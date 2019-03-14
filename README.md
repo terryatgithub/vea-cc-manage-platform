@@ -6,7 +6,7 @@ Admin Template之coocaaAT-one
 
 ```
 git clone  
-cd coocaaAT-one
+cd main-page
 npm install  
 ```
 ```
