@@ -18,6 +18,5 @@ npm run serve
 // 构建  
 npm run build
 
-//测试地址
-http://172.20.155.91:8090/main.html 
+
 ```
