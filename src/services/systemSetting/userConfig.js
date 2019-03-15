@@ -53,6 +53,19 @@ export function getRolesByUserId (data) {
     data
   })
 }
+
+/**
+ * 
+ * @param {*} params 
+ */
+export function saveUserRoles (params) {
+  return this.fetch({
+    method: 'post',
+    url:'/api/sysUser/saveUserRoles.html',
+    params
+  })
+}
+
 export function userConfigBusinessType (params) {
   return this.fetch({
     method: 'get',
