@@ -56,13 +56,13 @@ export function getRolesByUserId (data) {
 
 /**
  * 
- * @param {*} params 
+ * @param {*} params 保存用户角色
  */
 export function saveUserRoles (params) {
   return this.fetch({
     method: 'post',
     url:'/api/sysUser/saveUserRoles.html',
-    params
+    data
   })
 }
 
