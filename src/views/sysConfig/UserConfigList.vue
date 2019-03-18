@@ -208,6 +208,7 @@ export default {
 
     setData({ row }) {},
     editData({ row }) {
+      debugger;
       this.$emit("openAddPage", row.userId);
     },
     /**
