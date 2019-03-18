@@ -4,10 +4,10 @@
     <el-row :gutter="40">
       <el-col :span="24">
         <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
-          <el-form-item label="用户名称">
+          <el-form-item label="用户名称" prop="userName">
             <el-input v-model="form.userName" placeholder="用户名称"></el-input>
           </el-form-item>
-          <el-form-item label="所在部门">
+          <el-form-item label="所在部门" prop="deptId">
             <el-select v-model="form.deptId" placeholder="所在部门">
               <el-option
                 v-for="item in departmentList"
@@ -17,23 +17,23 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="登录账号">
+          <el-form-item label="登录账号" prop="loginName">
             <el-input v-model="form.loginName" placeholder="登录账号"></el-input>
           </el-form-item>
-          <el-form-item label="密码">
+          <el-form-item label="密码" prop="loginPwd">
             <el-input show-password v-model="form.loginPwd" placeholder="密码"></el-input>
           </el-form-item>
-          <el-form-item label="邮件地址">
+          <el-form-item label="邮件地址" prop="email">
             <el-input type="email" v-model="form.email" placeholder="邮件地址"></el-input>
           </el-form-item>
-          <el-form-item label="是否可用">
+          <el-form-item label="是否可用" prop="disabled">
             <el-radio v-model="form.disabled" label="0">是</el-radio>
             <el-radio v-model="form.disabled" label="1">否</el-radio>
           </el-form-item>
-          <el-form-item label="备注">
+          <el-form-item label="备注" prop="remark">
             <el-input type="textarea" v-model="form.remark" placeholder="备注"></el-input>
           </el-form-item>
-          <el-form-item label="数据权限">
+          <el-form-item label="数据权限" prop="dictIds">
             <el-form-item>
               <el-checkbox-group v-model="form.dictIds">
                 <el-checkbox
@@ -96,12 +96,10 @@ export default {
       });
     },
     submitBtn() {
+
         this.$refs.form.validate(valid => {
-          debugger;
           if (valid) {
-            this.$service.userConfigSave(this.form).then((data) => {
-               debugger;
-            })
+            this.$service.userConfigSave(this.form, "保存成功")
           }
         });
     },
