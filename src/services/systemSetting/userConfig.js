@@ -80,7 +80,10 @@ export function getRolesByUserId (data) {
  * @param {*} params 保存用户角色
  */
 export function saveUserRoles (data) {
-  debugger;
+  data = data.reduce((result, item) => {
+    result += '&' + item[0] + '=' + item[1]
+    return result
+  }, '').slice(1)
   return this.fetch({
     method: 'post',
     url: '/api/sysUser/saveUserRoles.html',

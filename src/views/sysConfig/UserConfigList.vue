@@ -163,7 +163,7 @@ export default {
       var data2 = [];
       var data3 = [];
       this.roleDialogVisible = true;
-      this.user.push('userId='+userId)
+      this.user.push(['userId',userId])
       this.$service.getNotRolesByUserId(object).then(data => {
        this.data1 = data;
        this.$service.getRolesByUserId(object).then(data => {
@@ -187,7 +187,7 @@ export default {
     handleChange(value, direction, movedKeys) {
       var str=[];
       for(var i=0; i<value.length; i++){
-        str.push('roleIds='+value[i])
+        str.push(['roleIds',value[i]])
       }
       this.selectedRole = this.user.concat(str)
       console.log(this.selectedRole)
@@ -195,15 +195,8 @@ export default {
     //弹框确定事件
     add(){
       const obj = this.selectedRole;
-      console.log(obj.join("&"))
-      const params = obj.reduce((result, item) => {
-          const itemSplited = item.split('=')
-          result[itemSplited[0]] = itemSplited[1]
-          return result
-      }, {})
-     this.$service.saveUserRoles(params, "保存成功")
+     this.$service.saveUserRoles(obj, "保存成功")
     },
- 
     setData({ row }) {},
     handleCreate() {
       this.$router.push({ name: "prize-create" });
@@ -336,12 +329,7 @@ export default {
           label: 0
         }
       }),
-      disabled: _.o
-        .enum({
-          否: "0",
-          是: "1"
-        })
-        .other("form", {
+      disabled: _.o.enum({ 否: "0",  是: "1"}).other("form", {
           component: "Select",
           placeholder: "是否禁用",
           cols: {
@@ -349,7 +337,8 @@ export default {
             label: 0
           }
         })
-    }).other("form", {
+      })
+      .other("form", {
       layout: "inline",
       footer: {
         cols: {
