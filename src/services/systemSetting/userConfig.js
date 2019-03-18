@@ -80,6 +80,10 @@ export function getRolesByUserId (data) {
  * @param {*} params 保存用户角色
  */
 export function saveUserRoles (data) {
+  data = data.reduce((result, item) => {
+    result += '&' + item[0] + '=' + item[1]
+    return result
+  }, '').slice(1)
   return this.fetch({
     method: 'post',
     url: '/api/sysUser/saveUserRoles.html',
@@ -108,6 +112,13 @@ export function userConfigSave (data) {
   return this.fetch({
     method: 'post',
     url: '/api/sysUser/save.html',
+    data
+  })
+}
+export function saveProfession (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysUser/saveProfession.html',
     data
   })
 }
