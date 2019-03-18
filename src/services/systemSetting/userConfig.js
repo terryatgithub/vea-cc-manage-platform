@@ -133,3 +133,14 @@ export function userConfigDelete (params) {
     params
   })
 }
+
+/**
+ * 部门管理
+ */
+export function sysDeptPageList (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysDept/pageList.html',
+    data
+  })
+}

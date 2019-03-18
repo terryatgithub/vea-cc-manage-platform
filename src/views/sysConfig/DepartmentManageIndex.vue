@@ -1,15 +1,206 @@
 <template>
-  <div>
+  <ContentCard class="content">
+    <ContentWrapper
+      :filter="filter"
+      :filterSchema="filterSchema"
+      :pagination="pagination"
+      @filter-change="handleFilterChange"
+      @filter-reset="handleFilterReset"
+    >
+      <div class="btns">
+        <el-button type="primary" icon="el-icon-plus" @click="addUser">新增</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
+      </div>
 
-  </div>
+      <Table
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+        :selected="table.selected"
+        :selection-type="table.selectionType"
+        @row-selection-add="handleRowSelectionAdd"
+        @row-selection-remove="handleRowSelectionRemove"
+        @all-row-selection-change="handleAllRowSelectionChange"
+      />
+    </ContentWrapper>
+  </ContentCard>
 </template>
+
 <script>
+import { ContentWrapper, Table, utils } from "admin-toolkit";
+import _ from 'gateschema'
+
 export default {
-  
+  components: {
+    ContentWrapper,
+    Table
+  },
+
+  data() {
+    return {
+      filterSchema: null,
+      filter: {
+        sort: undefined,
+        order: undefined
+      },
+      pagination: {},
+      table: {
+        props: {},
+        header: [
+          {
+            label: "部门名称",
+            prop: "deptName",
+            fit: true,
+            sortable: true
+          },
+          {
+            label: "部门电话",
+            prop: "deptTel",
+            fit: true,
+            sortable: true
+          },
+          {
+            label: "部门传真",
+            prop: "deptFax",
+            fit: true,
+            sortable: true
+          },
+          {
+            label: "是否禁用",
+            prop: "disabled",
+            fit: true,
+            sortable: true
+          },
+          {
+            label: "备注",
+            prop: "remark",
+            fit: true,
+            sortable: true
+          },
+          {
+            label: "排序",
+            prop: "pid",
+            fit: true,
+            sortable: true
+          },
+          {
+            label: "部门父编号",
+            prop: "pid",
+            fit: true,
+            sortable: true
+          },
+          {
+            label: "操作",
+            width: "200",
+            fixed: "right",
+            render: utils.component.createOperationRender(this, {
+              editData: "编辑"
+            })
+          }
+        ],
+        data: [],
+        selected: [],
+        selectionType: "multiple"
+      }
+    }
+  },
+
+  methods: {
+    /**
+     * 获取数据
+     */
+    fetchData() {
+      const filter = this.parseFilter();
+      this.$service.sysDeptPageList(filter).then(data => {
+        this.pagination.total = data.total;
+        this.table.data = data.rows;
+      });
+    },
+    parseFilter() {
+      const { filter, pagination } = this;
+      if (pagination) {
+        filter.page = pagination.currentPage;
+        filter.rows = pagination.pageSize;
+      }
+      return filter;
+    },
+    // 表单重设
+    handleFilterReset() {
+      this.filter = {
+        sort: undefined,
+        order: undefined
+      };
+      // this.fetchData();
+    }
+  },
+
+  created() {
+    let filterSchema = _.map({
+      deptName: _.o.string.other("form", {
+        placeholder: "部门名称",
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+      deptTel: _.o.string.other("form", {
+        placeholder: "部门电话",
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+      deptFax: _.o.string.other("form", {
+        placeholder: "部门传真",
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+      remark: _.o.string.other("form", {
+        placeholder: "备注",
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+      pid: _.o.number.other("form", {
+        placeholder: "部门父编号",
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+      disabled: _.o.enum({ 否: "0",  是: "1"}).other("form", {
+          component: "Select",
+          placeholder: "是否禁用",
+          cols: {
+            item: 3,
+            label: 0
+          }
+      }),
+    }).other("form", {
+      layout: "inline",
+      footer: {
+        cols: {
+          label: 0,
+          wrapper: 24
+        },
+        showSubmit: true,
+        submitText: "查询",
+        showReset: true,
+        resetText: "重置"
+      }
+    });
+    this.filterSchema = filterSchema;
+    this.fetchData();
+  }
 }
 </script>
-<style lang="stylus" scoped>
 
+<style lang="stylus" scoped>
+.btns
+  margin-bottom 10px
 </style>
 
 

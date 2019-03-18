@@ -361,7 +361,7 @@ export default {
     //保存用户数据权限
     saveProfession() {
       const dictIdGroupStr = this.checkedDictItems.join(',')
-      this.$service.saveProfession({userId: this.currentUserId, dicts: dictIdGroupStr});
+      this.$service.saveProfession({userId: this.currentUserId, dicts: dictIdGroupStr},'保存成功');
       this.dataPermissionWinVisible = false;
     }
   },
