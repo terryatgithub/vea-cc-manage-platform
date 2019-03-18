@@ -3,11 +3,32 @@ const depts = [
   { deptId: 58, deptName: '酷开-运营' },
   { deptId: 59, deptName: '酷开-测试' }
 ]
+const editData = {
+  dateModify: '2017-03-06 16:17:46',
+  deptId: 57,
+  dicts: [67],
+  disabled: 0,
+  email: 'admin@cooca.com',
+  loginCount: 9572,
+  loginIp: '172.20.135.14',
+  loginName: 'admin',
+  loginPwd: '',
+  loginTime: '2018-12-20 17:33:13',
+  remark: '我是系统管理员',
+  salt: '932299',
+  superAdmin: 0,
+  userId: 1,
+  userName: 'Admin'
+}
+
 /**
  * 得到部门
  */
 export function getDepts () {
   return Promise.resolve(depts)
+}
+export function userConfigEdit () {
+  return Promise.resolve(editData)
 }
 /**
  *
@@ -53,6 +74,22 @@ export function getRolesByUserId (data) {
     data
   })
 }
+
+/**
+ *
+ * @param {*} params 保存用户角色
+ */
+export function saveUserRoles (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysUser/saveUserRoles.html',
+    data
+  })
+}
+
+/**
+ * 得到数据权限列表
+ */
 export function userConfigBusinessType (params) {
   return this.fetch({
     method: 'get',
@@ -85,7 +122,7 @@ export function saveProfession (data) {
  *
  * @param {} params  支持批量删除
  */
-export function UserConfigDelete (params) {
+export function userConfigDelete (params) {
   return this.fetch({
     method: 'get',
     url: '/api/sysUser/remove.html',

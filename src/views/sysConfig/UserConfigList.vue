@@ -8,9 +8,8 @@
       @filter-reset="handleFilterReset"
     >
       <div class="btns">
-        <el-button type="primary" icon="el-icon-plus">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete">批量删除</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="addUser">新增</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
       </div>
       <Table
         :props="table.props"
@@ -23,15 +22,18 @@
         @all-row-selection-change="handleAllRowSelectionChange"
       />
     </ContentWrapper>
-    <!-- <el-dialog title="用户角色管理" :visible.sync="roleDialogVisible" width="30%">
+
+    <!-- 设置角色窗口 -->
+    <el-dialog title="设置用户角色" :visible.sync="roleDialogVisible">
       <span>
-         <el-transfer v-model="value1" :data="data"></el-transfer>
+        <el-transfer v-model="roleValue" :data="roleData" @change="handleChange"></el-transfer>
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="roleDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="roleDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="roleDialogVisible = false;add()">确 定</el-button>
       </span>
     </el-dialog> -->
+    <!-- 设置角色窗口end --->
 
     <!-- 数据权限窗口 -->
     <el-dialog title="数据权限设置" width="30%" :visible.sync="dataPermissionWinVisible">
@@ -50,10 +52,11 @@
         <el-button type="primary" @click="saveProfession">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- 数据权限窗口 -->
-
+    <!-- 数据权限窗口end -->
+    
   </ContentCard>
 </template>
+
 <script>
 import _ from "gateschema";
 import ButtonList from "./../../components/ButtonLIst";
@@ -66,8 +69,10 @@ export default {
   },
   data() {
     return {
-      depts: {},//部门
-      roleData: null,
+      depts: {}, //部门
+      roleData: [],
+      roleValue: [],
+      data1: [],
       roleDataSelected: null,
       roleDialogVisible: false,//角色管理窗口开关
       currentUserId: null,
@@ -75,6 +80,8 @@ export default {
       DataPermissionItems: {},//数据权限设置项
       checkedDictItems: [],//勾选的数据权限项
       isLoading: false,//数据权限设置窗口数据获取
+      selectedRole: [],
+      user: [],
       filter: {
         sort: undefined,
         order: undefined
@@ -153,11 +160,12 @@ export default {
           },
           {
             label: "操作",
-            width: "150",
+            width: "200",
             fixed: "right",
             render: utils.component.createOperationRender(this, {
               setRole: "设置角色",
-              setData: "数据权限"
+              setData: "数据权限",
+              editData: "编辑"
             })
           }
         ],
@@ -168,36 +176,93 @@ export default {
     };
   },
   methods: {
+    /**
+     * 新增用户
+     */
+    addUser() {
+      this.$emit("openAddPage", null);
+    },
     handleRead({ row }) {},
     setRole({ row }) {
-      this.getNotRolesByUserId(row.userId).then((data) => {
-          this.roleData = data 
-      })
+      const userId = row.userId;
+      const object = { userId: userId };
+      var data2 = [];
+      var data3 = [];
+      this.roleDialogVisible = true;
+      this.user.push("userId=" + userId);
+      this.$service.getNotRolesByUserId(object).then(data => {
+        this.data1 = data;
+        this.$service.getRolesByUserId(object).then(data => {
+          if (data != null) {
+            this.data1 = this.data1.concat(data);
+          }
+          for (let i = 0; i < this.data1.length; i++) {
+            data2.push({
+              key: this.data1[i].roleId,
+              label: this.data1[i].roleName
+            });
+          }
+          for (let j = 0; j < data.length; j++) {
+            data3.push(data[j].roleId);
+          }
+          this.roleData = data2;
+          this.roleValue = data3;
+        });
+      });
     },
-    async setData({ row }) {
-      this.currentUserId = row.userId;
-      //businessType
-      await this.userConfigBusinessType(row.userId)
-      //user checked id
-      this.checkedDictItems = [];
-      this.isLoading = true;
-      await this.getDictCheckedByUserId(row.userId);
-      this.isLoading = false
-      this.dataPermissionWinVisible = true;
+    handleChange(value, direction, movedKeys) {
+      var str = [];
+      for (var i = 0; i < value.length; i++) {
+        str.push("roleIds=" + value[i]);
+      }
+      this.selectedRole = this.user.concat(str);
+      console.log(this.selectedRole);
+    },
+    //弹框确定事件
+    add() {
+      const obj = this.selectedRole;
+      console.log(obj.join("&"));
+      const params = obj.reduce((result, item) => {
+        const itemSplited = item.split("=");
+        result[itemSplited[0]] = itemSplited[1];
+        return result;
+      }, {});
+      this.$service.saveUserRoles(params, "保存成功");
+    },
+    
+    editData({ row }) {
+      this.$emit("openAddPage", row.userId);
+    },
+    /**
+     * 批量删除
+     */
+    batchDel() {
+      if (this.selected.length === 0) {
+        this.$message("请选择再删除");
+        return;
+      }
+      if (window.confirm("确定要删除吗")) {
+        this.$service
+          .userConfigDelete({ id: this.selected.join(",") }, "删除成功")
+          .then(data => {
+            this.fetchData();
+          });
+      }
     },
     handleCreate() {
       this.$router.push({ name: "prize-create" });
     },
     handleRowSelectionAdd(targetItem) {
-      this.selected = this.selected.concat({
-        id: targetItem.userId
-      });
+      // this.selected = this.selected.concat({
+      //   id: targetItem.userId
+      // });
+      this.selected.push(targetItem.userId);
       this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(
-        item => item.id !== targetItem.userId
-      );
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.userId;
+      });
       this.updateTableSelected();
     },
     handleAllRowSelectionChange(value) {
@@ -214,7 +279,7 @@ export default {
     },
     updateTableSelected() {
       const table = this.table;
-      const newSelectedIndex = this.selected.map(item => item.id);
+      const newSelectedIndex = this.selected;
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.userId) > -1) {
           result.push(index);
@@ -244,6 +309,7 @@ export default {
         filter.rows = pagination.pageSize;
       }
       return filter;
+      console.log(filter);
     },
     /**
      * 获取数据
@@ -266,11 +332,25 @@ export default {
       });
     },
     getNotRolesByUserId(userId) {
-       this.$service.getNotRolesByUserId({userId: userId}).then(data => {
+      this.$service.getNotRolesByUserId({ userId: userId }).then(data => {
         data.forEach(element => {
           this.depts[element.deptName] = element.deptId;
         });
       });
+    },
+    /**
+     * 数据权限按钮
+     */
+    async setData({ row }) {
+      this.currentUserId = row.userId;
+      //businessType
+      await this.userConfigBusinessType(row.userId)
+      //user checked id
+      this.checkedDictItems = [];
+      this.isLoading = true;
+      await this.getDictCheckedByUserId(row.userId);
+      this.isLoading = false
+      this.dataPermissionWinVisible = true;
     },
     //获取用户数据权限
     getDictCheckedByUserId(userId) {

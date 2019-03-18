@@ -10,9 +10,6 @@ Object.defineProperties(Vue.prototype, {
 
 Object.defineProperties(Vue.prototype, {
   $getMenu: {
-    get () {
-      
-    }
+    get () {}
   }
 })
-
