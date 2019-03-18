@@ -74,6 +74,13 @@ export function userConfigSave (data) {
     data
   })
 }
+export function saveProfession (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysUser/saveProfession.html',
+    data
+  })
+}
 /**
  *
  * @param {} params  支持批量删除

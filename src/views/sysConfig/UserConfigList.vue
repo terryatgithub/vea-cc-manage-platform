@@ -39,12 +39,15 @@
       v-show="!isLoading"
       v-model="checkedDictItems">
         <el-checkbox class="checkItemStyle"
-          v-for="{dictId, dictCnName} in DataPermissionItems" :key="dictId" :label="dictCnName">
+          v-for="{dictId, dictCnName} in DataPermissionItems" 
+          :key="dictId" 
+          :label="dictId">
+          {{ dictCnName }}
         </el-checkbox>
       </el-checkbox-group>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dataPermissionWinVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dataPermissionWinVisible = false">确 定</el-button>
+        <el-button type="primary" @click="saveProfession">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 数据权限窗口 -->
@@ -67,6 +70,7 @@ export default {
       roleData: null,
       roleDataSelected: null,
       roleDialogVisible: false,//角色管理窗口开关
+      currentUserId: null,
       dataPermissionWinVisible: false,//数据权限窗口开关
       DataPermissionItems: {},//数据权限设置项
       checkedDictItems: [],//勾选的数据权限项
@@ -170,13 +174,15 @@ export default {
           this.roleData = data 
       })
     },
-    setData({ row }) {
+    async setData({ row }) {
+      this.currentUserId = row.userId;
       //businessType
-      this.userConfigBusinessType(row.userId);
+      await this.userConfigBusinessType(row.userId)
       //user checked id
       this.checkedDictItems = [];
-      this.getDictCheckedByUserId(row.userId);
       this.isLoading = true;
+      await this.getDictCheckedByUserId(row.userId);
+      this.isLoading = false
       this.dataPermissionWinVisible = true;
     },
     handleCreate() {
@@ -268,23 +274,21 @@ export default {
     },
     //获取用户数据权限
     getDictCheckedByUserId(userId) {
-      this.$service.getDictCheckedByUserId({userId: userId}).then((data) => {
-        const DataPermissionItemsIndexed = this.DataPermissionItemsIndexed
-        this.checkedDictItems = (data || [])
-          .filter(item => DataPermissionItemsIndexed[item])
-          .map(dictId => DataPermissionItemsIndexed[dictId].dictCnName)
-        this.isLoading = false;
+      return this.$service.getDictCheckedByUserId({userId: userId}).then((data) => {
+        this.checkedDictItems = data
       });
     },
     //数据权限项
     userConfigBusinessType(userId) {
-      this.$service.userConfigBusinessType({userId: userId}).then(data =>{
+      return this.$service.userConfigBusinessType({userId: userId}).then(data =>{
         this.DataPermissionItems = data;
-        this.DataPermissionItemsIndexed = data.reduce((result, item) => {
-          result[item.dictId] = item
-          return result
-        }, {})
       })
+    },
+    //保存用户数据权限
+    saveProfession() {
+      const dictIdGroupStr = this.checkedDictItems.join(',')
+      this.$service.saveProfession({userId: this.currentUserId, dicts: dictIdGroupStr});
+      this.dataPermissionWinVisible = false;
     }
   },
   created() {
