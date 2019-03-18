@@ -8,7 +8,7 @@
       @filter-reset="handleFilterReset"
     >
       <div class="btns">
-        <el-button type="primary" icon="el-icon-plus">新增</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="addUser">新增</el-button>
         <el-button type="primary" icon="el-icon-edit">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete">批量删除</el-button>
       </div>
@@ -23,15 +23,7 @@
         @all-row-selection-change="handleAllRowSelectionChange"
       />
     </ContentWrapper>
-    <!-- <el-dialog title="用户角色管理" :visible.sync="roleDialogVisible" width="30%">
-      <span>
-         <el-transfer v-model="value1" :data="data"></el-transfer>
-      </span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="roleDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="roleDialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>-->
+
     <!--设置角色-->
     <el-dialog title="设置用户角色" :visible.sync="roleDialogVisible">
       <span>
@@ -43,6 +35,7 @@
       </span>
     </el-dialog>
     <!--设置角色end--->
+
   </ContentCard>
 </template>
 
@@ -160,6 +153,9 @@ export default {
     };
   },
   methods: {
+    addUser (){
+      this.$emit("openAddPage")
+    },
     handleRead({ row }) {},
     setRole({ row }) {
       const userId = row.userId;
@@ -199,11 +195,13 @@ export default {
     //弹框确定事件
     add(){
       const obj = this.selectedRole;
-      debugger;
       console.log(obj.join("&"))
-     this.$service.saveUserRoles(obj.join("&")).then(data =>{
-       console.log(data)
-     })
+      const params = obj.reduce((result, item) => {
+          const itemSplited = item.split('=')
+          result[itemSplited[0]] = itemSplited[1]
+          return result
+      }, {})
+     this.$service.saveUserRoles(params, "保存成功")
     },
  
     setData({ row }) {},

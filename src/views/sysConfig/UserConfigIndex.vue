@@ -1,6 +1,6 @@
 <template>
   <div>
-    <UserConfigList v-if='isShowList'></UserConfigList>
+    <UserConfigList v-if='isShowList' @openAddPage="openAddPage"></UserConfigList>
     <UserConfigAdd v-if='!isShowList'></UserConfigAdd>
   </div>
 </template>
@@ -15,6 +15,11 @@ export default {
   data () {
     return {
       isShowList: true
+    }
+  },
+  methods: {
+    openAddPage () {
+       this.isShowList = false
     }
   }
 }
