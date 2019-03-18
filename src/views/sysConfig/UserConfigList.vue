@@ -9,8 +9,7 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addUser">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete">批量删除</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
       </div>
       <Table
         :props="table.props"
@@ -35,7 +34,6 @@
       </span>
     </el-dialog>
     <!--设置角色end--->
-
   </ContentCard>
 </template>
 
@@ -54,12 +52,12 @@ export default {
       depts: {}, //部门
       roleData: [],
       roleValue: [],
-      data1:[],
+      data1: [],
       roleDataSelected: null,
       roleDialogVisible: false, //角色管理窗口开关
       // show: false, //默认设置用户角色false,关闭
-      selectedRole:[],
-      user:[],
+      selectedRole: [],
+      user: [],
       filter: {
         sort: undefined,
         order: undefined
@@ -138,11 +136,12 @@ export default {
           },
           {
             label: "操作",
-            width: "150",
+            width: "200",
             fixed: "right",
             render: utils.component.createOperationRender(this, {
               setRole: "设置角色",
-              setData: "数据权限"
+              setData: "数据权限",
+              editData: "编辑"
             })
           }
         ],
@@ -153,8 +152,11 @@ export default {
     };
   },
   methods: {
-    addUser (){
-      this.$emit("openAddPage")
+    /**
+     * 新增用户
+     */
+    addUser() {
+      this.$emit("openAddPage", null);
     },
     handleRead({ row }) {},
     setRole({ row }) {
@@ -163,61 +165,81 @@ export default {
       var data2 = [];
       var data3 = [];
       this.roleDialogVisible = true;
-      this.user.push('userId='+userId)
+      this.user.push("userId=" + userId);
       this.$service.getNotRolesByUserId(object).then(data => {
-       this.data1 = data;
-       this.$service.getRolesByUserId(object).then(data => {
-         if(data!=null){
+        this.data1 = data;
+        this.$service.getRolesByUserId(object).then(data => {
+          if (data != null) {
             this.data1 = this.data1.concat(data);
-         }
-         for(let i=0; i<this.data1.length; i++){
-           data2.push({
-             key: this.data1[i].roleId,
-             label: this.data1[i].roleName
-           })
-         }
-         for(let j=0; j<data.length ;j++){
-           data3.push(data[j].roleId)
-         }
-         this.roleData = data2;
-         this.roleValue = data3
-       })
+          }
+          for (let i = 0; i < this.data1.length; i++) {
+            data2.push({
+              key: this.data1[i].roleId,
+              label: this.data1[i].roleName
+            });
+          }
+          for (let j = 0; j < data.length; j++) {
+            data3.push(data[j].roleId);
+          }
+          this.roleData = data2;
+          this.roleValue = data3;
+        });
       });
     },
     handleChange(value, direction, movedKeys) {
-      var str=[];
-      for(var i=0; i<value.length; i++){
-        str.push('roleIds='+value[i])
+      var str = [];
+      for (var i = 0; i < value.length; i++) {
+        str.push("roleIds=" + value[i]);
       }
-      this.selectedRole = this.user.concat(str)
-      console.log(this.selectedRole)
+      this.selectedRole = this.user.concat(str);
+      console.log(this.selectedRole);
     },
     //弹框确定事件
-    add(){
+    add() {
       const obj = this.selectedRole;
-      console.log(obj.join("&"))
+      console.log(obj.join("&"));
       const params = obj.reduce((result, item) => {
-          const itemSplited = item.split('=')
-          result[itemSplited[0]] = itemSplited[1]
-          return result
-      }, {})
-     this.$service.saveUserRoles(params, "保存成功")
+        const itemSplited = item.split("=");
+        result[itemSplited[0]] = itemSplited[1];
+        return result;
+      }, {});
+      this.$service.saveUserRoles(params, "保存成功");
     },
- 
+
     setData({ row }) {},
+    editData({ row }) {
+      this.$emit("openAddPage", row.userId);
+    },
+    /**
+     * 批量删除
+     */
+    batchDel() {
+      if (this.selected.length === 0) {
+        this.$message("请选择再删除");
+        return;
+      }
+      if (window.confirm("确定要删除吗")) {
+        this.$service
+          .userConfigDelete({ id: this.selected.join(",") }, "删除成功")
+          .then(data => {
+            this.fetchData();
+          });
+      }
+    },
     handleCreate() {
       this.$router.push({ name: "prize-create" });
     },
     handleRowSelectionAdd(targetItem) {
-      this.selected = this.selected.concat({
-        id: targetItem.userId
-      });
+      // this.selected = this.selected.concat({
+      //   id: targetItem.userId
+      // });
+      this.selected.push(targetItem.userId);
       this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(
-        item => item.id !== targetItem.userId
-      );
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.userId;
+      });
       this.updateTableSelected();
     },
     handleAllRowSelectionChange(value) {
@@ -234,7 +256,7 @@ export default {
     },
     updateTableSelected() {
       const table = this.table;
-      const newSelectedIndex = this.selected.map(item => item.id);
+      const newSelectedIndex = this.selected;
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.userId) > -1) {
           result.push(index);
@@ -370,9 +392,8 @@ export default {
 };
 </script>
 <style lang = 'stylus' scoped>
-.btns {
-  margin-bottom: 10px;
-}
+.btns
+  margin-bottom: 10px
 </style>
 
 

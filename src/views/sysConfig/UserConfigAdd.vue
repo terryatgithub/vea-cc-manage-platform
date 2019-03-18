@@ -21,9 +21,12 @@
             <el-input v-model="form.loginName" placeholder="登录账号"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="loginPwd">
-            <el-input show-password v-model="form.loginPwd" placeholder="密码"></el-input>
+            <el-input  v-model="form.loginPwd" placeholder="密码"></el-input>
           </el-form-item>
-          <el-form-item label="邮件地址" prop="email">
+          <el-form-item
+           label="邮件地址"
+           prop="email"
+           >
             <el-input type="email" v-model="form.email" placeholder="邮件地址"></el-input>
           </el-form-item>
           <el-form-item label="是否可用" prop="disabled">
@@ -38,11 +41,10 @@
               <el-checkbox-group v-model="form.dictIds">
                 <el-checkbox
                   v-for="item in dictEnNameList"
-                  :label="item.dictCnName"
                   :key="item.dictId"
-                  :value="item.dictId"
+                  :label="item.dictId"
                 >
-                  <!-- {{item.dictCnName}} -->
+                  {{item.dictCnName}}
                 </el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -77,7 +79,8 @@ export default {
         remark: null,
         dictIds: []
       },
-      formRules: {//表单规则
+      formRules: {
+        //表单规则
         userName: [
           { required: true, message: "请输入用户名称", trigger: "blur" }
         ],
@@ -85,7 +88,10 @@ export default {
           { required: true, message: "请输入登录账号", trigger: "blur" }
         ],
         loginPwd: [{ required: true, message: "请输入密码", trigger: "blur" }],
-        email: [{ required: true, message: "请输入邮件地址", trigger: "blur" }]
+        email: [
+          { required: true, message: "请输入邮件地址", trigger: "blur"},
+          {type: 'email', message: '邮件地址格式不正确',trigger: "blur"}
+        ]
       }
     };
   },
@@ -96,16 +102,20 @@ export default {
       });
     },
     submitBtn() {
-
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            this.$service.userConfigSave(this.form, "保存成功")
-          }
-        });
+      this.$refs.form.validate(valid => {
+        if (valid) {
+         this.$service.userConfigSave(this.form, "保存成功").then((data)=>{
+            this.$emit("openListPage");
+         })
+        }
+      });
     },
     getEditData() {
+      let obj = this;
       this.$service.userConfigEdit({ id: this.editId }).then(data => {
-        // this.dictEnNameList = data
+        Object.keys(this.form).forEach(v => {
+          this.form[v] = data[v];
+        });
       });
     },
     getDepts() {
@@ -117,8 +127,11 @@ export default {
   created() {
     this.userConfigBusinessType();
     this.getDepts();
-    if (this.editId !== null) {
+    if (this.editId !== null && this.editId !== undefined) {
+      this.title = '编辑'
       this.getEditData();
+    } else {
+      this.title = '新增'
     }
   }
 };
