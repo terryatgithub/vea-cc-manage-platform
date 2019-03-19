@@ -165,6 +165,7 @@ export function sysDeptDetailInfo (params) {
     params
   })
 }
+/**
  * 获取数据字典列表
  */
 export function getDictList (data) {
@@ -178,42 +179,40 @@ export function getDictList (data) {
 /**
  * 数据字典新增保存
  */
- export function SaveDictionary (data) {
-   return this.fetch({
-     method: 'post',
-     url: '/api/dict/save.html',
-     data
-   })
- }
+export function SaveDictionary (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dict/save.html',
+    data
+  })
+}
 
 /**
  * 数据字典更新
  */
-  export function UpdateDictionary (data) {
-   return this.fetch({
-     method: 'post',
-     url: '/api/dict/save.html',
-     data
-   })
- }
+export function UpdateDictionary (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dict/save.html',
+    data
+  })
+}
 
 /**
  * 数据字典分类新增
  */
- export function SaveDictCategory (data) {
-   return this.fetch({
-     method: 'post',
-     url: '/api/dictCategory/save.html',
-     data
-   })
- }
-
-
+export function SaveDictCategory (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dictCategory/save.html',
+    data
+  })
+}
 
 /**
  * 获取登陆日志
  */
-export function getLoginLogList (data){
+export function getLoginLogList (data) {
   return this.fetch({
     method: 'post',
     url: '/api/sysLogLogin/pageList.html',
