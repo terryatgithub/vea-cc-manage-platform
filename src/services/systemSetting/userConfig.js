@@ -7,7 +7,7 @@ const editData = {
   dateModify: '2017-03-06 16:17:46',
   deptId: 57,
   dicts: [67],
-  disabled: 0,
+  disabled: 1,
   email: 'admin@cooca.com',
   loginCount: 9572,
   loginIp: '172.20.135.14',
@@ -112,6 +112,13 @@ export function userConfigSave (data) {
   return this.fetch({
     method: 'post',
     url: '/api/sysUser/save.html',
+    data
+  })
+}
+export function saveProfession (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysUser/saveProfession.html',
     data
   })
 }

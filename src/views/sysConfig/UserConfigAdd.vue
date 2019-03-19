@@ -13,7 +13,7 @@
                 v-for="item in departmentList"
                 :key="item.deptId+''"
                 :label="item.deptName"
-                :value="item.deptId+''"
+                :value="item.deptId"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -21,12 +21,9 @@
             <el-input v-model="form.loginName" placeholder="登录账号"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="loginPwd">
-            <el-input  v-model="form.loginPwd" placeholder="密码"></el-input>
+            <el-input v-model="form.loginPwd" placeholder="密码"></el-input>
           </el-form-item>
-          <el-form-item
-           label="邮件地址"
-           prop="email"
-           >
+          <el-form-item label="邮件地址" prop="email">
             <el-input type="email" v-model="form.email" placeholder="邮件地址"></el-input>
           </el-form-item>
           <el-form-item label="是否可用" prop="disabled">
@@ -36,16 +33,14 @@
           <el-form-item label="备注" prop="remark">
             <el-input type="textarea" v-model="form.remark" placeholder="备注"></el-input>
           </el-form-item>
-          <el-form-item label="数据权限" prop="dictIds">
+          <el-form-item label="数据权限" prop="dicts">
             <el-form-item>
-              <el-checkbox-group v-model="form.dictIds">
+              <el-checkbox-group v-model="form.dicts">
                 <el-checkbox
                   v-for="item in dictEnNameList"
                   :key="item.dictId"
                   :label="item.dictId"
-                >
-                  {{item.dictCnName}}
-                </el-checkbox>
+                >{{item.dictCnName}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
           </el-form-item>
@@ -60,10 +55,11 @@
 </template>
 <script>
 export default {
-  prop: {
+  props: {
     editId: Number,
     default: null
   },
+  //  prop: ['editId'],
   data() {
     return {
       title: null,
@@ -77,7 +73,7 @@ export default {
         email: null,
         disabled: null,
         remark: null,
-        dictIds: []
+        dicts: []
       },
       formRules: {
         //表单规则
@@ -89,8 +85,8 @@ export default {
         ],
         loginPwd: [{ required: true, message: "请输入密码", trigger: "blur" }],
         email: [
-          { required: true, message: "请输入邮件地址", trigger: "blur"},
-          {type: 'email', message: '邮件地址格式不正确',trigger: "blur"}
+          { required: true, message: "请输入邮件地址", trigger: "blur" },
+          { type: "email", message: "邮件地址格式不正确", trigger: "blur" }
         ]
       }
     };
@@ -104,9 +100,9 @@ export default {
     submitBtn() {
       this.$refs.form.validate(valid => {
         if (valid) {
-         this.$service.userConfigSave(this.form, "保存成功").then((data)=>{
+          this.$service.userConfigSave(this.form, "保存成功").then(data => {
             this.$emit("openListPage");
-         })
+          });
         }
       });
     },
@@ -114,7 +110,11 @@ export default {
       let obj = this;
       this.$service.userConfigEdit({ id: this.editId }).then(data => {
         Object.keys(this.form).forEach(v => {
-          this.form[v] = data[v];
+          if (v === "disabled") {
+            this.form[v] = data[v]+'';
+          } else {
+            this.form[v] = data[v];
+          }
         });
       });
     },
@@ -128,10 +128,10 @@ export default {
     this.userConfigBusinessType();
     this.getDepts();
     if (this.editId !== null && this.editId !== undefined) {
-      this.title = '编辑'
+      this.title = "编辑";
       this.getEditData();
     } else {
-      this.title = '新增'
+      this.title = "新增";
     }
   }
 };

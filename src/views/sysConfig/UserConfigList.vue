@@ -23,7 +23,7 @@
       />
     </ContentWrapper>
 
-    <!--设置角色-->
+    <!-- 设置角色窗口 -->
     <el-dialog title="设置用户角色" :visible.sync="roleDialogVisible">
       <span>
         <el-transfer v-model="roleValue" :data="roleData" @change="handleChange"></el-transfer>
@@ -33,7 +33,27 @@
         <el-button type="primary" @click="roleDialogVisible = false;add()">确 定</el-button>
       </span>
     </el-dialog>
-    <!--设置角色end--->
+    <!-- 设置角色窗口end --->
+
+    <!-- 数据权限窗口 -->
+    <el-dialog title="数据权限设置" width="30%" :visible.sync="dataPermissionWinVisible">
+      <el-checkbox-group
+      v-show="!isLoading"
+      v-model="checkedDictItems">
+        <el-checkbox class="checkItemStyle"
+          v-for="{dictId, dictCnName} in DataPermissionItems" 
+          :key="dictId" 
+          :label="dictId">
+          {{ dictCnName }}
+        </el-checkbox>
+      </el-checkbox-group>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dataPermissionWinVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveProfession">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 数据权限窗口end -->
+    
   </ContentCard>
 </template>
 
@@ -54,8 +74,12 @@ export default {
       roleValue: [],
       data1: [],
       roleDataSelected: null,
-      roleDialogVisible: false, //角色管理窗口开关
-      // show: false, //默认设置用户角色false,关闭
+      roleDialogVisible: false,//角色管理窗口开关
+      currentUserId: null,
+      dataPermissionWinVisible: false,//数据权限窗口开关
+      DataPermissionItems: {},//数据权限设置项
+      checkedDictItems: [],//勾选的数据权限项
+      isLoading: false,//数据权限设置窗口数据获取
       selectedRole: [],
       user: [],
       filter: {
@@ -201,6 +225,7 @@ export default {
     },
     setData({ row }) {},
     editData({ row }) {
+      debugger;
       this.$emit("openAddPage", row.userId);
     },
     /**
@@ -307,12 +332,43 @@ export default {
           this.depts[element.deptName] = element.deptId;
         });
       });
+    },
+    /**
+     * 数据权限按钮
+     */
+    async setData({ row }) {
+      this.currentUserId = row.userId;
+      //businessType
+      await this.userConfigBusinessType(row.userId)
+      //user checked id
+      this.checkedDictItems = [];
+      this.isLoading = true;
+      await this.getDictCheckedByUserId(row.userId);
+      this.isLoading = false
+      this.dataPermissionWinVisible = true;
+    },
+    //获取用户数据权限
+    getDictCheckedByUserId(userId) {
+      return this.$service.getDictCheckedByUserId({userId: userId}).then((data) => {
+        this.checkedDictItems = data
+      });
+    },
+    //数据权限项
+    userConfigBusinessType(userId) {
+      return this.$service.userConfigBusinessType({userId: userId}).then(data =>{
+        this.DataPermissionItems = data;
+      })
+    },
+    //保存用户数据权限
+    saveProfession() {
+      const dictIdGroupStr = this.checkedDictItems.join(',')
+      this.$service.saveProfession({userId: this.currentUserId, dicts: dictIdGroupStr});
+      this.dataPermissionWinVisible = false;
     }
   },
   created() {
     let filterSchema = _.map({
       userName: _.o.string.other("form", {
-        component: "Input",
         placeholder: "用户名称",
         cols: {
           item: 3,
@@ -382,7 +438,9 @@ export default {
 </script>
 <style lang = 'stylus' scoped>
 .btns
-  margin-bottom: 10px
+  margin-bottom 10px
+.checkItemStyle
+  margin 10px
 </style>
 
 

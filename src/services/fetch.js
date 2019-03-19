@@ -13,11 +13,7 @@ export default function fetch ({
   let option = {
     method,
     url,
-    data: isJSON 
-        ? data 
-        : typeof data === 'string'
-          ? data
-          : qs.stringify(data),
+    data: isJSON ? data : typeof data === 'string' ? data : qs.stringify(data),
     params
   }
   // if (url != "/api/login") option.headers = { Authorization: this.state.token };
