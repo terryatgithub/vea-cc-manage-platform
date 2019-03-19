@@ -174,7 +174,8 @@ export function getDictList (data) {
    return this.fetch({
      method: 'post',
      url: '/api/dictCategory/save.html',
-     data
+     data,
+     isJSON: true
    })
  }
 
