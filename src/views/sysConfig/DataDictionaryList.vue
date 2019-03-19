@@ -154,7 +154,6 @@ export default {
     submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-           console.log(this.ruleForm.dictCategoryEnName)
            const dictCategoryObj = {
              dictCategoryCnName: this.ruleForm.dictCategoryCnName,
              dictCategoryEnName: this.ruleForm.dictCategoryEnName
@@ -162,16 +161,16 @@ export default {
            console.log(dictCategoryObj)
            this.$service.SaveDictCategory(dictCategoryObj,'保存成功').then(data => {
              this.dialogFormVisible = false
-             this.$refs[formName].resetFields();
+             this.$refs[formName].resetFields()
            })
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
       },
     resetForm(formName) {
-        this.$refs[formName].resetFields();
+      this.dialogFormVisible = false
+      this.$refs[formName].resetFields()
     },
     handleCreate() {
       this.$router.push({ name: "prize-create" });

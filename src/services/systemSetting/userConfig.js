@@ -135,6 +135,37 @@ export function userConfigDelete (params) {
 }
 
 /**
+ * 部门管理
+ */
+export function sysDeptPageList (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysDept/pageList.html',
+    data
+  })
+}
+export function sysDeptRemove (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysDept/remove.html',
+    params
+  })
+}
+export function sysDeptSave (params) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysDept/save.html',
+    params
+  })
+}
+export function sysDeptDetailInfo (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/v1/sysDept/getDetailInfo.html',
+    params
+  })
+}
+/**
  * 获取数据字典列表
  */
 export function getDictList (data) {
@@ -148,24 +179,24 @@ export function getDictList (data) {
 /**
  * 数据字典新增保存
  */
- export function SaveDictionary (data) {
-   return this.fetch({
-     method: 'post',
-     url: '/api/dict/save.html',
-     data
-   })
- }
+export function SaveDictionary (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dict/save.html',
+    data
+  })
+}
 
 /**
  * 数据字典更新
  */
-  export function UpdateDictionary (data) {
-   return this.fetch({
-     method: 'post',
-     url: '/api/dict/save.html',
-     data
-   })
- }
+export function UpdateDictionary (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dict/save.html',
+    data
+  })
+}
 
 /**
  * 数据字典分类新增
@@ -184,7 +215,7 @@ export function getDictList (data) {
 /**
  * 获取登陆日志
  */
-export function getLoginLogList (data){
+export function getLoginLogList (data) {
   return this.fetch({
     method: 'post',
     url: '/api/sysLogLogin/pageList.html',
