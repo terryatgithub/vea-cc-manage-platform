@@ -7,7 +7,7 @@ const editData = {
   dateModify: '2017-03-06 16:17:46',
   deptId: 57,
   dicts: [67],
-  disabled: 0,
+  disabled: 1,
   email: 'admin@cooca.com',
   loginCount: 9572,
   loginIp: '172.20.135.14',
@@ -163,5 +163,60 @@ export function sysDeptDetailInfo (params) {
     method: 'get',
     url: '/api/v1/sysDept/getDetailInfo.html',
     params
+  })
+}
+ * 获取数据字典列表
+ */
+export function getDictList (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dict/pageList.html',
+    data
+  })
+}
+
+/**
+ * 数据字典新增保存
+ */
+ export function SaveDictionary (data) {
+   return this.fetch({
+     method: 'post',
+     url: '/api/dict/save.html',
+     data
+   })
+ }
+
+/**
+ * 数据字典更新
+ */
+  export function UpdateDictionary (data) {
+   return this.fetch({
+     method: 'post',
+     url: '/api/dict/save.html',
+     data
+   })
+ }
+
+/**
+ * 数据字典分类新增
+ */
+ export function SaveDictCategory (data) {
+   return this.fetch({
+     method: 'post',
+     url: '/api/dictCategory/save.html',
+     data
+   })
+ }
+
+
+
+/**
+ * 获取登陆日志
+ */
+export function getLoginLogList (data){
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysLogLogin/pageList.html',
+    data
   })
 }

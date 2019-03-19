@@ -32,7 +32,7 @@
         <el-button @click="roleDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="roleDialogVisible = false;add()">确 定</el-button>
       </span>
-    </el-dialog> -->
+    </el-dialog>
     <!-- 设置角色窗口end --->
 
     <!-- 数据权限窗口 -->
@@ -225,6 +225,7 @@ export default {
     },
     setData({ row }) {},
     editData({ row }) {
+      debugger;
       this.$emit("openAddPage", row.userId);
     },
     /**

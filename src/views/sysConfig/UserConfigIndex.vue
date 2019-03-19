@@ -24,6 +24,7 @@ export default {
     */
     openAddPage (userId) {
        this.editId = userId
+       debugger
        this.isShowList = false
     },
      /** 
