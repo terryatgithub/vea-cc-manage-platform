@@ -1,12 +1,18 @@
 <template>
   <ContentCard class="content">
-    <ContentWrapper
+     <ContentWrapper
       :filter="filter"
       :filterSchema="filterSchema"
       :pagination="pagination"
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
+      <div class="btns">
+        <el-button type="primary" icon="el-icon-plus" @click="addDict">新增</el-button>
+        <el-button type="primary" icon="el-icon-edit">编辑</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
+        <el-button type="primary" icon="el-icon-plus" >新增字典分类</el-button>
+      </div>
       <Table
         :props="table.props"
         :header="table.header"
@@ -20,7 +26,6 @@
     </ContentWrapper>
   </ContentCard>
 </template>
-
 <script>
 import _ from "gateschema";
 import ButtonList from "./../../components/ButtonLIst";
@@ -44,46 +49,28 @@ export default {
       table: {
         props: {},
         header: [
-          {
-            label: "ID",
-            prop: "id",
-            width: "70",
-          },
-          {
-            label: "用户名",
-            width: "130",
-            prop: "userName",
-          },
-          {
-            label: "用户编号",
-            prop: "userId",
-            width: "90",
-          },
            {
-            label: "登录时间",
-            prop: "loginTime",
-            width: "150"
+            label: "ID",
+            prop: "dictId",
+            width: "70"
           },
           {
-            label: "用户IP",
-            prop: "loginIp",
-            width: "150"
-           
+            label: "字典名称",
+            "min-width": "90",
+            prop: "dictCnName",
+            sortable: true
           },
           {
-            label: "用户浏览器信息",
-            prop: "userAgent",
-             "min-width": "100"
+            label: "字典值",
+            prop: "dictEnName",
+            width: "110",
+            sortable: true
           },
           {
-            label: "登录类型",
-            prop: "loginType",
-            width: "100"
-          },
-          {
-            label: "说明",
-            prop: "remark",
-            width: "100"
+            label: "字典分类",
+            prop: "dictCategory",
+            "min-width": "160"
+            // sortable: 'custom'
           },
           // {
           //   label: "所在部门",
@@ -92,7 +79,8 @@ export default {
           //   render: (createElement, { row }) => {
           //     return row.sysDept.deptName;
           //   }
-          // }
+          // },
+          
         ],
         data: [],
         selected: [],
@@ -101,6 +89,31 @@ export default {
     };
   },
   methods: {
+    /**
+     * 新增字典
+     */
+    addDict() {
+      this.$emit("openAddPage", null);
+    },
+    editData({ row }) {
+      this.$emit("openAddPage", row.dictId);
+    },
+    /**
+     * 批量删除
+     */
+    batchDel() {
+      if (this.selected.length === 0) {
+        this.$message("请选择再删除");
+        return;
+      }
+      if (window.confirm("确定要删除吗")) {
+        this.$service
+          .userConfigDelete({ id: this.selected.join(",") }, "删除成功")
+          .then(data => {
+            this.fetchData();
+          });
+      }
+    },
     handleCreate() {
       this.$router.push({ name: "prize-create" });
     },
@@ -108,12 +121,12 @@ export default {
       // this.selected = this.selected.concat({
       //   id: targetItem.userId
       // });
-      this.selected.push(targetItem.id);
+      this.selected.push(targetItem.dictId);
       this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.id;
+        return item !== targetItem.dictId;
       });
       this.updateTableSelected();
     },
@@ -133,7 +146,7 @@ export default {
       const table = this.table;
       const newSelectedIndex = this.selected;
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.id) > -1) {
+        if (newSelectedIndex.indexOf(item.dictId) > -1) {
           result.push(index);
         }
         return result;
@@ -168,7 +181,7 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter();
-      this.$service.getLoginLogList(filter).then(data => {
+      this.$service.getDictList(filter).then(data => {
         this.pagination.total = data.total;
         this.table.data = data.rows;
       });
@@ -186,41 +199,33 @@ export default {
   },
   created() {
     let filterSchema = _.map({
-      userName: _.o.string.other("form", {
+      dictId: _.o.string.other("form", {
         component: "Input",
-        placeholder: "用户名  ",
+        placeholder: "字典ID",
         cols: {
           item: 3,
           label: 0
         }
       }),
-      deptId: _.o.enum(this.depts).other("form", {
+      dictCnName: _.o.string.other("form", {
+        component: "Input",
+        placeholder: "字典名称",
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+      dictEnName: _.o.string.other("form", {
+        component: "Input",
+        placeholder: "字典值",
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+      dictCategory: _.o.enum(this.depts).other("form", {
         component: "Select",
-        placeholder: "所在部门",
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
-      id: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "用户ID  ",
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
-      loginIp: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "用户登陆IP",
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
-      loginType: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "登陆类型",
+        placeholder: "字典分类",
         cols: {
           item: 3,
           label: 0
