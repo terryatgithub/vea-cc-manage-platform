@@ -1,6 +1,7 @@
 <template>
     <el-container class="layout">
         <div :class="isCollapseMenu? 'aside__menu aside__menu_collapse' : 'aside__menu'">
+          <div class="left-aside">
             <el-button
                 class="collpase-btn"
                 type="text"
@@ -14,6 +15,7 @@
                 :isCollapse="isCollapseMenu"
             >
             </Menu>
+            </div>
         </div>
         <el-container direction="vertical">
             <el-header
@@ -180,7 +182,7 @@ export default {
 .user-info
     margin-left auto
 .menu:not(.el-menu--collapse)
-    width 200px
+    min-width 200px
     background #333
 .el-submenu__title
     color #fff
@@ -205,4 +207,10 @@ export default {
     border-left 3px solid #fc4c02
 .el-submenu .el-menu
     background #1e1e1e
+body, html, #app,section.el-container, .aside__menu
+  height 100%
+.left-aside
+   height 100%
+   overflow-y auto
+   overflow-x hidden
 </style>
