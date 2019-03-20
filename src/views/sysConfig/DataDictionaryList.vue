@@ -11,7 +11,7 @@
         <el-button type="primary" icon="el-icon-plus" @click="addDict">新增</el-button>
         <el-button type="primary" icon="el-icon-edit">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
-        <el-button type="primary" icon="el-icon-plus" >新增字典分类</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="dialogFormVisible = true" >新增字典分类</el-button>
       </div>
       <Table
         :props="table.props"
@@ -23,6 +23,22 @@
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
       />
+      <!--字典分类添加弹框-->
+      <el-dialog title="添加字典分类" :visible.sync="dialogFormVisible">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" class="demo-ruleForm" :label-position="labelPosition">
+          <el-form-item label="字典分类名称" prop="dictCategoryCnName">
+            <el-input v-model="ruleForm.dictCategoryCnName"></el-input>
+          </el-form-item>
+          <el-form-item label="字典分类值" prop="dictCategoryEnName" >
+            <el-input v-model="ruleForm.dictCategoryEnName"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button style="float:right;" type="primary" @click="submitForm('ruleForm')">确定</el-button>
+            <el-button style="float:right;margin-right:15px" @click="resetForm('ruleForm')">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <!--字典分类end-->
     </ContentWrapper>
   </ContentCard>
 </template>
@@ -38,6 +54,21 @@ export default {
   },
   data() {
     return {
+      dialogFormVisible:false, //字典分类弹框默认false
+      labelPosition: 'right',
+     ruleForm: {
+          dictCategoryEnName: '',
+          dictCategoryCnName: '',
+        },
+      rules: {
+        dictCategoryCnName: [
+            { required: true, message: '请输入字典分类名称', trigger: 'blur' }
+        ],
+        dictCategoryEnName: [
+            { required: true, message: '请输入字典分类值', trigger: 'blur' }
+        ]
+      }, //弹框表单验证
+      formLabelWidth: '120px',
       depts: {}, //部门
       filter: {
         sort: undefined,
@@ -95,6 +126,9 @@ export default {
     addDict() {
       this.$emit("openAddPage", null);
     },
+    /**
+     * 修改字典
+     */
     editData({ row }) {
       this.$emit("openAddPage", row.dictId);
     },
@@ -114,13 +148,34 @@ export default {
           });
       }
     },
+    /**
+     * 新增数据字典分类
+     */
+    submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+           const dictCategoryObj = {
+             dictCategoryCnName: this.ruleForm.dictCategoryCnName,
+             dictCategoryEnName: this.ruleForm.dictCategoryEnName
+           }
+           console.log(dictCategoryObj)
+           this.$service.SaveDictCategory(dictCategoryObj,'保存成功').then(data => {
+             this.dialogFormVisible = false
+             this.$refs[formName].resetFields()
+           })
+          } else {
+            return false;
+          }
+        });
+      },
+    resetForm(formName) {
+      this.dialogFormVisible = false
+      this.$refs[formName].resetFields()
+    },
     handleCreate() {
       this.$router.push({ name: "prize-create" });
     },
     handleRowSelectionAdd(targetItem) {
-      // this.selected = this.selected.concat({
-      //   id: targetItem.userId
-      // });
       this.selected.push(targetItem.dictId);
       this.updateTableSelected();
     },
@@ -253,8 +308,10 @@ export default {
 };
 </script>
 <style lang = 'stylus' scoped>
-.btns
+.btns {
   margin-bottom: 10px
+} 
+
 </style>
 
 

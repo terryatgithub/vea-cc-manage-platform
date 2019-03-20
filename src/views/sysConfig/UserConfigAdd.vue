@@ -60,7 +60,7 @@ export default {
     default: null
   },
   //  prop: ['editId'],
-  data() {
+  data () {
     return {
       title: null,
       dictEnNameList: null,
@@ -76,64 +76,63 @@ export default {
         dicts: []
       },
       formRules: {
-        //表单规则
+        // 表单规则
         userName: [
-          { required: true, message: "请输入用户名称", trigger: "blur" }
+          { required: true, message: '请输入用户名称', trigger: 'blur' }
         ],
         loginName: [
-          { required: true, message: "请输入登录账号", trigger: "blur" }
+          { required: true, message: '请输入登录账号', trigger: 'blur' }
         ],
-        loginPwd: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        loginPwd: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         email: [
-          { required: true, message: "请输入邮件地址", trigger: "blur" },
-          { type: "email", message: "邮件地址格式不正确", trigger: "blur" }
+          { required: true, message: '请输入邮件地址', trigger: 'blur' },
+          { type: 'email', message: '邮件地址格式不正确', trigger: 'blur' }
         ]
       }
-    };
+    }
   },
   methods: {
-    userConfigBusinessType() {
+    userConfigBusinessType () {
       this.$service.userConfigBusinessType().then(data => {
-        this.dictEnNameList = data;
-      });
+        this.dictEnNameList = data
+      })
     },
-    submitBtn() {
+    submitBtn () {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$service.userConfigSave(this.form, "保存成功").then(data => {
-            this.$emit("openListPage");
-          });
+          this.$service.userConfigSave(this.form, '保存成功').then(data => {
+            this.$emit('openListPage')
+          })
         }
-      });
+      })
     },
-    getEditData() {
-      let obj = this;
+    getEditData () {
+      let obj = this
       this.$service.userConfigEdit({ id: this.editId }).then(data => {
         Object.keys(this.form).forEach(v => {
-          if (v === "disabled") {
-            this.form[v] = data[v]+'';
+          if (v === 'disabled') {
+            this.form[v] = data[v] + ''
           } else {
-            this.form[v] = data[v];
+            this.form[v] = data[v]
           }
-        });
-      });
+        })
+      })
     },
-    getDepts() {
+    getDepts () {
       return this.$service.getDepts().then(data => {
-        this.departmentList = data;
-      });
+        this.departmentList = data
+      })
     }
   },
-  created() {
-    this.userConfigBusinessType();
-    this.getDepts();
+  created () {
+    this.userConfigBusinessType()
+    this.getDepts()
     if (this.editId !== null && this.editId !== undefined) {
-      this.title = "编辑";
-      this.getEditData();
+      this.title = '编辑'
+      this.getEditData()
     } else {
-      this.title = "新增";
+      this.title = '新增'
     }
   }
-};
+}
 </script>
-
