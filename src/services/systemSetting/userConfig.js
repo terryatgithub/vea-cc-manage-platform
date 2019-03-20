@@ -158,7 +158,6 @@ export function SaveDictionary (data) {
 /**
  * 数据字典分类新增
  */
-<<<<<<< HEAD
  export function SaveDictCategory (data) {
    return this.fetch({
      method: 'post',
@@ -167,16 +166,6 @@ export function SaveDictionary (data) {
      isJSON: true
    })
  }
-=======
-export function SaveDictCategory (data) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/dictCategory/save.html',
-    data,
-    isJSON: true
-  })
-}
->>>>>>> 2f7a89ec69ebb40f5583337752369cb0e931c649
 
 /**
  * 获取登陆日志

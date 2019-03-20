@@ -365,14 +365,9 @@ export default {
   },
   created () {
     let filterSchema = _.map({
-<<<<<<< HEAD
       userName: _.o.string.other("form", {
         component: "Input",
         placeholder: "用户名称",
-=======
-      userName: _.o.string.other('form', {
-        placeholder: '用户名称',
->>>>>>> 2f7a89ec69ebb40f5583337752369cb0e931c649
         cols: {
           item: 3,
           label: 0

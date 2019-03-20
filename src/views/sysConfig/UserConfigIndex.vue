@@ -23,14 +23,8 @@ export default {
      * 打开新增编辑页面
     */
     openAddPage (userId) {
-<<<<<<< HEAD
        this.editId = userId
        this.isShowList = false
-=======
-      this.editId = userId
-      debugger
-      this.isShowList = false
->>>>>>> 2f7a89ec69ebb40f5583337752369cb0e931c649
     },
     /**
      * 打开列表页面
