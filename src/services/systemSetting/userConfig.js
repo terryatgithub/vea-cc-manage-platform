@@ -133,38 +133,6 @@ export function userConfigDelete (params) {
     params
   })
 }
-
-/**
- * 部门管理
- */
-export function sysDeptPageList (data) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/sysDept/pageList.html',
-    data
-  })
-}
-export function sysDeptRemove (params) {
-  return this.fetch({
-    method: 'get',
-    url: '/api/sysDept/remove.html',
-    params
-  })
-}
-export function sysDeptSave (params) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/sysDept/save.html',
-    params
-  })
-}
-export function sysDeptDetailInfo (params) {
-  return this.fetch({
-    method: 'get',
-    url: '/api/v1/sysDept/getDetailInfo.html',
-    params
-  })
-}
 /**
  * 获取数据字典列表
  */
@@ -190,6 +158,7 @@ export function SaveDictionary (data) {
 /**
  * 数据字典分类新增
  */
+<<<<<<< HEAD
  export function SaveDictCategory (data) {
    return this.fetch({
      method: 'post',
@@ -198,6 +167,16 @@ export function SaveDictionary (data) {
      isJSON: true
    })
  }
+=======
+export function SaveDictCategory (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dictCategory/save.html',
+    data,
+    isJSON: true
+  })
+}
+>>>>>>> 2f7a89ec69ebb40f5583337752369cb0e931c649
 
 /**
  * 获取登陆日志

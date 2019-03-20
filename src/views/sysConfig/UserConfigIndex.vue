@@ -19,25 +19,31 @@ export default {
     }
   },
   methods: {
-    /** 
+    /**
      * 打开新增编辑页面
     */
     openAddPage (userId) {
+<<<<<<< HEAD
        this.editId = userId
        this.isShowList = false
+=======
+      this.editId = userId
+      debugger
+      this.isShowList = false
+>>>>>>> 2f7a89ec69ebb40f5583337752369cb0e931c649
     },
-     /** 
+    /**
      * 打开列表页面
     */
     openListPage () {
       this.isShowList = true
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
     },
-    /**  
+    /**
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.isShowList = true
+      this.isShowList = true
     }
   }
 }

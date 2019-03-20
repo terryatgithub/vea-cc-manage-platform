@@ -1,6 +1,6 @@
 /**
  *
- * @param {*} data 按钮组
+ * 角色管理接口
  */
 export function getRoleList (data) {
   return this.fetch({
@@ -14,5 +14,19 @@ export function userRoleList (data) {
     method: 'post',
     url: '/api/sysRole/userList.html',
     data
+  })
+}
+export function saveRoleData (params) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysRole/save.html',
+    params
+  })
+}
+export function deleteRole (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysRole/remove.html',
+    params
   })
 }
