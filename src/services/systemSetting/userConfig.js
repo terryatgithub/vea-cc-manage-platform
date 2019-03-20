@@ -133,38 +133,6 @@ export function userConfigDelete (params) {
     params
   })
 }
-
-/**
- * 部门管理
- */
-export function sysDeptPageList (data) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/sysDept/pageList.html',
-    data
-  })
-}
-export function sysDeptRemove (params) {
-  return this.fetch({
-    method: 'get',
-    url: '/api/sysDept/remove.html',
-    params
-  })
-}
-export function sysDeptSave (params) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/sysDept/save.html',
-    params
-  })
-}
-export function sysDeptDetailInfo (params) {
-  return this.fetch({
-    method: 'get',
-    url: '/api/v1/sysDept/getDetailInfo.html',
-    params
-  })
-}
 /**
  * 获取数据字典列表
  */
@@ -201,16 +169,14 @@ export function UpdateDictionary (data) {
 /**
  * 数据字典分类新增
  */
- export function SaveDictCategory (data) {
-   return this.fetch({
-     method: 'post',
-     url: '/api/dictCategory/save.html',
-     data,
-     isJSON: true
-   })
- }
-
-
+export function SaveDictCategory (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dictCategory/save.html',
+    data,
+    isJSON: true
+  })
+}
 
 /**
  * 获取登陆日志
@@ -219,16 +185,6 @@ export function getLoginLogList (data) {
   return this.fetch({
     method: 'post',
     url: '/api/sysLogLogin/pageList.html',
-    data
-  })
-}
-/**
- * 操作日志
- */
-export function sysLogOpPageList (data) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/sysLogOp/pageList.html',
     data
   })
 }
