@@ -145,7 +145,7 @@ export function getDictList (data) {
 }
 
 /**
- * 数据字典新增保存
+ * 数据字典保存
  */
 export function SaveDictionary (data) {
   return this.fetch({
@@ -156,27 +156,16 @@ export function SaveDictionary (data) {
 }
 
 /**
- * 数据字典更新
- */
-export function UpdateDictionary (data) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/dict/save.html',
-    data
-  })
-}
-
-/**
  * 数据字典分类新增
  */
-export function SaveDictCategory (data) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/dictCategory/save.html',
-    data,
-    isJSON: true
-  })
-}
+ export function SaveDictCategory (data) {
+   return this.fetch({
+     method: 'post',
+     url: '/api/dictCategory/save.html',
+     data,
+     isJSON: true
+   })
+ }
 
 /**
  * 获取登陆日志
@@ -186,5 +175,50 @@ export function getLoginLogList (data) {
     method: 'post',
     url: '/api/sysLogLogin/pageList.html',
     data
+  })
+}
+
+/**
+ * 系统菜单list
+ */
+export function getSysMenuList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysMenu/pageList.html',
+    params
+  })
+}
+
+/**
+ * 系统菜单新增
+ */
+export function saveSysMenu (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/save.html',
+    data
+  })
+}
+
+/**
+ * 系统菜单编辑修改
+ */
+export function updateSysMenu (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/save.html',
+    data
+  })
+}
+/**
+ * 系统菜单数据回显
+ */
+export function editSysMenu (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysMenu/edit.html',
+    params
+  }).then(data => {
+    return  JSON.parse(data.match(/para = (\{.+\})/)[1])
   })
 }

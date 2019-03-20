@@ -20,7 +20,7 @@
           <el-form-item label="字典值" prop="dictEnName">
             <el-input v-model="form.dictEnName" placeholder="字典值"></el-input>
           </el-form-item>
-          <el-form-item label="字典分类" prop="dictCategory">
+          <!-- <el-form-item label="字典分类" prop="dictCategory">
               <el-select v-model="form.deptId" placeholder="字典分类">
               <el-option
                 v-for="item in departmentList"
@@ -28,6 +28,12 @@
                 :label="item.deptName"
                 :value="item.deptId+''"
               ></el-option>
+            </el-select>
+          </el-form-item> -->
+          <el-form-item label="字典分类">
+            <el-select v-model="form.dictCategory" placeholder="字典分类">
+              <el-option label="分类一" value="value1"></el-option>
+              <el-option label="分类二" value="value2"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -68,11 +74,6 @@ export default {
     };
   },
   methods: {
-    userConfigBusinessType() {
-      this.$service.userConfigBusinessType().then(data => {
-        this.dictEnNameList = data;
-      });
-    },
     submitBtn() {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -82,23 +83,17 @@ export default {
         }
       });
     },
+    //回显数据
     getEditData() {
       let obj = this;
-      this.$service.UpdateDictionary({ id: this.editId }).then(data => {
-        Object.keys(this.form).forEach(v => {
-          this.form[v] = data[v];
-        });
-      });
+      // this.$service.UpdateDictionary({ id: this.editId }).then(data => {
+      //   Object.keys(this.form).forEach(v => {
+      //     this.form[v] = data[v];
+      //   });
+      // });
     },
-    getDepts() {
-      return this.$service.getDepts().then(data => {
-        this.departmentList = data;
-      });
-    }
   },
   created() {
-    this.userConfigBusinessType();
-    this.getDepts();
     if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
       this.getEditData();
