@@ -33,7 +33,6 @@ export default {
   },
   data() {
     return {
-      depts: {}, //部门
       filter: {
         sort: undefined,
         order: undefined
@@ -43,7 +42,7 @@ export default {
       selected: [],
       table: {
         props: {},
-        heard: [
+        header: [
           {
             label: "ID",
             prop: "id",

@@ -190,7 +190,7 @@ export function getSysMenuList (params) {
 }
 
 /**
- * 系统菜单新增
+ * 系统菜单保存
  */
 export function saveSysMenu (data) {
   return this.fetch({
@@ -201,16 +201,6 @@ export function saveSysMenu (data) {
 }
 
 /**
- * 系统菜单编辑修改
- */
-export function updateSysMenu (data) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/sysMenu/save.html',
-    data
-  })
-}
-/**
  * 系统菜单数据回显
  */
 export function editSysMenu (params) {
@@ -220,5 +210,39 @@ export function editSysMenu (params) {
     params
   }).then(data => {
     return  JSON.parse(data.match(/para = (\{.+\})/)[1])
+  })
+}
+/**
+ * 系统菜单操作——待选操作
+ */
+export function getNotMenuByRunId (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/getNotMenuByRunId.html',
+    data
+  })
+}
+/**
+ * 系统菜单操作——已选操作
+ */
+export function getMenuByRunId (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/getMenuByRunId.html',
+    data
+  })
+}
+/**
+ * 系统菜单操作——保存
+ */
+export function  saveMenuRun (data) {
+  data = data.reduce((result, item) => {
+    result += '&' + item[0] + '=' + item[1]
+    return result
+  }, '').slice(1)
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/saveMenuRun.html',
+    data
   })
 }

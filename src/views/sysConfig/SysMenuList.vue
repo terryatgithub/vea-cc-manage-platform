@@ -21,6 +21,17 @@
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
       />
+      <!--设置操作-->
+      <el-dialog title="设置操作" :visible.sync="setDialogVisible">
+         <span>
+        <el-transfer v-model="svalue" :data="sdata" :titles="['待选操作','已选操作']" @change="handleChange"></el-transfer>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setDialogVisible = false;setSave()">确 定</el-button>
+      </span>
+      </el-dialog>
+      <!--设置操作end-->
     </ContentWrapper>
   </ContentCard>
 </template>
@@ -43,6 +54,12 @@ export default {
       },
       filterSchema: null,
       pagination: {},
+      setDialogVisible: false, //弹框默认关闭
+      svalue: [], //弹框右边数据
+      sdata: [], //弹框全部数据
+      allData:[], //弹框全部数据
+      setMenu: [], //弹框对象
+      selectMenu: [],
       selected: [],
       table: {
         props: {},
@@ -212,6 +229,47 @@ export default {
         this.table.data = data.rows;
       });
     },
+    /**
+     * 设施操作
+     */
+    setData({row}){
+      this.setDialogVisible = true
+      const MenuObj = { menuId:row.menuId}
+      this.setMenu.push(['menuId',row.menuId])
+      var data1 = []
+      this.$service.getNotMenuByRunId(MenuObj).then(data => {
+        this.allData = data
+        this.$service.getMenuByRunId(MenuObj).then(data => {
+          if (data != null){
+            this.allData = this.allData.concat(data) //拼接数组
+          }
+          //创建全部数组
+          for(let i =0;i<this.allData.length; i++){
+            data1.push({
+              key: this.allData[i].runId,
+              label: this.allData[i].runName
+            })
+          }
+          for (let j=0;j< data.length;j++){
+            this.svalue.push(data[j].runId)
+          }
+          this.sdata = data1
+        })
+      })
+    },
+    //选中操作
+    handleChange (value, direction, movedKeys) {
+      var str = []
+      for (var i = 0; i < value.length; i++) {
+        str.push(['runIds', value[i]])
+      }
+      this.selectMenu = this.setMenu.concat(str)
+      console.log(this.selectMenu)
+    },
+    //弹框保存事件
+    setSave () {
+      this.$service.saveMenuRun(this.selectMenu,"保存成功")
+    }
   },
   created() {
     let filterSchema = _.map({

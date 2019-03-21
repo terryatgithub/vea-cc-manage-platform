@@ -89,10 +89,10 @@ export default {
     submitBtn() {
       this.$refs.form.validate(valid => {
         if (valid) {
-            console.log(this.form)
-        //   this.$service.userConfigSave(this.form, "保存成功").then(data => {
-        //     this.$emit("openListPage");
-        //   });
+            console.log(this.form.menuId)
+          // this.$service.userConfigSave(this.form, "保存成功").then(data => {
+          //   this.$emit("openListPage");
+          // });
         }
       });
     },

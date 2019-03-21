@@ -26,7 +26,7 @@
     <!-- 设置角色窗口 -->
     <el-dialog title="设置用户角色" :visible.sync="roleDialogVisible">
       <span>
-        <el-transfer v-model="roleValue" :data="roleData" @change="handleChange"></el-transfer>
+        <el-transfer v-model="roleValue" :data="roleData" :titles="['待选角色','已选角色']" @change="handleChange"></el-transfer>
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="roleDialogVisible = false">取 消</el-button>
