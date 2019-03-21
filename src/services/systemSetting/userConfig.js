@@ -158,15 +158,14 @@ export function SaveDictionary (data) {
 /**
  * 数据字典分类新增
  */
- export function SaveDictCategory (data) {
-   return this.fetch({
-     method: 'post',
-     url: '/api/dictCategory/save.html',
-     data,
-     isJSON: true
-   })
- }
-
+export function SaveDictCategory (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dictCategory/save.html',
+    data,
+    isJSON: true
+  })
+}
 /**
  * 获取登陆日志
  */

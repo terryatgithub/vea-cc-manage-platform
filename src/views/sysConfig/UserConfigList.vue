@@ -367,7 +367,7 @@ export default {
     let filterSchema = _.map({
       userName: _.o.string.other("form", {
         component: "Input",
-        placeholder: "用户名称",
+        placeholder: '用户名称',
         cols: {
           item: 3,
           label: 0
@@ -431,8 +431,7 @@ export default {
       this.filterSchema = filterSchema
     })
     this.fetchData()
-  }
-}
+  }}
 </script>
 <style lang = 'stylus' scoped>
 .btns
