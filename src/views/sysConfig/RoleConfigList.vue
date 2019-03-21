@@ -51,35 +51,71 @@
       </el-table>
     </el-dialog>
     <!-- 查看用户窗口end -->
+
     <!-- 设置权限 -->
-    <!--<el-dialog title="设置用户角色" :visible.sync="roleDialogVisible">-->
-    <!--<span>-->
-    <!--<el-transfer v-model="roleValue" :data="roleData" @change="handleChange"></el-transfer>-->
-    <!--</span>-->
-    <!--<span slot="footer" class="dialog-footer">-->
-    <!--<el-button @click="roleDialogVisible = false">取 消</el-button>-->
-    <!--<el-button type="primary" @click="roleDialogVisible = false;add()">确 定</el-button>-->
-    <!--</span>-->
-    <!--</el-dialog>-->
+    <el-dialog title="权限设置" :visible.sync="setAuthDialogVisible">
+      <div>
+        <el-button>全选</el-button>
+        <el-button>取消全选</el-button>
+        <el-button @click="setAuthDialogVisible = false;updateAuth()">保存修改</el-button>
+        <el-button @click="setAuthDialogVisible = false">关闭</el-button>
+      </div>
+      <div>
+        <el-tree
+          :data="AuthList"
+          node-key="menuId"
+          default-expand-all
+          expand-on-click-node
+        >
+          <span slot-scope="{ node, data }">
+            <span>{{ data.title }}</span>
+            <span><el-checkbox></el-checkbox></span>
+          </span>
+        </el-tree>
+      </div>
+    </el-dialog>
     <!-- 设置权限窗口end --->
 
     <!-- 设置人群权限窗口 -->
-    <!--<el-dialog title="数据权限设置" width="30%" :visible.sync="dataPermissionWinVisible">-->
-    <!--<el-checkbox-group-->
-    <!--v-show="!isLoading"-->
-    <!--v-model="checkedDictItems">-->
-    <!--<el-checkbox class="checkItemStyle"-->
-    <!--v-for="{dictId, dictCnName} in DataPermissionItems"-->
-    <!--:key="dictId"-->
-    <!--:label="dictId">-->
-    <!--{{ dictCnName }}-->
-    <!--</el-checkbox>-->
-    <!--</el-checkbox-group>-->
-    <!--<span slot="footer" class="dialog-footer">-->
-    <!--<el-button @click="dataPermissionWinVisible = false">取 消</el-button>-->
-    <!--<el-button type="primary" @click="saveProfession">确 定</el-button>-->
-    <!--</span>-->
-    <!--</el-dialog>-->
+    <el-dialog
+      title="数据权限设置"
+      :visible.sync="showAuthOfCrowdDialog"
+    >
+      <div v-show="policies.length === 0">
+        加载中...
+      </div>
+      <div
+        v-for="policy in policies"
+        :key="policy.value"
+        class="crowd-selector"
+      >
+        <span
+          :title="policy.label"
+          class="crowd-selector__policy ellipsis"
+        >
+          {{policy.label}}
+        </span>
+        <div class="crowd-selector__crowd-list">
+          <el-tag
+            v-for="(crowd, key) in policy.crowds"
+            :key="key"
+            type="info"
+            :title="crowd.label"
+            :class="{
+              'ellipsis': true,
+              'crowd-selector__crowd': true,
+              'crowd-selector__crowd--disabled': crowd.disable == 1}"
+            @click.native="handleSelectCrowd(crowd)"
+          >
+            {{ crowd.label }}
+          </el-tag>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="showAuthOfCrowdDialog = false">取 消</el-button>
+        <el-button type="primary" @click="handleSaveAuth">确 定</el-button>
+      </div>
+    </el-dialog>
     <!-- 设置人群权限窗口end -->
   </ContentCard>
 </template>
@@ -151,7 +187,7 @@ export default {
             width: '350',
             render: utils.component.createOperationRender(this, {
               setAuth: '设置权限',
-              setAuthOfCrowd: '设置人群权限',
+              handleSetAuthOfCrowd: '设置人群权限',
               sysRoleView: '查看用户',
               editRole: '编辑'
             })
@@ -171,7 +207,12 @@ export default {
         handleBatchDelete: {
           text: '删除'
         }
-      }
+      },
+      showAuthOfCrowdDialog: false,
+      policies: [],
+      roleId: undefined,
+      setAuthDialogVisible: false,
+      AuthList: []
 
     }
   },
@@ -239,13 +280,78 @@ export default {
         return result
       }, [])
     },
-    setAuth () {},
-    setAuthOfCrowd () {},
+    setAuth ({ row }) {
+      this.$service.getAuthList({ roleId: row.roleId }).then((data) => {
+        console.log(data)
+        this.setAuthDialogVisible = true
+        this.AuthList = data
+      })
+    },
+    updateAuth () {},
+    fetchPolicies (roleId) {
+      debugger
+      this.$service.getPoliciesAndCrowds({ roleId: roleId }).then((data) => {
+        this.policies = data.data
+        data.data.forEach((item) => {
+          console.log(item.crowds)
+          this.$service.getCrowdOfPolicy({ id: item.value, roleId: roleId })
+            .then((crowds) => {
+              console.log(crowds.data)
+              this.$set(item, 'crowds', crowds.data)
+            })
+        })
+      })
+    },
+    handleSelectCrowd (crowd) {
+      crowd.disable = crowd.disable === 1 ? 0 : 1
+    },
+    handleSetAuthOfCrowd ({ row }) {
+      this.showAuthOfCrowdDialog = true
+      this.policies = []
+      this.roleId = row.roleId
+      this.fetchPolicies(row.roleId)
+    },
+    handleSaveAuth () {
+      const self = this
+      const roleId = this.roleId
+      const crowdIds = []
+      const policyIds = []
+      const policies = this.policies
+      policies.forEach(function (policyItem) {
+        let disablePolicy = true
+        policyItem.crowds.forEach(function (crowdItem) {
+          if (crowdItem.disable === 1) {
+            crowdIds.push(crowdItem.value)
+          } else {
+            disablePolicy = false
+          }
+        })
+        if (disablePolicy !== false && policyItem.crowds.length > 0) {
+          policyIds.push(policyItem.value)
+        }
+      })
+      this.$service.setCrowdAuthOfRole({
+        roleId: roleId,
+        disableTagInfoList: [
+          {
+            type: 'crowd',
+            tagIds: crowdIds
+          },
+          {
+            type: 'crowdPolicy',
+            tagIds: policyIds
+          }
+        ]
+        // policyIds: policyIds,
+        // crowdIds: crowdIds
+      }, '设置成功').then(function () {
+        self.showAuthOfCrowdDialog = false
+      })
+    },
     sysRoleView ({ row }) {
       this.viewUserDialogVisible = true
       let id = row.roleId
       this.$service.userRoleList({ roleId: id }).then((data) => {
-        console.log(data)
         this.userRoleData = data
       })
     },
@@ -275,4 +381,34 @@ export default {
   .query-action-list
     float left
     margin 0 20px
+  .crowd-selector {
+    min-height 35px
+    margin-bottom 10px
+  }
+  .crowd-selector__policy {
+    position absolute
+    width 90px
+    margin-left 8px
+  }
+  .crowd-selector__crowd-list {
+    padding-left 90px
+  }
+  .crowd-selector__crowd {
+    margin-left 10px
+    cursor pointer
+    width 140px
+    margin-bottom 10px
+    background-color rgba(64,158,255,0.1)
+    color #409eff
+  }
+  .crowd-selector__crowd--disabled {
+    color #fff
+    background-color #bfc4cd
+  }
+  .ellipsis {
+    overflow hidden
+    white-space nowrap
+    text-overflow ellipsis
+    vertical-align middle
+  }
 </style>
