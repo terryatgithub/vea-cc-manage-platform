@@ -61,6 +61,7 @@ export default {
   },
 
   data() {
+    let that = this
     return {
       filter: {
         sort: undefined,
@@ -130,7 +131,7 @@ export default {
             label: '操作',
             width: '90',
             fixed: 'right',
-            render(h, { row }) {
+            render: (h, { row }) => {
               return h(
                 Button,
                 {
@@ -139,9 +140,7 @@ export default {
                     icon: 'el-icon-plus'
                   },
                   on: {
-                    click: function() {
-                      console.log(this)
-                    }
+                    click: this.handleCopy.bind(this, row)
                   }
                 },
                 ['复制']
@@ -186,6 +185,41 @@ export default {
         }
       }
       this.fetchData()
+    },
+    // 老项目的方法
+    handleCopy: function (row) {
+      var opData = row.opData
+      var textArea = document.createElement("textarea");
+      textArea.style.position = 'fixed';
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.width = '2em';
+      textArea.style.height = '2em';
+      textArea.style.padding = '0';
+      textArea.style.border = 'none';
+      textArea.style.outline = 'none';
+      textArea.style.boxShadow = 'none';
+      textArea.style.background = 'transparent';
+      textArea.value = opData;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+          var successful = document.execCommand('copy');
+          if (successful){
+              this.$message({
+                  showClose: true,
+                  message: '复制成功',
+                  type: 'success'
+              })
+          }
+      } catch (err) {
+          this.$message({
+              showClose: true,
+              message: '复制失败',
+              type: 'warning'
+          })
+      }
+      document.body.removeChild(textArea);
     }
   },
   created() {
