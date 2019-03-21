@@ -33,7 +33,6 @@ export default {
   },
   data() {
     return {
-      depts: {}, //部门
       filter: {
         sort: undefined,
         order: undefined
@@ -85,14 +84,6 @@ export default {
             prop: "remark",
             width: "100"
           },
-          // {
-          //   label: "所在部门",
-          //   prop: "deptId",
-          //   "min-width": "90",
-          //   render: (createElement, { row }) => {
-          //     return row.sysDept.deptName;
-          //   }
-          // }
         ],
         data: [],
         selected: [],
@@ -173,30 +164,12 @@ export default {
         this.table.data = data.rows;
       });
     },
-    /**
-     * 得到部门列表
-     */
-    getDepts() {
-      return this.$service.getDepts().then(data => {
-        data.forEach(element => {
-          this.depts[element.deptName] = element.deptId;
-        });
-      });
-    }
-  },
+   },
   created() {
     let filterSchema = _.map({
       userName: _.o.string.other("form", {
         component: "Input",
         placeholder: "用户名  ",
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
-      deptId: _.o.enum(this.depts).other("form", {
-        component: "Select",
-        placeholder: "所在部门",
         cols: {
           item: 3,
           label: 0
@@ -240,9 +213,7 @@ export default {
         resetText: "重置"
       }
     });
-    this.getDepts().then(() => {
-      this.filterSchema = filterSchema;
-    });
+    this.filterSchema = filterSchema
     this.fetchData();
   }
 };

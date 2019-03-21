@@ -241,16 +241,6 @@ export default {
         this.table.data = data.rows;
       });
     },
-    /**
-     * 得到部门列表
-     */
-    getDepts() {
-      return this.$service.getDepts().then(data => {
-        data.forEach(element => {
-          this.depts[element.deptName] = element.deptId;
-        });
-      });
-    }
   },
   created() {
     let filterSchema = _.map({
@@ -278,9 +268,9 @@ export default {
           label: 0
         }
       }),
-      dictCategory: _.o.enum(this.depts).other("form", {
-        component: "Select",
-        placeholder: "字典分类",
+      dictCategory: _.o.enum({ 分类一: 0, 分类二: 1, 分类三: 2 }).other('form', {
+        component: 'Select',
+        placeholder: '字典分类',
         cols: {
           item: 3,
           label: 0
@@ -300,18 +290,14 @@ export default {
         resetText: "重置"
       }
     });
-    this.getDepts().then(() => {
-      this.filterSchema = filterSchema;
-    });
+    this.filterSchema = filterSchema;
     this.fetchData();
   }
 };
 </script>
 <style lang = 'stylus' scoped>
-.btns {
-  margin-bottom: 10px
-} 
-
+.btns
+  margin-bottom 10px
 </style>
 
 

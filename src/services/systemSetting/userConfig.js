@@ -145,20 +145,9 @@ export function getDictList (data) {
 }
 
 /**
- * 数据字典新增保存
+ * 数据字典保存
  */
 export function SaveDictionary (data) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/dict/save.html',
-    data
-  })
-}
-
-/**
- * 数据字典更新
- */
-export function UpdateDictionary (data) {
   return this.fetch({
     method: 'post',
     url: '/api/dict/save.html',
@@ -177,7 +166,6 @@ export function SaveDictCategory (data) {
     isJSON: true
   })
 }
-
 /**
  * 获取登陆日志
  */
@@ -185,6 +173,75 @@ export function getLoginLogList (data) {
   return this.fetch({
     method: 'post',
     url: '/api/sysLogLogin/pageList.html',
+    data
+  })
+}
+
+/**
+ * 系统菜单list
+ */
+export function getSysMenuList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysMenu/pageList.html',
+    params
+  })
+}
+
+/**
+ * 系统菜单保存
+ */
+export function saveSysMenu (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/save.html',
+    data
+  })
+}
+
+/**
+ * 系统菜单数据回显
+ */
+export function editSysMenu (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysMenu/edit.html',
+    params
+  }).then(data => {
+    return  JSON.parse(data.match(/para = (\{.+\})/)[1])
+  })
+}
+/**
+ * 系统菜单操作——待选操作
+ */
+export function getNotMenuByRunId (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/getNotMenuByRunId.html',
+    data
+  })
+}
+/**
+ * 系统菜单操作——已选操作
+ */
+export function getMenuByRunId (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/getMenuByRunId.html',
+    data
+  })
+}
+/**
+ * 系统菜单操作——保存
+ */
+export function  saveMenuRun (data) {
+  data = data.reduce((result, item) => {
+    result += '&' + item[0] + '=' + item[1]
+    return result
+  }, '').slice(1)
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/saveMenuRun.html',
     data
   })
 }

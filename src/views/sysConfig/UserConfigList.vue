@@ -26,7 +26,7 @@
     <!-- 设置角色窗口 -->
     <el-dialog title="设置用户角色" :visible.sync="roleDialogVisible">
       <span>
-        <el-transfer v-model="roleValue" :data="roleData" @change="handleChange"></el-transfer>
+        <el-transfer v-model="roleValue" :data="roleData" :titles="['待选角色','已选角色']" @change="handleChange"></el-transfer>
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="roleDialogVisible = false">取 消</el-button>
@@ -365,7 +365,8 @@ export default {
   },
   created () {
     let filterSchema = _.map({
-      userName: _.o.string.other('form', {
+      userName: _.o.string.other("form", {
+        component: "Input",
         placeholder: '用户名称',
         cols: {
           item: 3,
@@ -430,8 +431,7 @@ export default {
       this.filterSchema = filterSchema
     })
     this.fetchData()
-  }
-}
+  }}
 </script>
 <style lang = 'stylus' scoped>
 .btns
