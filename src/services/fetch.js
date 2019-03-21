@@ -27,6 +27,7 @@ export default function fetch ({
         if (!data.success) {
           throw { message: data.msg }
         }
+        return data.data
       } else {
         return data
       }
