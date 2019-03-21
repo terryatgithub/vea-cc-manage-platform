@@ -17,35 +17,7 @@
 
 <script>
 import _ from '../../utlis/gateschema'
-const schema = _.map({
-  deptName: _.o.string.required.other("form", {
-    label: "部门名称"
-  }),
-  deptTel: _.o.string.required.other('form', {
-    label: "部门电话"
-  }),
-  deptFax: _.o.string.required.other('form', {
-    label: '部门传真',
-  }),
-  remark: _.o.string.required.other('form', {
-    label: '备注',
-  }),
-  seq: _.o.number.required.other('form', {
-    label: '排序'
-  }),
-  pid: _.o.enum({ '酷开-研发': 57, '酷开-运营': 58, '酷开-测试': 59 }).other('form', {
-    component: 'Select',
-    label: '上级部门'
-  }),
-  disabled: _.o.enum({ 是: 1, 否: 0 }).other('form', {
-    label: '是否禁用'
-  })
-}).other('form', {
-    cols: {
-      label: 3,
-      wrapper: 5
-    }
-})
+
 export default {
   props: {
     editId: Number,
@@ -55,10 +27,15 @@ export default {
   data() {
     return {
       title: null,
-      schema,
+      schema: null,
       formData: {
-        pid: 57,
-        disabled: 0
+        deptName: '',
+        remark: '',
+        disabled: 0,
+        pid: 0
+      },
+      depts: {
+        '无': 0
       }
     };
   },
@@ -67,25 +44,64 @@ export default {
     //保存表单信息
     handleSubmit(err) {
       if (err.length === 0) {
-        this.$service.sysDeptSave(this.formData, '保存成功');
-        this.$emit('openListPage');
+        const data = this.formData
+        this.$service.sysDeptSave({jsonStr: data}, '保存成功').then(() => {
+          this.$emit('openListPage')
+        })
       }
     },
     getDepts() {
       return this.$service.getDepts().then(data => {
-        this.departmentList = data;
+        data.forEach(element => {
+          this.depts[element.deptName] = element.deptId
+        })
       });
     },
     getEditData() {
-      this.$service.sysDeptDetailInfo({id: this.editId});
+      this.$service.sysDeptDetailInfo({id: this.editId}).then(data => {
+        this.formData = data
+      });
     }
   },
 
   created() {
-    this.getDepts();
-    if (this.editId !== null && this.editId !== undefined) {
+    // this.getDepts();
+    // console.log(this.depts);
+    let schema = _.map({
+      deptName: _.o.string.required.other("form", {
+        label: "部门名称"
+      }),
+      deptTel: _.o.string.required.other('form', {
+        label: "部门电话"
+      }),
+      deptFax: _.o.string.required.other('form', {
+        label: '部门传真',
+      }),
+      remark: _.o.string.required.other('form', {
+        label: '备注',
+      }),
+      seq: _.o.number.required.other('form', {
+        label: '排序'
+      }),
+      pid: _.o.enum(this.depts).other('form', {
+        component: 'Select',
+        label: '上级部门'
+      }),
+      disabled: _.o.enum({ 是: 1, 否: 0 }).other('form', {
+        label: '是否禁用'
+      })
+    }).other('form', {
+        cols: {
+          label: 3,
+          wrapper: 5
+        }
+    })
+    this.getDepts().then(() => {
+      this.schema = schema
+    })
+    if (this.editId) {
       this.title = '编辑'
-      this.getEditData();
+      this.getEditData()
     } else {
       this.title = '新增'
     }

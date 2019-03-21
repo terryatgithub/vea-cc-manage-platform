@@ -28,6 +28,7 @@
 
 <script>
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { Input } from 'element-ui'
 import _ from 'gateschema'
 
 export default {
@@ -35,7 +36,7 @@ export default {
     ContentWrapper,
     Table
   },
-
+  
   data() {
     return {
       filterSchema: null,
@@ -81,8 +82,20 @@ export default {
           {
             label: '排序',
             prop: 'seq',
-            fit: true,
-            sortable: true
+            width: 100,
+            sortable: true,
+            render: (h, { row }) => {
+              return h(Input, 
+                { 
+                  ref: 'input',
+                  props: { value: row.seq },
+                  on: {
+                    change: (value) => {
+                      this.$service.sysDeptUpdateSeq({id: row.deptId, seq: value})
+                    }
+                  }
+                })
+            }
           },
           {
             label: '部门父编号',
