@@ -365,18 +365,9 @@ export default {
   },
   created () {
     let filterSchema = _.map({
-<<<<<<< Updated upstream
       userName: _.o.string.other("form", {
         component: "Input",
-        placeholder: "用户名称",
-=======
-      // userName: _.o.string.other("form", {
-      //   component: "Input",
-      //   placeholder: "用户名称",
-      userName: _.o.string.other('form', {
-         component: "Input",
         placeholder: '用户名称',
->>>>>>> Stashed changes
         cols: {
           item: 3,
           label: 0

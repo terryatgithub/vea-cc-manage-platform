@@ -23,13 +23,8 @@ export default {
      * 打开新增编辑页面
     */
     openAddPage (userId) {
-<<<<<<< Updated upstream
-       this.editId = userId
-       this.isShowList = false
-=======
       this.editId = userId
       this.isShowList = false
->>>>>>> Stashed changes
     },
     /**
      * 打开列表页面

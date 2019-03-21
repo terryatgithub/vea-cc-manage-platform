@@ -158,16 +158,6 @@ export function SaveDictionary (data) {
 /**
  * 数据字典分类新增
  */
-<<<<<<< Updated upstream
- export function SaveDictCategory (data) {
-   return this.fetch({
-     method: 'post',
-     url: '/api/dictCategory/save.html',
-     data,
-     isJSON: true
-   })
- }
-=======
 export function SaveDictCategory (data) {
   return this.fetch({
     method: 'post',
@@ -176,8 +166,6 @@ export function SaveDictCategory (data) {
     isJSON: true
   })
 }
->>>>>>> Stashed changes
-
 /**
  * 获取登陆日志
  */
