@@ -53,25 +53,57 @@
     <!-- 查看用户窗口end -->
 
     <!-- 设置权限 -->
-    <el-dialog title="权限设置" :visible.sync="setAuthDialogVisible">
-      <div>
-        <el-button>全选</el-button>
-        <el-button>取消全选</el-button>
+    <el-dialog
+      title="权限设置"
+      :visible.sync="setAuthDialogVisible"
+      class="auth-set-window"
+    >
+      <div class="set-Auth-buttons">
+        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
         <el-button @click="setAuthDialogVisible = false;updateAuth()">保存修改</el-button>
         <el-button @click="setAuthDialogVisible = false">关闭</el-button>
       </div>
       <div>
-        <el-tree
-          :data="AuthList"
-          node-key="menuId"
-          default-expand-all
-          expand-on-click-node
-        >
+            <el-tree
+              :data="AuthList"
+              node-key="menuId"
+              default-expand-all
+              expand-on-click-node
+            >
           <span slot-scope="{ node, data }">
-            <span>{{ data.title }}</span>
-            <span><el-checkbox></el-checkbox></span>
+            <span class="tree-data tree-data--big-size">{{ data.title }}</span>
+            <!--<el-checkbox-group v-model="checkedAuth" @change="handleCheckedAuthChange">-->
+              <!--<el-checkbox class="tree-data" :value="data.browser" :disabled="data.browser == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.edit" :disabled="data.edit == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.delete" :disabled="data.delete == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.search" :disabled="data.search == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.refresh" :disabled="data.refresh == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.print" :disabled="data.print == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.inport" :disabled="data.inport == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.export" :disabled="data.export == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.audit" :disabled="data.audit == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.claim" :disabled="data.claim == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.unclaim" :disabled="data.unclaim == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.unaudit" :disabled="data.unaudit == -1"></el-checkbox>-->
+              <!--<el-checkbox class="tree-data" :value="data.batchAudit" :disabled="data.batchAudit == -1"></el-checkbox>-->
+            <!--</el-checkbox-group>-->
+            <el-checkbox-group v-model="checkedAuth">
+            <span class="tree-data"><el-checkbox :value="data.browser" :disabled="data.browser == -1" :key="data.menuId+0+Math.random()"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.add" :disabled="data.add == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.edit" :disabled="data.edit == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.search" :disabled="data.search == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.refresh" :disabled="data.refresh == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.print" :disabled="data.print == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.inport" :disabled="data.inport == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.export" :disabled="data.export == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.audit" :disabled="data.audit == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.claim" :disabled="data.claim == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.unclaim" :disabled="data.unclaim == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.unaudit" :disabled="data.unaudit == -1"></el-checkbox></span>
+            <span class="tree-data"><el-checkbox :value="data.batchAudit" :disabled="data.batchAudit == -1"></el-checkbox></span>
+            </el-checkbox-group>
           </span>
-        </el-tree>
+            </el-tree>
       </div>
     </el-dialog>
     <!-- 设置权限窗口end --->
@@ -212,7 +244,10 @@ export default {
       policies: [],
       roleId: undefined,
       setAuthDialogVisible: false,
-      AuthList: []
+      AuthList: [],
+      isIndeterminate: true,
+      checkAll: false,
+      checkedAuth: [1]
 
     }
   },
@@ -280,6 +315,7 @@ export default {
         return result
       }, [])
     },
+    handleCheckAllChange () {},
     setAuth ({ row }) {
       this.$service.getAuthList({ roleId: row.roleId }).then((data) => {
         console.log(data)
@@ -374,41 +410,55 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-  .search-form
-    float left
-  .action-button
-    margin 30px 0
-  .query-action-list
-    float left
-    margin 0 20px
-  .crowd-selector {
-    min-height 35px
-    margin-bottom 10px
-  }
-  .crowd-selector__policy {
-    position absolute
-    width 90px
-    margin-left 8px
-  }
-  .crowd-selector__crowd-list {
-    padding-left 90px
-  }
-  .crowd-selector__crowd {
-    margin-left 10px
-    cursor pointer
-    width 140px
-    margin-bottom 10px
-    background-color rgba(64,158,255,0.1)
-    color #409eff
-  }
-  .crowd-selector__crowd--disabled {
-    color #fff
-    background-color #bfc4cd
-  }
-  .ellipsis {
-    overflow hidden
-    white-space nowrap
-    text-overflow ellipsis
-    vertical-align middle
-  }
+    .search-form
+      float left
+    .action-button
+      margin 30px 0
+    .query-action-list
+      float left
+      margin 0 20px
+    .crowd-selector
+      min-height 35px
+      margin-bottom 10px
+    .crowd-selector__policy
+      position absolute
+      width 90px
+      margin-left 8px
+    .crowd-selector__crowd-list
+      padding-left 90px
+    .crowd-selector__crowd
+      margin-left 10px
+      cursor pointer
+      width 140px
+      margin-bottom 10px
+      background-color rgba(64,158,255,0.1)
+      color #409eff
+    .crowd-selector__crowd--disabled
+      color #fff
+      background-color #bfc4cd
+    .ellipsis
+      overflow hidden
+      white-space nowrap
+      text-overflow ellipsis
+      vertical-align middle
+    .tree-data
+      display inline-block
+      width 70px
+      height 26px
+      border 1px dashed #ccc
+      text-align center
+      line-height 26px
+    .tree-data--big-size
+      width 120px
+    .set-Auth-buttons
+      margin -20px 0 20px 0
+    .auth-set-window >>> .el-tree-node__content
+          position relative
+    .auth-set-window >>> .el-dialog
+          overflow-x scroll
+    .auth-set-window >>> .el-tree-node > .el-tree-node__children
+          overflow-x initial
+          margin-left -18px
+    .auth-set-window >>> .el-checkbox-group
+          display inline-block
 </style>
