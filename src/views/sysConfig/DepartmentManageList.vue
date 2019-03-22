@@ -44,7 +44,10 @@ export default {
         sort: undefined,
         order: undefined
       },
-      pagination: {},
+      pagination: {
+        currentPage: 1,
+        pageSize: 15
+      },
       selected: [],
       table: {
         props: {},
@@ -175,6 +178,7 @@ export default {
           .sysDeptRemove({ id: this.selected.join(',') }, '删除成功')
           .then(data => {
             this.fetchData()
+            this.table.selected = []
           })
       }
     },

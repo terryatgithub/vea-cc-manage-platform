@@ -8,19 +8,18 @@ export function sysDeptPageList (data) {
     data
   })
 }
-// 这个是老的接口
 export function sysDeptRemove (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysDept/remove.html',
+    url: '/api/v1/sysDept/remove.html',
     params
   })
 }
-export function sysDeptSave (params) {
+export function sysDeptSave (data) {
   return this.fetch({
     method: 'post',
     url: '/api/v1/sysDept/save.html',
-    params
+    data: { jsonStr: JSON.stringify(data) }
   })
 }
 export function sysDeptDetailInfo (params) {
