@@ -183,7 +183,8 @@ export function getLoginLogList (data) {
 export function getSysMenuList (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysMenu/treePageList.html',
+    // url: '/api/sysMenu/treePageList.html',
+    url: '/api/sysMenu/pageList.html',
     params
   })
 }
