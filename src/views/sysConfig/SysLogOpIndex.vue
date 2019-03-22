@@ -33,8 +33,8 @@
           <el-input v-model="filter.opData" type="textarea" size="medium"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search" @click="handleFilterChange">搜索</el-button>
-          <el-button icon="el-icon-delete" @click="clearForm">清空</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleFilterChange">查询</el-button>
+          <el-button icon="el-icon-delete" @click="clearForm">重置</el-button>
         </el-form-item>
       </el-form>
 
