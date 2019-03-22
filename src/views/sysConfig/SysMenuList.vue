@@ -7,9 +7,12 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addMenu" >新增</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
+      <!-- <div class="btns" >
+        <el-button type="primary"  v-for="(item, seq) in buttonList" :key="seq" @click="click(seq)">{{item.runName}}</el-button>
+      </div> -->
+      <div class="btns" >
+        <el-button type="primary" icon="el-icon-plus" @click="addData" >新增</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="deleteData">批量删除</el-button>
       </div>
       <Table
         :props="table.props"
@@ -55,17 +58,20 @@ export default {
       filterSchema: null,
       pagination: {},
       setDialogVisible: false, //弹框默认关闭
-      svalue: [], //弹框右边数据
+      svalue: [], //右边数据
       sdata: [], //弹框全部数据
-      allData:[], //弹框全部数据
+      allData:[], //弹框数据
       setMenu: [], //弹框对象
-      selectMenu: [],
+      selectMenu: [], //选中数据
+      data1:[], //待选数据
+      data2:[],//已选数据
       selected: [],
+      buttonList:[],
       table: {
         props: {},
         header: [
             {
-                label: '菜单编号',
+                label: '菜单ID',
                 prop: 'menuId'
             },
             {
@@ -77,23 +83,23 @@ export default {
                   prop: 'elid'
             },
             {
-                  label: '节点图标样式',
+                  label: '图标样式',
                   prop: 'iconClass'
             },
             {
-                  label: '标签页编号',
+                  label: '标签ID',
                   prop: 'tabId'
             },
             {
-                  label: '标签页标题',
+                  label: '标签名称',
                   prop: 'tabTitle'
             },
             {
-                  label: '标签页图标',
+                  label: '标签图标',
                   prop: 'tabIcon'
             },
             {
-                  label: '页面URL',
+                  label: '跳转地址URL',
                   prop: 'iframeUrl' 
             },
             {
@@ -101,15 +107,15 @@ export default {
                   prop: 'seq', 
             },
             {
-                  label: '模式',
+                  label: '菜单目录',
                   prop: 'modle'
             },  
             {
-                  label: '启用',
+                  label: '禁用',
                   prop: 'disabled'
             },
             {
-                  label: '上级菜单',
+                  label: '父菜单ID',
                   prop: 'pmid' 
             },
             {
@@ -129,32 +135,55 @@ export default {
     };
   },
   methods: {
+    // click (index) {
+    //   const methodsMap = ['addData', 'editData', 'deleteData', 'selectData', 'handleFilterReset', 'printData', 'importData', 'exportData', 'dealData']
+    //   const method = methodsMap[index]
+    //   if (index == null) {
+    //     return this.$message({
+    //       type: 'error',
+    //       message: '点击失败'
+    //     })
+    //   }
+    //   if(index === 1){
+    //     if (this.selected.length==0) {
+    //        this.$message('请选择一条数据')
+    //     }
+    //     else if(this.selected.length >1){
+    //        this.$message('只能选择一条数据')
+    //     }
+    //     else{
+    //       this[method](this.selected[0])
+    //     }
+    //   } else {
+    //     this[method]()
+    //   }
+
+    // },
     /**
      * 新增
      */
-    addMenu(){
+    addData(){
         this.$emit("openAddPage", null)
     },
     /**
      * 编辑
      */
     editData({row}){
-        this.$emit("openAddPage", row.menuId);
+      this.$emit("openAddPage", row.menuId)
     },
     /**
      * 批量删除
      */
-    batchDel() {
+    deleteData() {
       if (this.selected.length === 0) {
         this.$message("请选择再删除");
         return;
       }
       if (window.confirm("确定要删除吗")) {
-        // this.$service
-        //   .userConfigDelete({ id: this.selected.join(",") }, "删除成功")
-        //   .then(data => {
-        //     this.fetchData();
-        //   });
+        this.$service.deleteMenuById({ id: this.selected.join(",") }, "删除成功")
+          .then(data => {
+            this.fetchData();
+          });
       }
     },
     handleCreate() {
@@ -230,59 +259,84 @@ export default {
       });
     },
     /**
+     * 获取menuInfoTree
+     */
+    getSysMenuInfo () {
+      return this.$service.getMenuInfo().then(data => {
+        this.buttonList = data
+      })
+    },
+    /**
      * 设施操作
      */
     setData({row}){
       this.setDialogVisible = true
       const MenuObj = { menuId:row.menuId}
+      var newData = []
+      var rightData = []
+      var rightData1 = []
       this.setMenu.push(['menuId',row.menuId])
-      var data1 = []
       this.$service.getNotMenuByRunId(MenuObj).then(data => {
-        this.allData = data
-        this.$service.getMenuByRunId(MenuObj).then(data => {
-          if (data != null){
-            this.allData = this.allData.concat(data) //拼接数组
-          }
-          //创建全部数组
-          for(let i =0;i<this.allData.length; i++){
-            data1.push({
-              key: this.allData[i].runId,
-              label: this.allData[i].runName
-            })
-          }
-          for (let j=0;j< data.length;j++){
-            this.svalue.push(data[j].runId)
-          }
-          this.sdata = data1
+        this.data1 = data  //待选数据
+         this.$service.getMenuByRunId(MenuObj).then(data => {
+            this.data2 = data //已选数据
+            this.allData = this.data1.concat(this.data2)
+            //数组对象去重
+            const obj = {}
+            this.allData = this.allData.reduce(function(item,next){
+              obj[next.runId] ? '' :obj[next.runId] = true && item.push(next)
+              return item
+            }, []) //全部数据
+            for (let i=0; i<this.allData.length; i++) {
+              newData.push({
+                key: this.allData[i].runId,
+                label: this.allData[i].runName
+              })
+            }
+            for (let j=0; j<this.data2.length; j++ ) {
+                rightData.push(this.data2[j].runId)
+            }
+            for (let k=0; k<rightData.length; k++){
+              if (rightData1.indexOf(rightData[k]) ==-1) {
+                rightData1.push(rightData[k])
+              }
+            }
+            this.sdata = newData
+            this.svalue = rightData1
+            console.log(newData)
+            console.log(rightData1)
+            
         })
       })
+     
+     
     },
     //选中操作
     handleChange (value, direction, movedKeys) {
       var str = []
+      var newStr = []
+      //去重
       for (var i = 0; i < value.length; i++) {
-        str.push(['runIds', value[i]])
+        if (str.indexOf(value[i]) == -1){
+          str.push(value[i])
+        }
       }
-      this.selectMenu = this.setMenu.concat(str)
-      console.log(this.selectMenu)
+      for (var j =0; j<str.length; j++) {
+        newStr.push(['runIds', str[j]])
+      }
+      this.selectMenu = this.setMenu.concat(newStr)
     },
     //弹框保存事件
     setSave () {
-      this.$service.saveMenuRun(this.selectMenu,"保存成功")
+      const obj = this.selectMenu
+      this.$service.saveMenuRun(obj,"保存成功")
     }
   },
   created() {
     let filterSchema = _.map({
       menuName: _.o.string.other("form", {
-        placeholder: "菜单名称",
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
-      elid: _.o.string.other("form", {
         component: "Input",
-        placeholder: "元素ID",
+        placeholder: "菜单名称",
         cols: {
           item: 3,
           label: 0
@@ -298,7 +352,7 @@ export default {
       }),
       tabId: _.o.string.other("form", {
         component: "Input",
-        placeholder: "标签页编号",
+        placeholder: "标签ID",
         cols: {
           item: 3,
           label: 0
@@ -306,7 +360,7 @@ export default {
       }),
        iframeUrl: _.o.string.other("form", {
         component: "Input",
-        placeholder: "页面URL",
+        placeholder: "跳转地址URL",
         cols: {
           item: 3,
           label: 0
@@ -314,7 +368,7 @@ export default {
       }),
        modle: _.o.string.other("form", {
         component: "Input",
-        placeholder: "模式",
+        placeholder: "菜单目录",
         cols: {
           item: 3,
           label: 0
@@ -322,7 +376,7 @@ export default {
       }),
        pmid: _.o.string.other("form", {
         component: "Input",
-        placeholder: "上级菜单",
+        placeholder: "菜单父ID",
         cols: {
           item: 3,
           label: 0
@@ -352,12 +406,15 @@ export default {
     });
     this.filterSchema = filterSchema;
     this.fetchData();
+    this.getSysMenuInfo();
   }
 };
 </script>
 <style lang = 'stylus' scoped>
 .btns
   margin-bottom 10px
+  display flex
+  flex-direction row
 </style>
 
 

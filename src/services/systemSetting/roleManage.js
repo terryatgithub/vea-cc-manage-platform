@@ -30,3 +30,32 @@ export function deleteRole (params) {
     params
   })
 }
+export function getPoliciesAndCrowds (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tag/list.html?type=crowdPolicy',
+    params
+  })
+}
+export function getCrowdOfPolicy (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tag/list.html?type=crowd',
+    params
+  })
+}
+export function setCrowdAuthOfRole (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/tag/save.html',
+    data,
+    isJSON: true
+  })
+}
+export function getAuthList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysRole/modifyRoleAuthView.html',
+    params
+  })
+}

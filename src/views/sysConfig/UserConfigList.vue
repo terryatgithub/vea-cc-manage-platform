@@ -68,9 +68,10 @@ export default {
   data () {
     return {
       depts: {}, // 部门
-      roleData: [],
-      roleValue: [],
-      data1: [],
+      roleData: [], //全部数据
+      roleValue: [], //右边数据
+      data1: [], //弹框数据
+      user: [],
       roleDataSelected: null,
       roleDialogVisible: false, // 角色管理窗口开关
       currentUserId: null,
@@ -79,7 +80,6 @@ export default {
       checkedDictItems: [], // 勾选的数据权限项
       isLoading: false, // 数据权限设置窗口数据获取
       selectedRole: [],
-      user: [],
       filter: {
         sort: undefined,
         order: undefined
@@ -214,7 +214,6 @@ export default {
         str.push(['roleIds', value[i]])
       }
       this.selectedRole = this.user.concat(str)
-      console.log(this.selectedRole)
     },
     // 弹框确定事件
     add () {
@@ -223,7 +222,6 @@ export default {
     },
     setData ({ row }) {},
     editData ({ row }) {
-      debugger
       this.$emit('openAddPage', row.userId)
     },
     /**
