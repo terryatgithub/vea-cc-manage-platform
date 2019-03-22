@@ -214,7 +214,6 @@ export default {
         str.push(['roleIds', value[i]])
       }
       this.selectedRole = this.user.concat(str)
-      console.log(this.selectedRole)
     },
     // 弹框确定事件
     add () {
@@ -223,7 +222,6 @@ export default {
     },
     setData ({ row }) {},
     editData ({ row }) {
-      debugger
       this.$emit('openAddPage', row.userId)
     },
     /**

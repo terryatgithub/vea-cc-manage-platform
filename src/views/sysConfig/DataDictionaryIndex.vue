@@ -1,7 +1,7 @@
 <template>
   <div>
     <DataDictionaryList v-show='isShowList' ref="list" @openAddPage="openAddPage"></DataDictionaryList>
-    <DataDictionaryAdd v-if='!isShowList' :editId="editId" @openListPage="openListPage" @go-back="goBack"></DataDictionaryAdd>
+    <DataDictionaryAdd v-if='!isShowList' :editData="editData"  @openListPage="openListPage" @go-back="goBack"></DataDictionaryAdd>
   </div>
 </template>
 <script>
@@ -15,16 +15,15 @@ export default {
   data () {
     return {
       isShowList: true,
-      editId: null
+      editData: null
     }
   },
   methods: {
     /** 
      * 打开新增编辑页面
     */
-    openAddPage (dictId) {
-      alert(dictId)
-       this.editId = dictId
+    openAddPage (row) {
+       this.editData = row
        this.isShowList = false
     },
      /** 

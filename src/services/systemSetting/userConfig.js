@@ -151,10 +151,31 @@ export function SaveDictionary (data) {
   return this.fetch({
     method: 'post',
     url: '/api/dict/save.html',
+    data,
+    isJSON: true
+  })
+}
+/**
+ * 数据字典删除
+ */
+export function DeleteDict (data) {
+  debugger
+  return this.fetch({
+    method: 'post',
+    url:'/api/dict/remove.html',
     data
   })
 }
+/**
+ * 数据字典分类list
+ */
 
+ export function getDictCategoryList () {
+    return this.fetch({
+      method: 'post',
+      url: '/api/dictCategory/list.html'
+    })
+ }
 /**
  * 数据字典分类新增
  */
