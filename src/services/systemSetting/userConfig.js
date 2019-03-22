@@ -151,10 +151,31 @@ export function SaveDictionary (data) {
   return this.fetch({
     method: 'post',
     url: '/api/dict/save.html',
+    data,
+    isJSON: true
+  })
+}
+/**
+ * 数据字典删除
+ */
+export function DeleteDict (data) {
+  debugger
+  return this.fetch({
+    method: 'post',
+    url:'/api/dict/remove.html',
     data
   })
 }
+/**
+ * 数据字典分类list
+ */
 
+ export function getDictCategoryList () {
+    return this.fetch({
+      method: 'post',
+      url: '/api/dictCategory/list.html'
+    })
+ }
 /**
  * 数据字典分类新增
  */
@@ -183,6 +204,7 @@ export function getLoginLogList (data) {
 export function getSysMenuList (params) {
   return this.fetch({
     method: 'get',
+    // url: '/api/sysMenu/treePageList.html',
     url: '/api/sysMenu/pageList.html',
     params
   })
@@ -192,6 +214,7 @@ export function getSysMenuList (params) {
  * 系统菜单保存
  */
 export function saveSysMenu (data) {
+  debugger
   return this.fetch({
     method: 'post',
     url: '/api/sysMenu/save.html',
@@ -243,5 +266,24 @@ export function  saveMenuRun (data) {
     method: 'post',
     url: '/api/sysMenu/saveMenuRun.html',
     data
+  })
+}
+/**
+ * 系统菜单按钮
+ */
+export function getMenuInfo () {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/getMenuInfo.html',
+  })
+}
+/**
+ * 系统菜单删除
+ */
+export function deleteMenuById(params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysMenu/remove.html',
+    params
   })
 }

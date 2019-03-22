@@ -22,8 +22,8 @@ export default {
     /** 
      * 打开新增编辑页面
     */
-    openAddPage (userId) {
-       this.editId = userId
+    openAddPage (menuId) {
+       this.editId = menuId
        this.isShowList = false
     },
      /** 

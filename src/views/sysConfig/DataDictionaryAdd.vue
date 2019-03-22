@@ -7,33 +7,13 @@
           <el-form-item label="字典名称" prop="dictCnName">
             <el-input v-model="form.dictCnName" placeholder="字典名称"></el-input>
           </el-form-item>
-          <!-- <el-form-item label="所在部门" prop="deptId">
-            <el-select v-model="form.deptId" placeholder="所在部门">
-              <el-option
-                v-for="item in departmentList"
-                :key="item.deptId+''"
-                :label="item.deptName"
-                :value="item.deptId+''"
-              ></el-option>
-            </el-select>
-          </el-form-item> -->
           <el-form-item label="字典值" prop="dictEnName">
             <el-input v-model="form.dictEnName" placeholder="字典值"></el-input>
           </el-form-item>
-          <!-- <el-form-item label="字典分类" prop="dictCategory">
-              <el-select v-model="form.deptId" placeholder="字典分类">
-              <el-option
-                v-for="item in departmentList"
-                :key="item.deptId+''"
-                :label="item.deptName"
-                :value="item.deptId+''"
-              ></el-option>
-            </el-select>
-          </el-form-item> -->
-          <el-form-item label="字典分类">
-            <el-select v-model="form.dictCategory" placeholder="字典分类">
-              <el-option label="分类一" value="value1"></el-option>
-              <el-option label="分类二" value="value2"></el-option>
+          <el-form-item label="字典分类" prop="dictCategory">
+            <el-select  v-model="form.dictCategory"   clearable placeholder="请选择字典分类">
+              <el-option v-for="item in dictCategoryStr" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -47,59 +27,92 @@
 </template>
 <script>
 export default {
-  prop: {
-    editId: Number,
+  props: {
+    editData: undefined,
     default: null
   },
+  //  prop: ['editId'],
   data() {
     return {
       title: null,
-      dictEnNameList: null,
-      departmentList: [],
-      form: {
+     form: {
+        dictId: null,
         dictCnName: null,
-        deptId: null,
         dictEnName: null,
-        dictIds: []
+        dictCategory: null,
+        checked: null,
+        createdDate: null,
+        creater: null,
+        dictStatus: null,
+        flag: null,
+        id: null,
+        keyword: null,
+        lastUpdateDate: null,
+        modifier: null
       },
-      formRules: {
+      dictCategoryStr:[],
+       formRules: {
         //表单规则
-        dictCnName: [
-          { required: true, message: "请输入字典名称", trigger: "blur" }
-        ],
-        dictEnName: [
-          { required: true, message: "请输入字典值", trigger: "blur" }
-        ]
+        dictCnName: [{ required: true, message: "请输入字典名称", trigger: "blur" }],
+        dictEnName: [{ required: true, message: "请输入字典值", trigger: "blur" }],
+        dictCategory: [{ required: true, message: "请选择字典分类", trigger: "blur" }]
       }
     };
   },
   methods: {
+    /**
+     * 获取字典分类
+     */
+    getDictCategoryList () {
+      this.$service.getDictCategoryList().then(data => {
+        //去重
+        var obj = {}
+        this.dictCategoryStr = data.data
+        this.dictCategoryStr = this.dictCategoryStr.reduce(function(item,next){
+          obj[next.value] ? '' :obj[next.value] = true && item.push(next)
+          return item
+        }, [])
+      })
+
+    },
+
     submitBtn() {
       this.$refs.form.validate(valid => {
         if (valid) {
-         this.$service.SaveDictionary(this.form, "保存成功").then((data)=>{
+          const dictObj = {
+            dictId:this.form.dictId,
+            dictCategory: this.form.dictCategory,
+            dictCnName: this.form.dictCnName,
+            dictEnName: this.form.dictEnName,
+          }
+          this.$service.SaveDictionary(dictObj, "保存成功").then(data => {
             this.$emit("openListPage");
-         })
+          });
         }
       });
     },
-    //回显数据
-    getEditData() {
-      let obj = this;
-      // this.$service.UpdateDictionary({ id: this.editId }).then(data => {
-      //   Object.keys(this.form).forEach(v => {
-      //     this.form[v] = data[v];
-      //   });
-      // });
-    },
+    // getEditData() {
+    //   let obj = this;
+    //    this.$service.1({ id: this.editId }).then(data => {
+    //        console.log(data)
+    //      Object.keys(this.form).forEach(v => {
+    //        if (v === "disabled") {
+    //        this.form[v] = data[v]+'';
+    //        } else {
+    //          this.form[v] = data[v];
+    //        }
+    //      });
+    //    });
+    // },
   },
   created() {
-    if (this.editId !== null && this.editId !== undefined) {
-      this.title = '编辑'
-      this.getEditData();
+    if (this.editData !== null && this.editData !== undefined) {
+      this.title = "编辑";
+      this.form = this.editData
     } else {
-      this.title = '新增'
+      this.title = "新增";
     }
+    this.getDictCategoryList()
   }
 };
 </script>

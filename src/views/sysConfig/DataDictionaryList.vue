@@ -9,8 +9,7 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addDict">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
         <el-button type="primary" icon="el-icon-plus" @click="dialogFormVisible = true" >新增字典分类</el-button>
       </div>
       <Table
@@ -69,7 +68,6 @@ export default {
         ]
       }, //弹框表单验证
       formLabelWidth: '120px',
-      depts: {}, //部门
       filter: {
         sort: undefined,
         order: undefined
@@ -77,6 +75,7 @@ export default {
       filterSchema: null,
       pagination: {},
       selected: [],
+      dictCategories: {},
       table: {
         props: {},
         header: [
@@ -100,18 +99,19 @@ export default {
           {
             label: "字典分类",
             prop: "dictCategory",
-            "min-width": "160"
-            // sortable: 'custom'
+            "min-width": "160",
+            //  render: (createElement, { row }) => {
+            //   return row.dictCategory
+            // }
           },
-          // {
-          //   label: "所在部门",
-          //   prop: "deptId",
-          //   "min-width": "90",
-          //   render: (createElement, { row }) => {
-          //     return row.sysDept.deptName;
-          //   }
-          // },
-          
+          {
+            label: '操作',
+            width: '200',
+            fixed: 'right',
+            render: utils.component.createOperationRender(this, {
+              editData: '编辑'
+            })
+          }
         ],
         data: [],
         selected: [],
@@ -129,24 +129,39 @@ export default {
     /**
      * 修改字典
      */
-    editData({ row }) {
-      this.$emit("openAddPage", row.dictId);
+    editData({row}) {
+        this.$emit("openAddPage", row);
     },
     /**
      * 批量删除
      */
     batchDel() {
-      if (this.selected.length === 0) {
-        this.$message("请选择再删除");
-        return;
+      // const id = this.selected[0]
+      if(this.selected.length==0) {
+        this.$message("请选择一条数据")
       }
-      if (window.confirm("确定要删除吗")) {
-        this.$service
-          .userConfigDelete({ id: this.selected.join(",") }, "删除成功")
+      if(this.selected.length==1) {
+        if (window.confirm("确定要删除吗")) {
+        this.$service.DeleteDict({ id: this.selected[0] }, "删除成功")
           .then(data => {
             this.fetchData();
           });
+        }
       }
+      if(this.selected.length >1 ) {
+        this.$message("只能选择一条数据")
+      }
+    },
+    /**
+     * 得到数据字典分类
+     */
+    getDictCategoryList () {
+      return  this.$service.getDictCategoryList().then(data =>{
+        data.data.forEach(element => {
+          this.dictCategories[element.label] = element.value
+        })
+      })
+
     },
     /**
      * 新增数据字典分类
@@ -237,6 +252,7 @@ export default {
     fetchData() {
       const filter = this.parseFilter();
       this.$service.getDictList(filter).then(data => {
+        console.log(data)
         this.pagination.total = data.total;
         this.table.data = data.rows;
       });
@@ -268,7 +284,7 @@ export default {
           label: 0
         }
       }),
-      dictCategory: _.o.enum({ 分类一: 0, 分类二: 1, 分类三: 2 }).other('form', {
+      dictCategory: _.o.enum(this.dictCategories).other('form', {
         component: 'Select',
         placeholder: '字典分类',
         cols: {
@@ -289,11 +305,13 @@ export default {
         showReset: true,
         resetText: "重置"
       }
-    });
-    this.filterSchema = filterSchema;
-    this.fetchData();
+    })
+    this.getDictCategoryList().then(() => {
+      this.filterSchema = filterSchema
+    })
+    this.fetchData()
   }
-};
+}
 </script>
 <style lang = 'stylus' scoped>
 .btns
