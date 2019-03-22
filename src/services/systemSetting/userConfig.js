@@ -183,7 +183,7 @@ export function getLoginLogList (data) {
 export function getSysMenuList (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysMenu/pageList.html',
+    url: '/api/sysMenu/treePageList.html',
     params
   })
 }
@@ -192,6 +192,7 @@ export function getSysMenuList (params) {
  * 系统菜单保存
  */
 export function saveSysMenu (data) {
+  debugger
   return this.fetch({
     method: 'post',
     url: '/api/sysMenu/save.html',
@@ -243,5 +244,24 @@ export function  saveMenuRun (data) {
     method: 'post',
     url: '/api/sysMenu/saveMenuRun.html',
     data
+  })
+}
+/**
+ * 系统菜单按钮
+ */
+export function getMenuInfo () {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysMenu/getMenuInfo.html',
+  })
+}
+/**
+ * 系统菜单删除
+ */
+export function deleteMenuById(params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysMenu/remove.html',
+    params
   })
 }

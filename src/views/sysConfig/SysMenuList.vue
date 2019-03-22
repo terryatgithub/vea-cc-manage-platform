@@ -7,9 +7,10 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addMenu" >新增</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
+      <div class="btns" >
+        <el-button type="primary"  v-for="(item, seq) in buttonList" :key="seq" @click="click(seq)">{{item.runName}}</el-button>
+        <!-- <el-button type="primary" icon="el-icon-plus" @click="addMenu" >新增</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button> -->
       </div>
       <Table
         :props="table.props"
@@ -61,6 +62,7 @@ export default {
       setMenu: [], //弹框对象
       selectMenu: [],
       selected: [],
+      buttonList:[],
       table: {
         props: {},
         header: [
@@ -116,7 +118,7 @@ export default {
                   label: "操作",
                   fixed: "right",
                   render: utils.component.createOperationRender(this, {
-                    editData: '编辑',
+                    // editData: '编辑',
                     setData: "设置操作"
                   })
             }
@@ -129,32 +131,59 @@ export default {
     };
   },
   methods: {
+    click (index) {
+      const methodsMap = ['addData', 'editData', 'deleteData', 'selectData', 'handleFilterReset', 'printData', 'importData', 'exportData', 'dealData']
+      const method = methodsMap[index]
+      if (index == null) {
+        return this.$message({
+          type: 'error',
+          message: '点击失败'
+        })
+      }
+      if(index === 1){
+        if (this.selected.length==0) {
+           this.$message('请选择一条数据')
+        }
+        else if(this.selected.length >1){
+           this.$message('只能选择一条数据')
+        }
+        else{
+          this[method](this.selected[0])
+        }
+      } else {
+        this[method]()
+      }
+
+    },
     /**
      * 新增
      */
-    addMenu(){
+    addData(){
         this.$emit("openAddPage", null)
     },
     /**
      * 编辑
      */
-    editData({row}){
-        this.$emit("openAddPage", row.menuId);
+    editData(menuId){
+      this.$emit("openAddPage", menuId)
     },
+    // editData({row}){
+    //   console.log(row.menuId)
+    //     this.$emit("openAddPage", 1);
+    // },
     /**
      * 批量删除
      */
-    batchDel() {
+    deleteData() {
       if (this.selected.length === 0) {
         this.$message("请选择再删除");
         return;
       }
       if (window.confirm("确定要删除吗")) {
-        // this.$service
-        //   .userConfigDelete({ id: this.selected.join(",") }, "删除成功")
-        //   .then(data => {
-        //     this.fetchData();
-        //   });
+        this.$service.deleteMenuById({ id: this.selected.join(",") }, "删除成功")
+          .then(data => {
+            this.fetchData();
+          });
       }
     },
     handleCreate() {
@@ -228,6 +257,18 @@ export default {
         this.pagination.total = data.total;
         this.table.data = data.rows;
       });
+    },
+    /**
+     * 获取menuInfoTree
+     */
+    getSysMenuInfo () {
+      return this.$service.getMenuInfo().then(data => {
+        console.log(data)
+        this.buttonList = data
+        // data.forEach(element => {
+        //   this.depts[element.deptName] = element.deptId
+        // })
+      })
     },
     /**
      * 设施操作
@@ -352,12 +393,15 @@ export default {
     });
     this.filterSchema = filterSchema;
     this.fetchData();
+    this.getSysMenuInfo();
   }
 };
 </script>
 <style lang = 'stylus' scoped>
 .btns
   margin-bottom 10px
+  display flex
+  flex-direction row
 </style>
 
 

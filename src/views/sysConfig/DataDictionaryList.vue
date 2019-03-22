@@ -9,7 +9,7 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addDict">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit">编辑</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
         <el-button type="primary" icon="el-icon-plus" @click="dialogFormVisible = true" >新增字典分类</el-button>
       </div>
@@ -129,8 +129,18 @@ export default {
     /**
      * 修改字典
      */
-    editData({ row }) {
-      this.$emit("openAddPage", row.dictId);
+    editData() {
+      if (this.selected.length==0) {
+        this.$message("请选择一条数据")
+      }
+       else if(this.selected.length==1){
+         const id = this.selected[0]
+        this.$emit("openAddPage", id);
+      }else{
+         this.$message("只能选择一条数据")
+      }
+
+      
     },
     /**
      * 批量删除

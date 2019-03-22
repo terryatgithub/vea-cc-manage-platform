@@ -23,6 +23,7 @@ export default {
      * 打开新增编辑页面
     */
     openAddPage (dictId) {
+      alert(dictId)
        this.editId = dictId
        this.isShowList = false
     },
