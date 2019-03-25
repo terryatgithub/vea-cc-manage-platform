@@ -100,15 +100,15 @@ function getInitData (app) {
       }
       obj.children = []
       if (typeof element.children !== 'undefined') {
-        element.children.forEach(element_c => {
+        element.children.forEach(elementC => {
           obj.children.push({
-            name: element_c.id,
-            path: element_c.attributes.iframeUrl,
-            component: routerMap[element_c.id],
+            name: elementC.id,
+            path: elementC.attributes.iframeUrl,
+            component: routerMap[elementC.id],
             meta: {
-              title: element_c.text,
-              icon: element_c.iconCls,
-              tagId: element_c.id
+              title: elementC.text,
+              icon: elementC.iconCls,
+              tagId: elementC.id
             }
           })
         })

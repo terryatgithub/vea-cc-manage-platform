@@ -11,7 +11,11 @@
             <el-input v-model="form.dictEnName" placeholder="字典值"></el-input>
           </el-form-item>
           <el-form-item label="字典分类" prop="dictCategory">
-            <el-select  v-model="form.dictCategory"   clearable placeholder="请选择字典分类">
+            <!-- <el-select  v-model="form.dictCategory"   clearable placeholder="请选择字典分类" value-key="value">
+              <el-option v-for="item in dictCategoryStr" :key="item.value" :label="item.label" :value="item">
+              </el-option>
+            </el-select> -->
+            <el-select  v-model="form.dictCategory"   clearable placeholder="请选择字典分类" >
               <el-option v-for="item in dictCategoryStr" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
@@ -68,10 +72,10 @@ export default {
         //去重
         var obj = {}
         this.dictCategoryStr = data.data
-        this.dictCategoryStr = this.dictCategoryStr.reduce(function(item,next){
-          obj[next.value] ? '' :obj[next.value] = true && item.push(next)
-          return item
-        }, [])
+        // this.dictCategoryStr = this.dictCategoryStr.reduce(function(item,next){
+        //   obj[next.value] ? '' :obj[next.value] = true && item.push(next)
+        //   return item
+        // }, [])
       })
 
     },
