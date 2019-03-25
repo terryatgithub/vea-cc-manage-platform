@@ -58,12 +58,23 @@
       :visible.sync="setAuthDialogVisible"
       class="auth-set-window"
     >
-      <div class="set-Auth-buttons">
+      <div class="set-auth-buttons">
         <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
         <el-button @click="setAuthDialogVisible = false;updateAuth()">保存修改</el-button>
         <el-button @click="setAuthDialogVisible = false">关闭</el-button>
       </div>
-      <div>
+      <!--<div class="set-auth-header"-->
+          <!--v-for="item in headerItems"-->
+        <!--&gt;-->
+          <!--{{item}}-->
+      <!--</div>-->
+      <div class="set-auth-content">
+            <span class="set-auth-header"
+                  v-for="(item,index) in headerItems"
+                  :key="index"
+            >
+              {{item}}
+            </span>
             <el-tree
               :data="AuthList"
               node-key="menuId"
@@ -72,36 +83,18 @@
             >
           <span slot-scope="{ node, data }">
             <span class="tree-data tree-data--big-size">{{ data.title }}</span>
-            <!--<el-checkbox-group v-model="checkedAuth" @change="handleCheckedAuthChange">-->
-              <!--<el-checkbox class="tree-data" :value="data.browser" :disabled="data.browser == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.edit" :disabled="data.edit == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.delete" :disabled="data.delete == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.search" :disabled="data.search == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.refresh" :disabled="data.refresh == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.print" :disabled="data.print == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.inport" :disabled="data.inport == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.export" :disabled="data.export == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.audit" :disabled="data.audit == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.claim" :disabled="data.claim == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.unclaim" :disabled="data.unclaim == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.unaudit" :disabled="data.unaudit == -1"></el-checkbox>-->
-              <!--<el-checkbox class="tree-data" :value="data.batchAudit" :disabled="data.batchAudit == -1"></el-checkbox>-->
-            <!--</el-checkbox-group>-->
-            <el-checkbox-group v-model="checkedAuth">
-            <span class="tree-data"><el-checkbox :value="data.browser" :disabled="data.browser == -1" :key="data.menuId+0+Math.random()"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.add" :disabled="data.add == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.edit" :disabled="data.edit == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.search" :disabled="data.search == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.refresh" :disabled="data.refresh == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.print" :disabled="data.print == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.inport" :disabled="data.inport == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.export" :disabled="data.export == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.audit" :disabled="data.audit == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.claim" :disabled="data.claim == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.unclaim" :disabled="data.unclaim == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.unaudit" :disabled="data.unaudit == -1"></el-checkbox></span>
-            <span class="tree-data"><el-checkbox :value="data.batchAudit" :disabled="data.batchAudit == -1"></el-checkbox></span>
-            </el-checkbox-group>
+            <span
+              v-for="(dataItem,index) in dataItems"
+              class="tree-data"
+              @click.stop="()=>{}"
+            >
+              <el-checkbox
+                 :value="data[dataItem] == 1 ? true : false"
+                 :disabled="data[dataItem] == -1"
+                 :key="data.menuId+index+Math.random()"
+                 @input="data[dataItem] = $event ? '1' : '0'"
+              ></el-checkbox>
+            </span>
           </span>
             </el-tree>
       </div>
@@ -247,8 +240,8 @@ export default {
       AuthList: [],
       isIndeterminate: true,
       checkAll: false,
-      checkedAuth: [1]
-
+      headerItems: ['菜单名称', '浏览', '新增', '编辑', '删除', '搜索', '刷新', '打印', '导入', '导出', '审核', '认领', '撤销认领', '撤销审核', '上架', '创建副本', '批量审核'],
+      dataItems: ['browser', 'add', 'edit', 'delete', 'search', 'refresh', 'print', 'inport', 'export', 'audit', 'claim', 'unclaim', 'unaudit', 'shelves', 'copy', 'batchAudit']
     }
   },
   methods: {
@@ -450,7 +443,7 @@ export default {
       line-height 26px
     .tree-data--big-size
       width 120px
-    .set-Auth-buttons
+    .set-auth-buttons
       margin -20px 0 20px 0
     .auth-set-window >>> .el-tree-node__content
           position relative
@@ -461,4 +454,18 @@ export default {
           margin-left -18px
     .auth-set-window >>> .el-checkbox-group
           display inline-block
+    .set-auth-header
+      display inline-block
+      width 70px
+      height 26px
+      border 1px solid #ccc
+      text-align center
+      line-height 26px
+      &:first-child
+        width 120px
+    .set-auth-content
+      width 1300px
+      height 500px
+    .auth-set-window >>> .el-tree-node__expand-icon
+      position absolute
 </style>
