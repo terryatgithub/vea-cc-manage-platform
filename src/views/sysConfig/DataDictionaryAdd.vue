@@ -16,7 +16,7 @@
               </el-option>
             </el-select> -->
             <el-select  v-model="form.dictCategory"   clearable placeholder="请选择字典分类" >
-              <el-option v-for="item in dictCategoryStr" :key="item.value" :label="item.label" :value="item.label">
+              <el-option v-for="item in dictCategoryStr" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
