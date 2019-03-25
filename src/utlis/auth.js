@@ -39,6 +39,7 @@ import MovieNotice from '../views/todoTask/MovieNoticeIndex'
 import MyDrafts from '../views/todoTask/MyDraftsIndex'
 import MyReviewTasks from '../views/todoTask/MyReviewTasksIndex'
 import MySubmitTasks from '../views/todoTask/MySubmitTasksIndex'
+import FilmDetailAdBit from '../views/adBitMgr/FilmDetailAdBit.vue'
 import Main from '@/components/Main'
 const routerMap = {
   broadcastBlock: BroadcastBlock,
@@ -79,7 +80,8 @@ const routerMap = {
   msn: MovieNotice,
   myDrafts: MyDrafts,
   myReviewTasks: MyReviewTasks,
-  mySubmitTasks: MySubmitTasks
+  mySubmitTasks: MySubmitTasks,
+  filmDetailAdBit: FilmDetailAdBit
 }
 function getInitData (app) {
   return app.$service.getMenu().then(data => {
