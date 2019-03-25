@@ -86,6 +86,7 @@
             <span
               v-for="(dataItem,index) in dataItems"
               class="tree-data"
+              :key="index"
               @click.stop="()=>{}"
             >
               <el-checkbox
