@@ -8,7 +8,7 @@ import * as roleManage from './systemSetting/roleManage'
 import * as departmentManage from './systemSetting/departmentManage'
 import * as sysLogOp from './systemSetting/sysLogOp'
 import * as blockInfo from './systemSetting/blockInfo'
-
+import * as materialManage from './commonModule/materialManage'
 const service = {
   state: {},
   fetch,
@@ -18,6 +18,7 @@ const service = {
   ...roleManage,
   ...departmentManage,
   ...sysLogOp,
-  ...blockInfo
+  ...blockInfo,
+  ...materialManage
 }
 Vue.prototype.$service = utils.wrapService(service)
