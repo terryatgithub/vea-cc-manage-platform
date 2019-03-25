@@ -7,6 +7,7 @@ import * as userConfig from './systemSetting/userConfig'
 import * as roleManage from './systemSetting/roleManage'
 import * as departmentManage from './systemSetting/departmentManage'
 import * as sysLogOp from './systemSetting/sysLogOp'
+import * as broadcastBlock from './systemSetting/broadcastBlock'
 
 const service = {
   state: {},
@@ -16,6 +17,7 @@ const service = {
   ...userConfig,
   ...roleManage,
   ...departmentManage,
-  ...sysLogOp
+  ...sysLogOp,
+  ...broadcastBlock
 }
 Vue.prototype.$service = utils.wrapService(service)
