@@ -20,7 +20,7 @@
           <el-form-item label="登录账号" prop="loginName">
             <el-input v-model="form.loginName" placeholder="登录账号"></el-input>
           </el-form-item>
-          <el-form-item label="密码" prop="loginPwd">
+          <el-form-item label="密码" prop="loginPwd" v-if="isShowloginPwd">
             <el-input v-model="form.loginPwd" placeholder="密码"></el-input>
           </el-form-item>
           <el-form-item label="邮件地址" prop="email">
@@ -65,6 +65,7 @@ export default {
       title: null,
       dictEnNameList: null,
       departmentList: [],
+      isShowloginPwd: true,
       form: {
         userName: null,
         deptId: null,
@@ -109,6 +110,7 @@ export default {
     getEditData () {
       let obj = this
       this.$service.userConfigEdit({ id: this.editId }).then(data => {
+        data = data.data
         Object.keys(this.form).forEach(v => {
           if (v === 'disabled') {
             this.form[v] = data[v] + ''
@@ -120,7 +122,7 @@ export default {
     },
     getDepts () {
       return this.$service.getDepts().then(data => {
-        this.departmentList = data
+        this.departmentList = data.data
       })
     }
   },
@@ -129,6 +131,7 @@ export default {
     this.getDepts()
     if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
+      this.isShowloginPwd = false
       this.getEditData()
     } else {
       this.title = '新增'

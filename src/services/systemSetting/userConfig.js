@@ -1,34 +1,13 @@
-const depts = [
-  { deptId: 57, deptName: '酷开-研发' },
-  { deptId: 58, deptName: '酷开-运营' },
-  { deptId: 59, deptName: '酷开-测试' }
-]
-const editData = {
-  dateModify: '2017-03-06 16:17:46',
-  deptId: 57,
-  dicts: [67],
-  disabled: 1,
-  email: 'admin@cooca.com',
-  loginCount: 9572,
-  loginIp: '172.20.135.14',
-  loginName: 'admin',
-  loginPwd: '',
-  loginTime: '2018-12-20 17:33:13',
-  remark: '我是系统管理员',
-  salt: '932299',
-  superAdmin: 0,
-  userId: 1,
-  userName: 'Admin'
-}
 
 /**
  * 得到部门
  */
-export function getDepts () {
-  return Promise.resolve(depts)
-}
-export function userConfigEdit () {
-  return Promise.resolve(editData)
+export function getDepts (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/v1/sysDept/listAllDept.html',
+    params
+  })
 }
 /**
  *
@@ -48,7 +27,7 @@ export function userConfigMenuInfo (data) {
 export function userConfigPageList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysUser/pageList.html',
+    url: '/api/v1/sysUser/pageList.html',
     data
   })
 }
@@ -98,6 +77,16 @@ export function userConfigBusinessType (params) {
   return this.fetch({
     method: 'get',
     url: '/api/globalDictInfo/getTypes/businessType.html',
+    params
+  })
+}
+/**
+ * 编辑
+ */
+export function userConfigEdit (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/v1/sysUser/getDetailInfo.html',
     params
   })
 }
@@ -159,10 +148,9 @@ export function SaveDictionary (data) {
  * 数据字典删除
  */
 export function DeleteDict (data) {
-  debugger
   return this.fetch({
     method: 'post',
-    url:'/api/dict/remove.html',
+    url: '/api/dict/remove.html',
     data
   })
 }
@@ -170,12 +158,12 @@ export function DeleteDict (data) {
  * 数据字典分类list
  */
 
- export function getDictCategoryList () {
-    return this.fetch({
-      method: 'post',
-      url: '/api/dictCategory/list.html'
-    })
- }
+export function getDictCategoryList () {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dictCategory/list.html'
+  })
+}
 /**
  * 数据字典分类新增
  */
@@ -257,7 +245,7 @@ export function getMenuByRunId (data) {
 /**
  * 系统菜单操作——保存
  */
-export function  saveMenuRun (data) {
+export function saveMenuRun (data) {
   data = data.reduce((result, item) => {
     result += '&' + item[0] + '=' + item[1]
     return result
@@ -280,10 +268,20 @@ export function getMenuInfo () {
 /**
  * 系统菜单删除
  */
-export function deleteMenuById(params) {
+export function deleteMenuById (params) {
   return this.fetch({
     method: 'get',
     url: '/api/sysMenu/remove.html',
     params
   })
 }
+/*
+ * 修改密码
+*/
+export function modifyPwd (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/v1/updatePassword.html',
+    params
+  })
+}  

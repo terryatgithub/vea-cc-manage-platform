@@ -65,13 +65,35 @@
                         v-model="isShowTagNav"
                         active-color="#13ce66"
                         inactive-color="#ff4949">
-                    </el-switch>
+                    </el-switch><br/>
+                     <el-button type="primary" class="modifyPwd" @click="modifyPwd">修改密码</el-button>
                 </div>
+               
             </div>
         </transition>
+      <!-- 修改密码-->
+      <el-dialog title="修改密码" :visible.sync="modifyDialogVisible">
+      <span>
+         <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
+          <el-form-item label="旧密码" prop="oldpwd">
+            <el-input v-model="form.oldpwd" placeholder="旧密码"></el-input>
+          </el-form-item>
+           <el-form-item label="新密码" prop="newpwd">
+            <el-input v-model="form.newpwd" placeholder="旧密码"></el-input>
+          </el-form-item>
+           <el-form-item label="确认新密码" prop="newpwd2">
+            <el-input v-model="form.newpwd2" placeholder="旧密码"></el-input>
+          </el-form-item>
+         </el-form>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="modifyDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="modifyPwdSave">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- end -->
     </el-container>
 </template>
-
 <script>
 import { Breadcrumb, Menu, TagNav } from 'admin-toolkit'
 import { setTimeout } from 'timers';
@@ -87,7 +109,20 @@ export default {
       breadcrumb: [],
       isCollapseMenu: false,
       isShowSetting: false,
-      isShowTagNav: true
+      isShowTagNav: true,
+      modifyDialogVisible: false,
+      form: {
+        oldpwd: null,
+        newpwd: null,
+        newpwd2:null
+      },
+       formRules: {
+        oldpwd: [{ required: true, message: "请输入原始密码", trigger: "blur" }],
+        newpwd: [{ required: true, message: "请输入新密码", trigger: "blur" }],
+        newpwd2: [
+          { required: true, validator: this.validatePass2, trigger: "blur" }
+        ]
+      }
     }
   },
   computed: {
@@ -99,7 +134,6 @@ export default {
       return this.$appState.$get('tags') || []
     },
     defaultMenu () {
-      //debugger
       const mainRoute = this.$router.options.routes.find((item) => {
         return item.path === '/'
       })
@@ -127,6 +161,27 @@ export default {
     }
   },
   methods: {
+    modifyPwd() {
+      this.modifyDialogVisible = true
+    },
+    modifyPwdSave(){
+     this.$refs.form.validate(valid => {
+        if (valid) {
+          this.$service.modifyPwd(this.form, '修改成功').then(data => {
+            this.modifyDialogVisible = false
+          })
+        }
+      })
+    },
+    validatePass2 (rule, value, callback) {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value != this.form.newpwd) {
+        callback(new Error("两次输入密码不一致！"));
+      } else {
+        callback();
+      }
+    },
     handleDropdownCommand (command) {
       if (command === 'logout') {
         this.$logout().then(() => {
@@ -213,4 +268,6 @@ body, html, #app,section.el-container, .aside__menu
    height 100%
    overflow-y auto
    overflow-x hidden
+.modifyPwd
+  margin-top 10px
 </style>

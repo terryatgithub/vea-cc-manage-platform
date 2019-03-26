@@ -9,6 +9,7 @@ import * as departmentManage from './systemSetting/departmentManage'
 import * as sysLogOp from './systemSetting/sysLogOp'
 import * as blockInfo from './systemSetting/blockInfo'
 import * as materialManage from './commonModule/materialManage'
+import * as globalCornerIconType from './commonModule/globalCornerIconType'
 const service = {
   state: {},
   fetch,
@@ -19,6 +20,7 @@ const service = {
   ...departmentManage,
   ...sysLogOp,
   ...blockInfo,
-  ...materialManage
+  ...materialManage,
+  ...globalCornerIconType
 }
 Vue.prototype.$service = utils.wrapService(service)

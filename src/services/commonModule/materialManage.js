@@ -19,3 +19,10 @@ export function materialBatchAudit (params) {
     params
   })
 }
+export function materialBatchDelete (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/v1/poster/remove.html',
+    params
+  })
+}

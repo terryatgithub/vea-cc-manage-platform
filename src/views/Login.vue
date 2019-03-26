@@ -121,6 +121,7 @@ export default {
   height: 50px
   background: #ffaa23
   border-color: #ffaa23
+  font-size 20px
 #verifyCode
   display: flex
   margin-bottom: 30px

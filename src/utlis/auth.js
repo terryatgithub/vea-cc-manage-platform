@@ -86,7 +86,7 @@ const routerMap = {
 function getInitData (app) {
   return app.$service.getMenu().then(data => {
     if (data.length === 0) {
-      this.$router.push({
+      app.$router.push({
         name: 'login',
         query: { redirect: app.$route.fullPath }
       })

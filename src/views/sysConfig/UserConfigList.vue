@@ -109,11 +109,8 @@ export default {
           },
           {
             label: '所在部门',
-            prop: 'deptId',
-            'min-width': '90',
-            render: (createElement, { row }) => {
-              return row.sysDept.deptName
-            }
+            prop: 'deptName',
+            'min-width': '90'
           },
           {
             label: '电子邮箱',
@@ -316,6 +313,7 @@ export default {
      */
     getDepts () {
       return this.$service.getDepts().then(data => {
+        data = data.data
         data.forEach(element => {
           this.depts[element.deptName] = element.deptId
         })
