@@ -156,7 +156,7 @@ export default {
     return {
       filter: {},
       filterSchema: _.map({
-        search: _.o
+        roleName: _.o
           .string.other('form', {
             label: '角色名称',
             placeholder: '请输入角色名称',
