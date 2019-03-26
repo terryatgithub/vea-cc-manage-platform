@@ -59,3 +59,10 @@ export function getAuthList (params) {
     params
   })
 }
+export function saveAuthOfRole (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysRole/modifyRoleAuthSave.html',
+    data
+  })
+}

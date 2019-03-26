@@ -59,22 +59,19 @@
       class="auth-set-window"
     >
       <div class="set-auth-buttons">
-        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-        <el-button @click="setAuthDialogVisible = false;updateAuth()">保存修改</el-button>
+        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAllValue" @change="handleCheckAllChange">全选</el-checkbox>
+        <el-button class="button--position" @click="updateAuth()">保存修改</el-button>
         <el-button @click="setAuthDialogVisible = false">关闭</el-button>
       </div>
-      <!--<div class="set-auth-header"-->
-          <!--v-for="item in headerItems"-->
-        <!--&gt;-->
-          <!--{{item}}-->
-      <!--</div>-->
+      <div class="set-auth-header">
+          <span class="set-auth-header__item"
+                v-for="(item,index) in headerItems"
+                :key="index"
+          >
+             {{item}}
+          </span>
+      </div>
       <div class="set-auth-content">
-            <span class="set-auth-header"
-                  v-for="(item,index) in headerItems"
-                  :key="index"
-            >
-              {{item}}
-            </span>
             <el-tree
               :data="AuthList"
               node-key="menuId"
@@ -94,6 +91,7 @@
                  :disabled="data[dataItem] == -1"
                  :key="data.menuId+index+Math.random()"
                  @input="data[dataItem] = $event ? '1' : '0'"
+                 :runId="index+1"
               ></el-checkbox>
             </span>
           </span>
@@ -240,7 +238,7 @@ export default {
       setAuthDialogVisible: false,
       AuthList: [],
       isIndeterminate: true,
-      checkAll: false,
+      checkAllValue: false,
       headerItems: ['菜单名称', '浏览', '新增', '编辑', '删除', '搜索', '刷新', '打印', '导入', '导出', '审核', '认领', '撤销认领', '撤销审核', '上架', '创建副本', '批量审核'],
       dataItems: ['browser', 'add', 'edit', 'delete', 'search', 'refresh', 'print', 'inport', 'export', 'audit', 'claim', 'unclaim', 'unaudit', 'shelves', 'copy', 'batchAudit']
     }
@@ -273,8 +271,18 @@ export default {
     editRole ({ row }) {
       this.$emit('openAddPage', row)
     },
-    handleSearch () {},
-    handleFilterReset () {},
+    handleSearch () {
+      if (this.pagination) {
+        this.pagination.currentPage = 1
+      }
+      this.fetchData()
+    },
+    handleFilterReset () {
+      this.filter = {
+        roleName: undefined
+      }
+      this.fetchData()
+    },
     handleSubmit () {},
     handleReset () {},
     handleRowSelectionAdd (targetItem) {
@@ -309,17 +317,58 @@ export default {
         return result
       }, [])
     },
-    handleCheckAllChange () {},
+    handleCheckAllChange (val) {
+      this.checkAllValue = val
+      this.isIndeterminate = false
+      const keys = this.dataItems
+      function checkAll (data) {
+        data.forEach((item) => {
+          keys.forEach((key) => {
+            if (item[key] !== '-1') {
+              item[key] = val ? '1' : '0'
+            }
+          })
+          if (item.children) {
+            checkAll(item.children)
+          }
+        })
+      }
+      checkAll(this.AuthList)
+    },
+    updateAuth () {
+      const self = this
+      const roleId = this.roleId
+      const keys = this.dataItems
+      const menuIds = []
+      function checkSelect (data) {
+        data.forEach((item) => {
+          keys.forEach((key, index) => {
+            if (item[key] === '1') {
+              menuIds.push({ 'menuId': item['menuId'], 'runId': (index + 1).toString() })
+            }
+          })
+          if (item.children) {
+            checkSelect(item.children)
+          }
+        })
+      }
+      checkSelect(this.AuthList)
+      this.$service.saveAuthOfRole({
+        roleId: roleId,
+        mrs: JSON.stringify(menuIds)
+      }, '设置成功').then(function () {
+        self.setAuthDialogVisible = false
+      })
+    },
     setAuth ({ row }) {
       this.$service.getAuthList({ roleId: row.roleId }).then((data) => {
         console.log(data)
         this.setAuthDialogVisible = true
         this.AuthList = data
+        this.roleId = row.roleId
       })
     },
-    updateAuth () {},
     fetchPolicies (roleId) {
-      debugger
       this.$service.getPoliciesAndCrowds({ roleId: roleId }).then((data) => {
         this.policies = data.data
         data.data.forEach((item) => {
@@ -446,16 +495,20 @@ export default {
       width 120px
     .set-auth-buttons
       margin -20px 0 20px 0
+      position absolute
     .auth-set-window >>> .el-tree-node__content
-          position relative
+      position relative
     .auth-set-window >>> .el-dialog
-          overflow-x scroll
+      overflow-x scroll
     .auth-set-window >>> .el-tree-node > .el-tree-node__children
-          overflow-x initial
-          margin-left -18px
+      overflow-x initial
+      margin-left -18px
     .auth-set-window >>> .el-checkbox-group
-          display inline-block
+      display inline-block
     .set-auth-header
+      width 1300px
+      margin-top 30px
+    .set-auth-header__item
       display inline-block
       width 70px
       height 26px
@@ -467,6 +520,11 @@ export default {
     .set-auth-content
       width 1300px
       height 500px
+      overflow inherit
+    .button--position
+      margin-left 15px
+    .auth-set-window >>> .el-dialog__body
+      overflow inherit
     .auth-set-window >>> .el-tree-node__expand-icon
       position absolute
 </style>
