@@ -45,22 +45,26 @@ export default {
           {
             label: 'ID',
             width: 100,
-            prop: 'id'
+            prop: 'id',
+            sortable: true
           },
           {
             label: '轮播时间',
             width: 200,
-            prop: 'containerName'
+            prop: 'containerName',
+            sortable: true
           },
           {
             label: '状态',
             width: 120,
-            prop: 'status'
+            prop: 'status',
+            sortable: true
           },
           {
             label: '更新时间',
             width: 200,
-            prop: 'lastUpdateDate'
+            prop: 'lastUpdateDate',
+            sortable: true
           },
           {
             label: '操作',
@@ -86,6 +90,9 @@ export default {
       this.$service.broadcastBlockPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
+        this.table.data.map((row, index) => {
+          this.table.data[index].status = row.status === 3 ? '待审核' : row.status === 4 ? '审核通过': '审核不通过'
+        })
       })
     },
     parseFilter () {
@@ -111,8 +118,17 @@ export default {
       }
       this.fetchData()
     },
+    /**
+     * 新增轮播位
+     */
     addBroadcastBlock() {
-
+      this.$emit('openAddPage', null)
+    },
+    /**
+     * 编辑轮播位
+     */
+    editData({ row }) {
+      this.$emit('openAddPage', row.id, row.currentVersion)
     }
   },
   created() {
