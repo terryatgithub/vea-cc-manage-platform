@@ -66,3 +66,10 @@ export function saveAuthOfRole (data) {
     data
   })
 }
+export function updateSeq (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/v1/sysRole/updateSeq.html',
+    params
+  })
+}

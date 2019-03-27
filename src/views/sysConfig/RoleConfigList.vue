@@ -1,28 +1,16 @@
 <template>
   <ContentCard>
-    <div class="filter">
-      <GateSchemaForm
-        v-model="filter"
-        :schema="filterSchema"
-        ref="filterForm"
-        @submit="handleSearch"
-        @reset="handleFilterReset"
-        class="search-form"
-      />
-      <div class="query-action-list">
-        <el-button type="primary" @click="$refs.filterForm.handleSubmit()">
-          查询
-        </el-button>
-        <el-button @click="$refs.filterForm.handleReset()">
-          重置
-        </el-button>
-      </div>
-    </div>
-    <ActionList :actions="actions" class="action-button" :target="this"></ActionList>
     <ContentWrapper
+      :filter="filter"
+      :filterSchema="filterSchema"
       :pagination="pagination"
-      @filter-change="fetchData"
-      style="clear: both">
+      @filter-change="handleFilterChange"
+      @filter-reset="handleFilterReset"
+    >
+      <div class="btns">
+        <el-button type="primary" icon="el-icon-plus" @click="handleCreate">新增</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="handleBatchDelete">删除</el-button>
+      </div>
       <Table
         :props="table.props"
         :header="table.header"
@@ -145,10 +133,9 @@
 </template>
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
   components: {
-    ActionList,
     Table,
     ContentWrapper
   },
@@ -167,7 +154,17 @@ export default {
             }
           })
       }).other('form', {
-        layout: 'inline'
+        layout: 'inline',
+        footer: {
+          cols: {
+            label: 0,
+            wrapper: 24
+          },
+          showSubmit: true,
+          submitText: '查询',
+          showReset: true,
+          resetText: '重置'
+        }
       }),
       pagination: {
       },
@@ -181,7 +178,25 @@ export default {
           },
           {
             label: '排序号',
-            prop: 'seq'
+            prop: 'seq',
+            sortable: true,
+            render: (h, { row }) => {
+              return h('el-input',
+                {
+                  props: {
+                    value: row.seq,
+                    type: 'text'
+                  },
+                  on: {
+                    input: (value) => {
+                      row.seq = value
+                    },
+                    blur: () => {
+                      this.$service.updateSeq({ id: row.roleId, seq: row.seq })
+                    }
+                  }
+                })
+            }
           },
           {
             label: '说明',
@@ -194,6 +209,7 @@ export default {
           {
             label: '创建时间',
             width: '180',
+            sortable: true,
             prop: 'createDate'
           },
           {
@@ -203,6 +219,7 @@ export default {
           {
             label: '修改时间',
             width: '180',
+            sortable: true,
             prop: 'modifyDate'
           },
           {
@@ -223,15 +240,6 @@ export default {
       },
       viewUserDialogVisible: false,
       userRoleData: [],
-      actions: {
-        handleCreate: {
-          type: 'primary',
-          text: '新建'
-        },
-        handleBatchDelete: {
-          text: '删除'
-        }
-      },
       showAuthOfCrowdDialog: false,
       policies: [],
       roleId: undefined,
@@ -245,11 +253,12 @@ export default {
   },
   methods: {
     parseFilter () {
-      if (this.pagination) {
-        this.filter.page = this.pagination.currentPage
-        this.filter.size = this.pagination.pageSize
+      const { filter, pagination } = this
+      if (pagination) {
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
       }
-      return this.filter
+      return filter
     },
     handleCreate () {
       this.$emit('openAddPage', null)
@@ -260,20 +269,27 @@ export default {
         return
       }
       const roleId = this.selected.map(item => item.id).join(',')
-      if (window.confirm('确定要删除吗')) {
+      this.$confirm('确定删除此活动吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
         this.$service
           .deleteRole({ id: roleId }, '删除成功')
           .then(data => {
+            this.handleAllRowSelectionRemove()
             this.fetchData()
           })
-      }
+      })
     },
     editRole ({ row }) {
       this.$emit('openAddPage', row)
     },
-    handleSearch () {
-      if (this.pagination) {
-        this.pagination.currentPage = 1
+    handleFilterChange (type) {
+      if (type === 'filter') {
+        if (this.pagination) {
+          this.pagination.currentPage = 1
+        }
       }
       this.fetchData()
     },
@@ -283,8 +299,6 @@ export default {
       }
       this.fetchData()
     },
-    handleSubmit () {},
-    handleReset () {},
     handleRowSelectionAdd (targetItem) {
       this.selected = this.selected.concat({
         id: targetItem.roleId
@@ -437,11 +451,7 @@ export default {
     fetchData () {
       const filter = this.parseFilter()
       this.$service.getRoleList(filter).then((data) => {
-        Object.assign(this.pagination, {
-          currentPage: data.current,
-          pageSize: data.size,
-          total: data.total
-        })
+        this.pagination.total = data.total
         this.table.data = data.rows
       })
     }
@@ -453,13 +463,8 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-    .search-form
-      float left
-    .action-button
-      margin 30px 0
-    .query-action-list
-      float left
-      margin 0 20px
+    .btns
+      margin-bottom 10px
     .crowd-selector
       min-height 35px
       margin-bottom 10px
