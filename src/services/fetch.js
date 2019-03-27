@@ -2,7 +2,7 @@ import qs from 'qs'
 import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-export default function fetch ({
+export default function fetch({
   method = 'get',
   url,
   data,
@@ -18,20 +18,49 @@ export default function fetch ({
   }
   // if (url != "/api/login") option.headers = { Authorization: this.state.token };
   return axios(option)
-    .then(function ({ data }) {
+    .then(function ({data}) {
       NProgress.done()
-      if (
-        typeof data.success !== 'undefined' &&
-        typeof data.msg !== 'undefined'
-      ) {
+      if (typeof data.success !== 'undefined' && typeof data.msg !== 'undefined') {//返回success
         if (!data.success) {
-          throw { message: data.msg }
+          throw new Error(data.msg)
         } else {
-          return data
+          if (typeof (data.data) !== 'undefined') {
+            if (typeof (data.total) !== 'undefined') {
+              return {
+                rows: data.data,
+                total: data.total
+              }
+            } else {
+              return data.data
+            }
+          } else if (typeof (data.rows) !== 'undefined') {
+            if (typeof (data.total) !== 'undefined') {
+              return {
+                rows: data.rows,
+                total: data.total
+              }
+            } else {
+              return data.rows
+            }
+          } else {
+            return data
+          }
         }
-        return data.data
       } else {
-        return data
+        if (typeof (data.rows) !== 'undefined'&&typeof (data.total) !== 'undefined') {
+          return {
+            rows: data.rows,
+            total: data.total
+          }
+        } else {
+            if(typeof(data.code) !== "undefined" && data.code !== '0') {
+              throw new Error(data.msg)
+            } else {
+              return data 
+            }
+          
+        }
+         
       }
     })
     .catch(e => {
@@ -39,3 +68,4 @@ export default function fetch ({
       throw e
     })
 }
+

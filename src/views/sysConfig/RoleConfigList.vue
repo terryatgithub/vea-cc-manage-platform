@@ -384,8 +384,8 @@ export default {
     },
     fetchPolicies (roleId) {
       this.$service.getPoliciesAndCrowds({ roleId: roleId }).then((data) => {
-        this.policies = data.data
-        data.data.forEach((item) => {
+        this.policies = data
+        data.forEach((item) => {
           console.log(item.crowds)
           this.$service.getCrowdOfPolicy({ id: item.value, roleId: roleId })
             .then((crowds) => {

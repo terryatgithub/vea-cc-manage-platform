@@ -331,7 +331,6 @@ export default {
      */
     getMaterialTypes() {
       return this.$service.getMaterialTypes().then(data => {
-        let d = data.data;
         d.forEach(element => {
           this.materialTypes[element.label] = element.id;
         });

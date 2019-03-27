@@ -71,7 +71,7 @@ export default {
       this.$service.getDictCategoryList().then(data => {
         //去重
         var obj = {}
-        this.dictCategoryStr = data.data
+        this.dictCategoryStr = data
         // this.dictCategoryStr = this.dictCategoryStr.reduce(function(item,next){
         //   obj[next.value] ? '' :obj[next.value] = true && item.push(next)
         //   return item

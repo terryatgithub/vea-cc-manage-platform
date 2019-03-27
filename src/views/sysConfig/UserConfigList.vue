@@ -313,7 +313,6 @@ export default {
      */
     getDepts () {
       return this.$service.getDepts().then(data => {
-        data = data.data
         data.forEach(element => {
           this.depts[element.deptName] = element.deptId
         })

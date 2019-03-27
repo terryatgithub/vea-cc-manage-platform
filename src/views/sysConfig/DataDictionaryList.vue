@@ -157,11 +157,10 @@ export default {
      */
     getDictCategoryList () {
       return  this.$service.getDictCategoryList().then(data =>{
-        data.data.forEach(element => {
+        data.forEach(element => {
           this.dictCategories[element.label] = element.value
         })
       })
-
     },
     /**
      * 新增数据字典分类

@@ -18,7 +18,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="优先级" prop="typePriority">
-             <el-input-number v-model="form.typePriority"  :min="1" label="优先级"></el-input-number>
+            <el-input-number v-model="form.typePriority" :min="1" label="优先级"></el-input-number>
             <!-- <el-input v-model="form.typePriority" placeholder="优先级"></el-input> -->
           </el-form-item>
           <el-form-item>
@@ -43,15 +43,15 @@ export default {
           name: '左上',
           id: 0
         },
-         {
+        {
           name: '右上',
           id: 1
         },
-         {
+        {
           name: '右下',
           id: 2
         },
-         {
+        {
           name: '左下',
           id: 3
         }
@@ -64,45 +64,48 @@ export default {
       formRules: {
         // 表单规则
         typeName: [
-          { required: true, message: "请输入角标名称", trigger: "blur" }
+          { required: true, message: '请输入角标名称', trigger: 'blur' }
         ],
         typePosition: [
-          { required: true, message: "请输入角标位置", trigger: "blur" }
+          { required: true, message: '请输入角标位置', trigger: 'blur' }
         ],
         typePriority: [
-          { required: true, message: "请输入角标优先级", trigger: "blur" },
+          { required: true, message: '请输入角标优先级', trigger: 'blur' }
         ]
       }
-    };
+    }
   },
   methods: {
     submitBtn() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$service.globalCornerIconTypeSave(this.form, "保存成功").then(data => {
-            this.$emit("openListPage");
-          });
+          this.$service
+            .globalCornerIconTypeSave({ 'jsonStr': JSON.stringify(this.form) }, '保存成功')
+            .then(data => {
+              this.$emit('openListPage')
+            })
         }
-      });
+      })
     },
     getEditData() {
-      let obj = this;
-      this.$service.globalCornerIconTypeDetail({ id: this.editId }).then(data => {
-         data = data.data
-        Object.keys(this.form).forEach(v => {
-            this.form[v] = data[v];
-        });
-      });
+      let obj = this
+      this.$service
+        .globalCornerIconTypeDetail({ id: this.editId })
+        .then(data => {
+          Object.keys(this.form).forEach(v => {
+            this.form[v] = data[v]
+          })
+        })
     }
   },
   created() {
     if (this.editId !== null && this.editId !== undefined) {
-      this.title = "编辑";
+      this.title = '编辑'
       this.typeId = this.editId
-      this.getEditData();
+      this.getEditData()
     } else {
-      this.title = "新增";
+      this.title = '新增'
     }
   }
-};
+}
 </script>

@@ -110,7 +110,6 @@ export default {
     getEditData () {
       let obj = this
       this.$service.userConfigEdit({ id: this.editId }).then(data => {
-        data = data.data
         Object.keys(this.form).forEach(v => {
           if (v === 'disabled') {
             this.form[v] = data[v] + ''
@@ -122,7 +121,7 @@ export default {
     },
     getDepts () {
       return this.$service.getDepts().then(data => {
-        this.departmentList = data.data
+        this.departmentList = data
       })
     }
   },
