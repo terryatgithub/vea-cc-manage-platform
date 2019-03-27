@@ -49,3 +49,19 @@ export function getMediaVideoInfos (params) {
     params
   })
 }
+// 内容源
+export function getPartnerSource (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tvos/getPartnerSource.html',
+    params
+  })
+}
+// 多情况筛选条件
+export function getCondition (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tvos/getCondition.html',
+    params
+  })
+}

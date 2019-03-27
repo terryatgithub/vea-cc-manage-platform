@@ -1,11 +1,18 @@
 <template>
-    <RemoteSelect ref="selector" :title="title" dialogClass="container" @select-end="confirmClick">
-      <el-tabs value="first">
-        <el-tab-pane label="轮播频道" name="first">
-          <BroadcastFilter v-model="filterValue"></BroadcastFilter>
-        </el-tab-pane>
-      </el-tabs>
-    </RemoteSelect>
+  <RemoteSelect
+    ref="selector" 
+    :title="title" 
+    customClass="container" 
+    @select-end="confirmClick"
+    :showSelection="false"
+    :showClearSelectionBtn="false"
+  >
+    <el-tabs value="first">
+      <el-tab-pane label="轮播频道" name="first">
+        <BroadcastFilter v-model="filterValue"></BroadcastFilter>
+      </el-tab-pane>
+    </el-tabs>
+  </RemoteSelect>
 </template>
 
 <script>
@@ -43,11 +50,6 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.container{
-  background-color red
-}
-.container >>> .content-list .filter-form .el-form{
+.container >>> .content-list .filter-form .el-form, .content-list
   justify-content center
-}
-
 </style>

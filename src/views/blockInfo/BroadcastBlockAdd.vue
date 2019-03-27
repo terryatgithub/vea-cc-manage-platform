@@ -231,12 +231,16 @@
           prop="thirdIdOrPackageName"
           v-if="lowerForm.coverType === 'media' || lowerForm.coverType === 'app' "
         >
-          <el-button
+          <!-- <el-button
             type="primary"
             size="medium"
             v-model="lowerForm.thirdIdOrPackageName"
             @click.native="selectResource('lower', lowerForm)"
-          >选择资源</el-button>
+          >选择资源</el-button> -->
+          <ResourceSelector
+            v-model="lowerForm.thirdIdOrPackageName"
+            title="选择资源"
+            >选择资源</ResourceSelector>
           <el-tag
             type="success"
             v-if="lowerForm.thirdIdOrPackageName"
@@ -314,10 +318,12 @@
 <script>
 import draggable from 'vuedraggable'
 import BroadcastSource from '@/components/BroadcastSource'
+import ResourceSelector from '@/components/ResourceSelector'
 export default {
   components: {
     draggable,
-    BroadcastSource
+    BroadcastSource,
+    ResourceSelector
   },
 
   props: {
