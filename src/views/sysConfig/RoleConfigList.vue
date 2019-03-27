@@ -134,7 +134,6 @@
 <script>
 import _ from 'gateschema'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
-import { Input } from 'element-ui'
 export default {
   components: {
     Table,
@@ -270,7 +269,7 @@ export default {
         return
       }
       const roleId = this.selected.map(item => item.id).join(',')
-      this.$confirm('确定删除此活动吗？','提示',{
+      this.$confirm('确定删除此活动吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
