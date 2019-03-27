@@ -78,8 +78,8 @@
   </el-container>
 </template>
 <script>
-import { Breadcrumb, Menu, TagNav } from "admin-toolkit";
-import { setTimeout } from "timers";
+import { Breadcrumb, Menu, TagNav } from 'admin-toolkit'
+import { setTimeout } from 'timers'
 export default {
   components: {
     Menu,
@@ -101,105 +101,105 @@ export default {
       },
       formRules: {
         oldpwd: [
-          { required: true, message: "请输入原始密码", trigger: "blur" }
+          { required: true, message: '请输入原始密码', trigger: 'blur' }
         ],
-        newpwd: [{ required: true, message: "请输入新密码", trigger: "blur" }],
+        newpwd: [{ required: true, message: '请输入新密码', trigger: 'blur' }],
         newpwd2: [
-          { required: true, validator: this.validatePass2, trigger: "blur" }
+          { required: true, validator: this.validatePass2, trigger: 'blur' }
         ]
       }
-    };
+    }
   },
   computed: {
     isKeepAlive() {
-      const meta = this.$route.meta;
-      return meta && meta.isCache !== false;
+      const meta = this.$route.meta
+      return meta && meta.isCache !== false
     },
     initTags() {
-      return this.$appState.$get("tags") || [];
+      return this.$appState.$get('tags') || []
     },
     defaultMenu() {
       const mainRoute = this.$router.options.routes.find(item => {
-        return item.path === "/";
-      });
+        return item.path === '/'
+      })
       function gen({ name, meta = {}, children }) {
         if (!meta.hideInMenu) {
           const currentMenuItem = {
             title: meta.title,
             icon: meta.icon,
             route: name
-          };
+          }
           if (children) {
             currentMenuItem.children = children.reduce((result, item) => {
-              const menuItem = gen(item);
+              const menuItem = gen(item)
               if (menuItem) {
-                result.push(menuItem);
+                result.push(menuItem)
               }
-              return result;
-            }, []);
+              return result
+            }, [])
           }
-          return currentMenuItem;
+          return currentMenuItem
         }
       }
-      const items = gen(mainRoute).children;
-      return items;
+      const items = gen(mainRoute).children
+      return items
     }
   },
   methods: {
     modifyPwd() {
-      this.modifyDialogVisible = true;
+      this.modifyDialogVisible = true
     },
     modifyPwdSave() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$service.modifyPwd(this.form, "修改成功").then(data => {
-            this.modifyDialogVisible = false;
+          this.$service.modifyPwd(this.form, '修改成功').then(data => {
+            this.modifyDialogVisible = false
             this.$logout().then(() => {
-              this.$router.push({ name: "login" });
-            });
-          });
+              this.$router.push({ name: 'login' })
+            })
+          })
         }
-      });
+      })
     },
     validatePass2(rule, value, callback) {
-      if (value === "") {
-        callback(new Error("请再次输入密码"));
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
       } else if (value != this.form.newpwd) {
-        callback(new Error("两次输入密码不一致！"));
+        callback(new Error('两次输入密码不一致！'))
       } else {
-        callback();
+        callback()
       }
     },
     handleDropdownCommand(command) {
-      if (command === "logout") {
+      if (command === 'logout') {
         this.$logout().then(() => {
-          this.$router.push({ name: "login" });
-        });
+          this.$router.push({ name: 'login' })
+        })
       }
     },
     toggleMenu() {
-      const isCollapseMenu = !this.isCollapseMenu;
-      this.$appState.$set("isCollapseMenu", isCollapseMenu);
-      this.isCollapseMenu = isCollapseMenu;
+      const isCollapseMenu = !this.isCollapseMenu
+      this.$appState.$set('isCollapseMenu', isCollapseMenu)
+      this.isCollapseMenu = isCollapseMenu
     },
     saveTags() {
-      const tags = this.$refs.tag.tags;
-      this.$appState.$set("tags", tags);
+      const tags = this.$refs.tag.tags
+      this.$appState.$set('tags', tags)
     }
   },
   created() {
-    this.isCollapseMenu = !!this.$appState.$get("isCollapseMenu");
-    this.$bus.$on("breadcrumb-change", breadcrumb => {
-      this.breadcrumb = breadcrumb;
-    });
+    this.isCollapseMenu = !!this.$appState.$get('isCollapseMenu')
+    this.$bus.$on('breadcrumb-change', breadcrumb => {
+      this.breadcrumb = breadcrumb
+    })
   },
   mounted() {
-    window.addEventListener("beforeunload", this.saveTags);
+    window.addEventListener('beforeunload', this.saveTags)
   },
   destroyed() {
-    window.removeEventListener("beforeunload", this.saveTags);
+    window.removeEventListener('beforeunload', this.saveTags)
   }
-};
+}
 </script>
 
 <style lang="stylus">

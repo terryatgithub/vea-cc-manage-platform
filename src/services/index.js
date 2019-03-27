@@ -11,6 +11,7 @@ import * as blockInfo from './systemSetting/blockInfo'
 import * as adminMasterControll from './systemSetting/adminMasterControll'
 import * as materialManage from './commonModule/materialManage'
 import * as globalCornerIconType from './commonModule/globalCornerIconType'
+import * as layoutInfor from './commonModule/layoutInfor'
 const service = {
   state: {},
   fetch,
@@ -23,6 +24,7 @@ const service = {
   ...blockInfo,
   ...materialManage,
   ...globalCornerIconType,
-  ...adminMasterControll
+  ...adminMasterControll,
+  ...layoutInfor
 }
 Vue.prototype.$service = utils.wrapService(service)

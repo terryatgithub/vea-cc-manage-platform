@@ -22,34 +22,7 @@
         @all-row-selection-change="handleAllRowSelectionChange"
       />
     </ContentWrapper>
-    <!-- 预览图片 -->
-    <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
-      <span class="pics"></span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="picDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="picDialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>
-    <!-- 预览图片 --->
-    <!-- 审核 -->
-    <el-dialog title="预览图片" :visible.sync="auditDialogVisible" width="30%">
-      <span>
-        <el-form ref="addForm" :model="addForm" :rules="auditFormRules" label-width="80px">
-          <el-form-item label="审核意见" prop="auditFlag">
-            <el-radio v-model="addForm.auditFlag" label="4">通过</el-radio>
-            <el-radio v-model="addForm.auditFlag" label="5">打回</el-radio>
-          </el-form-item>
-          <el-form-item label="意见说明" prop="auditDesc">
-            <el-input type="textarea" v-model="addForm.auditDesc"></el-input>
-          </el-form-item>
-        </el-form>
-      </span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="auditDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitAudit">确 定</el-button>
-      </span>
-    </el-dialog>
-    <!-- 审核 --->
+
   </ContentCard>
 </template>
 <script>
@@ -62,28 +35,21 @@ export default {
   },
   data() {
     return {
-      materialTypes: {}, //素材类型
-      typePosition: {
-        //状态
-        左上: 0,
-        右上: 1,
-        右下: 2,
-        左下: 3
+      layoutType: {
+        '主页6.0': 1,
+        '影视V2': 2
       },
-      picDialogVisible: false, //预览图片弹出框
-      auditDialogVisible: false, //审核弹出框
-      addForm: {
-        idStr: null,
-        auditFlag: '4',
-        auditDesc: ''
+      layoutIsTitle: {
+        带标题: 1,
+        不带标题: 0
       },
-      auditFormRules: {
-        auditDesc: [
-          { required: true, message: '请输入意见说明', trigger: 'blur' }
-        ],
-        auditFlag: [
-          { required: true, message: '请输入审核意见', trigger: 'blur' }
-        ]
+      layoutStatus: {
+        上架: 1,
+        下架: 0,
+        草稿: 2,
+        待审核: 3,
+        审核通过: 4,
+        审核不通过: 5
       },
       filter: {
         sort: undefined,
@@ -97,48 +63,131 @@ export default {
         header: [
           {
             label: 'ID',
-            prop: 'typeId',
+            prop: 'layoutId',
             width: '70'
           },
           {
-            label: '分类名称',
-            width: '120',
-            prop: 'typeName',
-            sortable: true
-          },
-          {
-            label: '角标位置',
-            prop: 'typePosition',
-            width: '110',
-            sortable: true
-          },
-          {
-            label: '优先级(越小越靠前)',
-            prop: 'typePriority',
-            width: '110',
-            sortable: true
-          },
-          {
-            label: '修改人',
-            prop: 'modifierUser',
-            width: '90',
+            label: '名称',
+            width: '170',
+            prop: 'layoutName',
+            sortable: true,
             render: (createElement, { row }) => {
-              return row.userName
+              return createElement('el-button', {
+                attrs:{
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.openReview(row.layoutId)
+                  }
+                }
+              },row.layoutName)
             }
           },
           {
-            label: '创建时间',
-            prop: 'createdDate',
-            sortable: true
+            label: '分类',
+            prop: 'layoutType',
+            width: '80',
+            render: (createElement, { row }) => {
+              if (row.layoutType === 1) {
+                return '主页6.0'
+              } else {
+                return '影视V2'
+              }
+            }
           },
           {
-            label: '修改时间',
+            label: '布局标题',
+            prop: 'layoutIsTitle',
+            width: '80',
+            render: (createElement, { row }) => {
+              if (row.layoutIsTitle === 1) {
+                return '带标题'
+              } else {
+                return '不带标题'
+              }
+            }
+          },
+          {
+            label: '扩展方式',
+            prop: 'layoutFlag',
+            width: '80',
+            render: (createElement, { row }) => {
+              if (typeof row.layoutFlag === 'undefined') {
+                return '无'
+              } else {
+                switch(row.layoutFlag) {
+                  case 0:
+                    return '横向扩展11'
+                    break
+                  case 1:
+                    return '纵向扩展22'
+                    break
+                }
+              }
+            }
+          },
+          {
+            label: '间距',
+            prop: 'space',
+            width: 70,
+            sortable:true
+          },
+          {
+            label: '高度',
+            prop: 'height',
+             width: 70,
+            sortable: true
+          },
+           {
+            label: '宽度',
+            prop: 'width',
+            width: 70,
+            sortable: true
+          },
+            {
+            label: '状态',
+            prop: 'layoutStatus',
+            width: 70,
+            render: (createElement, {row}) => {
+               let content='';
+						switch(row.layoutStatus){
+							case 0:
+								content='下架';
+								break;
+							case 1:
+								content='上架';
+								break;
+							case 2:
+								content='草稿';
+								break;
+							case 3:
+								content='待审核';
+								break;
+							case 4:
+								content='已审核';
+								break;
+							case 5:
+								content='审核不通过';
+								break;
+						}
+						return content
+            }
+          },
+           {
+            label: '更新时间',
             prop: 'lastUpdateDate',
             sortable: true
           },
+           {
+            label: '更新人',
+            prop: 'modifierName',
+            render :(createElement, {row}) => {
+               return row.modifierName
+            }
+          },
           {
             label: '操作',
-            width: '200',
             fixed: 'right',
             render: utils.component.createOperationRender(this, {
               editData: '编辑'
@@ -152,34 +201,17 @@ export default {
     }
   },
   methods: {
-    submitAudit() {
-      this.$refs.auditForm.validate(valid => {
-        if (valid) {
-          this.auditForm.idStr = this.selected.join(',')
-          this.$service
-            .materialBatchAudit(this.auditForm, '审批成功')
-            .then(data => {
-              this.fetchData()
-              this.auditDialogVisible = false
-            })
-        }
-      })
-    },
     /**
      * 新增用户
      */
     addItem() {
       this.$emit('openAddPage', null)
     },
-    handleChange(value, direction, movedKeys) {
-      var str = []
-      for (var i = 0; i < value.length; i++) {
-        str.push(['roleIds', value[i]])
-      }
-      this.selectedRole = this.user.concat(str)
+    openReview(layoutId) {
+      debugger
     },
     editData({ row }) {
-      this.$emit('openAddPage', row.typeId)
+      this.$emit('openAddPage', row.layoutId)
     },
     /**
      * 批量删除
@@ -191,7 +223,7 @@ export default {
       }
       if (window.confirm('确定要删除吗')) {
         this.$service
-          .globalCornerIconTypeBatchDel(
+          .getLayoutInforBatchDel(
             { id: this.selected.join(',') },
             '删除成功'
           )
@@ -201,12 +233,12 @@ export default {
       }
     },
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.typeId)
+      this.selected.push(targetItem.layoutId)
       this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.typeId
+        return item !== targetItem.layoutId
       })
       this.updateTableSelected()
     },
@@ -226,7 +258,7 @@ export default {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.typeId) > -1) {
+        if (newSelectedIndex.indexOf(item.layoutId) > -1) {
           result.push(index)
         }
         return result
@@ -260,7 +292,7 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter()
-      this.$service.getGlobalCornerIconTypePageList(filter).then(data => {
+      this.$service.getLayoutInforPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -268,25 +300,33 @@ export default {
   },
   created() {
     let filterSchema = _.map({
-      typeId: _.o.string.other('form', {
+      layoutName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标分类ID',
+        placeholder: '布局名称',
         cols: {
           item: 3,
           label: 0
         }
       }),
-      typeName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '角标名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
-      pictureCategory: _.o.enum(this.typePosition).other('form', {
+         layoutType: _.o.enum(this.layoutType).other('form', {
         component: 'Select',
-        placeholder: '角标位置',
+        placeholder: '布局分类',
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+          layoutIsTitle: _.o.enum(this.layoutIsTitle).other('form', {
+        component: 'Select',
+        placeholder: '布局标题',
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+      layoutStatus: _.o.enum(this.layoutStatus).other('form', {
+        component: 'Select',
+        placeholder: '状态',
         cols: {
           item: 3,
           label: 0
