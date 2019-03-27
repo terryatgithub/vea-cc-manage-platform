@@ -1063,8 +1063,8 @@ export default {
 
     this.title = this.editId ? '编辑页面' : '新增页面'
     // 素材类型获取
-    this.$service.getMaterialTypes().then(dataAll => {
-      const data = dataAll.data
+    this.$service.getMaterialTypes().then(data => {
+      console.log(data);
       var materialTypeOptions = []
       for (var i = 0; i < data.length; i++) {
         var materialTypeOption = {
