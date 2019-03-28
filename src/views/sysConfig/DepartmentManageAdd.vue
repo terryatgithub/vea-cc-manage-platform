@@ -107,8 +107,7 @@ export default {
       });
     },
     getEditData() {
-      this.$service.sysDeptDetailInfo({id: this.editId}).then(total => {
-        const data = total.data
+      this.$service.sysDeptDetailInfo({id: this.editId}).then(data => {
         Object.keys(this.formData).forEach(v => {
           if (v === 'disabled') {
             this.formData[v] = data[v] + ''
