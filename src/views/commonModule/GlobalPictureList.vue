@@ -211,7 +211,7 @@ export default {
      * 新增用户
      */
     addItem() {
-      this.$emit("openAddPage", null);
+      this.$emit("add");
     },
     handleRead({ row }) {},
     handleChange(value, direction, movedKeys) {
@@ -240,7 +240,7 @@ export default {
       this.picDialogVisible = true;
     },
     editData({ row }) {
-      this.$emit("openAddPage", row.userId);
+      this.$emit("edit", row.pictureId);
     },
     /**
      * 批量删除
@@ -331,7 +331,7 @@ export default {
      */
     getMaterialTypes() {
       return this.$service.getMaterialTypes().then(data => {
-        d.forEach(element => {
+        data.forEach(element => {
           this.materialTypes[element.label] = element.id;
         });
       });

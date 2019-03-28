@@ -1,20 +1,25 @@
 <template>
   <div>
-    <GlobalPictureList v-show="isShowList" ref="list" @openAddPage="openAddPage"></GlobalPictureList>
-    <GlobalPictureAdd
+    <GlobalPictureList 
+      v-show="isShowList" 
+      ref="list" 
+      @edit="handleEdit" 
+      @add="handleEdit"
+    />
+    <GlobalPictureUpsert
       v-if="!isShowList"
-      :editId="editId"
-      @openListPage="openListPage"
+      :edit-id="editId"
+      @show-list="handleShowList"
       @go-back="goBack"
-    ></GlobalPictureAdd>
+    />
   </div>
 </template>
 <script>
-import GlobalPictureAdd from "./GlobalPictureAdd";
+import GlobalPictureUpsert from "./GlobalPictureUpsert";
 import GlobalPictureList from "./GlobalPictureList";
 export default {
   components: {
-    GlobalPictureAdd,
+    GlobalPictureUpsert,
     GlobalPictureList
   },
   data() {
@@ -27,14 +32,14 @@ export default {
     /**
      * 打开新增编辑页面
      */
-    openAddPage(userId) {
-      this.editId = userId;
+    handleEdit(id) {
+      this.editId = id;
       this.isShowList = false;
     },
     /**
      * 打开列表页面
      */
-    openListPage() {
+    handleShowList() {
       this.isShowList = true;
       this.$refs.list.fetchData(); // 更新页面
     },
