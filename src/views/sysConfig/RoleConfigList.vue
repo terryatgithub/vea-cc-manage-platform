@@ -46,20 +46,20 @@
       :visible.sync="setAuthDialogVisible"
       class="auth-set-window"
     >
-      <div class="set-auth-buttons">
+      <div class="auth-set-window__buttons">
         <el-checkbox :indeterminate="isIndeterminate" v-model="checkAllValue" @change="handleCheckAllChange">全选</el-checkbox>
         <el-button class="button--position" @click="updateAuth()">保存修改</el-button>
         <el-button @click="setAuthDialogVisible = false">关闭</el-button>
       </div>
-      <div class="set-auth-header">
-          <span class="set-auth-header__item"
+      <div class="auth-set-window__header">
+          <span class="auth-set-window__header-item"
                 v-for="(item,index) in headerItems"
                 :key="index"
           >
              {{item}}
           </span>
       </div>
-      <div class="set-auth-content">
+      <div class="auth-set-window__content">
             <el-tree
               :data="AuthList"
               node-key="menuId"
@@ -389,8 +389,8 @@ export default {
           console.log(item.crowds)
           this.$service.getCrowdOfPolicy({ id: item.value, roleId: roleId })
             .then((crowds) => {
-              console.log(crowds.data)
-              this.$set(item, 'crowds', crowds.data)
+              console.log(crowds)
+              this.$set(item, 'crowds', crowds)
             })
         })
       })
@@ -464,72 +464,74 @@ export default {
 </script>
 <style lang="stylus" scoped>
     .btns
-      margin-bottom 10px
+        margin-bottom 10px
     .crowd-selector
-      min-height 35px
-      margin-bottom 10px
+        min-height 35px
+        margin-bottom 10px
     .crowd-selector__policy
-      position absolute
-      width 90px
-      margin-left 8px
+        position absolute
+        width 90px
+        margin-left 8px
     .crowd-selector__crowd-list
-      padding-left 90px
+        padding-left 90px
     .crowd-selector__crowd
-      margin-left 10px
-      cursor pointer
-      width 140px
-      margin-bottom 10px
-      background-color rgba(64,158,255,0.1)
-      color #409eff
+        margin-left 10px
+        cursor pointer
+        width 140px
+        margin-bottom 10px
+        background-color rgba(64,158,255,0.1)
+        color #409eff
     .crowd-selector__crowd--disabled
-      color #fff
-      background-color #bfc4cd
+        color #fff
+        background-color #bfc4cd
     .ellipsis
-      overflow hidden
-      white-space nowrap
-      text-overflow ellipsis
-      vertical-align middle
-    .tree-data
-      display inline-block
-      width 70px
-      height 26px
-      border 1px dashed #ccc
-      text-align center
-      line-height 26px
-    .tree-data--big-size
-      width 120px
-    .set-auth-buttons
-      margin -20px 0 20px 0
-      position absolute
-    .auth-set-window >>> .el-tree-node__content
-      position relative
-    .auth-set-window >>> .el-dialog
-      overflow-x scroll
-    .auth-set-window >>> .el-tree-node > .el-tree-node__children
-      overflow-x initial
-      margin-left -18px
-    .auth-set-window >>> .el-checkbox-group
-      display inline-block
-    .set-auth-header
-      width 1300px
-      margin-top 30px
-    .set-auth-header__item
-      display inline-block
-      width 70px
-      height 26px
-      border 1px solid #ccc
-      text-align center
-      line-height 26px
-      &:first-child
-        width 120px
-    .set-auth-content
-      width 1300px
-      height 500px
-      overflow inherit
+        overflow hidden
+        white-space nowrap
+        text-overflow ellipsis
+        vertical-align middle
+    .auth-set-window__header
+        width 1300px
+        margin-top 30px
+    .auth-set-window__header-item
+        display inline-block
+        width 70px
+        height 26px
+        border 1px solid #ccc
+        text-align center
+        line-height 26px
+        &:first-child
+            width 120px
+    .auth-set-window__content
+        width 1300px
+        height 500px
+        overflow inherit
     .button--position
-      margin-left 15px
-    .auth-set-window >>> .el-dialog__body
-      overflow inherit
-    .auth-set-window >>> .el-tree-node__expand-icon
-      position absolute
+        margin-left 15px
+    .tree-data
+        display inline-block
+        width 70px
+        height 26px
+        border 1px dashed #ccc
+        text-align center
+        line-height 26px
+    .tree-data--big-size
+        width 120px
+    .auth-set-window__buttons
+        margin -20px 0 20px 0
+        position absolute
+    .auth-set-window
+        >>> .el-tree-node__content
+                position relative
+        >>> .el-dialog
+                overflow-x scroll
+        >>> .el-tree-node
+               > .el-tree-node__children
+                     overflow-x initial
+                     margin-left -18px
+        >>> .el-checkbox-group
+                display inline-block
+        >>> .el-dialog__body
+                overflow inherit
+        >>> .el-tree-node__expand-icon
+                position absolute
 </style>
