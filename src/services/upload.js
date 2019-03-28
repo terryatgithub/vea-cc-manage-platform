@@ -8,5 +8,7 @@ export default function uploadImage ({ file, onUploadProgress }) {
     url: 'api/upload/image.html',
     data: formData,
     onUploadProgress
+  }).then(({ data }) => {
+    return data
   })
 }
