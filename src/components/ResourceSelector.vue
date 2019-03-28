@@ -53,7 +53,7 @@ export default {
 
   methods: {
     confirmClick: function() {
-      if(!this.filterValue){
+      if(!this.selectAll){
         this.$refs.selector.showDialog = true
         this.$message('请选择一条记录')
       }

@@ -1064,7 +1064,6 @@ export default {
     this.title = this.editId ? '编辑页面' : '新增页面'
     // 素材类型获取
     this.$service.getMaterialTypes().then(data => {
-      console.log(data);
       var materialTypeOptions = []
       for (var i = 0; i < data.length; i++) {
         var materialTypeOption = {
@@ -1076,8 +1075,7 @@ export default {
       }
     })
     // 角标类型获取
-    this.$service.getCornerTypes().then(dataAll => {
-      const data = dataAll.data
+    this.$service.getCornerTypes().then(data => {
       var cornerIconTypeOptions = []
       for (var i = 0; i < data.length; i++) {
         var cornerIconTypeOption = {

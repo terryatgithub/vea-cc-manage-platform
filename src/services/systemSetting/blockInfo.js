@@ -41,11 +41,19 @@ export function saveBlockInfo (data) {
 /**
  * 轮播推荐位资源
  */
-// 这是媒资提供的接口
+// 影视中心
 export function getMediaVideoInfos (params) {
   return this.fetch({
     method: 'get',
     url: '/api/tvos/getMediaVideoInfos.html',
+    params
+  })
+}
+// 影视中心2
+export function getFilterMediaVideoInfos (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tvos/getMediaVideoInfos.html?resType=vod&callbackparam=?',
     params
   })
 }
