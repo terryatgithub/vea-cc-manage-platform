@@ -1,7 +1,7 @@
 <template>
   <div>
-    <DepartmentManageList v-show='isShowList' ref="list" @openAddPage="openAddPage"></DepartmentManageList>
-    <DepartmentManageAdd v-if='!isShowList' :editId="editId" @openListPage="openListPage" @go-back="goBack"></DepartmentManageAdd>
+    <DepartmentManageList v-show='isShowList' ref="list" @open-add-page="openAddPage"></DepartmentManageList>
+    <DepartmentManageAdd v-if='!isShowList' :editId="editId" @open-list-page="openListPage" @go-back="goBack"></DepartmentManageAdd>
   </div>
 </template>
 

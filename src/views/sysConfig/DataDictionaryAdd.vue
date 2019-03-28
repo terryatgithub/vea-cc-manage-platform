@@ -32,8 +32,9 @@
 <script>
 export default {
   props: {
-    editData: undefined,
-    default: null
+    editData: {
+      type: Object
+    }
   },
   //  prop: ['editId'],
   data() {
@@ -72,10 +73,6 @@ export default {
         //去重
         var obj = {}
         this.dictCategoryStr = data
-        // this.dictCategoryStr = this.dictCategoryStr.reduce(function(item,next){
-        //   obj[next.value] ? '' :obj[next.value] = true && item.push(next)
-        //   return item
-        // }, [])
       })
 
     },
@@ -90,24 +87,11 @@ export default {
             dictEnName: this.form.dictEnName,
           }
           this.$service.SaveDictionary(dictObj, "保存成功").then(data => {
-            this.$emit("openListPage");
+            this.$emit("open-list-page");
           });
         }
       });
-    },
-    // getEditData() {
-    //   let obj = this;
-    //    this.$service.1({ id: this.editId }).then(data => {
-    //        console.log(data)
-    //      Object.keys(this.form).forEach(v => {
-    //        if (v === "disabled") {
-    //        this.form[v] = data[v]+'';
-    //        } else {
-    //          this.form[v] = data[v];
-    //        }
-    //      });
-    //    });
-    // },
+    }
   },
   created() {
     if (this.editData !== null && this.editData !== undefined) {

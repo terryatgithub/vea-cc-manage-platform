@@ -82,7 +82,7 @@ export default {
           this.$service
             .globalCornerIconTypeSave({ 'jsonStr': JSON.stringify(this.form) }, '保存成功')
             .then(data => {
-              this.$emit('openListPage')
+              this.$emit('open-list-page')
             })
         }
       })

@@ -96,7 +96,7 @@ export default {
             data.deptId = this.editId
           }
           this.$service.sysDeptSave(data, '保存成功').then(() => {
-            this.$emit('openListPage')
+            this.$emit('open-list-page')
           })
         }
       })
@@ -107,8 +107,7 @@ export default {
       });
     },
     getEditData() {
-      this.$service.sysDeptDetailInfo({id: this.editId}).then(total => {
-        const data = total.data
+      this.$service.sysDeptDetailInfo({id: this.editId}).then(data => {
         Object.keys(this.formData).forEach(v => {
           if (v === 'disabled') {
             this.formData[v] = data[v] + ''

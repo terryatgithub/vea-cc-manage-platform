@@ -1,7 +1,7 @@
 <template>
   <div>
-    <BroadcastBlockList v-show="isShowList" ref="list" @openAddPage="openAddPage"></BroadcastBlockList>
-    <BroadcastBlockAdd v-if="!isShowList" :editId="editId" :currentVersion="currentVersion" @openListPage="openListPage" @go-back="goBack"></BroadcastBlockAdd>
+    <BroadcastBlockList v-show="isShowList" ref="list" @open-add-page="openAddPage"></BroadcastBlockList>
+    <BroadcastBlockAdd v-if="!isShowList" :editId="editId" :currentVersion="currentVersion" @open-list-page="openListPage" @go-back="goBack"></BroadcastBlockAdd>
   </div>
 </template>
 <script>
@@ -26,7 +26,7 @@ export default {
     */
     openAddPage(id, currentVersion) {
       this.editId = id
-      this.currentVersion = currentVersion
+    //  this.currentVersion = currentVersion
       this.isShowList = false
     },
     /**

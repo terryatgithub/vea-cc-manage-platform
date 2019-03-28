@@ -9,7 +9,8 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
       </div>
       <Table
         :props="table.props"
@@ -185,13 +186,6 @@ export default {
             render :(createElement, {row}) => {
                return row.modifierName
             }
-          },
-          {
-            label: '操作',
-            fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              editData: '编辑'
-            })
           }
         ],
         data: [],
@@ -205,13 +199,15 @@ export default {
      * 新增用户
      */
     addItem() {
-      this.$emit('openAddPage', null)
+      this.$emit('open-add-page', null)
     },
     openReview(layoutId) {
-      debugger
+      
     },
-    editData({ row }) {
-      this.$emit('openAddPage', row.layoutId)
+    editData() {
+      if( this.$isAllowEdit(this.selected)) {
+         this.$emit('open-add-page',this.selected[0])
+      }
     },
     /**
      * 批量删除

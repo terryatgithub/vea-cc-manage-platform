@@ -103,7 +103,7 @@ export default {
     methods: {
         handleUpload(file, fileItem) {
             this.$refs.upload.getImageInfo(fileItem.dataUrl).then(function(imageInfo) {
-
+                debugger
                 const fileInfo = {
                     upload: fileItem,
                     materialTypeDictEnName: undefined,
@@ -125,15 +125,15 @@ export default {
                         }
                     }
                 }).then((data) => {
-                    if (result.code == 0) {
-                        const uploadResult = result.data[0]
+                    if (data.code == 0) {
+                        const uploadResult = data.data[0]
                         fileInfo.pictureName = uploadResult.originFileName
                         fileInfo.pictureType = uploadResult.fileType
                         fileInfo.pictureUrl = uploadResult.url
                         fileItem.status = 'success'
                     } else {
                         fileItem.status = 'error'
-                        fileItem.message = result.msg
+                        fileItem.message = data.msg
                     }
                 }).catch(() => {
                     fileItem.status = 'error'
@@ -221,7 +221,7 @@ export default {
                 if (!err) {
                     const data = this.getFormData()
                     this.$service.globalPictureUpsert(data, '保存成功').then(() => {
-                        this.$emit('go-back')
+                        this.$emit('show-list')
                     })
                 }
             })

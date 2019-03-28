@@ -1,8 +1,7 @@
 <template>
   <div>
-    <RoleConfigList v-show='isShowList' ref="list" @openAddPage="openAddPage"></RoleConfigList>
-    <!--<RoleConfigAdd v-if='!isShowList' :editId="editId"  @openListPage="openListPage" @go-back="goBack"></RoleConfigAdd>-->
-    <RoleConfigAdd v-if='!isShowList' :editData="editData"  @openListPage="openListPage" @go-back="goBack"></RoleConfigAdd>
+    <RoleConfigList v-show='isShowList' ref="list" @open-add-page="openAddPage"></RoleConfigList>
+    <RoleConfigAdd v-if='!isShowList' :editId="editId"  @open-list-page="openListPage" @go-back="goBack"></RoleConfigAdd>
   </div>
 </template>
 <script>
@@ -16,7 +15,7 @@ export default {
   data () {
     return {
       isShowList: true,
-      editData: undefined,
+      editId: undefined,
       index: undefined
     }
   },
@@ -24,8 +23,8 @@ export default {
     /**
        * 打开新增编辑页面
        */
-    openAddPage (row) {
-      this.editData = row
+    openAddPage (id) {
+      this.editId = id
       this.isShowList = false
     },
     /**

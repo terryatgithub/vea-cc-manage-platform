@@ -85,12 +85,11 @@ const routerMap = {
 }
 function getInitData (app) {
   return app.$service.getMenu().then(data => {
-    // if (data.length === 0) {
-    //   app.$router.push({
-    //     name: 'login',
-    //     query: { redirect: app.$route.fullPath }
-    //   })
-    // }
+    if (data.length === 0) {
+      app.$logout().then(() => {
+        app.$router.push({ name: 'login' })
+      })
+    }
     let children = []
     data.forEach(element => {
       let obj = {}

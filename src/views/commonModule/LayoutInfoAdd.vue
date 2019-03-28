@@ -4,22 +4,26 @@
     <el-row :gutter="40">
       <el-col :span="24">
         <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
-          <el-form-item label="布局名称(中文)" prop="typeName">
-            <el-input v-model="form.typeName" placeholder="角标名称"></el-input>
+          <el-form-item label="布局名称(中文)" prop="layoutName">
+            <el-input v-model="form.layoutName" placeholder="布局名称"></el-input>
           </el-form-item>
-          <el-form-item label="角标位置" prop="typePosition">
-            <el-select v-model="form.typePosition" placeholder="角标位置">
+          <el-form-item label="布局类别" prop="layoutType">
+            <el-select v-model="form.layoutType" placeholder="布局类别">
               <el-option
-                v-for="item in typePosition"
+                v-for="item in layoutType"
                 :key="item.name+''"
                 :label="item.name"
                 :value="item.id"
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="优先级" prop="typePriority">
-             <el-input-number v-model="form.typePriority"  :min="1" label="优先级"></el-input-number>
-            <!-- <el-input v-model="form.typePriority" placeholder="优先级"></el-input> -->
+          <el-form-item label="上传文件" >
+              <Upload :multiple="true" class="global-picture__uploader" ref="upload" @upload="handleUpload">
+
+              </Upload>
+          </el-form-item>
+           <el-form-item label="布局" prop="typePriority">
+           <el-button type="primary" @click="productLayout">生存布局</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitBtn">保存</el-button>
@@ -30,7 +34,11 @@
   </ContentCard>
 </template>
 <script>
+import { Upload } from 'admin-toolkit'
 export default {
+  components: {
+    Upload
+  },
   props: {
     editId: Number,
     default: null
@@ -80,7 +88,7 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service.globalCornerIconTypeSave(this.form, "保存成功").then(data => {
-            this.$emit("openListPage");
+            this.$emit('open-list-page');
           });
         }
       });
@@ -92,7 +100,14 @@ export default {
             this.form[v] = data[v];
         });
       });
+    },
+    handleUpload(file, fileItem) {
+
+    },
+    productLayout() {
+      
     }
+
   },
   created() {
     if (this.editId !== null && this.editId !== undefined) {

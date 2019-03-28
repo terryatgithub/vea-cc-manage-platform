@@ -15,6 +15,7 @@ import { GateSchemaForm } from 'admin-toolkit'
 import '@/assets/icon/iconfont.css'
 
 import './auth'
+import './common'
 import ContentCard from './../components/ContentCard.vue'
 Vue.use(ElementUI, { size: 'small', zIndex: 3000 })
 // Vue.prototype.$ELEMENT = { size: 'mini', zIndex: 3000 }

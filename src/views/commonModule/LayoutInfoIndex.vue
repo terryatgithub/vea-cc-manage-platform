@@ -1,10 +1,10 @@
 <template>
   <div>
-    <LayoutInfoList v-show="isShowList" ref="list" @openAddPage="openAddPage"></LayoutInfoList>
+    <LayoutInfoList v-show="isShowList" ref="list" @open-add-page="openAddPage"></LayoutInfoList>
     <LayoutInfoAdd
       v-if="!isShowList"
       :editId="editId"
-      @openListPage="openListPage"
+      @open-list-page="openListPage"
       @go-back="goBack"
     ></LayoutInfoAdd>
   </div>

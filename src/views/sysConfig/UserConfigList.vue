@@ -9,7 +9,8 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus"  @click="addUser">新增</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
       </div>
       <Table
         :props="table.props"
@@ -159,8 +160,7 @@ export default {
             fixed: 'right',
             render: utils.component.createOperationRender(this, {
               setRole: '设置角色',
-              setData: '数据权限',
-              editData: '编辑'
+              setData: '数据权限'
             })
           }
         ],
@@ -175,7 +175,7 @@ export default {
      * 新增用户
      */
     addUser () {
-      this.$emit('openAddPage', null)
+      this.$emit('open-add-page', null)
     },
     handleRead ({ row }) {},
     setRole ({ row }) {
@@ -218,8 +218,10 @@ export default {
       this.$service.saveUserRoles(obj, '保存成功')
     },
     setData ({ row }) {},
-    editData ({ row }) {
-      this.$emit('openAddPage', row.userId)
+    editData() {
+      if( this.$isAllowEdit(this.selected)) {
+         this.$emit('open-add-page',this.selected[0])
+      }
     },
     /**
      * 批量删除
@@ -241,9 +243,6 @@ export default {
       this.$router.push({ name: 'prize-create' })
     },
     handleRowSelectionAdd (targetItem) {
-      // this.selected = this.selected.concat({
-      //   id: targetItem.userId
-      // });
       this.selected.push(targetItem.userId)
       this.updateTableSelected()
     },
