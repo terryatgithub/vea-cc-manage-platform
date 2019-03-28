@@ -129,12 +129,21 @@ export default {
     getEditData() {
       let obj = this;
       this.$service.getCommonOnclickInfoEdit({ id: this.editId }).then(data => {
-          // console.log(data)
         Object.keys(this.form).forEach(v => {
-          console.log(v)
           obj.form[v] = data[v];
           if (v === 'params') {
-            obj.paramsList = JSON.parse(data[v])
+            let arrs = []
+            let lists = JSON.parse(data[v])
+            console.log(lists)
+            Object.keys(lists).forEach(p => {
+              let jsons = {}
+              jsons.key = p
+              jsons.value = lists[p]
+              arrs.push(jsons)
+            })
+            if (data[v] !== '{}') {
+              obj.paramsList = arrs
+            }
           }
         });
       });
