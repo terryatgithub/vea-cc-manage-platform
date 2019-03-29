@@ -193,3 +193,24 @@ export function SaveAudit(params) {
     params
   })
 }
+
+/**
+ * 多功能推进位-删除
+ */
+export function removeMulti(params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysPlugin/remove.html',
+    params
+  })
+}
+/**
+ * 功能推荐位——快速填充弹框数据
+ */
+export function getClickData(data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/commonOnclickInfo/pageList.html',
+    data
+  })
+}

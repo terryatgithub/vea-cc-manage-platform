@@ -1,8 +1,8 @@
 <template>
  <div>
-    <MultiFunctionBlockList v-show="model === 'list'" ref="list" @openAddPage="openAddPage" @openViewPage="openViewPage"></MultiFunctionBlockList>
-    <MultiFunctionBlockAdd v-if="model === 'add'" :editId="editId"  @openListPage="openListPage" @go-back="goBack"></MultiFunctionBlockAdd>
-    <MultiFunctionBlockView v-if="model ==='view'" :viewId="viewId" @openListPage="openListPage" @go-back="goBack"></MultiFunctionBlockView>
+    <MultiFunctionBlockList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></MultiFunctionBlockList>
+    <MultiFunctionBlockAdd v-if="model === 'add'" :editId="editId"  @open-list-page="openListPage" @go-back="goBack"></MultiFunctionBlockAdd>
+    <MultiFunctionBlockView v-if="model ==='view'" :viewId="viewId" @open-list-page="openListPage" @go-back="goBack"></MultiFunctionBlockView>
  </div>
 </template>
 <script>

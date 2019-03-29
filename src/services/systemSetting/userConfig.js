@@ -218,7 +218,7 @@ export function editSysMenu (params) {
     url: '/api/sysMenu/edit.html',
     params
   }).then(data => {
-    return  JSON.parse(data.match(/para = (\{.+\})/)[1])
+    return JSON.parse(data.match(/para = (\{.+\})/)[1])
   })
 }
 /**
@@ -261,7 +261,7 @@ export function saveMenuRun (data) {
 export function getMenuInfo () {
   return this.fetch({
     method: 'post',
-    url: '/api/sysMenu/getMenuInfo.html',
+    url: '/api/sysMenu/getMenuInfo.html'
   })
 }
 /**

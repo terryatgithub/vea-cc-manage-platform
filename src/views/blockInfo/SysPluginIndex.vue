@@ -1,8 +1,8 @@
 <template>
   <div>
-    <SysPluginList v-show="model === 'list'" ref="list" @openAddPage="openAddPage" @openViewPage="openViewPage"></SysPluginList>
-    <SysPluginAdd v-if="model === 'add'" :editId="editId"  @openListPage="openListPage" @go-back="goBack"></SysPluginAdd>
-    <SysPluginView v-if="model === 'view' "  :viewId ="viewId" @openListPage="openListPage" @go-back="goBack"></SysPluginView>
+    <SysPluginList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></SysPluginList>
+    <SysPluginAdd v-if="model === 'add'" :editId="editId"  @open-list-page="openListPage" @go-back="goBack"></SysPluginAdd>
+    <SysPluginView v-if="model === 'view' "  :viewId ="viewId" @open-list-page="openListPage" @go-back="goBack"></SysPluginView>
   </div>
 </template>
 <script>
