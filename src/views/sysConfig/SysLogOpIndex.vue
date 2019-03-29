@@ -112,7 +112,7 @@ export default {
                     placement: 'top'
                   }
                 },
-                [h('div', { class: 'op-data' }, [row.opData])]
+                [h('div', { class: 'operatiton-data' }, [row.opData])]
               )
             }
           },
@@ -229,6 +229,6 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.content >>> .op-data
+.content >>> .operatiton-data
   height: 50px;
 </style>

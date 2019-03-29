@@ -16,6 +16,21 @@
           @partnerChange="pannelResourceNew=$event"
         ></MovieFilter>
       </el-tab-pane>
+      <el-tab-pane label="教育中心" name="edu">
+        <EduFilter 
+           v-model="selectAll.edu"
+        ></EduFilter>
+      </el-tab-pane>
+      <el-tab-pane label="直播资源" name="live">
+        <LiveFilter 
+           v-model="selectAll.live"
+        ></LiveFilter>
+      </el-tab-pane>
+      <el-tab-pane label="专题资源" name="topics">
+        <TopicsFilter 
+           v-model="selectAll.topics"
+        ></TopicsFilter>
+      </el-tab-pane>
       <el-tab-pane label="轮播频道" name="broadcast">
         <BroadcastFilter 
           v-model="selectAll.broadcast"
@@ -28,6 +43,9 @@
 <script>
 import MovieFilter from './MovieFilter'
 import BroadcastFilter from './BroadcastFilter'
+import EduFilter from './EduFilter'
+import LiveFilter from './LiveFilter'
+import TopicsFilter from './TopicsFilter'
 import _ from 'gateschema'
 import { RemoteSelect, ContentWrapper, Table } from 'admin-toolkit'
 import { filter } from 'minimatch';
@@ -37,10 +55,16 @@ export default {
     ContentWrapper,
     Table,
     BroadcastFilter,
-    MovieFilter
+    MovieFilter,
+    EduFilter,
+    LiveFilter,
+    TopicsFilter
   },
 
-  props: ['title'],
+  props: {
+    title: String,
+    
+  },
 
   data() {
     return {

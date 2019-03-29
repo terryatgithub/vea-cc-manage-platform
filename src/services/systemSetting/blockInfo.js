@@ -43,9 +43,9 @@ export function saveBlockInfo(data) {
  */
 export function getSysPlugin (data) {
   return this.fetch({
-      method: 'post',
-      url: '/api/sysPlugin/pageList.html?pluginParentType=builtIn',
-      data
+    method: 'post',
+    url: '/api/sysPlugin/pageList.html?pluginParentType=builtIn',
+    data
   })
 }
 /**
@@ -54,19 +54,19 @@ export function getSysPlugin (data) {
 export function editSysPlugin (params) {
   return this.fetch({
     method: 'get',
-    url:'/api/sysPlugin/edit.html',
+    url: '/api/sysPlugin/edit.html',
     params
   })
-  .then(data => {
-    return  JSON.parse(data.match(/initPlugin = (\{.+\})/)[1])
-  })
+    .then(data => {
+      return JSON.parse(data.match(/initPlugin = (\{.+\})/)[1])
+    })
 }
 /**
  * 获取系统功能父类型数据字典
  */
 export function getPluginParentTypes(data) {
   return this.fetch({
-    method: 'post' ,
+    method: 'post',
     url: '/api/dict/sysPlugin/pluginParentType.html',
     data
   })
@@ -92,14 +92,6 @@ export function getMediaVideoInfos (params) {
     params
   })
 }
-// 影视中心2
-export function getFilterMediaVideoInfos (params) {
-  return this.fetch({
-    method: 'get',
-    url: '/api/tvos/getMediaVideoInfos.html?resType=vod&callbackparam=?',
-    params
-  })
-}
 // 内容源
 export function getPartnerSource (params) {
   return this.fetch({
@@ -113,6 +105,14 @@ export function getCondition (params) {
   return this.fetch({
     method: 'get',
     url: '/api/tvos/getCondition.html',
+    params
+  })
+}
+// 查询直播资源
+export function queryLiveVideoResult (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tvos/queryLiveVideoResult.html',
     params
   })
 }
@@ -143,10 +143,20 @@ export function getResourceList (data) {
   })
 }
 /**
+ * 获取角标
+ */
+export function getCornerList (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/globalCornerIcon/pageList.html',
+    data
+  })
+}
+/**
  * 系统插件保存
  */
 export function SavePlugin (data) {
-  data = {jsonStr: JSON.stringify(data)}
+  data = { jsonStr: JSON.stringify(data) }
   return this.fetch({
     method: 'post',
     url: '/api/sysPlugin/save.html',

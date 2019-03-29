@@ -104,12 +104,6 @@
           prop="thirdIdOrPackageName"
           style="width: 600px"
         >
-          <!-- <el-button
-            v-if="autoWrite"
-            type="primary"
-            v-model="normalForm.thirdIdOrPackageName"
-            @click.native="selectResource('normal', normalForm)"
-          >选择资源1</el-button> -->
           <BroadcastSource
             v-if="autoWrite"
             v-model="normalForm.thirdIdOrPackageName"
@@ -308,9 +302,25 @@
       </el-form>
     </div>
     
-    <!-- 海报和角标弹框 start -->
+    <!-- 海报弹框  -->
+    <el-dialog :visible.sync="customDialogPicture.visible" width="1200px">
+        <DialogPicture :title="customDialogPicture.title"></DialogPicture>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="customDialogPicture.visible = false">取 消</el-button>
+            <el-button type="primary" @click="customDialogPicture.visible = false">确 定</el-button>
+        </div>
+    </el-dialog>
+    <!-- 海报弹框 end -->
     
-    <!-- 海报和角标弹框 end -->
+    <!-- 角标弹框  -->
+    <el-dialog :visible.sync="customDialogCorner.visible" width="1200px">
+        <DialogCorner :title="customDialogCorner.title"></DialogCorner>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="customDialogCorner.visible = false">取 消</el-button>
+            <el-button type="primary" @click="customDialogCorner.visible = false">确 定</el-button>
+        </div>
+    </el-dialog>
+    <!-- 角标弹框 end -->
 
   </ContentCard>
 </template>
@@ -319,11 +329,15 @@
 import draggable from 'vuedraggable'
 import BroadcastSource from '@/components/BroadcastSource'
 import ResourceSelector from '@/components/ResourceSelector'
+import DialogPicture from '@/components/DialogPicture'
+import DialogCorner from '@/components/DialogCorner'
 export default {
   components: {
     draggable,
     BroadcastSource,
-    ResourceSelector
+    ResourceSelector,
+    DialogPicture,
+    DialogCorner
   },
 
   props: {
@@ -477,6 +491,7 @@ export default {
       layouttypenew: '',
       checkresourceis: true,
       customDialogPicture: {},
+      customDialogCorner: {},
       pictureOptions: {}
     }
   },
@@ -890,21 +905,14 @@ export default {
     openPicture: function(type, form, index) {
       this.pictureType = type
       this.currentForm = form
-      var titles = {
-        poster: '请选择海报',
-        corner: '请选择角标'
-      }
-
-      this.customDialogPicture = {
-        title: titles[type],
-        visible: true
-      }
-
-      if (type === 'corner') {
-        this.pictureListOptions.corner.url =
-          $basePath +
-          '/globalCornerIcon/pageList.html?cornerIconType.typePosition=' +
-          index
+      if (type === 'poster'){
+        this.customDialogPicture = {
+            visible: true
+          }
+      }else{
+        this.customDialogCorner = {
+          visible: true
+        }
       }
 
       this.pictureOptions = this.pictureListOptions[type]
