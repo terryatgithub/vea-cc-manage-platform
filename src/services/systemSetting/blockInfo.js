@@ -31,10 +31,53 @@ export function getMaterialTypes (params) {
 /**
  * 推荐位保存
  */
-export function saveBlockInfo (data) {
+export function saveBlockInfo(data) {
   return this.fetch({
     method: 'post',
     url: '/api/blockInfo/save.html',
+    data
+  })
+}
+/**
+ * 系统插件list
+ */
+export function getSysPlugin (data) {
+  return this.fetch({
+      method: 'post',
+      url: '/api/sysPlugin/pageList.html?pluginParentType=builtIn',
+      data
+  })
+}
+/**
+ * 系统插件编辑回显
+ */
+export function editSysPlugin (params) {
+  return this.fetch({
+    method: 'get',
+    url:'/api/sysPlugin/edit.html',
+    params
+  })
+  .then(data => {
+    return  JSON.parse(data.match(/initPlugin = (\{.+\})/)[1])
+  })
+}
+/**
+ * 获取系统功能父类型数据字典
+ */
+export function getPluginParentTypes(data) {
+  return this.fetch({
+    method: 'post' ,
+    url: '/api/dict/sysPlugin/pluginParentType.html',
+    data
+  })
+}
+/**
+ * 获取系统功能类型数据字典
+ */
+export function getPluginTypes(data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dict/sysPlugin/pluginType.html',
     data
   })
 }
@@ -70,6 +113,73 @@ export function getCondition (params) {
   return this.fetch({
     method: 'get',
     url: '/api/tvos/getCondition.html',
+    params
+  })
+}
+// export function getPluginVersions(data) {
+//   return this.fetch({
+//     method: 'post',
+//     url: '/api/dict/sysPlugin/',
+//     data
+//   })
+// }
+/**
+ * 插件类型对应的数据类型
+ */
+export function getPluginVersions(data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dict/sysPlugin/' + data + '.html'
+  })
+}
+/**
+ * 系统插件——获取海报
+ */
+export function getResourceList (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/globalPicture/dataList.html',
+    data
+  })
+}
+/**
+ * 系统插件保存
+ */
+export function SavePlugin (data) {
+  data = {jsonStr: JSON.stringify(data)}
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysPlugin/save.html',
+    data
+  })
+}
+/**
+ * 推荐位——多功能推荐位
+ */
+export function getMultiBlockList(data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/sysPlugin/pageList.html?builtInNotShow=1',
+    data
+  })
+}
+/**
+ * 推荐位——多功能推荐位预览
+ */
+export function getData(params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/sysPlugin/getDetailInfo.html',
+    params
+  })
+}
+/**
+ * 多功能推荐位——审核
+ */
+export function SaveAudit(params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/v1/audit/auditTask.html',
     params
   })
 }

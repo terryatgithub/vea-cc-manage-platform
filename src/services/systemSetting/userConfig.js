@@ -202,7 +202,6 @@ export function getSysMenuList (params) {
  * 系统菜单保存
  */
 export function saveSysMenu (data) {
-  debugger
   return this.fetch({
     method: 'post',
     url: '/api/sysMenu/save.html',
