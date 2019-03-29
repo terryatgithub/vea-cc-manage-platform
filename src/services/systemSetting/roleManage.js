@@ -73,3 +73,10 @@ export function updateSeq (params) {
     params
   })
 }
+export function getRoleDetailById (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/v1/sysRole/getDetailInfo.html',
+    params
+  })
+}

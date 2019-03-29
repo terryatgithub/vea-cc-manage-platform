@@ -1,10 +1,10 @@
 <template>
   <div>
-    <GlobalCornerIconTypeList v-show="isShowList" ref="list" @openAddPage="openAddPage"></GlobalCornerIconTypeList>
+    <GlobalCornerIconTypeList v-show="isShowList" ref="list" @open-add-page="openAddPage"></GlobalCornerIconTypeList>
     <GlobalCornerIconTypeAdd
       v-if="!isShowList"
       :editId="editId"
-      @openListPage="openListPage"
+      @open-list-page="openListPage"
       @go-back="goBack"
     ></GlobalCornerIconTypeAdd>
   </div>

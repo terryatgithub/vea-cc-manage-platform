@@ -1,7 +1,7 @@
 <template>
   <div>
-    <UserConfigList v-show='isShowList' ref="list" @openAddPage="openAddPage"></UserConfigList>
-    <UserConfigAdd v-if='!isShowList' :editId="editId" @openListPage="openListPage" @go-back="goBack"></UserConfigAdd>
+    <UserConfigList v-show='isShowList' ref="list" @open-add-page="openAddPage"></UserConfigList>
+    <UserConfigAdd v-if='!isShowList' :editId="editId" @open-list-page="openListPage" @go-back="goBack"></UserConfigAdd>
   </div>
 </template>
 <script>

@@ -9,6 +9,8 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addBroadcastBlock">新增</el-button>
+                <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
+
       </div>
 
       <Table
@@ -66,13 +68,13 @@ export default {
             prop: 'lastUpdateDate',
             sortable: true
           },
-          {
-            label: '操作',
-            width: '150',
-            render: utils.component.createOperationRender(this, {
-              editData: '编辑'
-            })
-          }
+          // {
+          //   label: '操作',
+          //   width: '150',
+          //   render: utils.component.createOperationRender(this, {
+          //     editData: '编辑'
+          //   })
+          // }
         ],
         data: [],
         selected: [],
@@ -122,13 +124,15 @@ export default {
      * 新增轮播位
      */
     addBroadcastBlock() {
-      this.$emit('openAddPage', null)
+      this.$emit('open-add-page', null)
     },
     /**
      * 编辑轮播位
      */
-    editData({ row }) {
-      this.$emit('openAddPage', row.id, row.currentVersion)
+    editData() {
+      if( this.$isAllowEdit(this.selected)) {
+         this.$emit('open-add-page',this.selected[0])
+      }
     }
   },
   created() {

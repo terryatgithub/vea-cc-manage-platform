@@ -10,6 +10,6 @@ export function globalPictureGet (params) {
   return this.fetch({
     url: 'api/globalPicture/edit.html?id=' + params.id
   }).then(result => {
-    return JSON.parse(result.match(/var para = (\{.+\})/)[1])
+    return JSON.parse(result.match(/initData = (\{.+\})/)[1])
   })
 }

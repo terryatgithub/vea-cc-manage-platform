@@ -9,6 +9,7 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="handleCreate">新增</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="handleBatchDelete">删除</el-button>
       </div>
       <Table
@@ -230,7 +231,6 @@ export default {
               setAuth: '设置权限',
               handleSetAuthOfCrowd: '设置人群权限',
               sysRoleView: '查看用户',
-              editRole: '编辑'
             })
           }
         ],
@@ -261,29 +261,30 @@ export default {
       return filter
     },
     handleCreate () {
-      this.$emit('openAddPage', null)
+      this.$emit('open-add-page', null)
     },
     handleBatchDelete () {
       if (this.selected.length === 0) {
         this.$message('请选择再删除')
         return
       }
-      const roleId = this.selected.map(item => item.id).join(',')
       this.$confirm('确定删除此活动吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.$service
-          .deleteRole({ id: roleId }, '删除成功')
+          .deleteRole({ id: this.selected.join(",") }, '删除成功')
           .then(data => {
             this.handleAllRowSelectionRemove()
             this.fetchData()
           })
       })
     },
-    editRole ({ row }) {
-      this.$emit('openAddPage', row)
+    editData() {
+      if( this.$isAllowEdit(this.selected)) {
+         this.$emit('open-add-page',this.selected[0])
+      }
     },
     handleFilterChange (type) {
       if (type === 'filter') {
@@ -299,14 +300,14 @@ export default {
       }
       this.fetchData()
     },
-    handleRowSelectionAdd (targetItem) {
-      this.selected = this.selected.concat({
-        id: targetItem.roleId
-      })
+     handleRowSelectionAdd (targetItem) {
+      this.selected.push(targetItem.roleId)
       this.updateTableSelected()
     },
     handleRowSelectionRemove (targetItem) {
-      this.selected = this.selected.filter(item => item.id !== targetItem.roleId)
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.roleId
+      })
       this.updateTableSelected()
     },
     handleAllRowSelectionChange (value) {
@@ -323,7 +324,7 @@ export default {
     },
     updateTableSelected () {
       const table = this.table
-      const newSelectedIndex = this.selected.map(item => item.id)
+      const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.roleId) > -1) {
           result.push(index)

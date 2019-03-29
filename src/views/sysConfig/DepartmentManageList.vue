@@ -9,6 +9,7 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addUser">新增</el-button>
+                <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
       </div>
 
@@ -105,14 +106,6 @@ export default {
             prop: 'pid',
             fit: true,
             sortable: true
-          },
-          {
-            label: '操作',
-            width: '200',
-            fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              editData: '编辑'
-            })
           }
         ],
         data: [],
@@ -143,11 +136,13 @@ export default {
     },
     //新增页面
     addUser() {
-      this.$emit('openAddPage', null)
+      this.$emit('open-add-page', null)
     },
     //编辑页面
-    editData({row}) {
-      this.$emit('openAddPage', row.deptId)
+    editData() {
+      if( this.$isAllowEdit(this.selected)) {
+         this.$emit('open-add-page',this.selected[0])
+      }
     },
     // 表单重设
     handleFilterReset() {
