@@ -177,13 +177,13 @@ export default {
         this.$message('只能选择一条')
       }
       else {
-        this.$emit('openAddPage', this.selected[0])
+        this.$emit('open-add-page', this.selected[0])
       }
       // this.$emit('openAddPage', row.pluginId)
     },
     //详情
     priviewData({row}){
-      this.$emit('openViewPage', row.pluginId)
+      this.$emit('open-view-page', row.pluginId)
     },
     //表格操作
     handleRowSelectionAdd(targetItem) {

@@ -200,13 +200,6 @@ export default {
         return {
              showAuditDialog: false,
              title: undefined,
-            // urls: {
-            //     save: $basePath + '/sysPlugin/save.html',
-            //     audit: $basePath + '/v1/audit/auditTask.html',
-            //     pluginParentTypeDict: $basePath + '/dict/sysPlugin/pluginParentType.html',
-            //     pluginTypeDict: $basePath + '/dict/sysPlugin/pluginType.html',
-            //     pluginVersionDict: $basePath + '/dict/sysPlugin/',
-            // },
             STATUS: STATUS,
             SOURCE_TEXT: SOURCE_TEXT,
             OPEN_MODE_TEXT: OPEN_MODE_TEXT,
@@ -426,7 +419,7 @@ export default {
             const block = this.block
             const auditForm = this.auditForm
             if (auditForm.auditDesc.trim() === '') {
-                this.FastDevTool.createAlertWin('请填写意见说明');
+                this.$message('请填写意见说明');
             } else {
                 this.$service.SaveAudit(
                     {
@@ -436,22 +429,11 @@ export default {
                         auditDesc: auditForm.auditDesc
                     }
                     ).then(data => {
-                        console.log(data)
+                        if (data) {
+                            this.showAuditDialog = false
+                            this.$emit('open-list-page')
+                        } 
                     })
-                // this.FastDevTool.ajax(this.urls.audit, {
-                //     id: block.pluginInfo.pluginId,
-                //     type: 'systemPlugin',
-                //     auditFlag: auditForm.auditFlag,
-                //     auditDesc: auditForm.auditDesc
-                // }, function (data) {
-                //     this.FastDevTool.createAlertWin(data.msg);
-                //     if (data.code === '0') {
-                //         this.showAuditDialog = false
-                //         this.FastDevTool.closeParentDialogWin('edit-view', 'list-view');
-                //     }
-                // }.bind(this), {
-                //     method: 'GET'
-                // });
             }
         },
         handleClose() {

@@ -8,9 +8,9 @@
       @filter-reset="handleFilterReset"
     >
       <div class="btns">
-        <el-button type="primary" icon="el-icon-plus"  @click="addMulti">新增</el-button>
+        <el-button type="primary" icon="el-icon-plus"  @click="addData">新增</el-button>
          <el-button type="primary" icon="el-icon-edit"  @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
       </div>
       <Table
         :props="table.props"
@@ -166,8 +166,8 @@ export default {
       })
     },
     //新增
-    addMulti () {
-      this.$emit('openAddPage', null)
+    addData () {
+      this.$emit('open-add-page', null)
     },
     /**
      * 编辑
@@ -180,25 +180,28 @@ export default {
         this.$message('只能选择一条')
       }
       else {
-        this.$emit('openAddPage', this.selected[0])
+        this.$emit('open-add-page', this.selected[0])
       }
     },
     //预览
     previewData({row}) {
-      this.$emit('openViewPage', row.pluginId)
+      this.$emit('open-view-page', row.pluginId)
     },
-    //批量删除
+    //删除
     batchDel () {
       if (this.selected.length === 0) {
         this.$message('请选择再删除')
         return
       }
-      if (window.confirm('确定要删除吗')) {
-        this.$service
-          .userConfigDelete({ id: this.selected.join(',') }, '删除成功')
-          .then(data => {
+      else if (this.selected.length > 1) {
+        this.$message('只能选择一条数据')
+      }
+      else {
+        if (window.confirm('确定要删除吗')) {
+          this.$service.removeMulti({id: this.selected[0]}, '删除成功').then(data => {
             this.fetchData()
           })
+        }
       }
     },
     handleCreate () {
