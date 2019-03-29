@@ -96,7 +96,7 @@ export default {
             data.deptId = this.editId
           }
           this.$service.sysDeptSave(data, '保存成功').then(() => {
-            this.$emit('openListPage')
+            this.$emit('open-list-page')
           })
         }
       })

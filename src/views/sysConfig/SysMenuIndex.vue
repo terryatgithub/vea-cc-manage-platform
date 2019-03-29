@@ -1,7 +1,7 @@
 <template>
   <div>
-    <SysMenuList v-show='isShowList' ref="list" @openAddPage="openAddPage"></SysMenuList>
-    <SysMenuAdd v-if='!isShowList' :editId="editId" @openListPage="openListPage" @go-back="goBack"></SysMenuAdd>
+    <SysMenuList v-show='isShowList' ref="list" @open-add-page="openAddPage"></SysMenuList>
+    <SysMenuAdd v-if='!isShowList' :editId="editId" @open-list-page="openListPage" @go-back="goBack"></SysMenuAdd>
   </div>
 </template>
 <script>

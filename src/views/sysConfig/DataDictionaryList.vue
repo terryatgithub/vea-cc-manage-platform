@@ -9,6 +9,7 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addDict">新增</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
         <el-button type="primary" icon="el-icon-plus" @click="dialogFormVisible = true" >新增字典分类</el-button>
       </div>
@@ -75,6 +76,7 @@ export default {
       filterSchema: null,
       pagination: {},
       selected: [],
+      selectedRows: {},
       dictCategories: {},
       table: {
         props: {},
@@ -103,14 +105,6 @@ export default {
             //  render: (createElement, { row }) => {
             //   return row.dictCategory
             // }
-          },
-          {
-            label: '操作',
-            width: '200',
-            fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              editData: '编辑'
-            })
           }
         ],
         data: [],
@@ -124,13 +118,15 @@ export default {
      * 新增字典
      */
     addDict() {
-      this.$emit("openAddPage", null);
+      this.$emit("open-add-page", null);
     },
     /**
      * 修改字典
      */
-    editData({row}) {
-        this.$emit("openAddPage", row);
+    editData() {
+      if( this.$isAllowEdit(this.selected)) {
+         this.$emit('open-add-page',this.selectedRows[this.selected[0]])
+      }
     },
     /**
      * 批量删除
@@ -191,12 +187,15 @@ export default {
     },
     handleRowSelectionAdd(targetItem) {
       this.selected.push(targetItem.dictId);
+      let id = targetItem.dictId
+      this.selectedRows[id] = targetItem
       this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.dictId;
       });
+      delete this.selectedRows[targetItem.dictId]
       this.updateTableSelected();
     },
     handleAllRowSelectionChange(value) {

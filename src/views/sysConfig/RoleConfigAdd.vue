@@ -30,7 +30,7 @@
 export default {
   name: 'RoleConfigAdd',
   props: {
-    editData: undefined,
+    editId: undefined,
     index: undefined
   },
   data () {
@@ -60,23 +60,24 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service.saveRoleData(this.formData, '保存成功').then(data => {
-            this.$emit('openListPage')
+            this.$emit('open-list-page')
           })
         }
       })
-    }
+    },
+    getEditData () {
+      this.$service.getRoleDetailById({ id: this.editId }).then(data => {
+        Object.keys(this.formData).forEach(v => {
+            this.formData[v] = data[v]
+        })
+      })
+    },
   },
   created () {
-    // if (this.editId !== null && this.editId !== undefined) {
-    //   this.title = '编辑'
-    //   this.getEditData()
-    // } else {
-    //   this.title = '新增'
-    // }
-    if (this.editData !== null && this.editData !== undefined) {
+    if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
-      console.log(this.editData)
-      this.formData = this.editData
+      this.formData.roleId = this.editId
+      this.getEditData()
     } else {
       this.title = '新增'
     }

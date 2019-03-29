@@ -9,7 +9,8 @@
     >
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchAudit">批量审核</el-button>
       </div>
       <Table
@@ -177,15 +178,8 @@ export default {
             label: "修改时间",
             prop: "lastUpdateDate",
             sortable: true
-          },
-          {
-            label: "操作",
-            width: "200",
-            fixed: "right",
-            render: utils.component.createOperationRender(this, {
-              editData: "编辑"
-            })
           }
+    
         ],
         data: [],
         selected: [],
@@ -211,7 +205,7 @@ export default {
      * 新增用户
      */
     addItem() {
-      this.$emit("add");
+       this.$emit('open-add-page')
     },
     handleRead({ row }) {},
     handleChange(value, direction, movedKeys) {
@@ -239,8 +233,10 @@ export default {
       this.reviewPicUrl = row.pictureUrl;
       this.picDialogVisible = true;
     },
-    editData({ row }) {
-      this.$emit("edit", row.pictureId);
+    editData() {
+      if( this.$isAllowEdit(this.selected)) {
+         this.$emit('open-add-page',this.selected[0])
+      }
     },
     /**
      * 批量删除

@@ -98,7 +98,7 @@ export default {
         if (valid) {
             console.log(this.form)
           this.$service.saveSysMenu(this.form, "保存成功").then(data => {
-            this.$emit("openListPage");
+            this.$emit("open-list-page");
           });
         }
       });

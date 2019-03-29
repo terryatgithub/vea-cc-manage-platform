@@ -1,7 +1,7 @@
 <template>
   <div>
-    <DataDictionaryList v-show='isShowList' ref="list" @openAddPage="openAddPage"></DataDictionaryList>
-    <DataDictionaryAdd v-if='!isShowList' :editData="editData"  @openListPage="openListPage" @go-back="goBack"></DataDictionaryAdd>
+    <DataDictionaryList v-show='isShowList' ref="list" @open-add-page="openAddPage"></DataDictionaryList>
+    <DataDictionaryAdd v-if='!isShowList' :editData="editData"  @open-list-page="openListPage" @go-back="goBack"></DataDictionaryAdd>
   </div>
 </template>
 <script>

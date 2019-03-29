@@ -328,7 +328,7 @@ export default {
 
   props: {
     editId: Number,
-    currentVersion: String,
+    //currentVersion: String,
     default: null
   },
 

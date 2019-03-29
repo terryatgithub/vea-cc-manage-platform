@@ -12,7 +12,8 @@
       </div> -->
       <div class="btns" >
         <el-button type="primary" icon="el-icon-plus" @click="addData" >新增</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="deleteData">批量删除</el-button>
+         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="deleteData">删除</el-button>
       </div>
       <Table
         :props="table.props"
@@ -122,7 +123,6 @@ export default {
                   label: "操作",
                   fixed: "right",
                   render: utils.component.createOperationRender(this, {
-                    editData: '编辑',
                     setData: "设置操作"
                   })
             }
@@ -163,13 +163,15 @@ export default {
      * 新增
      */
     addData(){
-        this.$emit("openAddPage", null)
+        this.$emit("open-add-page", null)
     },
     /**
      * 编辑
      */
-    editData({row}){
-      this.$emit("openAddPage", row.menuId)
+      editData() {
+      if( this.$isAllowEdit(this.selected)) {
+         this.$emit('open-add-page',this.selected[0])
+      }
     },
     /**
      * 批量删除

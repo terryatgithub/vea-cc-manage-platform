@@ -102,7 +102,7 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service.userConfigSave(this.form, '保存成功').then(data => {
-            this.$emit('openListPage')
+            this.$emit('open-list-page')
           })
         }
       })
@@ -131,6 +131,7 @@ export default {
     if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
       this.isShowloginPwd = false
+      this.form.userId = this.editId
       this.getEditData()
     } else {
       this.title = '新增'
