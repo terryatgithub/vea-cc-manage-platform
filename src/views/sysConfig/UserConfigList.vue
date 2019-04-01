@@ -312,6 +312,8 @@ export default {
      */
     getDepts () {
       return this.$service.getDepts().then(data => {
+        console.log(data)
+        debugger
         data.forEach(element => {
           this.depts[element.deptName] = element.deptId
         })

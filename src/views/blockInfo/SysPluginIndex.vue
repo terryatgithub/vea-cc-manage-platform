@@ -2,7 +2,7 @@
   <div>
     <SysPluginList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></SysPluginList>
     <SysPluginAdd v-if="model === 'add'" :editId="editId"  @open-list-page="openListPage" @go-back="goBack"></SysPluginAdd>
-    <SysPluginView v-if="model === 'view' "  :viewId ="viewId" @open-list-page="openListPage" @go-back="goBack"></SysPluginView>
+    <SysPluginView v-if="model === 'view'"  :viewId ="viewId" @open-list-page="openListPage" @go-back="goBack"></SysPluginView>
   </div>
 </template>
 <script>
@@ -35,7 +35,7 @@ export default {
      * 打开列表页面
     */
     openListPage () {
-      this.mode = 'list'
+      this.model = 'list'
       this.$refs.list.fetchData();//更新页面
     },
     //打开详情页

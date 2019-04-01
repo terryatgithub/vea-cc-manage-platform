@@ -317,8 +317,8 @@ export default {
         getPluginTypes(pluginParentType) {
             this.$service.getPluginTypes({pluginParentType: pluginParentType}).then(data => {
                 console.log(data)
-                if (data.code == 0) {
-                    this.pluginTypes = data.data
+                if (data) {
+                    this.pluginTypes = data
                 }
             })
         },
@@ -428,7 +428,7 @@ export default {
                         auditFlag: auditForm.auditFlag,
                         auditDesc: auditForm.auditDesc
                     }
-                    ).then(data => {
+                    , '审核成功').then(data => {
                         if (data) {
                             this.showAuditDialog = false
                             this.$emit('open-list-page')
@@ -445,8 +445,6 @@ export default {
         this.basicFn = basicFn
         this.getPluginParentTypes()
         window.mode = 'read'
-        debugger
-
         if (window.mode) {
             this.mode = window.mode
             this.title = '预览'

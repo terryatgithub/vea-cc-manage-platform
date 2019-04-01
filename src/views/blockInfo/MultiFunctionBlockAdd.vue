@@ -18,7 +18,12 @@
         <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
           <el-form-item label="固定刷新时间" prop="pluginInfo.refreshTime">
             <div class="el-input" style="max-width: 400px">
-              <ccTimeSpinner v-model="block.pluginInfo.refreshTime"></ccTimeSpinner>
+              <el-time-select
+                v-model="block.pluginInfo.refreshTime"
+                :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
+                placeholder="选择时间"
+                @change="handleTime"
+              ></el-time-select>
             </div>
           </el-form-item>
           <el-form-item label="活动形式" prop="hasActivity">
@@ -188,10 +193,16 @@
                 :rules="rules.aliveTime"
               >
                 <div class="el-input" style="max-width: 400px">
-                  <ccTimeSpinner
+                  <el-time-select
+                    v-model="item.extendInfo.aliveTime"
+                    :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
+                    placeholder="选择时间"
+                    @change="handleTime1"
+                  ></el-time-select>
+                  <!-- <ccTimeSpinner
                     v-model.number="item.extendInfo.aliveTime"
                     :options="{ min: '00:05',height: 34}"
-                  ></ccTimeSpinner>
+                  ></ccTimeSpinner>-->
                 </div>
               </el-form-item>
               <el-form-item
@@ -303,6 +314,7 @@
           </div>
         </template>
       </el-form>
+      <!--海报素材弹框-->
       <el-dialog :visible.sync="dialogTableVisible" width="1200px">
         <selectResource @selected="getSelectResource"></selectResource>
         <div slot="footer" class="dialog-footer">
@@ -388,7 +400,7 @@ export default {
       selectResource: {}, //素材选择事件
       selectImgData: {},
       urls: {
-             uploadImg: '/api' + "/uploadHomeImg.html" // 上传图片接口
+        uploadImg: '/api' + '/uploadHomeImg.html' // 上传图片接口
       },
       STATUS: STATUS,
       PARENT_TYPES: PARENT_TYPES,
@@ -507,7 +519,7 @@ export default {
         ],
         aliveTime: [
           { required: true, message: '请填入存活时间' },
-          { type: 'number', message: '请填入数字' }
+          // { type: 'number', message: '请填入数字' }
         ],
         focusImgUrl: [{ required: true, message: '请选择异形焦点' }],
         poster: {
@@ -547,35 +559,49 @@ export default {
   },
   watch: {},
   methods: {
+    //时间处理-:转换为数值
+    parseMinToStr(str) {
+      const timeArr = str.split(':')
+      const hours = parseInt(timeArr[0])
+      const mins = parseInt(timeArr[1])
+      return hours * 60 + mins
+    },
+    //转换位时间格式 ：hh:mm
+    parseStrToMin(min) {
+      const hours = Math.floor(min / 60)
+      const mins = min % 60
+      const hoursStr = hours > 9 ? '' + hours : '0' + hours
+      const minsStr = mins > 9 ? '' + mins : '0' + mins
+      return hoursStr + ':' + minsStr
+    },
     //数据回显
     getEditData() {
       this.$service.editSysPlugin({ id: this.editId }).then(data => {
         if (data) {
           this.setData(data)
-          this.pluginType = data.pluginInfo.pluginType
           if (this.pluginType) {
-            this.getPluginVersions(this.pluginType).then(function(versions) {
-              console.log(versions)
-              if (versions) {
-                // const rlsInfo = this.block.rlsInfo
-                const rlsInfo = data.rlsInfo
-                const rlsInfoIndexed = rlsInfo.reduce(function(result, item) {
-                  result[item.dataType] = item
-                  return result
-                }, {})
-                this.block.rlsInfo = versions.reduce(
-                  function(result, item) {
-                    const rlsItem = rlsInfoIndexed[item.value]
-                    if (rlsItem) {
-                      this.$set(rlsItem, 'label', item.label)
-                      result.push(rlsItem)
-                    }
+            this.getPluginVersions(this.pluginType).then(
+              function(versions) {
+                if (versions) {
+                  const rlsInfo = this.block.rlsInfo
+                  const rlsInfoIndexed = rlsInfo.reduce(function(result, item) {
+                    result[item.dataType] = item
                     return result
-                  }.bind(this),
-                  []
-                )
-              }
-            })
+                  }, {})
+                  this.block.rlsInfo = versions.reduce(
+                    function(result, item) {
+                      const rlsItem = rlsInfoIndexed[item.value]
+                      if (rlsItem) {
+                        this.$set(rlsItem, 'label', item.label)
+                        result.push(rlsItem)
+                      }
+                      return result
+                    }.bind(this),
+                    []
+                  )
+                }
+              }.bind(this)
+            )
           }
         }
       })
@@ -583,14 +609,10 @@ export default {
     //父数据字典查询接口
     getPluginParentTypes() {
       this.$service.getPluginParentTypes().then(data => {
-        console.log(data)
         if (data) {
           this.pluginParentTypes = data.filter(function(item) {
             return item.value !== 'builtIn'
           })
-        }
-        if (data) {
-          this.pluginParentTypes = data
         }
       })
     },
@@ -599,11 +621,14 @@ export default {
       this.$service
         .getPluginTypes({ pluginParentType: pluginParentType })
         .then(data => {
-          console.log(data)
           if (data) {
             this.pluginTypes = data
           }
         })
+    },
+     /**时间选择时间 */
+     handleTime() {},
+    handleTime1() {
     },
     getPluginVersions(type) {
       var that = this
@@ -903,6 +928,12 @@ export default {
       }
 
       this.block = Object.assign(this.block, block)
+      this.block.pluginInfo.refreshTime = this.parseStrToMin(
+        this.block.pluginInfo.refreshTime
+      )
+      for (let i=0; i<this.block.rlsInfo.length;i++) {
+        this.block.rlsInfo[i].extendInfo.aliveTime = this.parseStrToMin(this.block.rlsInfo[i].extendInfo.aliveTime)
+      }
     },
     parseData(data) {
       const helper = data.helper
@@ -1076,7 +1107,6 @@ export default {
       this.selectResource = data
     },
     selectSubmit() {
-      console.log(this.selectResource)
       const selectObj = {
         pictureId: this.selectResource.pictureId,
         pictureStatus: this.selectResource.pictureStatus,
@@ -1089,7 +1119,6 @@ export default {
       this.clickData = data
     },
     clickSubmit() {
-      console.log(this.clickData)
       var selectClick = this.clickData
       selectClick = JSON.parse(selectClick.onlickJson)
       const index = this.selectingClickForIndex
@@ -1103,7 +1132,6 @@ export default {
       this.selectImgData = data
     },
     selectImgSubmit() {
-      console.log(this.selectImgData)
       const index = this.selectingFocusImgForIndex
       const item = this.block.rlsInfo[index]
       this.$set(item.extendInfo, 'focusImgUrl', this.selectImgData.pictureUrl)
@@ -1113,8 +1141,13 @@ export default {
       this.validateData(
         formData,
         function() {
+          formData.pluginInfo.refreshTime = this.parseMinToStr(
+            formData.pluginInfo.refreshTime
+          )
+          for(let i=0;i<formData.rlsInfo.length;i++) {
+            formData.rlsInfo[i].extendInfo.aliveTime = this.parseMinToStr(formData.rlsInfo[i].extendInfo.aliveTime)
+          }
           formData = this.parseData(formData)
-          console.log(formData)
           this.$service.SavePlugin(formData, '保存成功').then(data => {
             this.$emit('open-list-page')
           })
