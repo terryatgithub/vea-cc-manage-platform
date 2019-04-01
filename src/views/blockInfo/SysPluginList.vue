@@ -144,7 +144,7 @@ export default {
             width: '200',
             fixed: 'right',
             render: utils.component.createOperationRender(this, {
-              priviewData: '详情'
+              priviewData: '预览'
             })
           }
         ],

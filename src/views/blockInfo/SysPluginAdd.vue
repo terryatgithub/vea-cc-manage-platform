@@ -190,10 +190,12 @@
                 :rules="rules.aliveTime"
               >
                 <div class="el-input" style="max-width: 400px">
-                  <ccTimeSpinner
+                  <el-time-select
                     v-model.number="item.extendInfo.aliveTime"
-                    :options="{ min: '00:05',height: 34}"
-                  ></ccTimeSpinner>
+                    :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
+                    placeholder="选择时间"
+                    @change="handleTime"
+                  ></el-time-select>
                 </div>
               </el-form-item>
               <el-form-item
@@ -313,12 +315,23 @@
           <el-button type="primary" @click="dialogTableVisible = false;selectSubmit()">确 定</el-button>
         </div>
       </el-dialog>
-     <!--点击事件弹框-->
+      <!--点击事件弹框-->
       <el-dialog :visible.sync="dialogClickTableVisible" width="1200px">
         <selectClick @clcik="getClickData"></selectClick>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogClickTableVisible = false">取 消</el-button>
           <el-button type="primary" @click="dialogClickTableVisible = false;clickSubmit()">确 定</el-button>
+        </div>
+      </el-dialog>
+      <!--选择异形焦点-->
+      <el-dialog :visible.sync="showFocusImgSelectorVisible" width="1200px">
+        <selectImg @selectImg="getSelectImg"></selectImg>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="showFocusImgSelectorVisible = false">取 消</el-button>
+          <el-button
+            type="primary"
+            @click="showFocusImgSelectorVisible = false;selectImgSubmit()"
+          >确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -357,12 +370,14 @@ import ccAppParamsForm from './ccAppParamsForm'
 import ccTimeSpinner from './ccTimeSpinner'
 import selectResource from './selectResource'
 import selectClick from './selectClick'
+import selectImg from './selectImg'
 export default {
   components: {
     ccAppParamsForm,
     ccTimeSpinner,
     selectResource,
     selectClick,
+    selectImg
   },
   props: {
     editId: Number,
@@ -373,8 +388,13 @@ export default {
       title: null,
       dialogTableVisible: false,
       dialogClickTableVisible: false,
-       clickData: {}, //点击事件
+      showFocusImgSelectorVisible: false, //异形弹框
+      clickData: {}, //点击事件
       selectResource: {},
+      selectImgData: {},
+      urls: {
+        uploadImg: '/api' + '/uploadHomeImg.html' // 上传图片接口
+      },
       STATUS: STATUS,
       PARENT_TYPES: PARENT_TYPES,
       SOURCE: SOURCE,
@@ -553,30 +573,30 @@ export default {
       this.$service.editSysPlugin({ id: this.editId }).then(data => {
         if (data) {
           this.setData(data)
-          this.pluginType = data.pluginInfo.pluginType
+          // this.pluginType = data.pluginInfo.pluginType
           if (this.pluginType) {
-            this.getPluginVersions(this.pluginType).then(function(versions) {
-              if (versions) {
-                //const rlsInfo = this.block.rlsInfo
-                const rlsInfo = data.rlsInfo
-                const rlsInfoIndexed = rlsInfo.reduce(function(result, item) {
-                  result[item.dataType] = item
-                  return result
-                }, {})
-                data.rlsInfo = versions.reduce(
-                  function(result, item) {
-                      // this.block.rlsInfo = versions.reduce(function(result, item) {
-                    const rlsItem = rlsInfoIndexed[item.value]
-                    if (rlsItem) {
-                      this.$set(rlsItem, 'label', item.label)
-                      result.push(rlsItem)
-                    }
+            this.getPluginVersions(this.pluginType).then(
+              function(versions) {
+                if (versions) {
+                  const rlsInfo = this.block.rlsInfo
+                  const rlsInfoIndexed = rlsInfo.reduce(function(result, item) {
+                    result[item.dataType] = item
                     return result
-                  }.bind(this),
-                  []
-                )
-              }
-            })
+                  }, {})
+                  this.block.rlsInfo = versions.reduce(
+                    function(result, item) {
+                      const rlsItem = rlsInfoIndexed[item.value]
+                      if (rlsItem) {
+                        this.$set(rlsItem, 'label', item.label)
+                        result.push(rlsItem)
+                      }
+                      return result
+                    }.bind(this),
+                    []
+                  )
+                }
+              }.bind(this)
+            )
           }
         }
       })
@@ -598,8 +618,8 @@ export default {
         .getPluginTypes({ pluginParentType: pluginParentType })
         .then(data => {
           console.log(data)
-          if (data.code == 0) {
-            this.pluginTypes = data.data
+          if (data) {
+            this.pluginTypes = data
           }
         })
     },
@@ -766,18 +786,16 @@ export default {
       }
       this.block.rlsInfo[this.selectingPostForIndex].poster = selectObj
     },
-     /**快速填充 */
+    /**快速填充 */
     handleSelectClickStart(index) {
-    
       this.selectingClickForIndex = index
-       this.dialogClickTableVisible = true
+      this.dialogClickTableVisible = true
     },
-     /**点击事件弹框 */
+    /**点击事件弹框 */
     getClickData(data) {
       this.clickData = data
     },
     clickSubmit() {
-      debugger
       console.log(this.clickData)
       var selectClick = this.clickData
       selectClick = JSON.parse(selectClick.onlickJson)
@@ -787,13 +805,23 @@ export default {
       this.showselectClickor = false
       this.selectingClickForIndex = undefined
     },
-   
+    /**异形焦点选择 */
+    getSelectImg(data) {
+      this.selectImgData = data
+    },
+    selectImgSubmit() {
+      console.log(this.selectImgData)
+      const index = this.selectingFocusImgForIndex
+      const item = this.block.rlsInfo[index]
+      this.$set(item.extendInfo, 'focusImgUrl', this.selectImgData.pictureUrl)
+      this.selectingFocusImgForIndex = undefined
+    },
     handleSelectTabStart(index) {
       this.showTabSelector = true
       this.selectingTabForIndex = index
     },
     handleSelectFocusImgStart(index) {
-      this.showFocusImgSelector = true
+      this.showFocusImgSelectorVisible = true
       this.selectingFocusImgForIndex = index
     },
     handleRemoveFocusImg(index) {
@@ -939,7 +967,11 @@ export default {
       this.block.pluginInfo.refreshTime = this.parseStrToMin(
         this.block.pluginInfo.refreshTime
       )
-      console.log(this.block)
+      for (let i = 0; i < this.block.rlsInfo.length; i++) {
+        this.block.rlsInfo[i].extendInfo.aliveTime = this.parseStrToMin(
+          this.block.rlsInfo[i].extendInfo.aliveTime
+        )
+      }
     },
     parseData(data) {
       const helper = data.helper
@@ -1116,6 +1148,11 @@ export default {
           formData.pluginInfo.refreshTime = this.parseMinToStr(
             formData.pluginInfo.refreshTime
           )
+          for (let i = 0; i < formData.rlsInfo.length; i++) {
+            formData.rlsInfo[i].extendInfo.aliveTime = this.parseMinToStr(
+              formData.rlsInfo[i].extendInfo.aliveTime
+            )
+          }
           formData = this.parseData(formData)
           console.log(formData)
           this.$service.SavePlugin(formData, '保存成功').then(data => {

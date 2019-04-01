@@ -36,7 +36,11 @@ export default {
   },
   data () {
     return {
-      parentTypes: {}, //父功能名称
+      parentTypes: {
+        多版本推荐位: 'multi',
+        标记推荐位: 'sign',
+        秒杀推荐位: 'secKill'
+      }, //父功能名称
       childTypes: {}, //功能分类
       pictureStatus: {
         下架: 0,
@@ -69,10 +73,6 @@ export default {
           {
             label: '功能名称',
             prop: 'pluginName'
-          },
-          {
-            label: '父功能',
-            prop: 'pluginParentType'
           },
           {
             label: '内容源',
@@ -140,7 +140,6 @@ export default {
     fetchData () {
       const filter = this.parseFilter()
       this.$service.getMultiBlockList(filter).then(data => {
-        console.log(data)
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -149,9 +148,9 @@ export default {
     getPluginParentTypes() {
       this.$service.getPluginParentTypes().then(data =>{
         console.log(data)
-        data.forEach(element => {
-          this.parentTypes[element.label] = element.value
-        })
+        // data.forEach(element => {
+        //   this.parentTypes[element.label] = element.value
+        // })
       })
     },
      //数据字典查询
@@ -297,14 +296,14 @@ export default {
           label: 0
         }
       }),
-      pluginType: _.o.enum(this.depts).other('form', {
-        component: 'Select',
-        placeholder: '功能分类',
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
+      // pluginType: _.o.enum(this.depts).other('form', {
+      //   component: 'Select',
+      //   placeholder: '功能分类',
+      //   cols: {
+      //     item: 3,
+      //     label: 0
+      //   }
+      // }),
       source: _.o.enum(this.source).other('form', {
         component: 'Select',
         placeholder: '内容源',
