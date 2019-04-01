@@ -190,12 +190,12 @@
                 :rules="rules.aliveTime"
               >
                 <div class="el-input" style="max-width: 400px">
-                   <el-time-select
-                 v-model.number="item.extendInfo.aliveTime"
-                  :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
-                  placeholder="选择时间"
-                  @change="handleTime"
-              ></el-time-select>
+                  <el-time-select
+                    v-model.number="item.extendInfo.aliveTime"
+                    :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
+                    placeholder="选择时间"
+                    @change="handleTime"
+                  ></el-time-select>
                 </div>
               </el-form-item>
               <el-form-item
@@ -967,8 +967,10 @@ export default {
       this.block.pluginInfo.refreshTime = this.parseStrToMin(
         this.block.pluginInfo.refreshTime
       )
-      for (let i=0; i<this.block.rlsInfo.length;i++) {
-        this.block.rlsInfo[i].extendInfo.aliveTime = this.parseStrToMin(this.block.rlsInfo[i].extendInfo.aliveTime)
+      for (let i = 0; i < this.block.rlsInfo.length; i++) {
+        this.block.rlsInfo[i].extendInfo.aliveTime = this.parseStrToMin(
+          this.block.rlsInfo[i].extendInfo.aliveTime
+        )
       }
     },
     parseData(data) {
@@ -1146,13 +1148,15 @@ export default {
           formData.pluginInfo.refreshTime = this.parseMinToStr(
             formData.pluginInfo.refreshTime
           )
-          for(let i=0;i<formData.rlsInfo.length;i++) {
-            formData.rlsInfo[i].extendInfo.aliveTime = this.parseMinToStr(formData.rlsInfo[i].extendInfo.aliveTime)
+          for (let i = 0; i < formData.rlsInfo.length; i++) {
+            formData.rlsInfo[i].extendInfo.aliveTime = this.parseMinToStr(
+              formData.rlsInfo[i].extendInfo.aliveTime
+            )
           }
           formData = this.parseData(formData)
           console.log(formData)
           this.$service.SavePlugin(formData, '保存成功').then(data => {
-           this.$emit('open-list-page')
+            this.$emit('open-list-page')
           })
         }.bind(this)
       )
