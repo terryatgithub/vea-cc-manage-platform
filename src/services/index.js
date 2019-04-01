@@ -10,6 +10,7 @@ import * as departmentManage from './systemSetting/departmentManage'
 import * as sysLogOp from './systemSetting/sysLogOp'
 import * as blockInfo from './systemSetting/blockInfo'
 import * as materialManage from './commonModule/materialManage'
+import * as tabInfo from './panelManage/tabInfo'
 
 const service = {
   state: {},
@@ -22,6 +23,7 @@ const service = {
   ...departmentManage,
   ...sysLogOp,
   ...blockInfo,
-  ...materialManage
+  ...materialManage,
+  ...tabInfo
 }
 Vue.prototype.$service = utils.wrapService(service)
