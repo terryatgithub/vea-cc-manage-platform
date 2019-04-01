@@ -15,13 +15,13 @@
       >
         <div class="box-list" slot="row" slot-scope="{row: item}">
           <p class="list-p">
-            <img class="list-img" :src="item.pictureUrl" alt>
+            <img class="list-img" :src="item.imgUrl" alt>
           </p>
-          <p class="list-title">{{item.pictureName}}</p>
+          <p class="list-title">{{item.cornerIconName}}</p>
           <p style="margin:0">
-            <span v-if="item.pictureStatus==1">审核通过</span>
+            <span v-if="item.cornerStatus==1">审核通过</span>
             <span v-else>待审核</span>
-            <span>{{item.pictureResolution}}</span>
+            <!-- <span>{{item.pictureResolution}}</span> -->
           </p>
         </div>
       </CardList>
@@ -39,16 +39,28 @@ export default {
     CardList
   },
   props: {
-    title: String
+    title: String,
+    typePosition: Number,
+    cornerIconTypeOptions: Object,
+    visible: false
+  },
+  watch: {
+    visible(value) {
+      if(value) {
+        this.fetchData()
+      }
+    }
   },
   data() {
     return {
-      cornerIconTypeOptions: [],//角标类型
-      materialTypes: {}, //素材类型
       pictureStatus: {
         //状态
         审核通过: 1,
         待审核: 2
+      },
+      cornerIconType: {
+        typePosition: this.typePosition,
+        typeId: ''
       },
       picDialogVisible: false, //预览图片弹出框
       auditDialogVisible: false, //审核弹出框
@@ -58,24 +70,27 @@ export default {
         order: undefined
       },
       filterSchema: null,
-      pagination: {},
+      pagination: {
+        currentPage: 1,
+        pageSize: 10
+      },
       selected: [],
       table: {
         props: {},
         header: [
           {
             label: 'ID',
-            prop: 'pictureId',
+            prop: 'cornerIconId',
             width: '70'
           },
           {
-            label: 'pictureUrl',
-            prop: 'pictureUrl',
+            label: 'imgUrl',
+            prop: 'imgUrl',
             width: '70',
             render: (createElement, { row }) => {
               return createElement('img', {
                 attrs: {
-                  src: row.pictureUrl,
+                  src: row.imgUrl,
                   width: '50px',
                   height: '50px',
                   class: 'imgs'
@@ -89,23 +104,17 @@ export default {
             }
           },
           {
-            label: '素材名称',
+            label: '角标名称',
             width: '120',
-            prop: 'pictureName',
-            sortable: true
-          },
-          {
-            label: '分辨率',
-            prop: 'pictureResolution',
-            width: '110',
+            prop: 'cornerIconName',
             sortable: true
           },
           {
             label: '状态',
-            prop: 'pictureStatus',
+            prop: 'cornerStatus',
             width: '90',
             render: (createElement, { row }) => {
-              switch (row.pictureStatus) {
+              switch (row.cornerStatus) {
                 case 0:
                   return '不可用'
                   break
@@ -122,12 +131,12 @@ export default {
             }
           },
           {
-            label: '素材类型',
-            prop: 'materialTypes',
+            label: '角标类型',
+            prop: 'cornerIconType',
             width: '70',
             render: (createElement, { row }) => {
-              return row.materialTypes.length > 0
-                ? row.materialTypes[0].dictCnName
+              return row.cornerIconType.length > 0
+                ? row.cornerIconType[0].typeName
                 : ''
             }
           },
@@ -161,7 +170,7 @@ export default {
     handleRowSelectionChange(row, index) {
       console.log(row)
       // this.table.data = row
-      this.$emit('selected', row)
+      this.$emit('input', row)
       let rowData = row
       this.table.selected = index
     },
@@ -175,8 +184,8 @@ export default {
     },
     handleFilterReset() {
       this.filter = {
-        sort: undefined,
-        order: undefined
+        page: 1,
+        rows: 10
       }
       this.fetchData()
     },
@@ -186,78 +195,44 @@ export default {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
+      this.cornerIconType.typeId = filter.cornerIconType
+      this.cornerIconType.typePosition = this.typePosition
+      filter.cornerIconType = undefined
+      filter['cornerIconType.typeId'] = this.cornerIconType.typeId
+      filter['cornerIconType.typePosition'] = this.cornerIconType.typePosition
       return filter
     },
     //获取数据
     fetchData() {
       const filter = this.parseFilter()
-      if(this.title !== '请选择角标'){
-        this.$service.getCornerList(filter).then(data => {
+      this.$service.getCornerList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
-        //  this.data = data.rows;
         console.log(data)
-        })
-      }else{
-        this.$service.getResourceList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
-        //  this.data = data.rows;
-        console.log(data)
-        })
-      }
-      
-    },
-    getMaterialTypes() {
-      return this.$service.getMaterialTypes().then(data => {
-        data.forEach(element => {
-          this.materialTypes[element.label] = element.id
-        })
       })
     }
   },
   created() {
-    // 角标类型获取
-    this.$service.getCornerTypes().then(data => {
-      var cornerIconTypeOptions = []
-      for (var i = 0; i < data.length; i++) {
-        var cornerIconTypeOption = {
-          label: data[i].typeName,
-          value: data[i].typeId
-        }
-        cornerIconTypeOptions.push(cornerIconTypeOption)
-      }
-      this.cornerIconTypeOptions = cornerIconTypeOptions
-      console.log(cornerIconTypeOptions);
-    })
     let filterSchema = _.map({
-      pictureId: _.o.string.other('form', {
+      cornerIconId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '素材ID',
+        placeholder: '角标ID',
         cols: {
           item: 3,
           label: 0
         }
       }),
-      pictureName: _.o.string.other('form', {
+      cornerIconName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '素材名称',
+        placeholder: '角标名称',
         cols: {
           item: 3,
           label: 0
         }
       }),
-      pictureCategory: _.o.enum(this.materialTypes).other('form', {
+      cornerIconType: _.o.enum(this.cornerIconTypeOptions).other('form', {
         component: 'Select',
-        placeholder: '素材类别',
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
-      pictureStatus: _.o.enum(this.pictureStatus).other('form', {
-        component: 'Select',
-        placeholder: '审核状态',
+        placeholder: '角标类别',
         cols: {
           item: 3,
           label: 0
@@ -276,10 +251,8 @@ export default {
         resetText: '重置'
       }
     })
-    this.getMaterialTypes().then(() => {
-      this.filterSchema = filterSchema
-    })
     this.fetchData()
+    this.filterSchema = filterSchema
   }
 }
 </script>

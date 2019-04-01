@@ -156,11 +156,11 @@ export default {
     }
   },
   methods: {
-    //选中时间
+    //选中事件
     handleRowSelectionChange(row, index) {
       console.log(row)
       // this.table.data = row
-      this.$emit('selected', row)
+      this.$emit('input', row)
       let rowData = row
       this.table.selected = index
     },

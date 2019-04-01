@@ -131,7 +131,7 @@ export default {
     Table
   },
 
-  props:['partner', 'disablePartner', 'singleObj'],
+  props:['partner', 'disablePartner', 'singleObj','muti'],
 
   data() {
     return {
@@ -285,7 +285,7 @@ export default {
         ],
         data: [],
         selected: {},
-        selectionType: 'single'
+        selectionType: this.muti
       }
     }
   },
@@ -451,8 +451,16 @@ export default {
 
     },
     handleRowChange(row, index) {
+      console.log('row',row);
       this.table.selected = index
-      this.selected = row.coocaaVId
+      this.selected = {
+        id: row.coocaaVId,
+        title: row.title,
+        subTitle: row.subTitle,
+        poster: {
+          pictureUrl: row.thumb
+        }
+      }
     }
   },
   created() {

@@ -7,9 +7,10 @@
     :showSelection="false"
     :showClearSelectionBtn="false"
   >
-    <el-tabs value="vedio">
+    <el-tabs v-model="currentTab">
       <el-tab-pane label="影视中心" name="vedio">
-        <MovieFilter 
+        <MovieFilter
+          :muti="muti"
           v-model="selectAll.vedio"
           :partner="pannelResourceNew"
           :disable-partner="disablePartner"
@@ -18,21 +19,25 @@
       </el-tab-pane>
       <el-tab-pane label="教育中心" name="edu">
         <EduFilter 
+           :muti="muti"
            v-model="selectAll.edu"
         ></EduFilter>
       </el-tab-pane>
       <el-tab-pane label="直播资源" name="live">
         <LiveFilter 
+           :muti="muti"
            v-model="selectAll.live"
         ></LiveFilter>
       </el-tab-pane>
       <el-tab-pane label="专题资源" name="topics">
         <TopicsFilter 
+           :muti="muti"
            v-model="selectAll.topics"
         ></TopicsFilter>
       </el-tab-pane>
       <el-tab-pane label="轮播频道" name="broadcast">
         <BroadcastFilter 
+          :muti="muti"
           v-model="selectAll.broadcast"
         ></BroadcastFilter>
       </el-tab-pane>
@@ -63,11 +68,15 @@ export default {
 
   props: {
     title: String,
-    
+    muti: String
+  },
+
+  watch: {
   },
 
   data() {
     return {
+      currentTab: 'vedio',
       disablePartner: true,
       selectAll: {},
       selected: null,
@@ -81,7 +90,13 @@ export default {
         this.$refs.selector.showDialog = true
         this.$message('请选择一条记录')
       }
-      this.$emit('input', this.selected)
+      if(this.muti === 'single'){
+        const { currentTab, selectAll } = this
+        this.selected = selectAll[currentTab]
+        this.$emit('input', this.selected)
+      }else{
+        this.$emit('input', this.selectAll)
+      }
     }
     
   },

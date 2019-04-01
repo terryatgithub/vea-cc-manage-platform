@@ -220,6 +220,7 @@ export default {
       gradeList: [], // 年级
       isMore: false,
       orderTip: '降序排列', // 排序按钮文字提示
+      selected: undefined
     };
   },
 

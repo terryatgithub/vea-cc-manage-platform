@@ -225,15 +225,10 @@
           prop="thirdIdOrPackageName"
           v-if="lowerForm.coverType === 'media' || lowerForm.coverType === 'app' "
         >
-          <!-- <el-button
-            type="primary"
-            size="medium"
-            v-model="lowerForm.thirdIdOrPackageName"
-            @click.native="selectResource('lower', lowerForm)"
-          >选择资源</el-button> -->
           <ResourceSelector
-            v-model="lowerForm.thirdIdOrPackageName"
+            v-model="lowerFormPackage"
             title="选择资源"
+            muti="single"
             >选择资源</ResourceSelector>
           <el-tag
             type="success"
@@ -304,20 +299,29 @@
     
     <!-- 海报弹框  -->
     <el-dialog :visible.sync="customDialogPicture.visible" width="1200px">
-        <DialogPicture :title="customDialogPicture.title"></DialogPicture>
+        <DialogPicture 
+          :title="customDialogPicture.title"
+          :form="customDialogPicture.form"
+          v-model="selectPicture"
+        ></DialogPicture>
         <div slot="footer" class="dialog-footer">
             <el-button @click="customDialogPicture.visible = false">取 消</el-button>
-            <el-button type="primary" @click="customDialogPicture.visible = false">确 定</el-button>
+            <el-button type="primary" @click="savePicture">确 定</el-button>
         </div>
     </el-dialog>
     <!-- 海报弹框 end -->
     
     <!-- 角标弹框  -->
     <el-dialog :visible.sync="customDialogCorner.visible" width="1200px">
-        <DialogCorner :title="customDialogCorner.title"></DialogCorner>
+        <DialogCorner
+          v-model="selectPicture"
+          :typePosition="customDialogCorner.index"
+          :cornerIconTypeOptions="cornerIconTypeOptions"
+          :visible="customDialogCorner.visible">
+        </DialogCorner>
         <div slot="footer" class="dialog-footer">
             <el-button @click="customDialogCorner.visible = false">取 消</el-button>
-            <el-button type="primary" @click="customDialogCorner.visible = false">确 定</el-button>
+            <el-button type="primary" @click="savePicture">确 定</el-button>
         </div>
     </el-dialog>
     <!-- 角标弹框 end -->
@@ -348,6 +352,12 @@ export default {
 
   data() {
     return {
+      lowerFormPackage: {
+        id: '',
+        title: '',
+        subTitle: ''
+      },//筛选器传回来的值
+      cornerIconTypeOptions: {},
       cornerTypes: [],
       materialTypes: null,
       basicForm: {
@@ -510,6 +520,66 @@ export default {
     }
   },
 
+  watch: {
+      lowerFormPackage(selected) {
+        this.lowerForm = {
+          thirdIdOrPackageName: selected.id,
+          title: selected.title,
+          subTitle: selected.subTitle,
+          poster: selected.poster
+        }
+      },
+      'basicForm.configModel': {
+        deep: true,
+        handler: function(newVal, oldVal) {
+          if (newVal === 'group') {
+            this.normalResourceBtn = '播放资源'
+          } else if (newVal === 'broadcast') {
+            this.normalResourceBtn = '轮播资源'
+          }
+        }
+      },
+      'normalForm.sign': {
+        deep: true,
+        handler: function(newVal, oldVal) {
+          if (newVal === 'manualSet') {
+            // 手动设置
+            this.normalForm.coverType = 'custom'
+            this.normalForm.contentType = 'custom'
+            if (this.autoWrite === false) {
+              // autoWrite为true时，选择资源  coverType为custom
+              this.normalForm.type = 'url'
+            }
+          }
+        }
+      },
+      autoWrite: function(newVal, oldVal) {
+        // if (newVal === false) {
+        //     this.normalForm = Object.assign({}, this.versionForm);
+        //     this.normalVersionContent.splice(this.currentIndex, 1, this.normalForm);
+        //     this.normalForm.sign = 'manualSet';
+        //     this.signDisabled = true;
+        //     this.normalForm.type = 'url';
+        //     this.normalForm.contentType = 'custom';
+        //     this.normalForm.coverType = 'custom';
+        //     var newForm = Object.assign({}, this.normalForm);
+        //     var newVal = {
+        //         url: this.normalForm.thirdIdOrPackageName,
+        //         source: "",
+        //         name: this.normalForm.title,
+        //         needParse: "false",
+        //         url_type: "web"
+        //     };
+        //     newForm.params = JSON.stringify(newVal);
+        //     this.normalForm = newForm;
+        // } else {
+        //     this.normalForm = Object.assign({}, this.versionForm);
+        //     this.normalForm.sign = 'autoSet';
+        //     this.signDisabled = false;
+        //     this.normalVersionContent[this.currentIndex] = this.normalForm;
+        // }
+      }
+  },
   methods: {
     autoWriteFun: function() {
       this.autoWrite = !this.autoWrite
@@ -907,14 +977,16 @@ export default {
       this.currentForm = form
       if (type === 'poster'){
         this.customDialogPicture = {
-            visible: true
+            visible: true,
+            form
           }
       }else{
         this.customDialogCorner = {
-          visible: true
+          visible: true,
+          form,
+          index
         }
       }
-
       this.pictureOptions = this.pictureListOptions[type]
     },
     getPicture: function(value) {
@@ -943,6 +1015,7 @@ export default {
           // var newForm = Object.assign({}, this.currentForm.cornerIconList);
           newForm[index] = cornerObj
           this.currentForm.cornerIconList = newForm
+          this.customDialogCorner.visible = false
         }
         this.selectPicture = {}
       }
@@ -1084,82 +1157,17 @@ export default {
     })
     // 角标类型获取
     this.$service.getCornerTypes().then(data => {
-      var cornerIconTypeOptions = []
+      var cornerIconTypeOptions = {}
       for (var i = 0; i < data.length; i++) {
-        var cornerIconTypeOption = {
-          label: data[i].typeName,
-          value: data[i].typeId
-        }
-        cornerIconTypeOptions.push(cornerIconTypeOption)
-        _this.pictureListOptions.corner.searchParams[
-          'cornerIconType.typeId'
-        ].options = cornerIconTypeOptions
+        var label = data[i].typeName
+        var value = data[i].typeId
+        cornerIconTypeOptions[label] = value
       }
+      this.cornerIconTypeOptions = cornerIconTypeOptions
+      console.log(this.cornerIconTypeOptions)
     })
   },
-  watch: {
-    'basicForm.configModel': {
-      deep: true,
-      handler: function(newVal, oldVal) {
-        if (newVal === 'group') {
-          this.normalResourceBtn = '播放资源'
-        } else if (newVal === 'broadcast') {
-          this.normalResourceBtn = '轮播资源'
-        }
-      }
-    },
-    'normalForm.sign': {
-      deep: true,
-      handler: function(newVal, oldVal) {
-        // if (newVal === 'manualSet' && this.autoWrite === false) {  // 手动设置
-        //     if (this.autoWrite) { // 影视如果是手动时type为custom，自动为res
-        //         this.normalForm.coverType = 'custom';
-        //         this.normalForm.contentType = 'custom';
-        //         this.normalForm.type = 'url';
-        //     }
-        // } else if (newVal === 'manualSet' && this.autoWrite === true) { // 手动填写（但是选择资源）
-        //     this.normalForm.coverType = 'custom';
-        //     this.normalForm.contentType = 'custom';
-        //     // this.normalForm.type = 'res';
-        // }
-        if (newVal === 'manualSet') {
-          // 手动设置
-          this.normalForm.coverType = 'custom'
-          this.normalForm.contentType = 'custom'
-          if (this.autoWrite === false) {
-            // autoWrite为true时，选择资源  coverType为custom
-            this.normalForm.type = 'url'
-          }
-        }
-      }
-    },
-    autoWrite: function(newVal, oldVal) {
-      // if (newVal === false) {
-      //     this.normalForm = Object.assign({}, this.versionForm);
-      //     this.normalVersionContent.splice(this.currentIndex, 1, this.normalForm);
-      //     this.normalForm.sign = 'manualSet';
-      //     this.signDisabled = true;
-      //     this.normalForm.type = 'url';
-      //     this.normalForm.contentType = 'custom';
-      //     this.normalForm.coverType = 'custom';
-      //     var newForm = Object.assign({}, this.normalForm);
-      //     var newVal = {
-      //         url: this.normalForm.thirdIdOrPackageName,
-      //         source: "",
-      //         name: this.normalForm.title,
-      //         needParse: "false",
-      //         url_type: "web"
-      //     };
-      //     newForm.params = JSON.stringify(newVal);
-      //     this.normalForm = newForm;
-      // } else {
-      //     this.normalForm = Object.assign({}, this.versionForm);
-      //     this.normalForm.sign = 'autoSet';
-      //     this.signDisabled = false;
-      //     this.normalVersionContent[this.currentIndex] = this.normalForm;
-      // }
-    }
-  }
+  
 }
 </script>
 

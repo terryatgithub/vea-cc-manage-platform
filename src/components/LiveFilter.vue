@@ -76,7 +76,7 @@ export default {
         currentPage: 1,
         pageSize: 10
       },
-      selected: {}, // 列表选中项
+      selected: undefined, // 列表选中项
       searchForm: {
         callbackparam: 'result',
         source: 'tencent', // 内容源
@@ -213,7 +213,7 @@ export default {
     },
     handleRowChange(row, index) {
       this.table.selected = index
-      this.selected = row.coocaaVId
+      this.selected = row.vId
     },
     reset() {
       this.searchForm = {

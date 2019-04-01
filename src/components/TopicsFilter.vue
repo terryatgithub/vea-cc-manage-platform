@@ -117,7 +117,14 @@ export default {
         ],
         selected: {},
         selectionType: 'single'
-      }
+      },
+      selected: undefined
+    }
+  },
+
+  watch: {
+    selected: function(value) {
+      this.$emit('input', value)
     }
   },
 
