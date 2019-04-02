@@ -179,7 +179,7 @@ export default {
       this.fetchData()
     },
     handleFilterChange(type) {
-      if (type === 'filter') {
+      if (type !== 'pagination') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }
