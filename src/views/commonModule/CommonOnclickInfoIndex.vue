@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CommonOnclickInfoList v-show='isShowList' ref="list" @openAddPage="openAddPage"></CommonOnclickInfoList>
+    <CommonOnclickInfoList v-show='isShowList' ref="list" @open-add-page="openAddPage"></CommonOnclickInfoList>
     <CommonOnclickInfoAdd v-if='!isShowList' :editId="editId" @openListPage="openListPage" @go-back="goBack"></CommonOnclickInfoAdd>
   </div>
 </template>

@@ -31,6 +31,7 @@
 
 <script>
 import _ from "gateschema";
+import { Button } from 'element-ui'
 import ButtonList from "./../../components/ButtonLIst";
 import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
 export default {
@@ -40,6 +41,7 @@ export default {
     ContentWrapper
   },
   data() {
+    let _this = this
     return {
       filter: {
         sort: undefined,
@@ -55,59 +57,131 @@ export default {
         header: [
             {
                 label: 'ID',
-                prop: 'commonOnclickId'
+                prop: 'homepageId'
             },
             {
-                label: '点击事件名称',
-                prop: 'onlickName'
+                label: '首页名称',
+                prop: 'homepageName',
+                align: 'center',
+                render: (h, { row }) => {
+                  return h(Button, 
+                    { 
+                      ref: 'button',
+                      props: {  },
+                      domProps: {
+                        innerHTML: row.homepageName
+                      },
+                      on: {
+                        click: (value) => {
+                          this.showData(row.homepageId, row.currentVersion)
+                        }
+                      }
+                    })
+                }
             },
              {
-                label: '备注',
-                prop: 'remark'
+                label: '关联策略',
+                prop: 'relationPolicyName',
+                width: 300,
+                render: (h, { row }) => {
+                  let content = row.relationPolicyName
+                  if(!content || content == '--'){
+                    return '--';
+                  }
+                  let pList = content.split(',')
+                  return h('div', 
+                  {
+                    style: {
+                      whiteSpace: 'nowrap'
+                    }
+                  },
+                  pList.map(function (item) {
+                    return h(Button, 
+                      { 
+                        ref: 'button',
+                        props: { },
+                        attrs: {
+                          title: '点击查看'
+                        },
+                        domProps: {
+                          innerHTML: item
+                        },
+                        on: {
+                          click: () => {
+                            _this.openPolicyDialog(_this.$regParenthesesContent(item))
+                          }
+                        }
+                      })
+                  }))
+                }
             },
             {
-                label: '应用包名',
-                prop: 'packagename'
+                label: '版本/状态',
+                prop: 'homepageStatus',
+                align: 'center',
+                render: (h, { row }) => {
+                  return h('span', 
+                    { 
+                      domProps: {
+                        innerHTML: row.currentVersion + '/' + _this.$numToAuditStatus(row.homepageStatus)
+                      }
+                    })
+                }
             },
             {
-                label: '应用版本号',
-                prop: 'versioncode'
+                  label: '待审核副本',
+                  prop: 'duplicateVersion',
+                  align: 'center',
+                  render: (h, { row }) => {
+                    if (row.duplicateVersion === '') {
+                      return ''
+                    } else {
+                      return h(Button, 
+                        { 
+                          ref: 'button',
+                          props: {  },
+                          domProps: {
+                            innerHTML: row.duplicateVersion
+                          },
+                          on: {
+                            click: (value) => {
+                              this.showData(row.homepageId, row.duplicateVersion)
+                            }
+                          }
+                        })
+                    }
+                  }
             },
             {
-                label: '启动动作',
-                prop: 'dowhat'
+                  label: '机型机芯',
+                  prop: 'chipModel',
+                  render: (h, { row }) => {
+                    return h('span', 
+                      { 
+                        style: {
+                          whiteSpace: 'nowrap'
+                        },
+                        domProps: {
+                          innerHTML: row.chipModel
+                        }
+                      })
+                  }
             },
             {
-                label: '启动方式',
-                prop: 'bywhat'
+                  label: '更新时间',
+                  prop: 'lastUpdateDate'
             },
             {
-                label: '启动参数',
-                prop: 'byvalue' 
+                  label: '更新人',
+                  prop: 'modiferName' 
             },
             {
-                label: '扩展参数',
-                prop: 'params', 
-            },
-            {
-                label: '异常处理',
-                prop: 'exception'
-            },  
-            {
-                label: '创建人',
-                prop: 'createrName'
-            },
-            {
-                label: '创建时间',
-                prop: 'createdDate' 
-            },
-            {
-                label: "修改人",
-                fixed: "modifierName"
-            },
-            {
-                label: "修改时间",
-                fixed: "lastUpdateDate"
+              label: '操作',
+              width: '100',
+              fixed: 'right',
+              render: utils.component.createOperationRender(this, {
+                editData: '复制'
+              })
             }
         ],
         data: [],
@@ -152,35 +226,45 @@ export default {
      */
     editData(){
       if (this.$isAllowEdit(this.selected)) {
-        this.$emit('open-add-page', this.selected[0])
+        this.$emit('open-add-page',this.selected[0])
+      }
+    },
+    /**
+     * 查看
+     */
+    showData(){
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('open-add-page',this.selected[0])
       }
     },
     /**
      * 批量删除
      */
     deleteData() {
-      if (this.selected.length === 0) {
-        this.$message("请选择再删除");
-        return;
-      }
-      if (window.confirm("确定要删除吗")) {
-        this.$service.commonOnclickInfoDelete({ id: this.selected.join(",") }, "删除成功")
+      if (this.$isAllowDelete(this.selected) && window.confirm("确定要删除吗")) {
+        this.$service.homePageInfoDelete({ id: this.selected.join(",") }, "删除成功")
           .then(data => {
             this.fetchData();
           });
       }
+    },
+    /**
+     * 查看关联策略
+     */
+    openPolicyDialog(arr) {
+      console.log(arr[0])
     },
     handleCreate() {
       this.$router.push({ name: "prize-create" });
     },
     //表格操作
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.commonOnclickId);
+      this.selected.push(targetItem.homepageId);
       this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.commonOnclickId;
+        return item !== targetItem.homepageId;
       });
       this.updateTableSelected();
     },
@@ -200,7 +284,7 @@ export default {
       const table = this.table;
       const newSelectedIndex = this.selected;
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.commonOnclickId) > -1) {
+        if (newSelectedIndex.indexOf(item.homepageId) > -1) {
           result.push(index);
         }
         return result;
@@ -237,7 +321,7 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter();
-      this.$service.getCommonOnclickInfoList(filter).then(data => {
+      this.$service.getHomePageInfoList(filter).then(data => {
         this.pagination.total = data.total;
         this.table.data = data.rows;
       });
@@ -246,14 +330,14 @@ export default {
      * 获取menuInfoTree
      */
     getSysMenuInfo () {
-      return this.$service.getCommonOnclickInfoMenu().then(data => {
+      return this.$service.getHomePageInfoMenu().then(data => {
         this.buttonList = data
       })
     }
   },
   created() {
     let filterSchema = _.map({
-      commonOnclickId: _.o.string.other("form", {
+      homepageId: _.o.string.other("form", {
         component: "Input",
         placeholder: "ID",
         cols: {
@@ -261,9 +345,33 @@ export default {
           label: 0
         }
       }),
-      onlickName: _.o.string.other("form", {
+      homepageName: _.o.string.other("form", {
         component: "Input",
-        placeholder: "点击事件名",
+        placeholder: "名称",
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+      homepageStatus: _.o.enum({
+        请选择: '',
+        下架:'0',
+        上架:'1',
+        草稿:'2',
+        待审核:'3',
+        审核通过:'4',
+        审核不通过:'5'
+      }).other("form", {
+        component: "Select",
+        placeholder: "状态",
+        cols: {
+          item: 3,
+          label: 0
+        },
+      }),
+      chipModel: _.o.string.other("form", {
+        component: "Input",
+        placeholder: "机型/机芯",
         cols: {
           item: 3,
           label: 0

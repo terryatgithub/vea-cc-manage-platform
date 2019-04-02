@@ -1,15 +1,76 @@
 import Vue from 'vue'
 /*
- 列表页只能选择一条数据编辑的提示语
+ *提示语
+ *列表页选择数据进行--编辑查看
 */
-Vue.prototype.$isAllowEdit = function (selectedId){
-  if (selectedId.length === 0) {
-    this.$message('请选择再编辑')
+Vue.prototype.$isAllowEdit = function (selected) {
+  if (selected.length !== 1) {
+    this.$message('请选择一条数据进行编辑')
     return false
-  } else if (selectedId.length === 1){
-    return true
   } else {
-    this.$message('只能选择一条数据')
-    return false
+    return true
   }
+}
+
+/*
+ *提示语
+ *列表页选择数据进行-删除操作
+*/
+Vue.prototype.$isAllowDelete = function (selected) {
+  if (selected.length === 0) {
+    this.$message('请选择数据后进行操作')
+    return false
+  } else {
+    return true
+  }
+}
+
+/**
+ *将数字转为对应的审核状态
+ *0下架,1上架,2草稿,3待审核,4审核通过,5审核不通过
+ */
+Vue.prototype.$numToAuditStatus = function (num) {
+  let auditStatus = ''
+  if (typeof (num) === 'number') {
+    switch (num) {
+      case 0:
+        auditStatus = '下架'
+        break
+      case 1:
+        auditStatus = '上架'
+        break
+      case 2:
+        auditStatus = '草稿'
+        break
+      case 3:
+        auditStatus = '待审核'
+        break
+      case 4:
+        auditStatus = '审核通过'
+        break
+      case 5:
+        auditStatus = '审核不通过'
+        break
+      case 6:
+        auditStatus = '审核中'
+        break
+      case 7:
+        auditStatus = '审核通过未上线'
+        break
+      case 9:
+        auditStatus = '待二次审核'
+        break
+      default:
+        auditStatus = '未知'
+    }
+  }
+  return auditStatus
+}
+
+/**
+ *匹配圆括号内的内容
+ *返回数组
+ */
+Vue.prototype.$regParenthesesContent = function (str) {
+  return str.match(/([^\(\)]+)(?=\))/g)
 }
