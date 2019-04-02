@@ -81,6 +81,7 @@ export default {
     return {
       selected: [],
       tabTypeOption: [
+        { label: '信号源版面', value: '5' },
         { label: '第三方版面', value: '4' },
         { label: '专题版面', value: '2' },
         { label: '普通版面', value: '1' }
@@ -94,12 +95,13 @@ export default {
         { label: '审核不通过', value: '5' }
       ],
       businessType: [],
-      filter: {},
+      filter: {
+        idPrefix: 10
+      },
       appIdType: [],
       filterSchema: null,
       pagination: {
-        currentPage: 1,
-        rowPages: 15
+        currentPage: 1
       },
       table: {
         props: {},
@@ -118,12 +120,12 @@ export default {
             prop: 'tabType',
             formatter: function (row) {
                 const v = row.tabType
-                return {'1': '普通版面', '2': '专题版面', '4': '第三方版面'}[v + ''] || '未知版面'
+                return {'1': '普通版面', '2': '专题版面', '4': '第三方版面', '5': '信号源版面'}[v + ''] || '未知版面'
             }
           },
           {
             label: '业务分类',
-            prop: 'tabCategory'
+            prop: 'businessCategoryName'
           },
           {
             label: '内容源',
@@ -204,7 +206,7 @@ export default {
       return filter
     },
     handleFilterChange(type) {
-      if (type === 'filter') {
+      if (type !== 'pagination') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }
@@ -212,7 +214,9 @@ export default {
       this.fetchData()
     },
     handleFilterReset() {
-      this.filter = {}
+      this.filter = {
+        idPrefix: 10
+      }
       this.fetchData()
     },
     addTabInfo() {
