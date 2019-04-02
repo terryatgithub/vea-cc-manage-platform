@@ -1,12 +1,54 @@
 <template>
   <ContentCard class="content">
     <ContentWrapper
-      :filter="filter"
-      :filterSchema="filterSchema"
       :pagination="pagination"
       @filter-change="handleFilterChange"
-      @filter-reset="handleFilterReset"
     >
+      <!-- 筛选部分 -->
+      <el-form inline ref="form" v-model="filter" label-width="90px" size="mini">
+        <el-form-item label="版面ID">
+          <el-input v-model="filter.tabId"/>
+        </el-form-item>
+        <el-form-item label="版面标题">
+          <el-input v-model="filter.tabName"/>
+        </el-form-item>
+        <el-form-item label="版面属性">
+          <el-select v-model="filter.tabType">
+            <el-option value="">请选择</el-option>
+            <el-option v-for="(item, index) in tabTypeOption" :key="index" :label="item.label" :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否二级tab">
+          <el-select v-model="filter.hasSubTab">
+            <el-option value="">请选择</el-option>
+            <el-option value="1">是</el-option>
+            <el-option value="0">否</el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="业务分类">
+          <el-select v-model="filter.tabCategory">
+            <el-option value="">请选择</el-option>
+            <el-option v-for="(item, index) in businessType" :key="index" :label="item.dictCnName" :value="item.dictId"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="AppId">
+          <el-select v-model="filter.tabAppid">
+            <el-option value="">请选择</el-option>
+            <el-option v-for="item in appIdType" :key="item.dictEnName" :label="item.dictCnName" :value="item.dictEnName"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="filter.tabStatus">
+            <el-option value="">请选择</el-option>
+            <el-option v-for="item in tabStatusOption" :key="item.label" :label="item.label" :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" @click="handleFilterChange">查询</el-button>
+          <el-button icon="el-icon-delete" @click="handleFilterReset">重置</el-button>
+        </el-form-item>
+      </el-form>
+      <!-- 筛选部分end -->
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -29,20 +71,6 @@
 
 <script>
 import { ContentWrapper, Table } from 'admin-toolkit'
-const tabTypeOption = [
-  { label: '请选择', value: '' },
-  { label: '第三方版面', value: '4' },
-  { label: '专题版面', value: '2' },
-  { label: '普通版面', value: '1' }
-]
-const tabStatusOption = [
-  { label: '下架', value: '0' },
-  { label: '上架', value: '1' },
-  { label: '草稿', value: '2' },
-  { label: '待审核', value: '3' },
-  { label: '审核通过', value: '4' },
-  { label: '审核不通过', value: '5' }
-]
 export default {
   components: {
     ContentWrapper,
@@ -51,8 +79,23 @@ export default {
 
   data () {
     return {
+      selected: [],
+      tabTypeOption: [
+        { label: '第三方版面', value: '4' },
+        { label: '专题版面', value: '2' },
+        { label: '普通版面', value: '1' }
+      ],
+      tabStatusOption: [
+        { label: '下架', value: '0' },
+        { label: '上架', value: '1' },
+        { label: '草稿', value: '2' },
+        { label: '待审核', value: '3' },
+        { label: '审核通过', value: '4' },
+        { label: '审核不通过', value: '5' }
+      ],
+      businessType: [],
       filter: {},
-      appIdType: undefined,
+      appIdType: [],
       filterSchema: null,
       pagination: {
         currentPage: 1,
@@ -93,18 +136,21 @@ export default {
           {
             label: 'AppId',
             prop: 'tabAppid',
-            // formatter: function (row) {
-            //   console.log(this.appIdType);
-            //   return this.appIdType[row.dictEnName]
-            // }
+            formatter: (row) => {
+              return this.appIdType.map((item) => {
+                if(row.tabAppid.toString() === item.dictEnName){
+                  return item.dictCnName
+                }
+              })
+            }
           },
           {
             label: '版本/状态',
             prop: 'tabStatus',
-            formatter: function(row) {
+            formatter: (row) => {
               const status = row.tabStatus
               const currentVersion = row.currentVersion
-              return currentVersion + '/' + tabStatusOption.map(function(item){
+              return currentVersion + '/' + this.tabStatusOption.map(function(item){
                 if(status.toString() === item.value){
                   return item.label
                 }
@@ -132,8 +178,8 @@ export default {
             prop: 'oper'
           }
         ],
-        selected: null,
-        selectionType: 'mutiple'
+        selected: [],
+        selectionType: 'multiple'
       }
     };
   },
@@ -157,11 +203,17 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
-
+    handleFilterChange(type) {
+      if (type === 'filter') {
+        if (this.pagination) {
+          this.pagination.currentPage = 1
+        }
+      }
+      this.fetchData()
     },
     handleFilterReset() {
-
+      this.filter = {}
+      this.fetchData()
     },
     addTabInfo() {
 
@@ -172,29 +224,55 @@ export default {
     batchDel() {
 
     },
-    handleRowSelectionAdd() {
-
+    /**
+     * 行选择操作
+     */
+    handleRowSelectionAdd(targetItem) {
+      this.selected.push(targetItem.tabId)
+      this.updateTableSelected()
     },
-    handleRowSelectionRemove() {
-
+    handleRowSelectionRemove(targetItem) {
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.tabId
+      })
+      this.updateTableSelected()
     },
-    handleAllRowSelectionChange() {
-      
+    handleAllRowSelectionChange(value) {
+      if (value) {
+        this.table.data.forEach(this.handleRowSelectionAdd)
+      } else {
+        this.selected = []
+        this.table.selected = []
+      }
     },
-    
+    updateTableSelected() {
+      const table = this.table
+      const newSelectedIndex = this.selected
+      table.selected = table.data.reduce((result, item, index) => {
+        if (newSelectedIndex.indexOf(item.tabId) > -1) {
+          result.push(index)
+        }
+        return result
+      }, [])
+    },
+    getBusinessType() {
+      this.$service.getBusinessType().then(data => {
+        this.businessType = data
+      })
+    }
   },
   created() {
     this.$service.getAppIdType().then(data => {
-    this.appIdType = data.reduce(function(result, item){
-      result[item.dictEnName] = item.dictCnName
-      return result
-      }, {})
+      this.appIdType = data
+      this.fetchData()
     })
-    this.fetchData()
+    this.getBusinessType()
   }
 
 }
 </script>
 
 <style lang='stylus' scoped>
+.btns
+  margin 30px 10px 30px
 </style>
