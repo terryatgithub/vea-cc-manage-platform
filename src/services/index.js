@@ -11,7 +11,7 @@ import * as sysLogOp from './systemSetting/sysLogOp'
 import * as blockInfo from './systemSetting/blockInfo'
 import * as materialManage from './commonModule/materialManage'
 import * as tabInfo from './panelManage/tabInfo'
-
+import * as homePageInfo from './homePageManage/homePageInfo'
 const service = {
   state: {},
   fetch,
@@ -24,6 +24,7 @@ const service = {
   ...sysLogOp,
   ...blockInfo,
   ...materialManage,
-  ...tabInfo
+  ...tabInfo,
+  ...homePageInfo
 }
 Vue.prototype.$service = utils.wrapService(service)
