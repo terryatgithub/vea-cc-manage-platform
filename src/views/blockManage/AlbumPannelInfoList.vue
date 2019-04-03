@@ -48,7 +48,8 @@ export default {
       ],
       pannelStatus: {},
       filter: {
-        idPrefix: 10
+        idPrefix: 10,
+        pannelType: 3
       },
       filterSchema: null,
       pagination: {
@@ -81,6 +82,10 @@ export default {
             formatter: (row) => {
                 return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_voole': '优朋'}[row.pannelList[0].pannelResource]
             }
+          },
+          {
+            label: '专辑数据',
+            prop: 'albumName'
           },
           {
             label: '引用状态',
@@ -157,7 +162,8 @@ export default {
     },
     handleFilterReset() {
       this.filter = {
-        idPrefix: 10
+        idPrefix: 10,
+        pannelType: 3
       }
       this.fetchData()
     },
@@ -232,6 +238,10 @@ export default {
         label: '板块标题',
         component: 'Input'
       }),
+      vDataListName: _.o.string.other('form', {
+        label: '关联专辑名',
+        component: 'Input'
+      }),
       tabName: _.o.string.other('form', {
         label: '引用状态',
         component: 'Input'
@@ -244,17 +254,9 @@ export default {
         label: '状态',
         component: 'Select'
       }),
-      pannelType: _.o.enum({'影视推荐板块': 6, '定向板块': 7, '常规板块': 1}).other('form', {
+      type: _.o.enum({'默认': -1, '置顶': 1, '下沉': 0}).other('form', {
         label: '板块类别',
         component: 'Select'
-      }),
-      contentTitle: _.o.string.other('form', {
-        label: '推荐位标题',
-        component: 'Input'
-      }),
-      contentPackageName: _.o.string.other('form', {
-        label: '推荐位包名',
-        component: 'Input'
       })
     }).other('form', {
       cols: {
