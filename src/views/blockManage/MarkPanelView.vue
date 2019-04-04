@@ -1,0 +1,215 @@
+<template>
+  <ContentCard :title="title" @go-back="$emit('go-back')">
+    <div id="preview" v-cloak>
+      <div class="audit-tip" v-show="releaseTime">该版块为定时任务，审核通过后将于{{ releaseTime }}上线</div>
+      <div id="pannelStatus">
+        <el-form :inline="true">
+          <el-form-item label="版本" v-if="isShowVersion">
+            <el-select
+              v-model="versions"
+              @change="handleSelectVersion"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in versionList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <div class="form-status">{{pannelStatus}}</div>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="base-tit">
+        <span>基本信息</span>
+      </div>
+      <el-form label-width="120px">
+        <el-form-item label="版块名称:">
+          <div>{{pannelName}}</div>
+        </el-form-item>
+        <el-form-item label="版块标题:">
+          <div>{{pannelTitle}} {{ showTitle === 0 ? '(前端不显示)' : '' }}</div>
+        </el-form-item>
+        <el-form-item label="功能类型:">
+          <div>{{clientType}}</div>
+        </el-form-item>
+        <el-form-item label="内容源:">
+          <div>{{pannelResourceText[pannelResource] || '不限'}}</div>
+        </el-form-item>
+      </el-form>
+      <div class="base-tit auditor-title">
+        <span>审核者备注</span>
+      </div>
+      <div class="up-addlist">
+        <table>
+          <tbody class="auditor-wrapper">
+            <!-- <tr v-for="(item, index) in auditHistories"> -->
+            <!-- <tr>
+              <td>{{ item.lastUpdateDate }}</td>
+              <td>{{ item.auditor }}</td>
+              <td>{{ item.auditFlag}}</td>
+              <td>{{ item.auditDesc }}</td>
+            </tr>-->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ContentCard>
+</template>
+<script>
+var param = {}
+export default {
+  props: {
+    viewId: Number,
+    default: null
+  },
+  data() {
+    return {
+      title: '预览',
+      pannelType: 'pannel',
+      auditHistories: [],
+      blockContentProps: {},
+      releaseTime: undefined,
+      activePannelIndex: 0,
+      buttonGroup: {
+        params: {
+          //   status: param.pannelList[0].pannelStatus,
+          //   resourceId: param.pannelGroupId,
+          //   version: param.currentVersion,
+          //   type: 'pannel',
+          //   menuElId: 'pannelInfo'
+        },
+        options: {
+          isAllowCopy: true
+        }
+      },
+      pannelResourceText: {
+        o_iqiyi: '爱奇艺',
+        o_tencent: '腾讯',
+        o_voole: '优朋'
+      },
+      clientType: '',
+      showTitle: 1,
+      pannelResource: '',
+      pannelName: '',
+      pannelTitle: '',
+      versions: '',
+      versionList: [],
+      isShowVersion: false,
+      pannelStatus: ''
+    }
+  },
+  computed: {
+    // pannelStatusText() {
+    //   const pannelStatus = this.pannelStatus
+    //   if (pannelStatus) {
+    //     console.log(pannelStatus)
+    //   }
+    // },
+    // focusShapeText() {
+    //   const focusShape = this.focusShape
+    //   if (focusShape !== undefined) {
+    //     return ['线落焦', '面落焦'][focusShape]
+    //   }
+    // }
+  },
+  methods: {
+    /**请求数据 */
+    getViewData() {
+     return this.$service.getViewData({ id: this.viewId }).then(data => {
+         console.log(data)
+        this.buttonGroup.params = data
+        this.pannelName = data.pannelList[0].pannelName
+        this.pannelTitle = data.pannelList[0].pannelTitle
+        this.pannelResource = data.pannelList[0].pannelResource
+        this.pannelStatus = this.parasNumToStr(data.pannelList[0].pannelStatus) 
+        this.versions = data.currentVersion
+        this.clientType = data.clientType
+      })
+    },
+    parasNumToStr(status) {
+       const methodsMap = ['下架', '上架', '草稿', '待审核', '审核通过',  '审核不通过']
+       const method = methodsMap[status]
+       return method 
+    },
+    //获取上架时间
+    getTimedInfo() {
+        const timeObj = {
+            id: this.viewId,
+            version: this.buttonGroup.params.currentVersion,
+            type: this.pannelType
+        }
+      this.$service.getTimedInfo(timeObj).then(data => {
+        this.releaseTime = data.releaseTime
+      })
+    },
+    getHistoryList() {
+        var that = this
+      const historyObj = {
+        id: that.viewId,
+        type: that.pannelType
+      }
+      that.$service.getHistoryList(historyObj).then(data => {
+        var version9 = ''
+        if (data.rows == null || data.rows.length == 0) {
+          that.isShowVersion = false
+          return false
+        }
+        that.isShowVersion = true
+        data.rows.forEach(function(v, i) {
+          that.versionList.push({
+            value: v.version,
+            label:
+              v.version +
+              '/' +
+              v.lastUpdateDate +
+              '/' +
+              v.modifierName +
+              '/' +
+              that.parasNumToStr(v.status)
+          })
+          console.log(that.versionList)
+          if (v.version == param.currentVersion) {
+            that.versions = v.version
+          }
+          if (v.status === 9) {
+            version9 = v.version
+          }
+        })
+        if (that.versions == '') {
+          that.versions = version9
+        }
+      })
+    },
+    handleSelectVersion(version) {
+        const timeObj = {
+            id: this.viewId,
+            version: version,
+            type: this.pannelType
+        }
+       this.$service.getTimedInfo(timeObj).then(data => {
+           this.releaseTime = data.releaseTime
+       })
+       this.getViewData()
+
+    },
+  },
+  created() {
+    this.getViewData().then(() => {
+      this.getTimedInfo()
+    })
+    this.getHistoryList()
+  }
+}
+</script>
+<style  scoped>
+.form-status {
+    background-color: #409eff;
+    padding: 0px 5px;
+    color: #fff
+}
+</style>
+

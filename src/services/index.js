@@ -13,6 +13,9 @@ import * as materialManage from './commonModule/materialManage'
 import * as tabInfo from './panelManage/tabInfo'
 import * as panelInfo from './blockManage/panelInfo'
 import * as homePageInfo from './homePageManage/homePageInfo'
+import * as resourceManage from './resourceManage/movie'
+import * as markPanel from './blockManage/markPanel'
+
 const service = {
   state: {},
   fetch,
@@ -27,6 +30,8 @@ const service = {
   ...materialManage,
   ...tabInfo,
   ...panelInfo,
-  ...homePageInfo
+  ...homePageInfo,
+  ...resourceManage,
+  ...markPanel
 }
 Vue.prototype.$service = utils.wrapService(service)
