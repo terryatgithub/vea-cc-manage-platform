@@ -171,7 +171,7 @@ export default {
     },
     handleRowChange(row, index) {
       this.table.selected = index
-      this.selected = row.coocaaVId
+      this.selected = row
     }
   },
   created() {}

@@ -106,7 +106,7 @@ export default {
     // table操作
     handleRowChange(row, index) {
       this.table.selected = index
-      this.selected = row.id
+      this.selected = row
     }
   },
   created() {

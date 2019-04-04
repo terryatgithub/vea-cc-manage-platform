@@ -453,14 +453,7 @@ export default {
     handleRowChange(row, index) {
       console.log('row',row);
       this.table.selected = index
-      this.selected = {
-        id: row.coocaaVId,
-        title: row.title,
-        subTitle: row.subTitle,
-        poster: {
-          pictureUrl: row.thumb
-        }
-      }
+      this.selected = row
     }
   },
   created() {

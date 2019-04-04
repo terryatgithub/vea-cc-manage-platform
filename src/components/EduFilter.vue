@@ -53,7 +53,7 @@
             <el-form-item label="课程版本">
               <el-select filterable v-model="searchForm.courseVersion" size="small">
                 <el-option label="请选择/输入" value=""></el-option>
-                <el-option v-for="version in conditionList.courseVersion" :key="version.tagEnName" :label="version.tagCnName" :value="version.tagCnName"></el-option>
+                <el-option v-for="version in conditionList.courseVersion" :key="version.tagId" :label="version.tagCnName" :value="version.tagCnName"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="集数">
@@ -265,9 +265,8 @@ export default {
     },
     handleRowChange(row, index) {
       this.table.selected = index
-      this.selected = row.coocaaVId
+      this.selected = row
     },
-    teachTypesSelectChange() {},
     yearStartListen: function () {
         if (this.searchForm.yearStart && !+this.searchForm.yearStart) {
             this.$message('年代必须为数字')
@@ -352,7 +351,11 @@ export default {
     },
   },
   mounted() {
-    this.$service.getCondition().then(result => {
+    const params = {
+      type: 'vod',
+      businessType: 1
+    }
+    this.$service.getCondition(params).then(result => {
       const data = JSON.parse(result.slice(7,-1))
       this.conditionList = data.vod
     })

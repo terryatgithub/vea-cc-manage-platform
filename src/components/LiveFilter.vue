@@ -213,7 +213,7 @@ export default {
     },
     handleRowChange(row, index) {
       this.table.selected = index
-      this.selected = row.vId
+      this.selected = row
     },
     reset() {
       this.searchForm = {
