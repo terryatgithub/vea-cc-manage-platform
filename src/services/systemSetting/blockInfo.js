@@ -35,7 +35,8 @@ export function saveBlockInfo(data) {
   return this.fetch({
     method: 'post',
     url: '/api/blockInfo/save.html',
-    data
+    data,
+    isJSON: true
   })
 }
 /**

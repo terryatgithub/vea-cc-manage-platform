@@ -1,7 +1,7 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div>
-      <el-button type="primary" size="medium">提交审核</el-button>
+      <el-button type="primary" size="medium" @click="submitCheck">提交审核</el-button>
       <el-button type="warning" size="medium" @click="$emit('go-back')">关闭</el-button>
     </div>
 
@@ -50,8 +50,9 @@
       >批量选择资源</el-button>
     </div>
 
-    <!-- {{normalVersionContent}} -->
+    <!-- {{normalVersionContent正常版本}} -->
     <div class="form-wrap">
+      <!-- group -->
       <el-row
         :gutter="4"
         class="normal-left-list"
@@ -89,6 +90,7 @@
         </el-card>
       </el-row>
 
+      <!-- broadcast -->
       <el-form
         :model="normalForm"
         ref="normalForm"
@@ -104,13 +106,22 @@
           prop="thirdIdOrPackageName"
           style="width: 600px"
         >
-          <BroadcastSource
-            v-if="autoWrite"
-            v-model="normalForm.thirdIdOrPackageName"
+          <ResourceSelector
+            v-if="basicForm.configModel === 'broadcast'"
             title="选择资源"
-            ></BroadcastSource>
+            muti="single"
+            :filterItems="['broadcast']"
+            @confirm-click="resourceConfirm($event, normalForm)"
+          >选择资源</ResourceSelector>
+          <ResourceSelector
+            v-if="autoWrite&&basicForm.configModel === 'group'"
+            title="选择资源"
+            muti="single"
+            :filterItems="['video', 'edu', 'live', 'broadcast']"
+            @confirm-click="resourceConfirm($event, normalForm)"
+          >选择资源</ResourceSelector>
           <el-input
-            v-else
+            v-if="!autoWrite"
             v-model="normalForm.thirdIdOrPackageName"
             style="float: left"
             @blur="getUrlBlur"
@@ -184,17 +195,14 @@
             <el-radio label="manualSet">手动设置</el-radio>
           </el-radio-group>
         </el-form-item>
-        <!-- <div v-if="normalForm.sign === 'manualSet'">
-          <cc-new-universal-reference
-            ref="openWayNormal"
-            :vip-reference-data="referenceDataNormal"
-            :vip-is-preview="noPreview"
-            :open-mode-array="openModeArray"
-            :reference-options="referenceOptions"
-          ></cc-new-universal-reference>
-        </div> -->
+
+        <div v-if="normalForm.sign === 'manualSet'">
+            <ccAppParamsForm ref="openWayNormal" :vip-reference-data="referenceDataNormal" :vip-is-preview = "noPreview" :open-mode-array="openModeArray" :reference-options="referenceOptions"/>
+        </div>
       </el-form>
     </div>
+
+    <!-- {{lowerVersionContent兼容低版本}} -->
     <div class="version-title" style="margin-top: 25px;">
       <h2 style="float: left;margin-top: 7px;">兼容低版本</h2>
       <div
@@ -226,9 +234,10 @@
           v-if="lowerForm.coverType === 'media' || lowerForm.coverType === 'app' "
         >
           <ResourceSelector
-            v-model="lowerFormPackage"
             title="选择资源"
             muti="single"
+            :filterItems="['video', 'edu', 'live', 'topics', 'broadcast']"
+            @confirm-click="resourceConfirm($event, lowerForm)"
             >选择资源</ResourceSelector>
           <el-tag
             type="success"
@@ -285,15 +294,15 @@
             <el-input v-model="lowerForm.versionCode"></el-input>
           </el-form-item>
         </div>
-        <!-- <div v-if="lowerForm.coverType === 'custom'">
-          <cc-new-universal-reference
-            ref="openWayLower"
-            :vip-reference-data="referenceData"
-            :vip-is-preview="noPreview"
-            :open-mode-array="openModeArray"
-            :reference-options="referenceOptions"
-          ></cc-new-universal-reference>
-        </div> -->
+        <div v-if="lowerForm.coverType === 'custom'">
+            <el-form-item label="打开方式">
+              <el-select value="第三方应用" style="max-width:280px">
+                <el-option value="app">第三方应用</el-option>
+              </el-select>
+              <el-button type="primary" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
+            </el-form-item>
+            <ccAppParamsForm ref="openWayLower"/>
+        </div>
       </el-form>
     </div>
     
@@ -326,6 +335,16 @@
     </el-dialog>
     <!-- 角标弹框 end -->
 
+    <!-- lowerForm第三方运用快速填充弹框 -->
+    <el-dialog :visible.sync="onclickEventVisible" width="1200px">
+      <selectClick @clcik="getClickData"></selectClick>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="onclickEventVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onclickEventVisible = false;clickThirdpartSubmit()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 第三方运用快速填充弹框end -->
+
   </ContentCard>
 </template>
 
@@ -335,13 +354,18 @@ import BroadcastSource from '@/components/BroadcastSource'
 import ResourceSelector from '@/components/ResourceSelector'
 import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
+import ccAppParamsForm from '@/views/blockInfo/ccAppParamsForm'
+import selectClick from '@/views/blockInfo/selectClick'
+
 export default {
   components: {
     draggable,
     BroadcastSource,
     ResourceSelector,
     DialogPicture,
-    DialogCorner
+    DialogCorner,
+    ccAppParamsForm,
+    selectClick
   },
 
   props: {
@@ -352,11 +376,9 @@ export default {
 
   data() {
     return {
-      lowerFormPackage: {
-        id: '',
-        title: '',
-        subTitle: ''
-      },//筛选器传回来的值
+      onclickEventVisibleFlag: '',//标识是哪个版本的快速填充弹窗normal/lower
+      clickData: undefined,//自定义快速填充单击选中的数据
+      onclickEventVisible: false,//自定义快速填充弹窗
       cornerIconTypeOptions: {},
       cornerTypes: [],
       materialTypes: null,
@@ -366,7 +388,9 @@ export default {
         configModel: 'broadcast'
       },
       normalForm: {},
-      lowerForm: {},
+      lowerForm: {
+        coverType: 'media'
+      },
       auditDisabled: false,
       normalRules: {
         title: [{ required: true, message: '请填写标题', trigger: 'blur' }],
@@ -487,6 +511,7 @@ export default {
       normalVersionContent: [],
       openModeArray: [{ name: '第三方应用', value: 'app' }],
       referenceDataNormal: [],
+      referenceData: [],
       noPreview: 'noPreview',
       referenceOptions: {
         picture: false
@@ -521,14 +546,6 @@ export default {
   },
 
   watch: {
-      lowerFormPackage(selected) {
-        this.lowerForm = {
-          thirdIdOrPackageName: selected.id,
-          title: selected.title,
-          subTitle: selected.subTitle,
-          poster: selected.poster
-        }
-      },
       'basicForm.configModel': {
         deep: true,
         handler: function(newVal, oldVal) {
@@ -553,34 +570,21 @@ export default {
           }
         }
       },
-      autoWrite: function(newVal, oldVal) {
-        // if (newVal === false) {
-        //     this.normalForm = Object.assign({}, this.versionForm);
-        //     this.normalVersionContent.splice(this.currentIndex, 1, this.normalForm);
-        //     this.normalForm.sign = 'manualSet';
-        //     this.signDisabled = true;
-        //     this.normalForm.type = 'url';
-        //     this.normalForm.contentType = 'custom';
-        //     this.normalForm.coverType = 'custom';
-        //     var newForm = Object.assign({}, this.normalForm);
-        //     var newVal = {
-        //         url: this.normalForm.thirdIdOrPackageName,
-        //         source: "",
-        //         name: this.normalForm.title,
-        //         needParse: "false",
-        //         url_type: "web"
-        //     };
-        //     newForm.params = JSON.stringify(newVal);
-        //     this.normalForm = newForm;
-        // } else {
-        //     this.normalForm = Object.assign({}, this.versionForm);
-        //     this.normalForm.sign = 'autoSet';
-        //     this.signDisabled = false;
-        //     this.normalVersionContent[this.currentIndex] = this.normalForm;
-        // }
-      }
+      // autoWrite: function(newVal, oldVal) {
+      // }
   },
   methods: {
+    clickThirdpartSubmit() {
+      var selectClick = this.clickData
+      selectClick = JSON.parse(selectClick.onlickJson)
+      console.log('selectClick', selectClick);
+    },
+    // 第三方应用快速填充
+    getClickData(data) {
+      this.clickData = data
+      console.log(this.clickData);
+    },
+    // 自动填写表单
     autoWriteFun: function() {
       this.autoWrite = !this.autoWrite
       if (this.autoWrite === false) {
@@ -608,6 +612,7 @@ export default {
         this.normalVersionContent[this.currentIndex] = this.normalForm
       }
     },
+    // 删除角标
     deleteCorner: function(form, index) {
       var list = form.cornerIconList.slice(0)
       list[index] = {
@@ -653,7 +658,10 @@ export default {
       arr.push(this.normalForm)
       this.normalVersionContent = arr
     },
+
+    // ??
     selectResource: function(type, form, selectType) {
+      console.log(111, type, form);
       this.resourceVisible = true
       this.resourceOptions.activeTabName = 'video'
       this.currentForm = form
@@ -700,6 +708,8 @@ export default {
       }
       this.resourceOptions = newOptions
     },
+
+    // ??
     paramIdFun: function(form, seledted) {
       // 封装保存的id
       if (seledted.contentType === 'movie') {
@@ -738,8 +748,9 @@ export default {
 
       return param
     },
-    packageFormParam: function(form, item) {
-      form.type = item.type
+
+    // ??表单格式转换
+    packageFormParam: function(item, form) {
       if (item.contentType === 'rotate') {
         form.subchannelIs = true
       } else {
@@ -750,24 +761,20 @@ export default {
       } else {
         form.smallTopicsIs = false
       }
-      form.title = item.title
-      form.coverType = item.coverType
-      form.contentType = item.contentType
-      form.subTitle = item.subTitle
-      form.thirdIdOrPackageName = item.thirdIdOrPackageName
       if (item.pictureUrl) {
-        var newForm = Object.assign({}, form.poster)
-        newForm.pictureUrl = item.pictureUrl
-        form.poster = newForm
+          var newForm = Object.assign({}, form.poster);
+          newForm.pictureUrl = item.pictureUrl;
+          form.poster = newForm;
       }
-
-      form.subTitle = item.subTitle
+      delete item.pictureUrl
+      Object.assign(form, item)
       var param = this.paramIdFun(form, item)
       form.clickParams = JSON.stringify(param)
       form.params = JSON.stringify(param)
 
       return form
     },
+    // 指定小专题
     smallTopicsLower: function() {
       if (this.lowerForm.smallTopicsId) {
         var newObj = JSON.parse(this.lowerForm.params)
@@ -775,6 +782,7 @@ export default {
         this.lowerForm.params = JSON.stringify(newObj)
       }
     },
+    // 手动填写字符串
     getUrlBlur: function() {
       if (this.autoWrite === false) {
         var newForm = Object.assign({}, this.normalForm)
@@ -811,45 +819,46 @@ export default {
         form.params = JSON.stringify(newObj)
       }
     },
-    // 资源确定
-    resourceConfirm: function(sortSelected) {
-      var _this = this
-      this.resourceVisible = false
-      var formArr = []
-      var currentForm = this.currentForm
+    // ??资源确定
+    resourceConfirm: function(callbackData, form) {
+      this.packageFormParam(callbackData, form)
+      console.log('thenForm', form);
+      // let type = tabName === 'video'||'edu' ? 
+      // var _this = this
+      // var formArr = []
+      // var seledted = sortSelected
+      // var form = _this.packageFormParam(seledted, form)
+      // if (this.resourceOptions.multi) {
+      //   console.log(_this.currentIndex)
+      //   _.each(sortSelected, function(item) {
+      //     var form = _this.packageFormParam(currentForm, item)
+      //     var newVal = Object.assign({}, form)
+      //     formArr.push(newVal)
+      //   })
+      //   var arr = formArr.slice(0)
+      //   console.log(arr)
+      //   _this.normalVersionContent.splice(
+      //     _this.currentIndex,
+      //     sortSelected.length,
+      //     arr
+      //   )
+      //   var FastDevTool1 = new FastDevTool()
+      //   _this.normalVersionContent = FastDevTool1.arrayFlatten(
+      //     _this.normalVersionContent
+      //   )
+      //   console.log(_this.normalVersionContent)
+      //   this.currentIndex = this.normalVersionContent.length - 1
+      // } else {
+      //   var seledted = sortSelected
+      //   var form = _this.packageFormParam(currentForm, seledted)
+      // }
 
-      if (this.resourceOptions.multi) {
-        // 多选
-        console.log(_this.currentIndex)
-        _.each(sortSelected, function(item) {
-          var form = _this.packageFormParam(currentForm, item)
-          var newVal = Object.assign({}, form)
-          formArr.push(newVal)
-        })
-        var arr = formArr.slice(0)
-        console.log(arr)
-        _this.normalVersionContent.splice(
-          _this.currentIndex,
-          sortSelected.length,
-          arr
-        )
-        var FastDevTool1 = new FastDevTool()
-        _this.normalVersionContent = FastDevTool1.arrayFlatten(
-          _this.normalVersionContent
-        )
-        console.log(_this.normalVersionContent)
-        this.currentIndex = this.normalVersionContent.length - 1
-      } else {
-        // 单选
-        var seledted = sortSelected
-        var form = _this.packageFormParam(currentForm, seledted)
-      }
-
-      console.log(this.normalForm)
     },
-    closeResource: function() {
-      this.resourceVisible = false
-    },
+    // closeResource: function() {
+    //   this.resourceVisible = false
+    // },
+     
+    // 校验normalForm
     checkNormalForm: function(cb) {
       var _this = this
       this.$refs.normalForm.validate(function(valid) {
@@ -876,6 +885,8 @@ export default {
         }
       })
     },
+
+    // 校验lowerForm
     checkLowerForm: function(cb) {
       var _this = this
       this.$refs.lowerForm.validate(function(valid) {
@@ -897,6 +908,10 @@ export default {
         }
       })
     },
+    deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj))
+    },
+    // 组合模式->添加normalForm
     addNormal: function(cb) {
       var _this = this
       this.checkNormalForm(function() {
@@ -908,6 +923,7 @@ export default {
         _this.signDisabled = false
       })
     },
+    // 组合模式->删除normalForm
     deleteNormal: function(index) {
       var _this = this
       this.$confirm('是否删除当前选中项?', '提示', {
@@ -947,6 +963,7 @@ export default {
           })
         })
     },
+    // 组合模式->normalForm切换
     switchNormal: function(index) {
       var _this = this
       this.checkNormalForm(function() {
@@ -972,6 +989,8 @@ export default {
         _this.normalVersionContent.splice(index, 1, _this.normalForm)
       })
     },
+
+    // 打开海报和角标弹窗
     openPicture: function(type, form, index) {
       this.pictureType = type
       this.currentForm = form
@@ -988,10 +1007,6 @@ export default {
         }
       }
       this.pictureOptions = this.pictureListOptions[type]
-    },
-    getPicture: function(value) {
-      console.log(value)
-      this.selectPicture = value
     },
     savePicture: function() {
       var selectPicture = this.selectPicture
@@ -1030,12 +1045,9 @@ export default {
       this.currentIndex = event.newIndex
       this.normalForm = this.normalVersionContent[event.newIndex]
     },
+
+    // 快速填充
     lowerFill: function() {
-      // console.log(val);
-      // if (val) {
-      //     var newForm = Object.assign({}, this.normalVersionContent[0]);
-      //     this.lowerForm = newForm;
-      // }
       var newForm = Object.assign({}, this.normalVersionContent[0])
       this.lowerForm = newForm
     },
@@ -1068,7 +1080,7 @@ export default {
         }
       })
     },
-    save: function() {
+    submitCheck: function() {
       var _this = this
       this.$refs.basicForm.validate(function(valid) {
         if (valid) {
@@ -1083,44 +1095,15 @@ export default {
               } else {
                 obj.normalVersionContent.push(_this.normalForm)
               }
-
               delete _this.lowerForm.smallTopicsId
               obj.lowerVersionContent = _this.lowerForm
               var resultObj = Object.assign(obj, _this.basicForm)
               resultObj.status = 3
               resultObj.parentType = 'Block'
-              console.log(resultObj)
+              console.log('resultObj',resultObj)
 
-              this.$service.saveBlockInfo(resultObj).then(data => {
-                if (data.code === '0') {
-                  window.parent.$('#data-list').datagrid('reload')
-                  _this.auditDisabled = true
-                  setTimeout(function() {
-                    window.parent.$('#add-view').dialog('_close')
-                  }, 1000)
-                }
-                _this.$message(data.msg)
-              })
-              // $.ajax({
-              //   type: 'POST',
-              //   url: $basePath + '/blockInfo/save.html',
-              //   data: JSON.stringify(resultObj),
-              //   contentType: 'application/json; charset=utf-8',
-              //   success: function(res) {
-              //     var data = JSON.parse(res)
-              //     if (data.code === '0') {
-              //       window.parent.$('#data-list').datagrid('reload')
-              //       _this.auditDisabled = true
-              //       setTimeout(function() {
-              //         window.parent.$('#add-view').dialog('_close')
-              //       }, 1000)
-              //     }
-              //     _this.$message(data.msg)
-              //   },
-              //   error: function(data) {
-              //     console.log(data)
-              //   }
-              // })
+              _this.$service.saveBlockInfo(resultObj)
+              _this.$emit('open-list-page')
             })
           })
         } else {
@@ -1164,7 +1147,6 @@ export default {
         cornerIconTypeOptions[label] = value
       }
       this.cornerIconTypeOptions = cornerIconTypeOptions
-      console.log(this.cornerIconTypeOptions)
     })
   },
   

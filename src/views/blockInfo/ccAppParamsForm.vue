@@ -1,5 +1,5 @@
 <template>
-     <div>
+     <div class="container">
         <el-form-item label="应用包名" :prop="formProp('packagename')" :rules="rules.packagename">
             <el-input v-model.trim="inputValue.packagename"></el-input>
         </el-form-item>
@@ -165,7 +165,9 @@ export default {
     border-radius: 15px;
     color: #999;
 }
-
+.container .el-input--small {
+    max-width: 280px;
+}
 </style>
 
 
