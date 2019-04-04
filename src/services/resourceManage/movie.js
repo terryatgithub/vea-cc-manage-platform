@@ -1,23 +1,30 @@
 // 资源管理——影片资源
-export function getMovieList (params) {
+export function getMediaVideoInfos(params) {
   return this.fetch({
     methods: 'get',
     url: '/api/tvos/getMediaVideoInfos.html',
     params
+  }).then(data => {
+    return JSON.parse(data.substring(7,data.length-1))
   })
 }
 
 //影片内容源获取
-export function getSources() {
+export function getPartnerSource(params) {
   return this.fetch({
-    methods: '/api/tvos/getPartnerSource.html',
-    data
+    methods: 'get',
+    url: '/api/tvos/getPartnerSource.html',
+    params
   })
 }
-export function getList(data) {
+//频道类型
+export function getCondition() {
   return this.fetch({
-    methods: 'post',
+    methods: 'get',
     url: '/api/tvos/getCondition.html',
-    data
+  })
+    .then(data => {
+    // return JSON.parse(data)
+      return  JSON.parse(data.substring(7,data.length-1))
   })
 }
