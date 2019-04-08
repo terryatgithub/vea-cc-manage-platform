@@ -197,7 +197,13 @@
         </el-form-item>
 
         <div v-if="normalForm.sign === 'manualSet'">
-            <ccAppParamsForm ref="openWayNormal" :vip-reference-data="referenceDataNormal" :vip-is-preview = "noPreview" :open-mode-array="openModeArray" :reference-options="referenceOptions"/>
+            <el-form-item label="打开方式">
+              <el-select value="第三方应用" style="max-width:280px">
+                <el-option value="app">第三方应用</el-option>
+              </el-select>
+              <el-button type="primary" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
+            </el-form-item>
+            <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/>
         </div>
       </el-form>
     </div>
@@ -301,7 +307,7 @@
               </el-select>
               <el-button type="primary" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
             </el-form-item>
-            <ccAppParamsForm ref="openWayLower"/>
+            <ccAppParamsForm ref="openWayLower" prop-prefix="onclick." v-model="lowerForm.onclick"/>
         </div>
       </el-form>
     </div>
@@ -335,7 +341,7 @@
     </el-dialog>
     <!-- 角标弹框 end -->
 
-    <!-- lowerForm第三方运用快速填充弹框 -->
+    <!-- 第三方运用快速填充弹框 -->
     <el-dialog :visible.sync="onclickEventVisible" width="1200px">
       <selectClick @clcik="getClickData"></selectClick>
       <div slot="footer" class="dialog-footer">
@@ -539,7 +545,7 @@ export default {
         }
       } else {
         return {
-          height: '1140px'
+          height: '1000px'
         }
       }
     }
@@ -575,9 +581,30 @@ export default {
   },
   methods: {
     clickThirdpartSubmit() {
-      var selectClick = this.clickData
-      selectClick = JSON.parse(selectClick.onlickJson)
-      console.log('selectClick', selectClick);
+      const { onclickEventVisibleFlag } = this
+      if(onclickEventVisibleFlag === 'lower') {
+        const inputValue = this.$refs.openWayLower.inputValue
+        this.parseOnclick(inputValue)
+      }else {
+        const inputValue = this.$refs.openWayNormal.inputValue
+        this.parseOnclick(inputValue)
+      }
+    },
+    parseOnclick(inputValue) {
+      const clickData = this.clickData
+      Object.keys(inputValue).map(item => {
+        if(item === 'params'){
+          const params = JSON.parse(clickData[item])
+          inputValue[item] = Object.keys(params).map(function(key) {
+            return {
+              key: key,
+              value: params[key]
+            }
+          })
+        }else {
+          inputValue[item] = clickData[item]
+        }
+      })
     },
     // 第三方应用快速填充
     getClickData(data) {
@@ -709,7 +736,6 @@ export default {
       this.resourceOptions = newOptions
     },
 
-    // ??
     paramIdFun: function(form, seledted) {
       // 封装保存的id
       if (seledted.contentType === 'movie') {
@@ -749,7 +775,7 @@ export default {
       return param
     },
 
-    // ??表单格式转换
+    // 表单格式转换
     packageFormParam: function(item, form) {
       if (item.contentType === 'rotate') {
         form.subchannelIs = true
@@ -822,7 +848,6 @@ export default {
     // ??资源确定
     resourceConfirm: function(callbackData, form) {
       this.packageFormParam(callbackData, form)
-      console.log('thenForm', form);
       // let type = tabName === 'video'||'edu' ? 
       // var _this = this
       // var formArr = []
@@ -864,8 +889,8 @@ export default {
       this.$refs.normalForm.validate(function(valid) {
         if (valid) {
           if (_this.normalForm.sign === 'manualSet') {
-            if (_this.$refs.openWayNormal.assembleOnclick()) {
-              _this.normalForm.onclick = _this.$refs.openWayNormal.assembleOnclick().onclick
+            if (true) {
+              // _this.normalForm.onclick = _this.$refs.openWayNormal.assembleOnclick().onclick
               _this.normalVersionContent.splice(
                 _this.currentIndex,
                 1,
@@ -892,8 +917,8 @@ export default {
       this.$refs.lowerForm.validate(function(valid) {
         if (valid) {
           if (_this.lowerForm.coverType === 'custom') {
-            if (_this.$refs.openWayLower.assembleOnclick()) {
-              _this.lowerForm.onclick = _this.$refs.openWayLower.assembleOnclick().onclick
+            if (true) {
+              // _this.lowerForm.onclick = _this.$refs.openWayLower.assembleOnclick().onclick
               cb()
             } else {
               _this.$message('请将表单填写完整')
@@ -1089,10 +1114,12 @@ export default {
               var obj = { normalVersionContent: [], lowerVersionContent: {} }
               if (_this.basicForm.configModel === 'group') {
                 _this.normalVersionContent.map(function(item) {
+                  item.onclick ? item.onclick = JSON.stringify(item.onclick) : ''
                   delete item.thirdIdOrPackageName
                 })
                 obj.normalVersionContent = _this.normalVersionContent
               } else {
+                _this.normalForm.onclick ? _this.normalForm.onclick = JSON.stringify(_this.normalForm.onclick) : ''
                 obj.normalVersionContent.push(_this.normalForm)
               }
               delete _this.lowerForm.smallTopicsId
