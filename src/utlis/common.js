@@ -73,6 +73,6 @@ Vue.prototype.$numToAuditStatus = function (num) {
  *返回数组
  */
 Vue.prototype.$regParenthesesContent = function (str) {
+  // eslint-disable-next-line no-useless-escape
   return str.match(/([^\(\)]+)(?=\))/g)
 }
-

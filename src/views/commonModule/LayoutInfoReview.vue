@@ -10,9 +10,13 @@
           <el-form-item label="布局类别" prop="layoutType">
             <div>{{form.layoutType}}</div>
           </el-form-item>
+           <el-form-item label="状态">
+           <div class="status">{{form.layoutStatus}}</div>
+          </el-form-item>
           <el-form-item label="布局">
             <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>
           </el-form-item>
+         
           <el-form-item>
            <AuditDetailButton
             :id="id"
@@ -66,6 +70,7 @@ export default {
         layoutName: null,
         layoutType: null,
         layoutJson: {},
+        layoutStatus: null,
         layoutModel: null, //布局类型
         layoutStatus: 2 //默认为草稿
       },
@@ -107,7 +112,10 @@ export default {
       Object.keys(this.form).forEach(v => {
         if (v ==='layoutType') {
           this.form[v] = this.getlLayoutTypeName(this.reviewData[v])
-        } else {
+        } else if(v === 'layoutStatus') {
+          this.form[v] = this.$numToAuditStatus(this.reviewData[v])
+        }
+        else {
          this.form[v] = this.reviewData[v]
         }
       })
@@ -158,5 +166,7 @@ export default {
 .layoutBloack
   >>> .close-block
     display: none
+.status
+  color red
 </style>
 

@@ -54,10 +54,8 @@
       </span>
     </el-dialog>
     <!-- 数据权限窗口end -->
-
   </ContentCard>
 </template>
-
 <script>
 import _ from 'gateschema'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
@@ -275,7 +273,7 @@ export default {
       }, [])
     },
     handleFilterChange (type) {
-      if (type === 'filter') {
+      if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }

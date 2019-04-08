@@ -175,7 +175,7 @@ export default {
       this.table.selected = index
     },
     handleFilterChange(type) {
-      if (type === 'filter') {
+      if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }

@@ -287,7 +287,7 @@ export default {
       }
     },
     handleFilterChange (type) {
-      if (type === 'filter') {
+      if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }

@@ -43,13 +43,13 @@ export default {
   data() {
     return {
       actions: {
-        audit: {
-          type: 'primary',
-          text: '审核'
-        },
-        unaudit: {
-          text: '撤销审核'
-        }
+        // audit: {
+        //   type: 'primary',
+        //   text: '审核'
+        // },
+        // unaudit: {
+        //   text: '撤销审核'
+        // }
       },
       auditDialog: false,
       auditForm: {
@@ -90,13 +90,13 @@ export default {
         menuElId: this.menuElId
       }
       this.$service.getAuditDetailButton(params).then(data => {
-        debugger
+        let action = {}
         data.forEach(v => {
-          if (v.runComm !== 'claim' && v.runComm !== 'unclaim')
-            this.actions[v.runComm] = { text: v.runName }
+          if (v.runComm !== 'claim' && v.runComm !== 'unclaim') {
+             action[v.runComm] = { text: v.runName , type: 'primary'}
+          }
         })
-        console.log(11)
-        debugger
+        this.actions = action
       })
     },
     audit() {
@@ -118,7 +118,7 @@ export default {
     }
   },
   created() {
-    this.getAuditDetailButton()
+   this.getAuditDetailButton()
   }
 }
 </script>
