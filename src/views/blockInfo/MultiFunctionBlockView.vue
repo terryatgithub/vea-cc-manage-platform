@@ -1,9 +1,6 @@
 <template>
  <ContentCard :title="title" @go-back="$emit('go-back')">
        <div class="multi-func-block-read" >    
-        <div class="toolbar-container" style="padding: 16px;">
-            <el-button type="primary" v-if="block.pluginInfo.pluginStatus === STATUS.waiting" @click="showAuditDialog = true">审核</el-button>
-        </div>
         <div class="base-tit">
             <span>基本信息</span>
         </div>
@@ -162,6 +159,9 @@
             <el-button type="primary" @click="handleAudit">确 定</el-button>
             </div>
         </el-dialog>
+          <div class="toolbar-container" style="padding: 16px;text-align:right">
+            <el-button type="primary" v-if="block.pluginInfo.pluginStatus === STATUS.waiting" @click="showAuditDialog = true">审核</el-button>
+        </div>
     </div>
  </ContentCard>
 </template>

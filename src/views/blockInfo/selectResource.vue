@@ -15,7 +15,7 @@
       >
       <div class="box-list" slot="row" slot-scope="{row: item}">
         <p class="list-p">
-          <img class="list-img" :src="item.pictureUrl" alt="">
+          <img class="list-img" :src="item.pictureUrl" alt="" v-on:click="reviewPic(item.pictureUrl)">
           </p>
         <p class="list-title"> {{item.pictureName}}</p>
           <p style="margin:0">
@@ -25,6 +25,12 @@
           </p>
       </div>
       </CardList>
+       <!-- 预览图片 -->
+    <el-dialog title="预览图片" :visible.sync="picDialogVisible" append-to-body >
+      <span class="pics">
+        <img :src="reviewPicUrl" alt="图片" style="width:50%">
+      </span>
+    </el-dialog>
     </ContentWrapper>
   </ContentCard>
 </template>
@@ -153,6 +159,10 @@ export default {
     };
   },
   methods: {
+     reviewPic(url) {
+      this.reviewPicUrl = url
+      this.picDialogVisible = true
+    },
     //选中时间
     handleRowSelectionChange(row,index){
       console.log(row)
