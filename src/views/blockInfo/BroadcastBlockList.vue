@@ -46,35 +46,25 @@ export default {
         header: [
           {
             label: 'ID',
-            width: 100,
+            width: 70,
             prop: 'id',
             sortable: true
           },
           {
             label: '轮播时间',
-            width: 200,
             prop: 'containerName',
             sortable: true
           },
           {
             label: '状态',
-            width: 120,
             prop: 'status',
             sortable: true
           },
           {
             label: '更新时间',
-            width: 200,
             prop: 'lastUpdateDate',
             sortable: true
-          },
-          // {
-          //   label: '操作',
-          //   width: '150',
-          //   render: utils.component.createOperationRender(this, {
-          //     editData: '编辑'
-          //   })
-          // }
+          }
         ],
         data: [],
         selected: [],

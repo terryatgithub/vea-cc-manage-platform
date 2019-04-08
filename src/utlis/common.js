@@ -2,6 +2,7 @@ import Vue from 'vue'
 /*
  *提示语
  *列表页选择数据进行--编辑查看
+ 列表页只能选择一条数据编辑的提示语 selectedId 为选择的ID 数组
 */
 Vue.prototype.$isAllowEdit = function (selected) {
   if (selected.length !== 1) {
@@ -74,3 +75,4 @@ Vue.prototype.$numToAuditStatus = function (num) {
 Vue.prototype.$regParenthesesContent = function (str) {
   return str.match(/([^\(\)]+)(?=\))/g)
 }
+

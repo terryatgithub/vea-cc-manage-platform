@@ -119,7 +119,7 @@ export default {
                 fileItem.status = 'uploading'
                 this.$service.upload({
                     file, 
-                    onUploadProgerss: (event) => {
+                    onUploadProgerss: (evt) => {
                         if (evt.lengthComputable) {
                             fileItem.percentage = evt.loaded /evt.total
                         }
