@@ -1,9 +1,6 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="multi-func-block-upsert">
-      <div style="padding: 10px;">
-        <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-      </div>
       <div class="base-tit">
         <span>基本信息</span>
       </div>
@@ -312,7 +309,7 @@
         <selectResource @selected="getSelectResource"></selectResource>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogTableVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogTableVisible = false;selectSubmit()">确 定</el-button>
+          <!-- <el-button type="primary" @click="dialogTableVisible = false;selectSubmit()">确 定</el-button> -->
         </div>
       </el-dialog>
       <!--点击事件弹框-->
@@ -320,7 +317,7 @@
         <selectClick @clcik="getClickData"></selectClick>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogClickTableVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogClickTableVisible = false;clickSubmit()">确 定</el-button>
+          <!-- <el-button type="primary" @click="dialogClickTableVisible = false;clickSubmit()">确 定</el-button> -->
         </div>
       </el-dialog>
       <!--选择异形焦点-->
@@ -328,12 +325,12 @@
         <selectImg @selectImg="getSelectImg"></selectImg>
         <div slot="footer" class="dialog-footer">
           <el-button @click="showFocusImgSelectorVisible = false">取 消</el-button>
-          <el-button
-            type="primary"
-            @click="showFocusImgSelectorVisible = false;selectImgSubmit()"
-          >确 定</el-button>
+          <!-- <el-button type="primary" @click="showFocusImgSelectorVisible = false;selectImgSubmit()">确 定</el-button> -->
         </div>
       </el-dialog>
+       <div style="padding: 10px;text-align:right">
+        <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
+      </div>
     </div>
   </ContentCard>
 </template>
@@ -776,15 +773,15 @@ export default {
     /**弹框选择素材 */
     getSelectResource(data) {
       this.selectResource = data
-    },
-    selectSubmit() {
-      console.log(this.selectResource)
+      this.dialogTableVisible = false
       const selectObj = {
         pictureId: this.selectResource.pictureId,
         pictureStatus: this.selectResource.pictureStatus,
         pictureUrl: this.selectResource.pictureUrl
       }
       this.block.rlsInfo[this.selectingPostForIndex].poster = selectObj
+    },
+    selectSubmit() {
     },
     /**快速填充 */
     handleSelectClickStart(index) {
@@ -794,9 +791,7 @@ export default {
     /**点击事件弹框 */
     getClickData(data) {
       this.clickData = data
-    },
-    clickSubmit() {
-      console.log(this.clickData)
+      this.dialogClickTableVisible = false
       var selectClick = this.clickData
       selectClick = JSON.parse(selectClick.onlickJson)
       const index = this.selectingClickForIndex
@@ -805,24 +800,26 @@ export default {
       this.showselectClickor = false
       this.selectingClickForIndex = undefined
     },
+    clickSubmit() {
+    },
     /**异形焦点选择 */
+     handleSelectFocusImgStart(index) {
+      this.showFocusImgSelectorVisible = true
+      this.selectingFocusImgForIndex = index
+    },
     getSelectImg(data) {
       this.selectImgData = data
-    },
-    selectImgSubmit() {
-      console.log(this.selectImgData)
+      this.showFocusImgSelectorVisible = false
       const index = this.selectingFocusImgForIndex
       const item = this.block.rlsInfo[index]
       this.$set(item.extendInfo, 'focusImgUrl', this.selectImgData.pictureUrl)
       this.selectingFocusImgForIndex = undefined
     },
+    selectImgSubmit() {
+    },
     handleSelectTabStart(index) {
       this.showTabSelector = true
       this.selectingTabForIndex = index
-    },
-    handleSelectFocusImgStart(index) {
-      this.showFocusImgSelectorVisible = true
-      this.selectingFocusImgForIndex = index
     },
     handleRemoveFocusImg(index) {
       this.block.rlsInfo[index].extendInfo.focusImgUrl = undefined
