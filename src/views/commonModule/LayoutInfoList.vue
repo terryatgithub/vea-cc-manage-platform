@@ -59,6 +59,7 @@ export default {
       filterSchema: null,
       pagination: {},
       selected: [],
+      selectedRows: {},
       table: {
         props: {},
         header: [
@@ -79,7 +80,8 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.openReview(row.layoutId)
+
+                    this.openReview(row) 
                   }
                 }
               },row.layoutName)
@@ -119,10 +121,10 @@ export default {
               } else {
                 switch(row.layoutFlag) {
                   case 0:
-                    return '横向扩展11'
+                    return '横向扩展'
                     break
                   case 1:
-                    return '纵向扩展22'
+                    return '纵向扩展'
                     break
                 }
               }
@@ -199,14 +201,19 @@ export default {
      * 新增用户
      */
     addItem() {
-      this.$emit('open-add-page', null)
+      this.$emit('open-add-page', {})
     },
-    openReview(layoutId) {
-      
+    openReview(row) {
+       this.$emit('open-review-page',row)
     },
     editData() {
       if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selected[0])
+         let row = this.selectedRows[this.selected[0]]
+         if (row.layoutStatus !== 4)
+         this.$emit('open-add-page',this.selectedRows[this.selected[0]])
+         else {
+           this.$message("该状态不能审核")
+         }
       }
     },
     /**
@@ -230,12 +237,15 @@ export default {
     },
     handleRowSelectionAdd(targetItem) {
       this.selected.push(targetItem.layoutId)
+      let id = targetItem.layoutId
+      this.selectedRows[id] = targetItem
       this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.layoutId
       })
+      delete this.selectedRows[targetItem.layoutId]
       this.updateTableSelected()
     },
     handleAllRowSelectionChange(value) {
@@ -261,7 +271,7 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
-      if (type === 'filter') {
+      if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }

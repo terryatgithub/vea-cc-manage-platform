@@ -33,3 +33,25 @@ export function getLayoutInforById (params) {
   })
 }
 
+export function getAuditDetailButton (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/buttonManage/getAuditDetailButton.html',
+    data
+  })
+}
+
+export function auditTask (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/audit/auditTask.html',
+    params
+  })
+}
+export function revokedAudit (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/V1/audit/revokedAudit.html',
+    params
+  })
+}
