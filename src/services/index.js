@@ -17,6 +17,7 @@ import * as resourceManage from './resourceManage/movie'
 import * as markPanel from './blockManage/markPanel'
 import * as globalCornerIconType from './commonModule/globalCornerIconType'
 import * as layoutInfor from './commonModule/layoutInfor'
+import * as themeInfo from './themeManage/themeInfo'
 const service = {
   state: {},
   fetch,
@@ -35,6 +36,7 @@ const service = {
   ...resourceManage,
   ...markPanel,
   ...globalCornerIconType,
-  ...layoutInfor
+  ...layoutInfor,
+  ...themeInfo
 }
 Vue.prototype.$service = utils.wrapService(service)
