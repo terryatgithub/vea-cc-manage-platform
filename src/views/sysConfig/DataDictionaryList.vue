@@ -1,6 +1,6 @@
 <template>
   <ContentCard class="content">
-     <ContentWrapper
+    <ContentWrapper
       :filter="filter"
       :filterSchema="filterSchema"
       :pagination="pagination"
@@ -11,7 +11,7 @@
         <el-button type="primary" icon="el-icon-plus" @click="addDict">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
-        <el-button type="primary" icon="el-icon-plus" @click="dialogFormVisible = true" >新增字典分类</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="dialogFormVisible = true">新增字典分类</el-button>
       </div>
       <Table
         :props="table.props"
@@ -25,11 +25,18 @@
       />
       <!--字典分类添加弹框-->
       <el-dialog title="添加字典分类" :visible.sync="dialogFormVisible">
-        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" class="demo-ruleForm" :label-position="labelPosition">
+        <el-form
+          :model="ruleForm"
+          :rules="rules"
+          ref="ruleForm"
+          label-width="140px"
+          class="demo-ruleForm"
+          :label-position="labelPosition"
+        >
           <el-form-item label="字典分类名称" prop="dictCategoryCnName">
             <el-input v-model="ruleForm.dictCategoryCnName"></el-input>
           </el-form-item>
-          <el-form-item label="字典分类值" prop="dictCategoryEnName" >
+          <el-form-item label="字典分类值" prop="dictCategoryEnName">
             <el-input v-model="ruleForm.dictCategoryEnName"></el-input>
           </el-form-item>
           <el-form-item>
@@ -43,9 +50,9 @@
   </ContentCard>
 </template>
 <script>
-import _ from "gateschema";
-import ButtonList from "./../../components/ButtonLIst";
-import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
+import _ from 'gateschema'
+import ButtonList from './../../components/ButtonLIst'
+import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 export default {
   components: {
     ActionList,
@@ -54,18 +61,18 @@ export default {
   },
   data() {
     return {
-      dialogFormVisible:false, //字典分类弹框默认false
+      dialogFormVisible: false, //字典分类弹框默认false
       labelPosition: 'right',
-     ruleForm: {
-          dictCategoryEnName: '',
-          dictCategoryCnName: '',
-        },
+      ruleForm: {
+        dictCategoryEnName: '',
+        dictCategoryCnName: ''
+      },
       rules: {
         dictCategoryCnName: [
-            { required: true, message: '请输入字典分类名称', trigger: 'blur' }
+          { required: true, message: '请输入字典分类名称', trigger: 'blur' }
         ],
         dictCategoryEnName: [
-            { required: true, message: '请输入字典分类值', trigger: 'blur' }
+          { required: true, message: '请输入字典分类值', trigger: 'blur' }
         ]
       }, //弹框表单验证
       formLabelWidth: '120px',
@@ -81,27 +88,27 @@ export default {
       table: {
         props: {},
         header: [
-           {
-            label: "ID",
-            prop: "dictId",
-            width: "70"
+          {
+            label: 'ID',
+            prop: 'dictId',
+            width: '70'
           },
           {
-            label: "字典名称",
-            "min-width": "90",
-            prop: "dictCnName",
+            label: '字典名称',
+            'min-width': '90',
+            prop: 'dictCnName',
             sortable: true
           },
           {
-            label: "字典值",
-            prop: "dictEnName",
-            width: "110",
+            label: '字典值',
+            prop: 'dictEnName',
+            width: '110',
             sortable: true
           },
           {
-            label: "字典分类",
-            prop: "dictCategory",
-            "min-width": "160",
+            label: '字典分类',
+            prop: 'dictCategory',
+            'min-width': '160'
             //  render: (createElement, { row }) => {
             //   return row.dictCategory
             // }
@@ -109,23 +116,23 @@ export default {
         ],
         data: [],
         selected: [],
-        selectionType: "multiple"
+        selectionType: 'multiple'
       }
-    };
+    }
   },
   methods: {
     /**
      * 新增字典
      */
     addDict() {
-      this.$emit("open-add-page", null);
+      this.$emit('open-add-page', null)
     },
     /**
      * 修改字典
      */
     editData() {
-      if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selectedRows[this.selected[0]])
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('open-add-page', this.selectedRows[this.selected[0]])
       }
     },
     /**
@@ -133,26 +140,27 @@ export default {
      */
     batchDel() {
       // const id = this.selected[0]
-      if(this.selected.length==0) {
-        this.$message("请选择一条数据")
+      if (this.selected.length == 0) {
+        this.$message('请选择一条数据')
       }
-      if(this.selected.length==1) {
-        if (window.confirm("确定要删除吗")) {
-        this.$service.DeleteDict({ id: this.selected[0] }, "删除成功")
-          .then(data => {
-            this.fetchData();
-          });
+      if (this.selected.length == 1) {
+        if (window.confirm('确定要删除吗')) {
+          this.$service
+            .DeleteDict({ id: this.selected[0] }, '删除成功')
+            .then(data => {
+              this.fetchData()
+            })
         }
       }
-      if(this.selected.length >1 ) {
-        this.$message("只能选择一条数据")
+      if (this.selected.length > 1) {
+        this.$message('只能选择一条数据')
       }
     },
     /**
      * 得到数据字典分类
      */
-    getDictCategoryList () {
-      return  this.$service.getDictCategoryList().then(data =>{
+    getDictCategoryList() {
+      return this.$service.getDictCategoryList().then(data => {
         data.forEach(element => {
           this.dictCategories[element.label] = element.value
         })
@@ -162,121 +170,123 @@ export default {
      * 新增数据字典分类
      */
     submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-           const dictCategoryObj = {
-             dictCategoryCnName: this.ruleForm.dictCategoryCnName,
-             dictCategoryEnName: this.ruleForm.dictCategoryEnName
-           }
-           console.log(dictCategoryObj)
-           this.$service.SaveDictCategory(dictCategoryObj,'保存成功').then(data => {
-             this.dialogFormVisible = false
-             this.$refs[formName].resetFields()
-           })
-          } else {
-            return false;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          const dictCategoryObj = {
+            dictCategoryCnName: this.ruleForm.dictCategoryCnName,
+            dictCategoryEnName: this.ruleForm.dictCategoryEnName
           }
-        });
-      },
+          console.log(dictCategoryObj)
+          this.$service
+            .SaveDictCategory(dictCategoryObj, '保存成功')
+            .then(data => {
+              this.dialogFormVisible = false
+              this.$refs[formName].resetFields()
+            })
+        } else {
+          return false
+        }
+      })
+    },
     resetForm(formName) {
       this.dialogFormVisible = false
       this.$refs[formName].resetFields()
     },
     handleCreate() {
-      this.$router.push({ name: "prize-create" });
+      this.$router.push({ name: 'prize-create' })
     },
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.dictId);
+      this.selected.push(targetItem.dictId)
       let id = targetItem.dictId
       this.selectedRows[id] = targetItem
-      this.updateTableSelected();
+      this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.dictId;
-      });
+        return item !== targetItem.dictId
+      })
       delete this.selectedRows[targetItem.dictId]
-      this.updateTableSelected();
+      this.updateTableSelected()
     },
     handleAllRowSelectionChange(value) {
       if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd);
+        this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
-        this.selected = [];
-        this.table.selected = [];
+        this.selected = []
+        this.table.selected = []
       }
     },
     handleAllRowSelectionRemove() {
-      this.selected = [];
-      this.table.selected = [];
+      this.selected = []
+      this.table.selected = []
     },
     updateTableSelected() {
-      const table = this.table;
-      const newSelectedIndex = this.selected;
+      const table = this.table
+      const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.dictId) > -1) {
-          result.push(index);
+          result.push(index)
         }
-        return result;
-      }, []);
+        return result
+      }, [])
     },
     handleFilterChange(type) {
-      if (type === "filter") {
+      if (type === 'filter') {
         if (this.pagination) {
-          this.pagination.currentPage = 1;
+          this.pagination.currentPage = 1
         }
       }
-      this.fetchData();
+      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {
         sort: undefined,
         order: undefined
-      };
-      this.fetchData();
+      }
+      this.fetchData()
     },
     parseFilter() {
-      const { filter, pagination } = this;
+      const { filter, pagination } = this
       if (pagination) {
-        filter.page = pagination.currentPage;
-        filter.rows = pagination.pageSize;
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
       }
-      return filter;
-      console.log(filter);
+      return filter
+      console.log(filter)
     },
     /**
      * 获取数据
      */
     fetchData() {
-      const filter = this.parseFilter();
+      const filter = this.parseFilter()
       this.$service.getDictList(filter).then(data => {
         console.log(data)
-        this.pagination.total = data.total;
-        this.table.data = data.rows;
-      });
-    },
+        this.pagination.total = data.total
+        this.table.data = data.rows
+      })
+    }
   },
   created() {
     let filterSchema = _.map({
-      dictId: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "字典ID",
+      dictId: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '字典ID',
         cols: {
           item: 3,
           label: 0
         }
       }),
-      dictCnName: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "字典名称",
+      dictCnName: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '字典名称',
         cols: {
           item: 3,
           label: 0
         }
       }),
-      dictEnName: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "字典值",
+      dictEnName: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '字典值',
         cols: {
           item: 3,
           label: 0
@@ -290,18 +300,17 @@ export default {
           label: 0
         }
       })
-      })
-      .other("form", {
-      layout: "inline",
+    }).other('form', {
+      layout: 'inline',
       footer: {
         cols: {
           label: 0,
           wrapper: 24
         },
         showSubmit: true,
-        submitText: "查询",
+        submitText: '查询',
         showReset: true,
-        resetText: "重置"
+        resetText: '重置'
       }
     })
     this.getDictCategoryList().then(() => {
@@ -312,8 +321,9 @@ export default {
 }
 </script>
 <style lang = 'stylus' scoped>
-.btns
-  margin-bottom 10px
+.btns {
+  margin-bottom: 10px;
+}
 </style>
 
 

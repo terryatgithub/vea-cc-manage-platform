@@ -22,9 +22,9 @@
 </template>
 
 <script>
-import _ from "gateschema";
-import ButtonList from "./../../components/ButtonLIst";
-import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
+import _ from 'gateschema'
+import ButtonList from './../../components/ButtonLIst'
+import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 export default {
   components: {
     ActionList,
@@ -44,183 +44,182 @@ export default {
         props: {},
         header: [
           {
-            label: "ID",
-            prop: "id",
-            width: "70",
+            label: 'ID',
+            prop: 'id',
+            width: '70'
           },
           {
-            label: "用户名",
-            width: "130",
-            prop: "userName",
+            label: '用户名',
+            width: '130',
+            prop: 'userName'
           },
           {
-            label: "用户编号",
-            prop: "userId",
-            width: "90",
-          },
-           {
-            label: "登录时间",
-            prop: "loginTime",
-            width: "150"
+            label: '用户编号',
+            prop: 'userId',
+            width: '90'
           },
           {
-            label: "用户IP",
-            prop: "loginIp",
-            width: "150"
-           
+            label: '登录时间',
+            prop: 'loginTime',
+            width: '150'
           },
           {
-            label: "用户浏览器信息",
-            prop: "userAgent",
-             "min-width": "100"
+            label: '用户IP',
+            prop: 'loginIp',
+            width: '150'
           },
           {
-            label: "登录类型",
-            prop: "loginType",
-            width: "100"
+            label: '用户浏览器信息',
+            prop: 'userAgent',
+            'min-width': '100'
           },
           {
-            label: "说明",
-            prop: "remark",
-            width: "100"
+            label: '登录类型',
+            prop: 'loginType',
+            width: '100'
           },
+          {
+            label: '说明',
+            prop: 'remark',
+            width: '100'
+          }
         ],
         data: [],
         selected: [],
-        selectionType: "multiple"
+        selectionType: 'multiple'
       }
-    };
+    }
   },
   methods: {
     handleCreate() {
-      this.$router.push({ name: "prize-create" });
+      this.$router.push({ name: 'prize-create' })
     },
     handleRowSelectionAdd(targetItem) {
       // this.selected = this.selected.concat({
       //   id: targetItem.userId
       // });
-      this.selected.push(targetItem.id);
-      this.updateTableSelected();
+      this.selected.push(targetItem.id)
+      this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.id;
-      });
-      this.updateTableSelected();
+        return item !== targetItem.id
+      })
+      this.updateTableSelected()
     },
     handleAllRowSelectionChange(value) {
       if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd);
+        this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
-        this.selected = [];
-        this.table.selected = [];
+        this.selected = []
+        this.table.selected = []
       }
     },
     handleAllRowSelectionRemove() {
-      this.selected = [];
-      this.table.selected = [];
+      this.selected = []
+      this.table.selected = []
     },
     updateTableSelected() {
-      const table = this.table;
-      const newSelectedIndex = this.selected;
+      const table = this.table
+      const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.id) > -1) {
-          result.push(index);
+          result.push(index)
         }
-        return result;
-      }, []);
+        return result
+      }, [])
     },
     handleFilterChange(type) {
-      if (type === "filter") {
+      if (type === 'filter') {
         if (this.pagination) {
-          this.pagination.currentPage = 1;
+          this.pagination.currentPage = 1
         }
       }
-      this.fetchData();
+      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {
         sort: undefined,
         order: undefined
-      };
-      this.fetchData();
+      }
+      this.fetchData()
     },
     parseFilter() {
-      const { filter, pagination } = this;
+      const { filter, pagination } = this
       if (pagination) {
-        filter.page = pagination.currentPage;
-        filter.rows = pagination.pageSize;
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
       }
-      return filter;
-      console.log(filter);
+      return filter
+      console.log(filter)
     },
     /**
      * 获取数据
      */
     fetchData() {
-      const filter = this.parseFilter();
+      const filter = this.parseFilter()
       this.$service.getLoginLogList(filter).then(data => {
-        this.pagination.total = data.total;
-        this.table.data = data.rows;
-      });
-    },
-   },
+        this.pagination.total = data.total
+        this.table.data = data.rows
+      })
+    }
+  },
   created() {
     let filterSchema = _.map({
-      userName: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "用户名  ",
+      userName: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '用户名  ',
         cols: {
           item: 3,
           label: 0
         }
       }),
-      id: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "用户ID  ",
+      id: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '用户ID  ',
         cols: {
           item: 3,
           label: 0
         }
       }),
-      loginIp: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "用户登陆IP",
+      loginIp: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '用户登陆IP',
         cols: {
           item: 3,
           label: 0
         }
       }),
-      loginType: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "登陆类型",
+      loginType: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '登陆类型',
         cols: {
           item: 3,
           label: 0
         }
       })
-      })
-      .other("form", {
-      layout: "inline",
+    }).other('form', {
+      layout: 'inline',
       footer: {
         cols: {
           label: 0,
           wrapper: 24
         },
         showSubmit: true,
-        submitText: "查询",
+        submitText: '查询',
         showReset: true,
-        resetText: "重置"
+        resetText: '重置'
       }
-    });
+    })
     this.filterSchema = filterSchema
-    this.fetchData();
+    this.fetchData()
   }
-};
+}
 </script>
 <style lang = 'stylus' scoped>
-.btns
-  margin-bottom: 10px
+.btns {
+  margin-bottom: 10px;
+}
 </style>
 
 

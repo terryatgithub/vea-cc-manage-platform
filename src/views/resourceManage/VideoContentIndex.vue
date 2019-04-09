@@ -33,12 +33,12 @@
                       :key="source.source_code"
                       :label="source.source_title"
                       :value="source.source_code"
-                    ></el-option> -->
+                    ></el-option>-->
                     <el-option
-                    v-for="source in source"
-                    :key="source.source_code"
-                    :label="source.source_title"
-                    :value="source.source_code"
+                      v-for="source in source"
+                      :key="source.source_code"
+                      :label="source.source_title"
+                      :value="source.source_code"
                     ></el-option>
                   </el-select>
                 </el-form-item>
@@ -106,8 +106,8 @@
                       :key="payType.tagId"
                       :label="payType.tagCnName"
                       :value="payType.tagEnName"
-                    ></el-option> -->
-                     <el-option
+                    ></el-option>-->
+                    <el-option
                       v-for="payType  in conditionList.payTypes"
                       :key="payType.tagId"
                       :label="payType.tagCnName"
@@ -132,7 +132,7 @@
                       :key="contentType.contentTypeId"
                       :label="contentType.contentType"
                       :value="contentType.contentTypeId"
-                    ></el-option> -->
+                    ></el-option>-->
                   </el-select>
                 </el-form-item>
                 <el-form-item label="年代">
@@ -158,7 +158,7 @@
                         :key="videoFormat.tagEnName"
                         :label="videoFormat.tagCnName"
                         :value="videoFormat.tagEnName"
-                      ></el-option> -->
+                      ></el-option>-->
                       <el-option
                         v-for="videoFormat in conditionList.videoFormat"
                         :key="videoFormat.tagEnName"
@@ -175,8 +175,8 @@
                         :key="label.tagId"
                         :label="label.tagCnName"
                         :value="label.tagCnName"
-                      ></el-option> -->
-                       <el-option
+                      ></el-option>-->
+                      <el-option
                         v-for="label in conditionList.contentTag"
                         :key="label.tagId"
                         :label="label.tagCnName"
@@ -185,15 +185,15 @@
                     </el-select>
                   </el-form-item>
                   <el-form-item label="排序方式">
-                    <el-select v-model="searchForm.orderBy" size="small" style="width: 85px;">
+                    <el-select v-model="searchForm.orderBy"  style="width: 85px;">
                       <el-option label="请选择" value></el-option>
                       <!-- <el-option
                         v-for="(order, oIndex) in conditionList.orderBy"
                         :key="order.tagId"
                         :label="order.tagCnName"
                         :value="order.tagEnName"
-                      ></el-option> -->
-                       <el-option
+                      ></el-option>-->
+                      <el-option
                         v-for="order in conditionList.orderBy"
                         :key="order.tagId"
                         :label="order.tagCnName"
@@ -216,8 +216,8 @@
                         :key="director.tagId"
                         :label="director.tagCnName"
                         :value="director.tagCnName"
-                      ></el-option> -->
-                       <el-option
+                      ></el-option>-->
+                      <el-option
                         v-for="director in conditionList.directors"
                         :key="director.tagId"
                         :label="director.tagCnName"
@@ -233,8 +233,8 @@
                         :key="actor.tagId"
                         :label="actor.tagCnName"
                         :value="actor.tagCnName"
-                      ></el-option> -->
-                       <el-option
+                      ></el-option>-->
+                      <el-option
                         v-for="actor in conditionList.actors"
                         :key="actor.tagId"
                         :label="actor.tagCnName"
@@ -250,7 +250,7 @@
                         :key="area.tagId"
                         :label="area.tagCnName"
                         :value="area.tagCnName"
-                      ></el-option> -->
+                      ></el-option>-->
                       <el-option
                         v-for="area in conditionList.areas"
                         :key="area.tagId"
@@ -299,14 +299,7 @@ export default {
     ContentWrapper
   },
   data() {
-    var _this = this
     return {
-      pagination: {},
-      selected: [],
-      filter: {
-        sort: undefined,
-        order: undefined
-      },
       searchForm: {
         sources: 'tencent', // 内容源
         category: '', // 频道类型
@@ -328,6 +321,7 @@ export default {
       },
       partner: 'tencent',
       conditionList: {}, // 筛选条件
+      searchParams: {},
       partnerList: [
         {
           label: '腾讯',
@@ -343,6 +337,13 @@ export default {
       videoTypes: [],
       isMore: false,
       orderTip: '降序排列', // 排序按钮文字提示
+      filter: {
+        sort: undefined,
+        order: undefined
+      },
+      filterSchema: null,
+      pagination: {},
+      selected: [],
       table: {
         props: {},
         header: [
@@ -501,6 +502,7 @@ export default {
     },
     search: function() {
       this.searchForm.ccSearchReset = false
+      this.searchParams = this.deepClone(this.searchForm)
       this.fetchData()
       var newParam = Object.assign({}, this.singleObj)
       newParam.data = []
@@ -513,7 +515,8 @@ export default {
     },
     reset: function() {
       this.searchForm = {
-        sources: this.pannelResource || 'tencent', // 内容源
+        // sources: this.pannelResource || 'tencent', // 内容源
+        sources: 'tencent', // 内容源
         category: '', // 频道类型
         videoTypes: '', // 影片类型
         payTypes: '', // 付费类型
@@ -531,12 +534,11 @@ export default {
         areas: '' // 地区
       }
       this.searchForm.ccSearchReset = true
-      // this.searchParams = this.deepClone(this.searchForm)
+      this.searchParams = this.deepClone(this.searchForm)
       if (this.partner !== 'tencent') {
         this.partner = 'tencent'
       }
       this.$nextTick(this.getSources)
-      //
       this.fetchData()
     },
     yearStartListen: function() {
@@ -570,6 +572,15 @@ export default {
         this.searchForm.licensee = ''
       }
     },
+     changeSort: function () { // 修改排序按钮的点击事件
+            if (this.searchForm.order === 'asc') {
+                this.searchForm.order = 'desc';
+                this.orderTip = '降序排列';
+            } else {
+                this.searchForm.order = 'asc';
+                this.orderTip = '升序排列';
+            }
+        },
     handleCreate() {
       this.$router.push({ name: 'prize-create' })
     },
@@ -597,6 +608,7 @@ export default {
       this.table.selected = []
     },
     updateTableSelected() {
+      debugger
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -608,6 +620,7 @@ export default {
     },
     //查询
     handleFilterChange(type) {
+      debugger
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
@@ -639,18 +652,94 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter()
-      delete this.searchForm.ccSearchReset
-      const mediaObj = Object.assign(filter,this.searchForm)
+      let mediaObj = Object.assign({}, filter)
+      if ((this.searchForm.ccSearchReset = true)) {
+        mediaObj.sources = this.searchForm.sources
+      } else {
+        if (this.searchForm.sources) {
+          mediaObj.sources = this.searchForm.sources //内容源
+        }
+      }
+      if (this.searchForm.category) {
+        mediaObj.category = this.searchForm.category //频道类型
+      } else {
+        delete mediaObj.category
+      }
+      if (this.searchForm.videoTypes) {
+        mediaObj.videoTypes = this.searchForm.videoTypes //影片类型
+      } else {
+        delete mediaObj.videoTypes
+      }
+      if (this.searchForm.licensee) {
+        mediaObj.licensee = this.searchForm.licensee //牌照
+      } else {
+        delete mediaObj.licensee
+      }
+      if (this.searchForm.payTypes) {
+        mediaObj.payTypes = this.searchForm.payTypes //付费类型
+      } else {
+        delete mediaObj.payTypes
+      }
+      if (this.searchForm.yearStart) {
+        mediaObj.yearStart = this.searchForm.yearStart //年代
+      } else {
+        delete mediaObj.yearStart
+      }
+      if (this.searchForm.yearEnd) {
+        mediaObj.yearEnd = this.searchForm.yearEnd //年代
+      } else {
+        mediaObj.yearEnd
+      }
+      if (this.searchForm.title) {
+        mediaObj.title = this.searchForm.title //标题
+      } else {
+        delete mediaObj.title
+      }
+      if (this.searchForm.contentTypes) {
+        mediaObj.contentTypes = this.searchForm.contentTypes //素材类型
+      } else {
+        delete mediaObj.contentTypes
+      }
+      if (this.searchForm.videoFormat) {
+        mediaObj.videoFormat = this.mediaObj.videoFormat //影片格式
+      } else {
+        delete mediaObj.videoFormat
+      }
+      if (this.searchForm.contentTag) {
+        mediaObj.contentTag = this.searchForm.contentTag //内容标签
+      } else {
+        delete mediaObj.contentTag
+      }
+      if (this.searchForm.orderBy) {
+        mediaObj.orderBy = this.searchForm.orderBy //排序方式
+      } else {
+        delete matchMedia.orderBy
+      }
+      if (this.searchForm.directors) {
+        mediaObj.directors = this.searchForm.directors //导演
+      } else {
+        delete mediaObj.directors
+      }
+      if (this.searchForm.actors) {
+        mediaObj.actors = this.searchForm.actors //演员
+      } else {
+        delete mediaObj.directors
+      }
+      if (this.searchForm.areas) {
+        mediaObj.areas = this.searchForm.areas //地区
+      } else {
+        delete mediaObj.actors
+      }
       this.$service.getMediaVideoInfos(mediaObj).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
+        console.log(this.pagination.total)
       })
     },
     //
     getSources() {
       var partner = this.partner
       this.$service.getPartnerSource({ partnerName: partner }).then(data => {
-        console.log(data)
         var source = data.rows.reduce(function(result, item) {
           if (item.source_List) {
             result = result.concat(item.source_List)
@@ -658,7 +747,6 @@ export default {
           return result
         }, [])
         this.source = source
-        console.log(source)
         var defaultSelected =
           source.find(function(item) {
             return item.source_code === partner
@@ -670,7 +758,6 @@ export default {
     },
     getCondition() {
       this.$service.getCondition().then(data => {
-        console.log(data)
         this.categories = data.vod.sources[0].child
         this.conditionList = data.vod
       })
