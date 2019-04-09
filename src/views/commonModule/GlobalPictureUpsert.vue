@@ -117,7 +117,7 @@ export default {
                 }
                 this.fileInfo.push(fileInfo)
                 fileItem.status = 'uploading'
-                this.$service.upload({
+                this.$service.uploadImage({
                     file, 
                     onUploadProgerss: (evt) => {
                         if (evt.lengthComputable) {

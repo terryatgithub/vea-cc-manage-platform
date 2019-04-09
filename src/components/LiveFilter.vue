@@ -191,8 +191,8 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter()
-      this.$service.queryLiveVideoResult(filter).then(result => {
-        let data = JSON.parse(result.slice(7, -1))
+      this.$service.queryLiveVideoResult(filter).then(data => {
+        data =JSON.parse(data.replace('result(','').replace(/\)*$/,''))
         this.pagination.total = data.total
         this.table.data = data.rows
       })

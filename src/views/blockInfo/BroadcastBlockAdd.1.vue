@@ -4,6 +4,7 @@
       <el-button type="primary" size="medium" @click="submitCheck">提交审核</el-button>
       <el-button type="warning" size="medium" @click="$emit('go-back')">关闭</el-button>
     </div>
+
     <div class="split-bar">
       基本信息
     </div>
@@ -103,23 +104,22 @@
           :label="normalResourceBtn"
           size="medium"
           prop="thirdIdOrPackageName"
-          style="width: 400px"
+          style="width: 600px"
         >
-             <el-button v-if="autoWrite" type="primary" v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', normalForm)">选择资源</el-button>
-          <!-- <ResourceSelector
+          <ResourceSelector
             v-if="basicForm.configModel === 'broadcast'"
             title="选择资源"
             muti="single"
             :filterItems="['broadcast']"
             @confirm-click="resourceConfirm($event, normalForm)"
-          >选择资源</ResourceSelector>
+          >选择资源-轮播模式</ResourceSelector>
           <ResourceSelector
             v-if="autoWrite&&basicForm.configModel === 'group'"
             title="选择资源"
             muti="single"
             :filterItems="['video', 'edu', 'live', 'broadcast']"
             @confirm-click="resourceConfirm($event, normalForm)"
-          >选择资源</ResourceSelector> -->
+          >选择资源</ResourceSelector>
           <el-input
             v-if="!autoWrite"
             v-model="normalForm.thirdIdOrPackageName"
@@ -176,12 +176,13 @@
               :key="index"
               :class="'corner-' + index "
               class="corner"
+              @click="openPicture('corner', normalForm, index)"
             >
-              <span class="corner-img-wrapper" v-if="corner.imgUrl" @click="openPicture('corner', normalForm, index)">
+              <span class="corner-img-wrapper" v-if="corner.imgUrl">
                 <img :src="corner.imgUrl" referrerpolicy="no-referrer">
                 <i class="el-icon-delete" @click.stop="deleteCorner(normalForm, index)"></i>
               </span>
-              <el-tag v-else type="success" @click="openPicture('corner', normalForm, index)">
+              <el-tag v-else type="success">
                 <i class="el-icon-plus"></i>
               </el-tag>
             </span>
@@ -238,13 +239,12 @@
           prop="thirdIdOrPackageName"
           v-if="lowerForm.coverType === 'media' || lowerForm.coverType === 'app' "
         >
-          <!-- <ResourceSelector
+          <ResourceSelector
             title="选择资源"
             muti="single"
             :filterItems="['video', 'edu', 'live', 'topics', 'broadcast']"
             @confirm-click="resourceConfirm($event, lowerForm)"
-            >选择资源</ResourceSelector> -->
-            <el-button type="primary" size="medium" v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', lowerForm)">选择资源</el-button>
+            >选择资源</ResourceSelector>
           <el-tag
             type="success"
             v-if="lowerForm.thirdIdOrPackageName"
@@ -283,12 +283,13 @@
               :key="index"
               :class="'corner-' + index "
               class="corner"
+              @click="openPicture('corner', lowerForm, index)"
             >
-              <span class="corner-img-wrapper" v-if="corner.imgUrl"  @click="openPicture('corner', lowerForm, index)">
+              <span class="corner-img-wrapper" v-if="corner.imgUrl">
                 <img :src="corner.imgUrl" referrerpolicy="no-referrer">
                 <i class="el-icon-delete" @click.stop="deleteCorner(lowerForm, index)"></i>
               </span>
-              <el-tag v-else type="success"  @click="openPicture('corner', lowerForm, index)">
+              <el-tag v-else type="success">
                 <i class="el-icon-plus"></i>
               </el-tag>
             </span>
@@ -349,8 +350,7 @@
       </div>
     </el-dialog>
     <!-- 第三方运用快速填充弹框end -->
-     <!-- 选择资源 -->
-           <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector>
+
   </ContentCard>
 </template>
 
@@ -388,18 +388,6 @@ export default {
       cornerIconTypeOptions: {},
       cornerTypes: [],
       materialTypes: null,
-      resourceVisible: false, //是否打开资源选择器
-       resourceOptions: { // 资源弹出框配置
-                multi: false, // 单选
-                activeTabName: 'video',
-                tabShow: {
-                    'video': true,
-                    'app': true,
-                    'edu': true,
-                    'live': true,
-                    'broadcast': true
-                }
-            },
       basicForm: {
         containerName: '',
         containerType: 'REFERENCE_BROADCASTING',
@@ -602,10 +590,6 @@ export default {
         this.parseOnclick(inputValue)
       }
     },
-    selectCancel() {
-      debugger
-      this.resourceVisible = false 
-    },
     parseOnclick(inputValue) {
       const clickData = this.clickData
       Object.keys(inputValue).map(item => {
@@ -704,6 +688,7 @@ export default {
 
     // ??
     selectResource: function(type, form, selectType) {
+      console.log(111, type, form);
       this.resourceVisible = true
       this.resourceOptions.activeTabName = 'video'
       this.currentForm = form
@@ -749,7 +734,6 @@ export default {
         }
       }
       this.resourceOptions = newOptions
-      
     },
 
     paramIdFun: function(form, seledted) {
@@ -863,7 +847,6 @@ export default {
     },
     // ??资源确定
     resourceConfirm: function(callbackData, form) {
-      this.resourceVisible = false 
       this.packageFormParam(callbackData, form)
       // let type = tabName === 'video'||'edu' ? 
       // var _this = this

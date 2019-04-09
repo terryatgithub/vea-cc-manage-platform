@@ -92,7 +92,7 @@ export default {
       this.$service.getAuditDetailButton(params).then(data => {
         let action = {}
         data.forEach(v => {
-          if (v.runComm !== 'claim' && v.runComm !== 'unclaim') {
+          if (v.runComm !== 'claim' && v.runComm !== 'unclaim' && v.runComm !=='copy') {
              action[v.runComm] = { text: v.runName , type: 'primary'}
           }
         })

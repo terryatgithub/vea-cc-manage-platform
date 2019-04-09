@@ -1,7 +1,7 @@
 <template>
   <div>
-    <BroadcastBlockList v-show="isShowList" ref="list" @open-add-page="openAddPage"></BroadcastBlockList>
-    <BroadcastBlockAdd v-if="!isShowList" :editId="editId" :currentVersion="currentVersion" @open-list-page="openListPage" @go-back="goBack"></BroadcastBlockAdd>
+    <BroadcastBlockList v-show="mode==='list'" ref="list" @open-add-page="openAddPage"></BroadcastBlockList>
+    <BroadcastBlockAdd v-if="mode==='add'" :editId="editId" :currentVersion="currentVersion" @open-list-page="openListPage" @go-back="goBack"></BroadcastBlockAdd>
   </div>
 </template>
 <script>
@@ -15,7 +15,7 @@ export default {
   },
   data() {
     return {
-      isShowList: true,
+      mode: 'list',
       editId: null,
       currentVersion: null
     };
@@ -26,21 +26,20 @@ export default {
     */
     openAddPage(id, currentVersion) {
       this.editId = id
-    //  this.currentVersion = currentVersion
-      this.isShowList = false
+      this.mode = 'add'
     },
     /**
      * 打开列表页面
     */
     openListPage () {
-      this.isShowList = true
+      this.mode = 'list'
       this.$refs.list.fetchData()// 更新页面
     },
     /**
      * 新增编辑里面的返回事件
     */
     goBack () {
-      this.isShowList = true
+      this.list = 'list'
     }
   }
 };

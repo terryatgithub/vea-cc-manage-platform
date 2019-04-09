@@ -115,7 +115,9 @@
       :data="table.data"
       :selected="table.selected"
       :selection-type="table.selectionType"
-      @row-selection-change="handleRowChange"
+        @row-selection-add="handleRowSelectionAdd"
+        @row-selection-remove="handleRowSelectionRemove"
+        @all-row-selection-change="handleAllRowSelectionChange"
     />
     <!-- Table部分end -->
   </ContentWrapper>
@@ -130,9 +132,7 @@ export default {
     ContentWrapper,
     Table
   },
-
-  props:['partner', 'disablePartner', 'singleObj','muti'],
-
+  props:['partner', 'disablePartner', 'singleObj','multi'],
   data() {
     return {
       sources: [],
@@ -178,7 +178,7 @@ export default {
         currentPage: 1,
         pageSize: 10
       },
-      selected: null,
+      selected: [],
       table: {
         props: {},
         header: [
@@ -284,8 +284,8 @@ export default {
           }
         ],
         data: [],
-        selected: {},
-        selectionType: this.muti
+        selected: [],
+        selectionType: 'single'
       }
     }
   },
@@ -377,8 +377,7 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter()
-      this.$service.getMediaVideoInfos(filter).then(result => {
-        let data = JSON.parse(result.slice(7, -1))
+      this.$service.getMediaVideoInfos(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -446,9 +445,36 @@ export default {
             this.orderTip = '升序排列';
         }
     },
-    // 选择单集
-    selectSingle() {
-
+     /**
+     * 行选择操作
+     */
+    handleRowSelectionAdd(targetItem) {
+      this.selected.push(targetItem.deptId)
+      this.updateTableSelected()
+    },
+    handleRowSelectionRemove(targetItem) {
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.deptId
+      })
+      this.updateTableSelected()
+    },
+    handleAllRowSelectionChange(value) {
+      if (value) {
+        this.table.data.forEach(this.handleRowSelectionAdd)
+      } else {
+        this.selected = []
+        this.table.selected = []
+      }
+    },
+    updateTableSelected() {
+      const table = this.table
+      const newSelectedIndex = this.selected
+      table.selected = table.data.reduce((result, item, index) => {
+        if (newSelectedIndex.indexOf(item.deptId) > -1) {
+          result.push(index)
+        }
+        return result
+      }, [])
     },
     handleRowChange(row, index) {
       console.log('row',row);
@@ -459,11 +485,12 @@ export default {
   created() {
     this.originPartner = this.partner
     this.searchForm.sources = this.partner
+    debugger
+    this.table.selectionType = this.multi
   },
   mounted() {
     this.getSource(this.partner)
-    this.$service.getCondition().then(result => {
-      const data = JSON.parse(result.slice(7,-1))
+    this.$service.getCondition().then((data) => {
       this.categories = data.vod.sources[0].child
       this.conditionList = data.vod
     })

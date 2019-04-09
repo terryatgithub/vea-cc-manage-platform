@@ -4,6 +4,7 @@
       <el-button type="primary" size="medium" @click="submitCheck">提交审核</el-button>
       <el-button type="warning" size="medium" @click="$emit('go-back')">关闭</el-button>
     </div>
+
     <div class="split-bar">
       基本信息
     </div>
@@ -350,7 +351,7 @@
     </el-dialog>
     <!-- 第三方运用快速填充弹框end -->
      <!-- 选择资源 -->
-           <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector>
+           <ResourceSelector v-if="resourceVisible" :pannel-resource="pannelResource" :resource-options="resourceOptions" v-on:close="closeResource" v-on:save="resourceConfirm"></ResourceSelector>
   </ContentCard>
 </template>
 
@@ -389,17 +390,6 @@ export default {
       cornerTypes: [],
       materialTypes: null,
       resourceVisible: false, //是否打开资源选择器
-       resourceOptions: { // 资源弹出框配置
-                multi: false, // 单选
-                activeTabName: 'video',
-                tabShow: {
-                    'video': true,
-                    'app': true,
-                    'edu': true,
-                    'live': true,
-                    'broadcast': true
-                }
-            },
       basicForm: {
         containerName: '',
         containerType: 'REFERENCE_BROADCASTING',
@@ -602,10 +592,6 @@ export default {
         this.parseOnclick(inputValue)
       }
     },
-    selectCancel() {
-      debugger
-      this.resourceVisible = false 
-    },
     parseOnclick(inputValue) {
       const clickData = this.clickData
       Object.keys(inputValue).map(item => {
@@ -704,6 +690,7 @@ export default {
 
     // ??
     selectResource: function(type, form, selectType) {
+      debugger
       this.resourceVisible = true
       this.resourceOptions.activeTabName = 'video'
       this.currentForm = form
@@ -749,7 +736,7 @@ export default {
         }
       }
       this.resourceOptions = newOptions
-      
+      debugger
     },
 
     paramIdFun: function(form, seledted) {
@@ -863,7 +850,6 @@ export default {
     },
     // ??资源确定
     resourceConfirm: function(callbackData, form) {
-      this.resourceVisible = false 
       this.packageFormParam(callbackData, form)
       // let type = tabName === 'video'||'edu' ? 
       // var _this = this

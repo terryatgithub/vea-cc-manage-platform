@@ -70,9 +70,8 @@ export default {
     fetchData: function() {
       const filter = this.parseFilter()
       this.$service.getMediaVideoInfos(filter).then(result => {
-        let data = JSON.parse(result.slice(7, -1))
-        this.pagination.total = data.total
-        this.table.data = data.rows
+        this.pagination.total = result.total
+        this.table.data = result.rows
       })
     },
     parseFilter () {

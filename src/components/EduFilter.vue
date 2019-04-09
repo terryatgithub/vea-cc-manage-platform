@@ -303,8 +303,7 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter()
-      this.$service.getMediaVideoInfos(filter).then(result => {
-        let data = JSON.parse(result.slice(7, -1))
+      this.$service.getMediaVideoInfos(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -355,8 +354,7 @@ export default {
       type: 'vod',
       businessType: 1
     }
-    this.$service.getCondition(params).then(result => {
-      const data = JSON.parse(result.slice(7,-1))
+    this.$service.getCondition(params).then(data => {
       this.conditionList = data.vod
     })
   },

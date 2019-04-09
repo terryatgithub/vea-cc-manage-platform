@@ -5,11 +5,11 @@ export function getMediaVideoInfos(params) {
     url: '/api/tvos/getMediaVideoInfos.html',
     params
   }).then(data => {
-    return JSON.parse(data.substring(7,data.length-1))
+    return JSON.parse(data.substring(7, data.length - 1))
   })
 }
 
-//影片内容源获取
+// 影片内容源获取
 export function getPartnerSource(params) {
   return this.fetch({
     methods: 'get',
@@ -17,25 +17,25 @@ export function getPartnerSource(params) {
     params
   })
 }
-//频道类型
+// 频道类型
 export function getCondition() {
   return this.fetch({
     methods: 'get',
-    url: '/api/tvos/getCondition.html',
+    url: '/api/tvos/getCondition.html'
   })
     .then(data => {
     // return JSON.parse(data)
-      return  JSON.parse(data.substring(7,data.length-1))
-  })
+      return JSON.parse(data.substring(7, data.length - 1))
+    })
 }
-//影片单集资源
+// 影片单集资源
 export function getSegmentList(params) {
   return this.fetch({
     methods: 'get',
     url: '/api/tvos/getSegmentList.html',
     params
   })
-  .then(data => {
-      return  JSON.parse(data.substring(7,data.length-1))
-  })
+    .then(data => {
+      return JSON.parse(data.substring(7, data.length - 1))
+    })
 }
