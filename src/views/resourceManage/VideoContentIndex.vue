@@ -2,7 +2,8 @@
   <ContentCard class="content">
     <ContentWrapper
       :filter="filter"
-      :pagination="handleFilterChange"
+      :filterSchema="filterSchema"
+      :pagination="pagination"
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
@@ -140,13 +141,13 @@
                     size="small"
                     v-model="searchForm.yearStart"
                     @blur="yearStartListen"
-                    style="width: 48px;"
+                    style="width: 70px;"
                   ></el-input>-
                   <el-input
                     size="small"
                     v-model="searchForm.yearEnd"
                     @blur="yearEndListen"
-                    style="width: 48px;"
+                    style="width: 70px;"
                   ></el-input>
                 </el-form-item>
                 <span v-show="isMore">
@@ -185,7 +186,7 @@
                     </el-select>
                   </el-form-item>
                   <el-form-item label="排序方式">
-                    <el-select v-model="searchForm.orderBy"  style="width: 85px;">
+                    <el-select v-model="searchForm.orderBy" size="small" >
                       <el-option label="请选择" value></el-option>
                       <!-- <el-option
                         v-for="(order, oIndex) in conditionList.orderBy"
@@ -202,7 +203,7 @@
                     </el-select>
                     <el-tooltip :content="orderTip">
                       <el-button
-                        :icon="searchForm.order === 'asc' ? 'arrow-up' : 'arrow-down'"
+                        :icon="searchForm.order === 'asc' ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"
                         size="mini"
                         @click="changeSort()"
                       ></el-button>
@@ -608,7 +609,6 @@ export default {
       this.table.selected = []
     },
     updateTableSelected() {
-      debugger
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -620,8 +620,7 @@ export default {
     },
     //查询
     handleFilterChange(type) {
-      debugger
-      if (type === 'query') {
+     if (type === 'filter') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }
@@ -645,7 +644,6 @@ export default {
         filter.callbackparam = 'result'
       }
       return filter
-      console.log(filter)
     },
     /**
      * 获取数据
@@ -701,7 +699,7 @@ export default {
         delete mediaObj.contentTypes
       }
       if (this.searchForm.videoFormat) {
-        mediaObj.videoFormat = this.mediaObj.videoFormat //影片格式
+        mediaObj.videoFormat = this.searchForm.videoFormat //影片格式
       } else {
         delete mediaObj.videoFormat
       }
@@ -723,17 +721,16 @@ export default {
       if (this.searchForm.actors) {
         mediaObj.actors = this.searchForm.actors //演员
       } else {
-        delete mediaObj.directors
+        delete mediaObj.actors
       }
       if (this.searchForm.areas) {
         mediaObj.areas = this.searchForm.areas //地区
       } else {
-        delete mediaObj.actors
+        delete mediaObj.areas
       }
       this.$service.getMediaVideoInfos(mediaObj).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
-        console.log(this.pagination.total)
       })
     },
     //

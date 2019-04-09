@@ -221,6 +221,7 @@ export default {
       this.table.selected = []
     },
     updateTableSelected() {
+      debugger
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -231,6 +232,7 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
+      debugger
       if (type === 'filter') {
         if (this.pagination) {
           this.pagination.currentPage = 1

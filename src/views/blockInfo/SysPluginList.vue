@@ -1,12 +1,12 @@
 <template>
  <ContentCard class="content">
    <ContentWrapper
-   :filter="filter"
-   :filterSchema="filterSchema"
-   :pagination="handleFilterChange"
-   @filter-change="handleFilterChange"
-   @filter-reset="handleFilterReset"
-   >
+      :filter="filter"
+      :filterSchema="filterSchema"
+      :pagination="pagination"
+      @filter-change="handleFilterChange"
+      @filter-reset="handleFilterReset"
+    >
    <div class="btns">
         <el-button type="primary" icon="el-icon-edit"  @click="editData">编辑</el-button>
         <!-- <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button> -->
@@ -308,6 +308,8 @@ export default {
 };
 </script>
 <style lang="stylus" scoped>
+.btns
+  margin-bottom 10px
 </style>
 
 
