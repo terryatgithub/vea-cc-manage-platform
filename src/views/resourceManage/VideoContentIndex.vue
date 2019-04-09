@@ -286,6 +286,13 @@
         @all-row-selection-change="handleAllRowSelectionChange"
       />
     </ContentWrapper>
+    <!--选择单集-->
+   <el-dialog :visible.sync="dialogTableVisible" width="1200px" @close='closeDialog'>
+        <selectSingle :singleId="singleId" @single="singleSearch"></selectSingle>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogTableVisible = false">取 消</el-button>
+        </div>
+      </el-dialog>
   </ContentCard>
 </template>
 
@@ -293,14 +300,18 @@
 import _ from 'gateschema'
 import ButtonList from './../../components/ButtonLIst'
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import selectSingle from './selectSingle'
 export default {
   components: {
     ActionList,
     Table,
-    ContentWrapper
+    ContentWrapper,
+    selectSingle
   },
   data() {
     return {
+      dialogTableVisible: false, //选择单集弹框
+      singleId: null,
       searchForm: {
         sources: 'tencent', // 内容源
         category: '', // 频道类型
@@ -465,7 +476,7 @@ export default {
             label: '操作',
             fixed: 'right',
             render: utils.component.createOperationRender(this, {
-              setRole: '选择单集'
+              operatSingle: '选择单集'
             })
           }
         ],
@@ -758,6 +769,18 @@ export default {
         this.categories = data.vod.sources[0].child
         this.conditionList = data.vod
       })
+    },
+    operatSingle(row) {
+      this.dialogTableVisible = true
+      this.singleId = row.row.coocaaVId
+    },
+    //关闭弹框清楚数据
+    closeDialog() {
+      this.singleId = null
+    },
+    singleSearch(data) {
+      this.dialogTableVisible = false
+      console.log(data)
     }
   },
   created() {

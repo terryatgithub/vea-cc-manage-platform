@@ -28,3 +28,14 @@ export function getCondition() {
       return  JSON.parse(data.substring(7,data.length-1))
   })
 }
+//影片单集资源
+export function getSegmentList(params) {
+  return this.fetch({
+    methods: 'get',
+    url: '/api/tvos/getSegmentList.html',
+    params
+  })
+  .then(data => {
+      return  JSON.parse(data.substring(7,data.length-1))
+  })
+}
