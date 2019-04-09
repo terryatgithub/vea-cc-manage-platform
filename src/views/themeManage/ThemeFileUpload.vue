@@ -2,8 +2,6 @@
   <Upload
     ref="upload"
     :multiple="true"
-    :min-height="100"
-    :max-height="200"
     :accept="accept"
     @upload="handleUpload"
   >
@@ -17,13 +15,20 @@
         <div v-if="file.status === 'uploading'" class="upload-pic-list__progress">
           <el-progress :width="100" type="circle" :percentage="file.percentage"></el-progress>
         </div>
-        <img v-else :src="file.dataUrl">
-        <i
-          v-if="file.status !== 'uploading'"
-          class="upload-pic-list__remove el-icon el-icon-close"
-          title="移除"
-          @click="$refs.upload.handleRemove(file)"
-        />
+        <div v-else class="upload-pic-list__success">
+          <img :src="file.dataUrl" class="upload-pic-list__success__img">
+          <i
+            v-if="file.status !== 'uploading'"
+            class="upload-pic-list__remove el-icon el-icon-error"
+            title="移除"
+            @click="$refs.upload.handleRemove(file);fileNum--"
+          />
+          <div class="diy-file-name">{{file.name}}</div>
+          <div class="diy-bar">
+            <span class="diy-bar__text">上传完成</span>
+          </div>
+        </div>
+        
       </div>
     </div>
   </Upload>
@@ -39,25 +44,65 @@ export default {
   props: {
     accept: {
       type: String
+    },
+    fileCount: {
+      type: String
     }
   },
 
   data () {
     return {
+      fileNum: 0 //记录上传文件数
     };
   },
 
   methods: {
     handleUpload (file, fileListItem) {
-      function update () {
-        if (fileListItem.percentage < 100) {
-          fileListItem.percentage += 10
-        } else {
-          fileListItem.status = 'successs'
-          clearInterval(fileListItem.interval)
+      console.log('file',file);
+      console.log('fileListItem',fileListItem);
+      let fileList = this.$refs.upload.fileList
+      let repeatName = false
+      fileList.map(item => {
+        if(item.name === file.name){
+          repeatName = true
+          return
         }
+      })
+      if(repeatName){
+        this.$message("该资源已存在")
+        fileList.pop()
+        return
       }
-      fileListItem.interval = setInterval(update, 200)
+      fileList[fileList.length-1].name = file.name
+      if(this.fileNum >= parseInt(this.fileCount)){
+        this.$message("上传文件数量超过限制,最大上传文件个数为" + this.fileCount)
+        fileList.pop()
+        return
+      }
+      this.fileNum++
+      this.fileName = file.name
+      this.$service.uploadImage({
+          file, 
+          onUploadProgerss: (evt) => {
+              if (evt.lengthComputable) {
+                  fileItem.percentage = evt.loaded /evt.total
+              }
+          }
+      }).then(data => {
+        console.log('data',data);
+      }).catch(() => {
+          fileItem.status = 'error'
+          fileItem.message = '网络错误'
+      })
+      // function update () {
+      //   if (fileListItem.percentage < 100) {
+      //     fileListItem.percentage += 10
+      //   } else {
+      //     fileListItem.status = 'successs'
+      //     clearInterval(fileListItem.interval)
+      //   }
+      // }
+      // fileListItem.interval = setInterval(update, 200)
     }
   },
   created() {}
@@ -68,7 +113,61 @@ export default {
 <style lang='stylus' scoped>
 .upload-pic-list
   width 200px
-  min-height 250px
+  min-height 280px
   text-align center
   border 1px solid #ccc
+.upload-pic-list__progress
+  display flex
+  align-items center
+  justify-content center
+  width 192px
+  height 192px
+.upload-pic-list__success
+  position relative
+  width 192px
+  height 192px
+.upload-pic-list__success:hover 
+  .diy-file-name, 
+  .upload-pic-list__remove
+    display block
+.upload-pic-list__success__img
+  width 100%
+  height 100%
+.diy-file-name
+  display none
+  position absolute
+  bottom 0px
+  left 0px
+  width 100%
+  height 20px
+  line-height 20px
+  text-align center
+  color #fff
+  background-color black
+.upload-pic-list__remove
+  display none
+  position absolute
+  top 0
+  right 0
+  z-index 2
+.diy-bar
+  position absolute
+  top 0
+  bottom 0
+  z-index 1
+  display flex
+  justify-content center
+  align-items center
+  width 100%
+  opacity: 0.7
+  background-color #ccc
+.diy-bar__text
+  height 24px
+  width 100%
+  font-size 14px
+  color #FFF
+  background-color #09F
+.el-icon
+  font-size 35px
+  color red
 </style>
