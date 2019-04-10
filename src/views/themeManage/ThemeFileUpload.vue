@@ -21,10 +21,10 @@
             v-if="file.status !== 'uploading'"
             class="upload-pic-list__remove el-icon el-icon-error"
             title="移除"
-            @click="$refs.upload.handleRemove(file);fileNum--"
+            @click="handleRemove(file)"
           />
           <div class="diy-file-name">{{file.name}}</div>
-          <div class="diy-bar">
+          <div v-if="file.status === 'success'" class="diy-bar">
             <span class="diy-bar__text">上传完成</span>
           </div>
         </div>
@@ -47,19 +47,26 @@ export default {
     },
     fileCount: {
       type: String
+    },
+    zipType: {
+      type: String,
+      default() {
+        return 'none'
+      }
     }
   },
 
   data () {
     return {
-      fileNum: 0 //记录上传文件数
+      fileNum: 0, //记录上传文件数
+      picData: {} //回调的数据
     };
   },
 
   methods: {
     handleUpload (file, fileListItem) {
-      console.log('file',file);
-      console.log('fileListItem',fileListItem);
+      // console.log('file',file);
+      // console.log('fileListItem',fileListItem);
       let fileList = this.$refs.upload.fileList
       let repeatName = false
       fileList.map(item => {
@@ -81,28 +88,86 @@ export default {
       }
       this.fileNum++
       this.fileName = file.name
-      this.$service.uploadImage({
-          file, 
-          onUploadProgerss: (evt) => {
-              if (evt.lengthComputable) {
-                  fileItem.percentage = evt.loaded /evt.total
-              }
+      const accept = this.accept
+
+      // 上传图片
+      if(/image/.test(accept)){
+        this.$service.uploadImage({
+            file, 
+            onUploadProgerss: (evt) => {
+                if (evt.lengthComputable) {
+                    fileListItem.percentage = evt.loaded /evt.total
+                }
+            }
+        }).then(dataAll => {
+          if(dataAll.code == 0){
+            fileListItem.status = 'success'
+            this.picData.url = dataAll.data[0].url
+            this.$emit('pic-data', this.picData)
+          }else {
+              fileListItem.status = 'error'
+              fileListItem.message = dataAll.msg
           }
-      }).then(data => {
-        console.log('data',data);
-      }).catch(() => {
-          fileItem.status = 'error'
-          fileItem.message = '网络错误'
-      })
-      // function update () {
-      //   if (fileListItem.percentage < 100) {
-      //     fileListItem.percentage += 10
-      //   } else {
-      //     fileListItem.status = 'successs'
-      //     clearInterval(fileListItem.interval)
-      //   }
-      // }
-      // fileListItem.interval = setInterval(update, 200)
+        }).catch(() => {
+            fileListItem.status = 'error'
+            fileListItem.message = '网络错误'
+        })
+      }
+      // 上传APK
+      else if(/vnd.android.package-archive/.test(accept)){
+        this.$service.uploadApk({
+            file, 
+            onUploadProgerss: (evt) => {
+                if (evt.lengthComputable) {
+                    fileListItem.percentage = evt.loaded /evt.total
+                }
+            }
+        }).then(dataAll => {
+          if(dataAll.code == 0){
+            fileListItem.status = 'success'
+            this.picData.url = dataAll.data.url
+            this.picData.fileMd5 = dataAll.data.fileMd5
+            this.$emit('pic-data', this.picData)
+          }else {
+              fileListItem.status = 'error'
+              fileListItem.message = dataAll.msg
+          }
+        }).catch(() => {
+            fileListItem.status = 'error'
+            fileListItem.message = '网络错误'
+        })
+      }
+      // 上传Zip
+      else if(/zip/.test(accept)){
+        const zipType = this.zipType
+        this.$service.uploadZip({
+            file,
+            type: zipType,
+            onUploadProgerss: (evt) => {
+                if (evt.lengthComputable) {
+                    fileListItem.percentage = evt.loaded /evt.total
+                }
+            }
+        }).then(dataAll => {
+          if(dataAll.code == 0){
+            fileListItem.status = 'success'
+            this.picData = dataAll.data
+            this.$emit('pic-data', this.picData)
+          }else {
+              fileListItem.status = 'error'
+              fileListItem.message = dataAll.msg
+          }
+        }).catch(() => {
+            fileListItem.status = 'error'
+            fileListItem.message = '网络错误'
+        })
+      }
+    },
+
+    handleRemove(file) {
+      this.$refs.upload.handleRemove(file)
+      this.fileNum--
+      this.$emit('handleRemove')
     }
   },
   created() {}

@@ -24,3 +24,29 @@ export function uploadLayoutFile ({ file, onUploadProgress }) {
     return data
   })
 }
+
+export function uploadApk ({ file, onUploadProgress }) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return axios({
+    method: 'post',
+    url: 'api/upload/apk.html',
+    data: formData,
+    onUploadProgress
+  }).then(({ data }) => {
+    return data
+  })
+}
+
+export function uploadZip ({ file, type, onUploadProgress }) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return axios({
+    method: 'post',
+    url: 'api/upload/zip.html?type=' + type,
+    data: formData,
+    onUploadProgress
+  }).then(({ data }) => {
+    return data
+  })
+}

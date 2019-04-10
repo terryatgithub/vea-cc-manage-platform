@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { Button } from 'element-ui'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 
@@ -69,7 +70,19 @@ export default {
           {
             label: '主题名称',
             prop: 'themeName',
-            sortable: true
+            sortable: true,
+            render: (h, {row}) => {
+              return h( Button,
+                {
+                  props: {
+                    type: 'success',
+                  },
+                  on: {
+                    click: () => this.themeInfoPreview(row.themeId)
+                  }
+                }, row.themeName
+              )
+            }
           },
           {
             label: '主题品牌',
@@ -131,7 +144,20 @@ export default {
           {
             label: '待审核副本',
             prop: 'duplicateVersion',
-            sortable: true
+            sortable: true,
+            render: (h, {row}) => {
+              if(!row.duplicateVersion) return
+              return h( Button,
+                {
+                  props: {
+                    type: 'success',
+                  },
+                  on: {
+                    click: () => this.duplicatePreview(row.themeId, row.currentVersion)
+                  }
+                }, row.duplicateVersion
+              )
+            }
           },
           {
             label: '原价(元)',
@@ -202,7 +228,8 @@ export default {
 
     },
     batchDel() {
-
+      const selected = this.selected.join(',')
+      this.$service.themeInfoRemove({id: selected})
     },
     /**
      * 行选择操作
@@ -234,6 +261,18 @@ export default {
         }
         return result
       }, [])
+    },
+    // 预览主题
+    themeInfoPreview(id) {
+      this.$service.themeInfoDetail({ id }).then(dataAll => {
+        console.log('预览数据', dataAll);
+      })
+    },
+    // 副本
+    duplicatePreview(id, version) {
+      this.$service.themeInfoDetail({ id, version }).then(dataAll => {
+        console.log('预览数据', dataAll);
+      })
     }
   },
   created() {
