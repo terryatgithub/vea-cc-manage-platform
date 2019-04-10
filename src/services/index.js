@@ -18,6 +18,8 @@ import * as markPanel from './blockManage/markPanel'
 import * as globalCornerIconType from './commonModule/globalCornerIconType'
 import * as layoutInfor from './commonModule/layoutInfor'
 import * as themeInfo from './themeManage/themeInfo'
+import * as globalPicture from './commonModule/globalPicture'
+import * as globalCornerIconMgr from './commonModule/globalCornerIconMgr'
 const service = {
   state: {},
   fetch,
@@ -37,6 +39,8 @@ const service = {
   ...markPanel,
   ...globalCornerIconType,
   ...layoutInfor,
-  ...themeInfo
+  ...themeInfo,
+  ...globalPicture,
+  ...globalCornerIconMgr
 }
 Vue.prototype.$service = utils.wrapService(service)
