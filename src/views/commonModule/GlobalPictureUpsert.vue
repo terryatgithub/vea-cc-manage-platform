@@ -248,8 +248,6 @@ export default {
 }
 </script>
 <style>
-.global-picture {
-}
 .global-picture__actions {
     padding: 15px;
     border-bottom: 1px solid #ccc;
