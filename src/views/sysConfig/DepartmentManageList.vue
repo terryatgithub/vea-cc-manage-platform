@@ -94,8 +94,11 @@ export default {
                   ref: 'input',
                   props: { value: row.seq },
                   on: {
-                    change: (value) => {
-                      this.$service.sysDeptUpdateSeq({id: row.deptId, seq: value})
+                    input: value => {
+                      row.seq = value
+                    },
+                    blur: (value) => {
+                      this.$service.sysDeptUpdateSeq({id: row.deptId, seq: row.seq})
                     }
                   }
                 })
