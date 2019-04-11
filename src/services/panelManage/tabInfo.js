@@ -36,3 +36,22 @@ export function getTabType(data) {
     data
   })
 }
+/**
+ * 版面管理 -> 影片详情页
+ */
+export function getMediaResourceInfo(params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/v1/getMediaResourceInfoToPanel.html',
+    params,
+    isJSON: true
+  })
+}
+// 分页
+export function filmDetailPageList(data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/filmDetailPage/pageList.html',
+    data
+  })
+}

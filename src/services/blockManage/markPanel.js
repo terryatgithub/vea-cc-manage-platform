@@ -1,5 +1,5 @@
 /** 板块管理——功能板块 */
-//表格list
+// 表格list
 export function getMarkPanelList (data) {
   return this.fetch({
     method: 'post',
@@ -7,16 +7,16 @@ export function getMarkPanelList (data) {
     data
   })
 }
-//获取业务分类
-export function getBusinessType(data) {
+// 获取业务分类
+export function getBusinessType (data) {
   return this.fetch({
     method: 'post',
     url: '/api/globalDictInfo/getTypes/businessType.html',
     data
   })
 }
-//回显数据
-export function getEditData(params) {
+// 回显数据
+export function getEditData (params) {
   return this.fetch({
     method: 'get',
     url: '/api/markPanel/edit.html',
@@ -25,47 +25,47 @@ export function getEditData(params) {
     return JSON.parse(data.match(/pannelInit = (\{.+\})/)[1])
   })
 }
-//保存
-export function MarkPanelSave(data) {
+// 保存
+export function MarkPanelSave (data) {
   return this.fetch({
     method: 'post',
     url: '/api/panel/save.html',
     data
   })
 }
-//删除
-export function deleteMarkPanel(params) {
+// 删除
+export function deleteMarkPanel (params) {
   return this.fetch({
     method: 'get',
     url: '/api/panel/remove.html',
     params
   })
 }
-//预览使用接口
-export function getViewData(params) {
+// 预览使用接口
+export function getViewData (params) {
   return this.fetch({
     method: 'get',
     url: '/api/panel/getDetailInfo.html',
     params
   })
 }
-export function getHistoryList(data) {
+export function getHistoryList (data) {
   return this.fetch({
     method: 'post',
     url: '/api/v1/hvi/historyList.html',
     data
   })
 }
-//获取上架时间
-export function getTimedInfo(data) {
+// 获取上架时间
+export function getTimedInfo (data) {
   return this.fetch({
     method: 'post',
     url: '/api/v1/timedTask/getTimedInfo.html',
     data
   })
 }
-//获取审核者
-export function getHandlePerson(params) {
+// 获取审核者
+export function getHandlePerson (params) {
   return this.fetch({
     method: 'get',
     url: '/api/v1/audit/historyList.html',
