@@ -7,13 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-    <div class="btns">
+      <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="deleteData">删除</el-button>
-         <el-button type="primary" icon="el-icon-edit-outline" @click="batchHandle">批量审核</el-button>
-          <el-button type="primary"  @click="selectAllOne">全选/全不选</el-button>
-           <el-button type="primary"  @click="changePriority">调整优先级</el-button>
+        <el-button type="primary" icon="el-icon-edit-outline" @click="batchHandle">批量审核</el-button>
+        <el-button type="primary" v-model="checkAll" @click="selectAllOne">全选/全不选</el-button>
+        <el-button type="primary" @click="changePriority">调整优先级</el-button>
       </div>
       <Table
         :props="table.props"
@@ -29,29 +29,47 @@
     <!-- 预览图片 -->
     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
       <span class="pics">
-        <img :src="reviewPicUrl" alt="图片" max-width="500">
+        <img :src="reviewPicUrl" alt="图片" style="width:200px">
+      </span>
+    </el-dialog>
+    <!--批量审核-->
+    <el-dialog title="审核" :visible.sync="dialogPLVisible" :before-close="handleDialogClose">
+      <GlobalIconAudit @auditForm="submitForm" @cancle="cancle" ref="auditForm"></GlobalIconAudit>
+    </el-dialog>
+    <!--调整优先级-->
+    <el-dialog title="调整优先级" :visible.sync="dialogLevelVisible">
+      <!-- <GlobelIconLevel @level="handleLevel"></GlobelIconLevel> -->
+      <GlobelIconLevel></GlobelIconLevel>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogLevelVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogLevelVisible = false">确 定</el-button>
       </span>
     </el-dialog>
   </ContentCard>
 </template>
-
 <script>
 import _ from 'gateschema'
 import ButtonList from './../../components/ButtonLIst'
+import GlobalIconAudit from './GlobalIconAudit'
+import GlobelIconLevel from './GlobelIconLevel'
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 export default {
   components: {
     ActionList,
     Table,
-    ContentWrapper
+    ContentWrapper,
+    GlobalIconAudit,
+    GlobelIconLevel
   },
   data() {
     return {
+      checkAll: false,
       globalTypes: {}, //角标分类
       attributeTypes: {}, //角标类别
+      dialogPLVisible: false,
+      dialogLevelVisible: false,
       cornerStatuses: {
-        无效: 0,
-        有效: 1,
+        审核通过: 1,
         待审核: 2,
         审核不通过: 3
       },
@@ -59,7 +77,7 @@ export default {
         左上: 0,
         右上: 1,
         左下: 3,
-        右下:2
+        右下: 2
       },
       picDialogVisible: false, //预览图片弹出框
       reviewPicUrl: null,
@@ -79,7 +97,23 @@ export default {
           },
           {
             label: '角标名称',
-            prop: 'cornerIconName'
+            prop: 'cornerIconName',
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.openReview(row)
+                    }
+                  }
+                },
+                row.cornerIconName
+              )
+            }
           },
           {
             label: '图片',
@@ -110,7 +144,7 @@ export default {
                   return '无效'
                   break
                 case 1:
-                  return '有效'
+                  return '审核通过'
                   break
                 case 2:
                   return '待审核'
@@ -146,27 +180,104 @@ export default {
       }
       return filter
     },
-    addData(){
+    addData() {
       this.$emit('open-add-page', null)
     },
-    editData(){
-      if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selected[0])
+    editData() {
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('open-add-page', this.selected[0])
       }
     },
     deleteData() {
-
+      // if (this.selected.length == 0) {
+      //   this.$message('请选择一条数据')
+      // } else if (this.selected.length > 1) {
+      //   this.$message('只能选择一条数据')
+      // } else {
+      //   if (window.confirm('确定要删除吗')) {
+      //     this.$service
+      //       .globalCornerIconRemove({ id: this.selected[0] }, '删除成功')
+      //       .then(data => {
+      //         this.fetchData()
+      //       })
+      //   }
+      // }
+      if (window.confirm('确定要删除吗')) {
+          this.$service
+            .globalCornerIconRemove({ id: this.selected.join(',') }, '删除成功')
+            .then(data => {
+              this.fetchData()
+            })
+        }
     },
-    batchHandle(){
-
+    //批量审核
+    batchHandle() {
+      var that = this
+      if (that.selected.length == 0) {
+        that.$message('最少选择一条数据')
+      } else {
+        debugger
+        console.log(that.table.data)
+        const ids = that.selected
+        for (var i = 0; i < ids.length; i++) {
+          for (var j = 0; j < that.table.data.length; j++) {
+            if (ids[i] == that.table.data[j].cornerIconId) {
+              if (that.table.data[j].cornerStatus == 2) {
+                this.dialogPLVisible = true
+              } else {
+                that.$message('[' + ids[i] + ']' + '不是审核状态，不允许审核')
+              }
+            }
+          }
+          // var result = this.table.data.some
+        }
+        // this.dialogPLVisible = true
+      }
     },
-    selectAllOne(){
-
+    submitForm(data) {
+      const auditForm = data
+      this.$service
+        .batchAudit(
+          {
+            idStr: this.selected.join(','),
+            auditFlag: auditForm.auditFlag,
+            auditDesc: auditForm.auditDesc
+          },
+          '审核成功'
+        )
+        .then(data => {
+          this.fetchData()
+          this.$refs.auditForm.cancle()
+          this.dialogPLVisible = false
+        })
     },
-    changePriority(){
-
+    //取消事件
+    cancle(data) {
+      this.dialogPLVisible = data
     },
+    handleDialogClose() {
+      this.$refs.auditForm.cancle()
+    },
+    //全选/全不选
+    selectAllOne() {
+      if (this.checkAll == false) {
+        this.checkAll = true
+      } else {
+        this.checkAll = false
+      }
+      this.handleAllRowSelectionChange(this.checkAll)
+    },
+    changePriority() {
+      this.dialogLevelVisible = true
+    },
+    // handelLevel(){
 
+    // },
+    //预览
+    openReview(row) {
+      console.log(row)
+      this.$emit('open-view-page', row.cornerIconId)
+    },
     //查询
     handleFilterChange(type) {
       if (type === 'filter') {
@@ -219,7 +330,7 @@ export default {
     },
     //角标分类
     getCornerTypes() {
-     return this.$service.getCornerTypes().then(data => {
+      return this.$service.getCornerTypes().then(data => {
         data.forEach(element => {
           this.globalTypes[element.typeName] = element.typeId
         })
@@ -227,7 +338,7 @@ export default {
     },
     //角标类别
     getIconAttributes() {
-     return this.$service.getIconAttributes().then(data => {
+      return this.$service.getIconAttributes().then(data => {
         data.attributes.forEach(element => {
           this.attributeTypes[element.attributeName] = element.attributeCode
         })
@@ -265,14 +376,16 @@ export default {
           label: 0
         }
       }),
-      'cornerIconType.typePosition': _.o.enum(this.typePositions).other('form', {
-        component: 'Select',
-        placeholder: '角标位置',
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
+      'cornerIconType.typePosition': _.o
+        .enum(this.typePositions)
+        .other('form', {
+          component: 'Select',
+          placeholder: '角标位置',
+          cols: {
+            item: 3,
+            label: 0
+          }
+        }),
       attributeCode: _.o.enum(this.attributeTypes).other('form', {
         component: 'Select',
         placeholder: '角标类别',
@@ -281,14 +394,14 @@ export default {
           label: 0
         }
       }),
-     cornerStatus: _.o.enum(this.cornerStatuses).other('form', {
+      cornerStatus: _.o.enum(this.cornerStatuses).other('form', {
         component: 'Select',
         placeholder: '审核状态',
         cols: {
           item: 3,
           label: 0
         }
-      }),
+      })
     }).other('form', {
       layout: 'inline',
       footer: {
@@ -308,12 +421,13 @@ export default {
         this.filterSchema = filterSchema
       })
     }) //获取角标分类
-     //角标类别
+    //角标类别
   }
 }
 </script>
 
 <style lang = 'stylus' scoped>
-.btns
-  margin-bottom: 10px
+.btns {
+  margin-bottom: 10px;
+}
 </style>

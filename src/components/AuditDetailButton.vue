@@ -90,6 +90,7 @@ export default {
         menuElId: this.menuElId
       }
       this.$service.getAuditDetailButton(params).then(data => {
+        console.log(data)
         let action = {}
         data.forEach(v => {
           if (v.runComm !== 'claim' && v.runComm !== 'unclaim' && v.runComm !=='copy') {
