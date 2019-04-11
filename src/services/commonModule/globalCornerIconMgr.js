@@ -50,3 +50,19 @@ export function globalCornerIconRemove(params) {
         params
     })
 }
+//角标素材管理—批量审核
+export function batchAudit(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/v1/cornerIcon/batchAudit.html',
+        params
+    })
+}
+//角标素材管理-预览
+export function getDetailInfo(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/v1/cornerIcon/getDetailInfo.html',
+        params
+    })
+}

@@ -33,11 +33,11 @@
                 >
                   <el-input v-model="file.cornerIconName"/>
                 </el-form-item>
-                <!--角标类别-->
+                <!--角标分类-->
                 <el-form-item
                   :prop="'fileInfo.' + index + '.globalIconTypeId'"
                   :rules="rules.type"
-                  label="角标类别"
+                  label="角标分类"
                 >
                   <el-select v-model="fileInfo[index].globalIconTypeId">
                     <el-option
@@ -48,11 +48,11 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <!--角标分类-->
+                <!--角标类别-->
                 <el-form-item
                   :prop="'fileInfo.' + index + '.attributeCode'"
                   :rules="rules.code"
-                  label="角标分类"
+                  label="角标类别"
                 >
                   <el-radio-group v-model="file.attributeCode">
                     <el-radio :label="'0'">其他</el-radio>
