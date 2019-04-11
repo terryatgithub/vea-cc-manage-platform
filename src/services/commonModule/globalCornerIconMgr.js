@@ -53,7 +53,7 @@ export function globalCornerIconRemove(params) {
 //角标素材管理—批量审核
 export function batchAudit(params) {
     return this.fetch({
-        method: 'get',
+        method: 'post',
         url: '/api/v1/cornerIcon/batchAudit.html',
         params
     })
@@ -63,6 +63,14 @@ export function getDetailInfo(params) {
     return this.fetch({
         method: 'get',
         url: '/api/v1/cornerIcon/getDetailInfo.html',
+        params
+    })
+}
+//角标素材管理—调整优先级
+export function changePriority(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/v1/cornerIcon/changePriority.html',
         params
     })
 }

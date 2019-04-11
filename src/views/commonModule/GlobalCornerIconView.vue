@@ -19,10 +19,10 @@
           <div>{{form.cornerStatus}}</div>
         </el-form-item>
       </el-form>
-      <div class="global_icon_actions">
-        <el-button type="primary" @click="toEdit">编辑</el-button>
-        <el-button type="primary" @click="toDelete">删除</el-button>
-        <el-button type="primary" @click="handleSubmit">审核</el-button>
+      <div class="global_icon_actions" >
+        <el-button type="primary" @click="toEdit" v-if="form.cornerStatus == '审核不通过'" >编辑</el-button>
+        <el-button type="primary" @click="toDelete" v-if="form.cornerStatus == '审核不通过'">删除</el-button>
+        <el-button type="primary" @click="handleSubmit" v-if="form.cornerStatus == '待审核'" >审核</el-button>
       </div>
       <el-dialog title="审核" :visible.sync="dialogPLVisible" :before-close="handleDialogClose">
         <GlobalIconAudit @auditForm="submitForm" @cancle="cancle" ref="auditForm"></GlobalIconAudit>

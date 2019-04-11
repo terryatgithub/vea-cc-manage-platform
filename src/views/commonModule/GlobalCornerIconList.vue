@@ -33,23 +33,33 @@
       </span>
     </el-dialog>
     <!--批量审核-->
-     <el-dialog title="审核" :visible.sync="dialogPLVisible" :before-close="handleDialogClose">
-        <GlobalIconAudit @auditForm="submitForm" @cancle="cancle" ref="auditForm"></GlobalIconAudit>
-      </el-dialog>
+    <el-dialog title="审核" :visible.sync="dialogPLVisible" :before-close="handleDialogClose">
+      <GlobalIconAudit @auditForm="submitForm" @cancle="cancle" ref="auditForm"></GlobalIconAudit>
+    </el-dialog>
+    <!--调整优先级-->
+    <el-dialog title="调整优先级" :visible.sync="dialogLevelVisible">
+      <!-- <GlobelIconLevel @level="handleLevel"></GlobelIconLevel> -->
+      <GlobelIconLevel></GlobelIconLevel>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogLevelVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogLevelVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </ContentCard>
 </template>
-
 <script>
 import _ from 'gateschema'
 import ButtonList from './../../components/ButtonLIst'
 import GlobalIconAudit from './GlobalIconAudit'
+import GlobelIconLevel from './GlobelIconLevel'
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 export default {
   components: {
     ActionList,
     Table,
     ContentWrapper,
-    GlobalIconAudit
+    GlobalIconAudit,
+    GlobelIconLevel
   },
   data() {
     return {
@@ -57,8 +67,8 @@ export default {
       globalTypes: {}, //角标分类
       attributeTypes: {}, //角标类别
       dialogPLVisible: false,
+      dialogLevelVisible: false,
       cornerStatuses: {
-        无效: 0,
         审核通过: 1,
         待审核: 2,
         审核不通过: 3
@@ -78,10 +88,6 @@ export default {
       filterSchema: null,
       pagination: {},
       selected: [],
-      auditForm: {
-        auditFlag: 4,
-        auditDesc: ''
-      },
       table: {
         props: {},
         header: [
@@ -183,26 +189,49 @@ export default {
       }
     },
     deleteData() {
-      if (this.selected.length == 0) {
-        this.$message('请选择一条数据')
-      } else if (this.selected.length > 1) {
-        this.$message('只能选择一条数据')
-      } else {
-        if (window.confirm('确定要删除吗')) {
+      // if (this.selected.length == 0) {
+      //   this.$message('请选择一条数据')
+      // } else if (this.selected.length > 1) {
+      //   this.$message('只能选择一条数据')
+      // } else {
+      //   if (window.confirm('确定要删除吗')) {
+      //     this.$service
+      //       .globalCornerIconRemove({ id: this.selected[0] }, '删除成功')
+      //       .then(data => {
+      //         this.fetchData()
+      //       })
+      //   }
+      // }
+      if (window.confirm('确定要删除吗')) {
           this.$service
-            .globalCornerIconRemove({ id: this.selected[0] }, '删除成功')
+            .globalCornerIconRemove({ id: this.selected.join(',') }, '删除成功')
             .then(data => {
               this.fetchData()
             })
         }
-      }
     },
     //批量审核
     batchHandle() {
-      if (this.selected.length == 0) {
-        this.$message('最少选择一条数据')
+      var that = this
+      if (that.selected.length == 0) {
+        that.$message('最少选择一条数据')
       } else {
-        this.dialogPLVisible = true
+        debugger
+        console.log(that.table.data)
+        const ids = that.selected
+        for (var i = 0; i < ids.length; i++) {
+          for (var j = 0; j < that.table.data.length; j++) {
+            if (ids[i] == that.table.data[j].cornerIconId) {
+              if (that.table.data[j].cornerStatus == 2) {
+                this.dialogPLVisible = true
+              } else {
+                that.$message('[' + ids[i] + ']' + '不是审核状态，不允许审核')
+              }
+            }
+          }
+          // var result = this.table.data.some
+        }
+        // this.dialogPLVisible = true
       }
     },
     submitForm(data) {
@@ -238,11 +267,16 @@ export default {
       }
       this.handleAllRowSelectionChange(this.checkAll)
     },
-    changePriority() {},
+    changePriority() {
+      this.dialogLevelVisible = true
+    },
+    // handelLevel(){
+
+    // },
     //预览
     openReview(row) {
       console.log(row)
-      this.$emit('open-view-page',row.cornerIconId)
+      this.$emit('open-view-page', row.cornerIconId)
     },
     //查询
     handleFilterChange(type) {
