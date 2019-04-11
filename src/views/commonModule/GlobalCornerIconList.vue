@@ -29,7 +29,13 @@
     <!-- 预览图片 -->
     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
       <span class="pics">
-        <img :src="reviewPicUrl" alt="图片" max-width="500">
+        <img :src="reviewPicUrl" alt="图片" style="width:200px">
+      </span>
+    </el-dialog>
+    <!--批量审核-->
+    <el-dialog title="批量处理" :visible.sync="dialogPLVisible" >
+      <span class="pics">
+        <img :src="reviewPicUrl" alt="图片" style="width:200px">
       </span>
     </el-dialog>
   </ContentCard>
@@ -49,9 +55,10 @@ export default {
     return {
       globalTypes: {}, //角标分类
       attributeTypes: {}, //角标类别
+      dialogPLVisible: false,
       cornerStatuses: {
         无效: 0,
-        有效: 1,
+        审核通过: 1,
         待审核: 2,
         审核不通过: 3
       },
@@ -110,7 +117,7 @@ export default {
                   return '无效'
                   break
                 case 1:
-                  return '有效'
+                  return '审核通过'
                   break
                 case 2:
                   return '待审核'
@@ -155,10 +162,25 @@ export default {
       }
     },
     deleteData() {
+      if(this.selected.length ==0) {
+        this.$message('请选择一条数据')
+      }
+      else if(this.selected.length >1) {
+        this.$message('只能选择一条数据')
+      }
+      else {
+        if (window.confirm('确定要删除吗')) {
+          this.$service
+            .globalCornerIconRemove({ id: this.selected[0] }, '删除成功')
+            .then(data => {
+              this.fetchData()
+            })
+        }
+      }
 
     },
     batchHandle(){
-
+      this.dialogPLVisible = true
     },
     selectAllOne(){
 

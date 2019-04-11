@@ -33,20 +33,31 @@
                 >
                   <el-input v-model="file.cornerIconName"/>
                 </el-form-item>
-                <el-form-item label="图片分辨率">{{ file.pictureResolution }}</el-form-item>
+                <!--角标类别-->
                 <el-form-item
-                  :prop="'fileInfo.' + index + '.materialTypeDictEnName'"
+                  :prop="'fileInfo.' + index + '.globalIconTypeId'"
                   :rules="rules.type"
-                  label="素材类型"
+                  label="角标类别"
                 >
-                  <el-select v-model="fileInfo[index].materialTypeDictEnName">
+                  <el-select v-model="fileInfo[index].globalIconTypeId">
                     <el-option
-                      v-for="(item, index) in picTypeOptions"
+                      v-for="(item, index) in attributes"
                       :key="index"
-                      :value="item.value"
-                      :label="item.label"
+                      :value="item.typeId"
+                      :label="item.typeName"
                     ></el-option>
                   </el-select>
+                </el-form-item>
+                <!--角标分类-->
+                <el-form-item
+                  :prop="'fileInfo.' + index + '.attributeCode'"
+                  :rules="rules.code"
+                  label="角标分类"
+                >
+                  <el-radio-group v-model="file.attributeCode">
+                    <el-radio :label="'0'">其他</el-radio>
+                    <el-radio :label="'1'">VIP</el-radio>
+                  </el-radio-group>
                 </el-form-item>
               </div>
               <i
@@ -62,23 +73,12 @@
               class="upload-pic-list__add"
               @click="$refs.upload.handleSelectFile()"
             >点击选择图片</el-button>
-
-            <el-button @click="showPicTypeSelector = true">批量设置类型</el-button>
           </template>
         </Upload>
       </el-form>
-      <el-dialog
-        class="global-pic-type-selector"
-        title="选择素材类型"
-        size="tiny"
-        :visible.sync="showPicTypeSelector"
-      >
-        <el-tag
-          v-for="(item, index) in picTypeOptions"
-          :key="index"
-          @click.native="handleBatchSetPicType(item)"
-        >{{ item.label }}</el-tag>
-      </el-dialog>
+      <div class="global_icon_actions">
+        <el-button type="primary" @click="handleSubmit">提交审核</el-button>
+      </div>
     </div>
   </ContentCard>
 </template>
@@ -92,14 +92,13 @@ export default {
   data() {
     return {
       mode: 'create',
-      showPicTypeSelector: false,
-      pictureId: undefined,
       fileInfo: [],
-      picTypeOptions: [],
-      picTypeOptionsIndexed: [],
+      attributes: [], //角标分类
+      attributesIndexed: [],
       rules: {
         title: [{ required: true, message: '请填写素材标题' }],
-        type: [{ required: true, message: '请选择素材类型' }]
+        type: [{ required: true, message: '请选择角标类别' }],
+        code: [{ required: true, message: '请选择角标分类' }]
       }
     }
   },
@@ -108,16 +107,13 @@ export default {
     handleUpload(file, fileItem) {
       this.$refs.upload.getImageInfo(fileItem.dataUrl).then(
         function(imageInfo) {
-          debugger
           const fileInfo = {
             upload: fileItem,
-            materialTypeDictEnName: undefined,
-            pictureId: undefined,
+            globalIconTypeId: undefined, //角标类别
             cornerIconName: undefined,
-            pictureResolution: imageInfo.width + '*' + imageInfo.height,
-            pictureStatus: undefined,
-            pictureType: undefined,
-            imgUrl: undefined
+            attributeCode: undefined, //角标分类
+            imgUrl: undefined,
+            pictureType: undefined //上传图片格式
           }
           this.fileInfo.push(fileInfo)
           fileItem.status = 'uploading'
@@ -155,55 +151,49 @@ export default {
         return i !== index
       })
     },
-    handleSelectPicTypeStart() {
-      this.showPicTypeSelector = true
-    },
-    handleBatchSetPicType(type) {
-      this.fileInfo.forEach(function(item) {
-        item.materialTypeDictEnName = type.value
-      })
-      this.showPicTypeSelector = false
-    },
-    getFormData() {
-      const pictureId = this.pictureId
-      const picTypeOptionsIndexed = this.picTypeOptionsIndexed
-      const picsJsonData = this.getUploadedFiles().map(item => {
-        return {
-          pictureId: pictureId,
-          pictureType: item.pictureType,
-          pictureResolution: item.pictureResolution,
-          imgUrl: item.imgUrl,
-          pictureStatus: item.pictureStatus,
-          cornerIconName: item.cornerIconName,
-          materialTypes: this.parseMaterialType(
-            picTypeOptionsIndexed[item.materialTypeDictEnName]
-          )
+    handleSubmit() {
+      this.validateFormData(err => {
+        if (!err) {
+          const data = this.getFormData()
+          console.log(data)
+          this.$service.globalCornerIconSave(data, '保存成功').then(() => {
+            this.$emit('open-list-page')
+          })
         }
       })
-      const data = { picsJsonData: JSON.stringify(picsJsonData) }
+    },
+    //保存数据
+    getFormData() {
+      const attributesIndexed = this.attributesIndexed
+      const jsonStr = this.getUploadedFiles().map(item => {
+        return {
+          cornerIconId: this.editId,
+          cornerIconName: item.cornerIconName, //标题
+          imgUrl: item.imgUrl, //url
+          attributeCode: item.attributeCode, //分类
+          typeRls: {
+            typeId: String(item.globalIconTypeId)
+          }
+        }
+      })
+      const data = { jsonStr: JSON.stringify(jsonStr) }
       return data
     },
+    //回显数据
     globalCornerIconEdit() {
-        this.$service.globalCornerIconEdit({id: this.editId}).then(this.setFormData)
+      this.$service
+        .globalCornerIconEdit({ id: this.editId })
+        .then(this.setFormData)
     },
     setFormData(data) {
       data = JSON.parse(JSON.stringify(data))
-      console.log(data)
-    //   const materialTypes = data.materialTypes
-    //   data.materialTypeDictEnName = materialTypes[0].dictEnName
+      data.globalIconTypeId = data.cornerIconType.typeId
       data.upload = {
         status: 'success',
         dataUrl: data.imgUrl
       }
-      this.pictureId = data.pictureId
+      console.log(data.attributeCode)
       this.fileInfo.push(data)
-    },
-    parseMaterialType(item) {
-      return {
-        dictId: item.id,
-        dictEnName: item.value,
-        dictCnName: item.label
-      }
     },
     validateFormData(cb) {
       this.$refs.form.validate(
@@ -213,7 +203,7 @@ export default {
             if (uploadedFiles.length === 0) {
               this.$message({
                 type: 'error',
-                message: '最少要上传一个素材，才能保存'
+                message: '最少要上传一个角标素材，才能保存'
               })
               cb(true)
             } else {
@@ -232,36 +222,32 @@ export default {
     getUploadedFiles() {
       return this.fileInfo.filter(item => item.imgUrl !== undefined)
     },
-    getMaterialTypes() {
-      this.$service.getMaterialTypes().then(data => {
-        this.picTypeOptions = data || []
-        this.picTypeOptionsIndexed = this.picTypeOptions.reduce(function(
-          result,
-          item
-        ) {
-          result[item.value] = item
+    getCornerTypes() {
+      this.$service.getCornerTypes().then(data => {
+        this.attributes = data || []
+        this.attributesIndexed = this.attributes.reduce(function(result, item) {
+          result[item.typeName] = item
           return result
-        },
-        {})
+        }, {})
       })
     }
   },
   created() {
     if (this.editId !== null && this.editId !== undefined) {
-        this.globalCornerIconEdit()
+      this.globalCornerIconEdit() //回显数据
       this.title = '编辑'
     } else {
       this.title = '新增'
     }
-    this.getMaterialTypes()
+    this.getCornerTypes() //角标分类
   }
 }
 </script>
 <style>
-.global-picture__actions {
+.global_icon_actions {
   padding: 15px;
-  border-bottom: 1px solid #ccc;
   margin-bottom: 20px;
+  text-align: right;
 }
 .global-picture .upload-pic-list__item,
 .global-picture .pic-info {

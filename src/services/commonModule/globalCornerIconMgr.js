@@ -34,3 +34,19 @@ export function globalCornerIconEdit(params) {
         return JSON.parse(data.match(/para = (\{.+\})/)[1])
       })
 }
+//角标素材管理-保存
+export function globalCornerIconSave(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/v1/cornerIcon/save.html',
+        data
+    })
+}
+//角标素材-删除
+export function globalCornerIconRemove(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/v1/cornerIcon/remove.html',
+        params
+    })
+}
