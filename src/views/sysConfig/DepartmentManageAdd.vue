@@ -21,6 +21,7 @@
           </el-form-item>
           <el-form-item label="上级部门" prop="pid">
             <el-select v-model="formData.pid" placeholder="所在部门">
+              <el-option label="无" value="0"/>
               <el-option
                 v-for="item in pidList"
                 :key="item.deptId+''"
@@ -30,8 +31,8 @@
             </el-select>
           </el-form-item>
           <el-form-item label="是否禁用" prop="disabled">
-            <el-radio v-model="formData.disabled" label="0">是</el-radio>
-            <el-radio v-model="formData.disabled" label="1">否</el-radio>
+            <el-radio v-model="formData.disabled" label="0">否</el-radio>
+            <el-radio v-model="formData.disabled" label="1">是</el-radio>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitBtn">保存</el-button>
@@ -64,7 +65,7 @@ export default {
         remark: '',
         seq: null,
         disabled: '0',
-        pid: 0
+        pid: '0'
       },
       formRules: {
         deptName: [

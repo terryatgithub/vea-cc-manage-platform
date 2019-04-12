@@ -75,7 +75,14 @@ export default {
             label: '是否禁用',
             prop: 'disabled',
             fit: true,
-            sortable: true
+            sortable: true,
+            render: (h, {row}) => {
+              return h('div', {
+                style: {
+                  color: ['red', 'green'][row.disabled]
+                }
+              }, ['否', '是'][row.disabled])
+            }
           },
           {
             label: '备注',
@@ -278,7 +285,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.btns {
-  margin-bottom: 10px;
-}
+.btns 
+  margin-bottom: 10px
 </style>
