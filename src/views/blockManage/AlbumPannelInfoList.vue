@@ -223,46 +223,46 @@ export default {
     }, {})
     let filterSchema = _.map({
       pannelCategory: _.o.enum(this.businessType).other('form', {
-        label: '业务分类',
+        placeholder: '业务分类',
         component: 'Select'
       }),
       pannelId: _.o.string.other('form', {
-        label: '板块ID',
+        placeholder: '板块ID',
         component: 'Input'
       }),
       pannelName: _.o.string.other('form', {
-        label: '板块名称',
+        placeholder: '板块名称',
         component: 'Input'
       }),
       pannelTitle: _.o.string.other('form', {
-        label: '板块标题',
+        placeholder: '板块标题',
         component: 'Input'
       }),
       vDataListName: _.o.string.other('form', {
-        label: '关联专辑名',
+        placeholder: '关联专辑名',
         component: 'Input'
       }),
       tabName: _.o.string.other('form', {
-        label: '引用状态',
+        placeholder: '引用状态',
         component: 'Input'
       }),
       pannelResource: _.o.enum({'腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优朋': 'o_voole'}).other('form', {
-        label: '内容源',
+        placeholder: '内容源',
         component: 'Select'
       }),
       pannelStatus: _.o.enum(this.pannelStatus).other('form', {
-        label: '状态',
+        placeholder: '状态',
         component: 'Select'
       }),
       type: _.o.enum({'默认': -1, '置顶': 1, '下沉': 0}).other('form', {
-        label: '板块类别',
+        placeholder: '板块类别',
         component: 'Select'
       })
     }).other('form', {
       cols: {
-        item: 5,
-        label: 2,
-        wrapper: 14
+        item: 6,
+        label: 0,
+        wrapper: 18
       },
       layout: 'inline',
       footer: {

@@ -132,4 +132,6 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
+.el-input
+  width 200px
 </style>

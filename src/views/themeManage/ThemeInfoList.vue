@@ -279,25 +279,24 @@ export default {
     let filterSchema = _.map({
       themeId: _.o.string.other('form', {
         component: 'Input',
-        label: '主题ID'
+        placeholder: '主题ID'
       }),
       themeName: _.o.string.other('form', {
         component: 'Input',
-        label: '主题名称'
+        placeholder: '主题名称'
       }),
       currentVersion: _.o.string.other('form', {
         component: 'Input',
-        label: '当前版本'
+        placeholder: '当前版本'
       }),
       themeStatus: _.o.enum({'待审核': '3', '审核通过': '4', '审核不通过': '5'}).other('form', {
         component: 'Select',
-        label: '状态'
+        placeholder: '状态'
       })
     }).other('form', {
       cols: {
-        item: 5,
-        label: 2,
-        wrapper: 18
+        item: 3,
+        label: 0
       },
       layout: 'inline',
       footer: {

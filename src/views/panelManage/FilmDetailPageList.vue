@@ -263,7 +263,6 @@ export default {
         this.productOptions = productItems
 
         //频道->爱奇艺channelOptions
-        // videoItemModels[0].categoryList
         var channelQiyi = {
           label: '爱奇艺',
           value: 'iqiyi',

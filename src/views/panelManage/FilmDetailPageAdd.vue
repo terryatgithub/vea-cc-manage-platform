@@ -38,6 +38,9 @@
           <el-option v-for="(item, index) in productItems" :key="index" :label="item.label" :value="item.value"/>
         </el-select>
       </el-form-item>
+      <el-form-item label="选择板块">
+        
+      </el-form-item>
     </el-form>
   </ContentCard>
 </template>
