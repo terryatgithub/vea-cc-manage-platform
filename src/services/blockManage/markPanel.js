@@ -3,7 +3,7 @@
 export function getMarkPanelList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/panel/pageList.html',
+    url: 'api/panel/pageList.html',
     data
   })
 }
@@ -11,7 +11,7 @@ export function getMarkPanelList (data) {
 export function getBusinessType (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/globalDictInfo/getTypes/businessType.html',
+    url: 'api/globalDictInfo/getTypes/businessType.html',
     data
   })
 }
@@ -19,7 +19,7 @@ export function getBusinessType (data) {
 export function getEditData (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/markPanel/edit.html',
+    url: 'api/markPanel/edit.html',
     params
   }).then(data => {
     return JSON.parse(data.match(/pannelInit = (\{.+\})/)[1])
@@ -29,7 +29,7 @@ export function getEditData (params) {
 export function MarkPanelSave (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/panel/save.html',
+    url: 'api/panel/save.html',
     data
   })
 }
@@ -37,7 +37,7 @@ export function MarkPanelSave (data) {
 export function deleteMarkPanel (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/panel/remove.html',
+    url: 'api/panel/remove.html',
     params
   })
 }
@@ -45,14 +45,14 @@ export function deleteMarkPanel (params) {
 export function getViewData (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/panel/getDetailInfo.html',
+    url: 'api/panel/getDetailInfo.html',
     params
   })
 }
 export function getHistoryList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/v1/hvi/historyList.html',
+    url: 'api/v1/hvi/historyList.html',
     data
   })
 }
@@ -60,7 +60,7 @@ export function getHistoryList (data) {
 export function getTimedInfo (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/v1/timedTask/getTimedInfo.html',
+    url: 'api/v1/timedTask/getTimedInfo.html',
     data
   })
 }
@@ -68,7 +68,7 @@ export function getTimedInfo (data) {
 export function getHandlePerson (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/v1/audit/historyList.html',
+    url: 'api/v1/audit/historyList.html',
     params
   })
 }

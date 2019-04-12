@@ -4,7 +4,7 @@
 export function broadcastBlockPageList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/blockInfo/pageList.html',
+    url: 'api/blockInfo/pageList.html',
     data
   })
 }
@@ -14,7 +14,7 @@ export function broadcastBlockPageList (data) {
 export function getCornerTypes (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/v1/cornerIconType/getCornerTypes.html',
+    url: 'api/v1/cornerIconType/getCornerTypes.html',
     params
   })
 }
@@ -24,7 +24,7 @@ export function getCornerTypes (params) {
 export function getMaterialTypes (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/dict/poster/materialType.html',
+    url: 'api/dict/poster/materialType.html',
     params
   })
 }
@@ -34,7 +34,7 @@ export function getMaterialTypes (params) {
 export function saveBlockInfo(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/blockInfo/save.html',
+    url: 'api/blockInfo/save.html',
     data,
     isJSON: true
   })
@@ -45,7 +45,7 @@ export function saveBlockInfo(data) {
 export function getSysPlugin (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysPlugin/pageList.html?pluginParentType=builtIn',
+    url: 'api/sysPlugin/pageList.html?pluginParentType=builtIn',
     data
   })
 }
@@ -55,7 +55,7 @@ export function getSysPlugin (data) {
 export function editSysPlugin (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysPlugin/edit.html',
+    url: 'api/sysPlugin/edit.html',
     params
   })
     .then(data => {
@@ -68,7 +68,7 @@ export function editSysPlugin (params) {
 export function getPluginParentTypes(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/dict/sysPlugin/pluginParentType.html',
+    url: 'api/dict/sysPlugin/pluginParentType.html',
     data
   })
 }
@@ -78,7 +78,7 @@ export function getPluginParentTypes(data) {
 export function getPluginTypes(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/dict/sysPlugin/pluginType.html',
+    url: 'api/dict/sysPlugin/pluginType.html',
     data
   })
 }
@@ -89,7 +89,7 @@ export function getPluginTypes(data) {
 export function getMediaVideoInfos (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/tvos/getMediaVideoInfos.html',
+    url: 'api/tvos/getMediaVideoInfos.html',
     params
   })
 }
@@ -97,7 +97,7 @@ export function getMediaVideoInfos (params) {
 export function getPartnerSource (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/tvos/getPartnerSource.html',
+    url: 'api/tvos/getPartnerSource.html',
     params
   })
 }
@@ -105,7 +105,7 @@ export function getPartnerSource (params) {
 export function getCondition (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/tvos/getCondition.html',
+    url: 'api/tvos/getCondition.html',
     params
   })
 }
@@ -113,14 +113,14 @@ export function getCondition (params) {
 export function queryLiveVideoResult (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/tvos/queryLiveVideoResult.html',
+    url: 'api/tvos/queryLiveVideoResult.html',
     params
   })
 }
 // export function getPluginVersions(data) {
 //   return this.fetch({
 //     method: 'post',
-//     url: '/api/dict/sysPlugin/',
+//     url: 'api/dict/sysPlugin/',
 //     data
 //   })
 // }
@@ -130,7 +130,7 @@ export function queryLiveVideoResult (params) {
 export function getPluginVersions(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/dict/sysPlugin/' + data + '.html'
+    url: 'api/dict/sysPlugin/' + data + '.html'
   })
 }
 /**
@@ -139,7 +139,7 @@ export function getPluginVersions(data) {
 export function getResourceList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/globalPicture/dataList.html',
+    url: 'api/globalPicture/dataList.html',
     data
   })
 }
@@ -149,7 +149,7 @@ export function getResourceList (data) {
 export function getCornerList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/globalCornerIcon/pageList.html',
+    url: 'api/globalCornerIcon/pageList.html',
     data
   })
 }
@@ -160,7 +160,7 @@ export function SavePlugin (data) {
   data = { jsonStr: JSON.stringify(data) }
   return this.fetch({
     method: 'post',
-    url: '/api/sysPlugin/save.html',
+    url: 'api/sysPlugin/save.html',
     data
   })
 }
@@ -170,7 +170,7 @@ export function SavePlugin (data) {
 export function getMultiBlockList(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysPlugin/pageList.html?builtInNotShow=1',
+    url: 'api/sysPlugin/pageList.html?builtInNotShow=1',
     data
   })
 }
@@ -180,7 +180,7 @@ export function getMultiBlockList(data) {
 export function getData(params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysPlugin/getDetailInfo.html',
+    url: 'api/sysPlugin/getDetailInfo.html',
     params
   })
 }
@@ -190,7 +190,7 @@ export function getData(params) {
 export function SaveAudit(params) {
   return this.fetch({
     method: 'get',
-    url: '/api/v1/audit/auditTask.html',
+    url: 'api/v1/audit/auditTask.html',
     params
   })
 }
@@ -201,7 +201,7 @@ export function SaveAudit(params) {
 export function removeMulti(params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysPlugin/remove.html',
+    url: 'api/sysPlugin/remove.html',
     params
   })
 }
@@ -211,7 +211,7 @@ export function removeMulti(params) {
 export function getClickData(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/commonOnclickInfo/pageList.html',
+    url: 'api/commonOnclickInfo/pageList.html',
     data
   })
 }

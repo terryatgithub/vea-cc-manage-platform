@@ -5,7 +5,7 @@
 export function tabInfoList(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/tabInfo/pageList.html',
+    url: 'api/tabInfo/pageList.html',
     data
   })
 }
@@ -13,7 +13,7 @@ export function tabInfoList(data) {
 export function getAppIdType(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/globalDictInfo/getTypes/appIdType.html',
+    url: 'api/globalDictInfo/getTypes/appIdType.html',
     data
   })
 }
@@ -21,7 +21,7 @@ export function getAppIdType(data) {
 export function getBusinessType(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/globalDictInfo/getTypes/businessType.html',
+    url: 'api/globalDictInfo/getTypes/businessType.html',
     data
   })
 }
@@ -32,7 +32,7 @@ export function getBusinessType(data) {
 export function getTabType(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/dict/tab/tabType.html?tabParentType=biz',
+    url: 'api/dict/tab/tabType.html?tabParentType=biz',
     data
   })
 }
@@ -42,7 +42,7 @@ export function getTabType(data) {
 export function getMediaResourceInfo(params) {
   return this.fetch({
     method: 'get',
-    url: '/api/v1/getMediaResourceInfoToPanel.html',
+    url: 'api/v1/getMediaResourceInfoToPanel.html',
     params,
     isJSON: true
   })
@@ -51,7 +51,7 @@ export function getMediaResourceInfo(params) {
 export function filmDetailPageList(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/filmDetailPage/pageList.html',
+    url: 'api/filmDetailPage/pageList.html',
     data
   })
 }

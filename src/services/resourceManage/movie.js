@@ -2,7 +2,7 @@
 export function getMediaVideoInfos(params) {
   return this.fetch({
     methods: 'get',
-    url: '/api/tvos/getMediaVideoInfos.html',
+    url: 'api/tvos/getMediaVideoInfos.html',
     params
   }).then(data => {
     return JSON.parse(data.substring(7, data.length - 1))
@@ -13,7 +13,7 @@ export function getMediaVideoInfos(params) {
 export function getPartnerSource(params) {
   return this.fetch({
     methods: 'get',
-    url: '/api/tvos/getPartnerSource.html',
+    url: 'api/tvos/getPartnerSource.html',
     params
   })
 }
@@ -21,7 +21,7 @@ export function getPartnerSource(params) {
 export function getCondition() {
   return this.fetch({
     methods: 'get',
-    url: '/api/tvos/getCondition.html'
+    url: 'api/tvos/getCondition.html'
   }).then(data => {
     return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
   })
@@ -31,7 +31,7 @@ export function getCondition() {
 export function getSegmentList(params) {
   return this.fetch({
     methods: 'get',
-    url: '/api/tvos/getSegmentList.html',
+    url: 'api/tvos/getSegmentList.html',
     params
   }).then(data => {
     return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))

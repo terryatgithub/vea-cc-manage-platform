@@ -4,7 +4,7 @@
 export function getHomePageInfoMenu () {
   return this.fetch({
     method: 'post',
-    url: '/api/homepageInfo/getMenuInfo.html'
+    url: 'api/homepageInfo/getMenuInfo.html'
   })
 }
 /**
@@ -13,7 +13,7 @@ export function getHomePageInfoMenu () {
 export function getHomePageInfoList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/homepageInfo/pageList.html',
+    url: 'api/homepageInfo/pageList.html',
     data
   })
 }
@@ -23,7 +23,7 @@ export function getHomePageInfoList (data) {
 export function homePageInfoSave (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/homepageInfo/save.html',
+    url: 'api/homepageInfo/save.html',
     data
   })
 }
@@ -33,7 +33,7 @@ export function homePageInfoSave (data) {
 export function homePageInfoDelete (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/homepageInfo/save.html',
+    url: 'api/homepageInfo/save.html',
     params
   })
 }
@@ -43,7 +43,7 @@ export function homePageInfoDelete (params) {
 export function getHomePageInfoEdit (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/homepageInfo/getDetailInfo.html',
+    url: 'api/homepageInfo/getDetailInfo.html',
     params
   }).then(data => {
     return data

@@ -5,7 +5,7 @@
 export function panelPageList(data) {
   return this.fetch({
     method: 'post',
-    url: '/api/panel/pageList.html',
+    url: 'api/panel/pageList.html',
     data
   })
 }
