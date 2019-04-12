@@ -74,9 +74,9 @@ export default {
               type: this.type,
               auditFlag: this.auditForm.auditFlag,
               auditDesc: this.auditForm.auditDesc
-            })
+            },'保存成功')
             .then(data => {
-              alert(data)
+              
             })
         }
       })
@@ -90,7 +90,6 @@ export default {
         menuElId: this.menuElId
       }
       this.$service.getAuditDetailButton(params).then(data => {
-        console.log(data)
         let action = {}
         data.forEach(v => {
           if (v.runComm !== 'claim' && v.runComm !== 'unclaim' && v.runComm !=='copy') {
@@ -99,6 +98,13 @@ export default {
         })
         this.actions = action
       })
+    },
+    edit() {
+      this.$emit("go-edit-Page")
+    },
+    delete(){
+      debugger
+      this.$emit("delete-item")
     },
     audit() {
       //审核

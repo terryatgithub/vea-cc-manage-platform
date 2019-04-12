@@ -12,21 +12,23 @@
       :data="table.data"
       :selected="table.selected"
       :selection-type="table.selectionType"
-      @row-selection-change="handleRowChange"
+      @row-click="rowClick"
+      @row-selection-add="handleRowSelectionAdd"
+      @row-selection-remove="handleRowSelectionRemove"
+      @all-row-selection-change="handleAllRowSelectionChange"
     />
   </ContentWrapper>
 </template>
 
 <script>
 import _ from 'gateschema'
-import { RemoteSelect, ContentWrapper, Table } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   components: {
-    RemoteSelect,
     ContentWrapper,
     Table
   },
-
+  props: ['multi'],
   data() {
     return {
       filter: {
@@ -39,7 +41,8 @@ export default {
       },
       filterSchema: null,
       pagination: {},
-      selected: null,
+      selected: [],
+      selectedRows: {},
       table: {
         props: {},
         header: [
@@ -54,19 +57,22 @@ export default {
           }
         ],
         data: [],
-        selected: {},
+        selected: [],
         selectionType: 'single'
       }
     }
   },
-
   watch: {
     selected: function(value) {
-      this.$emit('input', value)
+      this.$emit('input', Object.values(this.selectedRows))
     }
   },
-
   methods: {
+    rowClick(params) {
+       if (this.multi === 'single') {
+         this.$emit("row-click",params)
+       }
+    },
     fetchData: function() {
       const filter = this.parseFilter()
       this.$service.getMediaVideoInfos(filter).then(result => {
@@ -74,7 +80,7 @@ export default {
         this.table.data = result.rows
       })
     },
-    parseFilter () {
+    parseFilter() {
       const { filter, pagination } = this
       filter.code = filter.id
       if (pagination) {
@@ -83,18 +89,18 @@ export default {
       }
       return filter
     },
-    handleFilterReset () {
-      this.filter= {
+    handleFilterReset() {
+      ;(this.filter = {
         resType: 'operation',
         dataType: 'rotate',
         levelType: 'rotateSta',
         callback: 'result',
         page: 1,
         rows: 10
-      },
-      this.fetchData()
+      }),
+        this.fetchData()
     },
-    handleFilterChange (type) {
+    handleFilterChange(type) {
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
@@ -102,13 +108,42 @@ export default {
       }
       this.fetchData()
     },
-    // table操作
-    handleRowChange(row, index) {
-      this.table.selected = index
-      this.selected = row
+    /**
+     * 行选择操作
+     */
+    handleRowSelectionAdd(targetItem) {
+      this.selected.push(targetItem.id)
+      this.selectedRows[targetItem.id] = targetItem
+      this.updateTableSelected()
+    },
+    handleRowSelectionRemove(targetItem) {
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.id
+      })
+      delete this.selectedRows[targetItem.id]
+      this.updateTableSelected()
+    },
+    handleAllRowSelectionChange(value) {
+      if (value) {
+        this.table.data.forEach(this.handleRowSelectionAdd)
+      } else {
+        this.selected = []
+        this.table.selected = []
+      }
+    },
+    updateTableSelected() {
+      const table = this.table
+      const newSelectedIndex = this.selected
+      table.selected = table.data.reduce((result, item, index) => {
+        if (newSelectedIndex.indexOf(item.id) > -1) {
+          result.push(index)
+        }
+        return result
+      }, [])
     }
   },
   created() {
+    this.table.selectionType = this.multi
     let filterSchema = _.map({
       id: _.o.number.other('form', {
         component: 'Input',
@@ -128,20 +163,19 @@ export default {
           label: 0
         }
       })
+    }).other('form', {
+      layout: 'inline',
+      footer: {
+        cols: {
+          label: 0,
+          wrapper: 24
+        },
+        showSubmit: true,
+        submitText: '查询',
+        showReset: true,
+        resetText: '重置'
+      }
     })
-    .other('form', {
-        layout: 'inline',
-        footer: {
-          cols: {
-            label: 0,
-            wrapper: 24
-          },
-          showSubmit: true,
-          submitText: '查询',
-          showReset: true,
-          resetText: '重置',
-        }
-      })
     this.filterSchema = filterSchema
     this.fetchData()
   }

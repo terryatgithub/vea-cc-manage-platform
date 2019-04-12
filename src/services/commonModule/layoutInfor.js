@@ -41,17 +41,17 @@ export function getAuditDetailButton (data) {
   })
 }
 
-export function auditTask (params) {
+export function auditTask (data) {
   return this.fetch({
-    method: 'get',
-    url: '/api/audit/auditTask.html',
-    params
+    method: 'post',
+    url: '/api/v1/audit/auditTask.html',
+    data
   })
 }
-export function revokedAudit (params) {
+export function revokedAudit (data) {
   return this.fetch({
-    method: 'get',
-    url: '/api/V1/audit/revokedAudit.html',
-    params
+    method: 'post',
+    url: '/api/v1/audit/revokedAudit.html',
+    data
   })
 }

@@ -9,6 +9,7 @@ import * as roleManage from './systemSetting/roleManage'
 import * as departmentManage from './systemSetting/departmentManage'
 import * as sysLogOp from './systemSetting/sysLogOp'
 import * as blockInfo from './systemSetting/blockInfo'
+import * as adminMasterControll from './systemSetting/adminMasterControll'
 import * as materialManage from './commonModule/materialManage'
 import * as tabInfo from './panelManage/tabInfo'
 import * as panelInfo from './blockManage/panelInfo'
@@ -41,6 +42,7 @@ const service = {
   ...layoutInfor,
   ...themeInfo,
   ...globalPicture,
-  ...globalCornerIconMgr
+  ...globalCornerIconMgr,
+  ...adminMasterControll
 }
 Vue.prototype.$service = utils.wrapService(service)

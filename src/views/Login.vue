@@ -40,7 +40,7 @@ export default {
       user: {
         username: "yuanjunnan",
         password: "yuanjunnan@yjn@",
-        valicode: ""
+        valicode: "",
       },
       codeUrl: "captcha.jpg"
     };

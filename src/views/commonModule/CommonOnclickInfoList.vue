@@ -12,8 +12,8 @@
       </div> -->
       <div class="btns" >
         <el-button type="primary" icon="el-icon-plus" @click="addData" >新增</el-button>
-        <el-button type="success" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="danger" icon="el-icon-delete" @click="deleteData">删除</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="deleteData">删除</el-button>
       </div>
       <Table
         :props="table.props"

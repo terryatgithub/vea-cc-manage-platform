@@ -25,10 +25,7 @@ export function getCondition() {
   }).then(data => {
     return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
   })
-    // .then(data => {
-    // // return JSON.parse(data)
-    //   return JSON.parse(data.substring(7, data.length - 1))
-    // })
+
 }
 // 影片单集资源
 export function getSegmentList(params) {
@@ -39,7 +36,4 @@ export function getSegmentList(params) {
   }).then(data => {
     return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
   })
-    // .then(data => {
-    //   return JSON.parse(data.substring(7, data.length - 1))
-    // })
 }

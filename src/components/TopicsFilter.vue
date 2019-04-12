@@ -34,7 +34,10 @@
       :data="table.data"
       :selected="table.selected"
       :selection-type="table.selectionType"
-      @row-selection-change="handleRowChange"
+        @row-click="rowClick"
+      @row-selection-add="handleRowSelectionAdd"
+      @row-selection-remove="handleRowSelectionRemove"
+      @all-row-selection-change="handleAllRowSelectionChange"
     />
     <!-- Table部分end -->
   </ContentWrapper>
@@ -47,7 +50,7 @@ export default {
     ContentWrapper,
     Table
   },
-
+  props: ['multi'],
   data() {
     return {
       pagination: {
@@ -68,6 +71,7 @@ export default {
       table: {
         props: {},
         data: [],
+
         header: [
           {
             prop: 'id',
@@ -85,15 +89,15 @@ export default {
             prop: 'picture',
             label: '专题背景',
             render: (h, { row }) => {
-              if(row.picture)
-              return h('img', {
-                attrs: {
-                  src: row.picture,
-                  width: '110px',
-                  height: '50px',
-                  class: 'imgs'
-                }
-              })
+              if (row.picture)
+                return h('img', {
+                  attrs: {
+                    src: row.picture,
+                    width: '110px',
+                    height: '50px',
+                    class: 'imgs'
+                  }
+                })
             },
             width: '120'
           },
@@ -115,20 +119,28 @@ export default {
             width: '200'
           }
         ],
-        selected: {},
+        selected: [],
         selectionType: 'single'
       },
-      selected: undefined
+      selected: []
     }
   },
 
   watch: {
     selected: function(value) {
-      this.$emit('input', value)
+      this.$emit('input', this.selected)
     }
   },
 
   methods: {
+    //  multipleSelect() {
+    //   this.$emit("multiple-select",this.selected)
+    // },
+    rowClick(params) {
+       if (this.multi === 'single') {
+         this.$emit("single-select",params)
+       }
+    },
     reset() {
       this.searchForm = {
         resType: 'operation',
@@ -168,12 +180,44 @@ export default {
       })
       return rs
     },
-    handleRowChange(row, index) {
-      this.table.selected = index
-      this.selected = row
-    }
-  },
-  created() {}
+    handleRowSelectionAdd(targetItem) {
+      this.selected.push(targetItem);
+      this.updateTableSelected();
+    },
+    handleRowSelectionRemove(targetItem) {
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem;
+      });
+      this.updateTableSelected();
+    },
+    handleAllRowSelectionChange(value) {
+      if (value) {
+        this.table.data.forEach(this.handleRowSelectionAdd);
+      } else {
+        this.selected = [];
+        this.table.selected = [];
+      }
+    },
+    handleAllRowSelectionRemove() {
+      this.selected = [];
+      this.table.selected = [];
+    },
+    updateTableSelected() {
+      const table = this.table;
+      const newSelectedIndex = this.selected.map((e) => {
+        return e.id
+      });
+      table.selected = table.data.reduce((result, item, index) => {
+        if (newSelectedIndex.indexOf(item.id) > -1) {
+          result.push(index);
+        }
+        return result;
+      }, []);
+    },
+  created() {
+    this.table.selectionType = this.multi
+  }
+}
 }
 </script>
  

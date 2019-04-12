@@ -24,6 +24,7 @@
       v-if="mode==='review'"
       :reviewData="reviewData"
       @go-back="goBack"
+      @go-edit-Page="goEditPage"
     ></LayoutInfoReview>
   </div>
 </template>
@@ -54,6 +55,10 @@ export default {
     openAddPage(row) {
       this.editData = row
       this.mode = 'add'
+    },
+    goEditPage() {
+       this.editData = this.reviewData 
+       this.mode = 'add'
     },
     openReviewPage(row){
        this.reviewData = row
