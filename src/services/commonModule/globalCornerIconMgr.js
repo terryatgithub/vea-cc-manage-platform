@@ -3,7 +3,7 @@
 export function getGlobalMgrList(data) {
     return this.fetch({
         method: 'post',
-        url: '/api/v1/cornerIcon/pageList.html',
+        url: 'api/v1/cornerIcon/pageList.html',
         data
     }) 
 }
@@ -11,7 +11,7 @@ export function getGlobalMgrList(data) {
 export function getCornerTypes(data) {
     return this.fetch({
         method: 'post',
-        url: '/api/v1/cornerIconType/getCornerTypes.html',
+        url: 'api/v1/cornerIconType/getCornerTypes.html',
         data
     })
 }
@@ -19,7 +19,7 @@ export function getCornerTypes(data) {
 export function getIconAttributes(data) {
     return this.fetch({
         method: 'post',
-        url: '/api/v1/cornerIcon/getIconAttributes.html',
+        url: 'api/v1/cornerIcon/getIconAttributes.html',
         data
     })
 }
@@ -27,7 +27,7 @@ export function getIconAttributes(data) {
 export function globalCornerIconEdit(params) {
     return this.fetch({
         method: 'get',
-        url: '/api/globalCornerIcon/edit.html',
+        url: 'api/globalCornerIcon/edit.html',
         params
     })
     .then(data => {
@@ -38,7 +38,7 @@ export function globalCornerIconEdit(params) {
 export function globalCornerIconSave(data) {
     return this.fetch({
         method: 'post',
-        url: '/api/v1/cornerIcon/save.html',
+        url: 'api/v1/cornerIcon/save.html',
         data
     })
 }
@@ -46,7 +46,7 @@ export function globalCornerIconSave(data) {
 export function globalCornerIconRemove(params) {
     return this.fetch({
         method: 'get',
-        url: '/api/v1/cornerIcon/remove.html',
+        url: 'api/v1/cornerIcon/remove.html',
         params
     })
 }
@@ -54,7 +54,7 @@ export function globalCornerIconRemove(params) {
 export function batchAudit(params) {
     return this.fetch({
         method: 'post',
-        url: '/api/v1/cornerIcon/batchAudit.html',
+        url: 'api/v1/cornerIcon/batchAudit.html',
         params
     })
 }
@@ -62,7 +62,7 @@ export function batchAudit(params) {
 export function getDetailInfo(params) {
     return this.fetch({
         method: 'get',
-        url: '/api/v1/cornerIcon/getDetailInfo.html',
+        url: 'api/v1/cornerIcon/getDetailInfo.html',
         params
     })
 }
@@ -70,7 +70,7 @@ export function getDetailInfo(params) {
 export function changePriority(params) {
     return this.fetch({
         method: 'get',
-        url: '/api/v1/cornerIcon/changePriority.html',
+        url: 'api/v1/cornerIcon/changePriority.html',
         params
     })
 }

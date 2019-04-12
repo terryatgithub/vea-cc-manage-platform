@@ -5,7 +5,7 @@
 export function getDepts (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/v1/sysDept/listAllDept.html',
+    url: 'api/v1/sysDept/listAllDept.html',
     params
   })
 }
@@ -16,7 +16,7 @@ export function getDepts (params) {
 export function userConfigMenuInfo (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysUser/getMenuInfo.html',
+    url: 'api/sysUser/getMenuInfo.html',
     data
   })
 }
@@ -27,7 +27,7 @@ export function userConfigMenuInfo (data) {
 export function userConfigPageList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/v1/sysUser/pageList.html',
+    url: 'api/v1/sysUser/pageList.html',
     data
   })
 }
@@ -38,7 +38,7 @@ export function userConfigPageList (data) {
 export function getNotRolesByUserId (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysUser/getNotRolesByUserId.html',
+    url: 'api/sysUser/getNotRolesByUserId.html',
     data
   })
 }
@@ -49,7 +49,7 @@ export function getNotRolesByUserId (data) {
 export function getRolesByUserId (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysUser/getRolesByUserId.html',
+    url: 'api/sysUser/getRolesByUserId.html',
     data
   })
 }
@@ -65,7 +65,7 @@ export function saveUserRoles (data) {
   }, '').slice(1)
   return this.fetch({
     method: 'post',
-    url: '/api/sysUser/saveUserRoles.html',
+    url: 'api/sysUser/saveUserRoles.html',
     data
   })
 }
@@ -76,7 +76,7 @@ export function saveUserRoles (data) {
 export function userConfigBusinessType (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/globalDictInfo/getTypes/businessType.html',
+    url: 'api/globalDictInfo/getTypes/businessType.html',
     params
   })
 }
@@ -86,28 +86,28 @@ export function userConfigBusinessType (params) {
 export function userConfigEdit (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/v1/sysUser/getDetailInfo.html',
+    url: 'api/v1/sysUser/getDetailInfo.html',
     params
   })
 }
 export function getDictCheckedByUserId (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysUser/getDictCheckedByUserId.html',
+    url: 'api/sysUser/getDictCheckedByUserId.html',
     params
   })
 }
 export function userConfigSave (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysUser/save.html',
+    url: 'api/sysUser/save.html',
     data
   })
 }
 export function saveProfession (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysUser/saveProfession.html',
+    url: 'api/sysUser/saveProfession.html',
     data
   })
 }
@@ -118,7 +118,7 @@ export function saveProfession (data) {
 export function userConfigDelete (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysUser/remove.html',
+    url: 'api/sysUser/remove.html',
     params
   })
 }
@@ -128,7 +128,7 @@ export function userConfigDelete (params) {
 export function getDictList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/dict/pageList.html',
+    url: 'api/dict/pageList.html',
     data
   })
 }
@@ -139,7 +139,7 @@ export function getDictList (data) {
 export function SaveDictionary (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/dict/save.html',
+    url: 'api/dict/save.html',
     data,
     isJSON: true
   })
@@ -150,7 +150,7 @@ export function SaveDictionary (data) {
 export function DeleteDict (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/dict/remove.html',
+    url: 'api/dict/remove.html',
     data
   })
 }
@@ -161,7 +161,7 @@ export function DeleteDict (data) {
 export function getDictCategoryList () {
   return this.fetch({
     method: 'post',
-    url: '/api/dictCategory/list.html'
+    url: 'api/dictCategory/list.html'
   })
 }
 /**
@@ -170,7 +170,7 @@ export function getDictCategoryList () {
 export function SaveDictCategory (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/dictCategory/save.html',
+    url: 'api/dictCategory/save.html',
     data,
     isJSON: true
   })
@@ -181,7 +181,7 @@ export function SaveDictCategory (data) {
 export function getLoginLogList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysLogLogin/pageList.html',
+    url: 'api/sysLogLogin/pageList.html',
     data
   })
 }
@@ -192,8 +192,8 @@ export function getLoginLogList (data) {
 export function getSysMenuList (params) {
   return this.fetch({
     method: 'get',
-    // url: '/api/sysMenu/treePageList.html',
-    url: '/api/sysMenu/pageList.html',
+    // url: 'api/sysMenu/treePageList.html',
+    url: 'api/sysMenu/pageList.html',
     params
   })
 }
@@ -204,7 +204,7 @@ export function getSysMenuList (params) {
 export function saveSysMenu (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysMenu/save.html',
+    url: 'api/sysMenu/save.html',
     data
   })
 }
@@ -215,7 +215,7 @@ export function saveSysMenu (data) {
 export function editSysMenu (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysMenu/edit.html',
+    url: 'api/sysMenu/edit.html',
     params
   }).then(data => {
     return JSON.parse(data.match(/para = (\{.+\})/)[1])
@@ -227,7 +227,7 @@ export function editSysMenu (params) {
 export function getNotMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysMenu/getNotMenuByRunId.html',
+    url: 'api/sysMenu/getNotMenuByRunId.html',
     data
   })
 }
@@ -237,7 +237,7 @@ export function getNotMenuByRunId (data) {
 export function getMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/sysMenu/getMenuByRunId.html',
+    url: 'api/sysMenu/getMenuByRunId.html',
     data
   })
 }
@@ -251,7 +251,7 @@ export function saveMenuRun (data) {
   }, '').slice(1)
   return this.fetch({
     method: 'post',
-    url: '/api/sysMenu/saveMenuRun.html',
+    url: 'api/sysMenu/saveMenuRun.html',
     data
   })
 }
@@ -261,7 +261,7 @@ export function saveMenuRun (data) {
 export function getMenuInfo () {
   return this.fetch({
     method: 'post',
-    url: '/api/sysMenu/getMenuInfo.html'
+    url: 'api/sysMenu/getMenuInfo.html'
   })
 }
 /**
@@ -270,7 +270,7 @@ export function getMenuInfo () {
 export function deleteMenuById (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/sysMenu/remove.html',
+    url: 'api/sysMenu/remove.html',
     params
   })
 }
@@ -280,7 +280,7 @@ export function deleteMenuById (params) {
 export function modifyPwd (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/v1/updatePassword.html',
+    url: 'api/v1/updatePassword.html',
     params
   })
 }  

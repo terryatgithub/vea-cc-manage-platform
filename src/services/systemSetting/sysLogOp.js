@@ -5,7 +5,7 @@
 export function sysLogOpPageList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/v1/sysLogOp/pageList.html',
+    url: 'api/v1/sysLogOp/pageList.html',
     data
   })
 }

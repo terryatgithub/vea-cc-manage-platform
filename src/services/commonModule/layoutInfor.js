@@ -1,14 +1,14 @@
 export function getLayoutInforPageList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/v1/layout/pageList.html',
+    url: 'api/v1/layout/pageList.html',
     data
   })
 }
 export function getLayoutInforBatchDel (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/v1/layout/remove.html',
+    url: 'api/v1/layout/remove.html',
     data
   })
 }
@@ -18,7 +18,7 @@ export function getLayoutInforBatchDel (data) {
 export function getLayoutInforSave (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/v1/layout/save.html',
+    url: 'api/v1/layout/save.html',
     data
   })
 }
@@ -28,7 +28,7 @@ export function getLayoutInforSave (data) {
 export function getLayoutInforById (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/v1/layout/getDetailInfo.html',
+    url: 'api/v1/layout/getDetailInfo.html',
     params
   })
 }
@@ -36,22 +36,22 @@ export function getLayoutInforById (params) {
 export function getAuditDetailButton (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/buttonManage/getAuditDetailButton.html',
+    url: 'api/buttonManage/getAuditDetailButton.html',
     data
   })
 }
 
-export function auditTask (params) {
+export function auditTask (data) {
   return this.fetch({
-    method: 'get',
-    url: '/api/audit/auditTask.html',
-    params
+    method: 'post',
+    url: 'api/v1/audit/auditTask.html',
+    data
   })
 }
-export function revokedAudit (params) {
+export function revokedAudit (data) {
   return this.fetch({
-    method: 'get',
-    url: '/api/V1/audit/revokedAudit.html',
-    params
+    method: 'post',
+    url: 'api/v1/audit/revokedAudit.html',
+    data
   })
 }

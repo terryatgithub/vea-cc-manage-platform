@@ -158,9 +158,10 @@ export default {
   methods: {
     //选中事件
     handleRowSelectionChange(row, index) {
-      console.log(row)
-      // this.table.data = row
       this.$emit('input', row)
+      if(this.table.selectionType === 'single') {
+         this.$emit("close-dialog",'savePicture')
+      }
       let rowData = row
       this.table.selected = index
     },

@@ -56,7 +56,10 @@
       :data="table.data"
       :selected="table.selected"
       :selection-type="table.selectionType"
-      @row-selection-change="handleRowChange"
+        @row-click="rowClick"
+      @row-selection-add="handleRowSelectionAdd"
+      @row-selection-remove="handleRowSelectionRemove"
+      @all-row-selection-change="handleAllRowSelectionChange"
     />
     <!-- Table部分end -->
   </ContentWrapper>
@@ -69,14 +72,14 @@ export default {
     ContentWrapper,
     Table
   },
-
+  props: ['multi'],
   data() {
     return {
       pagination: {
         currentPage: 1,
         pageSize: 10
       },
-      selected: undefined, // 列表选中项
+      selected: [], // 列表选中项
       searchForm: {
         callbackparam: 'result',
         source: 'tencent', // 内容源
@@ -103,6 +106,7 @@ export default {
       table: {
         props: {},
         data: [],
+        selected: [],
         header: [
           {
             prop: 'vId',
@@ -168,7 +172,7 @@ export default {
             width: '200'
           }
         ],
-        selected: {},
+        selected: [],
         selectionType: 'single'
       }
     }
@@ -192,7 +196,7 @@ export default {
     fetchData() {
       const filter = this.parseFilter()
       this.$service.queryLiveVideoResult(filter).then(data => {
-        data =JSON.parse(data.replace('result(','').replace(/\)*$/,''))
+        data = JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -211,10 +215,38 @@ export default {
       })
       return rs
     },
-    handleRowChange(row, index) {
-      this.table.selected = index
-      this.selected = row
+    /**
+     * 行选择操作
+     */
+    handleRowSelectionAdd(targetItem) {
+      this.selected.push(targetItem.vId)
+      this.updateTableSelected()
     },
+    handleRowSelectionRemove(targetItem) {
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.vId
+      })
+      this.updateTableSelected()
+    },
+    handleAllRowSelectionChange(value) {
+      if (value) {
+        this.table.data.forEach(this.handleRowSelectionAdd)
+      } else {
+        this.selected = []
+        this.table.selected = []
+      }
+    },
+    updateTableSelected() {
+      const table = this.table
+      const newSelectedIndex = this.selected
+      table.selected = table.data.reduce((result, item, index) => {
+        if (newSelectedIndex.indexOf(item.vId) > -1) {
+          result.push(index)
+        }
+        return result
+      }, [])
+    },
+
     reset() {
       this.searchForm = {
         callbackparam: 'result',
@@ -226,7 +258,9 @@ export default {
       this.table.data = []
     }
   },
-  created() {}
+  created() {
+    this.table.selectionType = this.multi
+  }
 }
 </script>
  

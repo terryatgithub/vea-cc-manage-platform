@@ -5,14 +5,14 @@
 export function getAdminMasterControllInfo (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/adminMasterControl/getDetailInfo.html',
+    url: 'api/adminMasterControl/getDetailInfo.html',
     data
   })
 }
 export function saveAdminMasterControll (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/adminMasterControl/save.html',
+    url: 'api/adminMasterControl/save.html',
     data
   })
 }

@@ -317,6 +317,7 @@
           :title="customDialogPicture.title"
           :form="customDialogPicture.form"
           v-model="selectPicture"
+          @close-dialog="selectCancel"
         ></DialogPicture>
         <div slot="footer" class="dialog-footer">
             <el-button @click="customDialogPicture.visible = false">取 消</el-button>
@@ -379,7 +380,6 @@ export default {
     //currentVersion: String,
     default: null
   },
-
   data() {
     return {
       onclickEventVisibleFlag: '',//标识是哪个版本的快速填充弹窗normal/lower
@@ -602,9 +602,11 @@ export default {
         this.parseOnclick(inputValue)
       }
     },
-    selectCancel() {
-      debugger
+    selectCancel(type) {
       this.resourceVisible = false 
+      if (type === 'savePicture') {
+        this.savePicture()
+      }
     },
     parseOnclick(inputValue) {
       const clickData = this.clickData
@@ -629,6 +631,7 @@ export default {
     },
     // 自动填写表单
     autoWriteFun: function() {
+    //  debugger
       this.autoWrite = !this.autoWrite
       if (this.autoWrite === false) {
         this.normalForm = Object.assign({}, this.versionForm)
@@ -694,6 +697,7 @@ export default {
         })
     },
     clearFormAll: function() {
+     // debugger
       // 清空正常版本和低版本数据
       this.normalForm = Object.assign({}, this.versionForm)
       this.lowerForm = Object.assign({}, this.versionForm)
@@ -704,18 +708,16 @@ export default {
 
     // ??
     selectResource: function(type, form, selectType) {
+      debugger
       this.resourceVisible = true
       this.resourceOptions.activeTabName = 'video'
       this.currentForm = form
       var newOptions = Object.assign({}, this.resourceOptions)
       newOptions.multi = false
-
       if (selectType === 'multiSelect') {
         newOptions.multi = true
       }
-
       newOptions.activeTabName = 'video'
-
       if (type === 'normal') {
         if (this.basicForm.configModel === 'broadcast') {
           newOptions.tabShow = {
@@ -793,28 +795,33 @@ export default {
 
     // 表单格式转换
     packageFormParam: function(item, form) {
+      let tempForm =JSON.parse(JSON.stringify(form))
       if (item.contentType === 'rotate') {
-        form.subchannelIs = true
+        tempForm.subchannelIs = true
       } else {
-        form.subchannelIs = false
+        tempForm.subchannelIs = false
       }
       if (item.contentType === 'bigTopic') {
-        form.smallTopicsIs = true
+        tempForm.smallTopicsIs = true
       } else {
-        form.smallTopicsIs = false
+        tempForm.smallTopicsIs = false
       }
       if (item.pictureUrl) {
-          var newForm = Object.assign({}, form.poster);
-          newForm.pictureUrl = item.pictureUrl;
-          form.poster = newForm;
+        tempForm.poster.pictureUrl = item.pictureUrl
+        tempForm.poster.pictureId = item.pictureId
+       // delete item.pictureUrl
+        Object.assign(form, item)
+        form.poster =JSON.parse(JSON.stringify(tempForm.poster))
+      }else {
+         tempForm.poster = {}
+        Object.assign(form, item)
       }
-      delete item.pictureUrl
-      Object.assign(form, item)
-      var param = this.paramIdFun(form, item)
-      form.clickParams = JSON.stringify(param)
-      form.params = JSON.stringify(param)
 
-      return form
+      var param = this.paramIdFun(tempForm, item)
+      tempForm.clickParams = JSON.stringify(param)
+      tempForm.params = JSON.stringify(param)
+     // form = tempForm
+      return tempForm
     },
     // 指定小专题
     smallTopicsLower: function() {
@@ -840,6 +847,7 @@ export default {
       }
     },
     getTitleNormal: function() {
+    //  debugger
       if (this.autoWrite === false) {
         var newForm = Object.assign({}, this.normalForm)
         var newVal = {
@@ -864,37 +872,18 @@ export default {
     // ??资源确定
     resourceConfirm: function(callbackData, form) {
       this.resourceVisible = false 
-      this.packageFormParam(callbackData, form)
-      // let type = tabName === 'video'||'edu' ? 
-      // var _this = this
-      // var formArr = []
-      // var seledted = sortSelected
-      // var form = _this.packageFormParam(seledted, form)
-      // if (this.resourceOptions.multi) {
-      //   console.log(_this.currentIndex)
-      //   _.each(sortSelected, function(item) {
-      //     var form = _this.packageFormParam(currentForm, item)
-      //     var newVal = Object.assign({}, form)
-      //     formArr.push(newVal)
-      //   })
-      //   var arr = formArr.slice(0)
-      //   console.log(arr)
-      //   _this.normalVersionContent.splice(
-      //     _this.currentIndex,
-      //     sortSelected.length,
-      //     arr
-      //   )
-      //   var FastDevTool1 = new FastDevTool()
-      //   _this.normalVersionContent = FastDevTool1.arrayFlatten(
-      //     _this.normalVersionContent
-      //   )
-      //   console.log(_this.normalVersionContent)
-      //   this.currentIndex = this.normalVersionContent.length - 1
-      // } else {
-      //   var seledted = sortSelected
-      //   var form = _this.packageFormParam(currentForm, seledted)
-      // }
-
+      this.normalVersionContent = this.normalVersionContent.filter((e) => {
+        return e.type !== ''
+      })
+      if (callbackData instanceof Array) {
+       this.normalVersionContent = callbackData.reduce((result, current) => {
+            result.push(this.packageFormParam(current, form))
+            return result
+         },this.normalVersionContent)
+         
+      } else {
+         this.normalVersionContent.push(this.packageFormParam(callbackData, form))
+      }
     },
     // closeResource: function() {
     //   this.resourceVisible = false
@@ -902,6 +891,7 @@ export default {
      
     // 校验normalForm
     checkNormalForm: function(cb) {
+    //  debugger
       var _this = this
       this.$refs.normalForm.validate(function(valid) {
         if (valid) {
@@ -955,6 +945,7 @@ export default {
     },
     // 组合模式->添加normalForm
     addNormal: function(cb) {
+     // debugger
       var _this = this
       this.checkNormalForm(function() {
         _this.normalForm = _this.deepClone(_this.versionForm)
@@ -967,6 +958,7 @@ export default {
     },
     // 组合模式->删除normalForm
     deleteNormal: function(index) {
+     // debugger
       var _this = this
       this.$confirm('是否删除当前选中项?', '提示', {
         confirmButtonText: '确定',
@@ -1007,6 +999,7 @@ export default {
     },
     // 组合模式->normalForm切换
     switchNormal: function(index) {
+    //  debugger
       var _this = this
       this.checkNormalForm(function() {
         _this.$message('请填充或修改当前表单的内容！')
@@ -1090,6 +1083,7 @@ export default {
 
     // 快速填充
     lowerFill: function() {
+      //debugger
       var newForm = Object.assign({}, this.normalVersionContent[0])
       this.lowerForm = newForm
     },
@@ -1106,6 +1100,7 @@ export default {
       this.lowerForm = newForm
     },
     saveNormal: function(cb) {
+      //debugger
       var _this = this
       this.checkNormalForm(function() {
         if (_this.basicForm.configModel === 'group') {
@@ -1123,6 +1118,7 @@ export default {
       })
     },
     submitCheck: function() {
+      //debugger
       var _this = this
       this.$refs.basicForm.validate(function(valid) {
         if (valid) {
@@ -1161,13 +1157,14 @@ export default {
     }
   },
   created() {
+   // debugger;
     var _this = this
     this.normalForm = Object.assign({}, this.versionForm)
     // this.normalForm.jumpAdress = '1';
     this.lowerForm = Object.assign({}, this.versionForm)
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
-    this.normalVersionContent.push(this.normalForm)
+    //this.normalVersionContent.push(this.normalForm)
 
     this.title = this.editId ? '编辑页面' : '新增页面'
     // 素材类型获取

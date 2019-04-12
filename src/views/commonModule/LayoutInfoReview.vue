@@ -22,10 +22,12 @@
             :id="id"
             :version="version"
             :type="type"
+            :not-contain-btn="notContainBtn"
             :status="status"
             :menuElId="menuElId"
+            @go-edit-Page="goEditPage"
+            @delete-item="deleteItem"
            >
-       
            </AuditDetailButton>
           </el-form-item>
         </el-form>
@@ -56,6 +58,7 @@ export default {
       type: 'layout',
       status: null,
       menuElId: 'layoutInfo',
+      notContainBtn: ['claim', 'unclaim', 'copy'],
       layoutType: [
         {
           name: '主页6.0',
@@ -120,6 +123,13 @@ export default {
         }
       })
       this.getLayoutJson({fileName:this.form.layoutName, content: this.form.layoutJson})
+    },
+    goEditPage() {
+       this.$emit("go-edit-Page")
+    },
+    deleteItem() {
+      this.$service.getLayoutInforBatchDel({ id: this.id },'删除成功')
+      this.$emit("open-list-page")
     },
     getLayoutJson(data) {
       let d = JSON.parse(data.content) //布局内容

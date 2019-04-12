@@ -5,7 +5,7 @@
 export function themeInfoPageList (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/themeInfo/pageList.html',
+    url: 'api/themeInfo/pageList.html',
     data
   })
 }
@@ -13,7 +13,7 @@ export function themeInfoPageList (data) {
 export function themeInfoRemove (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/themeInfo/remove.html',
+    url: 'api/themeInfo/remove.html',
     params
   })
 }
@@ -21,7 +21,7 @@ export function themeInfoRemove (params) {
 export function themeInfoDetail (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/themeInfo/getDetailInfo.html',
+    url: 'api/themeInfo/getDetailInfo.html',
     params
   })
 }

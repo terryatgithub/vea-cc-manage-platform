@@ -16,9 +16,9 @@ export default function fetch({
     data: isJSON ? data : typeof data === 'string' ? data : qs.stringify(data),
     params
   }
-  // if (url != "/api/login") option.headers = { Authorization: this.state.token };
+  // if (url != "api/login") option.headers = { Authorization: this.state.token };
   return axios(option)
-    .then(function ({data}) {
+    .then(function ({ data }) {
       NProgress.done()
       if (typeof data.success !== 'undefined' && typeof data.msg !== 'undefined') {//返回success
         if (!data.success) {
@@ -47,20 +47,20 @@ export default function fetch({
           }
         }
       } else {
-        if (typeof (data.rows) !== 'undefined'&&typeof (data.total) !== 'undefined') {
+        if (typeof (data.rows) !== 'undefined' && typeof (data.total) !== 'undefined') {
           return {
             rows: data.rows,
             total: data.total
           }
         } else {
-            if(typeof(data.code) !== "undefined" && data.code !== '0') {
-              throw new Error(data.msg)
-            } else {
-              return data 
-            }
-          
+          if (typeof (data.code) !== 'undefined' && data.code !== '0') {
+            throw new Error(data.msg)
+          } else {
+            return data
+          }
+
         }
-         
+
       }
     })
     .catch(e => {
