@@ -7,7 +7,7 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <div class="btns">
+      <div v-if="dataList === undefined " class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
@@ -34,6 +34,13 @@ export default {
   components: {
     ContentWrapper,
     Table
+  },
+
+  props: {
+    // 影片详情页中添加板块
+    dataList: {
+      type: Object
+    }
   },
 
   data () {
@@ -139,10 +146,17 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter()
-      this.$service.panelPageList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
-      })
+      if(this.dataList) {
+        this.$service.panelDataList(filter).then(data => {
+          this.pagination.total = data.total
+          this.table.data = data.rows
+        })
+      }else {
+        this.$service.panelPageList(filter).then(data => {
+          this.pagination.total = data.total
+          this.table.data = data.rows
+        })
+      }
     },
     parseFilter() {
       const { filter, pagination } = this
@@ -161,9 +175,14 @@ export default {
       this.fetchData()
     },
     handleFilterReset() {
-      this.filter = {
-        idPrefix: 10,
-        pannelType: 3
+      console.log(this.dataList);
+      if(this.dataList) {
+        this.filter = Object.assign({}, this.dataList.filter)
+        console.log(this.filter);
+      }else {
+        this.filter = {
+          idPrefix: 10
+        }
       }
       this.fetchData()
     },
@@ -277,8 +296,14 @@ export default {
       }
     })
     this.getBusinessType().then(() => {
-      this.filterSchema = filterSchema
+      this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
     })
+    // 影片详情页中的板块
+    const dataList = this.dataList
+    if(dataList) {
+      this.filter = Object.assign({}, dataList.filter)
+      this.table = dataList.table
+    }
     this.fetchData()
   }
 

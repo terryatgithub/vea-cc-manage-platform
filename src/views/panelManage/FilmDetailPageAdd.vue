@@ -1,5 +1,6 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
+    <div v-show="!isShowPannelInfoList">
     <div>
       <el-button type="primary" @click="btnAudit">提交审核</el-button>
       <el-button type="primary" @click="btnSave">保存草稿</el-button>
@@ -39,15 +40,22 @@
         </el-select>
       </el-form-item>
       <el-form-item label="选择板块">
-        
+        <el-button type="primary" @click="isShowPannelInfoList=true">添加板块</el-button>
       </el-form-item>
     </el-form>
+    </div>
+    
+    <AddBlockFilter v-show="isShowPannelInfoList" @go-back="isShowPannelInfoList=false"/>
+
   </ContentCard>
 </template>
 
 <script>
+import AddBlockFilter from './AddBlockFilter'
 export default {
-  components: {},
+  components: {
+    AddBlockFilter
+  },
 
   watch: {
     'form.tabCategory': {
@@ -87,7 +95,8 @@ export default {
       pannelItems: [],
       product: '',
       productItems: [],
-      eduProductItems: []
+      eduProductItems: [],
+      isShowPannelInfoList: false, //添加板块弹窗
     };
   },
 
@@ -179,6 +188,9 @@ export default {
           this.productItems = []
         }
       }
+    },
+    openBlockPage() {
+
     }
   },
   created() {
