@@ -8,19 +8,19 @@ export function getGlobalMgrList(data) {
     }) 
 }
 //获取角标分类
-export function getCornerTypes(data) {
+export function getCornerTypes(params) {
     return this.fetch({
-        method: 'post',
-        url: 'api/v1/cornerIconType/getCornerTypes.html',
-        data
+        method: 'get',
+        url: '/api/v1/cornerIconType/getCornerTypes.html',
+        params
     })
 }
 //角标类别
-export function getIconAttributes(data) {
+export function getIconAttributes(params) {
     return this.fetch({
         method: 'post',
-        url: 'api/v1/cornerIcon/getIconAttributes.html',
-        data
+        url: '/api/v1/cornerIcon/getIconAttributes.html',
+        params
     })
 }
 //角标素材管理-编辑
@@ -53,9 +53,25 @@ export function globalCornerIconRemove(params) {
 //角标素材管理—批量审核
 export function batchAudit(params) {
     return this.fetch({
-        method: 'post',
-        url: 'api/v1/cornerIcon/batchAudit.html',
+        method: 'get',
+        url: '/api/v1/cornerIcon/batchAudit.html',
         params
+    })
+}
+//角标素材管理-详情页审核
+export function executionTask(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/auditTaskInfo/executionTask.html',
+        data
+    })
+}
+//角标素材管理—撤销审核
+export function revokedAudit(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/auditTaskInfo/revokedAudit.html',
+        data
     })
 }
 //角标素材管理-预览

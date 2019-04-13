@@ -22,7 +22,8 @@
       <div class="global_icon_actions">
         <el-button type="primary" @click="toEdit" v-if="form.cornerStatus == '审核不通过'">编辑</el-button>
         <el-button type="primary" @click="toDelete" v-if="form.cornerStatus == '审核不通过'">删除</el-button>
-        <el-button type="primary" @click="handleSubmit" v-if="form.cornerStatus == '待审核'">审核</el-button>
+        <el-button type="primary" @click="handleSubmit" v-if="form.cornerStatus == '待审核'" >审核</el-button>
+         <el-button type="primary" @click="cancelSubmit" v-if="form.cornerStatus == '待审核'" >撤销审核</el-button>
       </div>
       <!-- <AuditDetailButton
         :id="id"
@@ -112,16 +113,33 @@ export default {
     handleSubmit() {
       this.dialogPLVisible = true
     },
+    cancelSubmit(){
+      if(window.confirm('确定撤销审核吗')) {
+        this.$service.revokedAudit({resourceId: this.viewId,resourceType:'icon'}, '撤销审核成功').then(data =>{
+          this.$emit('open-list-page')
+        })
+      }
+    },
     submitForm(data) {
-      this.$service
-        .batchAudit(
-          {
-            idStr: this.viewId,
-            auditFlag: data.auditFlag,
-            auditDesc: data.auditDesc
-          },
-          '审核成功'
-        )
+      const auditFlag = data.auditFlag
+      const auditDesc = data.auditDesc
+      this.$service.executionTask(
+        {
+          resourceId: this.viewId,
+          resourceType: 'icon',
+          auditFlag: auditFlag,
+          auditDesc: auditDesc
+        }
+      )
+
+        // .batchAudit(
+        //   {
+        //     idStr: this.viewId,
+        //     auditFlag: data.auditFlag,
+        //     auditDesc: data.auditDesc
+        //   },
+        //   '审核成功'
+        // )
         .then(data => {
           this.$emit('open-list-page')
           this.$refs.auditForm.cancle()
