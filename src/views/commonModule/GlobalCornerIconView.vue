@@ -11,7 +11,7 @@
             <img :src="form.imgUrl" style="width:200px">
           </div>
         </el-form-item>
-        <el-form-item label="角标分类" prop="globalIconTypeId"></el-form-item>
+        <!-- <el-form-item label="角标分类" prop="globalIconTypeId"></el-form-item> -->
         <el-form-item label="角标类别" prop="attributeName">
           <div>{{form.attributeName}}</div>
         </el-form-item>
@@ -19,11 +19,21 @@
           <div>{{form.cornerStatus}}</div>
         </el-form-item>
       </el-form>
-      <div class="global_icon_actions" >
-        <el-button type="primary" @click="toEdit" v-if="form.cornerStatus == '审核不通过'" >编辑</el-button>
+      <div class="global_icon_actions">
+        <el-button type="primary" @click="toEdit" v-if="form.cornerStatus == '审核不通过'">编辑</el-button>
         <el-button type="primary" @click="toDelete" v-if="form.cornerStatus == '审核不通过'">删除</el-button>
-        <el-button type="primary" @click="handleSubmit" v-if="form.cornerStatus == '待审核'" >审核</el-button>
+        <el-button type="primary" @click="handleSubmit" v-if="form.cornerStatus == '待审核'">审核</el-button>
       </div>
+      <!-- <AuditDetailButton
+        :id="id"
+        :version="version"
+        :type="type"
+        :not-contain-btn="notContainBtn"
+        :status="status"
+        :menuElId="menuElId"
+        @go-edit-Page="goEditPage"
+        @delete-item="deleteItem"
+      ></AuditDetailButton> -->
       <el-dialog title="审核" :visible.sync="dialogPLVisible" :before-close="handleDialogClose">
         <GlobalIconAudit @auditForm="submitForm" @cancle="cancle" ref="auditForm"></GlobalIconAudit>
       </el-dialog>
@@ -37,15 +47,26 @@ import GlobalIconAudit from './GlobalIconAudit'
 export default {
   components: {
     Upload,
-    GlobalIconAudit
+    GlobalIconAudit,
   },
   data() {
     return {
       form: {},
-      dialogPLVisible: false
+      dialogPLVisible: false,
+      // id: null,
+      // version: '',
+      // type: 'icon',
+      // status: null,
+      // menuElId: 'globalCornerIcon',
+      // notContainBtn: ['claim', 'unclaim', 'copy']
     }
   },
-  props: ['viewId'],
+  // props: {
+  //   viewData: Object
+  // },
+  props: {
+    viewId: Number
+  },
   methods: {
     getDetailInfo() {
       this.$service.getDetailInfo({ id: this.viewId }).then(data => {
@@ -63,6 +84,9 @@ export default {
     toEdit() {
       this.$emit('open-add-page', this.viewId)
     },
+    // goEditPage() {
+    //   this.$emit('open-add-page', this.viewData.cornerIconId)
+    // },
     //删除
     toDelete() {
       if (window.confirm('确定要删除吗')) {
@@ -73,6 +97,18 @@ export default {
             })
         }
     },
+    // deleteItem() {
+    //   if (window.confirm('确定要删除吗')) {
+    //     this.$service
+    //       .globalCornerIconRemove(
+    //         { id: this.viewData.cornerIconId },
+    //         '删除成功'
+    //       )
+    //       .then(data => {
+    //         this.$emit('open-list-page')
+    //       })
+    //   }
+    // },
     handleSubmit() {
       this.dialogPLVisible = true
     },
@@ -108,6 +144,6 @@ export default {
 </script>
 <style scoped>
 .global-picture__label {
-  margin: 5px
+  margin: 5px;
 }
 </style>

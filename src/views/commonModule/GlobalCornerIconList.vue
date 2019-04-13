@@ -277,6 +277,7 @@ export default {
     openReview(row) {
       console.log(row)
       this.$emit('open-view-page', row.cornerIconId)
+      //  this.$emit('open-view-page', row)
     },
     //查询
     handleFilterChange(type) {
@@ -368,7 +369,7 @@ export default {
           label: 0
         }
       }),
-      'cornerIconType.typeId': _.o.enum(this.globalTypes).other('form', {
+      typeId: _.o.enum(this.globalTypes).other('form', {
         component: 'Select',
         placeholder: '角标分类',
         cols: {
@@ -376,7 +377,7 @@ export default {
           label: 0
         }
       }),
-      'cornerIconType.typePosition': _.o
+      typePosition: _.o
         .enum(this.typePositions)
         .other('form', {
           component: 'Select',
