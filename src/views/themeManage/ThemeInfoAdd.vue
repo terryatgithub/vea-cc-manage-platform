@@ -1,10 +1,5 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-    <div>
-      <el-button type="primary" @click="btnSave">提交审核</el-button>
-      <el-button type="warning" @click="$emit('go-back')">关闭</el-button>
-    </div>
-
     <div class="split-bar">
       <i class="el-icon-edit">基本信息</i>
     </div>
@@ -92,6 +87,11 @@
         </div>
       </div>
     </el-form>
+    
+    <div class="btn-save">
+      <el-button type="primary" @click="btnSave">提交审核</el-button>
+      <el-button type="warning" @click="$emit('go-back')">关闭</el-button>
+    </div>
   </ContentCard>
 </template>
 
@@ -215,4 +215,6 @@ export default {
   height 20px
   line-height 20px
   text-align center
+.btn-save
+  margin 10px
 </style>
