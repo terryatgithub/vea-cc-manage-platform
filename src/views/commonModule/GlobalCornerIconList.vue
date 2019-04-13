@@ -182,9 +182,9 @@ export default {
     parseFilter() {
       const { filter, pagination } = this
       if (pagination) {
+         filter.idPrefix = '10' //10:酷开数据;11:其他地方。默认酷开
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
-        filter.idPrefix = '10' //10:酷开数据;11:其他地方。默认酷开
       }
       return filter
     },
@@ -327,13 +327,12 @@ export default {
     },
     //角标分类
     getCornerTypes() {
-      // return this.$service.getCornerTypes().then(data => {
-      //   debugger
-      //   data.forEach(element => {
-      //     this.globalTypes[element.typeName] = element.typeId
-      //   })
-      //   console.log(this.globalTypes)
-      // })
+      return this.$service.getCornerTypes().then(data => {
+        data.forEach(element => {
+          this.globalTypes[element.typeName] = element.typeId
+        })
+        console.log(this.globalTypes)
+      })
     },
     //角标类别
     getIconAttributes() {
@@ -415,12 +414,12 @@ export default {
       }
     })
     this.fetchData()
-    // this.getCornerTypes().then(() => {
-     
-    // }) //获取角标分类
-     this.getIconAttributes().then(() => {
+    this.getCornerTypes().then(() => {
+      this.getIconAttributes().then(() => {
         this.filterSchema = filterSchema
       })
+    }) //获取角标分类
+    
     //角标类别
   }
 }

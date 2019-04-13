@@ -1,10 +1,10 @@
 /** 角标素材管理*/
 //分页
-export function getGlobalMgrList(data) {
+export function getGlobalMgrList(params) {
     return this.fetch({
-        method: 'post',
+        method: 'get',
         url: 'api/v1/cornerIcon/pageList.html',
-        data
+        params
     }) 
 }
 //获取角标分类
