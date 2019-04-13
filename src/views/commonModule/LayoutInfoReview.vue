@@ -16,7 +16,6 @@
           <el-form-item label="布局">
             <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>
           </el-form-item>
-         
           <el-form-item>
            <AuditDetailButton
             :id="id"

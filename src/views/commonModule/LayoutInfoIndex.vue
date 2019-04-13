@@ -25,6 +25,7 @@
       :reviewData="reviewData"
       @open-list-page="openListPage"
       @go-edit-Page="goEditPage"
+      @go-back="goBack"
     ></LayoutInfoReview>
   </div>
 </template>

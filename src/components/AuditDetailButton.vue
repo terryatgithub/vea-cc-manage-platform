@@ -38,7 +38,8 @@ export default {
     version: String, //版本
     type: String, //资源类型，block推荐位
     status: Number, // 获取权限按钮组的审核状态
-    menuElId: String //菜单elId
+    menuElId: String, //菜单elId
+    notContainBtn: Array
   },
   data() {
     return {
@@ -53,7 +54,7 @@ export default {
       },
       auditDialog: false,
       auditForm: {
-        auditFlag: '4' , //审核状态
+        auditFlag: '4', //审核状态
         auditDesc: '' //审核描述
       },
       auditFormRule: {
@@ -68,16 +69,17 @@ export default {
       this.$refs.auditForm.validate(valid => {
         if (valid) {
           this.$service
-            .auditTask({
-              id: this.id,
-              version: this.version,
-              type: this.type,
-              auditFlag: this.auditForm.auditFlag,
-              auditDesc: this.auditForm.auditDesc
-            },'保存成功')
-            .then(data => {
-              
-            })
+            .auditTask(
+              {
+                id: this.id,
+                version: this.version,
+                type: this.type,
+                auditFlag: this.auditForm.auditFlag,
+                auditDesc: this.auditForm.auditDesc
+              },
+              '保存成功'
+            )
+            .then(data => {})
         }
       })
     },
@@ -92,19 +94,19 @@ export default {
       this.$service.getAuditDetailButton(params).then(data => {
         let action = {}
         data.forEach(v => {
-          if (v.runComm !== 'claim' && v.runComm !== 'unclaim' && v.runComm !=='copy') {
-             action[v.runComm] = { text: v.runName , type: 'primary'}
+          // if (v.runComm !== 'claim' && v.runComm !== 'unclaim' && v.runComm !=='copy') {
+          if (this.notContainBtn.indexOf(v.runComm) < 0) {
+            action[v.runComm] = { text: v.runName, type: 'primary' }
           }
         })
         this.actions = action
       })
     },
     edit() {
-      this.$emit("go-edit-Page")
+      this.$emit('go-edit-Page')
     },
-    delete(){
-      debugger
-      this.$emit("delete-item")
+    delete() {
+      this.$emit('delete-item')
     },
     audit() {
       //审核
@@ -125,7 +127,7 @@ export default {
     }
   },
   created() {
-   this.getAuditDetailButton()
+    this.getAuditDetailButton()
   }
 }
 </script>
