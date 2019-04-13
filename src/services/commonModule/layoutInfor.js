@@ -44,14 +44,14 @@ export function getAuditDetailButton (data) {
 export function auditTask (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/audit/auditTask.html',
+    url: '/api/v1/audit/auditTask.html',
     data
   })
 }
 export function revokedAudit (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/audit/revokedAudit.html',
+    url: '/api/v1/audit/revokedAudit.html',
     data
   })
 }
