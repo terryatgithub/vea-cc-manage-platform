@@ -64,7 +64,15 @@ export default {
   data() {
     return {
       checkAll: false,
-      globalTypes: {}, //角标分类
+      globalTypes: {
+        test1: '1010',
+        test2: '1011',
+        付费属性: '101',
+        排行榜: '103',
+        教育角标: '105',
+        策划类: '104',
+        素材播出属性: '102'
+      }, //角标分类
       attributeTypes: {}, //角标类别
       dialogPLVisible: false,
       dialogLevelVisible: false,
@@ -174,9 +182,9 @@ export default {
     parseFilter() {
       const { filter, pagination } = this
       if (pagination) {
+         filter.idPrefix = '10' //10:酷开数据;11:其他地方。默认酷开
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
-        filter.idPrefix = '10' //10:酷开数据;11:其他地方。默认酷开
       }
       return filter
     },
@@ -189,26 +197,17 @@ export default {
       }
     },
     deleteData() {
-      // if (this.selected.length == 0) {
-      //   this.$message('请选择一条数据')
-      // } else if (this.selected.length > 1) {
-      //   this.$message('只能选择一条数据')
-      // } else {
-      //   if (window.confirm('确定要删除吗')) {
-      //     this.$service
-      //       .globalCornerIconRemove({ id: this.selected[0] }, '删除成功')
-      //       .then(data => {
-      //         this.fetchData()
-      //       })
-      //   }
-      // }
-      if (window.confirm('确定要删除吗')) {
-          this.$service
+      if (this.selected.length == 0) {
+        this.$message('请至少选择一条数据')
+      } else {
+        if (window.confirm('确定要删除吗')) {
+          const ids = this.$service
             .globalCornerIconRemove({ id: this.selected.join(',') }, '删除成功')
             .then(data => {
               this.fetchData()
             })
         }
+      }
     },
     //批量审核
     batchHandle() {
@@ -216,7 +215,6 @@ export default {
       if (that.selected.length == 0) {
         that.$message('最少选择一条数据')
       } else {
-        debugger
         console.log(that.table.data)
         const ids = that.selected
         for (var i = 0; i < ids.length; i++) {
@@ -229,9 +227,7 @@ export default {
               }
             }
           }
-          // var result = this.table.data.some
         }
-        // this.dialogPLVisible = true
       }
     },
     submitForm(data) {
@@ -277,10 +273,11 @@ export default {
     openReview(row) {
       console.log(row)
       this.$emit('open-view-page', row.cornerIconId)
+      //  this.$emit('open-view-page', row)
     },
     //查询
     handleFilterChange(type) {
-      if (type === 'filter') {
+      if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }
@@ -334,6 +331,7 @@ export default {
         data.forEach(element => {
           this.globalTypes[element.typeName] = element.typeId
         })
+        console.log(this.globalTypes)
       })
     },
     //角标类别
@@ -368,7 +366,7 @@ export default {
           label: 0
         }
       }),
-      'cornerIconType.typeId': _.o.enum(this.globalTypes).other('form', {
+      typeId: _.o.enum(this.globalTypes).other('form', {
         component: 'Select',
         placeholder: '角标分类',
         cols: {
@@ -376,7 +374,7 @@ export default {
           label: 0
         }
       }),
-      'cornerIconType.typePosition': _.o
+      typePosition: _.o
         .enum(this.typePositions)
         .other('form', {
           component: 'Select',
@@ -421,6 +419,7 @@ export default {
         this.filterSchema = filterSchema
       })
     }) //获取角标分类
+    
     //角标类别
   }
 }

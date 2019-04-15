@@ -1,6 +1,6 @@
 export function globalPictureUpsert (data) {
   return this.fetch({
-    url: 'api/globalPicture/save.html',
+    url: 'api/v1/poster/save.html',
     method: 'post',
     data
   })

@@ -159,7 +159,7 @@ export default {
         getFormData() {
             const pictureId = this.pictureId
             const picTypeOptionsIndexed = this.picTypeOptionsIndexed
-            const picsJsonData = this.getUploadedFiles().map((item) => {
+            const jsonStr = this.getUploadedFiles().map((item) => {
                 return {
                     pictureId: pictureId,
                     pictureType: item.pictureType,
@@ -170,7 +170,7 @@ export default {
                     materialTypes: this.parseMaterialType(picTypeOptionsIndexed[item.materialTypeDictEnName])
                 }
             })
-            const data = {picsJsonData: JSON.stringify(picsJsonData)}
+            const data = {jsonStr: JSON.stringify(jsonStr)}
             return data
         },
         setFormData(data) {

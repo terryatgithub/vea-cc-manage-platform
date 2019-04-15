@@ -23,9 +23,9 @@
       <LayoutInfoReview
       v-if="mode==='review'"
       :reviewData="reviewData"
-      @go-back="goBack"
       @open-list-page="openListPage"
       @go-edit-Page="goEditPage"
+      @go-back="goBack"
     ></LayoutInfoReview>
   </div>
 </template>
