@@ -5,7 +5,6 @@ export function getMediaVideoInfos(params) {
     url: 'api/tvos/getMediaVideoInfos.html',
     params
   }).then(data => {
-    debugger
     if (typeof (data) === 'string') {
       return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
     } else {
@@ -37,11 +36,11 @@ export function getCondition() {
 
 }
 // 影片单集资源
-export function getSegmentList(data) {
+export function getSegmentList(params) {
   return this.fetch({
-    methods: 'POST',
+    methods: 'get',
     url: 'api/tvos/getSegmentList.html',
-    data
+    params
   }).then(data => {
     if (typeof (data) === 'string') {
       return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))

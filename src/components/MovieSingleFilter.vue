@@ -177,6 +177,7 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter();
+      debugger
       Object.assign(filter, this.params)
       this.$service.getSegmentList(filter).then(data => {
        // data =JSON.parse(data.replace("result(",'').replace(/\)$/,''))

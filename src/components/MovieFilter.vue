@@ -385,8 +385,18 @@ export default {
             // render: utils.component.createOperationRender(this, {
             //   selectSingle: '选择单集'
             // })
-            render: (h,{row}) => {
-              debugger
+            render: (h,r) => {
+            //  debugger
+             return h('el-button',{
+                on: {
+                  'click': (event)=> {
+                    debugger
+                     event.stopPropagation()
+                     this.selectSingle(r)
+                  }
+                
+                }
+              },'选择单集')
             }
           }
         ],
@@ -412,6 +422,7 @@ export default {
 
   methods: {
     rowClick(params) {
+      debugger;
        if (this.multi === 'single') {
          this.$emit("row-click",params)
        }

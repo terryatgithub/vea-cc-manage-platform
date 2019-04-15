@@ -147,8 +147,10 @@ export default {
       }
     },
     selectSingle(params) {
+      debugger;
       this.mode = 'movieSingleFilter'
       this.movieParams = params
+      this.$refs.selector.showDialog = true
     },
     /*
     单选时回调函数
