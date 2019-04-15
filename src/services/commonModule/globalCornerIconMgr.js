@@ -5,16 +5,16 @@ export function getGlobalMgrList(params) {
         method: 'get',
         url: 'api/v1/cornerIcon/pageList.html',
         params
-    }) 
-}
-//获取角标分类
-export function getCornerTypes(params) {
-    return this.fetch({
-        method: 'get',
-        url: '/api/v1/cornerIconType/getCornerTypes.html',
-        params
     })
 }
+// //获取角标分类
+// export function getCornerTypes(params) {
+//     return this.fetch({
+//         method: 'get',
+//         url: '/api/v1/cornerIconType/getCornerTypes.html',
+//         params
+//     })
+// }
 //角标类别
 export function getIconAttributes(params) {
     return this.fetch({
@@ -30,9 +30,9 @@ export function globalCornerIconEdit(params) {
         url: 'api/globalCornerIcon/edit.html',
         params
     })
-    .then(data => {
-        return JSON.parse(data.match(/para = (\{.+\})/)[1])
-      })
+        .then(data => {
+            return JSON.parse(data.match(/para = (\{.+\})/)[1])
+        })
 }
 //角标素材管理-保存
 export function globalCornerIconSave(data) {

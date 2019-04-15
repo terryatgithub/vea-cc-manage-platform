@@ -417,6 +417,7 @@ export default {
     },
     movieSelect: function(value) { 
       this.table.data[this.selectIndex].singleMovie = value
+      this.table.data[this.selectIndex].singleId = value.coocaaMId
     }
   },
 
