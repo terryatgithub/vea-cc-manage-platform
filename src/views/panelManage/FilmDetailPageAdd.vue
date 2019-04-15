@@ -1,7 +1,7 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div v-show="!isShowPannelInfoList">
-    <div>
+    <div class="btns">
       <el-button type="primary" @click="btnAudit">提交审核</el-button>
       <el-button type="primary" @click="btnSave">保存草稿</el-button>
     </div>
@@ -10,7 +10,7 @@
       <i class="el-icon-edit">基本信息</i>
     </div>
 
-    <el-form ref="form" :rules="rules" v-model="form" label-width="90px">
+    <el-form ref="form" :rules="rules" :model="form" label-width="90px">
       <el-form-item label="版面名称" prop="tabName">
         <el-input v-model="form.tabName" style="width: 240px"/>
       </el-form-item>
@@ -42,19 +42,32 @@
       <el-form-item label="选择板块">
         <el-button type="primary" @click="isShowPannelInfoList=true">添加板块</el-button>
       </el-form-item>
+      <el-form-item label="优先级" :min='1'>
+        <el-input-number v-model="form.priority"/><span>注：数值越大优先级越高，数值越小优先级越低</span>
+      </el-form-item>
     </el-form>
+    <div class="table">
+      <Table
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+      />
+    </div>
     </div>
     
-    <AddBlockFilter v-show="isShowPannelInfoList" @go-back="isShowPannelInfoList=false"/>
-
+    <AddBlockFilter v-show="isShowPannelInfoList" @go-back="isShowPannelInfoList=false" @add-block="addBlock"/>
+    
   </ContentCard>
 </template>
 
 <script>
 import AddBlockFilter from './AddBlockFilter'
+import { Table } from 'admin-toolkit'
+import { Button } from 'element-ui'
 export default {
   components: {
-    AddBlockFilter
+    AddBlockFilter,
+    Table
   },
 
   watch: {
@@ -85,8 +98,10 @@ export default {
         ]
       },
       form: {
+        tabName: '',
         tabResource: 'qq',
-        tabCategory: '0'
+        tabCategory: '0',
+        priority: 1
       },
       tabResource: 'qq',
       iqiyiSource: [],
@@ -97,16 +112,91 @@ export default {
       productItems: [],
       eduProductItems: [],
       isShowPannelInfoList: false, //添加板块弹窗
+      blockTable: [],//板块列表
+      table: {
+        props: {},
+        data: [],
+        header: [
+          {
+            label: '排序'
+          },
+          {
+            label: '板块ID',
+            prop: 'pannelGroupId'
+          },
+          {
+            label: '板块名称',
+            prop: 'pannelGroupRemark'
+          },
+          {
+            label: '待审核副本',
+            prop: 'duplicateVersion'
+          },
+          {
+            label: '操作',
+            render: (h, {row}) => {
+              return h(Button, {
+                props: {
+                  type: 'warning'
+                },
+                on: {
+                  click: () => {
+                    const index = this.table.data.indexOf(row)
+                    this.table.data.splice(index, 1)
+                  }
+                }
+              }, '删除')
+            }
+          }
+        ],
+        selected: [],
+        selectionType: 'single'
+      }
     };
   },
 
   methods: {
     // 头部按钮
     btnAudit() {
-      console.log('form', this.form);
+      this.save(3)
     },
     btnSave() {
-      
+      this.save(2)
+    },
+    save(status) {
+      if(this.table.data.length === 0) {
+        this.$message('请添加版块')
+        return false
+      }
+      const form = this.form
+      this.$refs.form.validate(valid => {
+        if(valid) {
+          var jsonStr = {
+            tabInfo: {
+              tabId: '',
+              systemDefault: '',
+              tabName: form.tabName,
+              tabType: 3,
+              tabStatus: status,
+              tabResource: form.tabCategory==='0' ? form.tabResource : '',
+              currentVersion: ''
+            },
+            filmDetail: {
+              source: form.tabCategory==='0' ? form.tabResource : '',
+              product: this.product || '0',
+              channel: this.pannel || '0',
+              category: form.tabCategory,
+              priority: form.priority
+            },
+            pannelJson: this.table.data
+          }
+          this.$service.saveFilmDetailPage({jsonStr: JSON.stringify(jsonStr)}, '保存成功')
+          this.$emit('open-list-page')
+        }else {
+          this.$message('请将表单填写完整')
+          return
+        }
+      })
     },
     // 内容源改变
     changeResource(value) {
@@ -132,7 +222,7 @@ export default {
       })
     },
     clearResource() {
-
+      this.table.data = []
     },
     // 服务
     getMediaResourceInfo() {
@@ -153,7 +243,7 @@ export default {
           categoryList: [],
           productList: [],
         }
-        qqSource.categoryList = this._arrayingOption(videoItemModels[1].categoryList, 'category_name', 'category_id')
+        qqSource.categoryList = this._arrayingOption(videoItemModels[1].categoryList, 'category_name', 'cc_category_id')
         qqSource.productList = this._arrayingOption(videoItemModels[1].productList, 'source_name', 'source_sign')
         this.qqSource = qqSource
         this.pannelItems = qqSource.categoryList // 初始化
@@ -189,8 +279,25 @@ export default {
         }
       }
     },
-    openBlockPage() {
-
+    addBlock(blockData) {
+      const table = this.table
+      table.data = []
+      const initial = [
+        {
+          pannelGroupId: '-1002',
+          pannelGroupRemark: '花絮'
+        },
+        {
+          pannelGroupId: '-1001',
+          pannelGroupRemark: '相关推荐'
+        },
+        {
+          pannelGroupId: '-1003',
+          pannelGroupRemark: '相关明星'
+        }
+      ]
+      table.data = table.data.concat(initial)
+      table.data = table.data.concat(blockData)
     }
   },
   created() {
@@ -210,4 +317,7 @@ export default {
   line-height 36px
   background #e5e9f2
   border-radius 4px
+.table
+  width 550px
+  margin-left 40px
 </style>

@@ -82,7 +82,6 @@ export default {
     return {
       pannelValue: [],
       filter: {},
-      filterSchema: null,
       pagination: {
         currentPage: 1
       },
@@ -213,10 +212,25 @@ export default {
       this.$emit("open-add-page")
     },
     editData() {
-
+      const selected = this.selected
+      if(selected.length !== 1) {
+        this.$message('只能选择一条数据')
+        return false
+      }
+      this.$service.filmDetailPageList({tabId: selected.join()}).then(data => {
+        const row = data.rows[0]
+        if(row.currentStatus !== 2) {
+          this.$alert('该状态不允许编辑！', '操作提示', {confirmButtonText: '确定'})
+          return false
+        }else {
+          this.$emit("open-add-page")
+        }
+      })
     },
     batchDel() {
-
+      const select = this.selected.join(',')
+      this.$service.removeFilmDetailPage({ id: select }, '删除成功')
+      this.fetchData()
     },
     /**
      * 行选择操作
@@ -294,7 +308,6 @@ export default {
   created() {
     this.getMediaResourceInfo().then(() => {
     })
-    // this.filterSchema = filterSchema
     this.fetchData()
   }
 

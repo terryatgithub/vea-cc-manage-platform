@@ -2,15 +2,20 @@
   <ContentCard title="选择板块" @go-back="$emit('go-back')">
     <el-tabs type="card">
       <el-tab-pane label="内容板块">
-        <PannelInfoList :dataList="contentBlock"/>
+        <PannelInfoList ref="pannel" :dataList="contentBlock" v-model="pannelData"/>
       </el-tab-pane>
       <el-tab-pane label="专属板块">
-        <AlbumPannelInfoList :dataList="albumBlock"/>
+        <AlbumPannelInfoList ref="albumPannel" :dataList="albumBlock" v-model="albumPannelData"/>
       </el-tab-pane>
       <el-tab-pane label="专属影院板块">
         
       </el-tab-pane>
     </el-tabs>
+
+    <div class="btns">
+      <el-button type="primary" @click="clickAdd">确定</el-button>
+      <el-button @click="$emit('go-back')">取消</el-button>
+    </div>
   </ContentCard>
 </template>
 
@@ -26,6 +31,9 @@ export default {
 
   data () {
     return {
+      pannelData: [],
+      albumPannelData: [],
+      selected: [],
       contentBlock: {
         filter: {
           pannelType: 1,
@@ -108,7 +116,17 @@ export default {
     };
   },
 
-  methods: {},
+  watch: {
+  },
+
+  methods: {
+    clickAdd() {
+      const { pannelData, albumPannelData } = this
+      let block = [].concat(pannelData).concat(albumPannelData)
+      this.$emit('add-block', block)
+      this.$emit('go-back')
+    }
+  },
   created() {
     let filterSchema = _.map({
       pannelId: _.o.string.other('form', {
@@ -155,4 +173,7 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
+.btns
+  display flex
+  justify-content center
 </style>

@@ -140,6 +140,25 @@ export default {
     };
   },
 
+  watch: {
+    selected: {
+      handler(newVal, oldVal) {
+        const table = this.table
+        let rows = []
+        table.data.map(tableRow => {
+          if(newVal.indexOf(tableRow.pannelGroupId) > -1) {
+            let row = {
+              pannelGroupId: tableRow.pannelGroupId,
+              pannelGroupRemark: tableRow.pannelGroupRemark,
+              duplicateVersion: tableRow.duplicateVersion
+            }
+            rows.push(row)
+          }
+        })
+        this.$emit('input', rows)
+      }
+    }
+  },
   methods: {
     /**
      * 获取数据

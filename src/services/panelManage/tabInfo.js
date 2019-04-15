@@ -55,3 +55,19 @@ export function filmDetailPageList(data) {
     data
   })
 }
+// 保存
+export function saveFilmDetailPage(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/filmDetailPage/save.html',
+    data
+  })
+}
+// 删除
+export function removeFilmDetailPage(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/filmDetailPage/remove.html',
+    params
+  })
+}
