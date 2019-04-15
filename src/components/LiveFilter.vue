@@ -180,11 +180,17 @@ export default {
 
   watch: {
     selected: function(value) {
-      this.$emit('input', value)
+      this.$emit('input', this.selected)
     }
   },
 
   methods: {
+     rowClick(params) {
+       debugger;
+       if (this.multi === 'single') {
+         this.$emit("row-click",params)
+       }
+    },
     search(type) {
       if (type !== 'pagination') {
         if (this.pagination) {
@@ -215,38 +221,40 @@ export default {
       })
       return rs
     },
-    /**
-     * 行选择操作
-     */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.vId)
-      this.updateTableSelected()
+       handleRowSelectionAdd(targetItem) {
+      this.selected.push(targetItem);
+      this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.vId
-      })
-      this.updateTableSelected()
+        return item !== targetItem;
+      });
+      this.updateTableSelected();
     },
     handleAllRowSelectionChange(value) {
       if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
+        this.table.data.forEach(this.handleRowSelectionAdd);
       } else {
-        this.selected = []
-        this.table.selected = []
+        this.selected = [];
+        this.table.selected = [];
       }
     },
+    handleAllRowSelectionRemove() {
+      this.selected = [];
+      this.table.selected = [];
+    },
     updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
+      const table = this.table;
+      const newSelectedIndex = this.selected.map((e) => {
+        return e.vId
+      });
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.vId) > -1) {
-          result.push(index)
+          result.push(index);
         }
-        return result
-      }, [])
+        return result;
+      }, []);
     },
-
     reset() {
       this.searchForm = {
         callbackparam: 'result',

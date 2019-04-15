@@ -5,7 +5,12 @@ export function getMediaVideoInfos(params) {
     url: 'api/tvos/getMediaVideoInfos.html',
     params
   }).then(data => {
-    return JSON.parse(data.substring(7, data.length - 1))
+    debugger
+    if (typeof (data) === 'string') {
+      return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+    } else {
+      return data
+    }
   })
 }
 
@@ -23,17 +28,36 @@ export function getCondition() {
     methods: 'get',
     url: 'api/tvos/getCondition.html'
   }).then(data => {
-    return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+    if (typeof (data) === 'string') {
+      return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+    } else {
+      return data
+    }
   })
 
 }
 // 影片单集资源
-export function getSegmentList(params) {
+export function getSegmentList(data) {
+  return this.fetch({
+    methods: 'POST',
+    url: 'api/tvos/getSegmentList.html',
+    data
+  }).then(data => {
+    if (typeof (data) === 'string') {
+      return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+    } else {
+      return data
+    }
+  })
+}
+
+export function getAppManagementList(params) {
   return this.fetch({
     methods: 'get',
-    url: 'api/tvos/getSegmentList.html',
+    url: 'api/appManagement/pageList.html',
     params
-  }).then(data => {
-    return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
   })
+  // .then(data => {
+  //   return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+  // })
 }

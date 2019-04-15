@@ -21,11 +21,13 @@ import * as layoutInfor from './commonModule/layoutInfor'
 import * as themeInfo from './themeManage/themeInfo'
 import * as globalPicture from './commonModule/globalPicture'
 import * as globalCornerIconMgr from './commonModule/globalCornerIconMgr'
+import * as advertisement from './advertisement'
 const service = {
   state: {},
   fetch,
   login,
   getMenu,
+  ...advertisement,
   ...upload,
   ...userConfig,
   ...roleManage,

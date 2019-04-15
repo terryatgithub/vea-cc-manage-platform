@@ -382,9 +382,12 @@ export default {
             label: '操作',
             width: '100',
             fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              selectSingle: '选择单集'
-            })
+            // render: utils.component.createOperationRender(this, {
+            //   selectSingle: '选择单集'
+            // })
+            render: (h,{row}) => {
+              debugger
+            }
           }
         ],
         data: [],
@@ -399,8 +402,8 @@ export default {
       this.searchForm.sources = this.partner
       this.getSource(value)
     },
-    selected: function(value) {
-      this.$emit('input', value)
+   selected: function(value) {
+      this.$emit('input', this.selected)
     },
     movieSelect: function(value) { 
       this.table.data[this.selectIndex].singleMovie = value
@@ -408,12 +411,9 @@ export default {
   },
 
   methods: {
-    multipleSelect() {
-      this.$emit("multiple-select",this.selected)
-    },
     rowClick(params) {
        if (this.multi === 'single') {
-         this.$emit("single-select",params)
+         this.$emit("row-click",params)
        }
     },
     deepClone: function(obj) {
@@ -575,36 +575,39 @@ export default {
         this.orderTip = '升序排列'
       }
     },
-    /**
-     * 行选择操作
-     */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.coocaaVId)
-      this.updateTableSelected()
+   handleRowSelectionAdd(targetItem) {
+      this.selected.push(targetItem);
+      this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.coocaaVId
-      })
-      this.updateTableSelected()
+        return item !== targetItem;
+      });
+      this.updateTableSelected();
     },
-    handleAllRowSelectionChange(value) { 
+    handleAllRowSelectionChange(value) {
       if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
+        this.table.data.forEach(this.handleRowSelectionAdd);
       } else {
-        this.selected = []
-        this.table.selected = []
+        this.selected = [];
+        this.table.selected = [];
       }
     },
+    handleAllRowSelectionRemove() {
+      this.selected = [];
+      this.table.selected = [];
+    },
     updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
+      const table = this.table;
+      const newSelectedIndex = this.selected.map((e) => {
+        return e.coocaaVId
+      });
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.coocaaVId) > -1) {
-          result.push(index)
+          result.push(index);
         }
-        return result
-      }, [])
+        return result;
+      }, []);
     }
   },
   created() {

@@ -1,3 +1,4 @@
+
 <template>
   <ContentCard class="content">
     <ContentWrapper
@@ -13,6 +14,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+         @row-click="rowClick"
         @row-selection-change="handleRowSelectionChange"
       />
     </ContentWrapper>
@@ -71,6 +73,9 @@ export default {
     }
   },
   methods: {
+    rowClick(params) {
+         this.$emit("row-click",params)
+    },
     /**获取数据 */
     fetchData() {
        const filter = this.parseFilter();

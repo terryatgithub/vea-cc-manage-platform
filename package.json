@@ -16,13 +16,13 @@
     "element-ui": "^2.7.2",
     "gateschema": "^0.2.0",
     "gateschema-form-vue": "^0.2.2",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.0",
     "less-loader": "^4.1.0",
     "nprogress": "^0.2.0",
     "regenerator-runtime": "^0.13.2",
     "v-charts": "^1.19.0",
     "vue": "^2.6.10",
-    "vue-router": "^3.0.1",
+    "vue-router": "^3.0.4",
     "vuedraggable": "^2.20.0"
   },
   "devDependencies": {

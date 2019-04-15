@@ -49,39 +49,31 @@ export default {
         props: {},
         header: [
           {
-            label: "集数名",
-            prop: "urlCollection",
+            label: "ID",
+            prop: "appId",
             width: "70"
           },
            {
-            label: "单集ID",
-            prop: "coocaaMId",
+            label: "应用名称",
+            prop: "appName",
             width: "100"
           },
            {
-            label: "单集名称",
-            prop: "urlTitle",
+            label: "应用包名",
+            prop: "appPackageName",
           },
           {
             label: "图片",
-            prop: "thumb",
+            prop: "appImageUrl",
             render: (createElement, { row }) => {
               return createElement("img", {
                 attrs: {
-                  src: row.thumb,
+                  src: row.appImageUrl,
                   width: "50px",
                   height: "50px",
                   class: "imgs"
                 }
               });
-            }
-          },
-          {
-            label: "素材类型",
-            width: "120",
-            prop: "urlIsTrailer",
-            render: (createElement, {row}) => {
-              return row.urlIsTrailer === '1'?'非正片': '正片'
             }
           }
         ],
@@ -102,7 +94,7 @@ export default {
     // },
     rowClick(params) {
        if (this.multi === 'single') {
-         this.$emit("single-select",params)
+          this.$emit("row-click",params)
        }
     },
     selectCancel() {
@@ -140,10 +132,10 @@ export default {
     updateTableSelected() {
       const table = this.table;
       const newSelectedIndex = this.selected.map((e) => {
-        return e.coocaaMId
+        return e.appId
       });
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.coocaaMId) > -1) {
+        if (newSelectedIndex.indexOf(item.appId) > -1) {
           result.push(index);
         }
         return result;
@@ -178,7 +170,7 @@ export default {
     fetchData() {
       const filter = this.parseFilter();
       Object.assign(filter, this.params)
-      this.$service.getSegmentList(filter).then(data => {
+      this.$service.getAppManagementList(filter).then(data => {
        // data =JSON.parse(data.replace("result(",'').replace(/\)$/,''))
         this.pagination.total = data.total;
         this.table.data = data.rows;
@@ -188,17 +180,25 @@ export default {
   created() {
      this.table.selectionType = this.multi
     let filterSchema = _.map({
-      urlIsTrailer: _.o.enum({'非正片': '1', '正片': '0'}).other("form", {
-        component: "Select",
-        placeholder: "素材类型",
+      appId: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '应用ID',
         cols: {
           item: 3,
           label: 0
         }
-      }), 
-      urlTitle: _.o.string.other('form', {
+      }),
+      appName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '单集名称',
+        placeholder: '应用名称',
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
+       appPackageName: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '应用包名',
         cols: {
           item: 3,
           label: 0
