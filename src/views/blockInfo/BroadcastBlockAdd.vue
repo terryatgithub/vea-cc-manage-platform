@@ -1,13 +1,8 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-    <div>
-      <el-button type="primary" size="medium" @click="submitCheck">提交审核</el-button>
-      <el-button type="warning" size="medium" @click="$emit('go-back')">关闭</el-button>
-    </div>
     <div class="split-bar">
       基本信息
     </div>
-
     <el-form :model="basicForm" ref="basicForm" label-width="100px" class="demo-ruleForm">
       <el-form-item
         label="推荐位名称"
@@ -27,14 +22,14 @@
           <el-radio label="group">组合模式</el-radio>
         </el-radio-group>
       </el-form-item>
+      
     </el-form>
 
     <div class="split-bar">
-      <i class="el-icon-edit"></i>内容配置
+      内容配置
     </div>
-
     <div class="version-title">
-      <h2 class="version-title__h">正常版本</h2>
+      <h4 class="version-title__h">正常版本</h4>
       <el-tag
         class="version-title__tag"
         v-if="basicForm.configModel === 'group' "
@@ -44,11 +39,9 @@
         v-if="basicForm.configModel === 'group' "
         type="primary"
         style="float: right;"
-        size="medium"
-        @click.native="selectResource('normal', normalForm, 'multiSelect')"
+        @click.native="selectResource('normal', 'normalForm', 'multiSelect')"
       >批量选择资源</el-button>
     </div>
-
     <!-- {{normalVersionContent正常版本}} -->
     <div class="form-wrap">
       <!-- group -->
@@ -101,11 +94,10 @@
       >
         <el-form-item
           :label="normalResourceBtn"
-          size="medium"
           prop="thirdIdOrPackageName"
           style="width: 400px"
         >
-             <el-button v-if="autoWrite" type="primary" v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', normalForm)">选择资源</el-button>
+             <el-button v-if="autoWrite" type="primary" v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', 'normalForm')">选择资源</el-button>
           <!-- <ResourceSelector
             v-if="basicForm.configModel === 'broadcast'"
             title="选择资源"
@@ -159,7 +151,7 @@
           <el-card
             class="post-box"
             style="width: 320px;height: 180px"
-            @click.native="openPicture('poster', normalForm)"
+            @click.native="openPicture('poster', 'normalForm')"
           >
             <img
               v-if="normalForm.poster.pictureUrl"
@@ -177,11 +169,11 @@
               :class="'corner-' + index "
               class="corner"
             >
-              <span class="corner-img-wrapper" v-if="corner.imgUrl" @click="openPicture('corner', normalForm, index)">
+              <span class="corner-img-wrapper" v-if="corner.imgUrl" @click="openPicture('corner', 'normalForm', index)">
                 <img :src="corner.imgUrl" referrerpolicy="no-referrer">
                 <i class="el-icon-delete" @click.stop="deleteCorner(normalForm, index)"></i>
               </span>
-              <el-tag v-else type="success" @click="openPicture('corner', normalForm, index)">
+              <el-tag v-else type="success" @click="openPicture('corner', 'normalForm', index)">
                 <i class="el-icon-plus"></i>
               </el-tag>
             </span>
@@ -206,10 +198,9 @@
         </div>
       </el-form>
     </div>
-
     <!-- {{lowerVersionContent兼容低版本}} -->
     <div class="version-title" style="margin-top: 25px;">
-      <h2 style="float: left;margin-top: 7px;">兼容低版本</h2>
+      <h4 style="float: left;margin-top: 7px;">兼容低版本</h4>
       <div
         v-if="basicForm.configModel === 'group'"
         style="display: inline-block;margin-left: 14px;"
@@ -244,7 +235,7 @@
             :filterItems="['video', 'edu', 'live', 'topics', 'broadcast']"
             @confirm-click="resourceConfirm($event, lowerForm)"
             >选择资源</ResourceSelector> -->
-            <el-button type="primary" size="medium" v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', lowerForm)">选择资源</el-button>
+            <el-button type="primary"  v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', 'lowerForm')">选择资源</el-button>
           <el-tag
             type="success"
             v-if="lowerForm.thirdIdOrPackageName"
@@ -265,7 +256,7 @@
         <el-form-item
           label="海报"
           prop="poster.pictureUrl"
-          @click.native="openPicture('poster', lowerForm)"
+          @click.native="openPicture('poster', 'lowerForm')"
         >
           <el-card class="post-box" style="width: 486px;height: 180px">
             <img
@@ -284,11 +275,11 @@
               :class="'corner-' + index "
               class="corner"
             >
-              <span class="corner-img-wrapper" v-if="corner.imgUrl"  @click="openPicture('corner', lowerForm, index)">
+              <span class="corner-img-wrapper" v-if="corner.imgUrl"  @click="openPicture('corner', 'lowerForm', index)">
                 <img :src="corner.imgUrl" referrerpolicy="no-referrer">
                 <i class="el-icon-delete" @click.stop="deleteCorner(lowerForm, index)"></i>
               </span>
-              <el-tag v-else type="success"  @click="openPicture('corner', lowerForm, index)">
+              <el-tag v-else type="success"  @click="openPicture('corner', 'lowerForm', index)">
                 <i class="el-icon-plus"></i>
               </el-tag>
             </span>
@@ -308,9 +299,13 @@
             </el-form-item>
             <ccAppParamsForm ref="openWayLower" prop-prefix="onclick." v-model="lowerForm.onclick"/>
         </div>
+        
       </el-form>
     </div>
-    
+    <div class="submitCheck">
+      <el-button type="primary" @click="submitCheck">提交审核</el-button>
+    </div>
+     
     <!-- 海报弹框  -->
     <el-dialog :visible.sync="customDialogPicture.visible" width="1200px">
         <DialogPicture 
@@ -325,7 +320,6 @@
         </div>
     </el-dialog>
     <!-- 海报弹框 end -->
-    
     <!-- 角标弹框  -->
     <el-dialog :visible.sync="customDialogCorner.visible" width="1200px">
         <DialogCorner
@@ -340,10 +334,9 @@
         </div>
     </el-dialog>
     <!-- 角标弹框 end -->
-
     <!-- 第三方运用快速填充弹框 -->
     <el-dialog :visible.sync="onclickEventVisible" width="1200px">
-      <selectClick @clcik="getClickData"></selectClick>
+      <selectClick @row-click="getClickData"></selectClick>
       <div slot="footer" class="dialog-footer">
         <el-button @click="onclickEventVisible = false">取 消</el-button>
         <el-button type="primary" @click="onclickEventVisible = false;clickThirdpartSubmit()">确 定</el-button>
@@ -351,7 +344,7 @@
     </el-dialog>
     <!-- 第三方运用快速填充弹框end -->
      <!-- 选择资源 -->
-           <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector>
+    <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector>
   </ContentCard>
 </template>
 
@@ -626,6 +619,7 @@ export default {
     },
     // 第三方应用快速填充
     getClickData(data) {
+      debugger
       this.clickData = data
       console.log(this.clickData);
     },
@@ -708,7 +702,8 @@ export default {
 
     // ??
     selectResource: function(type, form, selectType) {
-      debugger
+
+    //  debugger
       this.resourceVisible = true
       this.resourceOptions.activeTabName = 'video'
       this.currentForm = form
@@ -795,7 +790,8 @@ export default {
 
     // 表单格式转换
     packageFormParam: function(item, form) {
-      let tempForm =JSON.parse(JSON.stringify(form))
+      let tempForm =JSON.parse(JSON.stringify(this.versionForm))
+      tempForm = Object.assign({}, tempForm, item)
       if (item.contentType === 'rotate') {
         tempForm.subchannelIs = true
       } else {
@@ -809,18 +805,10 @@ export default {
       if (item.pictureUrl) {
         tempForm.poster.pictureUrl = item.pictureUrl
         tempForm.poster.pictureId = item.pictureId
-       // delete item.pictureUrl
-        Object.assign(form, item)
-        form.poster =JSON.parse(JSON.stringify(tempForm.poster))
-      }else {
-         tempForm.poster = {}
-        Object.assign(form, item)
       }
-
       var param = this.paramIdFun(tempForm, item)
       tempForm.clickParams = JSON.stringify(param)
       tempForm.params = JSON.stringify(param)
-     // form = tempForm
       return tempForm
     },
     // 指定小专题
@@ -877,13 +865,14 @@ export default {
       })
       if (callbackData instanceof Array) {
        this.normalVersionContent = callbackData.reduce((result, current) => {
-            result.push(this.packageFormParam(current, form))
+            result.push(this.packageFormParam(current))
             return result
          },this.normalVersionContent)
-         
+        this[form] = this.normalVersionContent[0]
       } else {
+         this[form] = this.packageFormParam(callbackData)
          this.normalVersionContent.push(this.packageFormParam(callbackData, form))
-      }
+      } 
     },
     // closeResource: function() {
     //   this.resourceVisible = false
@@ -1050,7 +1039,7 @@ export default {
       } else {
         this.customDialogPicture.visible = false
         if (this.pictureType === 'poster') {
-          this.currentForm.poster = {
+          this[this.currentForm].poster = {
             pictureUrl: selectPicture.pictureUrl,
             pictureId: selectPicture.pictureId
           }
@@ -1061,16 +1050,15 @@ export default {
             position: index,
             imgUrl: selectPicture.imgUrl
           }
-          var newForm = this.currentForm.cornerIconList.slice(0)
+          var newForm = this[this.currentForm].cornerIconList.slice(0)
           // var newForm = Object.assign({}, this.currentForm.cornerIconList);
           newForm[index] = cornerObj
-          this.currentForm.cornerIconList = newForm
+          this[this.currentForm].cornerIconList = newForm
           this.customDialogCorner.visible = false
         }
         this.selectPicture = {}
       }
       this.normalVersionContent[this.currentIndex] = this.normalForm
-      console.log(this.currentForm)
     },
     onDragStart: function(event) {
       console.log(event)
@@ -1210,7 +1198,7 @@ export default {
   width: 95%;
   height: auto;
   padding: 10px;
-  border: 2px dotted darkgray;
+   border: 2px dotted darkgray;
   overflow: auto;
 }
 
@@ -1370,5 +1358,9 @@ export default {
 }
 .el-input {
     max-width: 280px;
+}
+.submitCheck {
+  margin-top: 20px;
+  margin-left: 110px;
 }
 </style>

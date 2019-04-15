@@ -17,17 +17,28 @@
           :disable-partner="disablePartner"
           :movie-select="movieSelect"
           @partnerChange="pannelResourceNew=$event"
+          @row-click="rowClick($event,'video')"
           @select-single="selectSingle"
         ></MovieFilter>
       </el-tab-pane>
       <el-tab-pane v-if="resourceOptions.tabShow['edu']" label="教育中心" name="edu">
-        <EduFilter :multi="multi" v-model="selectAll.edu"></EduFilter>
+        <EduFilter :multi="multi" 
+        v-model="selectAll.edu"
+         @row-click="rowClick($event,'edu')"
+        ></EduFilter>
       </el-tab-pane>
       <el-tab-pane v-if="resourceOptions.tabShow['live']" label="直播资源" name="live">
-        <LiveFilter :multi="multi" v-model="selectAll.live"></LiveFilter>
+        <LiveFilter :multi="multi"
+         v-model="selectAll.live"
+        @row-click="rowClick($event,'live')"
+         ></LiveFilter>
       </el-tab-pane>
       <el-tab-pane v-if="resourceOptions.tabShow['topics']" label="专题资源" name="topics">
-        <TopicsFilter :multi="multi" v-model="selectAll.topics"></TopicsFilter>
+        <TopicsFilter 
+        :multi="multi" 
+        v-model="selectAll.topics"
+        @row-click="rowClick($event,'topics')"
+        ></TopicsFilter>
       </el-tab-pane>
       <el-tab-pane v-if="resourceOptions.tabShow['broadcast']" label="轮播频道" name="broadcast">
         <BroadcastFilter :multi="multi" 
@@ -35,6 +46,14 @@
         v-model="selectAll.broadcast"
         >
         </BroadcastFilter>
+      </el-tab-pane>
+       <el-tab-pane v-if="resourceOptions.tabShow['app']" label="应用圈" name="app">
+        <AppFilter 
+        :multi="multi" 
+        @row-click="rowClick($event,'app')"
+        v-model="selectAll.app"
+        >
+        </AppFilter>
       </el-tab-pane>
     </el-tabs>
     <MovieSingleFilter v-if="mode==='movieSingleFilter'"
@@ -51,6 +70,7 @@ import BroadcastFilter from './BroadcastFilter'
 import EduFilter from './EduFilter'
 import LiveFilter from './LiveFilter'
 import TopicsFilter from './TopicsFilter'
+import AppFilter from './AppFilter'
 import _ from 'gateschema'
 import { RemoteSelect, ContentWrapper, Table } from 'admin-toolkit'
 import { filter } from 'minimatch'
@@ -65,7 +85,8 @@ export default {
     EduFilter,
     LiveFilter,
     TopicsFilter,
-    MovieSingleFilter
+    MovieSingleFilter,
+    AppFilter
   },
   props: {
     resourceOptions: {
@@ -126,14 +147,15 @@ export default {
       }
     },
     selectSingle(params) {
+      debugger;
       this.mode = 'movieSingleFilter'
       this.movieParams = params
+      this.$refs.selector.showDialog = true
     },
     /*
     单选时回调函数
      */
     rowClick(row, type) {
-      debugger
       let callbackParams = this.callbackParam(type, row)
       this.$emit('confirm-click', callbackParams)
     },
@@ -235,9 +257,10 @@ export default {
   },
   created() {
     this.multi = this.resourceOptions.multi ? 'multiple' : 'single'
+    let tabShowKeys = Object.keys(this.resourceOptions.tabShow)
+    this.currentTab = tabShowKeys[0]
   },
   mounted: function() {
-    debugger
     this.$refs.selector.showDialog = true
     switch (this.pannelResource) {
       case 'o_tencent':

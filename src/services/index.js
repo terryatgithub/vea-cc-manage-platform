@@ -21,11 +21,14 @@ import * as layoutInfor from './commonModule/layoutInfor'
 import * as themeInfo from './themeManage/themeInfo'
 import * as globalPicture from './commonModule/globalPicture'
 import * as globalCornerIconMgr from './commonModule/globalCornerIconMgr'
+import * as advertisement from './advertisement'
+import * as privatePannel from './blockManage/privatePannel'
 const service = {
   state: {},
   fetch,
   login,
   getMenu,
+  ...advertisement,
   ...upload,
   ...userConfig,
   ...roleManage,
@@ -43,6 +46,7 @@ const service = {
   ...themeInfo,
   ...globalPicture,
   ...globalCornerIconMgr,
-  ...adminMasterControll
+  ...adminMasterControll,
+  ...privatePannel
 }
 Vue.prototype.$service = utils.wrapService(service)

@@ -1,3 +1,6 @@
+/**** 
+轮播筛选器
+*/
 <template>
   <ContentWrapper
     :filter="filter"
@@ -62,9 +65,9 @@ export default {
       }
     }
   },
-  watch: {
+ watch: {
     selected: function(value) {
-      this.$emit('input', Object.values(this.selectedRows))
+      this.$emit('input', this.selected)
     }
   },
   methods: {
@@ -108,38 +111,40 @@ export default {
       }
       this.fetchData()
     },
-    /**
-     * 行选择操作
-     */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.id)
-      this.selectedRows[targetItem.id] = targetItem
-      this.updateTableSelected()
+
+      handleRowSelectionAdd(targetItem) {
+      this.selected.push(targetItem);
+      this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.id
-      })
-      delete this.selectedRows[targetItem.id]
-      this.updateTableSelected()
+        return item !== targetItem;
+      });
+      this.updateTableSelected();
     },
     handleAllRowSelectionChange(value) {
       if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
+        this.table.data.forEach(this.handleRowSelectionAdd);
       } else {
-        this.selected = []
-        this.table.selected = []
+        this.selected = [];
+        this.table.selected = [];
       }
     },
+    handleAllRowSelectionRemove() {
+      this.selected = [];
+      this.table.selected = [];
+    },
     updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
+      const table = this.table;
+      const newSelectedIndex = this.selected.map((e) => {
+        return e.id
+      });
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.id) > -1) {
-          result.push(index)
+          result.push(index);
         }
-        return result
-      }, [])
+        return result;
+      }, []);
     }
   },
   created() {

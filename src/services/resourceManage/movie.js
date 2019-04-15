@@ -5,7 +5,11 @@ export function getMediaVideoInfos(params) {
     url: 'api/tvos/getMediaVideoInfos.html',
     params
   }).then(data => {
-    return JSON.parse(data.substring(7, data.length - 1))
+    if (typeof (data) === 'string') {
+      return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+    } else {
+      return data
+    }
   })
 }
 
@@ -23,7 +27,11 @@ export function getCondition() {
     methods: 'get',
     url: 'api/tvos/getCondition.html'
   }).then(data => {
-    return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+    if (typeof (data) === 'string') {
+      return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+    } else {
+      return data
+    }
   })
 
 }
@@ -34,6 +42,21 @@ export function getSegmentList(params) {
     url: 'api/tvos/getSegmentList.html',
     params
   }).then(data => {
-    return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+    if (typeof (data) === 'string') {
+      return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+    } else {
+      return data
+    }
   })
+}
+
+export function getAppManagementList(params) {
+  return this.fetch({
+    methods: 'get',
+    url: 'api/appManagement/pageList.html',
+    params
+  })
+  // .then(data => {
+  //   return JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))
+  // })
 }

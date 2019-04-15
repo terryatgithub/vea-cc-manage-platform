@@ -192,7 +192,7 @@
       :data="table.data"
       :selected="table.selected"
       :selection-type="table.selectionType"
-        @row-click="rowClick"
+      @row-click="rowClick"
       @row-selection-add="handleRowSelectionAdd"
       @row-selection-remove="handleRowSelectionRemove"
       @all-row-selection-change="handleAllRowSelectionChange"
@@ -306,13 +306,18 @@ export default {
     }
   },
 
-  // watch: {
-  //   selected: function(value) {
-  //     this.$emit('input', value)
-  //   }
-  // },
+   watch: {
+    selected: function(value) {
+      this.$emit('input', this.selected)
+    }
+  },
 
   methods: {
+    rowClick(params) {
+       if (this.multi === 'single') {
+         this.$emit("row-click",params)
+       }
+    },
     teachTypesSelectChange: function(categoryName) {
       // 切换教育分类
       this.searchForm.gradeList = ''
@@ -436,36 +441,39 @@ export default {
       }
       this.table.data = []
     },
-     /**
-     * 行选择操作
-     */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.coocaaVId)
-      this.updateTableSelected()
+     handleRowSelectionAdd(targetItem) {
+      this.selected.push(targetItem);
+      this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.coocaaVId
-      })
-      this.updateTableSelected()
+        return item !== targetItem;
+      });
+      this.updateTableSelected();
     },
     handleAllRowSelectionChange(value) {
       if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
+        this.table.data.forEach(this.handleRowSelectionAdd);
       } else {
-        this.selected = []
-        this.table.selected = []
+        this.selected = [];
+        this.table.selected = [];
       }
     },
+    handleAllRowSelectionRemove() {
+      this.selected = [];
+      this.table.selected = [];
+    },
     updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
+      const table = this.table;
+      const newSelectedIndex = this.selected.map((e) => {
+        return e.coocaaVId
+      });
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.coocaaVId) > -1) {
-          result.push(index)
+          result.push(index);
         }
-        return result
-      }, [])
+        return result;
+      }, []);
     },
   },
   mounted() {

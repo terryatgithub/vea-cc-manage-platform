@@ -79,7 +79,9 @@ export default {
               },
               '保存成功'
             )
-            .then(data => {})
+            .then(data => {
+               this.auditDialog = false
+            })
         }
       })
     },
@@ -121,7 +123,7 @@ export default {
             type: this.type
           })
           .then(data => {
-            alert(data)
+            this.auditDialog = false
           })
       }
     }

@@ -5,21 +5,13 @@ export function getGlobalMgrList(params) {
         method: 'get',
         url: 'api/v1/cornerIcon/pageList.html',
         params
-    }) 
-}
-//获取角标分类
-export function getCornerTypes(params) {
-    return this.fetch({
-        method: 'get',
-        url: '/api/v1/cornerIconType/getCornerTypes.html',
-        params
     })
 }
 //角标类别
 export function getIconAttributes(params) {
     return this.fetch({
         method: 'post',
-        url: '/api/v1/cornerIcon/getIconAttributes.html',
+        url: 'api/v1/cornerIcon/getIconAttributes.html',
         params
     })
 }
@@ -30,9 +22,9 @@ export function globalCornerIconEdit(params) {
         url: 'api/globalCornerIcon/edit.html',
         params
     })
-    .then(data => {
-        return JSON.parse(data.match(/para = (\{.+\})/)[1])
-      })
+        .then(data => {
+            return JSON.parse(data.match(/para = (\{.+\})/)[1])
+        })
 }
 //角标素材管理-保存
 export function globalCornerIconSave(data) {
@@ -54,7 +46,7 @@ export function globalCornerIconRemove(params) {
 export function batchAudit(params) {
     return this.fetch({
         method: 'get',
-        url: '/api/v1/cornerIcon/batchAudit.html',
+        url: 'api/v1/cornerIcon/batchAudit.html',
         params
     })
 }
@@ -62,7 +54,7 @@ export function batchAudit(params) {
 export function executionTask(data) {
     return this.fetch({
         method: 'post',
-        url: '/api/auditTaskInfo/executionTask.html',
+        url: 'api/auditTaskInfo/executionTask.html',
         data
     })
 }
@@ -70,7 +62,7 @@ export function executionTask(data) {
 export function revokedAudit(data) {
     return this.fetch({
         method: 'post',
-        url: '/api/auditTaskInfo/revokedAudit.html',
+        url: 'api/auditTaskInfo/revokedAudit.html',
         data
     })
 }

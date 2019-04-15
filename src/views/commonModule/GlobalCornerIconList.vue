@@ -12,7 +12,7 @@
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="deleteData">删除</el-button>
         <el-button type="primary" icon="el-icon-edit-outline" @click="batchHandle">批量审核</el-button>
-        <el-button type="primary" v-model="checkAll" @click="selectAllOne">全选/全不选</el-button>
+        <!-- <el-button type="primary" v-model="checkAll" @click="selectAllOne">全选/全不选</el-button> -->
         <el-button type="primary" @click="changePriority">调整优先级</el-button>
       </div>
       <Table
