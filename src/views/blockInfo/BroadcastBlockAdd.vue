@@ -1,9 +1,5 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-    <div>
-      <el-button type="primary" size="medium" @click="submitCheck">提交审核</el-button>
-      <el-button type="warning" size="medium" @click="$emit('go-back')">关闭</el-button>
-    </div>
     <div class="split-bar">
       基本信息
     </div>
@@ -26,14 +22,14 @@
           <el-radio label="group">组合模式</el-radio>
         </el-radio-group>
       </el-form-item>
+      
     </el-form>
 
     <div class="split-bar">
-      <i class="el-icon-edit"></i>内容配置
+      内容配置
     </div>
-
     <div class="version-title">
-      <h2 class="version-title__h">正常版本</h2>
+      <h4 class="version-title__h">正常版本</h4>
       <el-tag
         class="version-title__tag"
         v-if="basicForm.configModel === 'group' "
@@ -43,11 +39,9 @@
         v-if="basicForm.configModel === 'group' "
         type="primary"
         style="float: right;"
-        size="medium"
         @click.native="selectResource('normal', 'normalForm', 'multiSelect')"
       >批量选择资源</el-button>
     </div>
-
     <!-- {{normalVersionContent正常版本}} -->
     <div class="form-wrap">
       <!-- group -->
@@ -100,7 +94,6 @@
       >
         <el-form-item
           :label="normalResourceBtn"
-          size="medium"
           prop="thirdIdOrPackageName"
           style="width: 400px"
         >
@@ -205,10 +198,9 @@
         </div>
       </el-form>
     </div>
-
     <!-- {{lowerVersionContent兼容低版本}} -->
     <div class="version-title" style="margin-top: 25px;">
-      <h2 style="float: left;margin-top: 7px;">兼容低版本</h2>
+      <h4 style="float: left;margin-top: 7px;">兼容低版本</h4>
       <div
         v-if="basicForm.configModel === 'group'"
         style="display: inline-block;margin-left: 14px;"
@@ -243,7 +235,7 @@
             :filterItems="['video', 'edu', 'live', 'topics', 'broadcast']"
             @confirm-click="resourceConfirm($event, lowerForm)"
             >选择资源</ResourceSelector> -->
-            <el-button type="primary" size="medium" v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', 'lowerForm')">选择资源</el-button>
+            <el-button type="primary"  v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', 'lowerForm')">选择资源</el-button>
           <el-tag
             type="success"
             v-if="lowerForm.thirdIdOrPackageName"
@@ -307,9 +299,13 @@
             </el-form-item>
             <ccAppParamsForm ref="openWayLower" prop-prefix="onclick." v-model="lowerForm.onclick"/>
         </div>
+        
       </el-form>
     </div>
-    
+    <div class="submitCheck">
+      <el-button type="primary" @click="submitCheck">提交审核</el-button>
+    </div>
+     
     <!-- 海报弹框  -->
     <el-dialog :visible.sync="customDialogPicture.visible" width="1200px">
         <DialogPicture 
@@ -324,7 +320,6 @@
         </div>
     </el-dialog>
     <!-- 海报弹框 end -->
-    
     <!-- 角标弹框  -->
     <el-dialog :visible.sync="customDialogCorner.visible" width="1200px">
         <DialogCorner
@@ -339,7 +334,6 @@
         </div>
     </el-dialog>
     <!-- 角标弹框 end -->
-
     <!-- 第三方运用快速填充弹框 -->
     <el-dialog :visible.sync="onclickEventVisible" width="1200px">
       <selectClick @row-click="getClickData"></selectClick>
@@ -350,7 +344,7 @@
     </el-dialog>
     <!-- 第三方运用快速填充弹框end -->
      <!-- 选择资源 -->
-           <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector>
+    <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector>
   </ContentCard>
 </template>
 
@@ -1204,7 +1198,7 @@ export default {
   width: 95%;
   height: auto;
   padding: 10px;
-  border: 2px dotted darkgray;
+   border: 2px dotted darkgray;
   overflow: auto;
 }
 
@@ -1364,5 +1358,9 @@ export default {
 }
 .el-input {
     max-width: 280px;
+}
+.submitCheck {
+  margin-top: 20px;
+  margin-left: 110px;
 }
 </style>

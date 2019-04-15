@@ -32,6 +32,7 @@ export default {
      * 打开列表页面
     */
     openListPage () {
+      debugger
       this.mode = 'list'
       this.$refs.list.fetchData()// 更新页面
     },

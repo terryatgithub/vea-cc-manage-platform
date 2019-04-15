@@ -216,6 +216,7 @@ export default {
      * 获取数据
      */
   fetchData() {
+    debugger
       const filter = this.parseFilter()
       this.$service.broadcastBlockPageList(filter).then(data => {
         this.pagination.total = data.total
