@@ -3,7 +3,7 @@
 export function privatePannelInfo(data) {
     return this.fetch({
         method: 'post',
-        url: '/api/privatePannelInfo/pageList.html',
+        url: 'api/privatePannelInfo/pageList.html',
         data
     })
 }
