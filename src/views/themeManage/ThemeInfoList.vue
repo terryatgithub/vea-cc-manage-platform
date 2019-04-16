@@ -26,8 +26,8 @@
     </ContentWrapper>
 
     <!-- 大图预览 -->
-    <el-dialog title="大图预览" :visible.sync="onclickPictureVisible" width="1200px">
-      <img :src="URL" width="1100px"/>
+    <el-dialog title="大图预览" :visible.sync="onclickPictureVisible" width="70%">
+      <img :src="URL" width="100%"/>
     </el-dialog>
     <!-- 大图预览end -->
   </ContentCard>
@@ -225,7 +225,20 @@ export default {
       this.$emit('open-add-page')
     },
     editData() {
-
+      const selected = this.selected
+      if(selected.length !== 1) {
+        this.$message('只能选择一条数据')
+        return false
+      }
+      const data = this.table.data
+      const status = data.find(item => {
+        return item.themeId === selected[0]
+      }).themeStatus
+      if(status === 4) {
+        this.$alert('审核通过的数据无法编辑！', '操作提示')
+        return false
+      }
+      this.$emit('open-add-page', selected[0])
     },
     batchDel() {
       const selected = this.selected.join(',')
@@ -264,14 +277,14 @@ export default {
     },
     // 预览主题
     themeInfoPreview(id) {
-      this.$service.themeInfoDetail({ id }).then(dataAll => {
-        console.log('预览数据', dataAll);
+      this.$service.themeInfoDetail({ id }).then(data => {
+        this.$emit('open-preview-page', data)
       })
     },
     // 副本
     duplicatePreview(id, version) {
-      this.$service.themeInfoDetail({ id, version }).then(dataAll => {
-        console.log('预览数据', dataAll);
+      this.$service.themeInfoDetail({ id, version }).then(data => {
+        this.$emit('open-preview-page', data)
       })
     }
   },
