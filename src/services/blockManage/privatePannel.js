@@ -16,10 +16,10 @@ export function getDictType(params) {
     })
 }
 /**历史版本 */
-export function getHistoryView(params) {
+export function getHistory(params) {
     return this.fetch({
         method: 'get',
-        url: 'api/privatePannelInfo/editHistory.html',
+        url: 'api/v1/hvi/historyList.html',
         params
     })
 }

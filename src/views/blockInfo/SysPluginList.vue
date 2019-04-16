@@ -71,6 +71,22 @@ export default {
           {
             label: '功能名称',
             prop: 'pluginName',
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.priviewData(row)
+                    }
+                  }
+                },
+                row.pluginName
+              )
+            }
           },
           {
             label: '内容源',
@@ -139,14 +155,14 @@ export default {
             label: '更新时间',
             prop: 'lastUpdateDate'
           },
-          {
-            label: '操作',
-            width: '200',
-            fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              priviewData: '预览'
-            })
-          }
+          // {
+          //   label: '操作',
+          //   width: '200',
+          //   fixed: 'right',
+          //   render: utils.component.createOperationRender(this, {
+          //     priviewData: '预览'
+          //   })
+          // }
         ],
         data: [],
         selected: [],
@@ -182,7 +198,7 @@ export default {
       // this.$emit('openAddPage', row.pluginId)
     },
     //详情
-    priviewData({row}){
+    priviewData(row){
       this.$emit('open-view-page', row.pluginId)
     },
     //表格操作
