@@ -19,13 +19,7 @@
           <div>{{form.cornerStatus}}</div>
         </el-form-item>
       </el-form>
-      <div class="global_icon_actions">
-        <el-button type="primary" @click="toEdit" v-if="form.cornerStatus == '审核不通过'">编辑</el-button>
-        <el-button type="primary" @click="toDelete" v-if="form.cornerStatus == '审核不通过'">删除</el-button>
-        <el-button type="primary" @click="handleSubmit" v-if="form.cornerStatus == '待审核'" >审核</el-button>
-         <el-button type="primary" @click="cancelSubmit" v-if="form.cornerStatus == '待审核'" >撤销审核</el-button>
-      </div>
-      <!-- <AuditDetailButton
+      <AuditDetailButton
         :id="id"
         :version="version"
         :type="type"
@@ -34,10 +28,7 @@
         :menuElId="menuElId"
         @go-edit-Page="goEditPage"
         @delete-item="deleteItem"
-      ></AuditDetailButton> -->
-      <el-dialog title="审核" :visible.sync="dialogPLVisible" :before-close="handleDialogClose">
-        <GlobalIconAudit @auditForm="submitForm" @cancle="cancle" ref="auditForm"></GlobalIconAudit>
-      </el-dialog>
+      ></AuditDetailButton>
     </div>
   </ContentCard>
 </template>
@@ -45,71 +36,56 @@
 <script>
 import { Upload } from 'admin-toolkit'
 import GlobalIconAudit from './GlobalIconAudit'
+import AuditDetailButton from './../../components/AuditDetailButton'
 export default {
   components: {
     Upload,
     GlobalIconAudit,
+     AuditDetailButton
   },
   data() {
     return {
       form: {},
       dialogPLVisible: false,
-      // id: null,
-      // version: '',
-      // type: 'icon',
-      // status: null,
-      // menuElId: 'globalCornerIcon',
-      // notContainBtn: ['claim', 'unclaim', 'copy']
+      id: null,
+      version: '',
+      type: 'icon',
+      status: null,
+      menuElId: 'globalCornerIcon',
+      notContainBtn: ['claim', 'unclaim', 'copy']
     }
   },
-  // props: {
-  //   viewData: Object
-  // },
   props: {
-    viewId: Number
+    viewData: Object
   },
   methods: {
     getDetailInfo() {
-      this.$service.getDetailInfo({ id: this.viewId }).then(data => {
+      this.$service.getDetailInfo({ id: this.viewData.cornerIconId }).then(data => {
         console.log(data)
         this.form = data
         this.form.cornerStatus = this.paraNumToNam(this.form.cornerStatus)
       })
     },
     paraNumToNam(status) {
-      const statusMap = ['无效', '审核通过', '待审核', '审核不通过']
+      const statusMap = ['下架', '上架', '草稿', '待审核','审核通过','审核不通过']
       const cornerStatus = statusMap[status]
       return cornerStatus
     },
-    //跳转到编辑
-    toEdit() {
-      this.$emit('open-add-page', this.viewId)
+    goEditPage() {
+      this.$emit('open-add-page', this.viewData.cornerIconId)
     },
-    // goEditPage() {
-    //   this.$emit('open-add-page', this.viewData.cornerIconId)
-    // },
-    //删除
-    toDelete() {
+    deleteItem() {
       if (window.confirm('确定要删除吗')) {
-          this.$service
-            .globalCornerIconRemove({ id: this.viewId }, '删除成功')
-            .then(data => {
-              this.$emit('open-list-page')
-            })
-        }
+        this.$service
+          .globalCornerIconRemove(
+            { id: this.viewData.cornerIconId },
+            '删除成功'
+          )
+          .then(data => {
+            this.$emit('open-list-page')
+          })
+      }
     },
-    // deleteItem() {
-    //   if (window.confirm('确定要删除吗')) {
-    //     this.$service
-    //       .globalCornerIconRemove(
-    //         { id: this.viewData.cornerIconId },
-    //         '删除成功'
-    //       )
-    //       .then(data => {
-    //         this.$emit('open-list-page')
-    //       })
-    //   }
-    // },
     handleSubmit() {
       this.dialogPLVisible = true
     },
@@ -131,15 +107,6 @@ export default {
           auditDesc: auditDesc
         }
       )
-
-        // .batchAudit(
-        //   {
-        //     idStr: this.viewId,
-        //     auditFlag: data.auditFlag,
-        //     auditDesc: data.auditDesc
-        //   },
-        //   '审核成功'
-        // )
         .then(data => {
           this.$emit('open-list-page')
           this.$refs.auditForm.cancle()
@@ -157,6 +124,8 @@ export default {
   created() {
     this.title = '预览'
     this.getDetailInfo()
+     this.id = this.viewData.cornerIconId
+      this.status = this.viewData.cornerStatus
   }
 }
 </script>

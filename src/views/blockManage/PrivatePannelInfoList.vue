@@ -74,7 +74,23 @@ export default {
           {
             label: '名称',
             prop: 'pannelGroupRemark',
-            width: '100'
+            width: '100',
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.openReview(row)
+                    }
+                  }
+                },
+                row.pannelGroupRemark
+              )
+            }
           },
           {
             label: '业务分类',
@@ -108,7 +124,23 @@ export default {
           {
             label: '待审核副本',
             prop: 'duplicateVersion',
-            width: '90'
+            width: '90',
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.openReview(row)
+                    }
+                  }
+                },
+                row.duplicateVersion
+              )
+            }
           },
           {
             label: '更新时间',
@@ -154,11 +186,55 @@ export default {
       return filter
     },
     //新增
-    addTabInfo() {},
+    addTabInfo() {
+      this.$emit('open-add-page', null)
+    },
     //编辑
-    editData() {},
+    editData() {
+      var that = this
+      if(that.selected.length==0) {
+        that.$message('请选择一条数据')
+      } else if (that.selected.length >1){
+        that.$message('只能选择一条数据')
+      } else {
+        for (var j = 0; j < that.table.data.length; j++) {
+            if (that.selected[0] == that.table.data[j].pannelGroupId) {
+              if (that.table.data[j].pannelStatus == 2) {
+             that.$emit('open-add-page', that.selected[0])
+              } else {
+                that.$message('该状态不允许编辑')
+              }
+            }
+          }
+      }
+    },
     //删除
-    batchDel() {},
+    batchDel() {
+      debugger
+      var that = this
+      if(that.selected.length ==0 ) {
+        that.$message('未选中记录')
+      } else {
+        const ids = that.selected
+        for(var i=0;i<ids.length;i++) {
+          for(var j=0;j<that.table.data.length;j++) {
+            if(ids[i] == that.table.data[j].pannelGroupId) {
+              //待审核不能删除
+              if(that.table.data[j].pannelStatus==3) {
+                that.$message('待审核状态下不允许删除')
+              } else {
+                that.$service.remove({id: ids.join(',')}, '删除成功').then(data => {
+                  that.fetchData()
+                })
+              }
+            }
+          }
+        }
+      }
+    },
+    openReview(row) {
+      this.$emit('open-view-page',row)
+    },
     //查询
     handleFilterChange(type) {
       if (type === 'query') {
@@ -181,10 +257,10 @@ export default {
       this.fetchData()
     },
     //获取业务分类
-    getBusinessType() {
-      return this.$service.getBusinessType().then(data => {
+    getDictType() {
+      return this.$service.getDictType().then(data => {
         data.forEach(element => {
-          this.pannelCategories[element.dictCnName] = element.dictId
+          this.pannelCategories[element.label] = element.id
         })
       })
     },
@@ -302,10 +378,11 @@ export default {
       this.filter = Object.assign({}, dataList.filter)
       this.table = dataList.table
     }
-    this.fetchData()
-    this.getBusinessType().then(() => {
+ 
+    this.getDictType().then(() => {
       this.filterSchema = filterSchema
     })
+       this.fetchData()
   }
 }
 </script>

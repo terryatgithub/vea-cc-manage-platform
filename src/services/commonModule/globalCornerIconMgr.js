@@ -5,6 +5,14 @@ export function getGlobalMgrList(params) {
         method: 'get',
         url: 'api/v1/cornerIcon/pageList.html',
         params
+    }) 
+}
+//获取角标分类
+export function getCornerTypes(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/v1/cornerIconType/getCornerTypes.html',
+        params
     })
 }
 //角标类别

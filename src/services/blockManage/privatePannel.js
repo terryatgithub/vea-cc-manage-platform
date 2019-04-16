@@ -7,3 +7,46 @@ export function privatePannelInfo(data) {
         data
     })
 }
+/**获取数据字典 */
+export function getDictType(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/dict/businessType.html',
+        params
+    })
+}
+/**历史版本 */
+export function getHistoryView(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/privatePannelInfo/editHistory.html',
+        params
+    })
+}
+/**编辑 */
+export function getEditData(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/privatePannelInfo/edit.html',
+        params
+    }).then(data => {
+        return JSON.parse(data.match(/initData = (\{.+\})/)[1])
+    })
+}
+/**保存 */
+export function privatePanelUpsert(data) {
+    return this.fetch({
+        method: 'post',
+        url: 'api/privatePannelInfo/save.html',
+        data
+    })
+}
+
+/**批量删除 */
+export function remove(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/panel/remove.html',
+        params
+    })
+}

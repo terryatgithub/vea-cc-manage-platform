@@ -12,7 +12,6 @@
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="deleteData">删除</el-button>
         <el-button type="primary" icon="el-icon-edit-outline" @click="batchHandle">批量审核</el-button>
-        <!-- <el-button type="primary" v-model="checkAll" @click="selectAllOne">全选/全不选</el-button> -->
         <el-button type="primary" @click="changePriority">调整优先级</el-button>
       </div>
       <Table
@@ -77,9 +76,12 @@ export default {
       dialogPLVisible: false,
       dialogLevelVisible: false,
       cornerStatuses: {
-        审核通过: 1,
-        待审核: 2,
-        审核不通过: 3
+        下架: 0,
+        上架: 1,
+        草稿: 2,
+        待审核: 3,
+        审核通过: 4,
+        审核不通过: 5
       },
       typePositions: {
         左上: 0,
@@ -149,16 +151,23 @@ export default {
               //0:
               switch (row.cornerStatus) {
                 case 0:
-                  return '无效'
+                  return '下架'
                   break
                 case 1:
-                  return '审核通过'
+                  return '上架'
                   break
                 case 2:
-                  return '待审核'
+                  return '草稿'
                   break
                 case 3:
+                  return '待审核'
+                  break
+                case 4:
+                  return '审核通过'
+                  break
+                case 5:
                   return '审核不通过'
+                  break
               }
             }
           }
@@ -182,7 +191,7 @@ export default {
     parseFilter() {
       const { filter, pagination } = this
       if (pagination) {
-         filter.idPrefix = '10' //10:酷开数据;11:其他地方。默认酷开
+        filter.idPrefix = '10' //10:酷开数据;11:其他地方。默认酷开
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
@@ -254,26 +263,14 @@ export default {
     handleDialogClose() {
       this.$refs.auditForm.cancle()
     },
-    //全选/全不选
-    selectAllOne() {
-      if (this.checkAll == false) {
-        this.checkAll = true
-      } else {
-        this.checkAll = false
-      }
-      this.handleAllRowSelectionChange(this.checkAll)
-    },
     changePriority() {
       this.dialogLevelVisible = true
     },
-    // handelLevel(){
-
-    // },
     //预览
     openReview(row) {
       console.log(row)
-      this.$emit('open-view-page', row.cornerIconId)
-      //  this.$emit('open-view-page', row)
+      // this.$emit('open-view-page', row.cornerIconId)
+      this.$emit('open-view-page', row)
     },
     //查询
     handleFilterChange(type) {
@@ -374,16 +371,14 @@ export default {
           label: 0
         }
       }),
-      typePosition: _.o
-        .enum(this.typePositions)
-        .other('form', {
-          component: 'Select',
-          placeholder: '角标位置',
-          cols: {
-            item: 3,
-            label: 0
-          }
-        }),
+      typePosition: _.o.enum(this.typePositions).other('form', {
+        component: 'Select',
+        placeholder: '角标位置',
+        cols: {
+          item: 3,
+          label: 0
+        }
+      }),
       attributeCode: _.o.enum(this.attributeTypes).other('form', {
         component: 'Select',
         placeholder: '角标类别',
@@ -419,7 +414,7 @@ export default {
         this.filterSchema = filterSchema
       })
     }) //获取角标分类
-    
+
     //角标类别
   }
 }

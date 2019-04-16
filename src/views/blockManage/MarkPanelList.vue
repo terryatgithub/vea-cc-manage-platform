@@ -68,7 +68,23 @@ export default {
           {
             label: '名称',
             prop: 'pannelGroupRemark',
-            width: '100'
+            width: '100',
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.preview(row)
+                    }
+                  }
+                },
+                row.pannelGroupRemark
+              )
+            }
           },
           {
             label: '业务分类',
@@ -142,13 +158,6 @@ export default {
           {
             label: '更新时间',
             prop: 'lastUpdateDate'
-          },
-          {
-            label: '操作',
-            fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              preview: '预览'
-            })
           }
         ],
         data: [],
@@ -207,7 +216,7 @@ export default {
       }
     },
     /**预览 */
-    preview({ row }) {
+    preview(row) {
       this.$emit('open-view-page', row.pannelGroupId)
     },
     /**获取业务分类 */

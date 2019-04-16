@@ -2,8 +2,8 @@
   <div>
     <GlobalCornerIconList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></GlobalCornerIconList>
     <GlobalCornerIconAdd v-if="model === 'add'" :editId="editId"  @open-list-page="openListPage" @go-back="goBack"></GlobalCornerIconAdd>
-    <GlobalCornerIconView v-if="model ==='view'" :viewId="viewId" @open-list-page="openListPage" @open-add-page="openAddPage" @go-back="goBack"></GlobalCornerIconView>
-    <!-- <GlobalCornerIconView v-if="model ==='view'" :viewData="viewData" @open-list-page="openListPage" @open-add-page="openAddPage" @go-back="goBack"></GlobalCornerIconView> -->
+    <!-- <GlobalCornerIconView v-if="model ==='view'" :viewId="viewId" @open-list-page="openListPage" @open-add-page="openAddPage" @go-back="goBack"></GlobalCornerIconView> -->
+    <GlobalCornerIconView v-if="model ==='view'" :viewData="viewData" @open-list-page="openListPage" @open-add-page="openAddPage" @go-back="goBack"></GlobalCornerIconView>
   </div>
 </template>
 <script>
@@ -20,8 +20,8 @@ export default {
     return {
       model: 'list',
       editId: null,
-      viewId: null,
-      // viewData: {}
+      // viewId: null,
+      viewData: {}
     }
   },
   methods: {
@@ -42,9 +42,14 @@ export default {
     /**
      * 打开预览页面
      */
-    openViewPage(id) {
+    // openViewPage(id) {
+    //   this.model = 'view'
+    //    this.viewId = id
+    //   //this.viewData = row
+    // },
+    openViewPage(data) {
       this.model = 'view'
-       this.viewId = id
+       this.viewData = data
       //this.viewData = row
     },
     /**

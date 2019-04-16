@@ -21,11 +21,11 @@
             <el-radio v-model="form.pannelList[0].pannelResource" label="o_tencent">腾讯</el-radio>
             <el-radio v-model="form.pannelList[0].pannelResource" label="o_iqiyi">爱奇艺</el-radio>
           </el-form-item>
-          <el-form-item label>
+        </el-form>
+        <div style="padding: 10px;text-align:right">
             <el-button type="warning" @click="submitStart">提交审核</el-button>
             <el-button type="primary" @click="submitEnd">保存草稿</el-button>
-          </el-form-item>
-        </el-form>
+         </div>
         <!--提交审核弹窗-->
         <el-dialog :visible.sync="dialogTableVisible">
           <el-form ref="submitForm" :model="submitForm" :rules="submitRules" label-width="100px">
