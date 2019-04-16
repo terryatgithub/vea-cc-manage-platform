@@ -42,8 +42,8 @@
       <el-form-item label="选择板块">
         <el-button type="primary" @click="isShowPannelInfoList=true">添加板块</el-button>
       </el-form-item>
-      <el-form-item label="优先级" :min='1'>
-        <el-input-number v-model="form.priority"/><span>注：数值越大优先级越高，数值越小优先级越低</span>
+      <el-form-item label="优先级">
+        <el-input-number v-model="form.priority" :min="1"/><span>注：数值越大优先级越高，数值越小优先级越低</span>
       </el-form-item>
     </el-form>
     <div class="table">
@@ -190,8 +190,9 @@ export default {
             },
             pannelJson: this.table.data
           }
-          this.$service.saveFilmDetailPage({jsonStr: JSON.stringify(jsonStr)}, '保存成功')
-          this.$emit('open-list-page')
+          this.$service.saveFilmDetailPage({jsonStr: JSON.stringify(jsonStr)}, '保存成功').then(() => {
+            this.$emit('open-list-page')
+          })
         }else {
           this.$message('请将表单填写完整')
           return
