@@ -172,6 +172,9 @@ export default {
   created() {
     if (this.editId) {
       this.title = '编辑页面'
+      this.$service.themeInfoDetail({ id:this.editId }).then(data => {
+        
+      })
     } else {
       this.title = '新增页面'
     }
