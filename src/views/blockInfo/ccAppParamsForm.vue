@@ -149,7 +149,7 @@ export default {
     }  
 }
 </script>
-<style>
+<style <style lang="stylus" scoped>
 .app-extend-params .el-form-item,
 .app-extend-params .el-form-item__label,
 .app-extend-params .el-form-item__content {

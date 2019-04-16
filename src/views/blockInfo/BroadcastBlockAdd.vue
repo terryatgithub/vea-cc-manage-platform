@@ -189,12 +189,13 @@
 
         <div v-if="normalForm.sign === 'manualSet'">
             <el-form-item label="打开方式">
-              <el-select value="第三方应用" style="max-width:280px">
+              <el-select value="第三方应用" class="thirdApp">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
               <el-button type="primary" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
             </el-form-item>
-            <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/>
+            <AppParams prop-prefix="onclick." v-model="normalForm.onclick"></AppParams>
+            <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
         </div>
       </el-form>
     </div>
@@ -292,12 +293,13 @@
         </div>
         <div v-if="lowerForm.coverType === 'custom'">
             <el-form-item label="打开方式">
-              <el-select value="第三方应用" style="max-width:280px">
+              <el-select value="第三方应用" class="thirdApp">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
               <el-button type="primary" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
             </el-form-item>
-            <ccAppParamsForm ref="openWayLower" prop-prefix="onclick." v-model="lowerForm.onclick"/>
+             <AppParams prop-prefix="onclick." v-model="lowerForm.onclick" ref="openWayLower"></AppParams>
+            <!-- <ccAppParamsForm ref="openWayLower" prop-prefix="onclick." v-model="lowerForm.onclick"/> -->
         </div>
         
       </el-form>
@@ -354,8 +356,8 @@ import BroadcastSource from '@/components/BroadcastSource'
 import ResourceSelector from '@/components/ResourceSelector'
 import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
-import ccAppParamsForm from '@/views/blockInfo/ccAppParamsForm'
 import selectClick from '@/views/blockInfo/selectClick'
+import { AppParams } from 'admin-toolkit'
 
 export default {
   components: {
@@ -364,8 +366,8 @@ export default {
     ResourceSelector,
     DialogPicture,
     DialogCorner,
-    ccAppParamsForm,
-    selectClick
+    selectClick,
+    AppParams
   },
 
   props: {
@@ -619,13 +621,29 @@ export default {
     },
     // 第三方应用快速填充
     getClickData(data) {
-      debugger
       this.clickData = data
-      console.log(this.clickData);
+      let params = JSON.parse(data.params) 
+      let keys = Object.keys(params)
+      let paramsArr = keys.reduce((result, current, index) => {
+         var obj = {}
+         obj.key = current
+         obj.value = params[current]
+         result.push(obj)
+         return result
+      },[])
+      let o ={
+                packagename: data.packagename,
+                versioncode: data.versioncode,
+                dowhat: data.dowhat,
+                bywhat: data.bywhat,
+                byvalue: data.byvalue,
+                params: paramsArr,
+                exception: data.exception
+        }
+      this[this.onclickEventVisibleFlag+"Form"]['onclick'] = o;
     },
     // 自动填写表单
     autoWriteFun: function() {
-    //  debugger
       this.autoWrite = !this.autoWrite
       if (this.autoWrite === false) {
         this.normalForm = Object.assign({}, this.versionForm)
@@ -1071,7 +1089,7 @@ export default {
 
     // 快速填充
     lowerFill: function() {
-      //debugger
+
       var newForm = Object.assign({}, this.normalVersionContent[0])
       this.lowerForm = newForm
     },
@@ -1130,8 +1148,10 @@ export default {
               resultObj.parentType = 'Block'
               console.log('resultObj',resultObj)
 
-              _this.$service.saveBlockInfo(resultObj)
-              _this.$emit('open-list-page')
+              _this.$service.saveBlockInfo(resultObj,'提交成功').then(() => {
+                   _this.$emit('open-list-page')
+              })
+             
             })
           })
         } else {
@@ -1362,5 +1382,9 @@ export default {
 .submitCheck {
   margin-top: 20px;
   margin-left: 110px;
+}
+.thirdApp {
+  max-width:280px;
+  margin-right :10px;
 }
 </style>

@@ -32,7 +32,6 @@ export default {
      * 打开列表页面
     */
     openListPage () {
-      debugger
       this.mode = 'list'
       this.$refs.list.fetchData()// 更新页面
     },
@@ -40,7 +39,7 @@ export default {
      * 新增编辑里面的返回事件
     */
     goBack () {
-      this.list = 'list'
+      this.mode = 'list'
     }
   }
 };

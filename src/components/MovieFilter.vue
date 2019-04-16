@@ -390,7 +390,6 @@ export default {
              return h('el-button',{
                 on: {
                   'click': (event)=> {
-                    debugger
                      event.stopPropagation()
                      this.selectSingle(r)
                   }
@@ -423,7 +422,6 @@ export default {
 
   methods: {
     rowClick(params) {
-      debugger;
        if (this.multi === 'single') {
          this.$emit("row-click",params)
        }
