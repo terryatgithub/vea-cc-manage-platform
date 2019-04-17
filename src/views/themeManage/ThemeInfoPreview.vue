@@ -15,6 +15,8 @@
       <el-button v-if="themeStatus === 2 || themeStatus === 3 || themeStatus === 5" type="primary">审核</el-button>
       <el-button v-else type="warning">创建副本</el-button>
     </div>
+
+    <HistoryTool :themeId="themeInfo.themeId" type="theme" @change="changeVersion"/>
     <!--操作btn end-->
     <div class="split-bar">
       <i class="el-icon-edit">基本信息</i>
@@ -62,8 +64,11 @@
 </template>
 
 <script>
+import HistoryTool from '@/components/HistoryTool'
 export default {
-  components: {},
+  components: {
+    HistoryTool
+  },
 
   props: {
     themeInfo: Object
