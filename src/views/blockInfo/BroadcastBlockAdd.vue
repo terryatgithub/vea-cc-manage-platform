@@ -4,12 +4,20 @@
       基本信息
     </div>
     <el-form :model="basicForm" ref="basicForm" label-width="100px" class="demo-ruleForm">
+      <el-form-item label="历史版本" v-if="disabled">
+        <el-select v-for="(h, index) in historyList" :key="index">
+          <el-option :label ="h" :value="index"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="审核状态" v-if="disabled">
+         {{status}}
+      </el-form-item>
       <el-form-item
         label="推荐位名称"
         prop="containerName"
         :rules="[{required: true, message:'请输入控件名称', trigger: 'blur'}]"
       >
-        <el-input v-model="basicForm.containerName"></el-input>
+        <el-input v-model="basicForm.containerName" :disabled="disabled"></el-input>
       </el-form-item>
       <el-form-item label="推荐位类型">
         <el-select v-model="basicForm.containerType">
@@ -17,9 +25,9 @@
         </el-select>
       </el-form-item>
       <el-form-item label="配置模式">
-        <el-radio-group v-model="basicForm.configModel" @change.native.prevent="modelChange">
-          <el-radio label="broadcast">轮播模式</el-radio>
-          <el-radio label="group">组合模式</el-radio>
+        <el-radio-group v-model="basicForm.configModel" @change.native.prevent="modelChange" >
+          <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio>
+          <el-radio label="group" :disabled="disabled">组合模式</el-radio>
         </el-radio-group>
       </el-form-item>
       
@@ -39,6 +47,7 @@
         v-if="basicForm.configModel === 'group' "
         type="primary"
         style="float: right;"
+        :disabled="disabled"
         @click.native="selectResource('normal', 'normalForm', 'multiSelect')"
       >批量选择资源</el-button>
     </div>
@@ -77,8 +86,8 @@
             <span>{{normal.title}}</span>
           </el-card>
         </draggable>
-        <el-card style="cursor: pointer;">
-          <span class="add-version" @click="addNormal">+添加资源</span>
+        <el-card style="cursor: pointer;" v-if="!disabled">
+          <span class="add-version" @click="addNormal" >+添加资源</span>
         </el-card>
       </el-row>
 
@@ -97,26 +106,13 @@
           prop="thirdIdOrPackageName"
           style="width: 400px"
         >
-             <el-button v-if="autoWrite" type="primary" v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', 'normalForm')">选择资源</el-button>
-          <!-- <ResourceSelector
-            v-if="basicForm.configModel === 'broadcast'"
-            title="选择资源"
-            muti="single"
-            :filterItems="['broadcast']"
-            @confirm-click="resourceConfirm($event, normalForm)"
-          >选择资源</ResourceSelector>
-          <ResourceSelector
-            v-if="autoWrite&&basicForm.configModel === 'group'"
-            title="选择资源"
-            muti="single"
-            :filterItems="['video', 'edu', 'live', 'broadcast']"
-            @confirm-click="resourceConfirm($event, normalForm)"
-          >选择资源</ResourceSelector> -->
+             <el-button v-if="autoWrite"  :disabled="disabled" type="primary" v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', 'normalForm')">选择资源</el-button>
           <el-input
             v-if="!autoWrite"
             v-model="normalForm.thirdIdOrPackageName"
             style="float: left"
             @blur="getUrlBlur"
+            :disabled="disabled"
           ></el-input>
           <el-tag
             type="success"
@@ -124,9 +120,9 @@
           >已选择：{{normalForm.thirdIdOrPackageName}}</el-tag>
           <a
             class="write-play"
-            v-if="autoWrite && basicForm.configModel === 'group' "
+            v-if="autoWrite && basicForm.configModel === 'group' && !disabled "
             href="#"
-            @click="autoWriteFun"
+            @click="autoWriteFun" 
           >手动填写播放串</a>
           <a
             class="write-play"
@@ -138,13 +134,13 @@
         </el-form-item>
         <div v-if="basicForm.configModel === 'group'">
           <el-form-item label="指定子频道" prop="subchannelId" v-if="normalForm.subchannelIs">
-            <el-input v-model="normalForm.subchannelId" @blur="getSubchannel(normalForm)"></el-input>
+            <el-input v-model="normalForm.subchannelId" @blur="getSubchannel(normalForm)" :disabled="disabled"></el-input>
           </el-form-item>
           <el-form-item label="标题" prop="title">
-            <el-input v-model="normalForm.title" @blur="getTitleNormal"></el-input>
+            <el-input v-model="normalForm.title" @blur="getTitleNormal" :disabled="disabled"></el-input>
           </el-form-item>
           <el-form-item label="副标题" prop="subTitle">
-            <el-input v-model="normalForm.subTitle"></el-input>
+            <el-input v-model="normalForm.subTitle" :disabled="disabled"></el-input>
           </el-form-item>
         </div>
         <el-form-item label="海报" prop="poster.pictureUrl">
@@ -182,8 +178,8 @@
 
         <el-form-item label="点击事件" prop="sign" v-if="basicForm.configModel === 'group'">
           <el-radio-group v-model="normalForm.sign" :disabled="signDisabled" size="mini">
-            <el-radio label="autoSet">自动生成</el-radio>
-            <el-radio label="manualSet">手动设置</el-radio>
+            <el-radio label="autoSet" :disabled="disabled">自动生成</el-radio>
+            <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -192,7 +188,7 @@
               <el-select value="第三方应用" class="thirdApp">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
-              <el-button type="primary" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
+              <el-button type="primary" :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
             </el-form-item>
             <AppParams prop-prefix="onclick." v-model="normalForm.onclick"></AppParams>
             <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
@@ -206,7 +202,7 @@
         v-if="basicForm.configModel === 'group'"
         style="display: inline-block;margin-left: 14px;"
       >
-        <el-button @click="lowerFill" type="primary" style="margin-right: 10px">快速填充</el-button>
+        <el-button @click="lowerFill" type="primary" style="margin-right: 10px" :disabled="disabled">快速填充</el-button>
         <span>使用正常版本的第一个资源，快速配置</span>
       </div>
     </div>
@@ -220,9 +216,9 @@
       >
         <el-form-item label="资源类别" prop="coverType">
           <el-radio-group v-model="lowerForm.coverType" @change="cleanLowerForm">
-            <el-radio label="media">媒体资源</el-radio>
-            <el-radio label="app">应用</el-radio>
-            <el-radio label="custom">自定义</el-radio>
+            <el-radio label="media" :disabled="disabled">媒体资源</el-radio>
+            <el-radio label="app" :disabled="disabled">应用</el-radio>
+            <el-radio label="custom" :disabled="disabled">自定义</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
@@ -230,29 +226,23 @@
           prop="thirdIdOrPackageName"
           v-if="lowerForm.coverType === 'media' || lowerForm.coverType === 'app' "
         >
-          <!-- <ResourceSelector
-            title="选择资源"
-            muti="single"
-            :filterItems="['video', 'edu', 'live', 'topics', 'broadcast']"
-            @confirm-click="resourceConfirm($event, lowerForm)"
-            >选择资源</ResourceSelector> -->
-            <el-button type="primary"  v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', 'lowerForm')">选择资源</el-button>
+            <el-button type="primary" :disabled="disabled"  v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', 'lowerForm')">选择资源</el-button>
           <el-tag
             type="success"
             v-if="lowerForm.thirdIdOrPackageName"
           >已选择：{{lowerForm.thirdIdOrPackageName}}</el-tag>
         </el-form-item>
         <el-form-item label="指定子频道" prop="subchannelId" v-if="lowerForm.subchannelIs">
-          <el-input v-model="lowerForm.subchannelId" @blur="getSubchannel(lowerForm)"></el-input>
+          <el-input v-model="lowerForm.subchannelId" :disabled="disabled"  @blur="getSubchannel(lowerForm)"></el-input>
         </el-form-item>
         <el-form-item v-if="lowerForm.smallTopicsIs" label="指定小专题" prop="smallTopicsId">
-          <el-input v-model="lowerForm.smallTopicsId" @blur="smallTopicsLower"></el-input>
+          <el-input v-model="lowerForm.smallTopicsId" :disabled="disabled" @blur="smallTopicsLower"></el-input>
         </el-form-item>
         <el-form-item label="标题" prop="title">
-          <el-input v-model="lowerForm.title"></el-input>
+          <el-input v-model="lowerForm.title" :disabled="disabled"></el-input>
         </el-form-item>
         <el-form-item label="副标题" prop="subTitle">
-          <el-input v-model="lowerForm.subTitle"></el-input>
+          <el-input v-model="lowerForm.subTitle" :disabled="disabled"></el-input>
         </el-form-item>
         <el-form-item
           label="海报"
@@ -288,7 +278,7 @@
         </el-form-item>
         <div v-if="lowerForm.coverType === 'media' || lowerForm.coverType === 'app'">
           <el-form-item label="应用版本号" prop="versionCode">
-            <el-input v-model="lowerForm.versionCode"></el-input>
+            <el-input v-model="lowerForm.versionCode" :disabled="disabled"></el-input>
           </el-form-item>
         </div>
         <div v-if="lowerForm.coverType === 'custom'">
@@ -296,7 +286,7 @@
               <el-select value="第三方应用" class="thirdApp">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
-              <el-button type="primary" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
+              <el-button type="primary" :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
             </el-form-item>
              <AppParams prop-prefix="onclick." v-model="lowerForm.onclick" ref="openWayLower"></AppParams>
             <!-- <ccAppParamsForm ref="openWayLower" prop-prefix="onclick." v-model="lowerForm.onclick"/> -->
@@ -304,8 +294,12 @@
         
       </el-form>
     </div>
-    <div class="submitCheck">
-      <el-button type="primary" @click="submitCheck">提交审核</el-button>
+    <div class="submitCheck" >
+      <el-button type="primary" v-if="!disabled"  @click="submitCheck">提交审核</el-button>
+      <!-- <AuditDetailButton v-if="disabled"
+      >
+
+      </AuditDetailButton> -->
     </div>
      
     <!-- 海报弹框  -->
@@ -357,6 +351,7 @@ import ResourceSelector from '@/components/ResourceSelector'
 import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
+import AuditDetailButton from '@/components/AuditDetailButton'
 import { AppParams } from 'admin-toolkit'
 
 export default {
@@ -367,16 +362,19 @@ export default {
     DialogPicture,
     DialogCorner,
     selectClick,
-    AppParams
+    AppParams,
+    AuditDetailButton
   },
 
   props: {
-    editId: Number,
-    //currentVersion: String,
-    default: null
+    editData: Object,
+    isReview: Boolean
   },
   data() {
     return {
+      status: null,
+      disabled: false, //是否禁用
+      historyList: [],
       onclickEventVisibleFlag: '',//标识是哪个版本的快速填充弹窗normal/lower
       clickData: undefined,//自定义快速填充单击选中的数据
       onclickEventVisible: false,//自定义快速填充弹窗
@@ -886,6 +884,7 @@ export default {
             result.push(this.packageFormParam(current))
             return result
          },this.normalVersionContent)
+         
         this[form] = this.normalVersionContent[0]
       } else {
          this[form] = this.packageFormParam(callbackData)
@@ -1009,7 +1008,7 @@ export default {
     //  debugger
       var _this = this
       this.checkNormalForm(function() {
-        _this.$message('请填充或修改当前表单的内容！')
+        //_this.$message('请填充或修改当前表单的内容！')
         _this.currentIndex = index
         _this.normalForm = _this.normalVersionContent[index]
         if (_this.normalForm.type === 'url') {
@@ -1162,19 +1161,55 @@ export default {
     },
     close: function() {
       window.parent.$('#add-view').dialog('_close')
+    },
+    getEditData(){
+      this.$service.getBroadcastBlockEditData({ id: this.editData.id, version: this.editData.currentVersion}).then((data) => {
+        this.status = this.$numToAuditStatus(data.status)
+        this.normalVersionContent = data.normalVersionContent.map((e) => {
+           let p = JSON.parse(e.params)
+           e.thirdIdOrPackageName = typeof(p.id) !== 'undefined'? p.id : p.rotateId
+           return e
+        })
+        this.normalForm = this.normalVersionContent[0] 
+        if ( typeof(JSON.parse(data.lowerVersionContent.params).id) !== 'undefined') {
+          data.lowerVersionContent.thirdIdOrPackageName = JSON.parse(data.lowerVersionContent.params).id
+        }
+        this.lowerVersionContent = this.lowerForm = data.lowerVersionContent
+        this.basicForm.configModel = data.configModel
+        this.basicForm.containerName = data.containerName
+        this.basicForm.containerType = data.containerType
+      })
+    },
+    getHistoryList(){
+      this.$service.getHistoryList({ id: this.editData.id, type: 'block'}).then((data) => {
+       data = data.rows
+       this.historyList =  data.reduce((result, current) => {
+           result.push(current.version + "/" + current.lastUpdateDate + "/" + current.modifierName + "/" + this.$numToAuditStatus(current.status))
+           return result 
+         },[])
+      })
     }
   },
   created() {
-   // debugger;
     var _this = this
     this.normalForm = Object.assign({}, this.versionForm)
-    // this.normalForm.jumpAdress = '1';
     this.lowerForm = Object.assign({}, this.versionForm)
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
-    //this.normalVersionContent.push(this.normalForm)
-
-    this.title = this.editId ? '编辑页面' : '新增页面'
+    if (this.editData !=='{}') {
+       if (this.isReview) {
+         this.title = '预览页面'
+         this.disabled = true
+         this.getHistoryList()
+       } else {
+         this.title = '编辑页面'
+         this.disabled = false
+       }
+      this.getEditData()
+    } else {
+      this.title = '新增页面'
+      this.disabled = false
+    }
     // 素材类型获取
     this.$service.getMaterialTypes().then(data => {
       var materialTypeOptions = []
@@ -1198,10 +1233,8 @@ export default {
       this.cornerIconTypeOptions = cornerIconTypeOptions
     })
   },
-  
 }
 </script>
-
 <style lang='stylus' scoped>
 .split-bar {
   width: 96%;
