@@ -8,11 +8,11 @@ export function privatePannelInfo(data) {
     })
 }
 /**获取数据字典 */
-export function getDictType(params) {
+export function getDictType(data) {
     return this.fetch({
-        method: 'get',
+        method: 'post',
         url: 'api/dict/businessType.html',
-        params
+        data
     })
 }
 /**历史版本 */
@@ -41,12 +41,21 @@ export function privatePanelUpsert(data) {
         data
     })
 }
-
 /**批量删除 */
 export function remove(params) {
     return this.fetch({
         method: 'get',
         url: 'api/panel/remove.html',
         params
+    })
+}
+/**预览 */
+export function privatePannelInfoView(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/privatePannelInfo/preview.html',
+        params
+    }).then(data => {
+        return JSON.parse(data.match(/initData = (\{.+\})/)[1])
     })
 }

@@ -14,8 +14,9 @@
     ></MarkPanelAdd>
     <MarkPanelView
       v-if="model === 'view'"
-      :viewId="viewId"
+      :viewData="viewData"
       @pen-list-page="openListPage"
+      @open-add-page="openAddPage"
       @go-back="goBack"
     ></MarkPanelView>
   </div>
@@ -34,18 +35,19 @@ export default {
     return {
       model: 'list',
       editId: null,
-      viewId: null
+      viewData: null
     }
   },
   methods: {
     /**打开新增编辑页 */
     openAddPage(id) {
+      debugger
       this.editId = id
       this.model = 'add'
     },
     /**打开详情页 */
-    openViewPage(id) {
-      this.viewId = id
+    openViewPage(data) {
+      this.viewData = data
       this.model = 'view'
     },
     /**打开列表页 */

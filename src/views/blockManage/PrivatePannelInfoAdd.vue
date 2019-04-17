@@ -8,7 +8,7 @@
         </div>
         <el-form ref="upsertForm" :model="panel" label-width="120px" :rules="rules">
           <div class="base-tit">
-            <span>基本信息</span>
+            <span class="el-icon-edit">基本信息</span>
           </div>
           <el-form-item label="业务分类">
             <el-select :value="panel.panelGroupCategory" @input="handlePanelGroupCategoryChange">
@@ -48,7 +48,7 @@
             </el-form-item>
           </template>
           <div class="base-tit">
-            <span>内容配置</span>
+            <span class="el-icon-edit">内容配置</span>
           </div>
           <el-form-item label="版块标题" prop="pannelList.0.pannelTitle" :rules="rules.pannelTitle">
             <el-input v-model="panel.pannelList[0].pannelTitle" placeholder="请输入版本标题"/>
@@ -465,5 +465,22 @@ export default {
 }
 .version-selector {
   width: 350px;
+}
+.base-info {
+  background-color: #fef8b8;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+.base-info div {
+  padding: 5px
+}
+.base-tit,
+.base-tit auditor-title  span{
+    background-color: #e6e6e6;
+    padding: 10px 2px;
+    margin: 5px 0px
+}
+.up-addlist {
+  margin: 10px 0px
 }
 </style>

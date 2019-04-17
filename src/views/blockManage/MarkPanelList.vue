@@ -217,7 +217,7 @@ export default {
     },
     /**预览 */
     preview(row) {
-      this.$emit('open-view-page', row.pannelGroupId)
+      this.$emit('open-view-page', row)
     },
     /**获取业务分类 */
     getBusinessType() {
