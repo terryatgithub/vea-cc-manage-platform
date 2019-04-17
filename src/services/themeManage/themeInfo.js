@@ -25,11 +25,20 @@ export function themeInfoDetail (params) {
     params
   })
 }
-// 历史
-export function themeInfoHistory (data) {
+// 保存
+export function savethemeInfo (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/hvi/historyList.html',
+    url: 'api/v1/theme/save.html?jsonStr=',
+    data,
+    isJSON: true
+  })
+}
+// 检查MD5
+export function checkThemeMd5 (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/themeInfo/checkThemeMd5.html',
     data
   })
 }

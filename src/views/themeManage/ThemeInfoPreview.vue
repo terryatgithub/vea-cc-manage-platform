@@ -1,7 +1,12 @@
 <template>
   <ContentCard title="预览页面" @go-back="$emit('go-back')">
 
-    <HistoryTool :id="themeInfo.themeId" type="theme" @change="changeVersion" :initialStatus="themeStatus"/>
+    <HistoryTool 
+      :id="themeInfo.themeId" 
+      type="theme" 
+      @change="changeVersion" 
+      :initialStatus="themeStatus"
+    />
     
     <div class="split-bar">
       <i class="el-icon-edit">基本信息</i>

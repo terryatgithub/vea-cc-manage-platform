@@ -1,5 +1,10 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
+    <div class="btn-save">
+      <el-button type="primary" @click="btnSave">提交审核</el-button>
+      <el-button type="warning" @click="$emit('go-back')">关闭</el-button>
+    </div>
+
     <div class="split-bar">
       <i class="el-icon-edit">基本信息</i>
     </div>
@@ -10,12 +15,12 @@
       </el-form-item>
       <el-form-item label="收费类型">
         <el-radio-group v-model="form.chargeType">
-          <el-radio label>免费</el-radio>
-          <el-radio label="pay">付费</el-radio>
-          <el-radio label="VIPfree">VIP免费</el-radio>
+          <el-radio label="0">免费</el-radio>
+          <el-radio label="1">付费</el-radio>
+          <el-radio label="2">VIP免费</el-radio>
         </el-radio-group>
       </el-form-item>
-      <div v-if="form.chargeType!==''" class="priceInput">
+      <div v-if="form.chargeType!=='0'" class="priceInput">
         <el-form-item label="价格">
           <el-input v-model="form.price"/>元
         </el-form-item>
@@ -31,6 +36,7 @@
       </el-form-item>
       <el-form-item label="皮肤APK">
         <ThemeFileUpload
+          ref="apk"
           accept="application/vnd.android.package-archive"
           fileCount="1"
           @pic-data="handleApk"
@@ -39,6 +45,7 @@
       </el-form-item>
       <el-form-item label="主题预览图">
         <ThemeFileUpload
+          ref="preview"
           accept="image/*"
           fileCount="1"
           @pic-data="handlePreviewImg"
@@ -47,6 +54,7 @@
       </el-form-item>
       <el-form-item label="主题缩略图">
         <ThemeFileUpload
+          ref="thumbImg"
           accept="image/*"
           fileCount="1"
           @pic-data="handleThumbImg"
@@ -55,6 +63,7 @@
       </el-form-item>
       <el-form-item label="图标库">
         <ThemeFileUpload
+          ref="pictureEntitys"
           accept="application/zip"
           fileCount="1"
           zipType="icon"
@@ -72,6 +81,7 @@
 
       <el-form-item label="指定背景图片">
         <ThemeFileUpload
+          ref="tabBgEntitys"
           accept="application/zip"
           fileCount="1"
           zipType="tabBg"
@@ -88,10 +98,6 @@
       </div>
     </el-form>
     
-    <div class="btn-save">
-      <el-button type="primary" @click="btnSave">提交审核</el-button>
-      <el-button type="warning" @click="$emit('go-back')">关闭</el-button>
-    </div>
   </ContentCard>
 </template>
 
@@ -111,7 +117,7 @@ export default {
     return {
       form: {
         themeName: '',
-        chargeType: '',
+        chargeType: '0',
         price: '',
         discountPrice: '',
         themeBrand: 'Coocaa',
@@ -123,27 +129,36 @@ export default {
         themeVersion: '',
         themeMd5: '',
         pictureEntitys: [],
-        tabBgEntitys: []
+        tabBgEntitys: [],
+        themeStatus: 3 // 默认待审核
       },
       rules: {
         themeName: [
           { required: true, message: '请输入主题名称', trigger: 'blur' }
         ]
-      }
+      },
+      editForm: {} // 编辑页面save的其他表单信息
     }
   },
 
   methods: {
     btnSave() {
       let form = this.form
-      if (form.chargeType === '') {
+      if (form.chargeType === '0') {
         form.price = '0'
         form.discountPrice = '0'
       }
+      const editForm = this.editForm
+      const formData = Object.assign({}, form, editForm)
+      this.$service.savethemeInfo(formData, '保存成功').then(() => {
+        this.$emit('open-list-page')
+      })
     },
     handleApk(picData) {
-      this.form.themeDownUrl = picData.url
-      this.form.themeMd5 = picData.fileMd5
+      this.$service.checkThemeMd5({ themeMd5: picData.fileMd5 }).then(() => {
+        this.form.themeDownUrl = picData.url
+        this.form.themeMd5 = picData.fileMd5
+      })
     },
     handlePreviewImg(picData) {
       this.form.previewImgUrl = picData.url
@@ -172,8 +187,65 @@ export default {
   created() {
     if (this.editId) {
       this.title = '编辑页面'
-      this.$service.themeInfoDetail({ id:this.editId }).then(data => {
-        
+      this.$service.themeInfoDetail({ id: this.editId }).then(data => {
+        const form = this.form
+        form.themeName = data.themeName
+        form.chargeType = data.chargeType.toString()
+        form.price = data.price
+        form.discountPrice = data.discountPrice
+        form.themeBrand = data.themeBrand
+
+        // apk
+        form.themeDownUrl = data.themeDownUrl
+        form.themeMd5 = data.themeMd5
+        let apkFile = {
+          name: 'file'
+        }
+        let apkFileList = this.$refs.apk.$refs.upload.fileList
+        apkFileList.push(apkFile)
+        this.$refs.apk.fileNum++
+        // preview
+        form.previewImgUrl = data.previewImgUrl
+        let previewFile = {
+          name: 'img',
+          dataUrl: data.previewImgUrl
+        }
+        let previewFileList = this.$refs.preview.$refs.upload.fileList
+        previewFileList.push(previewFile)
+        this.$refs.preview.fileNum++
+        // thumbImg
+        form.thumbImgUrl = data.thumbImgUrl
+        let thumbImgFile = {
+          name: 'img',
+          dataUrl: data.thumbImgUrl
+        }
+        let thumbImgFileList = this.$refs.thumbImg.$refs.upload.fileList
+        thumbImgFileList.push(thumbImgFile)
+        this.$refs.thumbImg.fileNum++
+        // pictureEntitys
+        form.pictureEntitys = data.pictureEntitys
+        let pictureEntitysFile = {
+          name: 'file'
+        }
+        let pictureEntitysFileList = this.$refs.pictureEntitys.$refs.upload.fileList
+        pictureEntitysFileList.push(pictureEntitysFile)
+        this.$refs.pictureEntitys.fileNum++
+        // tabBgEntitys
+        form.tabBgEntitys = data.tabBgEntitys
+        let tabBgEntitysFile = {
+          name: 'file'
+        }
+        let tabBgEntitysFileList = this.$refs.tabBgEntitys.$refs.upload.fileList
+        tabBgEntitysFileList.push(tabBgEntitysFile)
+        this.$refs.tabBgEntitys.fileNum++
+
+        form.systemDefault = data.systemDefault
+        form.themeStatus = data.themeStatus
+
+        this.editForm = {
+          themeId: data.themeId,
+          currentVersion: data.currentVersion
+        }
       })
     } else {
       this.title = '新增页面'
