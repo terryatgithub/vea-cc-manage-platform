@@ -8,7 +8,7 @@
         <AlbumPannelInfoList ref="albumPannel" :dataList="albumBlock" v-model="albumPannelData"/>
       </el-tab-pane>
       <el-tab-pane label="专属影院板块">
-        
+        <PrivatePannelInfoList :dataList="privateBlock" v-model="privatePannelData"/>
       </el-tab-pane>
     </el-tabs>
 
@@ -22,17 +22,20 @@
 <script>
 import PannelInfoList from '../blockManage/PannelInfoList'
 import AlbumPannelInfoList from '../blockManage/AlbumPannelInfoList'
+import PrivatePannelInfoList from '../blockManage/PrivatePannelInfoList'
 import _ from 'gateschema'
 export default {
   components: {
     PannelInfoList,
-    AlbumPannelInfoList
+    AlbumPannelInfoList,
+    PrivatePannelInfoList
   },
 
   data () {
     return {
       pannelData: [],
       albumPannelData: [],
+      privatePannelData: [],
       selected: [],
       contentBlock: {
         filter: {
@@ -47,6 +50,16 @@ export default {
       albumBlock: {
         filter: {
           pannelType: 3,
+          resourceIsNull: true,
+          pannelResource: 'qq',
+          multiStatus: '3,4'
+        },
+        filterSchema: {},
+        table: {}
+      },
+      privateBlock: {
+        filter: {
+          pannelType: 4,
           resourceIsNull: true,
           pannelResource: 'qq',
           multiStatus: '3,4'
@@ -121,8 +134,8 @@ export default {
 
   methods: {
     clickAdd() {
-      const { pannelData, albumPannelData } = this
-      let block = [].concat(pannelData).concat(albumPannelData)
+      const { pannelData, albumPannelData, privatePannelData } = this
+      let block = [].concat(pannelData).concat(albumPannelData).concat(privatePannelData)
       this.$emit('add-block', block)
       this.$emit('go-back')
     }
@@ -167,6 +180,8 @@ export default {
     this.contentBlock.table = Object.assign({}, this.table)
     this.albumBlock.filterSchema = filterSchema
     this.albumBlock.table = Object.assign({}, this.table)
+    this.privateBlock.filterSchema = filterSchema
+    this.privateBlock.table = Object.assign({}, this.table)
   }
 
 }

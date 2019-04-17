@@ -161,6 +161,25 @@ export default {
       }
     }
   },
+  watch: {
+    selected: {
+      handler(newVal, oldVal) {
+        const table = this.table
+        let rows = []
+        table.data.map(tableRow => {
+          if (newVal.indexOf(tableRow.pannelGroupId) > -1) {
+            let row = {
+              pannelGroupId: tableRow.pannelGroupId,
+              pannelGroupRemark: tableRow.pannelGroupRemark,
+              duplicateVersion: tableRow.duplicateVersion
+            }
+            rows.push(row)
+          }
+        })
+        this.$emit('input', rows)
+      }
+    }
+  },
   methods: {
     //初始化表格‘
     fetchData() {
@@ -192,40 +211,42 @@ export default {
     //编辑
     editData() {
       var that = this
-      if(that.selected.length==0) {
+      if (that.selected.length == 0) {
         that.$message('请选择一条数据')
-      } else if (that.selected.length >1){
+      } else if (that.selected.length > 1) {
         that.$message('只能选择一条数据')
       } else {
         for (var j = 0; j < that.table.data.length; j++) {
-            if (that.selected[0] == that.table.data[j].pannelGroupId) {
-              if (that.table.data[j].pannelStatus == 2) {
-             that.$emit('open-add-page', that.selected[0])
-              } else {
-                that.$message('该状态不允许编辑')
-              }
+          if (that.selected[0] == that.table.data[j].pannelGroupId) {
+            if (that.table.data[j].pannelStatus == 2) {
+              that.$emit('open-add-page', that.selected[0])
+            } else {
+              that.$message('该状态不允许编辑')
             }
           }
+        }
       }
     },
     //删除
     batchDel() {
       debugger
       var that = this
-      if(that.selected.length ==0 ) {
+      if (that.selected.length == 0) {
         that.$message('未选中记录')
       } else {
         const ids = that.selected
-        for(var i=0;i<ids.length;i++) {
-          for(var j=0;j<that.table.data.length;j++) {
-            if(ids[i] == that.table.data[j].pannelGroupId) {
+        for (var i = 0; i < ids.length; i++) {
+          for (var j = 0; j < that.table.data.length; j++) {
+            if (ids[i] == that.table.data[j].pannelGroupId) {
               //待审核不能删除
-              if(that.table.data[j].pannelStatus==3) {
+              if (that.table.data[j].pannelStatus == 3) {
                 that.$message('待审核状态下不允许删除')
               } else {
-                that.$service.remove({id: ids.join(',')}, '删除成功').then(data => {
-                  that.fetchData()
-                })
+                that.$service
+                  .remove({ id: ids.join(',') }, '删除成功')
+                  .then(data => {
+                    that.fetchData()
+                  })
               }
             }
           }
@@ -233,7 +254,7 @@ export default {
       }
     },
     openReview(row) {
-      this.$emit('open-view-page',row)
+      this.$emit('open-view-page', row)
     },
     //查询
     handleFilterChange(type) {
@@ -306,61 +327,38 @@ export default {
     let filterSchema = _.map({
       pannelId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: 'ID'
       }),
       pannelName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '名称'
       }),
       pannelTitle: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '标题',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '标题'
       }),
       pannelResource: _.o.enum(this.pannelResources).other('form', {
         component: 'Select',
-        placeholder: '内容源',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '内容源'
       }),
       pannelCategory: _.o.enum(this.pannelCategories).other('form', {
         component: 'Select',
-        placeholder: '业务分类',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '业务分类'
       }),
       tabName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '引用状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '引用状态'
       }),
       pannelStatus: _.o.enum(this.pannelStatus).other('form', {
         component: 'Select',
-        placeholder: '状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '状态'
       })
     }).other('form', {
+      cols: {
+        item: 6,
+        label: 0,
+        wrapper: 18
+      },
       layout: 'inline',
       footer: {
         cols: {
@@ -378,16 +376,32 @@ export default {
       this.filter = Object.assign({}, dataList.filter)
       this.table = dataList.table
     }
- 
+
     this.getDictType().then(() => {
-      this.filterSchema = filterSchema
+      this.dataList
+        ? (this.filterSchema = dataList.filterSchema)
+        : (this.filterSchema = filterSchema)
     })
-       this.fetchData()
+    this.fetchData()
   }
 }
 </script>
 <style lang="stylus" scoped>
-.btns {
-   margin-bottom: 10px;
-}
+.content >>> .content-list .filter-form .el-form
+  display inline
+.content >>> .content-list .filter-form .sf-item__label
+  width 100px
+  margin 0 10px
+  text-align center
+  border 1px solid #ddd
+  border-radius: 5px
+.content >>> .content-list .filter-form .sf-item--inline
+  margin 0
+.content >>> .el-table .cell
+  display flex
+  justify-content center
+  align-items center
+  height 40px
+.btns
+  margin 20px auto
 </style>
