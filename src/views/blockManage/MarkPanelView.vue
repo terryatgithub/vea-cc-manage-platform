@@ -4,12 +4,8 @@
       <div class="audit-tip" v-show="releaseTime">该版块为定时任务，审核通过后将于{{ releaseTime }}上线</div>
       <div id="pannelStatus">
         <el-form :inline="true">
-          <el-form-item label="版本" v-if="isShowVersion">
-            <el-select
-              v-model="versions"
-              @change="handleSelectVersion"
-              placeholder="请选择"
-            >
+          <!-- <el-form-item label="版本" v-if="isShowVersion">
+            <el-select v-model="versions" @change="handleSelectVersion" placeholder="请选择">
               <el-option
                 v-for="item in versionList"
                 :key="item.value"
@@ -17,10 +13,11 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-          </el-form-item>
-          <el-form-item>
+          </el-form-item> -->
+            <HistoryTool :id="id" :type="type" :initialStatus="status" @chenge="chengeVersion" /> 
+          <!-- <el-form-item>
             <div class="form-status">{{pannelStatus}}</div>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </div>
       <div class="base-tit">
@@ -56,19 +53,40 @@
           </tbody>
         </table>
       </div>
+      <AuditDetailButton
+        :id="id"
+        :version="version"
+        :type="type"
+        :not-contain-btn="notContainBtn"
+        :status="status"
+        :menuElId="menuElId"
+        @go-edit-Page="goEditPage"
+        @delete-item="deleteItem"
+      ></AuditDetailButton>
     </div>
   </ContentCard>
 </template>
 <script>
 var param = {}
+import AuditDetailButton from './../../components/AuditDetailButton'
+import HistoryTool from './../../components/HistoryTool'
 export default {
-  props: {
-    viewId: Number,
-    default: null
+  components: {
+    AuditDetailButton,
+    HistoryTool
+  },
+ props: {
+    viewData: Object
   },
   data() {
     return {
       title: '预览',
+      id: null,
+      version: '',
+      type: 'pannel',
+      status: null,
+      menuElId: 'pannelInfo',
+      notContainBtn: ['claim', 'unclaim', 'copy'],
       pannelType: 'pannel',
       auditHistories: [],
       blockContentProps: {},
@@ -119,37 +137,48 @@ export default {
   methods: {
     /**请求数据 */
     getViewData() {
-     return this.$service.getViewData({ id: this.viewId }).then(data => {
-         console.log(data)
-        this.buttonGroup.params = data
-        this.pannelName = data.pannelList[0].pannelName
-        this.pannelTitle = data.pannelList[0].pannelTitle
-        this.pannelResource = data.pannelList[0].pannelResource
-        this.pannelStatus = this.parasNumToStr(data.pannelList[0].pannelStatus) 
-        this.versions = data.currentVersion
-        this.clientType = data.clientType
-      })
+      return this.$service
+        .getViewData({ id: this.viewData.pannelGroupId })
+        .then(data => {
+          console.log(data)
+          this.buttonGroup.params = data
+          this.pannelName = data.pannelList[0].pannelName
+          this.pannelTitle = data.pannelList[0].pannelTitle
+          this.pannelResource = data.pannelList[0].pannelResource
+          this.pannelStatus = this.parasNumToStr(
+            data.pannelList[0].pannelStatus
+          )
+          this.versions = data.currentVersion
+          this.clientType = data.clientType
+        })
     },
     parasNumToStr(status) {
-       const methodsMap = ['下架', '上架', '草稿', '待审核', '审核通过',  '审核不通过']
-       const method = methodsMap[status]
-       return method 
+      const methodsMap = [
+        '下架',
+        '上架',
+        '草稿',
+        '待审核',
+        '审核通过',
+        '审核不通过'
+      ]
+      const method = methodsMap[status]
+      return method
     },
     //获取上架时间
     getTimedInfo() {
-        const timeObj = {
-            id: this.viewId,
-            version: this.buttonGroup.params.currentVersion,
-            type: this.pannelType
-        }
+      const timeObj = {
+        id: this.viewData.pannelGroupId,
+        version: this.buttonGroup.params.currentVersion,
+        type: this.pannelType
+      }
       this.$service.getTimedInfo(timeObj).then(data => {
         this.releaseTime = data.releaseTime
       })
     },
     getHistoryList() {
-        var that = this
+      var that = this
       const historyObj = {
-        id: that.viewId,
+        id: that.viewData.pannelGroupId,
         type: that.pannelType
       }
       that.$service.getHistoryList(historyObj).then(data => {
@@ -185,19 +214,33 @@ export default {
       })
     },
     handleSelectVersion(version) {
-        const timeObj = {
-            id: this.viewId,
-            version: version,
-            type: this.pannelType
-        }
-       this.$service.getTimedInfo(timeObj).then(data => {
-           this.releaseTime = data.releaseTime
-       })
-       this.getViewData()
-
+      const timeObj = {
+        id: this.viewData.pannelGroupId,
+        version: version,
+        type: this.pannelType
+      }
+      this.$service.getTimedInfo(timeObj).then(data => {
+        this.releaseTime = data.releaseTime
+      })
+      this.getViewData()
     },
+    goEditPage() {
+      this.$emit('open-add-page', this.viewData.pannelGroupId)
+    },
+    deleteItem() {
+      if (window.confirm('确定要删除吗')) {
+        this.$service
+          .deleteMarkPanel({ id: this.viewData.pannelGroupId }, '删除成功')
+          .then(data => {
+            this.$emit('open-list-page')
+          })
+      }
+    }
   },
   created() {
+    this.id = this.viewData.pannelGroupId
+    this.status = this.viewData.pannelStatus
+    this.version = this.viewData.currentVersion
     this.getViewData().then(() => {
       this.getTimedInfo()
     })
@@ -207,9 +250,9 @@ export default {
 </script>
 <style  scoped>
 .form-status {
-    background-color: #409eff;
-    padding: 0px 5px;
-    color: #fff
+  background-color: #409eff;
+  padding: 0px 5px;
+  color: #fff;
 }
 </style>
 

@@ -16,6 +16,7 @@
       v-if="model === 'view'"
       :viewData="viewData"
       @open-list-page="openListPage"
+       @open-add-page="openAddPage"
       @go-back="goBack"
     ></PrivatePannelInfoView>
   </div>
