@@ -242,7 +242,10 @@ export default {
     },
     batchDel() {
       const selected = this.selected.join(',')
-      this.$service.themeInfoRemove({id: selected})
+      this.$service.themeInfoRemove({id: selected}).then(() => {
+        this.selected = []
+        this.fetchData()
+      })
     },
     /**
      * 行选择操作
