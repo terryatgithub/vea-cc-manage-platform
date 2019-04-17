@@ -9,15 +9,19 @@
       </div>
       <div class="operate-box__status">{{statusName}}</div> 
     </div>
-    <el-button v-if="themeStatus === 0" type="primary">上架</el-button>
-    <el-button v-if="themeStatus === 2 || themeStatus === 3 || themeStatus === 5" type="primary">审核</el-button>
+    <el-button v-if="status === 0" type="primary">上架</el-button>
+    <el-button v-if="status === 2 || status === 3 || status === 5" type="primary">审核</el-button>
     <el-button v-else type="warning">创建副本</el-button>
+    <!-- <AuditDetailButton :id="id" :version="currentVersion" :type="type" :status="status"/> -->
   </div>
 </template>
 
 <script>
+import AuditDetailButton from './AuditDetailButton'
 export default {
-  components: {},
+  components: {
+    AuditDetailButton
+  },
 
   props: {
     id: Number,
@@ -31,7 +35,7 @@ export default {
       historyList: [],
       currentVersion: '',
       statusOption: ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过'],
-      themeStatus: undefined
+      status: undefined
     };
   },
 
@@ -42,7 +46,7 @@ export default {
           return item.value === this.currentVersion
         }).label
         let statusName = label.split("/")[3]
-        this.themeStatus = this.statusOption.indexOf(statusName)
+        this.status = this.statusOption.indexOf(statusName)
         return statusName
       }
       return this.statusOption[this.initialStatus]
@@ -59,7 +63,7 @@ export default {
     this.$service.getHistoryList({ id: this.id, type: this.type }).then(data => {
       if(data.total === 0){
         this.isShowHistory = false
-        this.themeStatus = this.initialStatus
+        this.status = this.initialStatus
       }else {
         this.currentVersion = data.rows[0].version 
         data.rows.forEach(row => {
