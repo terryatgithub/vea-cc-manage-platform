@@ -123,7 +123,10 @@ export default {
           {
             label: '状态',
             prop: 'status',
-            sortable: true
+            sortable: true,
+            render: (h, {row}) => {
+              return this.$numToAuditStatus(row.status)
+            }
           },
           {
             label: '更新时间',
@@ -152,6 +155,7 @@ export default {
       })
     },
     openReview(row){
+      debugger
        this.$emit('open-add-page', row, true)
     },
     /**
@@ -235,14 +239,6 @@ export default {
       this.$service.broadcastBlockPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
-        this.table.data.map((row, index) => {
-          this.table.data[index].status =
-            row.status === 3
-              ? '待审核'
-              : row.status === 4
-              ? '审核通过'
-              : '审核不通过'
-        })
       })
     },
   },

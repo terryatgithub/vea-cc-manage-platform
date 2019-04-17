@@ -72,7 +72,19 @@ export default {
           },
           {
             label: '名称',
-            prop: 'pannelGroupRemark'
+            prop: 'pannelGroupRemark',
+            render: (createElement, { row }) => {
+              return createElement('el-button', {
+                attrs:{
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.openReview(row) 
+                  }
+                }
+              },row.pannelGroupRemark)
+            }
           },
           {
             label: '布局',
@@ -156,6 +168,9 @@ export default {
   },
 
   methods: {
+     openReview(row) {
+       this.$emit('open-review-page',row)
+    },
     /**
      * 获取数据
      */

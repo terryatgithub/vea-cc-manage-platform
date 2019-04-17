@@ -1,7 +1,7 @@
 <template>
   <div>
     <BroadcastBlockList v-show="mode==='list'" ref="list" @open-add-page="openAddPage"></BroadcastBlockList>
-    <BroadcastBlockAdd v-if="mode==='add'" :isReview="isReview" :editData="editData"  @open-list-page="openListPage" @go-back="goBack"></BroadcastBlockAdd>
+    <BroadcastBlockAdd v-if="mode==='add'" :isReview="isReview" :editData="editData" @go-edit-Page="openListPage(editData, false)"  @open-list-page="openListPage" @go-back="goBack"></BroadcastBlockAdd>
   </div>
 </template>
 <script>

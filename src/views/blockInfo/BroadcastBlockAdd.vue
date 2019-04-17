@@ -10,7 +10,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="审核状态" v-if="disabled">
-         {{status}}
+         {{$numToAuditStatus(status)}}
       </el-form-item>
       <el-form-item
         label="推荐位名称"
@@ -289,17 +289,24 @@
               <el-button type="primary" :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
             </el-form-item>
              <AppParams prop-prefix="onclick." v-model="lowerForm.onclick" ref="openWayLower"></AppParams>
-            <!-- <ccAppParamsForm ref="openWayLower" prop-prefix="onclick." v-model="lowerForm.onclick"/> -->
         </div>
         
       </el-form>
     </div>
     <div class="submitCheck" >
       <el-button type="primary" v-if="!disabled"  @click="submitCheck">提交审核</el-button>
-      <!-- <AuditDetailButton v-if="disabled"
-      >
-
-      </AuditDetailButton> -->
+       <AuditDetailButton
+            v-if="disabled"
+            :id="id"
+            :version="version"
+            :type="type"
+            :not-contain-btn="notContainBtn"
+            :status="status"
+            :menuElId="menuElId"
+            @go-edit-Page="goEditPage"
+            @delete-item="deleteItem"
+           >
+        </AuditDetailButton>
     </div>
      
     <!-- 海报弹框  -->
@@ -373,6 +380,11 @@ export default {
   data() {
     return {
       status: null,
+      id: null,
+      version: '',
+      type: 'block',
+      menuElId: 'broadcastBlock',
+      notContainBtn: ['claim', 'unclaim', 'copy'],
       disabled: false, //是否禁用
       historyList: [],
       onclickEventVisibleFlag: '',//标识是哪个版本的快速填充弹窗normal/lower
@@ -585,6 +597,13 @@ export default {
       // }
   },
   methods: {
+    goEditPage() {
+       this.$emit("go-edit-Page")
+    },
+    deleteItem() {
+     // this.$service.getLayoutInforBatchDel({ id: this.id },'删除成功')
+      this.$emit("open-list-page")
+    },
     clickThirdpartSubmit() {
       const { onclickEventVisibleFlag } = this
       if(onclickEventVisibleFlag === 'lower') {
@@ -1163,8 +1182,7 @@ export default {
       window.parent.$('#add-view').dialog('_close')
     },
     getEditData(){
-      this.$service.getBroadcastBlockEditData({ id: this.editData.id, version: this.editData.currentVersion}).then((data) => {
-        this.status = this.$numToAuditStatus(data.status)
+      this.$service.getBroadcastBlockEditData({ id: this.id, version: this.version}).then((data) => { 
         this.normalVersionContent = data.normalVersionContent.map((e) => {
            let p = JSON.parse(e.params)
            e.thirdIdOrPackageName = typeof(p.id) !== 'undefined'? p.id : p.rotateId
@@ -1182,6 +1200,8 @@ export default {
     },
     getHistoryList(){
       this.$service.getHistoryList({ id: this.editData.id, type: 'block'}).then((data) => {
+       if (data === null)
+           return
        data = data.rows
        this.historyList =  data.reduce((result, current) => {
            result.push(current.version + "/" + current.lastUpdateDate + "/" + current.modifierName + "/" + this.$numToAuditStatus(current.status))
@@ -1197,9 +1217,13 @@ export default {
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
     if (this.editData !=='{}') {
+      this.id = this.editData.id
+      this.version = this.editData.currentVersion
+      this.status = this.editData.status
        if (this.isReview) {
          this.title = '预览页面'
          this.disabled = true
+         if (parseInt(this.status) === 4)
          this.getHistoryList()
        } else {
          this.title = '编辑页面'

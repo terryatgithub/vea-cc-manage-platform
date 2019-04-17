@@ -74,7 +74,19 @@ export default {
           },
           {
             label: '名称',
-            prop: 'tabName'
+            prop: 'tabName',
+             render: (createElement, { row }) => {
+              return createElement('el-button', {
+                attrs:{
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.openReview(row) 
+                  }
+                }
+              },row.tabName)
+            }
           },
           {
             label: '版面属性',
@@ -156,6 +168,9 @@ export default {
     },
     batchDel() {
 
+    },
+    openReview(row) {
+       this.$emit('open-review-page',row)
     },
     /**
      * 获取数据

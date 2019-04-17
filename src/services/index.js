@@ -23,6 +23,7 @@ import * as globalPicture from './commonModule/globalPicture'
 import * as globalCornerIconMgr from './commonModule/globalCornerIconMgr'
 import * as advertisement from './advertisement'
 import * as privatePannel from './blockManage/privatePannel'
+import * as todoTask from './todoTask'
 const service = {
   state: {},
   fetch,
@@ -47,6 +48,7 @@ const service = {
   ...globalPicture,
   ...globalCornerIconMgr,
   ...adminMasterControll,
-  ...privatePannel
+  ...privatePannel,
+  ...todoTask
 }
 Vue.prototype.$service = utils.wrapService(service)
