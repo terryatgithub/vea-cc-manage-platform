@@ -80,7 +80,6 @@ export default {
                 },
                 on: {
                   click: () => {
-
                     this.openReview(row) 
                   }
                 }

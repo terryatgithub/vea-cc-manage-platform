@@ -1,7 +1,7 @@
 <template>
   <div>
     <BroadcastBlockList v-show="mode==='list'" ref="list" @open-add-page="openAddPage"></BroadcastBlockList>
-    <BroadcastBlockAdd v-if="mode==='add'" :editId="editId" :currentVersion="currentVersion" @open-list-page="openListPage" @go-back="goBack"></BroadcastBlockAdd>
+    <BroadcastBlockAdd v-if="mode==='add'" :isReview="isReview" :editData="editData"  @open-list-page="openListPage" @go-back="goBack"></BroadcastBlockAdd>
   </div>
 </template>
 <script>
@@ -16,7 +16,8 @@ export default {
   data() {
     return {
       mode: 'list',
-      editId: null,
+      editData: {},
+      isReview: false,
       currentVersion: null
     };
   },
@@ -24,8 +25,9 @@ export default {
     /**
      * 打开新增编辑页面
     */
-    openAddPage(id, currentVersion) {
-      this.editId = id
+    openAddPage(row, isReview) {
+      this.editData = row
+      this.isReview = isReview
       this.mode = 'add'
     },
     /**

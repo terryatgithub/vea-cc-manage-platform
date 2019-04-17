@@ -49,13 +49,6 @@ export function getViewData (params) {
     params
   })
 }
-export function getHistoryList (data) {
-  return this.fetch({
-    method: 'post',
-    url: 'api/v1/hvi/historyList.html',
-    data
-  })
-}
 // 获取上架时间
 export function getTimedInfo (data) {
   return this.fetch({

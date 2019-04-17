@@ -215,3 +215,25 @@ export function getClickData(data) {
     data
   })
 }
+/*
+   id: 10139
+   type: block
+   预览页面版本历史记录
+*/
+export function getHistoryList(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/hvi/historyList.html',
+    params
+  })
+}
+/**
+ * 得到轮播推荐位的编辑数据
+ */
+export function getBroadcastBlockEditData(data) {
+  return this.fetch({
+    method: 'POST',
+    url: 'api/blockInfo/getDetailInfo.html',
+    data
+  })
+}

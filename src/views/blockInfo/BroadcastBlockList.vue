@@ -106,7 +106,19 @@ export default {
           {
             label: '轮播名称',
             prop: 'containerName',
-            sortable: true
+            sortable: true,
+            render: (h, {row}) => {
+            return h('el-button', {
+                attrs:{
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.openReview(row) 
+                  }
+                }
+              },row.containerName)
+            }
           },
           {
             label: '状态',
@@ -139,11 +151,14 @@ export default {
         }
       })
     },
+    openReview(row){
+       this.$emit('open-add-page', row, true)
+    },
     /**
      * 新增用户
      */
     addItem() {
-      this.$emit('open-add-page', null)
+      this.$emit('open-add-page', {}, false)
     },
     handleChange(value, direction, movedKeys) {
       var str = []
@@ -154,16 +169,16 @@ export default {
     },
     editData() {
       if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selected[0])
+         this.$emit('open-add-page',this.selected[0], false)
       }
     },
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.id)
+      this.selected.push(targetItem)
       this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.id
+        return item !== targetItem
       })
       this.updateTableSelected()
     },
@@ -181,7 +196,7 @@ export default {
     },
     updateTableSelected() {
       const table = this.table
-      const newSelectedIndex = this.selected
+      const newSelectedIndex = this.selected.map((e) => {return e.id})
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.id) > -1) {
           result.push(index)
