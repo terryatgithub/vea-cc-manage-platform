@@ -1,21 +1,8 @@
 <template>
   <ContentCard title="预览页面" @go-back="$emit('go-back')">
-    <!--操作btn start-->
-    <div class="operate-box">
-      <div class="operate-box__head">
-        <div class="operate-box__version" v-if="isShowHistory">
-          <span>版本： </span>
-          <el-select style="width:300px" v-model="currentVersion" @change="changeVersion">
-            <el-option v-for="(item, index) in historyList" :key="index" :label="item.label" :value="item.value"/>
-          </el-select>
-        </div>
-        <div class="operate-box__status">{{statusName}}</div> 
-      </div>
-      <el-button v-if="themeStatus === 0" type="primary">上架</el-button>
-      <el-button v-if="themeStatus === 2 || themeStatus === 3 || themeStatus === 5" type="primary">审核</el-button>
-      <el-button v-else type="warning">创建副本</el-button>
-    </div>
-    <!--操作btn end-->
+
+    <HistoryTool :id="themeInfo.themeId" type="theme" @change="changeVersion" :initialStatus="themeStatus"/>
+    
     <div class="split-bar">
       <i class="el-icon-edit">基本信息</i>
     </div>
@@ -62,8 +49,11 @@
 </template>
 
 <script>
+import HistoryTool from '@/components/HistoryTool'
 export default {
-  components: {},
+  components: {
+    HistoryTool
+  },
 
   props: {
     themeInfo: Object
@@ -82,24 +72,6 @@ export default {
         tabBgEntitys: []
       },
       themeStatus: undefined, // 审核状态
-      statusOption: ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过'],
-      historyList: [],// 历史版本
-      isShowHistory: true,
-      currentVersion: ''
-    }
-  },
-
-  computed: {
-    statusName() {
-      if(this.historyList.length !== 0) {
-        let label = this.historyList.find(item => {
-          return item.value === this.currentVersion
-        }).label
-        let statusName = label.split("/")[3]
-        this.themeStatus = this.statusOption.indexOf(statusName)
-        return statusName
-      }
-      return this.statusOption[this.themeStatus]
     }
   },
 
@@ -128,19 +100,6 @@ export default {
     form.tabBgEntitys = themeInfo.tabBgEntitys
 
     this.themeStatus = themeInfo.themeStatus
-    // 历史版本historyList
-    let historyList = this.historyList
-    this.$service.themeInfoHistory({ id: themeInfo.themeId, type: 'theme' }).then(data => {
-      if(data.total === 0){
-        this.isShowHistory = false
-      }else {
-        this.currentVersion = data.rows[0].version 
-        data.rows.forEach(row => {
-          let label = row.version + '/' + row.lastUpdateDate + '/' + row.modifierName + '/' + this.statusOption[row.status]
-          historyList.push({'label': label, 'value': row.version})
-        })
-      }
-    })
   }
 }
 </script>
@@ -192,23 +151,4 @@ export default {
   height 20px
   line-height 20px
   text-align center
-.operate-box
-  width 100%
-  height 100px
-  float fixed
-  background-color #fff
-.operate-box__head
-  margin-bottom 20px
-.operate-box__status
-  display inline-block
-  width 120px
-  height 30px
-  line-height 30px
-  padding 0 5px
-  background #4fc71b
-  color #fff
-  text-align center
-.operate-box__version
-  display: inline-block
-  margin-right 10px
 </style>
