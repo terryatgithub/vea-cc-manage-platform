@@ -20,8 +20,9 @@ export default {
   components: {},
 
   props: {
-    themeId: Number,
+    id: Number,
     type: String,
+    initialStatus: Number // 无历史版本的初始状态
   },
 
   data () {
@@ -30,7 +31,7 @@ export default {
       historyList: [],
       currentVersion: '',
       statusOption: ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过'],
-      themeStatus: 0
+      themeStatus: undefined
     };
   },
 
@@ -44,7 +45,7 @@ export default {
         this.themeStatus = this.statusOption.indexOf(statusName)
         return statusName
       }
-      return this.statusOption[this.themeStatus]
+      return this.statusOption[this.initialStatus]
     }
   },
 
@@ -55,9 +56,10 @@ export default {
   },
   created() {
     let historyList = this.historyList
-    this.$service.getHistoryList({ id: this.themeId, type: this.type }).then(data => {
+    this.$service.getHistoryList({ id: this.id, type: this.type }).then(data => {
       if(data.total === 0){
         this.isShowHistory = false
+        this.themeStatus = this.initialStatus
       }else {
         this.currentVersion = data.rows[0].version 
         data.rows.forEach(row => {
