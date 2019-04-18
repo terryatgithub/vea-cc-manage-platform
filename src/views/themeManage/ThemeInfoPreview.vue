@@ -2,13 +2,20 @@
   <ContentCard title="预览页面" @go-back="$emit('go-back')">
 
     <HistoryTool 
+      type="theme"
       :id="themeInfo.themeId" 
-      menuElid="themeInfo"
-      type="theme" 
-      @change="changeVersion" 
       :initialStatus="themeStatus"
+      @change="changeVersion"
+      @getHistoryList="getHistoryList"
     />
-    
+    <AuditDetailButton
+      v-if="hackReset"
+      type="theme" 
+      menuElId="themeInfo"
+      :id="themeInfo.themeId" 
+      :status="themeStatus"
+      :notContainBtn="notContainBtn"
+    />
     <div class="split-bar">
       <i class="el-icon-edit">基本信息</i>
     </div>
@@ -55,10 +62,12 @@
 </template>
 
 <script>
+import AuditDetailButton from '@/components/AuditDetailButton'
 import HistoryTool from '@/components/HistoryTool'
 export default {
   components: {
-    HistoryTool
+    HistoryTool,
+    AuditDetailButton
   },
 
   props: {
@@ -78,6 +87,8 @@ export default {
         tabBgEntitys: []
       },
       themeStatus: undefined, // 审核状态
+      hackReset: true, // 刷新组件
+      notContainBtn: ['claim']
     }
   },
 
@@ -90,6 +101,19 @@ export default {
           form[key] = data[key]
         })
         form.themeBrand = form.themeBrand === 'Coocaa' ? '创维酷开' : '其他'
+        // 按钮组刷新
+        this.hackReset = false
+        this.$nextTick(() => {
+          this.hackReset = true
+        })
+      })
+    },
+    getHistoryList(list) {
+      list.map(item => {
+        if(/待审核/.test(item.label)){
+          this.notContainBtn.push('copy')
+          return
+        }
       })
     }
   },

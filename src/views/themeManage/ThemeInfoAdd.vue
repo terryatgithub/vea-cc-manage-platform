@@ -150,12 +150,12 @@ export default {
       }
       const editForm = this.editForm
       const formData = Object.assign({}, form, editForm)
-      this.$service.savethemeInfo(formData, '保存成功').then(() => {
+      this.$service.savethemeInfo({jsonStr: JSON.stringify(formData)}, '保存成功').then(() => {
         this.$emit('open-list-page')
       })
     },
     handleApk(picData) {
-      this.$service.checkThemeMd5({ themeMd5: picData.fileMd5 }).then(() => {
+      this.$service.checkThemeMd5({ themeMd5: picData.fileMd5 }, '该主题可用').then(() => {
         this.form.themeDownUrl = picData.url
         this.form.themeMd5 = picData.fileMd5
       })
