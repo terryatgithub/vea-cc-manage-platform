@@ -12,7 +12,12 @@
       @open-list-page="openListPage"
       @go-back="goBack"
     />
-    <ThemeInfoPreview v-if="!isShowList && isShowPreview" :themeInfo="themeInfo" @go-back="preGoBack"/>
+    <ThemeInfoPreview
+      v-if="!isShowList && isShowPreview"
+      :themeInfo="themeInfo"
+      @go-back="preGoBack"
+      @open-list-page="openListPage"
+    />
   </div>
 </template>
 

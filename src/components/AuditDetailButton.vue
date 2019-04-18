@@ -82,6 +82,7 @@ export default {
             )
             .then(data => {
                this.auditDialog = false
+               this.$emit('open-list-page')
             })
         }
       })
@@ -127,6 +128,21 @@ export default {
             this.auditDialog = false
           })
       }
+    },
+    // 创建副本
+    copy() {
+      this.$emit('copy')
+    },
+    // 上架
+    shelves() {
+      let params = {
+        id: this.id,
+        version: this.version,
+        type: this.type
+      }
+      this.$service.putShelves(params, '上架成功').then(() => {
+        this.$emit('open-list-page')
+      })
     }
   },
   created() {
