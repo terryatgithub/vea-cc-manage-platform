@@ -1,6 +1,5 @@
 <template>
-  <ContentCard title="预览页面" @go-back="$emit('go-back')">
-
+  <ContentCard title="预览页面" @go-back="$emit('go-back')" class="content">
     <HistoryTool 
       type="theme"
       :id="themeInfo.themeId" 
@@ -12,10 +11,13 @@
       v-if="hackReset"
       type="theme" 
       menuElId="themeInfo"
+      :version="currentVersion"
       :id="themeInfo.themeId" 
       :status="themeStatus"
       :notContainBtn="notContainBtn"
+      @open-list-page="$emit('open-list-page')"
     />
+    
     <div class="split-bar">
       <i class="el-icon-edit">基本信息</i>
     </div>
@@ -88,12 +90,14 @@ export default {
       },
       themeStatus: undefined, // 审核状态
       hackReset: true, // 刷新组件
-      notContainBtn: ['claim']
+      notContainBtn: ['claim', 'unclaim'],
+      currentVersion: undefined
     }
   },
 
   methods: {
     changeVersion(version) {
+      this.currentVersion = version
       this.$service.themeInfoDetail({ id: this.themeInfo.themeId, version }).then(data => {
         this.themeStatus = data.themeStatus
         const form = this.form
@@ -130,6 +134,7 @@ export default {
     form.tabBgEntitys = themeInfo.tabBgEntitys
 
     this.themeStatus = themeInfo.themeStatus
+    this.currentVersion = themeInfo.currentVersion
   }
 }
 </script>
@@ -181,4 +186,6 @@ export default {
   height 20px
   line-height 20px
   text-align center
+.content >>> .action-list
+  flex-direction flex-start
 </style>

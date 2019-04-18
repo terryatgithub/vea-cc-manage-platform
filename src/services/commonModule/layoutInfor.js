@@ -53,3 +53,10 @@ export function revokedAudit (data) {
     data
   })
 }
+export function putShelves (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/audit/putShelves.html',
+    data
+  })
+}
