@@ -107,7 +107,7 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           console.log(this.form);
-          this.$service.saveSysMenu(this.form, "保存成功").then(data => {
+          this.$service.saveSysMenu({'jsonStr': JSON.stringify(this.form) }, "保存成功").then(data => {
             this.$emit("open-list-page");
           });
         }

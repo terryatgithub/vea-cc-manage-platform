@@ -8,6 +8,14 @@
       @change="changeVersion" 
       :initialStatus="themeStatus"
     />
+           <AuditDetailButton
+            :id="id"
+            :version="version"
+            :type="type"
+            :not-contain-btn="notContainBtn"
+            :status="themeStatus"
+            menuElId="themeInfo"
+           />
     
     <div class="split-bar">
       <i class="el-icon-edit">基本信息</i>
@@ -56,9 +64,11 @@
 
 <script>
 import HistoryTool from '@/components/HistoryTool'
+import AuditDetailButton from './../../components/AuditDetailButton'
 export default {
   components: {
-    HistoryTool
+    HistoryTool,
+    AuditDetailButton
   },
 
   props: {

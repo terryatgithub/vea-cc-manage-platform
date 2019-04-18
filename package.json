@@ -22,7 +22,7 @@
     "regenerator-runtime": "^0.13.2",
     "v-charts": "^1.19.0",
     "vue": "^2.6.10",
-    "vue-router": "^3.0.5",
+    "vue-router": "^3.0.6",
     "vuedraggable": "^2.20.0"
   },
   "devDependencies": {
