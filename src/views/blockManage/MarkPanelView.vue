@@ -13,43 +13,43 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-          </el-form-item> -->
-            <HistoryTool :id="id" :type="type" :initialStatus="status" @chenge="chengeVersion" /> 
+          </el-form-item>-->
+          <HistoryTool :id="id" :type="type" :initialStatus="status" @change="changeVsersion"/>
           <!-- <el-form-item>
             <div class="form-status">{{pannelStatus}}</div>
-          </el-form-item> -->
+          </el-form-item>-->
         </el-form>
       </div>
       <div class="base-tit">
-        <span>基本信息</span>
+        <span class="el-icon-edit">基本信息</span>
       </div>
       <el-form label-width="120px">
-        <el-form-item label="版块名称:">
+        <el-form-item label="版块名称">
           <div>{{pannelName}}</div>
         </el-form-item>
-        <el-form-item label="版块标题:">
+        <el-form-item label="版块标题">
           <div>{{pannelTitle}} {{ showTitle === 0 ? '(前端不显示)' : '' }}</div>
         </el-form-item>
-        <el-form-item label="功能类型:">
+        <el-form-item label="功能类型">
           <div>{{clientType}}</div>
         </el-form-item>
-        <el-form-item label="内容源:">
+        <el-form-item label="内容源">
           <div>{{pannelResourceText[pannelResource] || '不限'}}</div>
         </el-form-item>
       </el-form>
       <div class="base-tit auditor-title">
-        <span>审核者备注</span>
+        <span class="el-icon-edit">审核者备注</span>
       </div>
       <div class="up-addlist">
         <table>
           <tbody class="auditor-wrapper">
-            <!-- <tr v-for="(item, index) in auditHistories"> -->
-            <!-- <tr>
+            <tr v-for="(item, index) in auditHistories" :key="index">
               <td>{{ item.lastUpdateDate }}</td>
               <td>{{ item.auditor }}</td>
-              <td>{{ item.auditFlag}}</td>
+              <td v-if="item.auditFlag == 4">通过</td>
+              <td v-else>不通过</td>
               <td>{{ item.auditDesc }}</td>
-            </tr>-->
+            </tr>
           </tbody>
         </table>
       </div>
@@ -75,7 +75,7 @@ export default {
     AuditDetailButton,
     HistoryTool
   },
- props: {
+  props: {
     viewData: Object
   },
   data() {
@@ -120,20 +120,6 @@ export default {
       pannelStatus: ''
     }
   },
-  computed: {
-    // pannelStatusText() {
-    //   const pannelStatus = this.pannelStatus
-    //   if (pannelStatus) {
-    //     console.log(pannelStatus)
-    //   }
-    // },
-    // focusShapeText() {
-    //   const focusShape = this.focusShape
-    //   if (focusShape !== undefined) {
-    //     return ['线落焦', '面落焦'][focusShape]
-    //   }
-    // }
-  },
   methods: {
     /**请求数据 */
     getViewData() {
@@ -175,43 +161,55 @@ export default {
         this.releaseTime = data.releaseTime
       })
     },
-    getHistoryList() {
-      var that = this
-      const historyObj = {
-        id: that.viewData.pannelGroupId,
-        type: that.pannelType
-      }
-      that.$service.getHistoryList(historyObj).then(data => {
-        var version9 = ''
-        if (data.rows == null || data.rows.length == 0) {
-          that.isShowVersion = false
-          return false
-        }
-        that.isShowVersion = true
-        data.rows.forEach(function(v, i) {
-          that.versionList.push({
-            value: v.version,
-            label:
-              v.version +
-              '/' +
-              v.lastUpdateDate +
-              '/' +
-              v.modifierName +
-              '/' +
-              that.parasNumToStr(v.status)
-          })
-          console.log(that.versionList)
-          if (v.version == param.currentVersion) {
-            that.versions = v.version
-          }
-          if (v.status === 9) {
-            version9 = v.version
-          }
+    changeVsersion() {},
+    // getHistoryList() {
+    //   var that = this
+    //   const historyObj = {
+    //     id: that.viewData.pannelGroupId,
+    //     type: that.pannelType
+    //   }
+    //   that.$service.getHistoryList(historyObj).then(data => {
+    //     var version9 = ''
+    //     if (data.rows == null || data.rows.length == 0) {
+    //       that.isShowVersion = false
+    //       return false
+    //     }
+    //     that.isShowVersion = true
+    //     data.rows.forEach(function(v, i) {
+    //       that.versionList.push({
+    //         value: v.version,
+    //         label:
+    //           v.version +
+    //           '/' +
+    //           v.lastUpdateDate +
+    //           '/' +
+    //           v.modifierName +
+    //           '/' +
+    //           that.parasNumToStr(v.status)
+    //       })
+    //       console.log(that.versionList)
+    //       if (v.version == param.currentVersion) {
+    //         that.versions = v.version
+    //       }
+    //       if (v.status === 9) {
+    //         version9 = v.version
+    //       }
+    //     })
+    //     if (that.versions == '') {
+    //       that.versions = version9
+    //     }
+    //   })
+    // },
+    getHandlePerson() {
+      return this.$service
+        .getHandlePerson({
+          id: this.viewData.pannelGroupId,
+          version: this.viewData.currentVersion,
+          type: 'pannel'
         })
-        if (that.versions == '') {
-          that.versions = version9
-        }
-      })
+        .then(data => {
+          this.auditHistories = data
+        })
     },
     handleSelectVersion(version) {
       const timeObj = {
@@ -241,18 +239,31 @@ export default {
     this.id = this.viewData.pannelGroupId
     this.status = this.viewData.pannelStatus
     this.version = this.viewData.currentVersion
+    this.getHandlePerson()
     this.getViewData().then(() => {
       this.getTimedInfo()
     })
-    this.getHistoryList()
+    // this.getHistoryList()
   }
 }
 </script>
 <style  scoped>
+.audit-tip {
+  color: #aaa;
+  padding: 10px 0px;
+}
 .form-status {
   background-color: #409eff;
   padding: 0px 5px;
   color: #fff;
+}
+.base-tit {
+  background-color: #e6e6e6;
+  padding: 10px 2px;
+  margin: 5px 0px;
+}
+.base-tit span {
+  padding: 0px 5px;
 }
 </style>
 

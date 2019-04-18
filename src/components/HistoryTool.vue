@@ -14,13 +14,12 @@
     <div class="operate-box__status">{{statusName}}</div>
   </div>
 </template>
-
 <script>
-import AuditDetailButton from './AuditDetailButton'
+// import AuditDetailButton from './AuditDetailButton'
 export default {
-  components: {
-    AuditDetailButton
-  },
+  // components: {
+  //   AuditDetailButton
+  // },
 
   props: {
     id: Number,

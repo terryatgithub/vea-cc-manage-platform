@@ -64,6 +64,7 @@
 <script>
 import AuditDetailButton from '@/components/AuditDetailButton'
 import HistoryTool from '@/components/HistoryTool'
+import AuditDetailButton from './../../components/AuditDetailButton'
 export default {
   components: {
     HistoryTool,

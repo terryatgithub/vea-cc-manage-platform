@@ -193,7 +193,7 @@ export function getSysMenuList (params) {
   return this.fetch({
     method: 'get',
     // url: 'api/sysMenu/treePageList.html',
-    url: 'api/sysMenu/pageList.html',
+    url: 'api/v1/sysMenu/pageList.html',
     params
   })
 }
@@ -204,7 +204,7 @@ export function getSysMenuList (params) {
 export function saveSysMenu (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysMenu/save.html',
+    url: 'api/v1/sysMenu/save.html',
     data
   })
 }
@@ -215,7 +215,7 @@ export function saveSysMenu (data) {
 export function editSysMenu (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/sysMenu/edit.html',
+    url: 'api/v1/sysMenu/edit.html',
     params
   }).then(data => {
     return JSON.parse(data.match(/para = (\{.+\})/)[1])
@@ -227,7 +227,7 @@ export function editSysMenu (params) {
 export function getNotMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysMenu/getNotMenuByRunId.html',
+    url: 'api/v1/sysMenu/getNotMenuByRunId.html',
     data
   })
 }
@@ -237,7 +237,7 @@ export function getNotMenuByRunId (data) {
 export function getMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysMenu/getMenuByRunId.html',
+    url: 'api/v1/sysMenu/getMenuByRunId.html',
     data
   })
 }
@@ -251,7 +251,7 @@ export function saveMenuRun (data) {
   }, '').slice(1)
   return this.fetch({
     method: 'post',
-    url: 'api/sysMenu/saveMenuRun.html',
+    url: 'api/v1/sysMenu/saveMenuRun.html',
     data
   })
 }
@@ -270,7 +270,7 @@ export function getMenuInfo () {
 export function deleteMenuById (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/sysMenu/remove.html',
+    url: 'api/v1/sysMenu/remove.html',
     params
   })
 }
