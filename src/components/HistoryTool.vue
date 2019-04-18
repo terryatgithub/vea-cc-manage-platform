@@ -9,10 +9,10 @@
       </div>
       <div class="operate-box__status">{{statusName}}</div> 
     </div>
-    <el-button v-if="status === 0" type="primary">上架</el-button>
+    <!-- <el-button v-if="status === 0" type="primary">上架</el-button>
     <el-button v-if="status === 2 || status === 3 || status === 5" type="primary">审核</el-button>
-    <el-button v-else type="warning">创建副本</el-button>
-    <!-- <AuditDetailButton :id="id" :version="currentVersion" :type="type" :status="status"/> -->
+    <el-button v-else type="warning">创建副本</el-button> -->
+    <AuditDetailButton v-if="typeof(status)!== 'undefined'" :id="id" :type="type" :status="status" :menuElId="menuElid"/>
   </div>
 </template>
 
@@ -26,7 +26,8 @@ export default {
   props: {
     id: Number,
     type: String,
-    initialStatus: Number // 无历史版本的初始状态
+    initialStatus: Number, // 无历史版本的初始状态
+    menuElid: String // 参见wiki菜单elid说明
   },
 
   data () {
@@ -65,7 +66,9 @@ export default {
         this.isShowHistory = false
         this.status = this.initialStatus
       }else {
-        this.currentVersion = data.rows[0].version 
+        this.currentVersion = data.rows.find(item => {
+          return item.status === this.initialStatus
+        }).version
         data.rows.forEach(row => {
           let label = row.version + '/' + row.lastUpdateDate + '/' + row.modifierName + '/' + this.statusOption[row.status]
           historyList.push({'label': label, 'value': row.version})

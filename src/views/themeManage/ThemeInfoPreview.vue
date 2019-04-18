@@ -3,6 +3,7 @@
 
     <HistoryTool 
       :id="themeInfo.themeId" 
+      menuElid="themeInfo"
       type="theme" 
       @change="changeVersion" 
       :initialStatus="themeStatus"
@@ -42,7 +43,7 @@
         </div>
       </el-form-item>
       <el-form-item label="指定背景图" class="label">
-        <div class="icon-list">
+        <div class="icon-list" title="tabBgEntitys">
           <div v-for="(icon, index) in form.tabBgEntitys" :key="index" class="icon-list__item">
             <img class="icon-list__item-img--tabBgEntitys" :src="icon.pictureUrl">
             <span class="icon-list__item-text">{{index+1}}</span>

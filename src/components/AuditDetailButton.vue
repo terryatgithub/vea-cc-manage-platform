@@ -35,11 +35,19 @@ export default {
   },
   props: {
     id: Number, //自增ID
-    version: String, //版本
+    version: {
+      type: String,
+      default: ''
+    }, //版本
     type: String, //资源类型，block推荐位
     status: Number, // 获取权限按钮组的审核状态
     menuElId: String, //菜单elId
-    notContainBtn: Array
+    notContainBtn: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
   },
   data() {
     return {
