@@ -106,9 +106,9 @@
               <td>{{ item.lastUpdateDate }}</td>
               <td>{{ item.auditor }}</td>
               <td v-if="item.auditFlag == 4">
-                   通过
+                   审核通过
               </td>
-              <td v-else>不通过</td>
+              <td v-else>审核不通过</td>
               <td>{{ item.auditDesc }}</td>
             </tr>
           </tbody>
@@ -174,7 +174,7 @@ export default {
       type: 'pannel',
       status: null,
       menuElId: 'globalCornerIcon',
-      notContainBtn: ['claim', 'unclaim','copy'],
+      notContainBtn: ['claim', 'unclaim'],
       mode: null,
       title: null,
       STATUS: STATUS,
@@ -281,7 +281,12 @@ export default {
     }
   },
   methods: {
-    chengeVersion() {
+    chengeVersion(version) {
+      this.$service.privatePannelInfoView({id: this.viewData.pannelGroupId,version: version}).then(data => {
+        console.log(data)
+         this.setPanel(data)
+      })
+      console.log(version)
     },
     //业务分类
     getCategoryLabel(value) {

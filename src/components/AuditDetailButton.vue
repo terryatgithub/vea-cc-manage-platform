@@ -123,7 +123,7 @@ export default {
             id: this.id,
             version: this.version,
             type: this.type
-          })
+          }, '撤销成功')
           .then(data => {
             this.auditDialog = false
           })
