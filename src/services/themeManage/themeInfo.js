@@ -37,7 +37,7 @@ export function savethemeInfo (data) {
 export function checkThemeMd5 (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/themeInfo/checkThemeMd5.html',
+    url: 'api/v1/theme/checkThemeMd5.html',
     data
   })
 }
