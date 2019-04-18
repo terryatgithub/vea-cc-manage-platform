@@ -106,6 +106,7 @@ import ThemeFileUpload from './ThemeFileUpload'
 export default {
   props: {
     editId: Number,
+    version: String,
     default: null
   },
 
@@ -150,6 +151,7 @@ export default {
       }
       const editForm = this.editForm
       const formData = Object.assign({}, form, editForm)
+      console.log('formData', formData);
       this.$service.savethemeInfo({jsonStr: JSON.stringify(formData)}, '保存成功').then(() => {
         this.$emit('open-list-page')
       })
@@ -187,7 +189,7 @@ export default {
   created() {
     if (this.editId) {
       this.title = '编辑页面'
-      this.$service.themeInfoDetail({ id: this.editId }).then(data => {
+      this.$service.themeInfoDetail({ id: this.editId, version: this.version }).then(data => {
         const form = this.form
         form.themeName = data.themeName
         form.chargeType = data.chargeType.toString()
@@ -240,11 +242,11 @@ export default {
         this.$refs.tabBgEntitys.fileNum++
 
         form.systemDefault = data.systemDefault
-        form.themeStatus = data.themeStatus
-
+        form.themeStatus = 3
+        
         this.editForm = {
           themeId: data.themeId,
-          currentVersion: data.currentVersion
+          currentVersion: this.version ? '' : data.currentVersion
         }
       })
     } else {

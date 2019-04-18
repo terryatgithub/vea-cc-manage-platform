@@ -16,6 +16,7 @@
       :status="themeStatus"
       :notContainBtn="notContainBtn"
       @open-list-page="$emit('open-list-page')"
+      @copy="copy"
     />
     
     <div class="split-bar">
@@ -119,6 +120,9 @@ export default {
           return
         }
       })
+    },
+    copy() {
+      this.$emit('open-add-page', this.themeInfo.themeId, this.currentVersion)
     }
   },
   created() {

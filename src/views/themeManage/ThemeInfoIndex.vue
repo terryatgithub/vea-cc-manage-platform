@@ -9,6 +9,7 @@
     <ThemeInfoAdd
       v-if="!isShowList&&!isShowPreview"
       :editId="editId"
+      :version="version"
       @open-list-page="openListPage"
       @go-back="goBack"
     />
@@ -17,6 +18,7 @@
       :themeInfo="themeInfo"
       @go-back="preGoBack"
       @open-list-page="openListPage"
+      @open-add-page="openAddPage"
     />
   </div>
 </template>
@@ -38,7 +40,8 @@ export default {
       isShowList: true,
       isShowPreview: false,
       editId: null,
-      themeInfo: null
+      themeInfo: null,
+      version: null
     }
   },
 
@@ -46,8 +49,10 @@ export default {
     /**
      * 打开新增编辑页面
      */
-    openAddPage(editId) {
+    openAddPage(editId, version) {
       this.editId = editId
+      this.version = version
+      this.isShowPreview = false
       this.isShowList = false
     },
     /**
