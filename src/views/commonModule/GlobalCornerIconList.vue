@@ -76,9 +76,9 @@ export default {
       dialogPLVisible: false,
       dialogLevelVisible: false,
       cornerStatuses: {
-        下架: 0,
-        上架: 1,
-        草稿: 2,
+        // 下架: 0,
+        // 上架: 1,
+        // 草稿: 2,
         待审核: 3,
         审核通过: 4,
         审核不通过: 5
@@ -148,7 +148,6 @@ export default {
             label: '审核状态',
             prop: 'cornerStatus',
             render: (createElement, { row }) => {
-              //0:
               switch (row.cornerStatus) {
                 case 0:
                   return '下架'
@@ -229,10 +228,10 @@ export default {
         for (var i = 0; i < ids.length; i++) {
           for (var j = 0; j < that.table.data.length; j++) {
             if (ids[i] == that.table.data[j].cornerIconId) {
-              if (that.table.data[j].cornerStatus == 2) {
+              if (that.table.data[j].cornerStatus == 3||that.table.data[j].cornerStatuses == 2) {
                 this.dialogPLVisible = true
               } else {
-                that.$message('[' + ids[i] + ']' + '不是审核状态，不允许审核')
+                that.$message('[' + ids[i] + ']' + '不是待审核状态，不允许审核')
               }
             }
           }
