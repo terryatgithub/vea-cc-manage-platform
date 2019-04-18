@@ -2,6 +2,9 @@
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <el-row :gutter="40">
       <el-col :span="24">
+          <div class="base-tit">
+            <span class="el-icon-edit">基本信息</span>
+          </div>
         <el-form ref="form" :model="form" :rules="rules" label-width="120px">
           <el-form-item label="版块名称" prop="pannelList[0].pannelName">
             <el-input v-model="form.pannelList[0].pannelName" placeholder="版块名称"></el-input>
@@ -172,4 +175,12 @@ export default {
 }
 </script>
 <style scoped>
+.base-tit {
+   background-color: #e6e6e6;
+    padding: 10px 2px;
+    margin: 5px 0px
+}
+.base-tit span {
+  padding: 0px 5px
+}
 </style>

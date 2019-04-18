@@ -30,7 +30,7 @@
         <div>专属影院版块：</div>
         <div>专属影院，影片数据 由大数据和媒资库提供，运营人员只需配置相应内容块的影片类型（0 会员影片，1 非会员影片，2 单点影片）。</div>
       </div>
-      <el-form label-width="120px">
+      <el-form label-width="120px" label-position="right">
         <div class="base-tit">
           <span class="el-icon-edit">基本信息</span>
         </div>
@@ -105,9 +105,10 @@
             <tr v-for="(item, index) in auditHistories" :key="index">
               <td>{{ item.lastUpdateDate }}</td>
               <td>{{ item.auditor }}</td>
-              <!-- <td>
-                    {{ basicFn.numToAuditStatus(item.auditFlag)}}
-              </td>-->
+              <td v-if="item.auditFlag == 4">
+                   通过
+              </td>
+              <td v-else>不通过</td>
               <td>{{ item.auditDesc }}</td>
             </tr>
           </tbody>
@@ -409,12 +410,14 @@ export default {
       this.$service
         .privatePannelInfoView({ id: this.viewData.pannelGroupId })
         .then(data => {
-          console.log(data)
+          // console.log(data)
           this.setPanel(data)
         })
     }
   },
   created() {
+ 
+    console.log(this.viewData)
     this.title = '预览'
     this.mode = 'read'
     this.privatePannelInfoView()

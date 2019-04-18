@@ -41,7 +41,6 @@ export default {
   methods: {
     /**打开新增编辑页 */
     openAddPage(id) {
-      debugger
       this.editId = id
       this.model = 'add'
     },

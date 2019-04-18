@@ -1,24 +1,8 @@
 <template>
   <div>
-    <PrivatePannelInfoList
-      v-show="model === 'list'"
-      ref="list"
-      @open-add-page="openAddPage"
-      @open-view-page="openViewPage"
-    ></PrivatePannelInfoList>
-    <PrivatePannelInfoAdd
-      v-if="model === 'add'"
-      :editId="editId"
-      @open-list-page="openListPage"
-      @go-back="goBack"
-    ></PrivatePannelInfoAdd>
-    <PrivatePannelInfoView
-      v-if="model === 'view'"
-      :viewData="viewData"
-      @open-list-page="openListPage"
-       @open-add-page="openAddPage"
-      @go-back="goBack"
-    ></PrivatePannelInfoView>
+    <PrivatePannelInfoList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></PrivatePannelInfoList>
+    <PrivatePannelInfoAdd v-if="model === 'add'" :editId="editId" @open-list-page="openListPage" @go-back="goBack"></PrivatePannelInfoAdd>
+    <PrivatePannelInfoView v-if="model === 'view'" :viewData="viewData" @open-list-page="openListPage" @open-add-page="openAddPage" @go-back="goBack"></PrivatePannelInfoView>
   </div>
 </template>
 <script>
