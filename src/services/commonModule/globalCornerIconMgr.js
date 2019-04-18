@@ -59,18 +59,18 @@ export function batchAudit(params) {
     })
 }
 //角标素材管理-详情页审核
-export function executionTask(data) {
+export function executionTask(params) {
     return this.fetch({
         method: 'post',
-        url: 'api/auditTaskInfo/executionTask.html',
-        data
+        url: 'api/v1/audit/auditTask.html',
+        params
     })
 }
 //角标素材管理—撤销审核
 export function revokedAudit(data) {
     return this.fetch({
         method: 'post',
-        url: 'api/auditTaskInfo/revokedAudit.html',
+        url: 'api/v1/audit/revokedAudit.html',
         data
     })
 }

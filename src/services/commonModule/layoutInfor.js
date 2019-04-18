@@ -32,7 +32,6 @@ export function getLayoutInforById (params) {
     params
   })
 }
-
 export function getAuditDetailButton (data) {
   return this.fetch({
     method: 'post',
@@ -40,7 +39,6 @@ export function getAuditDetailButton (data) {
     data
   })
 }
-
 export function auditTask (data) {
   return this.fetch({
     method: 'post',

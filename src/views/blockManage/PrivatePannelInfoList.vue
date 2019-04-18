@@ -229,7 +229,6 @@ export default {
     },
     //删除
     batchDel() {
-      debugger
       var that = this
       if (that.selected.length == 0) {
         that.$message('未选中记录')

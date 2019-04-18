@@ -52,7 +52,7 @@ export default {
       type: 'icon',
       status: null,
       menuElId: 'globalCornerIcon',
-      notContainBtn: ['claim', 'unclaim', 'copy']
+      notContainBtn: ['claim', 'unclaim', 'copy', 'unaudit']
     }
   },
   props: {
