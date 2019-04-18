@@ -153,7 +153,7 @@ export default {
                     type: 'success',
                   },
                   on: {
-                    click: () => this.duplicatePreview(row.themeId, row.currentVersion)
+                    click: () => this.duplicatePreview(row.themeId, row.duplicateVersion)
                   }
                 }, row.duplicateVersion
               )

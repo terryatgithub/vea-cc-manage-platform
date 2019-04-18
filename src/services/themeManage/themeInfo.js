@@ -29,9 +29,8 @@ export function themeInfoDetail (params) {
 export function savethemeInfo (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/theme/save.html?jsonStr=',
-    data,
-    isJSON: true
+    url: 'api/v1/theme/save.html',
+    data
   })
 }
 // 检查MD5
