@@ -87,37 +87,89 @@ Vue.prototype.deepClone = function (obj) {
   var _this = this;
   var o;
   switch (typeof obj) {
-      case 'undefined':
-          break;
-      case 'string':
-          o = obj + '';
-          break;
-      case 'number':
-          o = obj - 0;
-          break;
-      case 'boolean':
-          o = obj;
-          break;
-      case 'object':
-          if (obj === null) {
-              o = null;
-          } else {
-              if (obj instanceof Array) {
-                  o = [];
-                  for (var i = 0, len = obj.length; i < len; i++) {
-                      o.push(_this.deepClone(obj[i]));
-                  }
-              } else {
-                  o = {};
-                  for (var k in obj) {
-                      o[k] = _this.deepClone(obj[k]);
-                  }
-              }
+    case 'undefined':
+      break;
+    case 'string':
+      o = obj + '';
+      break;
+    case 'number':
+      o = obj - 0;
+      break;
+    case 'boolean':
+      o = obj;
+      break;
+    case 'object':
+      if (obj === null) {
+        o = null;
+      } else {
+        if (obj instanceof Array) {
+          o = [];
+          for (var i = 0, len = obj.length; i < len; i++) {
+            o.push(_this.deepClone(obj[i]));
           }
-          break;
-      default:
-          o = obj;
-          break;
+        } else {
+          o = {};
+          for (var k in obj) {
+            o[k] = _this.deepClone(obj[k]);
+          }
+        }
+      }
+      break;
+    default:
+      o = obj;
+      break;
   }
   return o;
 };
+
+/**
+ *将数字转为对应的审核优先级标示
+ *1一般,2重要,3紧急
+ */
+Vue.prototype.$numToReviewPriority = function (num) {
+  var auditStatus
+  if (typeof (num) === 'number') {
+    switch (num) {
+      case 1:
+        auditStatus = "一般"
+        break
+      case 2:
+        auditStatus = "重要"
+        break
+      case 3:
+        auditStatus = "紧急"
+        break
+      default:
+        auditStatus = "未知"
+    }
+  }
+  return auditStatus
+}
+
+
+/**
+ *将数字转为对应的任务状态标示
+ *1进行中,2终止,3结束,4失效
+ */
+Vue.prototype.$numToTaskStatus = function (num) {
+  var auditStatus
+  if (typeof (num) === 'number') {
+    switch (num) {
+      case 1:
+        auditStatus = "进行中"
+        break
+      case 2:
+        auditStatus = "终止"
+        break
+      case 3:
+        auditStatus = "结束"
+        break
+      case 4:
+        auditStatus = "失效"
+        break
+      default:
+        auditStatus = "未知"
+    }
+  }
+  return auditStatus
+}

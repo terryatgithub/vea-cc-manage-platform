@@ -52,13 +52,6 @@ export default {
   data() {
     return {
       actions: {
-        // audit: {
-        //   type: 'primary',
-        //   text: '审核'
-        // },
-        // unaudit: {
-        //   text: '撤销审核'
-        // }
       },
       auditDialog: false,
       auditForm: {

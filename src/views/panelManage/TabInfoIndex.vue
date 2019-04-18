@@ -1,7 +1,7 @@
 <template>
   <div>
-    <TabInfoList v-show="isShow" ref="list" @open-add-page="openAddPage"/>
-    <TabInfoAdd v-if="!isShow" :editId="editId" @open-list-page="openListPage" @go-back="goBack"/>
+    <TabInfoList v-show="isShow" ref="list" @open-add-page="openAddPage" @open-review-page="openAddPage"/>
+    <TabInfoAdd v-if="!isShow"  :editId="editId" @open-list-page="openListPage" @go-back="goBack"/>
   </div>
 </template>
 
