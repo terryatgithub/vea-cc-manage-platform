@@ -59,3 +59,12 @@ export function privatePannelInfoView(params) {
         return JSON.parse(data.match(/initData = (\{.+\})/)[1])
     })
 }
+/**板块模块共用接口 ************/
+/**删除副本 */
+export function delHistory(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/panel/delHistory.html',
+        params
+    })
+}

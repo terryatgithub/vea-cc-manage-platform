@@ -3,8 +3,8 @@
     <div v-if="mode === 'read'" class="private-panel-info-read">
       <div class="private-panel-info-wrapper">
         <div style="margin-left: 10px">
-          <el-form :inline="true" style="margin:10px 0px" >
-            <HistoryTool :id="id" :type="type" :initialStatus="status" @change="chengeVersion" /> 
+          <el-form :inline="true" style="margin:10px 0px">
+            <HistoryTool :id="id" :type="type" :initialStatus="status" @change="chengeVersion"/>
             <!-- <el-form-item label="版本" v-if="versionList && versionList.length > 0">
               <el-select
                 class="version-selector"
@@ -19,10 +19,10 @@
                   :value="item.value"
                 ></el-option>
               </el-select>
-            </el-form-item> -->
+            </el-form-item>-->
             <!-- <el-form-item>
               <div class="status">{{ STATUS_TEXT[panel.pannelList[0].pannelStatus] }}</div>
-            </el-form-item> -->
+            </el-form-item>-->
           </el-form>
         </div>
       </div>
@@ -105,9 +105,7 @@
             <tr v-for="(item, index) in auditHistories" :key="index">
               <td>{{ item.lastUpdateDate }}</td>
               <td>{{ item.auditor }}</td>
-              <td v-if="item.auditFlag == 4">
-                   审核通过
-              </td>
+              <td v-if="item.auditFlag == 4">审核通过</td>
               <td v-else>审核不通过</td>
               <td>{{ item.auditDesc }}</td>
             </tr>
@@ -124,7 +122,7 @@
       :menuElId="menuElId"
       @go-edit-Page="goEditPage"
       @delete-item="deleteItem"
-      @go-copy-Page="CreatCopy"
+      @copy="CreatCopy"
     ></AuditDetailButton>
   </ContentCard>
 </template>
@@ -266,28 +264,8 @@ export default {
         return target && target.value
       }
     },
-    isReplica() {
-      return this.mode === 'replica'
-    },
-    buttonGroupParams() {
-      const panel = this.panel || {}
-      return {
-        type: 'pannel',
-        menuElId: 'privatePannelInfo',
-        status: panel.pannelList[0].pannelStatus,
-        resourceId: panel.pannelGroupId,
-        version: panel.currentVersion
-      }
-    }
   },
   methods: {
-    chengeVersion(version) {
-      this.$service.privatePannelInfoView({id: this.viewData.pannelGroupId,version: version}).then(data => {
-        console.log(data)
-         this.setPanel(data)
-      })
-      console.log(version)
-    },
     //业务分类
     getCategoryLabel(value) {
       const selected = this.panelGroupCategoryOptions.find(function(item) {
@@ -345,7 +323,9 @@ export default {
     //版本
     getHistory() {
       var that = this
-      that.$service.getHistory({ id: that.viewData.pannelGroupId, type: 'pannel' }).then(data => {
+      that.$service
+        .getHistory({ id: that.viewData.pannelGroupId, type: 'pannel' })
+        .then(data => {
           if (data.rows) {
             data.rows.forEach(function(v, i) {
               that.versionList.push({
@@ -361,8 +341,8 @@ export default {
                   that.parasNumToStr(v.status)
               })
             })
-        }
-      })
+          }
+        })
     },
     parasNumToStr(status) {
       const methodsMap = [
@@ -376,28 +356,13 @@ export default {
       const method = methodsMap[status]
       return method
     },
-    isAllowCopy() { 
-      //如果版本中有草稿或者待审核版本的时候，不允许创建副本
-
-      // const STATUS = this.STATUS
-      // const found = this.versionList.some(function(item) {
-      //   const status = item.row.status
-      //   return (
-      //     status === STATUS.draft ||
-      //     status === STATUS.waiting ||
-      //     status === STATUS.rejected
-      //   )
-      // })
-     
-      // // this.notContainBtn.push('copy')
-      // return !found
-    },
     //审核信息
-    getHandlePerson() {
+    getHandlePerson(data) {
+      console.log(data)
       this.$service
         .getHandlePerson({
-          id: this.viewData.pannelGroupId,
-          version: this.viewData.currentVersion,
+          id: data.pannelGroupId,
+          version: data.currentVersion,
           type: 'pannel'
         })
         .then(data => {
@@ -407,7 +372,16 @@ export default {
     goEditPage() {
       this.$emit('open-add-page', this.viewData.pannelGroupId)
     },
-    deleteItem() {},
+    deleteItem() {
+      console.log(this.version)
+      if (window.confirm('确定要删除')) {
+        // this.$service
+        //   .delHistory({ id: this.viewData.pannelGroupId,version: }, '删除成功')
+        //   .then(data => {
+        //     this.$emit('open-list-page')
+        //   })
+      }
+    },
     CreatCopy() {
       this.$emit('open-add-page', this.viewData.pannelGroupId)
     },
@@ -415,24 +389,32 @@ export default {
       this.$service
         .privatePannelInfoView({ id: this.viewData.pannelGroupId })
         .then(data => {
-          // console.log(data)
           this.setPanel(data)
+           this.getHandlePerson(data)
         })
-    }
+    },
+     chengeVersion(version) {
+      this.$service
+        .privatePannelInfoView({
+          id: this.viewData.pannelGroupId,
+          version: version
+        })
+        .then(data => {
+          this.setPanel(data)
+          this.getHandlePerson(data)
+        })
+    },
   },
   created() {
- 
     console.log(this.viewData)
     this.title = '预览'
     this.mode = 'read'
-    this.privatePannelInfoView()
+    this.privatePannelInfoView() //预览
     this.id = this.viewData.pannelGroupId
     this.version = this.viewData.currentVersion
     this.status = this.viewData.pannelStatus
     this.getDictType()
     this.getHistory()
-    this.isAllowCopy()
-    this.getHandlePerson()
   }
 }
 </script>
@@ -482,18 +464,18 @@ export default {
 }
 .base-info {
   background-color: #fef8b8;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 .base-info div {
-  padding: 5px
+  padding: 5px;
 }
 .base-tit,
-.base-tit auditor-title  span{
-    background-color: #e6e6e6;
-    padding: 10px 2px;
+.base-tit auditor-title span {
+  background-color: #e6e6e6;
+  padding: 10px 2px;
 }
 .up-addlist {
-  margin: 10px 0px
+  margin: 10px 0px;
 }
 </style>

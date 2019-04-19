@@ -1,7 +1,10 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div>
-      <div v-if="mode === 'create' || mode === 'edit' || mode === 'replica'" class="private-panel-info-upsert">
+      <div
+        v-if="mode === 'create' || mode === 'edit' || mode === 'replica'"
+        class="private-panel-info-upsert"
+      >
         <div class="base-info">
           <div>专属影院版块：</div>
           <div>专属影院，影片数据 由大数据和媒资库提供，运营人员只需配置相应内容块的影片类型（0 会员影片，1 非会员影片，2 单点影片）。</div>
@@ -21,7 +24,10 @@
             </el-select>
             <span class="spform">注：只有一个权限的操作者不能选择业务分类</span>
           </el-form-item>
-          <el-form-item label="内容源" v-if="panelGroupCategoryValue === 'common' || panelGroupCategoryValue === 'video'">
+          <el-form-item
+            label="内容源"
+            v-if="panelGroupCategoryValue === 'common' || panelGroupCategoryValue === 'video'"
+          >
             <el-radio-group
               :value="panel.pannelResource"
               @input="handlePannelResourceChange"
@@ -107,16 +113,16 @@
           </el-form-item>
         </el-form>
       </div>
-    <div style="padding: 10px;text-align:right">
-          <el-button type="warning" @click="handleSubmitAudit">提交审核</el-button>
-          <el-button type="primary" @click="handleSaveDraft">保存草稿</el-button>
-        </div>
+      <div style="padding: 10px;text-align:right">
+        <el-button type="warning" @click="handleSubmitAudit">提交审核</el-button>
+        <el-button type="primary" @click="handleSaveDraft">保存草稿</el-button>
+      </div>
     </div>
   </ContentCard>
 </template>
 <script>
 export default {
-    props:['editId'],
+  props: ['editId'],
   data() {
     const blockVideoTypeOptions = [
       {
@@ -325,9 +331,14 @@ export default {
         data,
         function(err) {
           if (!err) {
-            this.$service.privatePanelUpsert({jsonStr:JSON.stringify(this.parseDataToApi(data))}, '保存成功').then(
-              this.$emit('open-list-page')
-            )
+            this.$service
+              .privatePanelUpsert(
+                { jsonStr: JSON.stringify(this.parseDataToApi(data)) },
+                '保存成功'
+              )
+              .then(data => {
+                this.$emit('open-list-page')
+              })
           } else {
             this.$message({
               type: 'error',
@@ -366,7 +377,7 @@ export default {
       return panel
     },
     parseApiToData(data) {
-     const panel = JSON.parse(JSON.stringify(data))
+      const panel = JSON.parse(JSON.stringify(data))
       const firstPanel = data.pannelList[0]
       panel.pannelResource = firstPanel.pannelResource
       panel.showTitle = firstPanel.showTitle == 1 ? true : false
@@ -399,21 +410,21 @@ export default {
         )
     },
     getDictType() {
-        this.$service.getDictType().then(data => {
-            console.log(data)
-            this.panelGroupCategoryOptions = data
-        })
+      this.$service.getDictType().then(data => {
+        console.log(data)
+        this.panelGroupCategoryOptions = data
+      })
     }
   },
   created() {
-     if (this.editId !== null && this.editId !== undefined) {
+    if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
       this.mode = 'edit'
-     this.$service.getEditData({id: this.editId}).then(data => {
-       console.log(data)
-       this.setPanel(data)
-       this.getHistoryList()
-     })
+      this.$service.getEditData({ id: this.editId }).then(data => {
+        console.log(data)
+        this.setPanel(data)
+        this.getHistoryList()
+      })
     } else {
       this.title = '新增'
       this.mode = 'create'
@@ -468,19 +479,19 @@ export default {
 }
 .base-info {
   background-color: #fef8b8;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 .base-info div {
-  padding: 5px
+  padding: 5px;
 }
 .base-tit,
-.base-tit auditor-title  span{
-    background-color: #e6e6e6;
-    padding: 10px 2px;
-    margin: 5px 0px
+.base-tit auditor-title span {
+  background-color: #e6e6e6;
+  padding: 10px 2px;
+  margin: 5px 0px;
 }
 .up-addlist {
-  margin: 10px 0px
+  margin: 10px 0px;
 }
 </style>
