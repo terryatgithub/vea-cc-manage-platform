@@ -226,7 +226,13 @@ export default {
         thumbImgFileList.push(thumbImgFile)
         this.$refs.thumbImg.fileNum++
         // pictureEntitys
-        form.pictureEntitys = data.pictureEntitys
+        form.pictureEntitys = data.pictureEntitys.map(item => {
+          return {
+            pictureName: item.pictureName,
+            pictureResolution: item.pictureResolution,
+            pictureUrl: item.pictureUrl
+          }
+        })
         let pictureEntitysFile = {
           name: 'file'
         }
@@ -234,7 +240,13 @@ export default {
         pictureEntitysFileList.push(pictureEntitysFile)
         this.$refs.pictureEntitys.fileNum++
         // tabBgEntitys
-        form.tabBgEntitys = data.tabBgEntitys
+        form.tabBgEntitys = data.tabBgEntitys.map(item => {
+          return {
+            pictureName: item.pictureName,
+            pictureResolution: item.pictureResolution,
+            pictureUrl: item.pictureUrl
+          }
+        })
         let tabBgEntitysFile = {
           name: 'file'
         }
