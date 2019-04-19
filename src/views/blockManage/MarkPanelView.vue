@@ -62,6 +62,7 @@
         :menuElId="menuElId"
         @go-edit-Page="goEditPage"
         @delete-item="deleteItem"
+        @copy="createCopy"
       ></AuditDetailButton>
     </div>
   </ContentCard>
@@ -86,7 +87,7 @@ export default {
       type: 'pannel',
       status: null,
       menuElId: 'pannelInfo',
-      notContainBtn: ['claim', 'unclaim', 'copy'],
+      notContainBtn: ['claim', 'unclaim'],
       pannelType: 'pannel',
       auditHistories: [],
       blockContentProps: {},
@@ -136,6 +137,7 @@ export default {
           )
           this.versions = data.currentVersion
           this.clientType = data.clientType
+          this.getHandlePerson(data)
         })
     },
     parasNumToStr(status) {
@@ -161,50 +163,29 @@ export default {
         this.releaseTime = data.releaseTime
       })
     },
-    changeVsersion() {},
-    // getHistoryList() {
-    //   var that = this
-    //   const historyObj = {
-    //     id: that.viewData.pannelGroupId,
-    //     type: that.pannelType
-    //   }
-    //   that.$service.getHistoryList(historyObj).then(data => {
-    //     var version9 = ''
-    //     if (data.rows == null || data.rows.length == 0) {
-    //       that.isShowVersion = false
-    //       return false
-    //     }
-    //     that.isShowVersion = true
-    //     data.rows.forEach(function(v, i) {
-    //       that.versionList.push({
-    //         value: v.version,
-    //         label:
-    //           v.version +
-    //           '/' +
-    //           v.lastUpdateDate +
-    //           '/' +
-    //           v.modifierName +
-    //           '/' +
-    //           that.parasNumToStr(v.status)
-    //       })
-    //       console.log(that.versionList)
-    //       if (v.version == param.currentVersion) {
-    //         that.versions = v.version
-    //       }
-    //       if (v.status === 9) {
-    //         version9 = v.version
-    //       }
-    //     })
-    //     if (that.versions == '') {
-    //       that.versions = version9
-    //     }
-    //   })
-    // },
-    getHandlePerson() {
+    changeVsersion(version) {
+      this.$service
+        .getViewData({ id: this.viewData.pannelGroupId, version: version })
+        .then(data => {
+          console.log(data)
+           this.getHandlePerson(data)
+          this.buttonGroup.params = data
+          this.pannelName = data.pannelList[0].pannelName
+          this.pannelTitle = data.pannelList[0].pannelTitle
+          this.pannelResource = data.pannelList[0].pannelResource
+          this.pannelStatus = this.parasNumToStr(
+            data.pannelList[0].pannelStatus
+          )
+          this.versions = data.currentVersion
+          this.clientType = data.clientType
+        })
+     
+    },
+    getHandlePerson(data) {
       return this.$service
         .getHandlePerson({
-          id: this.viewData.pannelGroupId,
-          version: this.viewData.currentVersion,
+          id: data.pannelGroupId,
+          version: data.currentVersion,
           type: 'pannel'
         })
         .then(data => {
@@ -233,13 +214,15 @@ export default {
             this.$emit('open-list-page')
           })
       }
+    },
+    createCopy() {
+      this.$emit('open-add-page', this.viewData.pannelGroupId)
     }
   },
   created() {
     this.id = this.viewData.pannelGroupId
     this.status = this.viewData.pannelStatus
     this.version = this.viewData.currentVersion
-    this.getHandlePerson()
     this.getViewData().then(() => {
       this.getTimedInfo()
     })

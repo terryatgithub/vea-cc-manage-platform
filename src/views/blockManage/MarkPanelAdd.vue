@@ -158,7 +158,7 @@ export default {
     },
     /**编辑数据回显 */
     getEditData() {
-      this.$service.getEditData({ id: this.editId }).then(data => {
+      this.$service.getMarkEditData({ id: this.editId }).then(data => {
         console.log(data)
         this.form = data
       })
