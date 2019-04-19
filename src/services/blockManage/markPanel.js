@@ -16,7 +16,7 @@ export function getBusinessType (data) {
   })
 }
 // 回显数据
-export function getEditData (params) {
+export function getMarkEditData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/markPanel/edit.html',
