@@ -241,11 +241,17 @@ export default {
       this.$emit('open-add-page', selected[0])
     },
     batchDel() {
-      const selected = this.selected.join(',')
-      this.$service.themeInfoRemove({id: selected}).then(() => {
-        this.selected = []
-        this.fetchData()
-      })
+      if(this.selected.length === 0) {
+        this.$message('请选择数据后进行操作')
+        return 
+      }
+      if (window.confirm('确定要删除吗')) {
+        const selected = this.selected.join(',')
+        this.$service.themeInfoRemove({id: selected}).then(() => {
+          this.selected = []
+          this.fetchData()
+        })
+      }
     },
     /**
      * 行选择操作

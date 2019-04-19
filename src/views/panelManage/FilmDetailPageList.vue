@@ -228,9 +228,15 @@ export default {
       })
     },
     batchDel() {
-      const select = this.selected.join(',')
-      this.$service.removeFilmDetailPage({ id: select }, '删除成功')
-      this.fetchData()
+      if (this.selected.length === 0) {
+        this.$message('请选择再删除')
+        return
+      }
+      if (window.confirm('确定要删除吗')) {
+        const select = this.selected.join(',')
+        this.$service.removeFilmDetailPage({ id: select }, '删除成功')
+        this.fetchData()
+      }
     },
     /**
      * 行选择操作
