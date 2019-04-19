@@ -188,6 +188,7 @@ export default {
   },
   created() {
     if (this.editId) {
+      // 编辑，预览中的创建副本/若version存在，则为预览
       this.title = '编辑页面'
       this.$service.themeInfoDetail({ id: this.editId, version: this.version }).then(data => {
         const form = this.form
@@ -243,10 +244,11 @@ export default {
 
         form.systemDefault = data.systemDefault
         form.themeStatus = 3
+        form.cornerIconEntities = form.cornerIconEntities
         
         this.editForm = {
           themeId: data.themeId,
-          currentVersion: this.version ? '' : data.currentVersion
+          currentVersion: this.version ? undefined : data.currentVersion
         }
       })
     } else {

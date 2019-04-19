@@ -209,7 +209,7 @@ export default {
     },
     // 按钮操作
     addFilmDetail() {
-      this.$emit("open-add-page")
+      this.$emit('open-add-page')
     },
     editData() {
       const selected = this.selected
@@ -223,7 +223,7 @@ export default {
           this.$alert('该状态不允许编辑！', '操作提示', {confirmButtonText: '确定'})
           return false
         }else {
-          this.$emit("open-add-page")
+          this.$emit('open-add-page', selected[0])
         }
       })
     },
