@@ -70,6 +70,10 @@ export default {
     Table
   },
 
+  props: {
+    editId: Number
+  },
+
   watch: {
     'form.tabCategory': {
       deep: true,
@@ -91,7 +95,7 @@ export default {
 
   data () {
     return {
-      title: '新增页面',
+      title: '',
       rules: {
         tabName: [
           { required: true, message: '请输入主题名称', trigger: 'blur' }
@@ -303,6 +307,11 @@ export default {
   },
   created() {
     this.getMediaResourceInfo()
+    if(this.editId) {
+      this.title = '编辑页面'
+    }else {
+      this.title = '新增页面'
+    }
   }
 
 }
