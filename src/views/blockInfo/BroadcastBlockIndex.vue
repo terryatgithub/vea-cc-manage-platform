@@ -35,6 +35,7 @@ export default {
     */
     openListPage () {
       this.mode = 'list'
+      this.editData = {}
       this.$refs.list.fetchData()// 更新页面
     },
     /**
@@ -42,6 +43,7 @@ export default {
     */
     goBack () {
       this.mode = 'list'
+      this.editData = {}
     }
   }
 };

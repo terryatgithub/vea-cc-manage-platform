@@ -1,14 +1,10 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
+
     <div class="split-bar">
       基本信息
     </div>
     <el-form :model="basicForm" ref="basicForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="历史版本" v-if="disabled">
-        <el-select v-for="(h, index) in historyList" :key="index">
-          <el-option :label ="h" :value="index"></el-option>
-        </el-select>
-      </el-form-item>
       <el-form-item label="审核状态" v-if="disabled">
          {{$numToAuditStatus(status)}}
       </el-form-item>
@@ -295,6 +291,15 @@
     </div>
     <div class="submitCheck" >
       <el-button type="primary" v-if="!disabled"  @click="submitCheck">提交审核</el-button>
+      <HistoryTool
+      v-if="disabled"
+       :id="id"
+       :type="type"
+       :initialStatus="status"
+       @change="getVersion"
+      >
+
+      </HistoryTool>
        <AuditDetailButton
             v-if="disabled"
             :id="id"
@@ -360,7 +365,7 @@ import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
 import AuditDetailButton from '@/components/AuditDetailButton'
 import { AppParams } from 'admin-toolkit'
-
+import HistoryTool from './../../components/HistoryTool'
 export default {
   components: {
     draggable,
@@ -370,7 +375,8 @@ export default {
     DialogCorner,
     selectClick,
     AppParams,
-    AuditDetailButton
+    AuditDetailButton,
+    HistoryTool
   },
 
   props: {
@@ -555,6 +561,7 @@ export default {
   },
 
   computed: {
+   
     classObject: function() {
       if (this.normalForm.sign === 'autoSet') {
         return {
@@ -597,6 +604,9 @@ export default {
       // }
   },
   methods: {
+     getVersion(version){
+      debugger
+    },
     goEditPage() {
        this.$emit("go-edit-Page")
     },
@@ -1197,17 +1207,6 @@ export default {
         this.basicForm.containerName = data.containerName
         this.basicForm.containerType = data.containerType
       })
-    },
-    getHistoryList(){
-      this.$service.getHistoryList({ id: this.editData.id, type: 'block'}).then((data) => {
-       if (data === null)
-           return
-       data = data.rows
-       this.historyList =  data.reduce((result, current) => {
-           result.push(current.version + "/" + current.lastUpdateDate + "/" + current.modifierName + "/" + this.$numToAuditStatus(current.status))
-           return result 
-         },[])
-      })
     }
   },
   created() {
@@ -1216,15 +1215,13 @@ export default {
     this.lowerForm = Object.assign({}, this.versionForm)
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
-    if (this.editData !=='{}') {
+    if (JSON.stringify(this.editData) !=='{}') {
       this.id = this.editData.id
       this.version = this.editData.currentVersion
       this.status = this.editData.status
        if (this.isReview) {
          this.title = '预览页面'
          this.disabled = true
-         if (parseInt(this.status) === 4)
-         this.getHistoryList()
        } else {
          this.title = '编辑页面'
          this.disabled = false

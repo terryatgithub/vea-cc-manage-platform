@@ -8,9 +8,17 @@
       @filter-reset="handleFilterReset"
     >
       <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
+        <ButtonGroupForListPage 
+        pageName='layout' 
+        :not-contain-btns="notContainBtns"
+        @add="addItem"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage>
+        <!-- <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button> -->
       </div>
       <Table
         :props="table.props"
@@ -29,13 +37,16 @@
 <script>
 import _ from 'gateschema'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 export default {
   components: {
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     return {
+      notContainBtns: [ 'audit', 'batchAudit'],
       layoutType: {
         '主页6.0': 1,
         '影视V2': 2

@@ -13,7 +13,7 @@ export function getHomePageInfoMenu () {
 export function getHomePageInfoList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/homepageInfo/pageList.html',
+    url: 'api/v1/homepage/pageList.html',
     data
   })
 }

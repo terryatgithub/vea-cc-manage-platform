@@ -26,7 +26,7 @@
         @all-row-selection-change="handleAllRowSelectionChange"
       />
       <!--设置操作-->
-      <el-dialog title="设置操作" :visible.sync="setDialogVisible">
+      <el-dialog title="设置操作" :visible.sync="setDialogVisible" v-if="setDialogVisible">
         <span>
           <el-transfer
             v-model="svalue"

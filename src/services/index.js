@@ -2,7 +2,7 @@ import Vue from 'vue'
 import { utils } from 'admin-toolkit'
 import fetch from './fetch'
 import login from './login'
-import getMenu from './getMenu'
+import * as getMenu from './getMenu'
 import * as upload from './upload'
 import * as userConfig from './systemSetting/userConfig'
 import * as roleManage from './systemSetting/roleManage'
@@ -24,11 +24,12 @@ import * as globalCornerIconMgr from './commonModule/globalCornerIconMgr'
 import * as advertisement from './advertisement'
 import * as privatePannel from './blockManage/privatePannel'
 import * as todoTask from './todoTask'
+import * as policyManage from './homePageManage/policyManage'
 const service = {
   state: {},
   fetch,
   login,
-  getMenu,
+  ...getMenu,
   ...advertisement,
   ...upload,
   ...userConfig,
@@ -49,6 +50,7 @@ const service = {
   ...globalCornerIconMgr,
   ...adminMasterControll,
   ...privatePannel,
-  ...todoTask
+  ...todoTask,
+  ...policyManage
 }
 Vue.prototype.$service = utils.wrapService(service)

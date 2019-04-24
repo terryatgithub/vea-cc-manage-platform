@@ -191,30 +191,6 @@ export default {
     };
   },
   methods: {
-    // click (index) {
-    //   const methodsMap = ['addData', 'editData', 'deleteData', 'selectData', 'handleFilterReset', 'printData', 'importData', 'exportData', 'dealData']
-    //   const method = methodsMap[index]
-    //   if (index == null) {
-    //     return this.$message({
-    //       type: 'error',
-    //       message: '点击失败'
-    //     })
-    //   }
-    //   if(index === 1){
-    //     if (this.selected.length==0) {
-    //        this.$message('请选择一条数据')
-    //     }
-    //     else if(this.selected.length >1){
-    //        this.$message('只能选择一条数据')
-    //     }
-    //     else{
-    //       this[method](this.selected[0])
-    //     }
-    //   } else {
-    //     this[method]()
-    //   }
-
-    // },
     /**
      * 新增
      */

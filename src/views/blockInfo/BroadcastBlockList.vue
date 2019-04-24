@@ -8,6 +8,9 @@
       @filter-reset="handleFilterReset"
     >
       <div class="btns">
+        <!-- <ButtonGroupForListPage>
+          
+        </ButtonGroupForListPage> -->
         <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <!-- <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button> -->
@@ -56,11 +59,13 @@
 <script>
 import _ from 'gateschema'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 const statusOption = { 待审核: 3, 审核通过: 4, 审核不通过: 5 }
 export default {
   components: {
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -155,7 +160,6 @@ export default {
       })
     },
     openReview(row){
-      debugger
        this.$emit('open-add-page', row, true)
     },
     /**

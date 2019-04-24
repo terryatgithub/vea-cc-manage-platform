@@ -173,3 +173,23 @@ Vue.prototype.$numToTaskStatus = function (num) {
   }
   return auditStatus
 }
+Vue.prototype.$platform = function (platform) {
+  switch (platform) {
+    case 'yinhe':
+      return '爱奇艺'
+    case 'tencent':
+      return '腾讯'
+    case 'voole':
+      return '优朋'
+  }
+}
+/** 检验MAC地址是否正确 */
+Vue.prototype.$checkMacType = function (rule, value, callback) {
+  value = value.replace(/(^\s*)|(\s*$)/g, '') // 去掉空格
+  var reg = /^[a-zA-Z0-9]{12}$/
+  if (reg.test(value)) {
+    callback()
+  } else {
+    callback(new Error('请输入12位的MAC地址'))
+  }
+}
