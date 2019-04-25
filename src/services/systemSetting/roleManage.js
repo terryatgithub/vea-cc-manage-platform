@@ -37,7 +37,7 @@ export function getPoliciesAndCrowds (params) {
     params
   })
 }
-export function getCrowdOfPolicy (params) {
+export function rolePageGetCrowdOfPolicy (params) {
   return this.fetch({
     method: 'get',
     url: 'api/tag/list.html?type=crowd',
