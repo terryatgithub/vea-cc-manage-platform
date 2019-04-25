@@ -93,7 +93,7 @@ export default {
   data() {
     let _this = this
     return {
-      platform: '',
+      platform: 'tencent', //默认平台
       form: {
         platform: null,
         model: null,
@@ -144,25 +144,13 @@ export default {
       }
     }
   },
-  // watch: {
-  //   'filter.platform': function(newV,oldV){
-  //     debugger
-  //      if(window.confirm("是否要切换内容源，切换内容源之后，首页方案数据将会清除掉")){
-  //         this.platform = newV
-  //         this.fetchData()
-  //      } else {
-  //        this.filter.platform = oldV
-  //      }
-  //   }
-  // },
   methods: {
     changePlatform($event){ 
-      debugger
       if(window.confirm("是否要切换内容源，切换内容源之后，首页方案数据将会清除掉")){
-         // this.platform = newV
+          this.platform = $event
           this.fetchData()
        } else {
-        // this.formSearch.platform = oldV
+          this.formSearch.platform = this.platform
        }
     },
     addModelChip() {
@@ -255,54 +243,14 @@ export default {
     }
   },
   created() {
-    let filterSchema = _.map({
-      platform: _.o
-        .enum({
-          腾讯: 'tencent',
-          爱奇艺: 'yinhe',
-          优朋: 'voole',
-          优酷: 'youku'
-        })
-        .other('form', {
-          component: 'Select',
-          placeholder: '内容源',
-          cols: {
-            item: 3,
-            label: 0
-          }
-        }),
-      model: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '机型',
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }),
-      chip: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '机芯',
-        cols: {
-          item: 3,
-          label: 0
-        }
-      })
-    }).other('form', {
-      layout: 'inline',
-      footer: {
-        cols: {
-          label: 0,
-          wrapper: 24
-        },
-        showSubmit: true,
-        submitText: '查询',
-        showReset: true,
-        resetText: '重置'
-      }
-    })
-    this.filterSchema = filterSchema
     this.fetchData()
   }
 }
 </script>
+<style lang="stylus" scoped>
+.search
+  display flex
+  justify-content flex-end
+</style>
+
 

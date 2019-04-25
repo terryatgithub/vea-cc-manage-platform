@@ -311,11 +311,12 @@ export default {
         placeholder: '推荐位包名',
         component: 'Input'
       })
-    }).other('form', {
+    })
+    .other('form', {
       cols: {
         item: 6,
         label: 0,
-        wrapper: 18
+        wrapper: 20
       },
       layout: 'inline',
       footer: {
@@ -345,10 +346,6 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.content >>> .content-list .filter-form .el-form
-  display inline
-.content >>> .content-list .filter-form .sf-item--inline
-  margin 0
 .content >>> .el-table .cell
   display flex
   justify-content center

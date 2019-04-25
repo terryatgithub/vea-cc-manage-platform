@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ActionList :actions="actions" :target="this" class ="buttonGroup"></ActionList>
+    <ActionList :actions="actions" :target="this" class="buttonGroup"></ActionList>
   </div>
 </template>
 <script>
@@ -13,45 +13,57 @@ export default {
     pageName: String,
     notContainBtns: {
       type: Array,
-       default: function () {
+      default: function() {
         return []
-       }
+      }
     }
   },
   data() {
     return {
-      actions: {
-
-      }
+      actions: {}
     }
   },
   methods: {
     add() {
-      this.$emit("add")
+      this.$emit('add')
     },
-    edit(){
-      this.$emit("edit")
+    edit() {
+      this.$emit('edit')
     },
-    delete(){
-      this.$emit("delete")
+    delete() {
+      this.$emit('delete')
     }
   },
   created() {
-    this.$service.getButtonGroupForPageList(this.pageName).then((data) =>{
-       let action = {}
-        data.forEach(v => {
-          if (!this.notContainBtns.includes(v.runComm)) {
-            action[v.runComm] = { text: v.runName, type: 'primary' }
+    this.$service.getButtonGroupForPageList(this.pageName).then(data => {
+      let action = {}
+      data.forEach(v => {
+        if (!this.notContainBtns.includes(v.runComm)) {
+          switch (v.runComm) {
+            case 'add':
+              action[v.runComm] = { text: v.runName, type: 'primary' }
+              break
+            case 'edit':
+              action[v.runComm] = { text: v.runName, type: 'success' }
+              break
+            case 'delete':
+              action[v.runComm] = { text: v.runName, type: 'danger' }
+              break
+            default:
+              action[v.runComm] = { text: v.runName, type: 'primary' }
+              break
           }
-        })
-        this.actions = action
+        }
+      })
+      this.actions = action
     })
   }
 }
 </script>
 <style lang="stylus" scoped>
-.buttonGroup 
-    justify-content flex-start
+.buttonGroup
+  justify-content: flex-start
+  margin: 10px 0px
 </style>
 
 

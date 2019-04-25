@@ -30,6 +30,22 @@ export function getHomePageModelPageList(data) {
     data
   })
 }
+/** 新增保存 */
+export function policyConfSave(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/policyConf/save.html',
+    data
+  })
+}
+/**删除 */
+export function policyConfRemove(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/policyConf/remove.html',
+    data
+  })
+}
 
 export function crowdRelGet(params) {
   return this.fetch({
@@ -41,7 +57,7 @@ export function crowdRelGet(params) {
 
 export function getCrowdOfPolicyWithCache(id) {
   if (!cache.fetchCrowdPromise[id]) {
-    cache.fetchCrowdPromise[id] = getCrowdOfPolicy(id)
+    cache.fetchCrowdPromise[id] = this.getCrowdOfPolicy(id)
   }
   return cache.fetchCrowdPromise[id]
 }

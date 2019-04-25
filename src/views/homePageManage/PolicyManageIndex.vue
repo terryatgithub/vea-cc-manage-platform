@@ -2,18 +2,17 @@
   <div>
     <PolicyManageList v-show="mode==='list'" ref="list" @open-add-page="openAddPage"></PolicyManageList>
     <PolicyManageAdd v-if="mode==='add'" :isReview="isReview" :editData="editData"  @add-home-page="addHomePage" @go-edit-Page="openListPage(editData, false)"  @open-list-page="openListPage" @go-back="goBack"></PolicyManageAdd>
-    <PolicyManageAddHomePage v-if="mode==='addHomePage'"></PolicyManageAddHomePage>
+    <!-- <PolicyManageAddHomePage v-if="mode==='addHomePage'"></PolicyManageAddHomePage> -->
   </div>
 </template>
 <script>
 import PolicyManageList from  './PolicyManageList'
 import PolicyManageAdd from './PolicyManageAdd'
-import PolicyManageAddHomePage from './PolicyManageAddHomePage'
+// import PolicyManageAddHomePage from './PolicyManageAddHomePage'
 export default {
   components: {
     PolicyManageList,
-    PolicyManageAdd,
-    PolicyManageAddHomePage
+    PolicyManageAdd
   },
   data() {
     return {

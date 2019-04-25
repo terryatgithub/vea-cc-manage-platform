@@ -7,8 +7,14 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
+      <!-- <ButtonGroupForListPage 
+      pageName="baDept" 
+      @add="addDep" 
+      @edit="editData" 
+      @delete="batchDel">
+      </ButtonGroupForListPage> -->
       <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addUser">新增</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="addDep">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
       </div>
@@ -28,6 +34,7 @@
 </template>
 
 <script>
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import { Input } from 'element-ui'
 import _ from 'gateschema'
@@ -35,9 +42,10 @@ import _ from 'gateschema'
 export default {
   components: {
     ContentWrapper,
-    Table
+    Table,
+    ButtonGroupForListPage
   },
-  
+
   data() {
     return {
       filterSchema: null,
@@ -76,12 +84,16 @@ export default {
             prop: 'disabled',
             fit: true,
             sortable: true,
-            render: (h, {row}) => {
-              return h('div', {
-                style: {
-                  color: ['red', 'green'][row.disabled]
-                }
-              }, ['否', '是'][row.disabled])
+            render: (h, { row }) => {
+              return h(
+                'div',
+                {
+                  style: {
+                    color: ['red', 'green'][row.disabled]
+                  }
+                },
+                ['否', '是'][row.disabled]
+              )
             }
           },
           {
@@ -96,19 +108,21 @@ export default {
             width: 100,
             sortable: true,
             render: (h, { row }) => {
-              return h(Input, 
-                { 
-                  ref: 'input',
-                  props: { value: row.seq },
-                  on: {
-                    input: value => {
-                      row.seq = value
-                    },
-                    blur: (value) => {
-                      this.$service.sysDeptUpdateSeq({id: row.deptId, seq: row.seq})
-                    }
+              return h(Input, {
+                ref: 'input',
+                props: { value: row.seq },
+                on: {
+                  input: value => {
+                    row.seq = value
+                  },
+                  blur: value => {
+                    this.$service.sysDeptUpdateSeq({
+                      id: row.deptId,
+                      seq: row.seq
+                    })
                   }
-                })
+                }
+              })
             }
           },
           {
@@ -145,13 +159,13 @@ export default {
       return filter
     },
     //新增页面
-    addUser() {
+    addDep() {
       this.$emit('open-add-page', null)
     },
     //编辑页面
     editData() {
-      if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selected[0])
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('open-add-page', this.selected[0])
       }
     },
     // 表单重设
@@ -223,49 +237,30 @@ export default {
   created() {
     let filterSchema = _.map({
       deptName: _.o.string.other('form', {
-        placeholder: '部门名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '部门名称'
       }),
       deptTel: _.o.string.other('form', {
-        placeholder: '部门电话',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '部门电话'
       }),
       deptFax: _.o.string.other('form', {
-        placeholder: '部门传真',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '部门传真'
       }),
       remark: _.o.string.other('form', {
-        placeholder: '备注',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '备注'
       }),
       pid: _.o.number.other('form', {
-        placeholder: '部门父编号',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '部门父编号'
       }),
       disabled: _.o.enum({ 否: 0, 是: 1 }).other('form', {
         component: 'Select',
-        placeholder: '是否禁用',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '是否禁用'
       })
     }).other('form', {
+      cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {
@@ -285,6 +280,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.btns 
+.btns
   margin-bottom: 10px
 </style>

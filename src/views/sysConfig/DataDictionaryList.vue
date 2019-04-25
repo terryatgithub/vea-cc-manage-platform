@@ -7,6 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
+     <!-- <ButtonGroupForListPage 
+        pageName='dict' 
+        @add="addDict"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage> -->
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addDict">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -52,12 +59,14 @@
 <script>
 import _ from 'gateschema'
 import ButtonList from './../../components/ButtonLIst'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 export default {
   components: {
     ActionList,
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -221,7 +230,6 @@ export default {
       this.table.selected = []
     },
     updateTableSelected() {
-      debugger
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -232,7 +240,6 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
-      debugger
       if (type === 'filter') {
         if (this.pagination) {
           this.pagination.currentPage = 1
@@ -272,37 +279,26 @@ export default {
     let filterSchema = _.map({
       dictId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '字典ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '字典ID'
       }),
       dictCnName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '字典名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '字典名称'
       }),
       dictEnName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '字典值',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '字典值'
       }),
       dictCategory: _.o.enum(this.dictCategories).other('form', {
         component: 'Select',
         placeholder: '字典分类',
-        cols: {
-          item: 3,
-          label: 0
-        }
       })
     }).other('form', {
+       cols: {
+        item: 5,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

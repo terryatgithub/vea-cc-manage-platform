@@ -7,6 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
+     <!-- <ButtonGroupForListPage 
+        pageName='userConfig' 
+        @add="addUser"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage> -->
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus"  @click="addUser">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -58,11 +65,13 @@
 </template>
 <script>
 import _ from 'gateschema'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
   components: {
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data () {
     return {
@@ -359,54 +368,35 @@ export default {
     let filterSchema = _.map({
       userName: _.o.string.other("form", {
         component: "Input",
-        placeholder: '用户名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '用户名称'
       }),
       deptId: _.o.enum(this.depts).other('form', {
         component: 'Select',
-        placeholder: '所在部门',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '所在部门'
       }),
       loginName: _.o.string.format('email').other('form', {
         component: 'Input',
-        placeholder: '登录账号',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '登录账号'
       }),
       email: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '电子邮箱',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '电子邮箱'
       }),
       loginIp: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '最后登录IP',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '最后登录IP'
       }),
       disabled: _.o.enum({ 否: '0', 是: '1' }).other('form', {
         component: 'Select',
-        placeholder: '是否禁用',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '是否禁用'
       })
     })
       .other('form', {
+         cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
         layout: 'inline',
         footer: {
           cols: {

@@ -168,37 +168,26 @@ export default {
     let filterSchema = _.map({
       userName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '用户名  ',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '用户名  '
       }),
       id: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '用户ID  ',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '用户ID  '
       }),
       loginIp: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '用户登陆IP',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '用户登陆IP'
       }),
       loginType: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '登陆类型',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '登陆类型'
       })
     }).other('form', {
+      cols: {
+        item: 5,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

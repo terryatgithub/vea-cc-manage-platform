@@ -41,7 +41,7 @@
                     v-model="selectedCrowd"
                     change-on-select
                 ></el-cascader>
-                <el-button :disabled="!selectedCrowd" type="primary" @click="handleSelectCascadeCrowd">
+                <el-button :disabled="!selectedCrowd" class="marginL" type="primary" @click="handleSelectCascadeCrowd">
                     确定
                 </el-button>
             </div>
@@ -185,4 +185,8 @@ export default {
 .crowd-selector .el-cascader .el-input {
     max-width: 600px;
 }
+.marginL {
+ margin-left: 10px;
+}
+ 
 </style>

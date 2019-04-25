@@ -15,6 +15,7 @@
         :selected="table.selected"
         :selection-type="table.selectionType"
         @row-click="rowClick"
+        @row-selection-change="rowClick"
       />
     </ContentWrapper>
   </ContentCard>
@@ -29,7 +30,9 @@ export default {
     ContentEllipsis
   },
   props: {
-   homepageModel: String
+   homepageModel: String,
+   homepageResource: String,
+   homepageStatusArray: String
   },
   data() {
     return {
@@ -132,6 +135,8 @@ export default {
     fetchData() {
       const filter = this.parseFilter()
       filter.homepageModel = this.homepageModel
+      filter.homepageResource = this.homepageResource
+      filter.homepageStatusArray = this.homepageStatusArray
       this.$service.getHomePageModelPageList(filter).then(data => {
         data.rows.splice(5)
         this.pagination.total = data.total

@@ -1,4 +1,5 @@
 <template>
+ <ContentCard class="content">
   <div>
     <el-form :model="form" :rules="rules" ref="form" label-width="200px" class="admin-control-content">
       <el-form-item label="是否开启管理后台缓存" prop="openCache">
@@ -15,12 +16,14 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="submitForm">保存修改</el-button>
+        <el-button @click="submitForm" type="primary">保存修改</el-button>
       </el-form-item>
     </el-form>
   </div>
+ </ContentCard>
 </template>
 <script>
+
 export default {
   data: function () {
     return {

@@ -12,9 +12,9 @@
         @add="addData"
         @edit="editData"
         @delete="batchDel"
-      ></ButtonGroupForListPage> -->
-      <div class="btns" >
-        <el-button type="primary" icon="el-icon-plus" @click="addData" >新增</el-button>
+      ></ButtonGroupForListPage>-->
+      <div class="btns">
+        <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
       </div>
@@ -53,7 +53,9 @@ export default {
         order: undefined
       },
       filterSchema: null,
-      pagination: {},
+      pagination: {
+        pageSize: 5
+      },
       selected: [],
       table: {
         props: {
@@ -63,12 +65,12 @@ export default {
           {
             label: 'ID',
             prop: 'policyId',
-            width: 220
+            width: 70
           },
           {
             label: '策略名称',
             prop: 'policyName',
-            align: 'center',
+            width: 150,
             render: (h, { row }) => {
               return h(
                 'el-button',
@@ -92,6 +94,7 @@ export default {
           },
           {
             label: '关联首页方案',
+            width: 150,
             prop: 'relationHomepageName'
           },
           {
@@ -105,10 +108,6 @@ export default {
           {
             label: '版本',
             prop: 'currentVersion'
-          },
-          {
-            label: '待审核副本',
-            prop: 'duplicateVersion'
           },
           {
             label: '状态',
@@ -149,7 +148,7 @@ export default {
           },
           {
             label: '更新人',
-            prop: 'modiferName'
+            prop: 'modifierName'
           }
         ],
         data: [],
@@ -183,7 +182,7 @@ export default {
         window.confirm('确定要删除吗')
       ) {
         this.$service
-          .homePageInfoDelete({ id: this.selected.join(',') }, '删除成功')
+          .policyConfRemove({ id: this.selected.join(',') }, '删除成功')
           .then(data => {
             this.fetchData()
           })
@@ -191,12 +190,23 @@ export default {
     },
     //表格操作
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.homepageId)
+      this.selected = this.selected.concat(this.getIDs(targetItem))
       this.updateTableSelected()
     },
+    getIDs (item) {
+      let arr = []
+       if (typeof item.children !== 'undefined') {
+        item.children.forEach(e => {
+          arr.push(e.policyId)
+        })
+      }
+      arr.push(item.policyId)
+      return arr
+    },
     handleRowSelectionRemove(targetItem) {
+      let removeID = this.getIDs(targetItem)
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.homepageId
+        return removeID.includes(item) === false
       })
       this.updateTableSelected()
     },
@@ -215,8 +225,12 @@ export default {
     updateTableSelected() {
       const table = this.table
       const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.homepageId) > -1) {
+      let d = table.data.reduce((result, item, index) => {
+        result = result.concat(this.getIDs(item))
+        return result
+      }, [])
+      table.selected = d.reduce((result, item, index) => {
+        if (newSelectedIndex.indexOf(item) > -1) {
           result.push(index)
         }
         return result

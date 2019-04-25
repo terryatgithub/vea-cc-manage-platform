@@ -1,44 +1,77 @@
 <template>
   <ContentCard class="content">
     <ContentWrapper
-      :filter="filter"
-      :filterSchema="filterSchema"
       :pagination="pagination"
       @filter-change="handleFilterChange"
-      @filter-reset="handleFilterReset"
     >
+      <el-form ref="form" :model="filter" inline label-width="90px" size="mini">
+        <el-form-item label="自增ID">
+          <el-input v-model="filter.id"></el-input>
+        </el-form-item>
+        <el-form-item label="操作者ID">
+          <el-input v-model="filter.userId"></el-input>
+        </el-form-item>
+        <el-form-item label="操作者名称">
+          <el-input v-model="filter.userName"></el-input>
+        </el-form-item>
+        <el-form-item label="菜单名称">
+          <el-input v-model="filter.menuName"></el-input>
+        </el-form-item>
+        <el-form-item label="菜单Elid">
+          <el-input v-model="filter.menuElid"></el-input>
+        </el-form-item>
+        <el-form-item label="执行的方法">
+          <el-input v-model="filter.execMethod"></el-input>
+        </el-form-item>
+        <el-form-item label="操作耗时">
+          <el-input v-model="filter.elapsedTime"></el-input>
+        </el-form-item>
+        <el-form-item label="操作时间">
+          <el-input v-model="filter.createTime"></el-input>
+        </el-form-item>
+        <el-form-item label="操作的数据">
+          <el-input v-model="filter.opData" type="textarea" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" @click="handleFilterChange">查询</el-button>
+          <el-button icon="el-icon-delete" @click="clearForm">重置</el-button>
+        </el-form-item>
+      </el-form>
+
       <Table
         :props="table.props"
         :header="table.header"
         :data="table.data"
+        :selected="table.selected"
+        :selection-type="table.selectionType"
       />
     </ContentWrapper>
   </ContentCard>
 </template>
 
 <script>
-import _ from 'gateschema'
+import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import _ from '../../utlis/gateschema'
 import { Button, Tooltip } from 'element-ui'
-import ButtonList from './../../components/ButtonLIst'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+
 export default {
   components: {
-    ActionList,
-    Table,
-    ContentWrapper
+    ContentWrapper,
+    Table
   },
+
   data() {
+    let that = this
     return {
       filter: {
         sort: undefined,
         order: undefined
       },
-      filterSchema: null,
-      pagination: {},
       selected: [],
+      pagination: {},
       table: {
         props: {},
-      header: [
+        header: [
           {
             label: '自增ID',
             prop: 'id',
@@ -117,11 +150,42 @@ export default {
         ],
         data: [],
         selected: [],
-        selectionType: 'multiple'
+        selectionType: 'none'
       }
     }
   },
+
   methods: {
+    /**
+     * 获取数据
+     */
+    fetchData() {
+      const filter = this.parseFilter()
+      this.$service.sysLogOpPageList(filter).then(data => {
+        this.pagination.total = data.total
+        this.table.data = data.rows
+      })
+    },
+    parseFilter() {
+      const { filter, pagination } = this
+      if (pagination) {
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
+      }
+      return filter
+    },
+    clearForm() {
+      this.filter = {}
+      this.fetchData()
+    },
+    handleFilterChange(type) {
+      if (type !== 'pagination') {
+        if (this.pagination) {
+          this.pagination.currentPage = 1
+        }
+      }
+      this.fetchData()
+    },
     // 老项目的方法
     handleCopy: function (row) {
       var opData = row.opData
@@ -156,108 +220,15 @@ export default {
           })
       }
       document.body.removeChild(textArea);
-    },
-    handleFilterChange(type) {
-      if (type === 'filter') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
-        }
-      }
-      this.fetchData()
-    },
-    handleFilterReset() {
-      this.filter = {
-        sort: undefined,
-        order: undefined
-      }
-      this.fetchData()
-    },
-    parseFilter() {
-      const { filter, pagination } = this
-      if (pagination) {
-        filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
-      }
-      return filter
-      console.log(filter)
-    },
-    /**
-     * 获取数据
-     */
-    fetchData() {
-      const filter = this.parseFilter()
-      this.$service.sysLogOpPageList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
-      })
     }
   },
   created() {
-    let filterSchema = _.map({
-      id: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: 'ID  '
-      }),
-      userId: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '操作者ID  '
-      }),
-      userName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '操作者名称'
-      }),
-      menuName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '菜单名称'
-      }),
-       menuElid: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '菜单Elid  '
-      }),
-      execMethod: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '执行的方法  '
-      }),
-      elapsedTime: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '操作耗时'
-      }),
-      createTime: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '操作耗时'
-      }),
-       opData: _.o.string.other('form', {
-        component: 'Input',
-        type: 'textarea',
-        placeholder: '操作的数据'
-      })
-    }).other('form', {
-      cols: {
-        item: 5,
-        label: 0,
-        wrapper: 20
-      },
-      layout: 'inline',
-      footer: {
-        cols: {
-          label: 0,
-          wrapper: 24
-        },
-        showSubmit: true,
-        submitText: '查询',
-        showReset: true,
-        resetText: '重置'
-      }
-    })
-    this.filterSchema = filterSchema
     this.fetchData()
   }
 }
 </script>
+
 <style lang='stylus' scoped>
 .content >>> .operatiton-data
   height: 50px;
 </style>
-
-
-

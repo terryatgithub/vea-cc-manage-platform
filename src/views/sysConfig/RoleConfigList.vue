@@ -7,11 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="handleCreate">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="handleBatchDelete">删除</el-button>
-      </div>
+          <ButtonGroupForListPage 
+        pageName='sysRole' 
+        @add="handleCreate"
+        @edit="editData"
+        @delete="handleBatchDelete"
+        >
+        </ButtonGroupForListPage>
       <Table
         :props="table.props"
         :header="table.header"
@@ -49,8 +51,8 @@
     >
       <div class="auth-set-window__buttons">
         <el-checkbox :indeterminate="isIndeterminate" v-model="checkAllValue" @change="handleCheckAllChange">全选</el-checkbox>
-        <el-button class="button--position" @click="updateAuth()">保存修改</el-button>
-        <el-button @click="setAuthDialogVisible = false">关闭</el-button>
+        <el-button type="primary" class="button--position" @click="updateAuth()">保存修改</el-button>
+        <el-button type="info" @click="setAuthDialogVisible = false">关闭</el-button>
       </div>
       <div class="auth-set-window__header">
           <span class="auth-set-window__header-item"
@@ -135,10 +137,12 @@
 <script>
 import _ from 'gateschema'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 export default {
   components: {
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data: function () {
     return {
@@ -149,9 +153,9 @@ export default {
             label: '角色名称',
             placeholder: '请输入角色名称',
             cols: {
-              item: 35,
-              label: 8,
-              wrapper: 15
+              item: 6,
+              label: 0,
+              wrapper: 18
             }
           })
       }).other('form', {
@@ -387,7 +391,6 @@ export default {
       this.$service.getPoliciesAndCrowds({ roleId: roleId }).then((data) => {
         this.policies = data
         data.forEach((item) => {
-          console.log(item.crowds)
           this.$service.getCrowdOfPolicy({ id: item.value, roleId: roleId })
             .then((crowds) => {
               console.log(crowds)
@@ -464,8 +467,6 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-    .btns
-        margin-bottom 10px
     .crowd-selector
         min-height 35px
         margin-bottom 10px

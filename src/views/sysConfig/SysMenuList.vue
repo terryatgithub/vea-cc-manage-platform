@@ -7,14 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <!-- <div class="btns" >
-        <el-button type="primary"  v-for="(item, seq) in buttonList" :key="seq" @click="click(seq)">{{item.runName}}</el-button>
-      </div>-->
-      <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="deleteData">删除</el-button>
-      </div>
+        <ButtonGroupForListPage 
+        pageName='sysMenu' 
+        @add="addData"
+        @edit="editData"
+        @delete="deleteData"
+        >
+        </ButtonGroupForListPage>
       <Table
         :props="table.props"
         :header="table.header"
@@ -48,12 +47,14 @@
 <script>
 import _ from 'gateschema'
 import ButtonList from './../../components/ButtonLIst'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 export default {
   components: {
     ActionList,
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -340,61 +341,38 @@ export default {
     let filterSchema = _.map({
       menuName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '菜单名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '菜单名称'
       }),
       elid: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '元素ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '元素ID'
       }),
       tabId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '标签ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '标签ID'
       }),
       iframeUrl: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '跳转地址URL',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '跳转地址URL'
       }),
       modle: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '菜单目录',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '菜单目录'
       }),
       pmid: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '菜单父ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '菜单父ID'
       }),
       disabled: _.o.enum({ 否: '0', 是: '1' }).other('form', {
         component: 'Select',
-        placeholder: '是否禁用',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '是否禁用'
       })
     }).other('form', {
+       cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {
