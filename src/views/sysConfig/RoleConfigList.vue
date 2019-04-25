@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-          <ButtonGroupForListPage 
-        pageName='sysRole' 
+          <ButtonGroupForListPage
+        pageName='sysRole'
         @add="handleCreate"
         @edit="editData"
         @delete="handleBatchDelete"
@@ -234,7 +234,7 @@ export default {
             render: utils.component.createOperationRender(this, {
               setAuth: '设置权限',
               handleSetAuthOfCrowd: '设置人群权限',
-              sysRoleView: '查看用户',
+              sysRoleView: '查看用户'
             })
           }
         ],
@@ -278,7 +278,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$service
-          .deleteRole({ id: this.selected.join(",") }, '删除成功')
+          .deleteRole({ id: this.selected.join(',') }, '删除成功')
           .then(data => {
             this.handleAllRowSelectionRemove()
             this.fetchData()
@@ -286,8 +286,8 @@ export default {
       })
     },
     editData() {
-      if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selected[0])
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('open-add-page', this.selected[0])
       }
     },
     handleFilterChange (type) {
@@ -304,7 +304,7 @@ export default {
       }
       this.fetchData()
     },
-     handleRowSelectionAdd (targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.roleId)
       this.updateTableSelected()
     },
@@ -391,7 +391,7 @@ export default {
       this.$service.getPoliciesAndCrowds({ roleId: roleId }).then((data) => {
         this.policies = data
         data.forEach((item) => {
-          this.$service.getCrowdOfPolicy({ id: item.value, roleId: roleId })
+          this.$service.getCrowdOfPolicy(item.value + '&roleId=' + roleId)
             .then((crowds) => {
               console.log(crowds)
               this.$set(item, 'crowds', crowds)
