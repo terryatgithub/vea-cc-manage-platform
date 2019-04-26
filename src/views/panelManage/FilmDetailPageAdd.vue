@@ -21,10 +21,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="内容源" v-if="form.tabCategory==='0'">
-        <el-radio-group v-model="tabResource"  @change.native.prevent="changeResource">
+        <el-radio-group v-model="form.tabResource"  @change.native.prevent="changeResource">
           <el-radio label="qq">腾讯</el-radio>
           <el-radio label="iqiyi">爱奇艺</el-radio>
-          <el-radio label="voole">优朋</el-radio>
+          <el-radio label="youku">优朋</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="频道">
@@ -40,7 +40,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="选择板块">
-        <el-button type="primary" @click="isShowPannelInfoList=true">添加板块</el-button>
+        <el-button type="primary" @click="addModel">添加板块</el-button>
       </el-form-item>
       <el-form-item label="优先级">
         <el-input-number v-model="form.priority" :min="1"/><span>注：数值越大优先级越高，数值越小优先级越低</span>
@@ -54,9 +54,9 @@
       />
     </div>
     </div>
-    
-    <AddBlockFilter v-show="isShowPannelInfoList" @go-back="isShowPannelInfoList=false" @add-block="addBlock"/>
-    
+
+    <AddBlockFilter :parentPannelResource="parentResource" v-show="isShowPannelInfoList" @go-back="isShowPannelInfoList=false" @add-block="addBlock"/>
+
   </ContentCard>
 </template>
 
@@ -77,18 +77,25 @@ export default {
   watch: {
     'form.tabCategory': {
       deep: true,
-      handler: function(newVal, oldVal){
-        if(newVal === '1'){
-          this.pannelItems = []
-          this.productItems = this.eduProductItems
-          this.pannel = ''
-          this.product = ''
-        }else if(newVal === '0'){
-          this.handleTabResourceChange(this.tabResource)
+      handler: function(newVal, oldVal) {
+        debugger
+        if (newVal === '1') {
+          this.pannelItems = this.eduProductItems.categoryList
+          this.productItems = this.eduProductItems.productList
+          if (this.eduProductItems.categoryList.length === 0) { this.pannel = '不限' }
+          if (this.tabResourceFlag === 0) { this.tabResourceFlag = 1 } else {
+            this.pannel = ''
+            this.product = ''
+          }
+          // this.pannel = ''
+          // this.product = ''
+        } else if (newVal === '0') {
+          this.handleTabResourceChange(this.form.tabResource)
         }
       }
     },
-    tabResource:function (value) {
+    'form.tabResource': function (value, oldVal) {
+      debugger
       this.handleTabResourceChange(value)
     }
   },
@@ -103,26 +110,59 @@ export default {
       },
       form: {
         tabName: '',
-        tabResource: 'qq',
         tabCategory: '0',
-        priority: 1
+        tabResource: '',
+        priority: 1,
+        currentVersion: ''
       },
-      tabResource: 'qq',
+      globalTabResource: '',
+      parentResource: '',
+      tabResourceFlag: 1,
       iqiyiSource: [],
       qqSource: [],
+      youkuSource: [],
       pannel: '',
       pannelItems: [],
       product: '',
       productItems: [],
       eduProductItems: [],
-      isShowPannelInfoList: false, //添加板块弹窗
-      blockTable: [],//板块列表
+      isShowPannelInfoList: false, // 添加板块弹窗
+      blockTable: [], // 板块列表
       table: {
         props: {},
         data: [],
         header: [
           {
-            label: '排序'
+            label: '排序',
+            prop: 'pannelSequence',
+            render: (h, { row }) => {
+              return h('el-input', {
+                props: {
+                  value: row.pannelSequence
+                },
+                on: {
+                  input: (value) => {
+                    row.pannelSequence = value
+                  },
+                  blur: () => {
+                    let array = this.table.data
+                    let indexLength = array.length
+                    let newValue = parseInt(row.pannelSequence)
+                    let flag = Number.isInteger(newValue)
+                    let oldValue = array.indexOf(row) + 1
+                    if (flag && newValue > 0 && newValue < indexLength) {
+                      row.pannelSequence = newValue
+                      if (newValue !== oldValue) {
+                        let oldArray = array[oldValue - 1]
+                        array[newValue - 1].pannelSequence = oldValue
+                        array[oldValue - 1] = array[newValue - 1]
+                        array[newValue - 1] = oldArray
+                      }
+                    } else (row.pannelSequence = this.table.data.indexOf(row) + 1)
+                  }
+                }
+              })
+            }
           },
           {
             label: '板块ID',
@@ -138,7 +178,7 @@ export default {
           },
           {
             label: '操作',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return h(Button, {
                 props: {
                   type: 'warning'
@@ -147,6 +187,7 @@ export default {
                   click: () => {
                     const index = this.table.data.indexOf(row)
                     this.table.data.splice(index, 1)
+                    this.table.data.forEach((item, index) => { item.pannelSequence = index + 1 })
                   }
                 }
               }, '删除')
@@ -156,7 +197,7 @@ export default {
         selected: [],
         selectionType: 'single'
       }
-    };
+    }
   },
 
   methods: {
@@ -168,25 +209,25 @@ export default {
       this.save(2)
     },
     save(status) {
-      if(this.table.data.length === 0) {
+      if (this.table.data.length === 0) {
         this.$message('请添加版块')
         return false
       }
       const form = this.form
       this.$refs.form.validate(valid => {
-        if(valid) {
+        if (valid) {
           var jsonStr = {
             tabInfo: {
-              tabId: '',
+              tabId: this.editId,
               systemDefault: '',
               tabName: form.tabName,
               tabType: 3,
               tabStatus: status,
-              tabResource: form.tabCategory==='0' ? form.tabResource : '',
-              currentVersion: ''
+              tabResource: form.tabCategory === '0' ? form.tabResource : '',
+              currentVersion: form.currentVersion
             },
             filmDetail: {
-              source: form.tabCategory==='0' ? form.tabResource : '',
+              source: form.tabCategory === '0' ? form.tabResource : '',
               product: this.product || '0',
               channel: this.pannel || '0',
               category: form.tabCategory,
@@ -194,12 +235,13 @@ export default {
             },
             pannelJson: this.table.data
           }
-          this.$service.saveFilmDetailPage({jsonStr: JSON.stringify(jsonStr)}, '保存成功').then(() => {
+          this.$service.saveFilmDetailPage({ jsonStr: JSON.stringify(jsonStr) }, '保存成功').then((data) => {
+            console.log('++++++++saveinfo')
+            console.log(data)
             this.$emit('open-list-page')
           })
-        }else {
+        } else {
           this.$message('请将表单填写完整')
-          return
         }
       })
     },
@@ -210,64 +252,87 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       })
-      .then(() => {
-        this.$message({
-          type: 'success',
-          message: '内容源切换成功!'
+        .then(() => {
+          this.$message({
+            type: 'success',
+            message: '内容源切换成功!'
+          })
+          // this.form.tabResource = this.tabResource
+          this.clearResource()
         })
-        this.form.tabResource = this.tabResource
-        this.clearResource()
-      })
-      .catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消切换'
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消切换'
+          })
+          // this.form.tabResource = 'qq'
         })
-        this.tabResource = this.form.tabResource
-      })
     },
     clearResource() {
       this.table.data = []
     },
     // 服务
     getMediaResourceInfo() {
+      debugger
       return this.$service.getMediaResourceInfo().then(data => {
-        var movieData = JSON.parse(decodeURI(data.slice(5,-1)))
+        console.log('-----获取各种业务的频道及产品包信息')
+        var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
         var videoItemModels = movieData.videoItemModels
+        console.log(videoItemModels)
         // 内容源：iqiyi
         var iqiyiSource = {
           categoryList: [],
-          productList: [],
+          productList: []
         }
-        iqiyiSource.categoryList = this._arrayingOption(videoItemModels[0].categoryList, 'category_name', 'category_id')
+        iqiyiSource.categoryList = this._arrayingOption(videoItemModels[0].categoryList, 'category_name', 'cc_category_id')
         iqiyiSource.productList = this._arrayingOption(videoItemModels[0].productList, 'source_name', 'source_sign')
         this.iqiyiSource = iqiyiSource
 
-        //内容源：tencent
+        // 内容源：tencent
         var qqSource = {
           categoryList: [],
-          productList: [],
+          productList: []
         }
         qqSource.categoryList = this._arrayingOption(videoItemModels[1].categoryList, 'category_name', 'cc_category_id')
         qqSource.productList = this._arrayingOption(videoItemModels[1].productList, 'source_name', 'source_sign')
         this.qqSource = qqSource
-        this.pannelItems = qqSource.categoryList // 初始化
-        this.productItems = qqSource.productList
-        //教育->产品包
-        this.eduProductItems = this._arrayingOption(videoItemModels[2].productList, 'source_name', 'source_sign')
+        // 初始化,新增状态
+        if (this.editId === '') {
+          this.pannelItems = qqSource.categoryList
+          this.productItems = qqSource.productList
+        }
+        // 内容源：youku
+        var youkuSource = {
+          categoryList: [],
+          productList: []
+        }
+        youkuSource.categoryList = this._arrayingOption(videoItemModels[2].categoryList, 'category_name', 'cc_category_id')
+        youkuSource.productList = this._arrayingOption(videoItemModels[2].productList, 'source_name', 'source_sign')
+        this.youkuSource = youkuSource
+        // 教育->产品包
+        var coocaaSource = {
+          categoryList: [],
+          productList: []
+        }
+        coocaaSource.categoryList = this._arrayingOption(videoItemModels[3].categoryList, 'category_name', 'cc_category_id')
+        coocaaSource.productList = this._arrayingOption(videoItemModels[3].productList, 'source_name', 'source_sign')
+        this.eduProductItems = coocaaSource
       })
     },
     // 数组化[{label, value}]
     _arrayingOption(arr, label, value) {
       return arr.reduce((result, item) => {
-        return result.concat({label: item[label], value: item[value]})
+        return result.concat({ label: item[label], value: item[value] })
       }, [])
     },
     handleTabResourceChange(value) {
-      const { qqSource, iqiyiSource, tabResource } = this
-      this.pannel = ''
-      this.product = ''
-      switch(value){
+      debugger
+      const { qqSource, iqiyiSource, youkuSource } = this
+      if (this.tabResourceFlag === 0 && this.globalTabResource === value) { this.tabResourceFlag = 1 } else {
+        this.pannel = ''
+        this.product = ''
+      }
+      switch (value) {
         case 'qq': {
           this.pannelItems = qqSource.categoryList
           this.productItems = qqSource.productList
@@ -278,6 +343,11 @@ export default {
           this.productItems = iqiyiSource.productList
           break
         }
+        case 'youku': {
+          this.pannelItems = youkuSource.categoryList
+          this.productItems = youkuSource.productList
+          break
+        }
         default: {
           this.pannelItems = []
           this.productItems = []
@@ -285,6 +355,7 @@ export default {
       }
     },
     addBlock(blockData) {
+      debugger
       const table = this.table
       table.data = []
       const initial = [
@@ -303,14 +374,52 @@ export default {
       ]
       table.data = table.data.concat(initial)
       table.data = table.data.concat(blockData)
+      table.data.forEach((item, index) => {
+        this.$set(item, 'pannelSequence', index + 1)
+      })
+    },
+    addModel() {
+      this.isShowPannelInfoList = true
+      this.parentResource = this.form.tabResource
     }
   },
   created() {
     this.getMediaResourceInfo()
-    if(this.editId) {
+    if (this.editId) {
       this.title = '编辑页面'
-    }else {
+      this.form.tabResource = ''
+      this.$service.editFilmDetailPage({ id: this.editId })
+        .then((data) => {
+          debugger
+          console.log('编辑接口返回的数据')
+          console.log(data)
+          this.form.tabName = data.filmDetail.tabName
+          this.form.tabCategory = data.filmDetail.category
+          this.form.priority = data.filmDetail.priority
+          this.form.tabResource = data.filmDetail.source
+          this.form.currentVersion = data.filmDetail.currentVersion
+          console.log(this.form)
+          this.globalTabResource = data.filmDetail.source
+          // this.handleTabResourceChange(data.filmDetail.source)
+          console.log(this.pannelItems)
+          console.log(this.productItems)
+          this.pannel = data.filmDetail.channel
+          this.product = data.filmDetail.product
+          this.table.data = data.pannelList
+          let pannelNameList = []
+          data.pannelList.forEach((dataBack) => {
+            pannelNameList.push(dataBack.pannelName)
+          })
+          this.table.data.forEach((item, index) => {
+            item.pannelGroupRemark = pannelNameList[ index ]
+            item.pannelSequence = index + 1
+          })
+          this.tabResourceFlag = 0
+          // this.tabId = data.filmDetail.id
+        })
+    } else {
       this.title = '新增页面'
+      this.form.tabResource = 'qq'
     }
   }
 

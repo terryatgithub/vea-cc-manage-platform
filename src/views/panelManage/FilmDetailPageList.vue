@@ -15,7 +15,7 @@
           <el-select v-model="filter.source" clearable @change="pannelValue=[];filter.channel=''">
             <el-option value="qq" label="腾讯"/>
             <el-option value="iqiyi" label="爱奇艺"/>
-            <el-option value="voole" label="优朋"/>
+            <el-option value="youku" label="优酷"/>
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
@@ -70,8 +70,7 @@
 </template>
 
 <script>
-import _ from 'gateschema'
-import { ContentWrapper, Table } from 'admin-toolkit' 
+import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   components: {
     ContentWrapper,
@@ -107,7 +106,18 @@ export default {
           {
             prop: 'tabName',
             label: '版面名称',
-            sortable: true
+            render: (createElement, { row }) => {
+              return createElement('el-button', {
+                props: {
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.openReview(row)
+                  }
+                }
+              }, row.tabName)
+            }
           },
           {
             prop: 'priority',
@@ -127,13 +137,13 @@ export default {
             label: '内容源',
             sortable: true,
             formatter: row => {
-              if(row.category == 0) {
-                switch(row.source){
+              if (row.category == 0) {
+                switch (row.source) {
                   case 'qq': return '腾讯'
                   case 'iqiyi': return '爱奇艺'
-                  case 'voole': return '优朋'
+                  case 'youku': return '优酷'
                 }
-              }else {
+              } else {
                 return ''
               }
             }
@@ -143,7 +153,7 @@ export default {
             label: '版本/状态',
             sortable: true,
             formatter: row => {
-              return row.currentVersion + '/' + ['下架','上架','草稿','待审核','审核通过','审核不通过'][row.currentStatus]
+              return row.currentVersion + '/' + ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过'][row.currentStatus]
             }
           },
           {
@@ -165,13 +175,13 @@ export default {
             prop: 'auditor',
             label: '审核人',
             sortable: true
-          },
+          }
         ],
         selected: [],
         selectionType: 'multiple'
       },
       selected: []
-    };
+    }
   },
 
   methods: {
@@ -183,6 +193,8 @@ export default {
       this.$service.filmDetailPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
+        this.table.selected = []
+        this.selected = []
       })
     },
     parseFilter() {
@@ -213,16 +225,16 @@ export default {
     },
     editData() {
       const selected = this.selected
-      if(selected.length !== 1) {
+      if (selected.length !== 1) {
         this.$message('只能选择一条数据')
         return false
       }
-      this.$service.filmDetailPageList({tabId: selected.join()}).then(data => {
+      this.$service.filmDetailPageList({ tabId: selected.join() }).then(data => {
         const row = data.rows[0]
-        if(row.currentStatus !== 2) {
-          this.$alert('该状态不允许编辑！', '操作提示', {confirmButtonText: '确定'})
+        if (row.currentStatus !== 2) {
+          this.$alert('该状态不允许编辑！', '操作提示', { confirmButtonText: '确定' })
           return false
-        }else {
+        } else {
           this.$emit('open-add-page', selected[0])
         }
       })
@@ -234,8 +246,9 @@ export default {
       }
       if (window.confirm('确定要删除吗')) {
         const select = this.selected.join(',')
-        this.$service.removeFilmDetailPage({ id: select }, '删除成功')
-        this.fetchData()
+        this.$service.removeFilmDetailPage({ id: select }, '删除成功').then(() => {
+          this.fetchData()
+        })
       }
     },
     /**
@@ -269,35 +282,35 @@ export default {
         return result
       }, [])
     },
-    //服务
+    // 服务
     getMediaResourceInfo() {
       return this.$service.getMediaResourceInfo().then(data => {
-        var movieData = JSON.parse(decodeURI(data.slice(5,-1)))
+        var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
         var videoItemModels = movieData.videoItemModels
         // 产品包
         var productList = videoItemModels.reduce((result, item) => {
           result.push(item.productList)
           return result
         }, [])
-        var productItems = [].concat.apply([], productList);
+        var productItems = [].concat.apply([], productList)
         this.productOptions = productItems
 
-        //频道->爱奇艺channelOptions
+        // 频道->爱奇艺channelOptions
         var channelQiyi = {
           label: '爱奇艺',
           value: 'iqiyi',
           children: []
         }
-        channelQiyi.children = videoItemModels[0].categoryList.reduce((result, item)=> {
-          return result.concat({label: item.category_name, value: item.category_id})
+        channelQiyi.children = videoItemModels[0].categoryList.reduce((result, item) => {
+          return result.concat({ label: item.category_name, value: item.category_id })
         }, [])
         var channelTent = {
           label: '腾讯',
           value: 'qq',
           children: []
         }
-        channelTent.children = videoItemModels[1].categoryList.reduce((result, item)=> {
-          return result.concat({label: item.category_name, value: item.category_id})
+        channelTent.children = videoItemModels[1].categoryList.reduce((result, item) => {
+          return result.concat({ label: item.category_name, value: item.category_id })
         }, [])
         this.channelOptions.push(channelQiyi)
         this.channelOptions.push(channelTent)
@@ -308,6 +321,9 @@ export default {
       this.filter.source = ''
       this.filter.source = value[0]
       this.filter.channel = value[1]
+    },
+    openReview (row) {
+      this.$emit('open-add-page', row.tabId)
     }
 
   },

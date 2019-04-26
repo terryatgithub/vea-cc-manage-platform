@@ -30,6 +30,9 @@ export default {
     AlbumPannelInfoList,
     PrivatePannelInfoList
   },
+  props: {
+    parentPannelResource: String
+  },
 
   data () {
     return {
@@ -98,8 +101,8 @@ export default {
             formatter: (row) => {
               const status = row.pannelStatus
               const currentVersion = row.currentVersion
-              return currentVersion + '/' + this.pannelStatusOption.map(function(item){
-                if(status.toString() === item.value){
+              return currentVersion + '/' + this.pannelStatusOption.map(function(item) {
+                if (status.toString() === item.value) {
                   return item.label
                 }
               }).join('')
@@ -125,8 +128,8 @@ export default {
         { label: '待审核', value: '3' },
         { label: '审核通过', value: '4' },
         { label: '审核不通过', value: '5' }
-      ],
-    };
+      ]
+    }
   },
 
   watch: {
@@ -154,7 +157,7 @@ export default {
         placeholder: '引用状态',
         component: 'Input'
       }),
-      pannelStatus: _.o.enum({'待审核': '3', '审核通过': '4'}).other('form', {
+      pannelStatus: _.o.enum({ '待审核': '3', '审核通过': '4' }).other('form', {
         placeholder: '审核状态',
         component: 'Select'
       })
@@ -176,6 +179,12 @@ export default {
         resetText: '重置'
       }
     })
+    if (this.parentPannelResource !== '') {
+      debugger
+      this.contentBlock.filter.pannelResource = this.parentPannelResource
+      this.albumBlock.filter.pannelResource = this.parentPannelResource
+      this.privateBlock.filter.pannelResource = this.parentPannelResource
+    }
     this.contentBlock.filterSchema = filterSchema
     this.contentBlock.table = Object.assign({}, this.table)
     this.albumBlock.filterSchema = filterSchema

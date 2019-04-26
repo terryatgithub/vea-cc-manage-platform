@@ -71,3 +71,21 @@ export function removeFilmDetailPage(params) {
     params
   })
 }
+// 编辑
+export function editFilmDetailPage(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/filmDetailPage/edit.html',
+    params
+  }).then(result => {
+    return JSON.parse(result.match(/param = (\{.+\})/)[1])
+  })
+}
+// 预览
+export function reviewFilmDetailPage(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/filmDetailPage/preview.html',
+    params
+  })
+}
