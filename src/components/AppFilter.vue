@@ -43,7 +43,9 @@ export default {
         order: undefined
       },
       filterSchema: null,
-      pagination: {},
+      pagination: {
+        pageSize: 5
+      },
       selected: [],
       table: {
         props: {},
@@ -182,30 +184,23 @@ export default {
     let filterSchema = _.map({
       appId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '应用ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '应用ID'
       }),
       appName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '应用名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '应用名称'
       }),
        appPackageName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '应用包名',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '应用包名'
       }),
 
     }).other("form", {
+       cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: "inline",
       footer: {
         cols: {

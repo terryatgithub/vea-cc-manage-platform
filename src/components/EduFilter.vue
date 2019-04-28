@@ -214,7 +214,7 @@ export default {
     return {
       pagination: {
         currentPage: 1,
-        pageSize: 10
+        pageSize: 5
       },
       searchForm: {
         // 筛选条件表单

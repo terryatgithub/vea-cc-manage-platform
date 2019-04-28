@@ -117,21 +117,18 @@ export default {
     let filterSchema = _.map({
       taskId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: 'ID'
       }),
           taskName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '名称'
       })
     }).other('form', {
+       cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

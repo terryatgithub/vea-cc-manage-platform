@@ -7,6 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
+       <!-- <ButtonGroupForListPage 
+        pageName='userConfig' 
+        @add="addUser"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage> -->
       <div v-if="dataList === undefined " class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -29,11 +36,13 @@
 <script>
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 
 export default {
   components: {
     ContentWrapper,
-    Table
+    Table,
+    ButtonGroupForListPage
   },
 
   props: {

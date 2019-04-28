@@ -7,11 +7,7 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <Table
-        :props="table.props"
-        :header="table.header"
-        :data="table.data"
-      />
+      <Table :props="table.props" :header="table.header" :data="table.data"/>
     </ContentWrapper>
   </ContentCard>
 </template>
@@ -46,27 +42,31 @@ export default {
             prop: 'tabName',
             sortable: true,
             render: (createElement, { row }) => {
-              return createElement('el-button', {
-                attrs:{
-                  type: 'text'
-                },
-                on: {
-                  click: () => {
-                    this.openReview(row) 
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.openReview(row)
+                    }
                   }
-                }
-              },row.tabName)
+                },
+                row.tabName
+              )
             }
           },
           {
             label: '标题',
-            prop: 'tabCnTitle',
+            prop: 'tabCnTitle'
           },
           {
             label: '待处理的版本',
-            prop: 'currentVersion',
+            prop: 'currentVersion'
           },
-           {
+          {
             label: '更新时间',
             prop: 'lastUpdateDate',
             sortable: true
@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     openReview(row) {
-       this.$emit('open-review-page',row)
+      this.$emit('open-review-page', row)
     },
     handleFilterChange(type) {
       if (type === 'query') {
@@ -110,7 +110,7 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter()
-        filter.resourceType = 'tab'
+      filter.resourceType = 'tab'
       this.$service.myDraftsPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
@@ -121,21 +121,18 @@ export default {
     let filterSchema = _.map({
       taskId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: 'ID'
       }),
-          taskName: _.o.string.other('form', {
+      taskName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '名称'
       })
     }).other('form', {
+      cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

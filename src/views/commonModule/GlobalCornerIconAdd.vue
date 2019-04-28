@@ -70,6 +70,7 @@
             <el-button
               :disabled="mode === 'edit' && fileInfo.length >=1"
               type="primary"
+              plain
               class="upload-pic-list__add"
               @click="$refs.upload.handleSelectFile()"
             >点击选择图片</el-button>

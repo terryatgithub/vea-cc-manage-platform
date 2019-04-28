@@ -193,3 +193,12 @@ Vue.prototype.$checkMacType = function (rule, value, callback) {
     callback(new Error('请输入12位的MAC地址'))
   }
 }
+/**
+ * 得到搜索框的select组件需要的键值对象
+*/
+Vue.prototype.$getFilterSelectField = function (data, key, value) {
+  return data.reduce((result, current) => {
+    result[current[key]] = current[value]
+    return result
+  }, {})
+}

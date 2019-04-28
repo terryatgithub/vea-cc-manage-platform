@@ -1,14 +1,5 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-    <div class="btn-save">
-      <el-button type="primary" @click="btnSave">提交审核</el-button>
-      <el-button type="warning" @click="$emit('go-back')">关闭</el-button>
-    </div>
-
-    <div class="split-bar">
-      <i class="el-icon-edit">基本信息</i>
-    </div>
-
     <el-form ref="form" :rules="rules" :model="form" label-width="90px">
       <el-form-item label="主题名称" prop="themeName">
         <el-input v-model="form.themeName" style="width:200px"/>
@@ -96,8 +87,11 @@
           <span class="icon-list__item-text">{{index+1}}</span>
         </div>
       </div>
+      <el-form-item>
+        <el-button type="primary" @click="btnSave">提交审核</el-button>
+        <el-button  @click="$emit('go-back')">关闭</el-button>
+      </el-form-item>
     </el-form>
-    
   </ContentCard>
 </template>
 
@@ -151,16 +145,20 @@ export default {
       }
       const editForm = this.editForm
       const formData = Object.assign({}, form, editForm)
-      console.log('formData', formData);
-      this.$service.savethemeInfo({jsonStr: JSON.stringify(formData)}, '保存成功').then(() => {
-        this.$emit('open-list-page')
-      })
+      console.log('formData', formData)
+      this.$service
+        .savethemeInfo({ jsonStr: JSON.stringify(formData) }, '保存成功')
+        .then(() => {
+          this.$emit('open-list-page')
+        })
     },
     handleApk(picData) {
-      this.$service.checkThemeMd5({ themeMd5: picData.fileMd5 }, '该主题可用').then(() => {
-        this.form.themeDownUrl = picData.url
-        this.form.themeMd5 = picData.fileMd5
-      })
+      this.$service
+        .checkThemeMd5({ themeMd5: picData.fileMd5 }, '该主题可用')
+        .then(() => {
+          this.form.themeDownUrl = picData.url
+          this.form.themeMd5 = picData.fileMd5
+        })
     },
     handlePreviewImg(picData) {
       this.form.previewImgUrl = picData.url
@@ -190,79 +188,83 @@ export default {
     if (this.editId) {
       // 编辑，预览中的创建副本/若version存在，则为预览
       this.title = '编辑页面'
-      this.$service.themeInfoDetail({ id: this.editId, version: this.version }).then(data => {
-        const form = this.form
-        form.themeName = data.themeName
-        form.chargeType = data.chargeType.toString()
-        form.price = data.price
-        form.discountPrice = data.discountPrice
-        form.themeBrand = data.themeBrand
+      this.$service
+        .themeInfoDetail({ id: this.editId, version: this.version })
+        .then(data => {
+          const form = this.form
+          form.themeName = data.themeName
+          form.chargeType = data.chargeType.toString()
+          form.price = data.price
+          form.discountPrice = data.discountPrice
+          form.themeBrand = data.themeBrand
 
-        // apk
-        form.themeDownUrl = data.themeDownUrl
-        form.themeMd5 = data.themeMd5
-        let apkFile = {
-          name: 'file'
-        }
-        let apkFileList = this.$refs.apk.$refs.upload.fileList
-        apkFileList.push(apkFile)
-        this.$refs.apk.fileNum++
-        // preview
-        form.previewImgUrl = data.previewImgUrl
-        let previewFile = {
-          name: 'img',
-          dataUrl: data.previewImgUrl
-        }
-        let previewFileList = this.$refs.preview.$refs.upload.fileList
-        previewFileList.push(previewFile)
-        this.$refs.preview.fileNum++
-        // thumbImg
-        form.thumbImgUrl = data.thumbImgUrl
-        let thumbImgFile = {
-          name: 'img',
-          dataUrl: data.thumbImgUrl
-        }
-        let thumbImgFileList = this.$refs.thumbImg.$refs.upload.fileList
-        thumbImgFileList.push(thumbImgFile)
-        this.$refs.thumbImg.fileNum++
-        // pictureEntitys
-        form.pictureEntitys = data.pictureEntitys.map(item => {
-          return {
-            pictureName: item.pictureName,
-            pictureResolution: item.pictureResolution,
-            pictureUrl: item.pictureUrl
+          // apk
+          form.themeDownUrl = data.themeDownUrl
+          form.themeMd5 = data.themeMd5
+          let apkFile = {
+            name: 'file'
+          }
+          let apkFileList = this.$refs.apk.$refs.upload.fileList
+          apkFileList.push(apkFile)
+          this.$refs.apk.fileNum++
+          // preview
+          form.previewImgUrl = data.previewImgUrl
+          let previewFile = {
+            name: 'img',
+            dataUrl: data.previewImgUrl
+          }
+          let previewFileList = this.$refs.preview.$refs.upload.fileList
+          previewFileList.push(previewFile)
+          this.$refs.preview.fileNum++
+          // thumbImg
+          form.thumbImgUrl = data.thumbImgUrl
+          let thumbImgFile = {
+            name: 'img',
+            dataUrl: data.thumbImgUrl
+          }
+          let thumbImgFileList = this.$refs.thumbImg.$refs.upload.fileList
+          thumbImgFileList.push(thumbImgFile)
+          this.$refs.thumbImg.fileNum++
+          // pictureEntitys
+          form.pictureEntitys = data.pictureEntitys.map(item => {
+            return {
+              pictureName: item.pictureName,
+              pictureResolution: item.pictureResolution,
+              pictureUrl: item.pictureUrl
+            }
+          })
+          let pictureEntitysFile = {
+            name: 'file'
+          }
+          let pictureEntitysFileList = this.$refs.pictureEntitys.$refs.upload
+            .fileList
+          pictureEntitysFileList.push(pictureEntitysFile)
+          this.$refs.pictureEntitys.fileNum++
+          // tabBgEntitys
+          form.tabBgEntitys = data.tabBgEntitys.map(item => {
+            return {
+              pictureName: item.pictureName,
+              pictureResolution: item.pictureResolution,
+              pictureUrl: item.pictureUrl
+            }
+          })
+          let tabBgEntitysFile = {
+            name: 'file'
+          }
+          let tabBgEntitysFileList = this.$refs.tabBgEntitys.$refs.upload
+            .fileList
+          tabBgEntitysFileList.push(tabBgEntitysFile)
+          this.$refs.tabBgEntitys.fileNum++
+
+          form.systemDefault = data.systemDefault
+          form.themeStatus = 3
+          form.cornerIconEntities = form.cornerIconEntities
+
+          this.editForm = {
+            themeId: data.themeId,
+            currentVersion: this.version ? undefined : data.currentVersion
           }
         })
-        let pictureEntitysFile = {
-          name: 'file'
-        }
-        let pictureEntitysFileList = this.$refs.pictureEntitys.$refs.upload.fileList
-        pictureEntitysFileList.push(pictureEntitysFile)
-        this.$refs.pictureEntitys.fileNum++
-        // tabBgEntitys
-        form.tabBgEntitys = data.tabBgEntitys.map(item => {
-          return {
-            pictureName: item.pictureName,
-            pictureResolution: item.pictureResolution,
-            pictureUrl: item.pictureUrl
-          }
-        })
-        let tabBgEntitysFile = {
-          name: 'file'
-        }
-        let tabBgEntitysFileList = this.$refs.tabBgEntitys.$refs.upload.fileList
-        tabBgEntitysFileList.push(tabBgEntitysFile)
-        this.$refs.tabBgEntitys.fileNum++
-
-        form.systemDefault = data.systemDefault
-        form.themeStatus = 3
-        form.cornerIconEntities = form.cornerIconEntities
-        
-        this.editForm = {
-          themeId: data.themeId,
-          currentVersion: this.version ? undefined : data.currentVersion
-        }
-      })
     } else {
       this.title = '新增页面'
     }
@@ -272,40 +274,40 @@ export default {
 
 <style lang='stylus' scoped>
 .split-bar
-  width 96%
-  height 36px
-  margin 8px 0px
-  padding 0px 6px
-  font-size 17px
-  line-height 36px
-  background #e5e9f2
-  border-radius 4px
+  width: 96%
+  height: 36px
+  margin: 8px 0px
+  padding: 0px 6px
+  font-size: 17px
+  line-height: 36px
+  background: #e5e9f2
+  border-radius: 4px
 .priceInput >>> .el-input
-  width 100px
+  width: 100px
 .icon-list
-  display flex
-  flex-direction row
-  flex-wrap wrap
-  width 700px
-  margin 5px 85px 16px
-  background #fff
-  border 1px solid #ddd
+  display: flex
+  flex-direction: row
+  flex-wrap: wrap
+  width: 700px
+  margin: 5px 85px 16px
+  background: #fff
+  border: 1px solid #ddd
 .icon-list__item
-  display flex
-  flex-direction column
-  margin 5px
+  display: flex
+  flex-direction: column
+  margin: 5px
 .icon-list__item-img--pictureEntitys
-  width 50px
-  height 50px
-  border 1px solid #eee
-  border-radius 3px
+  width: 50px
+  height: 50px
+  border: 1px solid #eee
+  border-radius: 3px
 .icon-list__item-img--tabBgEntitys
-  width 192px
-  height 108px
+  width: 192px
+  height: 108px
 .icon-list__item-text
-  height 20px
-  line-height 20px
-  text-align center
+  height: 20px
+  line-height: 20px
+  text-align: center
 .btn-save
-  margin 10px
+  margin: 10px
 </style>

@@ -7,13 +7,20 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <div class="btns">
+        <ButtonGroupForListPage 
+        pageName='cornerIcon' 
+        @add="addData"
+        @edit="editData"
+        @delete="deleteData"
+        >
+        </ButtonGroupForListPage>
+      <!-- <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="deleteData">删除</el-button>
         <el-button type="primary" icon="el-icon-edit-outline" @click="batchHandle">批量审核</el-button>
         <el-button type="primary" @click="changePriority">调整优先级</el-button>
-      </div>
+      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
@@ -51,6 +58,8 @@ import _ from 'gateschema'
 import ButtonList from './../../components/ButtonLIst'
 import GlobalIconAudit from './GlobalIconAudit'
 import GlobelIconLevel from './GlobelIconLevel'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 export default {
   components: {
@@ -58,7 +67,8 @@ export default {
     Table,
     ContentWrapper,
     GlobalIconAudit,
-    GlobelIconLevel
+    GlobelIconLevel,
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -348,53 +358,34 @@ export default {
     let filterSchema = _.map({
       cornerIconName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标名称  ',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标名称  '
       }),
       cornerIconId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标ID'
       }),
       typeId: _.o.enum(this.globalTypes).other('form', {
         component: 'Select',
-        placeholder: '角标分类',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标分类'
       }),
       typePosition: _.o.enum(this.typePositions).other('form', {
         component: 'Select',
-        placeholder: '角标位置',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标位置'
       }),
       attributeCode: _.o.enum(this.attributeTypes).other('form', {
         component: 'Select',
-        placeholder: '角标类别',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标类别'
       }),
       cornerStatus: _.o.enum(this.cornerStatuses).other('form', {
         component: 'Select',
-        placeholder: '审核状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '审核状态'
       })
     }).other('form', {
+        cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

@@ -277,19 +277,11 @@ export default {
     let filterSchema = _.map({
       policyId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: 'ID'
       }),
       policyName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '策略名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '策略名称'
       }),
       policyStatus: _.o
         .enum({
@@ -303,21 +295,18 @@ export default {
         })
         .other('form', {
           component: 'Select',
-          placeholder: '状态',
-          cols: {
-            item: 3,
-            label: 0
-          }
+          placeholder: '状态'
         }),
       chipModel: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '机型/机芯',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '机型/机芯'
       })
     }).other('form', {
+             cols: {
+        item: 5,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

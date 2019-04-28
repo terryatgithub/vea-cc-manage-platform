@@ -1,9 +1,6 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="multi-func-block-upsert">
-      <div class="base-tit">
-        <span>基本信息</span>
-      </div>
       <el-form ref="blockForm" :rules="rules" :model="block" label-width="140px">
         <el-form-item
           label="系统功能名称"

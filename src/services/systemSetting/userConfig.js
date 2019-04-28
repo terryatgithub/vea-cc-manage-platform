@@ -283,4 +283,4 @@ export function modifyPwd (params) {
     url: 'api/v1/updatePassword.html',
     params
   })
-}  
+}

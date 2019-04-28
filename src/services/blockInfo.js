@@ -8,6 +8,13 @@ export function broadcastBlockPageList (data) {
     data
   })
 }
+export function deleteBroadcastBlock (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/blockInfo/remove.html',
+    params
+  })
+}
 /**
  * 角标类型
  */

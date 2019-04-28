@@ -43,7 +43,9 @@ export default {
         rows: 10
       },
       filterSchema: null,
-      pagination: {},
+      pagination: {
+        pageSize: 5
+      },
       selected: [],
       selectedRows: {},
       table: {
@@ -59,7 +61,9 @@ export default {
             prop: 'title'
           }
         ],
-        data: [],
+        data: [
+        //  {id: 1, title: 'test'}
+        ],
         selected: [],
         selectionType: 'single'
       }
@@ -153,22 +157,19 @@ export default {
       id: _.o.number.other('form', {
         component: 'Input',
         placeholder: '轮播入口ID',
-        label: '轮播入口ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        label: '轮播入口ID'
       }),
       title: _.o.string.other('form', {
         component: 'Input',
         placeholder: '轮播入口名称',
-        label: '轮播入口名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        label: '轮播入口名称'
       })
     }).other('form', {
+       cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

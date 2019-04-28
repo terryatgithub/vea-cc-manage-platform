@@ -7,9 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <!-- <div class="btns" >
-        <el-button type="primary"  v-for="(item, seq) in buttonList" :key="seq" @click="click(seq)">{{item.runName}}</el-button>
-      </div> -->
+        <!-- <ButtonGroupForListPage 
+        pageName='commonOnclickInfo' 
+        @add="addUser"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage> -->
       <div class="btns" >
         <el-button type="primary" icon="el-icon-plus" @click="addData" >新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -31,13 +35,16 @@
 
 <script>
 import _ from "gateschema";
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+
 import ButtonList from "./../../components/ButtonLIst";
 import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
 export default {
   components: {
     ActionList,
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -117,30 +124,6 @@ export default {
     };
   },
   methods: {
-    // click (index) {
-    //   const methodsMap = ['addData', 'editData', 'deleteData', 'selectData', 'handleFilterReset', 'printData', 'importData', 'exportData', 'dealData']
-    //   const method = methodsMap[index]
-    //   if (index == null) {
-    //     return this.$message({
-    //       type: 'error',
-    //       message: '点击失败'
-    //     })
-    //   }
-    //   if(index === 1){
-    //     if (this.selected.length==0) {
-    //        this.$message('请选择一条数据')
-    //     }
-    //     else if(this.selected.length >1){
-    //        this.$message('只能选择一条数据')
-    //     }
-    //     else{
-    //       this[method](this.selected[0])
-    //     }
-    //   } else {
-    //     this[method]()
-    //   }
-
-    // },
     /**
      * 新增
      */
@@ -255,24 +238,22 @@ export default {
     let filterSchema = _.map({
       commonOnclickId: _.o.string.other("form", {
         component: "Input",
-        placeholder: "ID",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "ID"
       }),
       onlickName: _.o.string.other("form", {
         component: "Input",
         placeholder: "点击事件名",
-        cols: {
-          item: 3,
-          label: 0
-        }
       })
     })
       .other("form", {
+         cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: "inline",
       footer: {
+
         cols: {
           label: 0,
           wrapper: 24

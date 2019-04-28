@@ -77,7 +77,7 @@ export default {
     return {
       pagination: {
         currentPage: 1,
-        pageSize: 10
+        pageSize: 5
       },
       selected: [], // 列表选中项
       searchForm: {

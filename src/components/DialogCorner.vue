@@ -216,29 +216,22 @@ export default {
     let filterSchema = _.map({
       cornerIconId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标ID'
       }),
       cornerIconName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标名称'
       }),
       cornerIconType: _.o.enum(this.cornerIconTypeOptions).other('form', {
         component: 'Select',
-        placeholder: '角标类别',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标类别'
       })
     }).other('form', {
+      cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

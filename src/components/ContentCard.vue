@@ -37,10 +37,6 @@ export default {
     .actions
         padding 0 20px
         float right
-// .content-card__main
-//   >>> .el-input__inner, >>>.el-select, >>> .el-textarea
-//          width 500px
-    
 </style>
 
 

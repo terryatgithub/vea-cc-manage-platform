@@ -43,7 +43,9 @@ export default {
         order: undefined
       },
       filterSchema: null,
-      pagination: {},
+      pagination: {
+        pageSize: 5
+      },
       selected: [],
       table: {
         props: {},
@@ -191,22 +193,19 @@ export default {
     let filterSchema = _.map({
       urlIsTrailer: _.o.enum({'非正片': '1', '正片': '0'}).other("form", {
         component: "Select",
-        placeholder: "素材类型",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "素材类型"
       }), 
       urlTitle: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '单集名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '单集名称'
       }),
 
     }).other("form", {
+      cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: "inline",
       footer: {
         cols: {

@@ -41,7 +41,7 @@
       >短标题模式需至少运营四个资源，长标题模式至少6个，才能填满布局哦~</el-tag>
       <el-button
         v-if="basicForm.configModel === 'group' "
-        type="primary"
+        type="primary" plain
         style="float: right;"
         :disabled="disabled"
         @click.native="selectResource('normal', 'normalForm', 'multiSelect')"
@@ -102,7 +102,7 @@
           prop="thirdIdOrPackageName"
           style="width: 400px"
         >
-             <el-button v-if="autoWrite"  :disabled="disabled" type="primary" v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', 'normalForm')">选择资源</el-button>
+             <el-button v-if="autoWrite"  :disabled="disabled" type="primary" plain v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', 'normalForm')">选择资源</el-button>
           <el-input
             v-if="!autoWrite"
             v-model="normalForm.thirdIdOrPackageName"
@@ -112,6 +112,7 @@
           ></el-input>
           <el-tag
             type="success"
+            class="marginL"
             v-if="normalForm.thirdIdOrPackageName && autoWrite"
           >已选择：{{normalForm.thirdIdOrPackageName}}</el-tag>
           <a
@@ -184,7 +185,7 @@
               <el-select value="第三方应用" class="thirdApp">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
-              <el-button type="primary" :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
+              <el-button type="primary" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
             </el-form-item>
             <AppParams prop-prefix="onclick." v-model="normalForm.onclick"></AppParams>
             <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
@@ -198,7 +199,7 @@
         v-if="basicForm.configModel === 'group'"
         style="display: inline-block;margin-left: 14px;"
       >
-        <el-button @click="lowerFill" type="primary" style="margin-right: 10px" :disabled="disabled">快速填充</el-button>
+        <el-button @click="lowerFill" type="primary" plain style="margin-right: 10px" :disabled="disabled">快速填充</el-button>
         <span>使用正常版本的第一个资源，快速配置</span>
       </div>
     </div>
@@ -222,9 +223,10 @@
           prop="thirdIdOrPackageName"
           v-if="lowerForm.coverType === 'media' || lowerForm.coverType === 'app' "
         >
-            <el-button type="primary" :disabled="disabled"  v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', 'lowerForm')">选择资源</el-button>
+            <el-button type="primary" plain :disabled="disabled"  v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', 'lowerForm')">选择资源</el-button>
           <el-tag
             type="success"
+            class="marginL"
             v-if="lowerForm.thirdIdOrPackageName"
           >已选择：{{lowerForm.thirdIdOrPackageName}}</el-tag>
         </el-form-item>
@@ -282,7 +284,7 @@
               <el-select value="第三方应用" class="thirdApp">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
-              <el-button type="primary" :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
+              <el-button type="primary" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
             </el-form-item>
              <AppParams prop-prefix="onclick." v-model="lowerForm.onclick" ref="openWayLower"></AppParams>
         </div>
@@ -747,6 +749,7 @@ export default {
 
     // ??
     selectResource: function(type, form, selectType) {
+      debugger
 
     //  debugger
       this.resourceVisible = true

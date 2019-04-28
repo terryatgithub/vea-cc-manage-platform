@@ -7,6 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
+            <!-- <ButtonGroupForListPage 
+        pageName='tab' 
+        @add="addUser"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage> -->
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -30,10 +37,12 @@
 <script>
 import _ from 'gateschema'
 import { ContentWrapper, Table } from 'admin-toolkit'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 export default {
   components: {
     ContentWrapper,
-    Table
+    Table,
+    ButtonGroupForListPage
   },
 
   data () {
@@ -256,36 +265,25 @@ export default {
     }, {})
     let filterSchema = _.map({
       tabId: _.o.string.other('form', {
-        placeholder: '版面Id',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '版面Id'
       }),
       tabName: _.o.string.other('form', {
-        placeholder: '版面标题',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '版面标题'
       }),
       tabType: _.o.enum(this.tabType).other('form', {
         component: 'Select',
-        placeholder: '版面属性',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '版面属性'
       }),
       tabStatus: _.o.enum(this.tabStatus).other('form', {
         component: 'Select',
-        placeholder: '状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '状态'
       })
     }).other('form', {
+       cols: {
+        item: 5,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

@@ -16,9 +16,6 @@
         @delete="batchDel"
         >
         </ButtonGroupForListPage>
-        <!-- <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button> -->
       </div>
       <Table
         :props="table.props"
@@ -318,37 +315,26 @@ export default {
     let filterSchema = _.map({
       layoutName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '布局名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '布局名称'
       }),
          layoutType: _.o.enum(this.layoutType).other('form', {
         component: 'Select',
-        placeholder: '布局分类',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '布局分类'
       }),
           layoutIsTitle: _.o.enum(this.layoutIsTitle).other('form', {
         component: 'Select',
-        placeholder: '布局标题',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '布局标题'
       }),
       layoutStatus: _.o.enum(this.layoutStatus).other('form', {
         component: 'Select',
-        placeholder: '状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '状态'
       })
     }).other('form', {
+       cols: {
+        item: 5,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

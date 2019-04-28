@@ -1,54 +1,89 @@
 <template>
   <ContentCard class="content">
-    <ContentWrapper
-        :pagination="pagination"
-        @filter-change="handleFilterChange"
-      >
-      <el-form :model="filter" inline label-width="90px">
-        <el-form-item label="板面ID">
-          <el-input v-model="filter.tabId"/>
+    <ContentWrapper :pagination="pagination" @filter-change="handleFilterChange">
+      <div class="el-row">
+      <el-form :model="filter" inline label-width="90px" >
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-input v-model="filter.tabId" placeholder="板面ID"/>
+          </div>
         </el-form-item>
-        <el-form-item label="版面标题">
-          <el-input v-model="filter.tabName"/>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-input v-model="filter.tabName" placeholder="版面标题"/>
+          </div>
         </el-form-item>
-        <el-form-item label="内容源">
-          <el-select v-model="filter.source" clearable @change="pannelValue=[];filter.channel=''">
-            <el-option value="qq" label="腾讯"/>
-            <el-option value="iqiyi" label="爱奇艺"/>
-            <el-option value="youku" label="优酷"/>
-          </el-select>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select
+              v-model="filter.source"
+              placeholder="内容源"
+              clearable
+              @change="pannelValue=[];filter.channel=''"
+            >
+              <el-option value="qq" label="腾讯"/>
+              <el-option value="iqiyi" label="爱奇艺"/>
+              <el-option value="youku" label="优酷"/>
+            </el-select>
+          </div>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="filter.tabStatus" clearable>
-            <el-option v-for="item in tabStatusOption" :key="item.label" :label="item.label" :value="item.value"/>
-          </el-select>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select v-model="filter.tabStatus" clearable placeholder="状态">
+              <el-option
+                v-for="item in tabStatusOption"
+                :key="item.label"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </div>
         </el-form-item>
-        <el-form-item label="业务分类">
-          <el-select v-model="filter.category" clearable>
-            <el-option value="0" label="影视"/>
-            <el-option value="1" label="教育"/>
-          </el-select>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select v-model="filter.category" clearable placeholder="业务分类">
+              <el-option value="0" label="影视"/>
+              <el-option value="1" label="教育"/>
+            </el-select>
+          </div>
         </el-form-item>
-        <el-form-item label="频道">
-          <el-cascader
-          :value="pannelValue"
-          :options="channelOptions"
-          expand-trigger="hover"
-          clearable
-          @change="handleChannelChange"
-          />
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-cascader
+              placeholder="频道"
+              :value="pannelValue"
+              :options="channelOptions"
+              expand-trigger="hover"
+              clearable
+              @change="handleChannelChange"
+            />
+          </div>
         </el-form-item>
-        <el-form-item label="产品包">
-          <el-select v-model="filter.product" clearable>
-            <el-option v-for="(item, index) in productOptions" :key="index" :label="item.source_name" :value="item.source_sign"/>
-          </el-select>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select v-model="filter.product" clearable placeholder="产品包">
+              <el-option
+                v-for="(item, index) in productOptions"
+                :key="index"
+                :label="item.source_name"
+                :value="item.source_sign"
+              />
+            </el-select>
+          </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search" @click="handleFilterChange">查询</el-button>
-          <el-button icon="el-icon-delete" @click="handleFilterReset">重置</el-button>
+          <el-button type="primary"  @click="handleFilterChange">查询</el-button>
+          <el-button  @click="handleFilterReset">重置</el-button>
         </el-form-item>
       </el-form>
-
+      </div>
+              <!-- <ButtonGroupForListPage 
+        pageName='tab' 
+        @add="addUser"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage> -->
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addFilmDetail">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -70,14 +105,16 @@
 </template>
 
 <script>
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   components: {
     ContentWrapper,
+    ButtonGroupForListPage,
     Table
   },
 
-  data () {
+  data() {
     return {
       pannelValue: [],
       filter: {},
@@ -107,16 +144,20 @@ export default {
             prop: 'tabName',
             label: '版面名称',
             render: (createElement, { row }) => {
-              return createElement('el-button', {
-                props: {
-                  type: 'text'
-                },
-                on: {
-                  click: () => {
-                    this.openReview(row)
+              return createElement(
+                'el-button',
+                {
+                  props: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.openReview(row)
+                    }
                   }
-                }
-              }, row.tabName)
+                },
+                row.tabName
+              )
             }
           },
           {
@@ -129,7 +170,11 @@ export default {
             label: '业务分类',
             sortable: true,
             formatter: row => {
-              return row.category === '0' ? '影视' : row.category === '1' ? '教育' : ''
+              return row.category === '0'
+                ? '影视'
+                : row.category === '1'
+                ? '教育'
+                : ''
             }
           },
           {
@@ -139,9 +184,12 @@ export default {
             formatter: row => {
               if (row.category == 0) {
                 switch (row.source) {
-                  case 'qq': return '腾讯'
-                  case 'iqiyi': return '爱奇艺'
-                  case 'youku': return '优酷'
+                  case 'qq':
+                    return '腾讯'
+                  case 'iqiyi':
+                    return '爱奇艺'
+                  case 'youku':
+                    return '优酷'
                 }
               } else {
                 return ''
@@ -153,7 +201,13 @@ export default {
             label: '版本/状态',
             sortable: true,
             formatter: row => {
-              return row.currentVersion + '/' + ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过'][row.currentStatus]
+              return (
+                row.currentVersion +
+                '/' +
+                ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过'][
+                  row.currentStatus
+                ]
+              )
             }
           },
           {
@@ -229,15 +283,19 @@ export default {
         this.$message('只能选择一条数据')
         return false
       }
-      this.$service.filmDetailPageList({ tabId: selected.join() }).then(data => {
-        const row = data.rows[0]
-        if (row.currentStatus !== 2) {
-          this.$alert('该状态不允许编辑！', '操作提示', { confirmButtonText: '确定' })
-          return false
-        } else {
-          this.$emit('open-add-page', selected[0])
-        }
-      })
+      this.$service
+        .filmDetailPageList({ tabId: selected.join() })
+        .then(data => {
+          const row = data.rows[0]
+          if (row.currentStatus !== 2) {
+            this.$alert('该状态不允许编辑！', '操作提示', {
+              confirmButtonText: '确定'
+            })
+            return false
+          } else {
+            this.$emit('open-add-page', selected[0])
+          }
+        })
     },
     batchDel() {
       if (this.selected.length === 0) {
@@ -246,9 +304,11 @@ export default {
       }
       if (window.confirm('确定要删除吗')) {
         const select = this.selected.join(',')
-        this.$service.removeFilmDetailPage({ id: select }, '删除成功').then(() => {
-          this.fetchData()
-        })
+        this.$service
+          .removeFilmDetailPage({ id: select }, '删除成功')
+          .then(() => {
+            this.fetchData()
+          })
       }
     },
     /**
@@ -301,17 +361,29 @@ export default {
           value: 'iqiyi',
           children: []
         }
-        channelQiyi.children = videoItemModels[0].categoryList.reduce((result, item) => {
-          return result.concat({ label: item.category_name, value: item.category_id })
-        }, [])
+        channelQiyi.children = videoItemModels[0].categoryList.reduce(
+          (result, item) => {
+            return result.concat({
+              label: item.category_name,
+              value: item.category_id
+            })
+          },
+          []
+        )
         var channelTent = {
           label: '腾讯',
           value: 'qq',
           children: []
         }
-        channelTent.children = videoItemModels[1].categoryList.reduce((result, item) => {
-          return result.concat({ label: item.category_name, value: item.category_id })
-        }, [])
+        channelTent.children = videoItemModels[1].categoryList.reduce(
+          (result, item) => {
+            return result.concat({
+              label: item.category_name,
+              value: item.category_id
+            })
+          },
+          []
+        )
         this.channelOptions.push(channelQiyi)
         this.channelOptions.push(channelTent)
       })
@@ -322,36 +394,31 @@ export default {
       this.filter.source = value[0]
       this.filter.channel = value[1]
     },
-    openReview (row) {
+    openReview(row) {
       this.$emit('open-add-page', row.tabId)
     }
-
   },
   created() {
-    this.getMediaResourceInfo().then(() => {
-    })
+    this.getMediaResourceInfo().then(() => {})
     this.fetchData()
   }
-
 }
 </script>
 
 <style lang='stylus' scoped>
-.content >>> .content-list .filter-form .el-form
-  display inline
-.content >>> .content-list .filter-form .sf-item__label
-  width 100px
-  margin 0 10px
-  text-align center
-  border 1px solid #ddd
-  border-radius: 5px
-.content >>> .content-list .filter-form .sf-item--inline
-  margin 0
 .content >>> .el-table .cell
-  display flex
-  justify-content center
-  align-items center
-  height 40px
+                display: flex
+                justify-content: center
+                align-items: center
+                height: 40px
 .btns
-  margin 20px auto
+  margin: 20px auto
+.content >>> .el-form-item__content
+                width: 100%
+                .el-select,.el-cascader
+                   width 100%
+ .content
+    >>> .el-form--inline .el-form-item {
+           margin-right: 0px;
+}
 </style>

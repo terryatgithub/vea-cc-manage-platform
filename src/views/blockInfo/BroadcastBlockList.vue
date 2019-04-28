@@ -7,14 +7,12 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <div class="btns">
-        <!-- <ButtonGroupForListPage>
-          
-        </ButtonGroupForListPage> -->
-        <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <!-- <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button> -->
-      </div>
+      <ButtonGroupForListPage
+        pageName="blockInfo"
+        @add="addItem"
+        @edit="editData"
+        @delete="batchDel"
+      ></ButtonGroupForListPage>
       <Table
         :props="table.props"
         :header="table.header"
@@ -101,7 +99,7 @@ export default {
       selected: [],
       table: {
         props: {},
-          header: [
+        header: [
           {
             label: 'ID',
             width: 70,
@@ -112,24 +110,28 @@ export default {
             label: '轮播名称',
             prop: 'containerName',
             sortable: true,
-            render: (h, {row}) => {
-            return h('el-button', {
-                attrs:{
-                  type: 'text'
-                },
-                on: {
-                  click: () => {
-                    this.openReview(row) 
+            render: (h, { row }) => {
+              return h(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.openReview(row)
+                    }
                   }
-                }
-              },row.containerName)
+                },
+                row.containerName
+              )
             }
           },
           {
             label: '状态',
             prop: 'status',
             sortable: true,
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return this.$numToAuditStatus(row.status)
             }
           },
@@ -159,8 +161,8 @@ export default {
         }
       })
     },
-    openReview(row){
-       this.$emit('open-add-page', row, true)
+    openReview(row) {
+      this.$emit('open-add-page', row, true)
     },
     /**
      * 新增用户
@@ -176,8 +178,22 @@ export default {
       this.selectedRole = this.user.concat(str)
     },
     editData() {
-      if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selected[0], false)
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('open-add-page', this.selected[0], false)
+      }
+    },
+    batchDel() {
+      if (this.$isAllowDelete) {
+        if (window.confirm('确定要删除吗')) {
+          let selected = this.selected.map((e) => {
+            return e.id
+          })
+          this.$service
+            .deleteBroadcastBlock({ id: selected.join(',') }, '删除成功')
+            .then(data => {
+              this.fetchData()
+            })
+        }
       }
     },
     handleRowSelectionAdd(targetItem) {
@@ -204,7 +220,9 @@ export default {
     },
     updateTableSelected() {
       const table = this.table
-      const newSelectedIndex = this.selected.map((e) => {return e.id})
+      const newSelectedIndex = this.selected.map(e => {
+        return e.id
+      })
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.id) > -1) {
           result.push(index)
@@ -238,13 +256,13 @@ export default {
     /**
      * 获取数据
      */
-  fetchData() {
+    fetchData() {
       const filter = this.parseFilter()
       this.$service.broadcastBlockPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
-    },
+    }
   },
   created() {
     let filterSchema = _.map({
@@ -263,9 +281,9 @@ export default {
     }).other('form', {
       layout: 'inline',
       cols: {
+        item: 6,
         label: 0,
-        item: 3,
-        wrapper: 24
+        wrapper: 20
       },
       footer: {
         cols: {

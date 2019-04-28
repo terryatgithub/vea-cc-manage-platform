@@ -7,6 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
+         <!-- <ButtonGroupForListPage 
+        pageName='globalPicture' 
+        @add="addUser"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage> -->
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -59,11 +66,14 @@
 
 <script>
 import _ from "gateschema";
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+
 import { ContentWrapper, Table, utils } from "admin-toolkit";
 export default {
   components: {
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -337,37 +347,26 @@ export default {
     let filterSchema = _.map({
       pictureId: _.o.string.other("form", {
         component: "Input",
-        placeholder: "素材ID",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "素材ID"
       }),
       pictureName: _.o.string.other("form", {
         component: "Input",
-        placeholder: "素材名称",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "素材名称"
       }),
       pictureCategory: _.o.enum(this.materialTypes).other("form", {
         component: "Select",
-        placeholder: "素材类别",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "素材类别"
       }),
       pictureStatus: _.o.enum(this.pictureStatus).other("form", {
         component: "Select",
-        placeholder: "审核状态",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "审核状态"
       })
     }).other("form", {
+       cols: {
+        item: 5,
+        label: 0,
+        wrapper: 20
+      },
       layout: "inline",
       footer: {
         cols: {

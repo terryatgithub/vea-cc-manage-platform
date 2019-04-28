@@ -18,7 +18,7 @@
               >
                 <el-option
                   v-for="(partner, pIndex) in partnerList"
-                  :key="pIndex"
+                  :key="'partner'+pIndex"
                   :label="partner.label"
                   :value="partner.value"
                 ></el-option>
@@ -28,7 +28,7 @@
               <el-select v-model="searchForm.sources" @change="sourceSelectChange" size="small">
                 <el-option
                   v-for="source in sources"
-                  :key="source.source_code"
+                  :key="'source'+source.source_code"
                   :label="source.source_title"
                   :value="source.source_code"
                 ></el-option>
@@ -38,7 +38,7 @@
               <el-select v-model="searchForm.licensee" size="small" clearable>
                 <el-option
                   v-for="item in conditionList.licensee"
-                  :key="item.tagId"
+                  :key="'item'+item.tagId"
                   :label="item.tagCnName"
                   :value="item.tagEnName"
                 ></el-option>
@@ -54,7 +54,7 @@
                 <el-option label="请选择/输入" value></el-option>
                 <el-option
                   v-for="category in categories"
-                  :key="category.categoryId"
+                  :key="'category'+category.categoryId"
                   :label="category.categoryName"
                   :value="category.categoryId"
                 ></el-option>
@@ -65,7 +65,7 @@
                 <el-option label="请选择/输入" value></el-option>
                 <el-option
                   v-for="videoType in videoTypes"
-                  :key="videoType.tagId"
+                  :key="'videoType'+videoType.tagId"
                   :label="videoType.tagName"
                   :value="videoType.tagName"
                 ></el-option>
@@ -76,7 +76,7 @@
                 <el-option label="请选择/输入" value></el-option>
                 <el-option
                   v-for="payType in conditionList.payTypes"
-                  :key="payType.tagId"
+                  :key="'payType'+payType.tagId"
                   :label="payType.tagCnName"
                   :value="payType.tagEnName"
                 ></el-option>
@@ -90,7 +90,7 @@
                 <el-option label="请选择" value></el-option>
                 <el-option
                   v-for="contentType in conditionList.contentTypes"
-                  :key="contentType.contentTypeId"
+                  :key="'contentType'+contentType.contentTypeId"
                   :label="contentType.contentType"
                   :value="contentType.contentTypeId"
                 ></el-option>
@@ -116,7 +116,7 @@
                   <el-option label="请选择" value></el-option>
                   <el-option
                     v-for="videoFormat in conditionList.videoFormat"
-                    :key="videoFormat.tagEnName"
+                    :key="'videoFormat'+videoFormat.tagEnName"
                     :label="videoFormat.tagCnName"
                     :value="videoFormat.tagEnName"
                   ></el-option>
@@ -127,7 +127,7 @@
                   <el-option label="请选择" value></el-option>
                   <el-option
                     v-for="label in conditionList.contentTag"
-                    :key="label.tagId"
+                    :key="'label'+label.tagId"
                     :label="label.tagCnName"
                     :value="label.tagCnName"
                   ></el-option>
@@ -138,7 +138,7 @@
                   <el-option label="请选择" value></el-option>
                   <el-option
                     v-for="order in conditionList.orderBy"
-                    :key="order.tagId"
+                    :key="'order'+order.tagId"
                     :label="order.tagCnName"
                     :value="order.tagEnName"
                   ></el-option>
@@ -156,7 +156,7 @@
                   <el-option label="请选择/输入" value></el-option>
                   <el-option
                     v-for="director in conditionList.directors"
-                    :key="director.tagId"
+                    :key="'director'+director.tagId"
                     :label="director.tagCnName"
                     :value="director.tagCnName"
                   ></el-option>
@@ -167,7 +167,7 @@
                   <el-option label="请选择/输入" value></el-option>
                   <el-option
                     v-for="actor in conditionList.actors"
-                    :key="actor.tagId"
+                    :key="'actor'+actor.tagId"
                     :label="actor.tagCnName"
                     :value="actor.tagCnName"
                   ></el-option>
@@ -178,7 +178,7 @@
                   <el-option label="请选择/输入" value></el-option>
                   <el-option
                     v-for="area in conditionList.areas"
-                    :key="area.tagId"
+                    :key="'area'+area.tagId"
                     :label="area.tagCnName"
                     :value="area.tagCnName"
                   ></el-option>
@@ -270,7 +270,7 @@ export default {
       orderTip: '降序排列', // 排序按钮文字提示
       pagination: {
         currentPage: 1,
-        pageSize: 10
+        pageSize: 5
       },
       selected: [],
       table: {
@@ -364,6 +364,7 @@ export default {
             mouseStyle: 'hover',
              fixed: 'right',
             render: (h, {row}) => {
+             console.log(10)
               let title =typeof(row.singleMovie) !=='undefined' ? row.singleMovie.urlTitle:''
               if(typeof(row.singleMovie) !=='undefined') {
                return h('el-button',{

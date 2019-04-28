@@ -18,7 +18,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="上传文件">
-            <el-button type="primary" @click="$refs.upload.handleSelectFile()">上传布局文件</el-button>
+            <el-button type="primary" plain @click="$refs.upload.handleSelectFile()">上传布局文件</el-button>
             <Upload
               :multiple="true"
               class="global-picture__uploader"
@@ -49,7 +49,7 @@
             </Upload>
           </el-form-item>
           <el-form-item label="布局">
-            <el-button type="primary" @click="productLayout">生存布局</el-button>
+            <el-button type="primary" plain @click="productLayout">生存布局</el-button>
           </el-form-item>
           <el-form-item>
             <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>

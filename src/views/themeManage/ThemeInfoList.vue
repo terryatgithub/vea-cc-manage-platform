@@ -7,6 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
+      <!-- <ButtonGroupForListPage 
+        pageName='themeInfo' 
+        @add="addUser"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage> -->
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addUser">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -35,13 +42,15 @@
 
 <script>
 import { Button } from 'element-ui'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 
 export default {
   components: {
     ContentWrapper,
-    Table
+    Table,
+    ButtonGroupForListPage
   },
 
   data () {
@@ -75,7 +84,7 @@ export default {
               return h( Button,
                 {
                   props: {
-                    type: 'success',
+                    type: 'text',
                   },
                   on: {
                     click: () => this.themeInfoPreview(row.themeId)
@@ -316,9 +325,10 @@ export default {
         placeholder: '状态'
       })
     }).other('form', {
-      cols: {
-        item: 3,
-        label: 0
+       cols: {
+        item: 5,
+        label: 0,
+        wrapper: 20
       },
       layout: 'inline',
       footer: {

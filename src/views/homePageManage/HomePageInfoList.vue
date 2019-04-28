@@ -315,19 +315,11 @@ export default {
     let filterSchema = _.map({
       homepageId: _.o.string.other("form", {
         component: "Input",
-        placeholder: "ID",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "ID"
       }),
       homepageName: _.o.string.other("form", {
         component: "Input",
-        placeholder: "名称",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "名称"
       }),
       homepageStatus: _.o.enum({
         请选择: '',
@@ -339,22 +331,19 @@ export default {
         审核不通过:'5'
       }).other("form", {
         component: "Select",
-        placeholder: "状态",
-        cols: {
-          item: 3,
-          label: 0
-        },
+        placeholder: "状态"
       }),
       chipModel: _.o.string.other("form", {
         component: "Input",
-        placeholder: "机型/机芯",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "机型/机芯"
       })
     })
       .other("form", {
+         cols: {
+        item: 5,
+        label: 0,
+        wrapper: 20
+      },
       layout: "inline",
       footer: {
         cols: {

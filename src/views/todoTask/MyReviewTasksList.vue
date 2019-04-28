@@ -20,7 +20,7 @@ export default {
     ContentWrapper
   },
   props: {
-   resourceType: String
+    resourceType: String
   },
   data() {
     return {
@@ -154,19 +154,11 @@ export default {
     let filterSchema = _.map({
       taskId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: 'ID'
       }),
       taskName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '名称'
       }),
       auditFlag: _.o
         .enum({
@@ -177,13 +169,9 @@ export default {
         })
         .other('form', {
           component: 'Select',
-          placeholder: '审核状态',
-          cols: {
-            item: 3,
-            label: 0
-          }
+          placeholder: '审核状态'
         }),
-        currentOperator: _.o
+      currentOperator: _.o
         .enum({
           不限: '',
           仅自己: 0,
@@ -191,13 +179,14 @@ export default {
         })
         .other('form', {
           component: 'Select',
-          placeholder: '审核人',
-          cols: {
-            item: 3,
-            label: 0
-          }
+          placeholder: '审核人'
         })
     }).other('form', {
+      cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

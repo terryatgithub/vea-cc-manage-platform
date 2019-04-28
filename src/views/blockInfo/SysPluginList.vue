@@ -1,40 +1,40 @@
 <template>
- <ContentCard class="content">
-   <ContentWrapper
+  <ContentCard class="content">
+    <ContentWrapper
       :filter="filter"
       :filterSchema="filterSchema"
       :pagination="pagination"
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-   <div class="btns">
-        <el-button type="primary" icon="el-icon-edit"  @click="editData">编辑</el-button>
-        <!-- <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button> -->
-      </div>
-  <Table
-    :props="table.props"
-    :header="table.header"
-    :data="table.data"
-    :selected="table.selected"
-    :selection-type="table.selectionType"
-    @row-selection-add="handleRowSelectionAdd"
-    @row-selection-remove="handleRowSelectionRemove"
-     @all-row-selection-change="handleAllRowSelectionChange"
-  />
-   </ContentWrapper>
- </ContentCard>
+      <ButtonGroupForListPage pageName="sysPlugin" @edit="editData"></ButtonGroupForListPage>
+      <Table
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+        :selected="table.selected"
+        :selection-type="table.selectionType"
+        @row-selection-add="handleRowSelectionAdd"
+        @row-selection-remove="handleRowSelectionRemove"
+        @all-row-selection-change="handleAllRowSelectionChange"
+      />
+    </ContentWrapper>
+  </ContentCard>
 </template>
 <script>
 import _ from 'gateschema'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
   components: {
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     return {
-       pluginStatus: {
+      pluginStatus: {
         下架: 0,
         上架: 1,
         草稿: 2,
@@ -55,12 +55,12 @@ export default {
       },
       filterSchema: null,
       pagination: {},
-      selected:[],
+      selected: [],
       filter: {
         sort: undefined,
         order: undefined
       },
-       table: {
+      table: {
         props: {},
         header: [
           {
@@ -91,70 +91,70 @@ export default {
           {
             label: '内容源',
             prop: 'source',
-           render: (createElement, {row}) => {
-                switch (row.source) {
-                    case 0:
-                     return '无'
-                     break;
-                    case 1:
-                     return '腾讯'
-                     break;
-                    case 2:
-                     return '爱奇艺'
-                     break;
-                }
+            render: (createElement, { row }) => {
+              switch (row.source) {
+                case 0:
+                  return '无'
+                  break
+                case 1:
+                  return '腾讯'
+                  break
+                case 2:
+                  return '爱奇艺'
+                  break
+              }
             }
           },
           {
             label: '状态',
             prop: 'pluginStatus',
-            render: (createElement, {row}) => {
-                switch (row.pluginStatus) {
-                    case 0:
-                     return '下架'
-                     break;
-                    case 1:
-                     return '上架'
-                     break;
-                    case 2:
-                     return '草稿'
-                     break;
-                    case 3:
-                     return '待审核'
-                     break;
-                    case 4:
-                     return '审核通过'
-                     break;
-                    case 5:
-                     return '审核不通过'
-                     break;
-                }
+            render: (createElement, { row }) => {
+              switch (row.pluginStatus) {
+                case 0:
+                  return '下架'
+                  break
+                case 1:
+                  return '上架'
+                  break
+                case 2:
+                  return '草稿'
+                  break
+                case 3:
+                  return '待审核'
+                  break
+                case 4:
+                  return '审核通过'
+                  break
+                case 5:
+                  return '审核不通过'
+                  break
+              }
             }
           },
           {
             label: '频道',
             prop: 'channel',
-            render: (createElement, {row}) => {
-                switch (row.channel) {
-                    case 'movie':
-                     return '影视'
-                     break;
-                    case 'child':
-                     return '少儿'
-                     break;
-                    case 'sport':
-                     return '体育'
-                     break;
-                    case 'edu':
-                     return '教育'
-                     break;
-                }
+            render: (createElement, { row }) => {
+              switch (row.channel) {
+                case 'movie':
+                  return '影视'
+                  break
+                case 'child':
+                  return '少儿'
+                  break
+                case 'sport':
+                  return '体育'
+                  break
+                case 'edu':
+                  return '教育'
+                  break
+              }
             }
           },
           {
             label: '更新时间',
             prop: 'lastUpdateDate'
-          },
+          }
           // {
           //   label: '操作',
           //   width: '200',
@@ -170,11 +170,11 @@ export default {
       }
     }
   },
-  methods:{
-     /**
+  methods: {
+    /**
      * 获取数据
      */
-    fetchData () {
+    fetchData() {
       const filter = this.parseFilter()
       this.$service.getSysPlugin(filter).then(data => {
         console.log(data)
@@ -185,147 +185,128 @@ export default {
     /**
      * 编辑
      */
-    editData({row}) {
+    editData({ row }) {
       if (this.selected.length == 0) {
         this.$message('请选择一条数据')
-      }
-      else if (this.selected.length >1) {
+      } else if (this.selected.length > 1) {
         this.$message('只能选择一条')
-      }
-      else {
+      } else {
         this.$emit('open-add-page', this.selected[0])
       }
       // this.$emit('openAddPage', row.pluginId)
     },
     //详情
-    priviewData(row){
+    priviewData(row) {
       this.$emit('open-view-page', row.pluginId)
     },
     //表格操作
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.pluginId);
-      this.updateTableSelected();
+      this.selected.push(targetItem.pluginId)
+      this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.pluginId;
-      });
-      this.updateTableSelected();
+        return item !== targetItem.pluginId
+      })
+      this.updateTableSelected()
     },
     handleAllRowSelectionChange(value) {
       if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd);
+        this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
-        this.selected = [];
-        this.table.selected = [];
+        this.selected = []
+        this.table.selected = []
       }
     },
     handleAllRowSelectionRemove() {
-      this.selected = [];
-      this.table.selected = [];
+      this.selected = []
+      this.table.selected = []
     },
     updateTableSelected() {
-      const table = this.table;
-      const newSelectedIndex = this.selected;
+      const table = this.table
+      const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item.pluginId) > -1) {
-          result.push(index);
+          result.push(index)
         }
-        return result;
-      }, []);
+        return result
+      }, [])
     },
     //查询
     handleFilterChange(type) {
-      if (type === "filter") {
+      if (type === 'filter') {
         if (this.pagination) {
-          this.pagination.currentPage = 1;
+          this.pagination.currentPage = 1
         }
       }
-      this.fetchData();
+      this.fetchData()
     },
     //重置
     handleFilterReset() {
       this.filter = {
         sort: undefined,
         order: undefined
-      };
-      this.fetchData();
+      }
+      this.fetchData()
     },
     parseFilter() {
-      const { filter, pagination } = this;
+      const { filter, pagination } = this
       if (pagination) {
-        filter.page = pagination.currentPage;
-        filter.rows = pagination.pageSize;
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
       }
-      return filter;
-      console.log(filter);
+      return filter
+      console.log(filter)
     }
   },
   created() {
     let filterSchema = _.map({
-      pluginId: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "ID",
-        cols: {
-          item: 3,
-          label: 0
-        }
+      pluginId: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: 'ID'
       }),
-      pluginName: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "功能名称",
-        cols: {
-          item: 3,
-          label: 0
-        }
+      pluginName: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '功能名称'
       }),
       source: _.o.enum(this.source).other('form', {
         component: 'Select',
-        placeholder: '内容源',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '内容源'
       }),
       channel: _.o.enum(this.channel).other('form', {
         component: 'Select',
-        placeholder: '频道',
-        cols: {
-          item: 3,
-          label: 0
-        }
-      }), 
+        placeholder: '频道'
+      }),
       pluginStatus: _.o.enum(this.pluginStatus).other('form', {
         component: 'Select',
-        placeholder: '状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '状态'
       })
-      })
-      .other("form", {
-      layout: "inline",
+    }).other('form', {
+      cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
+      layout: 'inline',
       footer: {
         cols: {
           label: 0,
           wrapper: 24
         },
         showSubmit: true,
-        submitText: "查询",
+        submitText: '查询',
         showReset: true,
-        resetText: "重置"
+        resetText: '重置'
       }
-    });
-    this.filterSchema = filterSchema;
-    this.fetchData();
+    })
+    this.filterSchema = filterSchema
+    this.fetchData()
   }
-
-};
+}
 </script>
 <style lang="stylus" scoped>
 .btns
-  margin-bottom 10px
+  margin-bottom: 10px
 </style>
 
 

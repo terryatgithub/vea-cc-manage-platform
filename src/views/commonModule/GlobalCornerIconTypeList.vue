@@ -7,11 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
-      </div>
+         <ButtonGroupForListPage 
+        pageName='cornerIconType' 
+        @add="addItem"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage>
       <Table
         :props="table.props"
         :header="table.header"
@@ -55,11 +57,14 @@
 </template>
 <script>
 import _ from 'gateschema'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
   components: {
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -265,29 +270,22 @@ export default {
     let filterSchema = _.map({
       typeId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标分类ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标分类ID'
       }),
       typeName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标名称'
       }),
       pictureCategory: _.o.enum(this.typePosition).other('form', {
         component: 'Select',
-        placeholder: '角标位置',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '角标位置'
       })
     }).other('form', {
+        cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

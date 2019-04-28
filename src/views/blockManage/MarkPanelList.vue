@@ -7,6 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
+         <!-- <ButtonGroupForListPage 
+        pageName='userConfig' 
+        @add="addUser"
+        @edit="editData"
+        @delete="batchDel"
+        >
+        </ButtonGroupForListPage> -->
       <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -27,12 +34,15 @@
 </template>
 <script>
 import _ from 'gateschema'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+
 import ButtonList from './../../components/ButtonLIst'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
   components: {
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -283,53 +293,34 @@ export default {
     let filterSchema = _.map({
       pannelGroupId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: 'ID'
       }),
       pannelGroupRemark: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '名称'
       }),
       categoryName: _.o.enum(this.businessTypes).other('form', {
         component: 'Select',
-        placeholder: '业务分类',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '业务分类'
       }),
       pannelResource: _.o.enum(this.pannelResources).other('form', {
         component: 'Select',
-        placeholder: '内容源',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '内容源'
       }),
       fullTabName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '引用状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '引用状态'
       }),
       pannelStatus: _.o.enum(this.pannelStatuses).other('form', {
         component: 'Select',
-        placeholder: '状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '状态'
       })
     }).other('form', {
+        cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

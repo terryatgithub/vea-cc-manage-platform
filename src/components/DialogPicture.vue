@@ -57,7 +57,9 @@ export default {
         order: undefined
       },
       filterSchema: null,
-      pagination: {},
+      pagination: {
+        pageSize: 5
+      },
       selected: [],
       table: {
         props: {},
@@ -210,37 +212,26 @@ export default {
     let filterSchema = _.map({
       pictureId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '素材ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '素材ID'
       }),
       pictureName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '素材名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '素材名称'
       }),
       pictureCategory: _.o.enum(this.materialTypes).other('form', {
         component: 'Select',
-        placeholder: '素材类别',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '素材类别'
       }),
       pictureStatus: _.o.enum(this.pictureStatus).other('form', {
         component: 'Select',
-        placeholder: '审核状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '审核状态'
       })
     }).other('form', {
+       cols: {
+        item: 5,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

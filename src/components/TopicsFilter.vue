@@ -55,7 +55,7 @@ export default {
     return {
       pagination: {
         currentPage: 1,
-        pageSize: 10
+        pageSize: 5
       },
       searchForm: {
         resType: 'operation',
