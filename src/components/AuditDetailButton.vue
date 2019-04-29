@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ActionList :actions="actions" :target="this"></ActionList>
+    <ActionList :actions="actions" :target="this" class="actions"></ActionList>
     <el-dialog title="审核" :visible.sync="auditDialog" width="30%">
       <span>
         <el-form
@@ -21,8 +21,8 @@
         </el-form>
       </span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="auditDialog = false">取 消</el-button>
         <el-button type="primary" @click="submitAuditMessage">确 定</el-button>
+         <el-button @click="auditDialog = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -49,10 +49,14 @@ export default {
       }
     }
   },
+  watch: {
+    version: function(newV, oldV) {
+      this.getAuditDetailButton()
+    }
+  },
   data() {
     return {
-      actions: {
-      },
+      actions: {},
       auditDialog: false,
       auditForm: {
         auditFlag: '4', //审核状态
@@ -81,8 +85,8 @@ export default {
               '保存成功'
             )
             .then(data => {
-               this.auditDialog = false
-               this.$emit('open-list-page')
+              this.auditDialog = false
+              this.$emit('open-list-page')
             })
         }
       })
@@ -95,16 +99,30 @@ export default {
         status: this.status,
         menuElId: this.menuElId
       }
-      this.$service.getAuditDetailButton(params).then(data => {
+      let p1 = this.$service.getHistoryList({ id: this.id, type: this.type }) //要实时查看是否显示创建副本按钮
+      let p2 = this.$service.getAuditDetailButton(params)
+      Promise.all([p1,p2]).then((result)=> {
+        let data1 = result[0].rows
+        let hasCopy = true
+        data1 === null ? data1 = [] : ''
+        data1.forEach((e) => {
+          if (parseInt(e.status) === 2 || parseInt(e.status) === 3) {
+                hasCopy = false
+                return false
+          }
+        })
+        if(!hasCopy) {
+          this.notContainBtn.push('copy');//不能创建副本
+        }
+        let data2 = result[1]
         let action = {}
-        data.forEach(v => {
-          // if (v.runComm !== 'claim' && v.runComm !== 'unclaim' && v.runComm !=='copy') {
+        data2.forEach(v => {
           if (this.notContainBtn.indexOf(v.runComm) < 0) {
             action[v.runComm] = { text: v.runName, type: 'primary' }
           }
         })
         this.actions = action
-      })
+      }) 
     },
     edit() {
       this.$emit('go-edit-Page')
@@ -119,11 +137,14 @@ export default {
     unaudit() {
       if (window.confirm('真的要撤销审核吗？')) {
         this.$service
-          .revokedAudit({
-            id: this.id,
-            version: this.version,
-            type: this.type
-          }, '撤销成功')
+          .revokedAudit(
+            {
+              id: this.id,
+              version: this.version,
+              type: this.type
+            },
+            '撤销成功'
+          )
           .then(data => {
             this.auditDialog = false
           })
@@ -150,4 +171,9 @@ export default {
   }
 }
 </script>
+<style lang="stylus" scoped>
+.actions
+  justify-content: center
+</style>
+
 

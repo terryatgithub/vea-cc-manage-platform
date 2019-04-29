@@ -35,7 +35,6 @@
 <script>
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-
 import ButtonList from './../../components/ButtonLIst'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
@@ -133,26 +132,7 @@ export default {
             prop: 'pannelStatus',
             width: '90',
             render: (createElement, { row }) => {
-              switch (row.pannelStatus) {
-                case 0:
-                  return '下架'
-                  break
-                case 1:
-                  return '上架'
-                  break
-                case 2:
-                  return '草稿'
-                  break
-                case 3:
-                  return '待审核'
-                  break
-                case 4:
-                  return '审核通过'
-                  break
-                case 5:
-                  return '审核不通过'
-                  break
-              }
+              return this.$numToAuditStatus(row.pannelStatus)
             }
           },
           {

@@ -5,7 +5,7 @@ const cache = {
 export function getPolicyManagePageList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/policyConf/pageList.html',
+    url: 'api/v1/policyConf/pageList.html',
     data
   })
 }
@@ -34,15 +34,15 @@ export function getHomePageModelPageList(data) {
 export function policyConfSave(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/policyConf/save.html',
+    url: 'api/v1/policyConf/save.html',
     data
   })
 }
-/**删除 */
+/* 删除 */
 export function policyConfRemove(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/policyConf/remove.html',
+    url: 'api/v1/policyConf/remove.html',
     data
   })
 }

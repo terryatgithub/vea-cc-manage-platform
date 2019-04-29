@@ -4,25 +4,7 @@
       <div class="private-panel-info-wrapper">
         <div style="margin-left: 10px">
           <el-form :inline="true" style="margin:10px 0px">
-            <HistoryTool :id="id" :type="type" :initialStatus="status" @change="chengeVersion"/>
-            <!-- <el-form-item label="版本" v-if="versionList && versionList.length > 0">
-              <el-select
-                class="version-selector"
-                v-model="panel.currentVersion"
-                @change="handleSelectVersion"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in versionList"
-                  :key="item.version"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>-->
-            <!-- <el-form-item>
-              <div class="status">{{ STATUS_TEXT[panel.pannelList[0].pannelStatus] }}</div>
-            </el-form-item>-->
+            <HistoryTool :id="id" :type="type" :initialStatus="status" ref="history" @change="changeVersionAndStatus"/>
           </el-form>
         </div>
       </div>
@@ -32,7 +14,7 @@
       </div>
       <el-form label-width="120px" label-position="right">
         <div class="base-tit">
-          <span class="el-icon-edit">基本信息</span>
+          <span >基本信息</span>
         </div>
         <el-form-item label="业务分类">
           <span>{{ getCategoryLabel(panel.panelGroupCategory) }}</span>
@@ -52,7 +34,7 @@
           <el-form-item label="推荐维度">{{ getPanelGroupTypeLabel(panel.panelGroupType) }}</el-form-item>
         </template>
         <div class="base-tit">
-          <span class="el-icon-edit">内容配置</span>
+          <span>内容配置</span>
         </div>
         <el-form-item label="版块标题" prop="pannelList.0.pannelTitle">
           {{ panel.pannelList[0].pannelTitle }}
@@ -97,7 +79,7 @@
         </el-form-item>
       </el-form>
       <div class="base-tit auditor-title">
-        <span class="el-icon-edit">审核者备注</span>
+        <span>审核者备注</span>
       </div>
       <div class="up-addlist">
         <table>
@@ -171,7 +153,7 @@ export default {
       version: '',
       type: 'pannel',
       status: null,
-      menuElId: 'globalCornerIcon',
+      menuElId: 'privatePannelInfo',
       notContainBtn: ['claim', 'unclaim'],
       mode: null,
       title: null,
@@ -320,30 +302,6 @@ export default {
         this.panelGroupCategoryOptions = data
       })
     },
-    //版本
-    getHistory() {
-      var that = this
-      that.$service
-        .getHistory({ id: that.viewData.pannelGroupId, type: 'pannel' })
-        .then(data => {
-          if (data.rows) {
-            data.rows.forEach(function(v, i) {
-              that.versionList.push({
-                value: v.version,
-                row: v,
-                label:
-                  v.version +
-                  '/' +
-                  v.lastUpdateDate +
-                  '/' +
-                  v.modifierName +
-                  '/' +
-                  that.parasNumToStr(v.status)
-              })
-            })
-          }
-        })
-    },
     parasNumToStr(status) {
       const methodsMap = [
         '下架',
@@ -375,15 +333,10 @@ export default {
     deleteItem() {
       console.log(this.version)
       if (window.confirm('确定要删除')) {
-        // this.$service
-        //   .delHistory({ id: this.viewData.pannelGroupId,version: }, '删除成功')
-        //   .then(data => {
-        //     this.$emit('open-list-page')
-        //   })
       }
     },
     CreatCopy() {
-      this.$emit('open-add-page', this.viewData.pannelGroupId)
+      this.$emit('create-copy', this.viewData.pannelGroupId)
     },
     privatePannelInfoView() {
       this.$service
@@ -393,11 +346,13 @@ export default {
            this.getHandlePerson(data)
         })
     },
-     chengeVersion(version) {
+     changeVersionAndStatus(obj) {
+       this.status = obj.status
+       this.version = obj.version
       this.$service
         .privatePannelInfoView({
           id: this.viewData.pannelGroupId,
-          version: version
+          version: this.version 
         })
         .then(data => {
           this.setPanel(data)
@@ -412,9 +367,8 @@ export default {
     this.privatePannelInfoView() //预览
     this.id = this.viewData.pannelGroupId
     this.version = this.viewData.currentVersion
-    this.status = this.viewData.pannelStatus
+    this.status = parseInt(this.viewData.pannelStatus)
     this.getDictType()
-    this.getHistory()
   }
 }
 </script>
@@ -473,9 +427,10 @@ export default {
 .base-tit,
 .base-tit auditor-title span {
   background-color: #e6e6e6;
-  padding: 10px 2px;
+  padding: 10px 10px;
+  margin: 10px;
 }
 .up-addlist {
-  margin: 10px 0px;
+  margin: 10px 10px;
 }
 </style>

@@ -1,17 +1,15 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-    <el-row :gutter="40">
+    <el-row>
       <el-col :span="24">
-          <div class="base-tit">
-            <span class="el-icon-edit">基本信息</span>
-          </div>
-        <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="el-form-add"> 
           <el-form-item label="版块名称" prop="pannelList[0].pannelName">
             <el-input v-model="form.pannelList[0].pannelName" placeholder="版块名称"></el-input>
           </el-form-item>
           <el-form-item label="版块标题" prop="pannelList[0].pannelTitle">
             <el-input v-model="form.pannelList[0].pannelTitle" placeholder="版块标题"></el-input>
             <el-checkbox
+            class="marginL"
               :value="!form.pannelList[0].showTitle"
               @input="form.pannelList[0].showTitle = !$event"
             >前端不显示标题</el-checkbox>
@@ -23,12 +21,13 @@
             <el-radio v-model="form.pannelList[0].pannelResource" label>不限</el-radio>
             <el-radio v-model="form.pannelList[0].pannelResource" label="o_tencent">腾讯</el-radio>
             <el-radio v-model="form.pannelList[0].pannelResource" label="o_iqiyi">爱奇艺</el-radio>
+            <el-radio v-model="form.pannelList[0].pannelResource" label="o_youku">优酷</el-radio>
           </el-form-item>
+           <el-form-item>
+             <el-button type="primary" @click="submitStart">提交审核</el-button>
+             <el-button type="primary" plain @click="submitEnd">保存草稿</el-button>
+           </el-form-item>
         </el-form>
-        <div style="padding: 10px;text-align:right">
-            <el-button type="warning" @click="submitStart">提交审核</el-button>
-            <el-button type="primary" @click="submitEnd">保存草稿</el-button>
-         </div>
         <!--提交审核弹窗-->
         <el-dialog :visible.sync="dialogTableVisible">
           <el-form ref="submitForm" :model="submitForm" :rules="submitRules" label-width="100px">
@@ -42,8 +41,8 @@
               <el-date-picker v-model="submitForm.releaseTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择时间"></el-date-picker>
             </el-form-item>
             <el-form-item>
-              <el-button @click="dialogTableVisible = false;resetFields('submitForm')">取 消</el-button>
               <el-button type="primary" @click="submitTime('submitForm')">确 定</el-button>
+              <el-button @click="dialogTableVisible = false;resetFields('submitForm')">取 消</el-button>
             </el-form-item>
           </el-form>
         </el-dialog>
@@ -138,9 +137,13 @@ export default {
             this.form.isTiming = this.$refs.submitForm.model.isTiming
             this.form.releaseTime = this.$refs.submitForm.model.releaseTime
             this.dialogTableVisible = false
-            const jsonStr = JSON.stringify(this.form)
-            this.$service.MarkPanelSave({jsonStr: JSON.stringify(this.form)}, '成功').then(data => {
-                this.$emit('open-list-page')
+            this.$refs.form.validate(valid2 => {
+              if (valid2) {
+                const jsonStr = JSON.stringify(this.form)
+                this.$service.MarkPanelSave({jsonStr: JSON.stringify(this.form)}, '成功').then(data => {
+                    this.$emit('open-list-page')
+                })
+              }
             })
         }
       })

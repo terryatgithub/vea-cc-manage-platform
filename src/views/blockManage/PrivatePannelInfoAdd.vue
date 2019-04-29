@@ -9,9 +9,15 @@
           <div>专属影院版块：</div>
           <div>专属影院，影片数据 由大数据和媒资库提供，运营人员只需配置相应内容块的影片类型（0 会员影片，1 非会员影片，2 单点影片）。</div>
         </div>
-        <el-form ref="upsertForm" :model="panel" label-width="120px" :rules="rules">
+        <el-form
+          ref="upsertForm"
+          :model="panel"
+          label-width="120px"
+          :rules="rules"
+          class="el-form-add"
+        >
           <div class="base-tit">
-            <span class="el-icon-edit">基本信息</span>
+            <span>基本信息</span>
           </div>
           <el-form-item label="业务分类">
             <el-select :value="panel.panelGroupCategory" @input="handlePanelGroupCategoryChange">
@@ -22,7 +28,7 @@
                 :value="item.id"
               ></el-option>
             </el-select>
-            <span class="spform">注：只有一个权限的操作者不能选择业务分类</span>
+            <span class="spform marginL">注：只有一个权限的操作者不能选择业务分类</span>
           </el-form-item>
           <el-form-item
             label="内容源"
@@ -54,11 +60,15 @@
             </el-form-item>
           </template>
           <div class="base-tit">
-            <span class="el-icon-edit">内容配置</span>
+            <span>内容配置</span>
           </div>
           <el-form-item label="版块标题" prop="pannelList.0.pannelTitle" :rules="rules.pannelTitle">
             <el-input v-model="panel.pannelList[0].pannelTitle" placeholder="请输入版本标题"/>
-            <el-checkbox :value="!panel.showTitle" @input="panel.showTitle=!$event">前端不显示标题</el-checkbox>
+            <el-checkbox
+              :value="!panel.showTitle"
+              @input="panel.showTitle=!$event"
+              class="marginL"
+            >前端不显示标题</el-checkbox>
           </el-form-item>
           <div>
             <el-form-item v-if="panel.panelGroupType === 5" label="版块布局">
@@ -110,19 +120,19 @@
             >
               <el-input-number v-model="panel.pannelList[0].vipContentAmount" :max="15" :min="0"/>
             </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
+              <el-button type="primary" plain @click="handleSaveDraft">保存草稿</el-button>
+            </el-form-item>
           </el-form-item>
         </el-form>
-      </div>
-      <div style="padding: 10px;text-align:right">
-        <el-button type="warning" @click="handleSubmitAudit">提交审核</el-button>
-        <el-button type="primary" @click="handleSaveDraft">保存草稿</el-button>
       </div>
     </div>
   </ContentCard>
 </template>
 <script>
 export default {
-  props: ['editId'],
+  props: ['editId','isCopy'],
   data() {
     const blockVideoTypeOptions = [
       {
@@ -247,8 +257,8 @@ export default {
         return target && target.value
       }
     },
-    isReplica() {
-      return this.mode === 'replica'
+    isReplica() { //副本
+      return this.isCopy
     },
     buttonGroupParams() {
       const panel = this.panel || {}
@@ -400,15 +410,15 @@ export default {
         location.pathname + '?id=' + panel.pannelGroupId + '&version=' + version
       location.href = href
     },
-    getHistoryList: function() {
-      this.$service
-        .getHistoryList({ id: this.panel.pannelGroupId, type: 'pannel' })
-        .then(
-          function(data) {
-            this.versionList = data
-          }.bind(this)
-        )
-    },
+    // getHistoryList: function() {
+    //   this.$service
+    //     .getHistoryList({ id: this.panel.pannelGroupId, type: 'pannel' })
+    //     .then(
+    //       function(data) {
+    //         this.versionList = data
+    //       }.bind(this)
+    //     )
+    // },
     getDictType() {
       this.$service.getDictType().then(data => {
         console.log(data)
@@ -419,11 +429,9 @@ export default {
   created() {
     if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
-      this.mode = 'edit'
+      this.mode = 'edit' 
       this.$service.getEditData({ id: this.editId }).then(data => {
-        console.log(data)
         this.setPanel(data)
-        this.getHistoryList()
       })
     } else {
       this.title = '新增'
@@ -488,8 +496,8 @@ export default {
 .base-tit,
 .base-tit auditor-title span {
   background-color: #e6e6e6;
-  padding: 10px 2px;
-  margin: 5px 0px;
+  padding: 10px 10px;
+  margin: 10px 0px;
 }
 .up-addlist {
   margin: 10px 0px;

@@ -8,19 +8,14 @@
           :key="index"
           :label="item.label"
           :value="item.value"
-        />
+        >{{item.label}}</el-option>
       </el-select>
     </div>
     <div class="operate-box__status">{{statusName}}</div>
   </div>
 </template>
 <script>
-// import AuditDetailButton from './AuditDetailButton'
 export default {
-  // components: {
-  //   AuditDetailButton
-  // },
-
   props: {
     id: Number,
     type: String,
@@ -31,36 +26,27 @@ export default {
     return {
       isShowHistory: true,
       historyList: [],
-      currentVersion: '',
-      statusOption: [
-        '下架',
-        '上架',
-        '草稿',
-        '待审核',
-        '审核通过',
-        '审核不通过'
-      ],
-      status: undefined
+      currentVersion: ''
     }
   },
 
   computed: {
     statusName() {
-      if (this.historyList.length !== 0) {
-        let label = this.historyList.find(item => {
-          return item.value === this.currentVersion
-        }).label
-        let statusName = label.split('/')[3]
-        this.status = this.statusOption.indexOf(statusName)
-        return statusName
-      }
-      return this.statusOption[this.initialStatus]
+      return this.$numToAuditStatus(
+        this.currentVersion === ''
+          ? this.initialStatus
+          : parseInt(this.currentVersion.split('_')[1])
+      )
     }
   },
 
   methods: {
-    changeVersion(version) {
-      this.$emit('change', version)
+    changeVersion(versionAndStatus) {
+      versionAndStatus = versionAndStatus.split('_')
+      this.$emit('change', {
+        version: versionAndStatus[0],
+        status: parseInt(versionAndStatus[1])
+      })
     },
     getHistoryList() {
       return this.$service
@@ -68,12 +54,12 @@ export default {
         .then(data => {
           if (data.total === 0) {
             this.isShowHistory = false
-            this.status = this.initialStatus
           } else {
-            this.currentVersion = data.rows.find(item => {
-              return item.status === this.initialStatus
-            }).version
+            this.isShowHistory = true
             data.rows.forEach(row => {
+              if (row.status === this.initialStatus) {
+                this.currentVersion = row.version + '_' + row.status
+              }
               let label =
                 row.version +
                 '/' +
@@ -81,8 +67,11 @@ export default {
                 '/' +
                 row.modifierName +
                 '/' +
-                this.statusOption[row.status]
-              this.historyList.push({ label: label, value: row.version })
+                this.$numToAuditStatus(parseInt(row.status))
+              this.historyList.push({
+                label: label,
+                value: row.version + '_' + row.status
+              })
             })
           }
         })
@@ -98,17 +87,17 @@ export default {
 
 <style lang='stylus' scoped>
 .operate-box__head
-  margin-bottom 20px
+  margin-bottom: 20px
 .operate-box__status
-  display inline-block
-  width 120px
-  height 30px
-  line-height 30px
-  padding 0 5px
-  background #4fc71b
-  color #fff
-  text-align center
+  display: inline-block
+  width: 120px
+  height: 30px
+  line-height: 30px
+  padding: 0 5px
+  background: #4fc71b
+  color: #fff
+  text-align: center
 .operate-box__version
-  display inline-block
-  margin-right 10px
+  display: inline-block
+  margin-right: 10px
 </style>

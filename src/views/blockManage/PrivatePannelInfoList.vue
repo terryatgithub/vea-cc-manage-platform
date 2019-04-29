@@ -395,16 +395,6 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.content >>> .content-list .filter-form .el-form
-  display inline
-.content >>> .content-list .filter-form .sf-item__label
-  width 100px
-  margin 0 10px
-  text-align center
-  border 1px solid #ddd
-  border-radius: 5px
-.content >>> .content-list .filter-form .sf-item--inline
-  margin 0
 .content >>> .el-table .cell
   display flex
   justify-content center

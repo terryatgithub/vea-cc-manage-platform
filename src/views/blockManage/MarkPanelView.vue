@@ -4,20 +4,7 @@
       <div class="audit-tip" v-show="releaseTime">该版块为定时任务，审核通过后将于{{ releaseTime }}上线</div>
       <div id="pannelStatus">
         <el-form :inline="true">
-          <!-- <el-form-item label="版本" v-if="isShowVersion">
-            <el-select v-model="versions" @change="handleSelectVersion" placeholder="请选择">
-              <el-option
-                v-for="item in versionList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>-->
           <HistoryTool :id="id" :type="type" :initialStatus="status" @change="changeVsersion"/>
-          <!-- <el-form-item>
-            <div class="form-status">{{pannelStatus}}</div>
-          </el-form-item>-->
         </el-form>
       </div>
       <div class="base-tit">
@@ -163,11 +150,14 @@ export default {
         this.releaseTime = data.releaseTime
       })
     },
-    changeVsersion(version) {
+    changeVsersion(versionAndStatus) {
+      versionAndStatus = versionAndStatus.split('_')
+      let version = versionAndStatus[0]
+      this.version = version
+      this.status = parseInt(versionAndStatus[1])
       this.$service
         .getViewData({ id: this.viewData.pannelGroupId, version: version })
         .then(data => {
-          console.log(data)
            this.getHandlePerson(data)
           this.buttonGroup.params = data
           this.pannelName = data.pannelList[0].pannelName

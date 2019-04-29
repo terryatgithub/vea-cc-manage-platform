@@ -1,8 +1,8 @@
 <template>
   <div>
     <PrivatePannelInfoList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></PrivatePannelInfoList>
-    <PrivatePannelInfoAdd v-if="model === 'add'" :editId="editId" @open-list-page="openListPage" @go-back="goBack"></PrivatePannelInfoAdd>
-    <PrivatePannelInfoView v-if="model === 'view'" :viewData="viewData" @open-list-page="openListPage" @open-add-page="openAddPage" @go-back="goBack"></PrivatePannelInfoView>
+    <PrivatePannelInfoAdd v-if="model === 'add'" :editId="editId" :isCopy="isCopy" @open-list-page="openListPage" @go-back="goBack"></PrivatePannelInfoAdd>
+    <PrivatePannelInfoView v-if="model === 'view'" :viewData="viewData" @open-list-page="openListPage" @create-copy="createCopy" @go-back="goBack"></PrivatePannelInfoView>
   </div>
 </template>
 <script>
@@ -18,11 +18,17 @@ export default {
   data() {
     return {
       model: 'list',
+      isCopy: false,
       editId: null,
       viewData: null
     }
   },
   methods: {
+    createCopy(id){
+      this.editId = id
+      this.model = 'add'
+      this.isCopy = true 
+    },
     /**打开新增编辑页 */
     openAddPage(id) {
       this.editId = id
