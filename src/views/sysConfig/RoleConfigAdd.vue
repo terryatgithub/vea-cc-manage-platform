@@ -9,8 +9,9 @@
         :rules="formRules"
         ref="form"
         label-width="100px"
+        class="el-form-add"
     >
-      <el-form-item label="角色名称" prop="roleName">
+      <el-form-item label="角色名称" prop="roleName" >
         <el-input v-model="formData.roleName" placeholder="用户名称"></el-input>
       </el-form-item>
       <el-form-item label="排序号" prop="seq">

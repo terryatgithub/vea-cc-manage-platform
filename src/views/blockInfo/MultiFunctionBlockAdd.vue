@@ -1,7 +1,7 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="multi-func-block-upsert">
-      <el-form ref="blockForm" :rules="rules" :model="block" label-width="140px">
+      <el-form ref="blockForm" :rules="rules" :model="block" label-width="140px" class="el-form-add">
         <el-form-item
           label="系统功能名称"
           prop="pluginInfo.pluginName"

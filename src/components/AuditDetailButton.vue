@@ -22,7 +22,7 @@
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitAuditMessage">确 定</el-button>
-         <el-button @click="auditDialog = false">取 消</el-button>
+        <el-button @click="auditDialog = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -39,6 +39,12 @@ export default {
       type: String,
       default: ''
     }, //版本
+    hasHistory: {
+      type: Boolean,
+      default() {
+        return true
+      }
+    },
     type: String, //资源类型，block推荐位
     status: Number, // 获取权限按钮组的审核状态
     menuElId: String, //菜单elId
@@ -91,7 +97,7 @@ export default {
         }
       })
     },
-    getAuditDetailButton() {
+    promiseAll() {
       let params = {
         resourceId: this.id,
         version: this.version,
@@ -101,18 +107,18 @@ export default {
       }
       let p1 = this.$service.getHistoryList({ id: this.id, type: this.type }) //要实时查看是否显示创建副本按钮
       let p2 = this.$service.getAuditDetailButton(params)
-      Promise.all([p1,p2]).then((result)=> {
+      Promise.all([p1, p2]).then(result => {
         let data1 = result[0].rows
         let hasCopy = true
-        data1 === null ? data1 = [] : ''
-        data1.forEach((e) => {
+        data1 === null ? (data1 = []) : ''
+        data1.forEach(e => {
           if (parseInt(e.status) === 2 || parseInt(e.status) === 3) {
-                hasCopy = false
-                return false
+            hasCopy = false
+            return false
           }
         })
-        if(!hasCopy) {
-          this.notContainBtn.push('copy');//不能创建副本
+        if (!hasCopy) {
+          this.notContainBtn.push('copy') //不能创建副本
         }
         let data2 = result[1]
         let action = {}
@@ -122,7 +128,29 @@ export default {
           }
         })
         this.actions = action
-      }) 
+      })
+    },
+    getAuditDetailButton() {
+      if (this.hasHistory) {
+        this.promiseAll()
+      } else {
+        let params = {
+          resourceId: this.id,
+          version: this.version,
+          type: this.type,
+          status: this.status,
+          menuElId: this.menuElId
+        }
+        this.$service.getAuditDetailButton(params).then(data => {
+          let action = {}
+          data.forEach(v => {
+            if (this.notContainBtn.indexOf(v.runComm) < 0) {
+              action[v.runComm] = { text: v.runName, type: 'primary' }
+            }
+          })
+          this.actions = action
+        })
+      }
     },
     edit() {
       this.$emit('go-edit-Page')
@@ -173,7 +201,7 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .actions
-  justify-content: center
+  justify-content center
 </style>
 
 

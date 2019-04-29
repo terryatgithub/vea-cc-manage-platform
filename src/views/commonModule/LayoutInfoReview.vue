@@ -22,6 +22,7 @@
             :version="version"
             :type="type"
             :not-contain-btn="notContainBtn"
+            :hasHistory="hasHistory"
             :status="status"
             :menuElId="menuElId"
             @go-edit-Page="goEditPage"
@@ -53,6 +54,7 @@ export default {
       fileInfo: [],
       content: [],
       id: null,
+      hasHistory: false,
       version: '',
       type: 'layout',
       status: null,

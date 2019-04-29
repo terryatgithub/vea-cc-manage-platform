@@ -3,7 +3,7 @@
     <!--新增编辑界面-->
     <el-row :gutter="40">
       <el-col :span="24">
-        <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
+        <el-form :model="form" :rules="formRules" ref="form" label-width="100px" class="el-form-add">
           <el-form-item label="用户名称" prop="userName">
             <el-input v-model="form.userName" placeholder="用户名称"></el-input>
           </el-form-item>

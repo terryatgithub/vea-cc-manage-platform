@@ -1,8 +1,8 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-    <el-form ref="form" :rules="rules" :model="form" label-width="90px">
+    <el-form ref="form" :rules="rules" :model="form" label-width="90px" class="el-form-add">
       <el-form-item label="主题名称" prop="themeName">
-        <el-input v-model="form.themeName" style="width:200px"/>
+        <el-input v-model="form.themeName" />
       </el-form-item>
       <el-form-item label="收费类型">
         <el-radio-group v-model="form.chargeType">

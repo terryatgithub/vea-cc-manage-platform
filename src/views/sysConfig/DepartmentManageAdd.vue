@@ -3,7 +3,7 @@
     <!-- 新增编辑表单 -->
     <el-row :gutter="40">
       <el-col :span="24">
-        <el-form :model="formData" :rules="formRules" ref="form" label-width="100px">
+        <el-form :model="formData" :rules="formRules" ref="form" label-width="100px" class="el-form-add">
           <el-form-item label="部门名称" prop="deptName">
             <el-input v-model="formData.deptName" placeholder="部门名称"></el-input>
           </el-form-item>

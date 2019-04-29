@@ -3,7 +3,7 @@
     <!--新增编辑界面-->
     <el-row :gutter="40">
       <el-col :span="24">
-        <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
+        <el-form :model="form" :rules="formRules" ref="form" label-width="100px" class="el-form-add">
           <el-form-item label="角标名称" prop="typeName">
             <el-input v-model="form.typeName" placeholder="角标名称"></el-input>
           </el-form-item>

@@ -3,7 +3,7 @@
     <!--新增编辑界面-->
     <el-row :gutter="40">
       <el-col :span="24">
-        <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
+        <el-form :model="form" :rules="formRules" ref="form" label-width="100px" class="el-form-add">
           <el-form-item label="策略名称" prop="policyName">
             <el-input v-model="form.policyName" placeholder="策略名称"></el-input>
           </el-form-item>

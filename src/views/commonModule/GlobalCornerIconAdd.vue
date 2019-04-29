@@ -1,7 +1,7 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="global-picture">
-      <el-form ref="form" label-width="120px" :model="this">
+      <el-form ref="form" label-width="120px" :model="this" class="el-form-add">
         <div class="global-picture__label">角标图片</div>
         <Upload
           :multiple="true"

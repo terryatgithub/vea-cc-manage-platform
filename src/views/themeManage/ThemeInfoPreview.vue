@@ -97,8 +97,9 @@ export default {
   },
 
   methods: {
-    changeVersion(version) {
-      this.currentVersion = version
+    changeVersion(obj) {
+      this.themeStatus = obj.status
+      this.currentVersion = obj.version
       this.$service.themeInfoDetail({ id: this.themeInfo.themeId, version }).then(data => {
         this.themeStatus = data.themeStatus
         const form = this.form

@@ -4,7 +4,7 @@
     <div class="split-bar">
       基本信息
     </div>
-    <el-form :model="basicForm" ref="basicForm" label-width="100px" class="demo-ruleForm">
+    <el-form :model="basicForm" ref="basicForm" label-width="100px" class="el-form-add">
       <el-form-item label="审核状态" v-if="disabled">
          {{$numToAuditStatus(status)}}
       </el-form-item>
@@ -90,10 +90,10 @@
       <!-- broadcast -->
       <el-form
         :model="normalForm"
+        class="el-form-add"
         ref="normalForm"
         :rules="normalRules"
         label-width="100px"
-        class="demo-ruleForm"
         style="float: left;width: 75%"
         :class="{cutLine: basicForm.configModel === 'group'}"
       >
@@ -143,7 +143,7 @@
         <el-form-item label="海报" prop="poster.pictureUrl">
           <el-card
             class="post-box"
-            style="width: 320px;height: 180px"
+            style="height: 180px"
             @click.native="openPicture('poster', 'normalForm')"
           >
             <img
@@ -209,7 +209,7 @@
         ref="lowerForm"
         :rules="lowerRules"
         label-width="100px"
-        class="demo-ruleForm"
+       class="el-form-add"
       >
         <el-form-item label="资源类别" prop="coverType">
           <el-radio-group v-model="lowerForm.coverType" @change="cleanLowerForm">
@@ -247,7 +247,7 @@
           prop="poster.pictureUrl"
           @click.native="openPicture('poster', 'lowerForm')"
         >
-          <el-card class="post-box" style="width: 486px;height: 180px">
+          <el-card class="post-box" style="height: 180px">
             <img
               v-if="lowerForm.poster.pictureUrl"
               :src="lowerForm.poster.pictureUrl"
@@ -1432,9 +1432,6 @@ export default {
   right: 0;
   color: #FF4949;
   font-size: 20px;
-}
-.el-input {
-    max-width: 280px;
 }
 .submitCheck {
   margin-top: 20px;

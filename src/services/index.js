@@ -27,6 +27,7 @@ import * as todoTask from './todoTask'
 import * as policyManage from './homePageManage/policyManage'
 import * as sysPlugin from './sysPlugin'
 import * as common from './common'
+import * as commonResource from './commonResource'
 
 const service = {
   state: {},
@@ -56,6 +57,7 @@ const service = {
   ...todoTask,
   ...policyManage,
   ...sysPlugin,
-  ...common
+  ...common,
+  ...commonResource
 }
 Vue.prototype.$service = utils.wrapService(service)

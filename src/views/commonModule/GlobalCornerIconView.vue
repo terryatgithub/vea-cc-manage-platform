@@ -25,6 +25,7 @@
         :type="type"
         :not-contain-btn="notContainBtn"
         :status="status"
+        :hasHistory="hasHistory"
         :menuElId="menuElId"
         @go-edit-Page="goEditPage"
         @delete-item="deleteItem"
@@ -47,6 +48,7 @@ export default {
     return {
       form: {},
       dialogPLVisible: false,
+      hasHistory: false,
       id: null,
       version: '',
       type: 'icon',

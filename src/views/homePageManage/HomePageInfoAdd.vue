@@ -3,7 +3,7 @@
     <!--新增编辑界面-->
     <el-row :gutter="40">
       <el-col :span="24">
-        <el-form :model="form" :rules="formRules" ref="form" label-width="160px">
+        <el-form :model="form" :rules="formRules" ref="form" label-width="160px" class="el-form-add">
           <!-- <el-form-item label="菜单ID" prop="homepageId">
             <el-input v-model="form.homepageId" placeholder="菜单ID"></el-input>
           </el-form-item> -->

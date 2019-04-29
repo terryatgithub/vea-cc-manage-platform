@@ -3,10 +3,7 @@
     <!--新增编辑界面-->
     <el-row :gutter="40">
       <el-col :span="24">
-        <el-form :model="form" :rules="formRules" ref="form" label-width="160px">
-          <!-- <el-form-item label="菜单ID" prop="commonOnclickId">
-            <el-input v-model="form.commonOnclickId" placeholder="菜单ID"></el-input>
-          </el-form-item> -->
+        <el-form :model="form" :rules="formRules" ref="form" label-width="160px" class="el-form-add">
           <el-form-item label="点击事件名称" prop="onlickName">
             <el-input v-model="form.onlickName" placeholder="点击事件名称"></el-input>
           </el-form-item>
@@ -16,41 +13,7 @@
           <el-form-item label="点击事件json串" prop="onlickJson">
             <el-input type="textarea" v-model="form.onlickJson" placeholder="异常处理(exception)"></el-input>
           </el-form-item>
-          <el-form-item label="应用包名" prop="packagename">
-            <el-input v-model="form.packagename" placeholder="应用包名"></el-input>
-          </el-form-item>
-          <el-form-item label="应用版本号" prop="versioncode">
-            <el-input v-model="form.versioncode" placeholder="应用版本号"></el-input>
-          </el-form-item>
-          <el-form-item label="启动动作" prop="dowhat">
-            <el-select v-model="form.dowhat" placeholder="请选择活动区域">
-              <el-option label="startActivity" value="startActivity"></el-option>
-              <el-option label="startService" value="startService"></el-option>
-              <el-option label="sendBroadcast" value="sendBroadcast"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="启动方式" prop="bywhat">
-            <el-select v-model="form.bywhat" placeholder="请选择活动区域">
-              <el-option label="action" value="action"></el-option>
-              <el-option label="class" value="class"></el-option>
-              <el-option label="uri" value="uri"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="启动参数" prop="byvalue">
-            <el-input v-model="form.byvalue" placeholder="启动参数"></el-input>
-          </el-form-item>
-          <el-form-item label="扩展参数" prop="params">
-            <ul class="cc-params-ul">
-              <li v-for="(item, index) in paramsList">
-                <el-input v-model="item.key" :value="item.key" placeholder="key"></el-input>
-                <el-input v-model="item.value" :value="item.value" placeholder="value"></el-input>
-                <el-button v-show="paramsList.length > 1" type="danger" size="mini" @click="paramsRedBtn(index)" title="删除">-</el-button>
-              </li>
-            </ul>
-            <div class="cc-params-btn">
-              <el-button type="primary" size="mini" @click="paramsAddBtn" title="增加">+</el-button>
-            </div>
-          </el-form-item>
+          <AppParams  prop-prefix="onclick." v-model="form.onclick"></AppParams>
           <el-form-item label="异常处理(exception)" prop="exception">
             <el-input type="textarea" v-model="form.exception" placeholder="异常处理(exception)"></el-input>
           </el-form-item>
@@ -63,7 +26,11 @@
   </ContentCard>
 </template>
 <script>
+import { AppParams } from 'admin-toolkit'
 export default {
+  components: {
+    AppParams
+  },
   props: {
     editId: Number,
     default: null
@@ -73,16 +40,17 @@ export default {
     return {
       title: null,
       form: {
-        //commonOnclickId: null,
         onlickName: null,
         remark: null,
         onlickJson: null,
-        packagename: null,
-        versioncode: '-1',
-        dowhat:'startActivity',
-        bywhat:'action',
-        byvalue:null,
-        params:null,
+        onclick: {
+          packagename: null,
+          versioncode: '-1',
+          dowhat:'startActivity',
+          bywhat:'action',
+          byvalue:null,
+          params:[],
+        },
         exception:null
       },
       formRules: {
@@ -111,41 +79,42 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           let params = {}
-          let jsonStr = {}
-          this.paramsList.forEach(function (item) {
-            if(item.key.trim() != '') {
-              params[item.key] = item.value;
-            }
+          this.form.onclick.params.forEach(element => {
+            params[element.key] = element.value
           })
-          this.form.params = JSON.stringify(params)
-          jsonStr.jsonStr = JSON.stringify(this.form)
-          console.log(this.form)
-          this.$service.commonOnclickInfoSave(jsonStr, "保存成功").then(data => {
+          this.form.onclick.params = params
+          this.form = Object.assign({},this.form,this.form.onclick)
+          delete this.form.onclick
+          this.$service.commonOnclickInfoSave({jsonStr: JSON.stringify(this.form)}, "保存成功").then(data => {
             this.$emit("openListPage");
           });
         }
       });
     },
     getEditData() {
-      let obj = this;
       this.$service.getCommonOnclickInfoEdit({ id: this.editId }).then(data => {
-        Object.keys(this.form).forEach(v => {
-          obj.form[v] = data[v];
-          if (v === 'params') {
-            let arrs = []
-            let lists = JSON.parse(data[v])
-            console.log(lists)
-            Object.keys(lists).forEach(p => {
-              let jsons = {}
-              jsons.key = p
-              jsons.value = lists[p]
-              arrs.push(jsons)
-            })
-            if (data[v] !== '{}') {
-              obj.paramsList = arrs
-            }
+        const params = JSON.parse(data.params || '{}')
+        data.params = Object.keys(params).map((key) => {
+          return {
+            key,
+            value: params[key]
           }
-        });
+        })
+        data.onclick = {
+          packagename: data.packagename,
+          versioncode: data.versioncode,
+          dowhat: data.dowhat,
+          bywhat: data.bywhat,
+          byvalue: data.byvalue,
+          params: data.params
+        }
+        delete data.packagename
+        delete data.versioncode
+        delete data.dowhat
+        delete data.bywhat
+        delete data.byvalue
+        delete data.params
+        this.form = Object.assign({}, this.form, data)
       });
     },
   },

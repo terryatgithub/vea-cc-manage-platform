@@ -10,7 +10,7 @@
       <i class="el-icon-edit">基本信息</i>
     </div>
 
-    <el-form ref="form" :rules="rules" :model="form" label-width="90px">
+    <el-form ref="form" :rules="rules" :model="form" label-width="90px" class="el-form-add">
       <el-form-item label="版面名称" prop="tabName">
         <el-input v-model="form.tabName" style="width: 240px"/>
       </el-form-item>
