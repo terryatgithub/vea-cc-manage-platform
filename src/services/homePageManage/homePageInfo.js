@@ -24,7 +24,7 @@ export function homePageInfoSave (data) {
   return this.fetch({
     method: 'post',
     url: 'api/homepageInfo/save.html',
-    data
+    data: { data: JSON.stringify(data) }
   })
 }
 /**
@@ -40,12 +40,10 @@ export function homePageInfoDelete (params) {
 /**
  * 首页方案管理-首页方案--详情
  */
-export function getHomePageInfoEdit (params) {
+export function homePageGetDetail (params) {
   return this.fetch({
     method: 'get',
     url: 'api/homepageInfo/getDetailInfo.html',
     params
-  }).then(data => {
-    return data
   })
 }

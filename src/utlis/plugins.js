@@ -6,6 +6,7 @@ import VCharts from 'v-charts'
 import 'element-ui/lib/theme-chalk/index.css'
 // import './theme/coocaa-red/index.css'
 import './bus'
+import shadowDrag from '@/directives/shadowDrag'
 
 import AppState from '@william17/vue-app-state'
 
@@ -16,6 +17,7 @@ import '@/assets/icon/iconfont.css'
 
 import './auth'
 import './common'
+import constants from './consts'
 import ContentCard from './../components/ContentCard.vue'
 Vue.use(ElementUI, { size: 'small', zIndex: 3000 })
 // Vue.prototype.$ELEMENT = { size: 'mini', zIndex: 3000 }
@@ -25,3 +27,5 @@ Vue.use(ElementUI)
 Vue.use(AppState)
 Vue.component('GateSchemaForm', GateSchemaForm)
 Vue.component('ContentCard', ContentCard)
+Vue.directive('shadow-drag', shadowDrag)
+Vue.prototype.$consts = constants

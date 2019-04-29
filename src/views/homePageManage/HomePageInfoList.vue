@@ -53,7 +53,9 @@ export default {
       selected: [],
       buttonList:[],
       table: {
-        props: {},
+        props: {
+          'row-key': 'homepageId'
+        },
         header: [
             {
                 label: 'ID',
@@ -66,17 +68,15 @@ export default {
                 render: (h, { row }) => {
                   return h(Button, 
                     { 
-                      ref: 'button',
-                      props: {  },
-                      domProps: {
-                        innerHTML: row.homepageName
+                      props: {
+                        type: 'text'
                       },
                       on: {
-                        click: (value) => {
-                          this.showData(row.homepageId, row.currentVersion)
+                        click: () => {
+                          this.handleRead(row)
                         }
                       }
-                    })
+                    }, row.homepageName)
                 }
             },
              {
@@ -84,6 +84,11 @@ export default {
                 prop: 'relationPolicyName',
                 width: 300,
                 render: (h, { row }) => {
+                  const relationPolicyName = row.relationPolicyName
+                  if (relationPolicyName.length > 20) {
+                    return relationPolicyName.slice(0, 20) + '...'
+                  } 
+                  return relationPolicyName
                   let content = row.relationPolicyName
                   if(!content || content == '--'){
                     return '--';
@@ -120,12 +125,8 @@ export default {
                 prop: 'homepageStatus',
                 align: 'center',
                 render: (h, { row }) => {
-                  return h('span', 
-                    { 
-                      domProps: {
-                        innerHTML: row.currentVersion + '/' + _this.$numToAuditStatus(row.homepageStatus)
-                      }
-                    })
+                  const statusText = this.$consts.statusText
+                  return h('span', `${row.currentVersion}/${statusText[row.homepageStatus]}`)
                 }
             },
             {
@@ -138,35 +139,22 @@ export default {
                     } else {
                       return h(Button, 
                         { 
-                          ref: 'button',
-                          props: {  },
-                          domProps: {
-                            innerHTML: row.duplicateVersion
+                          props: {
+                            type: 'text'
                           },
                           on: {
                             click: (value) => {
                               this.showData(row.homepageId, row.duplicateVersion)
                             }
                           }
-                        })
+                        }, row.duplicateVersion)
                     }
                   }
             },
-            {
-                  label: '机型机芯',
-                  prop: 'chipModel',
-                  render: (h, { row }) => {
-                    return h('span', 
-                      { 
-                        style: {
-                          whiteSpace: 'nowrap'
-                        },
-                        domProps: {
-                          innerHTML: row.chipModel
-                        }
-                      })
-                  }
-            },
+            // {
+            //       label: '机型机芯',
+            //       prop: 'chipModel',
+            // },
             {
                   label: '更新时间',
                   prop: 'lastUpdateDate'
@@ -190,28 +178,28 @@ export default {
       }
     };
   },
+  computed: {
+  },
   methods: {
     /**
      * 新增
      */
     addData(){
-        this.$emit("open-add-page", null)
+        this.$emit("create")
     },
     /**
      * 编辑
      */
     editData(){
       if (this.$isAllowEdit(this.selected)) {
-        this.$emit('open-add-page',this.selected[0])
+        this.$emit('edit', this.selected[0])
       }
     },
     /**
      * 查看
      */
-    showData(){
-      if (this.$isAllowEdit(this.selected)) {
-        this.$emit('open-add-page',this.selected[0])
-      }
+    handleRead(item) {
+      this.$emit('read', item)
     },
     /**
      * 批量删除

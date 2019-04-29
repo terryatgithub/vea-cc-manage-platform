@@ -7,14 +7,6 @@ export function getMarkPanelList (data) {
     data
   })
 }
-// 获取业务分类
-export function getBusinessType (data) {
-  return this.fetch({
-    method: 'post',
-    url: 'api/globalDictInfo/getTypes/businessType.html',
-    data
-  })
-}
 // 回显数据
 export function getMarkEditData (params) {
   return this.fetch({

@@ -256,4 +256,18 @@ body, html, #app, section.el-container, .aside__menu
   overflow-x: hidden
 .modifyPwd
   margin-top: 10px
+
+/* width */
+.left-aside::-webkit-scrollbar
+  width 2px
+  height 2px
+/* Track */
+.left-aside::-webkit-scrollbar-track
+  background: #f1f1f1
+/* Handle */
+.left-aside::-webkit-scrollbar-thumb 
+  background: #888
+/* Handle on hover */
+.left-aside::-webkit-scrollbar-thumb:hover
+  background: #555 
 </style>

@@ -11,7 +11,7 @@ import * as sysLogOp from './systemSetting/sysLogOp'
 import * as blockInfo from './blockInfo'
 import * as adminMasterControll from './systemSetting/adminMasterControll'
 import * as materialManage from './commonModule/materialManage'
-import * as tabInfo from './panelManage/tabInfo'
+import * as tabInfo from './tabInfo'
 import * as panelInfo from './blockManage/panelInfo'
 import * as homePageInfo from './homePageManage/homePageInfo'
 import * as resourceManage from './resourceManage/movie'
@@ -25,6 +25,9 @@ import * as advertisement from './advertisement'
 import * as privatePannel from './blockManage/privatePannel'
 import * as todoTask from './todoTask'
 import * as policyManage from './homePageManage/policyManage'
+import * as sysPlugin from './sysPlugin'
+import * as common from './common'
+
 const service = {
   state: {},
   fetch,
@@ -51,6 +54,8 @@ const service = {
   ...adminMasterControll,
   ...privatePannel,
   ...todoTask,
-  ...policyManage
+  ...policyManage,
+  ...sysPlugin,
+  ...common
 }
 Vue.prototype.$service = utils.wrapService(service)

@@ -16,3 +16,10 @@ export function panelDataList(data) {
     data
   })
 }
+
+export function panelGetDetail(params) {
+  return this.fetch({
+    url: 'api/panel/getDetailInfo.html',
+    params
+  })
+}

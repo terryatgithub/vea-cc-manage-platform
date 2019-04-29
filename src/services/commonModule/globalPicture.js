@@ -13,3 +13,10 @@ export function globalPictureGet (params) {
     return JSON.parse(result.match(/initData = (\{.+\})/)[1])
   })
 }
+
+export function globalPictureList (params) {
+  return this.fetch({
+    url: 'api/globalPicture/dataList.html',
+    params
+  })
+}

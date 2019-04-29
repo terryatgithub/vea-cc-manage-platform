@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HomePageInfoList 
+    <TabInfoList 
       v-show='isShowList' 
       ref="list" 
       @create="handleCreate"
@@ -8,22 +8,22 @@
       @edit="handleEdit"
       @copy="handleCopy"
     />
-    <HomePageInfo 
+    <TabInfo 
       v-if='!isShowList' 
       :id="id" 
       :init-mode="mode"
       @upsert-end="handleUpsertEnd" 
       @go-back="goBack">
-    </HomePageInfo>
+    </TabInfo>
   </div>
 </template>
 <script>
-import HomePageInfo from './HomePageInfo'
-import HomePageInfoList from './HomePageInfoList'
+import TabInfoList from './TabInfoList'
+import TabInfo from './TabInfo'
 export default {
   components: {
-    HomePageInfo,
-    HomePageInfoList
+    TabInfoList,
+    TabInfo
   },
   data () {
     return {
@@ -39,17 +39,17 @@ export default {
       this.isShowList = false
     },
     handleEdit(item) {
-      this.id = item.homepageId
+      this.id = item.tabId
       this.mode = 'edit'
       this.isShowList = false
     },
     handleRead(item) {
-      this.id = item.homepageId
+      this.id = item.tabId
       this.mode = 'read'
       this.isShowList = false
     },
     handleCopy(item) {
-      this.id = item.homepageId
+      this.id = item.tabId
       this.mode = 'copy'
       this.isShowList = false
     },
