@@ -1,584 +1,589 @@
 <template>
-  <div class="tab-info-wrapper">
-    <ContentCard 
-      v-show="!embedTab"
-      :title="title" 
-      @go-back="$emit('go-back')">
-      <CommonContent 
-        ref="commonContent"
-        :mode="mode" 
-        :resource-info="resourceInfo"
-        @replicate="mode = 'replicate'"
-        @edit="mode = 'edit'"
-        @unaudit="fetchData"
-        @shelves="fetchData"
-        @audit="$emit('upsert-end')"
-        @submit-audit="handleSubmitAudit"
-        @save-draft="handleSaveDraft"
-        @select-version="fetchData"
-      >
-      <template v-if="mode !== 'read'" >
-          <el-form ref="tabForm" :rules="rules" :model="tabInfo" label-width="170px">
-              <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
-                  <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
-                  <i v-else class="el-icon-arrow-up" ></i>
-                  <span>基本信息</span>
-              </div>
-              <div :style="{display: isCollapseBase ? 'none' : 'block'}">
-                  <el-form-item label="版面名称" prop="tabName">
-                      <el-input v-model.trim="tabInfo.tabName"></el-input>
-                  </el-form-item>
+  <PageWrapper 
+    class="tab-info-wrapper"
+  >
+    <PageContentWrapper v-show="activePage === 'tab_info'">
+        <ContentCard 
+        :title="title" 
+        @go-back="$emit('go-back')">
+        <CommonContent 
+            ref="commonContent"
+            :mode="mode" 
+            :resource-info="resourceInfo"
+            @replicate="mode = 'replicate'"
+            @edit="mode = 'edit'"
+            @unaudit="fetchData"
+            @shelves="fetchData"
+            @audit="$emit('upsert-end')"
+            @submit-audit="handleSubmitAudit"
+            @save-draft="handleSaveDraft"
+            @select-version="fetchData"
+        >
+        <template v-if="mode !== 'read'" >
+            <el-form ref="tabForm" :rules="rules" :model="tabInfo" label-width="170px">
+                <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
+                    <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
+                    <i v-else class="el-icon-arrow-up" ></i>
+                    <span>基本信息</span>
+                </div>
+                <div :style="{display: isCollapseBase ? 'none' : 'block'}">
+                    <el-form-item label="版面名称" prop="tabName">
+                        <el-input v-model.trim="tabInfo.tabName"></el-input>
+                    </el-form-item>
 
-                  <el-form-item label="TAB标题(中文)" prop="tabCnTitle">
-                      <el-input v-model.trim="tabInfo.tabCnTitle"></el-input>
-                  </el-form-item>
+                    <el-form-item label="TAB标题(中文)" prop="tabCnTitle">
+                        <el-input v-model.trim="tabInfo.tabCnTitle"></el-input>
+                    </el-form-item>
 
-                  <el-form-item label="TAB标题(英文)" prop="tabEnTitle">
-                      <el-input v-model.trim="tabInfo.tabEnTitle"></el-input>
-                  </el-form-item>
+                    <el-form-item label="TAB标题(英文)" prop="tabEnTitle">
+                        <el-input v-model.trim="tabInfo.tabEnTitle"></el-input>
+                    </el-form-item>
 
-                  <el-form-item label="业务分类" prop="tabCategory">
-                      <cc-business-type-selector :value="tabInfo.tabCategory" @input="handleChangeTabCategory" />
-                  </el-form-item>
+                    <el-form-item label="业务分类" prop="tabCategory">
+                        <cc-business-type-selector :value="tabInfo.tabCategory" @input="handleChangeTabCategory" />
+                    </el-form-item>
 
-                  <el-form-item v-show="showSystemDefault" label="系统默认" prop="systemDefault">
-                      <el-switch on-text="是" off-text="否" :value="!!tabInfo.systemDefault" @input="tabInfo.systemDefault = $event ? 1 : 0" /> 
-                  </el-form-item>
+                    <el-form-item v-show="showSystemDefault" label="系统默认" prop="systemDefault">
+                        <el-switch on-text="是" off-text="否" :value="!!tabInfo.systemDefault" @input="tabInfo.systemDefault = $event ? 1 : 0" /> 
+                    </el-form-item>
 
-                  <el-form-item label="AppId" prop="tabAppid">
-                      <cc-appid-selector :disabled="tabInfo.tabAppid !== -1" v-model="tabInfo.tabAppid" />
-                  </el-form-item>
+                    <el-form-item label="AppId" prop="tabAppid">
+                        <cc-appid-selector :disabled="tabInfo.tabAppid !== -1" v-model="tabInfo.tabAppid" />
+                    </el-form-item>
 
-                  <el-form-item 
-                      v-if="hasSource"
-                      label="内容源" 
-                      prop="tabResource"
-                  >
-                      <SourceRadioSelector
-                      :value="tabInfo.tabResource" 
-                      @input="handleChangeSource"
-                      :disabled="isReplicate"
-                      />
-                  </el-form-item>
+                    <el-form-item 
+                        v-if="hasSource"
+                        label="内容源" 
+                        prop="tabResource"
+                    >
+                        <SourceRadioSelector
+                        :value="tabInfo.tabResource" 
+                        @input="handleChangeSource"
+                        :disabled="isReplicate"
+                        />
+                    </el-form-item>
 
-                  <el-form-item label="TAB对应的icon" prop="pictureName">
-                      <el-button @click="handleSelectIconStart">选择</el-button>
-                      <span v-if="tabInfo.iconTypeName">
-                          已选择： {{ tabInfo.iconTypeName }}
-                      </span>
-                  </el-form-item>
+                    <el-form-item label="TAB对应的icon" prop="pictureName">
+                        <el-button @click="handleSelectIconStart">选择</el-button>
+                        <span v-if="tabInfo.iconTypeName">
+                            已选择： {{ tabInfo.iconTypeName }}
+                        </span>
+                    </el-form-item>
 
-                  <el-form-item label="标题图片">
-                      <cc-global-picture-selector
-                          title="选择素材"
-                          @select-end="handleSelectTitleIcon('imgOnSelected', $event)"
-                          picture-resolution="178*80"
-                      >
-                          <el-form-item class="tab-title-icon-wrapper" prop="imgOnSelected">
-                              <img v-if="tabInfo.imgOnSelected" :src="tabInfo.imgOnSelected" />
-                              <div class="tab-title-icon__title">
-                                  选中
-                              </div>
-                          </el-form-item>
-                      </cc-global-picture-selector>
+                    <el-form-item label="标题图片">
+                        <cc-global-picture-selector
+                            title="选择素材"
+                            @select-end="handleSelectTitleIcon('imgOnSelected', $event)"
+                            picture-resolution="178*80"
+                        >
+                            <el-form-item class="tab-title-icon-wrapper" prop="imgOnSelected">
+                                <img v-if="tabInfo.imgOnSelected" :src="tabInfo.imgOnSelected" />
+                                <div class="tab-title-icon__title">
+                                    选中
+                                </div>
+                            </el-form-item>
+                        </cc-global-picture-selector>
 
-                      <cc-global-picture-selector
-                          title="选择素材"
-                          @select-end="handleSelectTitleIcon('imgOnFocus', $event)"
-                          picture-resolution="178*80"
-                      >
-                          <el-form-item class="tab-title-icon-wrapper" prop="imgOnFocus">
-                              <img v-if="tabInfo.imgOnFocus" :src="tabInfo.imgOnFocus" />
-                              <div class="tab-title-icon__title">
-                                  落焦
-                              </div>
-                          </el-form-item>
-                      </cc-global-picture-selector>
+                        <cc-global-picture-selector
+                            title="选择素材"
+                            @select-end="handleSelectTitleIcon('imgOnFocus', $event)"
+                            picture-resolution="178*80"
+                        >
+                            <el-form-item class="tab-title-icon-wrapper" prop="imgOnFocus">
+                                <img v-if="tabInfo.imgOnFocus" :src="tabInfo.imgOnFocus" />
+                                <div class="tab-title-icon__title">
+                                    落焦
+                                </div>
+                            </el-form-item>
+                        </cc-global-picture-selector>
 
-                      <cc-global-picture-selector
-                          title="选择素材"
-                          @select-end="handleSelectTitleIcon('imgOnBlur', $event)"
-                          picture-resolution="178*80"
-                      >
-                          <el-form-item class="tab-title-icon-wrapper" prop="imgOnBlur">
-                              <img v-if="tabInfo.imgOnBlur" :src="tabInfo.imgOnBlur" />
-                              <div class="tab-title-icon__title">
-                                  非落焦
-                              </div>
-                          </el-form-item>
-                      </cc-global-picture-selector>
-                  </el-form-item>
+                        <cc-global-picture-selector
+                            title="选择素材"
+                            @select-end="handleSelectTitleIcon('imgOnBlur', $event)"
+                            picture-resolution="178*80"
+                        >
+                            <el-form-item class="tab-title-icon-wrapper" prop="imgOnBlur">
+                                <img v-if="tabInfo.imgOnBlur" :src="tabInfo.imgOnBlur" />
+                                <div class="tab-title-icon__title">
+                                    非落焦
+                                </div>
+                            </el-form-item>
+                        </cc-global-picture-selector>
+                    </el-form-item>
 
-                  <el-form-item label="自动化推荐" prop="autoPromotion">
-                      <el-radio-group 
-                          v-model="tabInfo.autoPromotion" 
-                      >
-                          <el-radio v-for="(item, key) in PROMOTIONS" :key="key" :label="item.value" >{{ item.label }}</el-radio>
-                      </el-radio-group>
-                  </el-form-item>
+                    <el-form-item label="自动化推荐" prop="autoPromotion">
+                        <el-radio-group 
+                            v-model="tabInfo.autoPromotion" 
+                        >
+                            <el-radio v-for="(item, key) in PROMOTIONS" :key="key" :label="item.value" >{{ item.label }}</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
 
-                  <el-form-item 
-                      label="固定刷新时间" 
-                      prop="timeCycle">
-                      <div class="el-input" style="max-width: 400px">
-                      <cc-time-spinner v-model="tabInfo.timeCycle" :options="{
-                          min: '00:05',
-                          height: 32
-                      }" >
-                      </cc-time-spinner>
-                      </div>
-                  </el-form-item>
-              </div>
-              <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
-                  <i v-if="isCollapseExtend" class="el-icon-arrow-down"></i>
-                  <i v-else class="el-icon-arrow-up" ></i>
-                  <span>扩展参数</span>
-              </div>
+                    <el-form-item 
+                        label="固定刷新时间" 
+                        prop="timeCycle">
+                        <div class="el-input" style="max-width: 400px">
+                        <cc-time-spinner v-model="tabInfo.timeCycle" :options="{
+                            min: '00:05',
+                            height: 32
+                        }" >
+                        </cc-time-spinner>
+                        </div>
+                    </el-form-item>
+                </div>
+                <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
+                    <i v-if="isCollapseExtend" class="el-icon-arrow-down"></i>
+                    <i v-else class="el-icon-arrow-up" ></i>
+                    <span>扩展参数</span>
+                </div>
 
-              <div :style="{display: isCollapseExtend ? 'none' : 'block'}">
-                  <el-form-item label="版面属性" prop="tabType">
-                      <el-radio-group 
-                          v-model="tabInfo.tabType" 
-                          :disabled="isReplicate"
-                      >
-                          <el-radio v-for="(item, key) in TAB_TYPES" :key="key" :label="item.value" >{{ item.label }}</el-radio>
-                      </el-radio-group>
-                  </el-form-item>
-                  
-                  <template v-if="tabInfo.tabType === 1">
-                      <el-form-item label="是否二级版面" prop="hasSubTab">
-                          <el-switch :disabled="isReplicate" :value="!!tabInfo.hasSubTab" @input="tabInfo.hasSubTab= $event&&1||0" on-text="是" off-text="否" /> 
-                      </el-form-item>
+                <div :style="{display: isCollapseExtend ? 'none' : 'block'}">
+                    <el-form-item label="版面属性" prop="tabType">
+                        <el-radio-group 
+                            v-model="tabInfo.tabType" 
+                            :disabled="isReplicate"
+                        >
+                            <el-radio v-for="(item, key) in TAB_TYPES" :key="key" :label="item.value" >{{ item.label }}</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    
+                    <template v-if="tabInfo.tabType === 1">
+                        <el-form-item label="是否二级版面" prop="hasSubTab">
+                            <el-switch :disabled="isReplicate" :value="!!tabInfo.hasSubTab" @input="tabInfo.hasSubTab= $event&&1||0" on-text="是" off-text="否" /> 
+                        </el-form-item>
 
-                      <el-form-item v-if="tabInfo.hasSubTab === 1" label="是否支持记忆" prop="flagIsRecord">
-                          <el-switch :value="!!tabInfo.flagIsRecord" @input="tabInfo.flagIsRecord= $event&&1||0" on-text="是" off-text="否" /> 
-                      </el-form-item>
+                        <el-form-item v-if="tabInfo.hasSubTab === 1" label="是否支持记忆" prop="flagIsRecord">
+                            <el-switch :value="!!tabInfo.flagIsRecord" @input="tabInfo.flagIsRecord= $event&&1||0" on-text="是" off-text="否" /> 
+                        </el-form-item>
 
-                      <el-form-item label="活动浮窗" prop="floatWindow">
-                          <cc-float-window-selector
-                              @select-end="handleSelectFloatWindowEnd"
-                              :params="floatWindowParams"
-                          />
-                          <template v-if="tabInfo.activityFloatWindow">
-                              已选择: {{ tabInfo.activityFloatWindow.pluginName }} 
-                              <el-button type="danger" size="small" @click="handleRemoveFloatWindow"> 删除 </el-button>
-                          </template>
-                      </el-form-item>
+                        <el-form-item label="活动浮窗" prop="floatWindow">
+                            <cc-float-window-selector
+                                @select-end="handleSelectFloatWindowEnd"
+                                :params="floatWindowParams"
+                            />
+                            <template v-if="tabInfo.activityFloatWindow">
+                                已选择: {{ tabInfo.activityFloatWindow.pluginName }} 
+                                <el-button type="danger" size="small" @click="handleRemoveFloatWindow"> 删除 </el-button>
+                            </template>
+                        </el-form-item>
 
-                      <el-form-item label="选择版面" v-if="tabInfo.hasSubTab === 1">
+                        <el-form-item label="选择版面" v-if="tabInfo.hasSubTab === 1">
 
-                          <cc-tab-selector-el 
-                              ref="tabSelector"
-                              :source="tabInfo.tabResource"
-                              :has-sub-tab="0"
-                              @select-start="handleSelectTabStart"
-                              @select-end="handleSelectTabEnd"
-                          />
-                          <el-button type="warning" @click="handleCreateTab">新建版面</el-button>
-                          <div>
-                              <Table
-                              :data="tabInfo.tabList"
-                              :header="subTabTableHeader"
-                              selectionType="none"
-                              />
-                              
-                          </div>
-                      </el-form-item>
-                  </template>
+                            <cc-tab-selector-el 
+                                ref="tabSelector"
+                                :source="tabInfo.tabResource"
+                                :has-sub-tab="0"
+                                @select-start="handleSelectTabStart"
+                                @select-end="handleSelectTabEnd"
+                            />
+                            <el-button type="warning" @click="handleCreateTab">新建版面</el-button>
+                            <div>
+                                <OrderableTable
+                                    ref="subTabTable"
+                                    v-model="tabInfo.tabList"
+                                    :header="subTabTableHeader"
+                                />
+                                
+                            </div>
+                        </el-form-item>
+                    </template>
 
-                  <template v-if="tabInfo.tabType === 2">
-                      <el-form-item label="活动浮窗" prop="floatWindow">
-                          <cc-float-window-selector
-                              @select-end="handleSelectFloatWindowEnd"
-                              :params="floatWindowParams"
-                          />
-                          <template v-if="tabInfo.activityFloatWindow">
-                              已选择: {{ tabInfo.activityFloatWindow.pluginName }} 
-                              <el-button type="danger" size="small" @click="handleRemoveFloatWindow"> 删除 </el-button>
-                          </template>
-                      </el-form-item>
-                  </template>
+                    <template v-if="tabInfo.tabType === 2">
+                        <el-form-item label="活动浮窗" prop="floatWindow">
+                            <cc-float-window-selector
+                                @select-end="handleSelectFloatWindowEnd"
+                                :params="floatWindowParams"
+                            />
+                            <template v-if="tabInfo.activityFloatWindow">
+                                已选择: {{ tabInfo.activityFloatWindow.pluginName }} 
+                                <el-button type="danger" size="small" @click="handleRemoveFloatWindow"> 删除 </el-button>
+                            </template>
+                        </el-form-item>
+                    </template>
 
-                  <el-form-item label="选择板块" v-if="tabInfo.hasSubTab === 0">
-                      <div class="tab-info__virtual-tab-menu" :style="{visibility: isPanelDragging ? 'hidden' : 'visible'}">
-                          <Affix 
-                              relative-element-selector=".tab-info__virtual-tab" 
-                              scroll-container-selector=".el-main"
-                              style="width: 840px; display: inline-block;background: #fff; z-index: 1;"
-                              :offset="{ top: 128, bottom: 50 }"
-                          >
-                              <cc-panel-selector-el
-                                  ref="panelSelector"
-                                  :source="tabInfo.tabResource"
-                                  @select-end="handleSelectPanelEnd"
-                              />
-                              <el-dropdown>
+                    <el-form-item label="选择板块" v-if="tabInfo.hasSubTab === 0">
+                        <div class="tab-info__virtual-tab-menu" :style="{visibility: isPanelDragging ? 'hidden' : 'visible'}">
+                            <Affix 
+                                relative-element-selector=".tab-info__virtual-tab" 
+                                scroll-container-selector=".el-main"
+                                style="width: 840px; display: inline-block;background: #fff; z-index: 1;"
+                                :offset="{ top: 128, bottom: 50 }"
+                            >
+                                <cc-panel-selector-el
+                                    ref="panelSelector"
+                                    :source="tabInfo.tabResource"
+                                    @select-end="handleSelectPanelEnd"
+                                />
+                                <el-dropdown>
 
-                                  <el-button type="warning">
-                                      新建<i class="el-icon-caret-bottom el-icon--right"></i>
-                                  </el-button>
-                                  <el-dropdown-menu slot="dropdown">
-                                      <el-dropdown-item @click.native="openPannelWin(1)">常规版块</el-dropdown-item>
-                                      <el-dropdown-item @click.native="openPannelWin(3)">业务专辑</el-dropdown-item>
-                                      <el-dropdown-item @click.native="openPannelWin(5)">专属影院</el-dropdown-item>
-                                  </el-dropdown-menu>
-                              </el-dropdown> 
-                              <el-button @click="handleToggleAllPanel(false)">
-                                  展开所有
-                              </el-button>
-                              <el-button @click="handleToggleAllPanel(true)">
-                                  收起所有
-                              </el-button>
-                          </Affix>
-                      </div>
-                      <cc-virtual-tab 
-                          ref="virtualTab"
-                          class="tab-info__virtual-tab"
-                          @insert-panel="handleInsertPanel"
-                          @reorder-panel="handleReOrderPanel"
-                          @remove-panel="handleRemovePanel"
-                          @change-crowd="handleChangeCrowdOfPanel"
-                          @toggle-type="handleTogglePanelType"
-                          @collapse="handleChangeCollapseState"
-                          @uncollapse="handleChangeCollapseState"
-                          @open-panel="handlePreviewPanel"
-                          @change-panel-order-start="handleChangePanelOrderStart"
-                          @change-panel-order-end="handleChangePanelOrderEnd"
-                          @click-block="handleClickBlock"
-                          @drag-start="handleDragStart"
-                          @drag-end="handleDragEnd"
-                          @show-all-panel="handleShowAllPanels"
-                          :panels="tabInfo.pannelList"
-                          :panel-data="panelListIndexed"
-                          :width="840"
-                          :ratio="0.4"
-                          :show-title="true"
-                      />
-                  </el-form-item>
+                                    <el-button type="warning">
+                                        新建<i class="el-icon-caret-bottom el-icon--right"></i>
+                                    </el-button>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item @click.native="openPannelWin(1)">常规版块</el-dropdown-item>
+                                        <el-dropdown-item @click.native="openPannelWin(3)">业务专辑</el-dropdown-item>
+                                        <el-dropdown-item @click.native="openPannelWin(5)">专属影院</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown> 
+                                <el-button @click="handleToggleAllPanel(false)">
+                                    展开所有
+                                </el-button>
+                                <el-button @click="handleToggleAllPanel(true)">
+                                    收起所有
+                                </el-button>
+                            </Affix>
+                        </div>
+                        <cc-virtual-tab 
+                            ref="virtualTab"
+                            class="tab-info__virtual-tab"
+                            @insert-panel="handleInsertPanel"
+                            @reorder-panel="handleReOrderPanel"
+                            @remove-panel="handleRemovePanel"
+                            @change-crowd="handleChangeCrowdOfPanel"
+                            @toggle-type="handleTogglePanelType"
+                            @collapse="handleChangeCollapseState"
+                            @uncollapse="handleChangeCollapseState"
+                            @open-panel="handlePreviewPanel"
+                            @change-panel-order-start="handleChangePanelOrderStart"
+                            @change-panel-order-end="handleChangePanelOrderEnd"
+                            @click-block="handleClickBlock"
+                            @drag-start="handleDragStart"
+                            @drag-end="handleDragEnd"
+                            @show-all-panel="handleShowAllPanels"
+                            :panels="tabInfo.pannelList"
+                            :panel-data="panelListIndexed"
+                            :width="840"
+                            :ratio="0.4"
+                            :show-title="true"
+                        />
+                    </el-form-item>
 
-              </div>
+                </div>
 
-              <template v-if="tabInfo.tabType === 2">
-                  <div class="form-legend-header" @click="isCollapseSpec = !isCollapseSpec">
-                      <i v-if="isCollapseSpec" class="el-icon-arrow-down"></i>
-                      <i v-else class="el-icon-arrow-up" ></i>
-                      <span>专题配置</span>
-                  </div>
-                  <div :style="{display: isCollapseSpec || isPanelDragging ? 'none' : 'block'}">
-                      <el-form-item label="是否显示会员" prop="isShowvip">
-                          <el-switch :value="!!tabInfo.isShowvip" @input="tabInfo.isShowvip = !!$event" on-text="是" off-text="否" /> 
-                      </el-form-item>
+                <template v-if="tabInfo.tabType === 2">
+                    <div class="form-legend-header" @click="isCollapseSpec = !isCollapseSpec">
+                        <i v-if="isCollapseSpec" class="el-icon-arrow-down"></i>
+                        <i v-else class="el-icon-arrow-up" ></i>
+                        <span>专题配置</span>
+                    </div>
+                    <div :style="{display: isCollapseSpec || isPanelDragging ? 'none' : 'block'}">
+                        <el-form-item label="是否显示会员" prop="isShowvip">
+                            <el-switch :value="!!tabInfo.isShowvip" @input="tabInfo.isShowvip = !!$event" on-text="是" off-text="否" /> 
+                        </el-form-item>
 
-                      <el-form-item label="专题版面大背景" prop="alumbTabBg">
-                          <cc-global-picture-selector
-                          title="选择素材"
-                          @select-end="handleSelectBgEnd"
-                          picture-resolution="1920*1080"
-                          />
-                          <div class="image-preview-wrapper" v-if="tabInfo.alumbTabBg">
-                              <img class="image-preview" :src="tabInfo.alumbTabBg"/>
-                          </div>
-                      </el-form-item>
-                      <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg">
-                          <cc-global-picture-selector
-                              title="选择长图素材"
-                              @select-end="handleSelectLongBgEnd"
-                              :query-long-poster="1"
-                          />长图下最多支持6个板块
-                          <div class="image-preview-wrapper image-preview-wrapper--long" v-if="tabInfo.alumbTabLongBg">
-                              <img class="image-preview" :src="tabInfo.alumbTabLongBg"/>
-                              <i title="移除" @click="tabInfo.alumbTabLongBg = undefined" class="el-icon el-icon-close"></i>
-                          </div>
-                      </el-form-item>
+                        <el-form-item label="专题版面大背景" prop="alumbTabBg">
+                            <cc-global-picture-selector
+                            title="选择素材"
+                            @select-end="handleSelectBgEnd"
+                            picture-resolution="1920*1080"
+                            />
+                            <div class="image-preview-wrapper" v-if="tabInfo.alumbTabBg">
+                                <img class="image-preview" :src="tabInfo.alumbTabBg"/>
+                            </div>
+                        </el-form-item>
+                        <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg">
+                            <cc-global-picture-selector
+                                title="选择长图素材"
+                                @select-end="handleSelectLongBgEnd"
+                                :query-long-poster="1"
+                            />长图下最多支持6个板块
+                            <div class="image-preview-wrapper image-preview-wrapper--long" v-if="tabInfo.alumbTabLongBg">
+                                <img class="image-preview" :src="tabInfo.alumbTabLongBg"/>
+                                <i title="移除" @click="tabInfo.alumbTabLongBg = undefined" class="el-icon el-icon-close"></i>
+                            </div>
+                        </el-form-item>
 
-                      <el-form-item label="版面简介显示高">
-                          <el-input-number :min="0" :max="880" :step="1" v-model.number="tabInfo.sinkSize" />&nbsp;注:数值范围0-880
-                      </el-form-item>
+                        <el-form-item label="版面简介显示高">
+                            <el-input-number :min="0" :max="880" :step="1" v-model.number="tabInfo.sinkSize" />&nbsp;注:数值范围0-880
+                        </el-form-item>
 
-                      <el-form-item label="板块标题颜色">
-                          <el-color-picker v-model="tabInfo.pannelTitleColor"/>
-                      </el-form-item>
+                        <el-form-item label="板块标题颜色">
+                            <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                        </el-form-item>
 
-                      <el-form-item label="推荐位字体颜色(落焦)">
-                          <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
-                      </el-form-item>
+                        <el-form-item label="推荐位字体颜色(落焦)">
+                            <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
+                        </el-form-item>
 
-                      <el-form-item label="推荐位字体颜色(非落焦)">
-                          <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
-                      </el-form-item>
-                  </div>
-              </template>
+                        <el-form-item label="推荐位字体颜色(非落焦)">
+                            <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
+                        </el-form-item>
+                    </div>
+                </template>
 
-          </el-form>
+            </el-form>
 
-          <cc-icon-selector
-              v-if="showIconSelector"
-              @select-cancel="handleSelectIconCancel"
-              @select-end="handleSelectIconEnd"
-          />
-          <cc-crowd-selector
-              v-if="showCrowdSelector"
-              @select-cancel="handleSelectCrowdCancel"
-              @select-end="handleSelectCrowdEnd"
-          />
-      </template>
-      <template v-if="mode === 'read'">
-          <el-form ref="tabForm" :rules="rules" :model="tabInfo" label-width="170px">
-              <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
-                  <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
-                  <i v-else class="el-icon-arrow-up" ></i>
-                  <span>基本信息</span>
-              </div>
+            <cc-icon-selector
+                v-if="showIconSelector"
+                @select-cancel="handleSelectIconCancel"
+                @select-end="handleSelectIconEnd"
+            />
+            <cc-crowd-selector
+                v-if="showCrowdSelector"
+                @select-cancel="handleSelectCrowdCancel"
+                @select-end="handleSelectCrowdEnd"
+            />
+        </template>
+        <template v-if="mode === 'read'">
+            <el-form ref="tabForm" :rules="rules" :model="tabInfo" label-width="170px">
+                <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
+                    <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
+                    <i v-else class="el-icon-arrow-up" ></i>
+                    <span>基本信息</span>
+                </div>
 
-              <div :style="{display: isCollapseBase ? 'none' : 'block'}">
-                  <el-form-item label="版面名称" prop="tabName">
-                      {{ tabInfo.tabName }}
-                  </el-form-item>
+                <div :style="{display: isCollapseBase ? 'none' : 'block'}">
+                    <el-form-item label="版面名称" prop="tabName">
+                        {{ tabInfo.tabName }}
+                    </el-form-item>
 
-                  <el-form-item label="TAB标题(中文)" prop="tabCnTitle">
-                      {{ tabInfo.tabCnTitle }}
-                  </el-form-item>
+                    <el-form-item label="TAB标题(中文)" prop="tabCnTitle">
+                        {{ tabInfo.tabCnTitle }}
+                    </el-form-item>
 
-                  <el-form-item label="TAB标题(英文)" prop="tabEnTitle">
-                      {{ tabInfo.tabEnTitle }}
-                  </el-form-item>
+                    <el-form-item label="TAB标题(英文)" prop="tabEnTitle">
+                        {{ tabInfo.tabEnTitle }}
+                    </el-form-item>
 
-                  <el-form-item label="业务分类" prop="tabCategory">
-                      <cc-business-type-selector :is-read="true" v-model="tabInfo.tabCategory" />
-                  </el-form-item>
+                    <el-form-item label="业务分类" prop="tabCategory">
+                        <cc-business-type-selector :is-read="true" v-model="tabInfo.tabCategory" />
+                    </el-form-item>
 
 
-                  <el-form-item v-show="showSystemDefault" label="系统默认" prop="systemDefault">
-                      {{ tabInfo.systemDefault ? '是' : '否'}}
-                  </el-form-item>
+                    <el-form-item v-show="showSystemDefault" label="系统默认" prop="systemDefault">
+                        {{ tabInfo.systemDefault ? '是' : '否'}}
+                    </el-form-item>
 
-                  <el-form-item label="AppId" prop="tabAppid">
-                      <cc-appid-selector :is-read="true" v-model="tabInfo.tabAppid" />
-                  </el-form-item>
+                    <el-form-item label="AppId" prop="tabAppid">
+                        <cc-appid-selector :is-read="true" v-model="tabInfo.tabAppid" />
+                    </el-form-item>
 
-                  <el-form-item 
-                      v-if="hasSource"
-                      label="内容源" 
-                      prop="tabResource"
-                  >
-                      {{ $consts.sourceText[tabInfo.tabResource] }}
-                  </el-form-item>
+                    <el-form-item 
+                        v-if="hasSource"
+                        label="内容源" 
+                        prop="tabResource"
+                    >
+                        {{ $consts.sourceText[tabInfo.tabResource] }}
+                    </el-form-item>
 
-                  <el-form-item label="TAB对应的icon" prop="pictureName">
-                      <span v-if="tabInfo.iconTypeName">
-                          {{ tabInfo.iconTypeName }}
-                      </span>
-                      <div v-if="tabInfo.pictureUrl" class="tab-icon-wrapper" @click="handleSelectIconStart">
-                          <img :src="tabInfo.pictureUrl" />
-                      </div>
-                  </el-form-item>
+                    <el-form-item label="TAB对应的icon" prop="pictureName">
+                        <span v-if="tabInfo.iconTypeName">
+                            {{ tabInfo.iconTypeName }}
+                        </span>
+                        <div v-if="tabInfo.pictureUrl" class="tab-icon-wrapper" @click="handleSelectIconStart">
+                            <img :src="tabInfo.pictureUrl" />
+                        </div>
+                    </el-form-item>
 
-                  <el-form-item label="标题图片">
-                      <el-form-item class="tab-title-icon-wrapper" prop="imgOnSelected">
-                          <img v-if="tabInfo.imgOnSelected" :src="tabInfo.imgOnSelected" />
-                          <div class="tab-title-icon__title">
-                              选中
-                          </div>
-                      </el-form-item>
+                    <el-form-item label="标题图片">
+                        <el-form-item class="tab-title-icon-wrapper" prop="imgOnSelected">
+                            <img v-if="tabInfo.imgOnSelected" :src="tabInfo.imgOnSelected" />
+                            <div class="tab-title-icon__title">
+                                选中
+                            </div>
+                        </el-form-item>
 
-                      <el-form-item class="tab-title-icon-wrapper" prop="imgOnFocus">
-                          <img v-if="tabInfo.imgOnFocus" :src="tabInfo.imgOnFocus" />
-                          <div class="tab-title-icon__title">
-                              落焦
-                          </div>
-                      </el-form-item>
+                        <el-form-item class="tab-title-icon-wrapper" prop="imgOnFocus">
+                            <img v-if="tabInfo.imgOnFocus" :src="tabInfo.imgOnFocus" />
+                            <div class="tab-title-icon__title">
+                                落焦
+                            </div>
+                        </el-form-item>
 
-                      <el-form-item class="tab-title-icon-wrapper" prop="imgOnBlur">
-                          <img v-if="tabInfo.imgOnBlur" :src="tabInfo.imgOnBlur" />
-                          <div class="tab-title-icon__title">
-                              非落焦
-                          </div>
-                      </el-form-item>
-                  </el-form-item>
+                        <el-form-item class="tab-title-icon-wrapper" prop="imgOnBlur">
+                            <img v-if="tabInfo.imgOnBlur" :src="tabInfo.imgOnBlur" />
+                            <div class="tab-title-icon__title">
+                                非落焦
+                            </div>
+                        </el-form-item>
+                    </el-form-item>
 
-                  <el-form-item label="自动化推荐" prop="autoPromotion">
-                      {{ tabInfo.autoPromotion === 'movie' ? '影视' : '无'}}
-                  </el-form-item>
+                    <el-form-item label="自动化推荐" prop="autoPromotion">
+                        {{ tabInfo.autoPromotion === 'movie' ? '影视' : '无'}}
+                    </el-form-item>
 
-                  <el-form-item 
-                      label="固定刷新时间" 
-                      prop="timeCycle">
-                      {{ parseMinToStr(tabInfo.timeCycle) }}
-                  </el-form-item>
-              </div>
-              <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
-                  <i v-if="isCollapseExtend" class="el-icon-arrow-down"></i>
-                  <i v-else class="el-icon-arrow-up" ></i>
-                  <span>配置内容</span>
-              </div>
+                    <el-form-item 
+                        label="固定刷新时间" 
+                        prop="timeCycle">
+                        {{ parseMinToStr(tabInfo.timeCycle) }}
+                    </el-form-item>
+                </div>
+                <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
+                    <i v-if="isCollapseExtend" class="el-icon-arrow-down"></i>
+                    <i v-else class="el-icon-arrow-up" ></i>
+                    <span>配置内容</span>
+                </div>
 
-              <div :style="{display: isCollapseExtend ? 'none' : 'block'}">
+                <div :style="{display: isCollapseExtend ? 'none' : 'block'}">
 
-                  <el-form-item label="版面属性" prop="tabType">
-                      {{ tabInfo.tabType === 1 ? '普通版面' : '专题版面'}}
-                  </el-form-item>
-                  
-                  <template v-if="tabInfo.tabType === 1">
-                      <el-form-item label="是否二级版面" prop="hasSubTab">
-                          {{ tabInfo.hasSubTab === 1 ? '是' : '否'}}
-                      </el-form-item>
+                    <el-form-item label="版面属性" prop="tabType">
+                        {{ tabInfo.tabType === 1 ? '普通版面' : '专题版面'}}
+                    </el-form-item>
+                    
+                    <template v-if="tabInfo.tabType === 1">
+                        <el-form-item label="是否二级版面" prop="hasSubTab">
+                            {{ tabInfo.hasSubTab === 1 ? '是' : '否'}}
+                        </el-form-item>
 
-                      <el-form-item v-if="tabInfo.hasSubTab === 1" label="是否支持记忆" prop="flagIsRecord">
-                          {{ tabInfo.flagIsRecord === 1 ? '是' : '否'}}
-                      </el-form-item>
+                        <el-form-item v-if="tabInfo.hasSubTab === 1" label="是否支持记忆" prop="flagIsRecord">
+                            {{ tabInfo.flagIsRecord === 1 ? '是' : '否'}}
+                        </el-form-item>
 
-                      <el-form-item label="活动浮窗" prop="floatWindow">
-                          <template v-if="tabInfo.activityFloatWindow">
-                              {{ tabInfo.activityFloatWindow.pluginName }} 
-                          </template>
-                      </el-form-item>
+                        <el-form-item label="活动浮窗" prop="floatWindow">
+                            <template v-if="tabInfo.activityFloatWindow">
+                                {{ tabInfo.activityFloatWindow.pluginName }} 
+                            </template>
+                        </el-form-item>
 
-                      <el-form-item label="选择版面" v-if="tabInfo.hasSubTab === 1">
-                          <div>
-                              <el-table
-                                  :data="tabInfo.tabList"
-                                  border
-                                  style="margin-top: 20px; max-width: 80%">
-                                  <el-table-column
-                                      prop=""
-                                      label="排序"
-                                      width="100">
-                                      <template scope="scope">
-                                          {{ scope.$index + 1 }}
-                                      </template>
-                                  </el-table-column>
-                                  <el-table-column
-                                      prop="tabId"
-                                      label="版面ID"
-                                      width="180">
-                                  </el-table-column>
-                                  <el-table-column
-                                      prop="tabName"
-                                      label="版面名称"
-                                  >
-                                      <template scope="scope">
-                                      <el-button
-                                          @click.native.prevent="handlePreviewTab(scope.row, scope.row.currentVersion, scope.$index)"
-                                          type="text"
-                                          size="small">
-                                          {{ scope.row.tabName }}
-                                      </el-button>
-                                      </template>
-                                  </el-table-column>
-                                  <el-table-column
-                                      prop="duplicateVersion"
-                                      label="待审核副本"
-                                      width="120"
-                                  >
-                                      <template scope="scope">
-                                      <el-button
-                                          v-if="scope.row.duplicateVersion"
-                                          @click.native.prevent="handlePreviewTab(scope.row, scope.row.duplicateVersion, scope.$index)"
-                                          type="text"
-                                          size="small">
-                                          {{ scope.row.duplicateVersion }}
-                                      </el-button>
-                                      </template>
-                                  </el-table-column>
-                              </el-table>
-                          </div>
-                      </el-form-item>
-                  </template>
+                        <el-form-item label="选择版面" v-if="tabInfo.hasSubTab === 1">
+                            <div>
+                                <el-table
+                                    :data="tabInfo.tabList"
+                                    border
+                                    style="margin-top: 20px; max-width: 80%">
+                                    <el-table-column
+                                        prop=""
+                                        label="排序"
+                                        width="100">
+                                        <template scope="scope">
+                                            {{ scope.$index + 1 }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="tabId"
+                                        label="版面ID"
+                                        width="180">
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="tabName"
+                                        label="版面名称"
+                                    >
+                                        <template scope="scope">
+                                        <el-button
+                                            @click.native.prevent="handlePreviewTab(scope.row, scope.row.currentVersion, scope.$index)"
+                                            type="text"
+                                            size="small">
+                                            {{ scope.row.tabName }}
+                                        </el-button>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="duplicateVersion"
+                                        label="待审核副本"
+                                        width="120"
+                                    >
+                                        <template scope="scope">
+                                        <el-button
+                                            v-if="scope.row.duplicateVersion"
+                                            @click.native.prevent="handlePreviewTab(scope.row, scope.row.duplicateVersion, scope.$index)"
+                                            type="text"
+                                            size="small">
+                                            {{ scope.row.duplicateVersion }}
+                                        </el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </el-form-item>
+                    </template>
 
-                  <template v-if="tabInfo.tabType === 2">
-                      <el-form-item label="活动浮窗" prop="floatWindow">
-                          <template v-if="tabInfo.activityFloatWindow">
-                              {{ tabInfo.activityFloatWindow.pluginName }} 
-                          </template>
-                      </el-form-item>
-                  </template>
+                    <template v-if="tabInfo.tabType === 2">
+                        <el-form-item label="活动浮窗" prop="floatWindow">
+                            <template v-if="tabInfo.activityFloatWindow">
+                                {{ tabInfo.activityFloatWindow.pluginName }} 
+                            </template>
+                        </el-form-item>
+                    </template>
 
-                  <el-form-item label="选择板块" v-if="tabInfo.hasSubTab === 0">
-                      <div class="tab-info__virtual-tab-menu">
-                          <affix 
-                              relative-element-selector=".tab-info__virtual-tab" 
-                              scroll-container-selector=".el-main"
-                              style="width: 840px; display: inline-block;background: #fff; z-index: 1;"
-                              :offset="{ top: 128, bottom: 50 }"
-                          >
-                              <el-button @click="handleToggleAllPanel(false)">
-                                  展开所有
-                              </el-button>
-                              <el-button @click="handleToggleAllPanel(true)">
-                                  收起所有
-                              </el-button>
-                          </affix>
-                      </div>
-                      <cc-virtual-tab 
-                          class="tab-info__virtual-tab"
-                          @open-panel="handlePreviewPanel"
-                          :panels="tabInfo.pannelList"
-                          :panel-data="panelListIndexed"
-                          @click-block="handleClickBlock"
-                          @collapse="handleChangeCollapseState"
-                          @uncollapse="handleChangeCollapseState"
-                          :read-only="true"
-                          :width="840"
-                          :ratio="0.4"
-                          :show-title="true"
-                      />
-                  </el-form-item>
+                    <el-form-item label="选择板块" v-if="tabInfo.hasSubTab === 0">
+                        <div class="tab-info__virtual-tab-menu">
+                            <affix 
+                                relative-element-selector=".tab-info__virtual-tab" 
+                                scroll-container-selector=".el-main"
+                                style="width: 840px; display: inline-block;background: #fff; z-index: 1;"
+                                :offset="{ top: 128, bottom: 50 }"
+                            >
+                                <el-button @click="handleToggleAllPanel(false)">
+                                    展开所有
+                                </el-button>
+                                <el-button @click="handleToggleAllPanel(true)">
+                                    收起所有
+                                </el-button>
+                            </affix>
+                        </div>
+                        <cc-virtual-tab 
+                            class="tab-info__virtual-tab"
+                            @open-panel="handlePreviewPanel"
+                            :panels="tabInfo.pannelList"
+                            :panel-data="panelListIndexed"
+                            @click-block="handleClickBlock"
+                            @collapse="handleChangeCollapseState"
+                            @uncollapse="handleChangeCollapseState"
+                            :read-only="true"
+                            :width="840"
+                            :ratio="0.4"
+                            :show-title="true"
+                        />
+                    </el-form-item>
 
-                  <template v-if="tabInfo.tabType === 2">
-                      <div class="form-legend-header">
-                          <span>专题配置</span>
-                      </div>
+                    <template v-if="tabInfo.tabType === 2">
+                        <div class="form-legend-header">
+                            <span>专题配置</span>
+                        </div>
 
-                      <el-form-item label="是否显示会员" prop="isShowvip">
-                          {{ tabInfo.isShowvip ? '是' : '否' }}
-                      </el-form-item>
+                        <el-form-item label="是否显示会员" prop="isShowvip">
+                            {{ tabInfo.isShowvip ? '是' : '否' }}
+                        </el-form-item>
 
-                      <el-form-item label="专题版面大背景" prop="alumbTabBg">
-                          <img class="image-preview" v-if="tabInfo.alumbTabBg" :src="tabInfo.alumbTabBg"/>
-                      </el-form-item>
+                        <el-form-item label="专题版面大背景" prop="alumbTabBg">
+                            <img class="image-preview" v-if="tabInfo.alumbTabBg" :src="tabInfo.alumbTabBg"/>
+                        </el-form-item>
 
-                      <el-form-item label="专题版面长图背景" prop="alumbTabLongBg">
-                          <img class="image-preview" v-if="tabInfo.alumbTabLongBg" :src="tabInfo.alumbTabLongBg"/>
-                      </el-form-item>
+                        <el-form-item label="专题版面长图背景" prop="alumbTabLongBg">
+                            <img class="image-preview" v-if="tabInfo.alumbTabLongBg" :src="tabInfo.alumbTabLongBg"/>
+                        </el-form-item>
 
-                      <el-form-item label="版面简介显示高">
-                          {{ tabInfo.sinkSize }}
-                      </el-form-item>
+                        <el-form-item label="版面简介显示高">
+                            {{ tabInfo.sinkSize }}
+                        </el-form-item>
 
-                      <el-form-item label="板块标题颜色">
-                          <input disabled type="color" :value="tabInfo.pannelTitleColor" />
-                      </el-form-item>
+                        <el-form-item label="板块标题颜色">
+                            <input disabled type="color" :value="tabInfo.pannelTitleColor" />
+                        </el-form-item>
 
-                      <el-form-item label="推荐位字体颜色(落焦)">
-                          <input disabled type="color" :value="tabInfo.blockTitleFocusColor" />
-                      </el-form-item>
+                        <el-form-item label="推荐位字体颜色(落焦)">
+                            <input disabled type="color" :value="tabInfo.blockTitleFocusColor" />
+                        </el-form-item>
 
-                      <el-form-item label="推荐位字体颜色(非落焦)">
-                          <input disabled type="color" :value="tabInfo.blockTitleUnfocusColor" />
-                      </el-form-item>
+                        <el-form-item label="推荐位字体颜色(非落焦)">
+                            <input disabled type="color" :value="tabInfo.blockTitleUnfocusColor" />
+                        </el-form-item>
 
-                  </template>
-              </div>
-          </el-form>
-      </template>
-      </CommonContent>
-    </ContentCard>
+                    </template>
+                </div>
+            </el-form>
+        </template>
+        </CommonContent>
+        </ContentCard>
+    </PageContentWrapper>
 
-    <TabInfo
-      v-if="embedTab" 
-      class="tab-info-embed"
-      :title-prefix="title"
-      :id="embedTab.id" 
-      :version="embedTab.version"
-      :init-mode="embedTab.mode" 
-      @upsert-end="handleTabEmbedBack"
-      @go-back="embedTab = undefined" />
-  </div>
+    <PageContentWrapper v-if="activePage === 'tab'">
+        <TabInfo
+          :title-prefix="title"
+          :id="embedTab.id" 
+          :version="embedTab.version"
+          :init-mode="embedTab.mode" 
+          @upsert-end="handleTabEmbedBack"
+          @go-back="activePage = 'tab_info'" />
+    </PageContentWrapper>
+  </PageWrapper>
 </template>
 
 <script>
 import { Table } from 'admin-toolkit'
 import Var from '@/components/Var'
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
 import SourceRadioSelector from '@/components/SourceRadioSelector'
 import CommonContent from '@/components/CommonContent'
 import ContentCard from '@/components/ContentCard'
@@ -594,15 +599,11 @@ import TimeSpinner from '@/components/TimeSpinner'
 import VirtualTab from '@/components/VirtualTab'
 import InputOrder from '@/components/InputOrder'
 import { Affix } from 'vue-affix'
-const titleMap = {
-  'create': '创建版面',
-  'read': '预览版面',
-  'edit': '编辑版面',
-  'replicate': '创建版面副本',
-  'copy': '复制版面'
-}
+import titleMixin from '@/mixins/title'
+import OrderableTable from '@/components/OrderableTable'
 export default {
     name: 'TabInfo',
+    mixins: [titleMixin],
     components: {
       'cc-var': Var,
       'cc-table-el': Table,
@@ -621,7 +622,10 @@ export default {
       Affix,
       ContentCard,
       SourceRadioSelector,
-      InputOrder
+      InputOrder,
+      OrderableTable,
+      PageWrapper,
+      PageContentWrapper
     },
     data() {
         const STATUS = {
@@ -641,6 +645,8 @@ export default {
         }
         return {
             mode: 'create',
+            activePage: 'tab_info',
+            resourceName: '版面',
             embedTab: undefined,
             isCollapseBase: false,
             isCollapseExtend: false,
@@ -741,29 +747,11 @@ export default {
                 imgOnFocus: undefined,
                 imgOnSelected: undefined,
             },
-            selectedTabList: [],
             versionList: [],
 
             panelNormalDuplicates: {},
             panelSpecDuplicates: {},
             subTabTableHeader: [
-              {
-                label: '排序',
-                width: 100,
-                render: (h, params) => {
-                  return h(InputOrder, {
-                    key: params.$index + Math.random().toString(),
-                    props: {
-                      value: params.$index + 1
-                    },
-                    on: {
-                      input: ($event) => {
-                        this.handleChangeTabOrder(params.$index, $event)
-                      }
-                    }
-                  })
-                }
-              },
               {
                 label: '版面ID',
                 prop: 'tabId',
@@ -800,34 +788,12 @@ export default {
                     }
                   }, row.duplicateVersion)
                 }
-              },
-              {
-                label: '操作',
-                width: 80,
-                render: (h, {$index, row}) => {
-                  return h('el-button', {
-                    props: {
-                      type: 'text'
-                    },
-                    on: {
-                      click: () => {
-                        this.handleRemoveTab($index)
-                      }
-                    }
-                  }, '删除')
-                }
               }
             ]
-
         }
     },
-    props: ['id', 'version', 'init-mode', 'titlePrefix'],
+    props: ['id', 'version', 'init-mode'],
     computed: {
-      title() {
-        const titlePrefix = this.titlePrefix
-        const title = titleMap[this.mode]
-        return titlePrefix ? `${titlePrefix} / ${title}` : title
-      },
       resourceInfo() {
         const tabInfo = this.tabInfo
         if (tabInfo.tabId) {
@@ -882,7 +848,6 @@ export default {
         }
     },
     watch: {
-        'selectedTabList': 'handleSelectedTabListChange' 
     },
     methods: {
         parseMinToStr(min) {
@@ -914,11 +879,6 @@ export default {
             setTimeout(function() {
                 this.isPanelDragging = false
             }.bind(this))
-        },
-        handleSelectedTabListChange() {
-            this.tabInfo.tabList = this.selectedTabList.map(function(item) {
-                return item.data
-            })
         },
         handleCreateTab() {
           this.embedTab = {
@@ -1713,40 +1673,13 @@ export default {
         handleSelectTabStart() {
             this.$nextTick(function() {
                 const tabSelector = this.$refs.tabSelector
-                this.selectedTabList.forEach(function(item) {
-                    tabSelector.handleTableRowSelectionAdd(item.data)
+                this.tabInfo.tabList.forEach(function(item) {
+                    tabSelector.handleTableRowSelectionAdd(item)
                 })
             }.bind(this))
         },
         handleSelectTabEnd(data) {
-            const originSelectedTabList = this.selectedTabList
-            const selectedTabList = data
-            const selectedTabListIndexed = data.reduce(function(result, item, index) {
-                result[item.id] = index
-                return result
-            }, {})
-            let tabList = []
-            originSelectedTabList.forEach(function(item) {
-                const index = selectedTabListIndexed[item.id]
-                if (index !== undefined) {
-                    // 
-                    tabList.push(item)
-                    selectedTabList[index] = undefined 
-                }
-            })
-            this.selectedTabList = tabList.concat(selectedTabList.filter(function(item) { return item }))
-            this.showTabSelector = false
-        },
-        handleChangeTabOrder(index, order) {
-            const tabList = this.selectedTabList
-            if (order > tabList.length) {
-                order = tabList.length
-            }
-            const newIndex = order - 1
-            const oldIndex = index
-            const item = tabList[oldIndex]
-            tabList.splice(oldIndex, 1)
-            this.selectedTabList = [].concat(tabList.slice(0, newIndex), item, tabList.slice(newIndex))
+            this.$refs.subTabTable.handleAppendData(data, 'tabId')
         },
         handleChangePanelOrderStart(index, order) {
             if (order !== '') {
@@ -1790,6 +1723,7 @@ export default {
             });
         },
         handleTabEmbedBack() {
+          this.activePage = 'tab_info'
           const { index, id, version, mode } = this.embedTab
           if (index !== undefined) {
             this.$service.tabInfoList({tabId: id}).then((data) => {
@@ -1799,39 +1733,14 @@ export default {
           this.embedTab = undefined
         },
         handlePreviewTab(row, version, index) {
+          this.activePage = 'tab'
           this.embedTab = {
             index: index,
             id: row.tabId,
             version: version,
             mode: 'read'
           }
-            return
-            const tabId = row.tabId
-            const url = '/tabInfo/toAudit.html?id=' + tabId + '&version=' + version;
-            this.FastDevTool.createDialogWin('edit-view', {
-                confirmInfo: false,
-                fit: true,
-                iconCls: 'icon-edit',
-                minimizable: false,
-                maximizable: true,
-                title: '预览页面',
-                content: this.FastDevTool.createIframe(url),
-                onClose: function() {
-                }.bind(this)
-            })
         },
-        handleRemoveTab(index) {
-            const subTab = this.tabInfo.tabList[index]
-            const tabSelector = this.$refs.tabSelector
-            this.selectedTabList.splice(index, 1)
-            if (tabSelector) {
-                tabSelector.selected = tabSelector.selected.filter(function(item) {
-                    return item.id !== subTab.tabId
-                })
-                tabSelector.updateTableSelected()
-            }
-        },
-
         handleShowTimeShelf() {
             const data = this.getFormData()
             data.tabStatus = this.STATUS.waiting
@@ -2118,16 +2027,6 @@ export default {
                 }.bind(this), 50)
             }
 
-            if (data.tabList) {
-                this.selectedTabList = data.tabList.map(function(item) {
-                    return {
-                        data: item,
-                        id: item.tabId,
-                        label: item.tabName
-                    }
-                })
-            }
-
             this.tabInfo = Object.assign({}, this.tabInfo, {
                 tabId: data.tabId,
                 currentVersion: data.currentVersion,
@@ -2205,7 +2104,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .tab-title-icon-wrapper {
     display: inline-block;
     width: 180px;
@@ -2219,7 +2118,7 @@ export default {
     max-width: 100%;
     max-height: 100%;
 }
-.tab-title-icon-wrapper .el-form-item__content {
+.tab-title-icon-wrapper >>> .el-form-item__content {
     height: 100%;
 }
 .tab-title-icon__title {
@@ -2247,12 +2146,6 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-.tab-info-wrapper 
-  position relative
-.tab-info-embed
-  position absolute
-  top 0
-  width 100%
 .image-preview-wrapper 
     position relative
     max-width 400px

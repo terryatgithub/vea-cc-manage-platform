@@ -1,282 +1,217 @@
 <template>
-<ContentCard title="首页方案" @go-back="$emit('go-back')">
-    <CommonContent 
-      :mode="mode" 
-      :resource-info="resourceInfo"
-      @replicate="mode = 'replicate'"
-      @edit="mode = 'edit'"
-      @unaudit="fetchData"
-      @shelves="fetchData"
-      @audit="$emit('upsert-end')"
-      @submit-audit="handleSubmitAudit"
-      @save-draft="handleSaveDraft"
-      @select-version="fetchData"
-    >
-      <div class="hompage-upsert" v-if="mode !== 'read'">
-        <el-form ref="homepageForm" :model="homepage" :rules="rules" label-width="140px">
-          <div class="form-legend-header">
-              <span>基本信息</span>
-          </div>
-          <el-form-item label="首页名称" prop="homepageName">
-            <el-input v-model="homepage.homepageName" placeholder="首页名称" />
-          </el-form-item>
-          <el-form-item label="首页模式" prop="homepageModel">
-            <el-radio-group v-model="homepage.homepageModel">
-              <el-radio label="normal">标准模式</el-radio>
-              <el-radio label="child">儿童模式</el-radio>
-              <el-radio label="old">老人模式</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="首页版本号" prop="homepageVersion">
-            <el-input v-model="homepage.homepageVersion" placeholder="首页版本号"></el-input>
-          </el-form-item>
+  <PageWrapper>
+    <PageContentWrapper v-show="activePage == 'homepage'">
+      <ContentCard 
+        :title="title" 
+        @go-back="$emit('go-back')">
+          <CommonContent 
+            :mode="mode" 
+            :resource-info="resourceInfo"
+            @replicate="mode = 'replicate'"
+            @edit="mode = 'edit'"
+            @unaudit="fetchData"
+            @shelves="fetchData"
+            @audit="$emit('upsert-end')"
+            @submit-audit="handleSubmitAudit"
+            @save-draft="handleSaveDraft"
+            @select-version="fetchData"
+          >
+            <div class="hompage-upsert" v-if="mode !== 'read'">
+              <el-form ref="homepageForm" :model="homepage" :rules="rules" label-width="140px">
+                <div class="form-legend-header">
+                    <span>基本信息</span>
+                </div>
+                <el-form-item label="首页名称" prop="homepageName">
+                  <el-input v-model="homepage.homepageName" placeholder="首页名称" />
+                </el-form-item>
+                <el-form-item label="首页模式" prop="homepageModel">
+                  <el-radio-group v-model="homepage.homepageModel">
+                    <el-radio label="normal">标准模式</el-radio>
+                    <el-radio label="child">儿童模式</el-radio>
+                    <el-radio label="old">老人模式</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="首页版本号" prop="homepageVersion">
+                  <el-input v-model="homepage.homepageVersion" placeholder="首页版本号"></el-input>
+                </el-form-item>
 
-          <div class="form-legend-header">
-              <span>数据列表配置</span>
-          </div>
-          <el-form-item label="首页版面">
-            <TabSelector
-                @select-end="handleSelectTabEnd"
-            />
-            <el-button type="warning" @click="handleCreateTab">新建版面</el-button>
-            <span class="cc-form-annotation">至少选择1个版面</span>
-            <div>
-                <el-table
-                    :data="tabGroupList"
-                    border
-                    style="margin-top: 20px;">
-                    <el-table-column
-                        prop=""
-                        label="排序"
-                        width="100">
-                        <template scope="scope">
-                          <InputOrder
-                            :key="Math.random().toString()"
-                            :value="scope.$index + 1" 
-                            @input="handleChangeTabOrder(scope.$index, $event)"
-                          />
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        prop="tabId"
-                        label="版面ID"
-                        width="180">
-                    </el-table-column>
-                    <el-table-column
-                        prop="tabName"
-                        width="180"
-                        label="版面名称">
-                        <template scope="scope">
-                        <el-button
-                            @click.native.prevent="handleShowTabGroup(scope.$index)"
-                            type="text"
-                            size="small">
-                            {{ scope.row.tabName }}
-                        </el-button>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        prop="tabCnTitle"
-                        label="TAB标题(中文)"
-                        width="180">
-                    </el-table-column>
-                    <el-table-column
-                        prop="tabEnTitle"
-                        label="TAB标题(英文)"
-                        width="180">
-                    </el-table-column>
-                    <el-table-column
-                        label="默认落焦"
-                        width="100"
-                        align="center"
-                      >
-                      <template scope="scope">
-                        <el-radio 
-                          :title="scope.row.canBeDefaultFocusTab ? '' : '只有普通版面或设了默认版面的定向版面组才能设为默认落焦'"
-                          :disabled="!scope.row.canBeDefaultFocusTab" 
-                          v-model="homepage.defaultFocusIndex" 
-                          :label="scope.$index"
-                        >&nbsp;</el-radio>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="版面数"
-                      width="100"
-                    >
-                      <template scope="scope">
-                        <span> {{ scope.row.tabCount }} </span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="默认版面"
-                      width="150"
-                    >
-                      <template scope="scope">
-                        {{ scope.row.isDefaultTab ? '有' : '无'}}
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                        label="操作"
-                        width="80"
-                    >
-                        <template scope="scope">
-                        <el-button
-                            @click.native.prevent="handleRemoveTab(scope.$index)"
-                            type="text"
-                            size="small">
-                            删除
-                        </el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
+                <div class="form-legend-header">
+                    <span>数据列表配置</span>
+                </div>
+                <el-form-item label="首页版面">
+                  <TabSelector
+                      @select-end="handleSelectTabEnd"
+                  />
+                  <el-button type="warning" @click="handleCreateTab">新建版面</el-button>
+                  <span class="cc-form-annotation">至少选择1个版面</span>
+                  <OrderableTable 
+                    v-model="tabGroupList"
+                    :header="tabGroupTableHeader"
+                  />
+                  <div>
+
+                      
+                  </div>
+                </el-form-item>
+              </el-form>
             </div>
-          </el-form-item>
-        </el-form>
-      </div>
 
-      <div class="homepage-read" v-if="mode === 'read'">
-        <el-form label-width="140px">
-          <div class="form-legend-header">
-              <span>基本信息</span>
-          </div>
-          <el-form-item label="首页名称" prop="homepageName">
-            {{ homepage.homepageName }}
-          </el-form-item>
-          <el-form-item label="首页模式" prop="homepageModel">
-            {{ HOME_MODE_MAP[homepage.homepageModel] }}
-          </el-form-item>
-          <el-form-item label="首页版本号" prop="homepageVersion">
-            {{ homepage.homepageVersion }}
-          </el-form-item>
+            <div class="homepage-read" v-if="mode === 'read'">
+              <el-form label-width="140px">
+                <div class="form-legend-header">
+                    <span>基本信息</span>
+                </div>
+                <el-form-item label="首页名称" prop="homepageName">
+                  {{ homepage.homepageName }}
+                </el-form-item>
+                <el-form-item label="首页模式" prop="homepageModel">
+                  {{ HOME_MODE_MAP[homepage.homepageModel] }}
+                </el-form-item>
+                <el-form-item label="首页版本号" prop="homepageVersion">
+                  {{ homepage.homepageVersion }}
+                </el-form-item>
 
-          <div class="form-legend-header">
-              <span>数据列表配置</span>
-          </div>
-          <el-form-item label="首页版面">
-            <div>
-                <el-table :data="tabGroupList" border>
-                    <el-table-column
-                        prop=""
-                        label="排序"
-                        width="100">
-                        <template scope="scope">
-                        {{ scope.$index + 1 }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        prop="tabId"
-                        label="版面ID"
-                        width="180">
-                    </el-table-column>
+                <div class="form-legend-header">
+                    <span>数据列表配置</span>
+                </div>
+                <el-form-item label="首页版面">
+                  <div>
+                      <el-table :data="tabGroupList" border>
+                          <el-table-column
+                              prop=""
+                              label="排序"
+                              width="100">
+                              <template scope="scope">
+                              {{ scope.$index + 1 }}
+                              </template>
+                          </el-table-column>
+                          <el-table-column
+                              prop="tabId"
+                              label="版面ID"
+                              width="180">
+                          </el-table-column>
 
-                    <el-table-column
-                        prop="tabName"
-                        width="180"
-                        label="版面名称">
-                        <template scope="scope">
-                        <el-button
-                            @click.native.prevent="handleShowTabGroup(scope.$index)"
-                            type="text"
-                            size="small">
-                            {{ scope.row.tabName }}
-                        </el-button>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        prop="tabCnTitle"
-                        label="TAB标题(中文)"
-                        width="180">
-                    </el-table-column>
-                    <el-table-column
-                        prop="tabEnTitle"
-                        label="TAB标题(英文)"
-                        width="180">
-                    </el-table-column>
-                    <el-table-column
-                        label="默认落焦"
-                        width="100"
-                        align="center"
-                      >
-                      <template scope="scope">
-                        <span>{{ homepage.defaultFocusIndex === scope.$index ? '是' : '否' }}</span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="版面数"
-                      width="100"
-                    >
-                      <template scope="scope">
-                        <span> {{ scope.row.tabCount }} </span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="默认版面"
-                      width="150"
-                    >
-                      <template scope="scope">
-                        {{ scope.row.isDefaultTab ? '有' : '无' }}
-                      </template>
-                    </el-table-column>
+                          <el-table-column
+                              prop="tabName"
+                              width="180"
+                              label="版面名称">
+                              <template scope="scope">
+                              <el-button
+                                  @click.native.prevent="handleShowTabGroup(scope.$index)"
+                                  type="text"
+                                  size="small">
+                                  {{ scope.row.tabName }}
+                              </el-button>
+                              </template>
+                          </el-table-column>
+                          <el-table-column
+                              prop="tabCnTitle"
+                              label="TAB标题(中文)"
+                              width="180">
+                          </el-table-column>
+                          <el-table-column
+                              prop="tabEnTitle"
+                              label="TAB标题(英文)"
+                              width="180">
+                          </el-table-column>
+                          <el-table-column
+                              label="默认落焦"
+                              width="100"
+                              align="center"
+                            >
+                            <template scope="scope">
+                              <span>{{ homepage.defaultFocusIndex === scope.$index ? '是' : '否' }}</span>
+                            </template>
+                          </el-table-column>
+                          <el-table-column
+                            label="版面数"
+                            width="100"
+                          >
+                            <template scope="scope">
+                              <span> {{ scope.row.tabCount }} </span>
+                            </template>
+                          </el-table-column>
+                          <el-table-column
+                            label="默认版面"
+                            width="150"
+                          >
+                            <template scope="scope">
+                              {{ scope.row.isDefaultTab ? '有' : '无' }}
+                            </template>
+                          </el-table-column>
 
-                </el-table>
+                      </el-table>
+                  </div>
+                </el-form-item>
+              </el-form>
             </div>
-          </el-form-item>
-        </el-form>
-      </div>
-    </CommonContent>
+          </CommonContent>
 
-  <cc-crowd-selector
-      v-if="showCrowdSelector"
-      @select-cancel="handleSelectCrowdCancel"
-      @select-end="handleSelectCrowdEnd"
-  />
+        <cc-crowd-selector
+            v-if="showCrowdSelector"
+            @select-cancel="handleSelectCrowdCancel"
+            @select-end="handleSelectCrowdEnd"
+        />
 
 
-  <cc-homepage-tab-group-setter
-    v-if="showTabGroupSetter" 
-    :tabs="homepage.tabInfos[activeTabGroupIndex]"
-    :readonly="mode === 'read'"
-    @set-end="handleSetTabGroupEnd"
-    @set-cancel="showTabGroupSetter = false"
-  />
 
-  <div id="add-view"></div>
+      </ContentCard>
+    </PageContentWrapper>
 
-  <el-dialog title="审核" :visible.sync="showAuditDialog">
-      <el-form>
-      <el-form-item label="审核意见">
-          <el-radio class="radio" v-model="auditForm.auditFlag" :label="4">通过</el-radio>
-          <el-radio class="radio" v-model="auditForm.auditFlag" :label="5">打回</el-radio>
-      </el-form-item>
-      <el-form-item label="意见说明">
-          <el-input type="textarea" v-model="auditForm.auditDesc"></el-input>
-      </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-      <el-button @click="showAuditDialog = false">取 消</el-button>
-      <el-button type="primary" @click="handleAudit">确 定</el-button>
-      </div>
-  </el-dialog>
-</ContentCard>
+    <PageContentWrapper v-if="activePage === 'tab_group_setter'">
+      <HomePageTabGroupSetter
+        :title-prefix="title"
+        :tabs="homepage.tabInfos[activeTabGroupIndex]"
+        :readonly="mode === 'read'"
+        @set-end="handleSetTabGroupEnd"
+        @go-back="activePage = 'homepage'"
+      />
+    </PageContentWrapper>
 
+    <PageContentWrapper v-if="activePage === 'tab'">
+      <TabInfo
+        :title-prefix="title"
+        :id="embedTab.id" 
+        :version="embedTab.version"
+        :init-mode="embedTab.mode" 
+        @upsert-end="handleTabEmbedBack"
+        @go-back="activePage = 'homepage'" />
+    </PageContentWrapper>
+
+  </PageWrapper>
 </template>
 
 <script>
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
 import CommonContent from '@/components/CommonContent.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 import InputOrder from '@/components/InputOrder'
+import titleMixin from '@/mixins/title'
+import HomePageTabGroupSetter from './HomePageTabGroupSetter'
+import OrderableTable from '@/components/OrderableTable'
+import TabInfo from '@/views/tabInfo/TabInfo'
 export default {
+  mixins: [titleMixin],
   components: {
+    PageWrapper,
+    PageContentWrapper,
     CommonContent,
     TabSelector,
-    InputOrder
+    InputOrder,
+    HomePageTabGroupSetter,
+    OrderableTable,
+    TabInfo
   },
   data() {
     return {
       mode: 'create',
+      resourceName: '首页方案',
+      activePage: 'homepage',
       showTabGroupSetter: false,
       showCrowdSelector: false,
       showAuditDialog: false,
+      embedTab: undefined,
       selectedTabList: [],
       selectedTabListIndexed: {},
       activeTabGroupIndex: undefined,
@@ -317,7 +252,67 @@ export default {
         homepageVersion: [
           { required: true, message: '请输入首页版本号'}
         ]  
-      }
+      },
+      tabGroupTableHeader: [
+        {
+          label: '版面ID',
+          prop: 'tabId'
+        },
+        {
+          label: '版面名称',
+          width: 180,
+          render: (h, {$index, row}) => {
+            return h('el-button', {
+              props: {
+                type: 'text'
+              },
+              on: {
+                click: () => {
+                  this.handleShowTabGroup($index)
+                }
+              }
+            }, row.tabName)
+          }
+        },
+        {
+          prop: "tabCnTitle",
+          label: "TAB标题(中文)",
+          width: 180
+        },
+        {
+          label: '默认落焦',
+          width: 80,
+          align: 'center',
+          render: (h, {$index, row}) => {
+            return h('el-radio', {
+              attrs: {
+                title: row.canBeDefaultFocusTab ? '' : '只有普通版面或设了默认版面的定向版面组才能设为默认落焦'
+              },
+              props: {
+                value: this.homepage.defaultFocusIndex,
+                label: $index
+              },
+              on: {
+                input: (val) => {
+                  this.homepage.defaultFocusIndex = val
+                }
+              }
+            }, '')
+          }
+        },
+        {
+          label: '版面数',
+          prop: 'tabCount',
+          width: 80
+        },
+        {
+          label: '默认版面',
+          width: 80,
+          render: (h, {$index, row}) => {
+            return row.isDefaultTab ? '有' : '否'
+          }
+        }
+      ]
     }
   },
   computed: {
@@ -333,61 +328,48 @@ export default {
         }
       }
     },
-    tabGroupList() {
-      const homepage = this.homepage
-      const defaultFocusIndex = homepage.defaultFocusIndex
-      const tabInfos = homepage.tabInfos || []
-      const tabGroupList = []
-      tabInfos.forEach(function(tabList) {
-        const defaultTabIndex = tabList.findIndex(function(item) {
-          return item.isDefaultTab
+    tabGroupList: {
+      get() {
+        const homepage = this.homepage
+        const defaultFocusIndex = homepage.defaultFocusIndex
+        const tabInfos = homepage.tabInfos || []
+        const tabGroupList = []
+        tabInfos.forEach(function(tabList) {
+          const defaultTabIndex = tabList.findIndex(function(item) {
+            return item.isDefaultTab
+          })
+          const tabItem = {
+            tabCount: tabList.length,
+            canBeDefaultFocusTab: false,
+            tabList
+          }
+          const tabItemToShow = tabList[defaultTabIndex > -1 ? defaultTabIndex : 0]
+          // 只有普通版面和已经设了默认版面的版面组可以默认落焦
+          if (defaultTabIndex > -1 || (tabItem.tabCount === 1 && tabItemToShow.dmpInfo === undefined)) {
+            tabItem.canBeDefaultFocusTab = true
+          }
+          Object.assign(tabItem, tabItemToShow)
+          tabGroupList.push(tabItem)
         })
-        const tabItem = {
-          tabCount: tabList.length,
-          canBeDefaultFocusTab: false
+        if (defaultFocusIndex !== undefined && !tabGroupList[defaultFocusIndex].canBeDefaultFocusTab) {
+          // 如果当前默认落焦不能被设为默认落焦, 则取消当前默认落焦
+          homepage.defaultFocusIndex = undefined
         }
-        const tabItemToShow = tabList[defaultTabIndex > -1 ? defaultTabIndex : 0]
-        // 只有普通版面和已经设了默认版面的版面组可以默认落焦
-        if (defaultTabIndex > -1 || (tabItem.tabCount === 1 && tabItemToShow.dmpInfo === undefined)) {
-          tabItem.canBeDefaultFocusTab = true
-        }
-        Object.assign(tabItem, tabItemToShow)
-        tabGroupList.push(tabItem)
-      })
-      if (defaultFocusIndex !== undefined && !tabGroupList[defaultFocusIndex].canBeDefaultFocusTab) {
-        // 如果当前默认落焦不能被设为默认落焦, 则取消当前默认落焦
-        homepage.defaultFocusIndex = undefined
+        return tabGroupList
+      },
+      set(val) {
+        this.homepage.tabInfos = val.map(item => item.tabList)
       }
-      console.log(tabGroupList)
-      return tabGroupList
-    },
-    buttonGroupParams() {
-      const homepage = this.homepage || {}
-      return  {
-        type: 'homepage',
-        menuElId: 'homepageInfo',
-        status: homepage.homepageStatus,
-        resourceId: homepage.homepageId,
-        version: homepage.currentVersion
-      }
-    },
-    isAllowCopy() {
-        const STATUS = this.$consts.status
-        const found = this.versionList.some(function(item) {
-          const status = item.row.status
-            return status === STATUS.draft || status === STATUS.waiting || status === STATUS.rejected
-        })
-        return !found
     },
   },
   props: ['id', 'initMode'],
   methods: {
     handleShowTabGroup(index) {
       this.activeTabGroupIndex = index
-      this.showTabGroupSetter = true
+      this.activePage = 'tab_group_setter'
     },
     handleSetTabGroupEnd(tabList) {
-      this.showTabGroupSetter = false
+      this.activePage = 'homepage'
       this.$set(this.homepage.tabInfos, this.activeTabGroupIndex, tabList)
     },
     handleSaveDraft() {
@@ -617,46 +599,21 @@ export default {
       })
     },
     handleSelectTabEnd(data) {
-      this.showTabSelector = false
       const tabInfos = this.homepage.tabInfos
       data.forEach(function(item) {
         tabInfos.push([
-          Object.assign({}, item.data)
+          Object.assign({}, item)
         ])
       })
     },
-    handleChangeTabOrder(index, order) {
-        const homepage = this.homepage
-        const tabList = homepage.tabInfos
-        if (order > tabList.length) {
-          order = tabList.length
-        }
-        const newIndex = order - 1
-        const oldIndex = index
-        const item = tabList[oldIndex]
-        const defaultFocusIndex = homepage.defaultFocusIndex
-        const defaultFocusItem = tabList[defaultFocusIndex]
-        tabList.splice(oldIndex, 1)
-        const newTabList = [].concat(tabList.slice(0, newIndex), [item], tabList.slice(newIndex))
-        homepage.tabInfos = newTabList
-        if (defaultFocusIndex > -1) {
-          homepage.defaultFocusIndex = newTabList.findIndex(function(item) {
-            return item === defaultFocusItem
-          })
-        }
+    handleTabEmbedBack() {
+      this.activePage = 'homepage'
     },
     handleCreateTab() {
-        const url = $basePath + '/tabInfo/add.html';
-        const FastDevTool = this.FastDevTool
-        FastDevTool.createDialogWin('add-view', {
-            confirmInfo: true,
-            fit: true,
-            iconCls: 'icon-edit',
-            minimizable: false,
-            maximizable: true,
-            title: '版面页面',
-            content: FastDevTool.createIframe(url)
-        });
+      this.activePage = 'tab'
+      this.embedTab = {
+        mode: 'create'
+      }
     },
     handleRemoveTab(index) {
         const homepage = this.homepage
@@ -767,21 +724,5 @@ export default {
   }
 }
 </script>
-<style scoped>
-.version-selector {
-  width: 350px;
-}
-.version-selector .el-input {
-  max-width: 350px
-}
-.status {
-  display: inline-block;
-  width: 120px;
-  height: 30px;
-  line-height: 30px;
-  padding: 0 5px;
-  background: #4fc71b;
-  color: #fff;
-  text-align: center;
-}
+<style lang="stylus" scoped>
 </style>

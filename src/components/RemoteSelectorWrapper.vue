@@ -152,4 +152,5 @@ export default {
   float right
 .remote-selector-dialog
   padding-bottom 10px
+
 </style>

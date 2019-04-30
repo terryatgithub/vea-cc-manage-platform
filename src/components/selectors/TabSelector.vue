@@ -95,6 +95,7 @@
 import { Table } from 'admin-toolkit'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 import SourceSelector from '../SourceSelector'
+const ID = 'tabId'
 export default {
   components: {
     Table,
@@ -270,24 +271,16 @@ export default {
         })
     },
     handleTableRowSelectionChange(item, index) {
-        this.selected = [{
-            id: item.tabId,
-            label: item.tabName,
-            data: item
-        }]
+        this.selected = [item]
         this.table.selected = index
     },
     handleTableRowSelectionAdd(targetItem) {
-        this.selected = this.selected.concat({
-            id: targetItem.tabId,
-            label: targetItem.tabName,
-            data: targetItem
-        })
+        this.selected = this.selected.concat(targetItem)
         this.updateTableSelected()
     },
     handleTableRowSelectionRemove(targetItem) {
         this.selected = this.selected.filter((item) => {
-            return item.id !== targetItem.tabId
+            return item[ID] !== targetItem[ID]
         })        
         this.updateTableSelected()
     },
@@ -300,9 +293,9 @@ export default {
     },
     updateTableSelected() {
         const table = this.table
-        const newSelectedIndex = this.selected.map(item => item.id)
+        const newSelectedIndex = this.selected.map(item => item[ID])
         table.selected = table.data.reduce((result, item, index)=> {
-            if (newSelectedIndex.indexOf(item.tabId) > -1) {
+            if (newSelectedIndex.indexOf(item[ID]) > -1) {
                 result.push(index)
             }
             return result
