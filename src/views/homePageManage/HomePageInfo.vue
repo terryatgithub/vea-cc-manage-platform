@@ -12,6 +12,7 @@
             @unaudit="fetchData"
             @shelves="fetchData"
             @audit="$emit('upsert-end')"
+            @copy="handleCopy"
             @submit-audit="handleSubmitAudit"
             @save-draft="handleSaveDraft"
             @select-version="fetchData"
@@ -47,6 +48,7 @@
                   <OrderableTable 
                     v-model="tabGroupList"
                     :header="tabGroupTableHeader"
+                    :hide-action="true"
                   />
                   <div>
 
@@ -75,84 +77,16 @@
                     <span>数据列表配置</span>
                 </div>
                 <el-form-item label="首页版面">
-                  <div>
-                      <el-table :data="tabGroupList" border>
-                          <el-table-column
-                              prop=""
-                              label="排序"
-                              width="100">
-                              <template scope="scope">
-                              {{ scope.$index + 1 }}
-                              </template>
-                          </el-table-column>
-                          <el-table-column
-                              prop="tabId"
-                              label="版面ID"
-                              width="180">
-                          </el-table-column>
-
-                          <el-table-column
-                              prop="tabName"
-                              width="180"
-                              label="版面名称">
-                              <template scope="scope">
-                              <el-button
-                                  @click.native.prevent="handleShowTabGroup(scope.$index)"
-                                  type="text"
-                                  size="small">
-                                  {{ scope.row.tabName }}
-                              </el-button>
-                              </template>
-                          </el-table-column>
-                          <el-table-column
-                              prop="tabCnTitle"
-                              label="TAB标题(中文)"
-                              width="180">
-                          </el-table-column>
-                          <el-table-column
-                              prop="tabEnTitle"
-                              label="TAB标题(英文)"
-                              width="180">
-                          </el-table-column>
-                          <el-table-column
-                              label="默认落焦"
-                              width="100"
-                              align="center"
-                            >
-                            <template scope="scope">
-                              <span>{{ homepage.defaultFocusIndex === scope.$index ? '是' : '否' }}</span>
-                            </template>
-                          </el-table-column>
-                          <el-table-column
-                            label="版面数"
-                            width="100"
-                          >
-                            <template scope="scope">
-                              <span> {{ scope.row.tabCount }} </span>
-                            </template>
-                          </el-table-column>
-                          <el-table-column
-                            label="默认版面"
-                            width="150"
-                          >
-                            <template scope="scope">
-                              {{ scope.row.isDefaultTab ? '有' : '无' }}
-                            </template>
-                          </el-table-column>
-
-                      </el-table>
-                  </div>
+                  <OrderableTable 
+                    v-model="tabGroupList"
+                    :header="tabGroupTableHeader"
+                    :readonly="true"
+                    :hide-action="true"
+                  />
                 </el-form-item>
               </el-form>
             </div>
           </CommonContent>
-
-        <cc-crowd-selector
-            v-if="showCrowdSelector"
-            @select-cancel="handleSelectCrowdCancel"
-            @select-end="handleSelectCrowdEnd"
-        />
-
 
 
       </ContentCard>
@@ -175,7 +109,7 @@
         :version="embedTab.version"
         :init-mode="embedTab.mode" 
         @upsert-end="handleTabEmbedBack"
-        @go-back="activePage = 'homepage'" />
+        @go-back="handleTabEmbedBack" />
     </PageContentWrapper>
 
   </PageWrapper>
@@ -252,67 +186,7 @@ export default {
         homepageVersion: [
           { required: true, message: '请输入首页版本号'}
         ]  
-      },
-      tabGroupTableHeader: [
-        {
-          label: '版面ID',
-          prop: 'tabId'
-        },
-        {
-          label: '版面名称',
-          width: 180,
-          render: (h, {$index, row}) => {
-            return h('el-button', {
-              props: {
-                type: 'text'
-              },
-              on: {
-                click: () => {
-                  this.handleShowTabGroup($index)
-                }
-              }
-            }, row.tabName)
-          }
-        },
-        {
-          prop: "tabCnTitle",
-          label: "TAB标题(中文)",
-          width: 180
-        },
-        {
-          label: '默认落焦',
-          width: 80,
-          align: 'center',
-          render: (h, {$index, row}) => {
-            return h('el-radio', {
-              attrs: {
-                title: row.canBeDefaultFocusTab ? '' : '只有普通版面或设了默认版面的定向版面组才能设为默认落焦'
-              },
-              props: {
-                value: this.homepage.defaultFocusIndex,
-                label: $index
-              },
-              on: {
-                input: (val) => {
-                  this.homepage.defaultFocusIndex = val
-                }
-              }
-            }, '')
-          }
-        },
-        {
-          label: '版面数',
-          prop: 'tabCount',
-          width: 80
-        },
-        {
-          label: '默认版面',
-          width: 80,
-          render: (h, {$index, row}) => {
-            return row.isDefaultTab ? '有' : '否'
-          }
-        }
-      ]
+      }
     }
   },
   computed: {
@@ -361,8 +235,95 @@ export default {
         this.homepage.tabInfos = val.map(item => item.tabList)
       }
     },
+    tabGroupTableHeader() {
+      const header = [
+        {
+          label: '版面ID',
+          prop: 'tabId'
+        },
+        {
+          label: '版面名称',
+          width: 180,
+          render: (h, {$index, row}) => {
+            return h('el-button', {
+              props: {
+                type: 'text'
+              },
+              on: {
+                click: () => {
+                  this.handleShowTabGroup($index)
+                }
+              }
+            }, row.tabName)
+          }
+        },
+        {
+          prop: "tabCnTitle",
+          label: "TAB标题(中文)",
+          width: 180
+        },
+        {
+          label: '默认落焦',
+          width: 80,
+          align: 'center',
+          render: (h, {$index, row}) => {
+            const defaultFocusIndex = this.homepage.defaultFocusIndex
+            if (this.mode === 'read') {
+              return $index === defaultFocusIndex ? '是' : '否'
+            }
+            return h('el-radio', {
+              attrs: {
+                title: row.canBeDefaultFocusTab ? '' : '只有普通版面或设了默认版面的定向版面组才能设为默认落焦'
+              },
+              props: {
+                disabled: !row.canBeDefaultFocusTab,
+                value: defaultFocusIndex,
+                label: $index
+              },
+              on: {
+                input: (val) => {
+                  this.homepage.defaultFocusIndex = val
+                }
+              }
+            }, '')
+          }
+        },
+        {
+          label: '版面数',
+          prop: 'tabCount',
+          width: 80
+        },
+        {
+          label: '默认版面',
+          width: 80,
+          render: (h, {$index, row}) => {
+            return row.isDefaultTab ? '有' : '否'
+          }
+        }
+      ]
+
+      if (this.mode !== 'read') {
+        header.push({
+          label: '操作',
+          width: 80,
+          render: (h, {$index, row}) => {
+            return h('el-button', {
+              props: {
+                type: 'text'
+              },
+              on: {
+                click: () => {
+                  this.handleRemoveTab($index)
+                }
+              }
+            }, '删除')
+          }
+        })
+      }
+      return header
+    }
   },
-  props: ['id', 'initMode'],
+  props: ['id', 'initMode', 'version'],
   methods: {
     handleShowTabGroup(index) {
       this.activeTabGroupIndex = index
@@ -625,90 +586,11 @@ export default {
             ? undefined
             : defaultFocusIndex
     },
-    handleSelectVersion(version) {
-        const homepage = this.homepage
-        const href = location.pathname + '?id=' + homepage.homepageId + '&version=' + version
-        location.href = href
-    },
-    handleEdit() {
-        const homepage = this.homepage
-        window.location.href = this.urls.edit + '?id=' + homepage.homepageId + '&version=' + homepage.currentVersion
-    },
-    handleDelete() {
-        const FastDevTool = this.FastDevTool
-        const urls = this.urls
-        const homepage = this.homepage
-        FastDevTool.createConfirmWin({ // 审核
-            title: '提示',
-            content: '确认删除该版本吗?'
-        }, function () {
-          this.$service.homepageDeleteHistory({
-            id: homepage.homepageId, 
-            version: homepage.currentVersion
-          }, '删除成功').then(function() {
-            if (this.versionList.length > 1) { // 有其他版本时 切换到其他版本详情页
-                window.location.href = urls.preview + '?id=' + homepage.homepageId;
-                window.parent.$('#list-view').datagrid('reload');
-            } else { // 没有其他版本时 返回到版面列表页
-                FastDevTool.closeParentDialogWin('edit-view', 'list-view');
-            }
-            }.bind(this))
-        }.bind(this));
-    },
-    handleAudit() {
-        const FastDevTool = this.FastDevTool
-        const auditForm = this.auditForm
-        const homepage = this.homepage
-        if (auditForm.auditDesc.trim() === '') {
-            FastDevTool.createAlertWin('请填写意见说明');
-        } else {
-            this.$service.audit({
-                id: homepage.homepageId,
-                version: homepage.currentVersion,
-                type: 'homepage',
-                auditFlag: auditForm.auditFlag,
-                auditDesc: auditForm.auditDesc
-            }).then(function(result) {
-              this.showAuditDialog = false
-              FastDevTool.closeParentDialogWin('edit-view', 'list-view');
-            }.bind(this), '操作成功')
-        }
-    },
-    handleUnAudit() {
-      const homepage = this.homepage
-      const FastDevTool = this.FastDevTool
-      this.$confirm('您确定要撤销审核吗?', '提示')
-        .then(function() {
-          this.$service.revokeAudit({
-            id: homepage.homepageId,
-            version: homepage.currentVersion,
-            type: 'homepage'
-          }).then(function() {
-            FastDevTool.closeParentDialogWin('edit-view', 'list-view');
-          }.bind(this))
-        }.bind(this))
-        .catch(function(){})
-    },
-    handleCreateReplica() {
-      const homepage = this.homepage
-      const href = this.urls.edit_history_view + '?id=' + homepage.homepageId + '&version=' + homepage.currentVersion
-      window.location.href = href
-    },
     handleCopy() {
       const data = JSON.parse(JSON.stringify(this.homepage))
       data.homepageId = undefined
       data.currentVersion = '';
       this.submit(data)
-    },
-    handleShelves() {
-      const homepage = this.homepage
-      this.$service.shelves({
-        id: homepage.homepageId,
-        version: homepage.currentVersion,
-        type: 'homepage'
-      }).then(function() {
-        window.location.reload();
-      })
     },
     fetchData(version) {
       this.$service.homePageGetDetail({id: this.id, version}).then((data) => {
@@ -719,7 +601,7 @@ export default {
   created() {
     this.mode = this.initMode || 'create'
     if (this.id) {
-      this.fetchData()
+      this.fetchData(this.version)
     }
   }
 }

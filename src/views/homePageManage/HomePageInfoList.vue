@@ -144,7 +144,7 @@ export default {
                           },
                           on: {
                             click: (value) => {
-                              this.showData(row.homepageId, row.duplicateVersion)
+                              this.handleRead(row, row.duplicateVersion)
                             }
                           }
                         }, row.duplicateVersion)
@@ -168,7 +168,7 @@ export default {
               width: '100',
               fixed: 'right',
               render: utils.component.createOperationRender(this, {
-                editData: '复制'
+                handleCopy: '复制'
               })
             }
         ],
@@ -181,35 +181,25 @@ export default {
   computed: {
   },
   methods: {
-    /**
-     * 新增
-     */
+    handleCopy({ row }) {
+      this.$emit('copy', row)
+    },
     addData(){
         this.$emit("create")
     },
-    /**
-     * 编辑
-     */
     editData(){
       if (this.$isAllowEdit(this.selected)) {
         this.$emit('edit', this.selected[0])
       }
     },
-    /**
-     * 查看
-     */
-    handleRead(item) {
-      this.$emit('read', item)
+    handleRead(item, version) {
+      this.$emit('read', item, version)
     },
-    /**
-     * 批量删除
-     */
     deleteData() {
       if (this.$isAllowDelete(this.selected) && window.confirm("确定要删除吗")) {
-        this.$service.homePageInfoDelete({ id: this.selected.join(",") }, "删除成功")
-          .then(data => {
-            this.fetchData();
-          });
+        this.$service.homePageInfoDelete({ 
+          id: this.selected.map(item => item.homepageId).join(',') 
+        }, "删除成功").then(this.fetchData);
       }
     },
     /**
@@ -223,7 +213,7 @@ export default {
     },
     //表格操作
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.homepageId);
+      this.selected.push(targetItem);
       this.updateTableSelected();
     },
     handleRowSelectionRemove(targetItem) {
@@ -245,10 +235,11 @@ export default {
       this.table.selected = [];
     },
     updateTableSelected() {
+      const idField = 'homepageId'
       const table = this.table;
-      const newSelectedIndex = this.selected;
+      const newSelectedIndex = this.selected.reduce((result, item) => (result[item[idField]] = true, result), {});
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.homepageId) > -1) {
+        if (newSelectedIndex[item[idField]]) {
           result.push(index);
         }
         return result;
@@ -288,6 +279,7 @@ export default {
       this.$service.getHomePageInfoList(filter).then(data => {
         this.pagination.total = data.total;
         this.table.data = data.rows;
+        this.updateTableSelected()
       });
     },
     /**
@@ -300,7 +292,7 @@ export default {
     }
   },
   created() {
-    let filterSchema = _.map({
+    const filterSchema = _.map({
       homepageId: _.o.string.other("form", {
         component: "Input",
         placeholder: "ID"
@@ -310,7 +302,6 @@ export default {
         placeholder: "名称"
       }),
       homepageStatus: _.o.enum({
-        请选择: '',
         下架:'0',
         上架:'1',
         草稿:'2',

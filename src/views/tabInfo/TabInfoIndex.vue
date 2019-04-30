@@ -29,7 +29,8 @@ export default {
     return {
       isShowList: true,
       id: null,
-      mode: 'create'
+      mode: 'create',
+      version: undefined
     }
   },
   methods: {

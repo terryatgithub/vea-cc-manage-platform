@@ -9,7 +9,7 @@
           :version-list="versionList"
         />
         <div>
-          <el-button type="primary" @click="handleCopy">确认复制</el-button>
+          <el-button type="primary" @click="$emit('copy')">确认复制</el-button>
         </div>
       </div>
       <div v-else>

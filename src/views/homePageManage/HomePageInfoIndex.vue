@@ -12,6 +12,7 @@
       v-if='!isShowList' 
       :id="id" 
       :init-mode="mode"
+      :version="version"
       @upsert-end="handleUpsertEnd" 
       @go-back="goBack">
     </HomePageInfo>
@@ -28,8 +29,9 @@ export default {
   data () {
     return {
       isShowList: true,
-      id: null,
-      mode: 'create'
+      id: undefined,
+      mode: 'create',
+      version: undefined
     }
   },
   methods: {
@@ -43,9 +45,10 @@ export default {
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(item) {
+    handleRead(item, version) {
       this.id = item.homepageId
       this.mode = 'read'
+      this.version = version
       this.isShowList = false
     },
     handleCopy(item) {
@@ -57,10 +60,12 @@ export default {
       this.isShowList = true
       this.$refs.list.fetchData();//更新页面
       this.mode = 'list'
+      this.version = undefined
     },
     goBack () {
      this.isShowList = true
      this.mode = 'list'
+     this.version = undefined
     }
   }
 }

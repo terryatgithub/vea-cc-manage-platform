@@ -30,15 +30,18 @@ export default {
       const orderHeader = {
         label: '排序',
         width: 100,
-        render: (h, params) => {
+        render: (h, { $index }) => {
+          if (this.readonly) {
+            return $index + 1
+          }
           return h(InputOrder, {
-            key: params.$index + Math.random().toString(),
+            key: $index + Math.random().toString(),
             props: {
-              value: params.$index + 1
+              value: $index + 1
             },
             on: {
-              input: ($event) => {
-                this.handleChangeOrder(params.$index, $event)
+              input: (order) => {
+                this.handleChangeOrder($index, order)
               }
             }
           })
@@ -67,7 +70,7 @@ export default {
       return header
     }
   },
-  props: ['value', 'header', 'hideAction'],
+  props: ['value', 'header', 'hideAction', 'readonly'],
   methods: {
     handleChangeOrder(index, order) {
       const dataList = this.value

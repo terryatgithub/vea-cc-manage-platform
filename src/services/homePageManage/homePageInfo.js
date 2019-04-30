@@ -32,8 +32,7 @@ export function homePageInfoSave (data) {
  */
 export function homePageInfoDelete (params) {
   return this.fetch({
-    method: 'get',
-    url: 'api/homepageInfo/save.html',
+    url: 'api/v1/homepage/remove.html',
     params
   })
 }

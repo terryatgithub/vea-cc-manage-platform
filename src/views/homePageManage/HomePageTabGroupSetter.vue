@@ -21,9 +21,10 @@
             v-model="tabList" 
             :header="tabTableHeader"
             :hide-action="true"
+            :readonly="readonly"
           />
           
-        <cc-crowd-selector
+        <CrowdSelector
             v-if="showCrowdSelector"
             @select-cancel="handleSelectCrowdCancel"
             @select-end="handleSelectCrowdEnd"
@@ -39,7 +40,7 @@
         :version="embedTab.version"
         :init-mode="embedTab.mode" 
         @upsert-end="handleTabEmbedBack"
-        @go-back="activePage = 'tab_group_setter'" />
+        @go-back="handleTabEmbedBack" />
     </PageContentWrapper>
   </PageWrapper>
 </template>
@@ -50,6 +51,7 @@ import PageContentWrapper from '@/components/PageContentWrapper'
 import TabSelector from '@/components/selectors/TabSelector.vue'
 import OrderableTable from '@/components/OrderableTable.vue'
 import TabInfo from '@/views/tabInfo/TabInfo'
+import CrowdSelector from '@/components/CrowdSelector.vue'
 import titleMixin from '@/mixins/title'
 export default {
   mixins: [titleMixin],
@@ -58,7 +60,8 @@ export default {
     PageContentWrapper,
     TabSelector,
     OrderableTable,
-    TabInfo
+    TabInfo,
+    CrowdSelector
   },
   data() {
     return {
@@ -68,7 +71,11 @@ export default {
       tabList: [],
       embedTab: undefined,
       activeTabIndex: undefined,
-      tabTableHeader: [
+    }
+  },
+  computed: {
+    tabTableHeader() {
+      const header =  [
         {
           label: '版面ID',
           prop: 'tabId',
@@ -141,44 +148,48 @@ export default {
               }, row.dmpInfo.dmpCrowdName)
             }
           }
-        },
-        {
-          label: '操作',
-          width: 180,
-          render: (h, {$index, row}) => {
-            const btns = [
-              h('el-button', {
-                on: {
-                  click: () => {
-                    this.handleRemoveTab($index)
-                  }
-                }
-              }, '删除')
-            ]
-            if (row.dmpInfo) {
-              btns.unshift(h('el-button', {
-                on: {
-                  click: () => {
-                    this.handleRemoveCrowd(scope.$index)
-                  }
-                }
-              }, '取消定向'))
-            } else {
-              btns.unshift(h('el-button', {
-                props: {
-                  disabled: row.isDefaultTab
-                },
-                on: {
-                  click: () => {
-                    this.handleSelectCrowdStart($index)
-                  }
-                }
-              }, '选择人群'))
-            }
-            return btns
-          }
         }
       ]
+
+      if (!this.readonly) {
+        header.push({
+            label: '操作',
+            width: 180,
+            render: (h, {$index, row}) => {
+              const btns = [
+                h('el-button', {
+                  on: {
+                    click: () => {
+                      this.handleRemoveTab($index)
+                    }
+                  }
+                }, '删除')
+              ]
+              if (row.dmpInfo) {
+                btns.unshift(h('el-button', {
+                  on: {
+                    click: () => {
+                      this.handleRemoveCrowd($index)
+                    }
+                  }
+                }, '取消定向'))
+              } else {
+                btns.unshift(h('el-button', {
+                  props: {
+                    disabled: row.isDefaultTab
+                  },
+                  on: {
+                    click: () => {
+                      this.handleSelectCrowdStart($index)
+                    }
+                  }
+                }, '选择人群'))
+              }
+              return btns
+            }
+          })
+      }
+      return header
     }
   },
   props: {
@@ -218,12 +229,10 @@ export default {
     handleTabEmbedBack() {
       const { index, id } = this.embedTab
       const tab = this.tabList[index]
-      this.$service.tabGet({
-        tabId: id
-      }).then(function(result) {
+      this.activePage = 'tab_group_setter'
+      this.$service.tabInfoGet({id}).then(function(result) {
         Object.assign(tab, result)
       })
-      this.embedTab = undefined
     },
     handleSetDefaultTab(index) {
       this.tabList.forEach((item, idx) => {
@@ -238,12 +247,10 @@ export default {
       this.tabList.splice(index, 1)
     },
     handleSelectTabStart() {
-        this.$nextTick(function() {
-            const tabSelector = this.$refs.tabSelector
-            this.tabs.forEach(function(item) {
-              tabSelector.handleTableRowSelectionAdd(item)
-            })
-        }.bind(this))
+      this.$nextTick(() => {
+        const tabSelector = this.$refs.tabSelector
+        this.tabList.forEach(tabSelector.handleTableRowSelectionAdd)
+      })
     },
     handleSelectTabEnd(data) {
       this.$refs.tabTable.handleAppendData(data, 'tabId')
@@ -258,14 +265,14 @@ export default {
     handleSelectCrowdEnd(policy, crowd) {
       const tabList = this.tabList
       const index = tabList.findIndex(function(item) {
-        const dmpInfo = item.data.dmpInfo
+        const dmpInfo = item.dmpInfo
         if (dmpInfo && dmpInfo.dmpPolicyId === policy.value && dmpInfo.dmpCrowdId === crowd.value) {
           return true
         }
       })
       if (index === -1) {
         this.showCrowdSelector = false
-        const tab = this.tabList[this.activeTabIndex].data
+        const tab = this.tabList[this.activeTabIndex]
         this.$set(tab, 'dmpInfo', {
           dmpPolicyId: policy.value,
           dmpCrowdId: crowd.value,

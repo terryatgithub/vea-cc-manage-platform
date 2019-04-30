@@ -38,10 +38,10 @@
             <div v-else>
                 <el-cascader
                     :options="crowd.cascadeItems"
-                    v-model="selectedCrowd"
+                    v-model="selectedCascaderCrowd"
                     change-on-select
                 ></el-cascader>
-                <el-button :disabled="!selectedCrowd" class="marginL" type="primary" @click="handleSelectCascadeCrowd">
+                <el-button :disabled="!selectedCascaderCrowd" class="marginL" type="primary" @click="handleSelectCascadeCrowd">
                     确定
                 </el-button>
             </div>
@@ -58,6 +58,7 @@ export default {
       showCrowdSelector: false,
       selectedPolicy: undefined,
       selectedCrowd: undefined,
+      selectedCascaderCrowd: undefined,
       policy: {
         pagination: {},
         items: []
@@ -100,18 +101,16 @@ export default {
       this.selectEnd()
     },
     handleSelectCascadeCrowd() {
-        const selectedCrowdValue = this.selectedCrowd.pop()
-        this.selectedCrowd = this.crowd.items.find(function(item) {
-            return item.value === selectedCrowdValue
-        })
-        this.selectEnd()
+      const selectedCrowdValue = this.selectedCascaderCrowd.slice(-1)[0]
+      this.selectedCrowd = this.crowd.items.find(function(item) {
+          return item.value === selectedCrowdValue
+      })
+      this.selectEnd()
     },
     handleSelectCrowdCancel() {
       this.showCrowdSelector = false
     },
     selectEnd () {
-      this.showCrowdSelector = false 
-      this.showPolicySelector = false
       this.$emit('select-end', this.selectedPolicy, this.selectedCrowd)
     },
     listToTree(data, options) {
