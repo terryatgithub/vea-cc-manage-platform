@@ -3,17 +3,24 @@
     <!--新增编辑界面-->
     <el-row :gutter="40">
       <el-col :span="24">
-        <el-form :model="form" :rules="formRules" ref="form" label-width="100px" class="el-form-add">
+        <el-form
+          :model="form"
+          :rules="formRules"
+          ref="form"
+          label-width="100px"
+          class="el-form-add"
+        >
           <el-form-item label="策略名称" prop="policyName">
             <el-input v-model="form.policyName" placeholder="策略名称"></el-input>
           </el-form-item>
           <el-form-item label="机型机芯" prop="chipModel">
             <el-button
               v-if="form.deviceInfos.length===0"
-              type="info" plain
+              type="primary"
+              plain
               @click="selectChipModel"
             >选择机型机芯</el-button>
-            <SelectedTag v-if="form.deviceInfos.length>0">
+            <SelectedTag v-if="form.deviceInfos.length>0" >
               <ul>
                 <li v-for="(item, index) in form.deviceInfos" :key="index">
                   <el-tag
@@ -23,32 +30,32 @@
                   >{{item.model}}_{{item.chip}}</el-tag>
                 </li>
                 <li>
-                  <el-button type="info" plain @click="selectChipModel">选择机型机芯</el-button>
+                  <el-button type="primary" plain @click="selectChipModel">选择机型机芯</el-button>
                 </li>
               </ul>
             </SelectedTag>
           </el-form-item>
-          <el-form-item label="首页版本号" required class="homePageVersion">
+          <el-form-item label="首页版本号" required class="linkwork">
             <el-col :span="11" style="padding-left:0px;padding-right:0px;">
               <el-form-item prop="homePageVerStart">
-                <el-input-number v-model="form.homePageVerStart"  :min="1000000" :max="9999999"></el-input-number>
+                <el-input-number v-model="form.homePageVerStart" :min="1000000" :max="9999999"></el-input-number>
               </el-form-item>
             </el-col>
-            <el-col class="line" :span="1">-</el-col>
+            <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
             <el-col :span="11" style="padding-left:0px;padding-right:0px;">
               <el-form-item prop="homePageVerEnd">
-                <el-input-number v-model="form.homePageVerEnd"   :min="1000000" :max="9999999"></el-input-number>
+                <el-input-number v-model="form.homePageVerEnd" :min="1000000" :max="9999999"></el-input-number>
                 <!-- <el-input placeholder="首页版本号结尾" v-model="form.homePageVerEnd" style="width: 100%;"></el-input> -->
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item label="Mac地址" required>
+          <el-form-item label="Mac地址" required class="linkwork">
             <el-col :span="11" style="padding-left:0px;padding-right:0px;">
               <el-form-item prop="macStart">
                 <el-input placeholder="Mac地址起始" v-model="form.macStart" style="width: 100%;"></el-input>
               </el-form-item>
             </el-col>
-            <el-col class="line" :span="1">-</el-col>
+            <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
             <el-col :span="11" style="padding-left:0px;padding-right:0px;">
               <el-form-item prop="macEnd">
                 <el-input placeholder="Mac地址结尾" v-model="form.macEnd" style="width: 100%;"></el-input>
@@ -60,38 +67,36 @@
             <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
           </el-form-item>
           <el-form-item label="关联首页方案">
-            <el-button type="info" plain @click="selectHomePageModel('normal')">选择标准模式首页</el-button>
-            <span v-if="typeof(form.homepageInfoListObj['normal'])!=='undefined'"  class="tip">已选首页：
-               <el-tag
-                    type="success"
-                  >{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
-              </span>
+            <el-button type="primary" plain @click="selectHomePageModel('normal')">选择标准模式首页</el-button>
+            <span v-if="typeof(form.homepageInfoListObj['normal'])!=='undefined'" class="tip">
+              已选首页：
+              <el-tag type="success">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
+            </span>
           </el-form-item>
           <el-form-item label="关联首页方案">
-            <el-button type="info" plain @click="selectHomePageModel('child')">选择儿童模式首页</el-button>
-            <span v-if="typeof(form.homepageInfoListObj['child'])!=='undefined'"  class="tip">已选首页：
-               <el-tag
-                    type="success"
-                  >{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
-              </span>
+            <el-button type="primary" plain @click="selectHomePageModel('child')">选择儿童模式首页</el-button>
+            <span v-if="typeof(form.homepageInfoListObj['child'])!=='undefined'" class="tip">
+              已选首页：
+              <el-tag type="success">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
+            </span>
           </el-form-item>
-           <el-form-item label="定向首页方案">
-            <el-button type="info" plain @click="addHomePage('normal')">添加标准模式</el-button>
-            <el-button type="info" plain  @click="addHomePage('child')">添加儿童模式</el-button>
-            <el-button  type="info" plain @click="cancel">解绑所有方案</el-button>
-            <SelectedHomePage 
-            :dataArr="form.specialNormalHp" 
-            @edit-item="editHomePage"
-            @remove-item="removeHomePage"
-            title="标准模式"
-            v-if="form.specialNormalHp.length>0"
+          <el-form-item label="定向首页方案">
+            <el-button type="primary" plain @click="addHomePage('normal')">添加标准模式</el-button>
+            <el-button type="primary" plain @click="addHomePage('child')">添加儿童模式</el-button>
+            <el-button type="primary" plain @click="cancel">解绑所有方案</el-button>
+            <SelectedHomePage
+              :dataArr="form.specialNormalHp"
+              @edit-item="editHomePage"
+              @remove-item="removeHomePage"
+              title="标准模式"
+              v-if="form.specialNormalHp.length>0"
             ></SelectedHomePage>
-            <SelectedHomePage 
-            :dataArr="form.specialChildHp" 
-            @edit-item="editHomePage"
-            @remove-item="removeHomePage"
-            v-if="form.specialChildHp.length>0"
-            title="儿童模式"
+            <SelectedHomePage
+              :dataArr="form.specialChildHp"
+              @edit-item="editHomePage"
+              @remove-item="removeHomePage"
+              v-if="form.specialChildHp.length>0"
+              title="儿童模式"
             ></SelectedHomePage>
           </el-form-item>
           <el-form-item>
@@ -102,26 +107,30 @@
       </el-col>
     </el-row>
     <el-dialog :dialogTitle="dialogTitle" :visible.sync="dialogVisible" width="80%">
-      <ChipModel ref="chipModelSelected" v-if="mode==='modelChip'"></ChipModel>
-      <HomePageModel 
-      :homepageModel="model" 
-      :homepageResource="platform"
-      homepageStatusArray=4
-      v-if="mode==='HomePageModel'" 
-      @row-click="rowClick">
-      </HomePageModel>
-      
+      <ChipModel ref="chipModelSelected" 
+      v-if="mode==='modelChip'" 
+      :selectionType="selectionType"
+      @row-click="ChipModelRowClick"
+      ></ChipModel>
+      <HomePageModel
+        :homepageModel="model"
+        :homepageResource="platform"
+        homepageStatusArray="4"
+        v-if="mode==='HomePageModel'"
+        @row-click="rowClick"
+      ></HomePageModel>
+
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="dialogVisible = false;mode=''">取 消</el-button>
         <el-button type="primary" @click="dialogSubmit">确 定</el-button>
       </span>
     </el-dialog>
-    <PolicyManageAddHomePage 
-    v-if="addHomePageDialogVisible"
-    :itemType="model" 
-    :editHomePageData="editHomePageData"
-    @add-home-page-close="addHomePageClose"
-    @create-home-page="createHomePage"
+    <PolicyManageAddHomePage
+      v-if="addHomePageDialogVisible"
+      :itemType="model"
+      :editHomePageData="editHomePageData"
+      @add-home-page-close="addHomePageClose"
+      @create-home-page="createHomePage"
     ></PolicyManageAddHomePage>
   </ContentCard>
 </template>
@@ -129,8 +138,8 @@
 import ChipModel from './../../components/ChipModel'
 import SelectedTag from './../../components/SelectedTag'
 import HomePageModel from './../../components/HomePageModel'
- import PolicyManageAddHomePage from './PolicyManageAddHomePage'
- import SelectedHomePage from './../../components/SelectedHomePage.vue'
+import PolicyManageAddHomePage from './PolicyManageAddHomePage'
+import SelectedHomePage from './../../components/SelectedHomePage.vue'
 export default {
   components: {
     ChipModel,
@@ -146,13 +155,14 @@ export default {
   data() {
     return {
       title: null,
+      selectionType: 'multiple',
       dialogTitle: null,
       mode: null,
       dialogVisible: false,
-      addHomePageDialogVisible: false,//是否显示addHomePage组件
+      addHomePageDialogVisible: false, //是否显示addHomePage组件
       model: 'normal',
-      platform: 'tencent',//内容源
-      editHomePageData: {},//编辑定向首页方案
+      platform: 'tencent', //内容源
+      editHomePageData: {}, //编辑定向首页方案
       form: {
         policyId: null,
         policyName: null,
@@ -208,21 +218,28 @@ export default {
     platform: function(newV) {
       this.form.homepageInfoList = []
       this.form.homepageInfoListObj = {}
-      this.form.specialNormalHp = [] 
+      this.form.specialNormalHp = []
       this.form.specialChildHp = []
       this.form.schemeFilterEntity.partner = newV
     }
   },
   methods: {
-    cancel(){
+    ChipModelRowClick(row){
+      this.dialogVisible = false
+      this.form.deviceInfos =[{
+        'chip': row.chip,
+        'model': row.model
+      }]
+    },
+    cancel() {
       this.form.homepageInfoList = []
       this.form.homepageInfoListObj = {}
-      this.form.specialNormalHp = [] 
+      this.form.specialNormalHp = []
       this.form.specialChildHp = []
       this.form.schemeFilterEntity = {}
     },
     /** 关联首页选择*/
-    rowClick(row){
+    rowClick(row) {
       this.dialogVisible = false
       this.form.homepageInfoListObj[this.model] = {
         homepageId: row.homepageId,
@@ -231,44 +248,43 @@ export default {
         homepageVersion: row.homepageVersion
       }
     },
-   addHomePageClose(){
-     this.addHomePageDialogVisible = false
-    
-   },
-   /*定向首页方案编辑*/
-   editHomePage(model, index){
-     this.addHomePageDialogVisible = true
-     if (model === 'normal') {
-       this.editHomePageData = this.form.specialNormalHp[index]
-     } else {
-       this.editHomePageData = this.form.specialChildHp[index]
-     }
-   },
-   /*定向首页方案编辑*/
-   removeHomePage(model, index){
-     if (model === 'normal') {
-       this.editHomePageData = this.form.specialNormalHp.splice(index, 1)
-     } else {
-       this.editHomePageData = this.form.specialChildHp.splice(index, 1)
-     }
-   },
-   /** 
-    * 生存一个定向首页方案
-   */
-   createHomePage(form){
-     this.addHomePageDialogVisible = false
-     if(this.model === 'normal') {
-       this.form.specialNormalHp.push(form)
-     } else {
-       this.form.specialChildHp.push(form)
-     }
-   },
-    /** 
-     * 添加定向首页
-    */
-    addHomePage(model){
+    addHomePageClose() {
+      this.addHomePageDialogVisible = false
+    },
+    /*定向首页方案编辑*/
+    editHomePage(model, index) {
       this.addHomePageDialogVisible = true
-     // this.title = '添加定向首页方案'
+      if (model === 'normal') {
+        this.editHomePageData = this.form.specialNormalHp[index]
+      } else {
+        this.editHomePageData = this.form.specialChildHp[index]
+      }
+    },
+    /*定向首页方案编辑*/
+    removeHomePage(model, index) {
+      if (model === 'normal') {
+        this.editHomePageData = this.form.specialNormalHp.splice(index, 1)
+      } else {
+        this.editHomePageData = this.form.specialChildHp.splice(index, 1)
+      }
+    },
+    /**
+     * 生存一个定向首页方案
+     */
+    createHomePage(form) {
+      this.addHomePageDialogVisible = false
+      if (this.model === 'normal') {
+        this.form.specialNormalHp.push(form)
+      } else {
+        this.form.specialChildHp.push(form)
+      }
+    },
+    /**
+     * 添加定向首页
+     */
+    addHomePage(model) {
+      this.addHomePageDialogVisible = true
+      // this.title = '添加定向首页方案'
       this.model = model
       this.editHomePageData = {}
     },
@@ -282,8 +298,9 @@ export default {
       this.dialogVisible = false
       switch (this.mode) {
         case 'modelChip':
-          let platform =this.$refs.chipModelSelected.platform
-          if (platform !== this.platform ) { //更新首页
+          let platform = this.$refs.chipModelSelected.platform
+          if (platform !== this.platform) {
+            //更新首页
             this.platform = platform
           }
           this.form.deviceInfos = this.$refs.chipModelSelected.selected.map(
@@ -297,7 +314,7 @@ export default {
           break
       }
     },
-   
+
     selectChipModel() {
       this.dialogVisible = true
       this.dialogTitle = '选择机型机芯'
@@ -312,37 +329,51 @@ export default {
     submitBtn(status) {
       this.$refs.form.validate(valid => {
         let obj = this.form.homepageInfoListObj
-        Object.keys(obj).forEach((e) => {
+        Object.keys(obj).forEach(e => {
           this.form.homepageInfoList.push(obj[e])
         })
         this.form.policyStatus = status
         if (valid) {
           this.$service
-            .policyConfSave(
-              { jsonStr: JSON.stringify(this.form) },
-              '保存成功'
-            )
+            .policyConfSave({ jsonStr: JSON.stringify(this.form) }, '保存成功')
             .then(data => {
               this.$emit('open-list-page')
             })
         }
       })
     },
+
     getEditData() {
-      let obj = this
-      this.$service
-        .globalCornerIconTypeDetail({ id: this.editId })
-        .then(data => {
-          Object.keys(this.form).forEach(v => {
-            this.form[v] = data[v]
-          })
-        })
+      this.$service.getPolicyConfDetail({ id: this.editId }).then(data => {
+        this.form = {
+          policyId: data.policyId,
+          policyName: data.policyName,
+          macStart: data.macStart,
+          macEnd: data.macEnd,
+          homePageVerEnd: data.homePageVerEnd,
+          homePageVerStart: data.homepageVerStart,
+          priority: data.priority,
+          policyStatus: data.policyStatus,
+          deviceInfos: [{'chip': data.chip,'model': data.model}], //机型机芯{chip:'',model:''}
+          homepageInfoList: data.homepageInfoList,
+          homepageInfoListObj: {
+            normal: data.homepageInfoList.length > 0 ? data.homepageInfoList[0] : {},
+            child: data.homepageInfoList.length === 2 ? data.homepageInfoList[1] : {}
+          },
+          schemeFilterEntity: {
+            partner: data.platform
+          },
+          regionCityPairs: [],
+          specialNormalHp: data.specialNormalHp,
+          specialChildHp: data.specialChildHp
+        }
+      })
     }
   },
   created() {
     if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
-      this.typeId = this.editId
+      this.selectionType = 'single'
       this.getEditData()
     } else {
       this.title = '新增'
@@ -351,11 +382,9 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.homePageVersion >>> .el-input-number
-  width: 100%
 .tip
-  font-size 12px
-  margin-left 10px
+  font-size: 12px
+  margin-left: 10px
 </style>
 
 

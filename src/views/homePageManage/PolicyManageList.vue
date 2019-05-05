@@ -57,6 +57,7 @@ export default {
         pageSize: 5
       },
       selected: [],
+      selectedItems: [],
       table: {
         props: {
           rowKey: 'policyId'
@@ -158,7 +159,9 @@ export default {
     }
   },
   methods: {
-    openReview() {},
+    openReview(row) {
+      this.$emit('open-preview-page', row.policyId)
+    },
     /**
      * 新增
      */
@@ -170,7 +173,14 @@ export default {
      */
     editData() {
       if (this.$isAllowEdit(this.selected)) {
-        this.$emit('open-add-page', this.selected[0])
+        if(parseInt(this.selectedItems[0].policyStatus) === 2){
+          this.$emit('open-add-page', this.selected[0])
+        } else {
+          this.$message({
+            type: 'error',
+            message: '只有草稿状态才能编辑'
+          })
+        }
       }
     },
     /**
@@ -190,23 +200,35 @@ export default {
     },
     //表格操作
     handleRowSelectionAdd(targetItem) {
-      this.selected = this.selected.concat(this.getIDs(targetItem))
+      let obj = this.getIDs(targetItem)
+      this.selected = this.selected.concat(obj.ids)
+      this.selectedItems = this.selectedItems.concat(obj.items)
       this.updateTableSelected()
     },
     getIDs (item) {
-      let arr = []
+      let ids = []
+      let items = []
        if (typeof item.children !== 'undefined') {
         item.children.forEach(e => {
-          arr.push(e.policyId)
+          ids.push(e.policyId)
+          items.push(e)
         })
       }
-      arr.push(item.policyId)
-      return arr
+      ids.push(item.policyId)
+      items.push(item)
+      return {
+        ids: ids,
+        items: items
+      }
     },
     handleRowSelectionRemove(targetItem) {
-      let removeID = this.getIDs(targetItem)
-      this.selected = this.selected.filter(item => {
-        return removeID.includes(item) === false
+      let obj = this.getIDs(targetItem)
+      let selected = this.selected
+      this.selected = this.selected.filter((item, index) => {
+        return obj.ids.includes(item) === false
+      })
+       this.selectedItems = this.selectedItems.filter((item, index) => {
+        return obj.ids.includes(selected[index]) === false
       })
       this.updateTableSelected()
     },
@@ -220,13 +242,14 @@ export default {
     },
     handleAllRowSelectionRemove() {
       this.selected = []
+      this.selectedItems = []
       this.table.selected = []
     },
     updateTableSelected() {
       const table = this.table
       const newSelectedIndex = this.selected
       let d = table.data.reduce((result, item, index) => {
-        result = result.concat(this.getIDs(item))
+        result = result.concat(this.getIDs(item).ids)
         return result
       }, [])
       table.selected = d.reduce((result, item, index) => {

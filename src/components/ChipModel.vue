@@ -2,6 +2,8 @@
   <ContentCard class="content">
     <ContentWrapper
       :pagination="pagination"
+      @filter-change="handleFilterChange"
+      @filter-reset="handleFilterReset"
     >
       <el-form :inline="true" :model="formSearch" class="search">
             <el-form-item>
@@ -25,7 +27,7 @@
       </el-form>
       <el-collapse>
         <el-collapse-item title="新增">
-          <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
+          <el-form :model="form" :rules="formRules" ref="form" label-width="100px" class="el-form-add">
             <el-form-item label="内容源" prop="platform">
               <el-select v-model="form.platform" placeholder="内容源">
                 <el-option label="爱奇艺" value="yinhe"></el-option>
@@ -65,6 +67,8 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        @row-click="rowClick"
+        @row-selection-change="rowClick"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -84,6 +88,14 @@ import {
 } from 'admin-toolkit'
 import SelectedTag from './SelectedTag'
 export default {
+  props: {
+    selectionType: {
+      type: String,
+      default(){
+        return 'multiple'
+      }
+    }
+  },
   components: {
     ActionList,
     Table,
@@ -140,11 +152,15 @@ export default {
         ],
         data: [],
         selected: [],
-        selectionType: 'multiple'
+        selectionType: this.selectionType
       }
     }
   },
   methods: {
+    rowClick(params){
+      debugger;
+       this.$emit("row-click",params)
+    },
     changePlatform($event){ 
       if(window.confirm("是否要切换内容源，切换内容源之后，首页方案数据将会清除掉")){
           this.platform = $event
@@ -205,10 +221,12 @@ export default {
       }, [])
     },
     //查询
-    handleFilterChange() {
+    handleFilterChange(type) {
+     if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }
+     }
       this.fetchData()
     },
     //重置

@@ -1,23 +1,26 @@
 <template>
   <div>
-    <PolicyManageList v-show="mode==='list'" ref="list" @open-add-page="openAddPage"></PolicyManageList>
-    <PolicyManageAdd v-if="mode==='add'" :isReview="isReview" :editData="editData"  @add-home-page="addHomePage" @go-edit-Page="openListPage(editData, false)"  @open-list-page="openListPage" @go-back="goBack"></PolicyManageAdd>
+    <PolicyManagePreview v-if="mode==='preview'" :editId="editId" @go-back="goBack"> </PolicyManagePreview>
+    <PolicyManageList v-show="mode==='list'" ref="list" @open-add-page="openAddPage" @open-preview-page="openPreviewPage"></PolicyManageList>
+    <PolicyManageAdd v-if="mode==='add'" :isReview="isReview" :editId="editId"  @add-home-page="addHomePage" @go-edit-Page="openListPage(editData, false)"  @open-list-page="openListPage" @go-back="goBack"></PolicyManageAdd>
     <!-- <PolicyManageAddHomePage v-if="mode==='addHomePage'"></PolicyManageAddHomePage> -->
   </div>
 </template>
 <script>
 import PolicyManageList from  './PolicyManageList'
 import PolicyManageAdd from './PolicyManageAdd'
+import PolicyManagePreview from './PolicyManagePreview'
 // import PolicyManageAddHomePage from './PolicyManageAddHomePage'
 export default {
   components: {
     PolicyManageList,
-    PolicyManageAdd
+    PolicyManageAdd,
+    PolicyManagePreview
   },
   data() {
     return {
       mode: 'list',
-      editData: {},
+      editId: null,
       isReview: false,
       currentVersion: null
     };
@@ -26,11 +29,15 @@ export default {
     addHomePage(){
       this.mode = 'addHomePage'
     },
+    openPreviewPage(id){
+      this.mode = 'preview'
+      this.editId = id
+    },
     /**
      * 打开新增编辑页面
     */
-    openAddPage(row, isReview) {
-      this.editData = row
+    openAddPage(id, isReview) {
+      this.editId = id
       this.isReview = isReview
       this.mode = 'add'
     },
@@ -39,7 +46,7 @@ export default {
     */
     openListPage () {
       this.mode = 'list'
-      this.editData = {}
+      this.editId = null
       this.$refs.list.fetchData()// 更新页面
     },
     /**
@@ -47,7 +54,7 @@ export default {
     */
     goBack () {
       this.mode = 'list'
-      this.editData = {}
+      this.editId = null
     }
   }
 }

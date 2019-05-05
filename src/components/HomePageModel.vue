@@ -138,7 +138,7 @@ export default {
       filter.homepageResource = this.homepageResource
       filter.homepageStatusArray = this.homepageStatusArray
       this.$service.getHomePageModelPageList(filter).then(data => {
-        data.rows.splice(5)
+       // data.rows.splice(5)
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -158,7 +158,7 @@ export default {
       cols: {
         item: 6,
         label: 0,
-        wrapper: 20
+        wrapper: 22
       },
       layout: 'inline',
       footer: {

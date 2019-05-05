@@ -76,3 +76,19 @@ export function getCrowdPolicy(params) {
     params
   })
 }
+/** 编辑 */
+export function getPolicyConfDetail(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/policyConf/getDetailInfo.html',
+    params
+  })
+}
+/** 编辑 */
+export function getTestPolicyConfDetail(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/testPolicyConf/getDetailInfo.html',
+    params
+  })
+}
