@@ -77,8 +77,8 @@
         </el-form-item>
       </el-form>
       </div>
-              <!-- <ButtonGroupForListPage 
-        pageName='tab' 
+              <!-- <ButtonGroupForListPage
+        pageName='tab'
         @add="addUser"
         @edit="editData"
         @delete="batchDel"
@@ -105,12 +105,12 @@
 </template>
 
 <script>
-import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+// import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   components: {
     ContentWrapper,
-    ButtonGroupForListPage,
+    // ButtonGroupForListPage,
     Table
   },
 
@@ -293,7 +293,7 @@ export default {
             })
             return false
           } else {
-            this.$emit('open-add-page', selected[0])
+            this.$emit('open-add-page', selected[0], 'edit')
           }
         })
     },
@@ -365,7 +365,7 @@ export default {
           (result, item) => {
             return result.concat({
               label: item.category_name,
-              value: item.category_id
+              value: item.cc_category_id
             })
           },
           []
@@ -379,23 +379,39 @@ export default {
           (result, item) => {
             return result.concat({
               label: item.category_name,
-              value: item.category_id
+              value: item.cc_category_id
+            })
+          },
+          []
+        )
+        var channelYouku = {
+          label: '优酷',
+          value: 'youku',
+          children: []
+        }
+        channelYouku.children = videoItemModels[2].categoryList.reduce(
+          (result, item) => {
+            return result.concat({
+              label: item.category_name,
+              value: item.cc_category_id
             })
           },
           []
         )
         this.channelOptions.push(channelQiyi)
         this.channelOptions.push(channelTent)
+        this.channelOptions.push(channelYouku)
       })
     },
 
     handleChannelChange(value) {
+      debugger
       this.filter.source = ''
       this.filter.source = value[0]
       this.filter.channel = value[1]
     },
     openReview(row) {
-      this.$emit('open-add-page', row.tabId)
+      this.$emit('open-add-page', row.tabId, 'read')
     }
   },
   created() {

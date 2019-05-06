@@ -110,5 +110,7 @@ export function reviewFilmDetailPage(params) {
     method: 'get',
     url: 'api/filmDetailPage/preview.html',
     params
+  }).then(result => {
+    return JSON.parse(result.match(/param = (\{.+\})/)[1])
   })
 }

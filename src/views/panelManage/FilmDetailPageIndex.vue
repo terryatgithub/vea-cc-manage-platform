@@ -1,7 +1,17 @@
 <template>
   <div>
-    <FilmDetailPageList v-show="isShow" ref="list" @open-add-page="openAddPage"/>
-    <FilmDetailPageAdd v-if="!isShow" :editId="editId" @open-list-page="openListPage" @go-back="goBack"/>
+    <FilmDetailPageList
+      v-show="isShow"
+      ref="list"
+      @open-add-page="openAddPage"
+    />
+    <FilmDetailPageAdd
+      v-if="!isShow"
+      :editId="editId"
+      :initMode="mode"
+      @open-list-page="openListPage"
+      @go-back="goBack"
+    />
   </div>
 </template>
 
@@ -17,14 +27,16 @@ export default {
   data () {
     return {
       isShow: true,
-      editId: ''
-    };
+      editId: '',
+      mode: ''
+    }
   },
 
   methods: {
-    openAddPage(editId) {
+    openAddPage(editId, mode) {
       this.editId = editId
       this.isShow = false
+      this.mode = mode
     },
     goBack() {
       this.isShow = true
@@ -33,9 +45,7 @@ export default {
       this.isShow = true
       this.$refs.list.fetchData()
     }
-  },
-  created() {}
-
+  }
 }
 </script>
 
