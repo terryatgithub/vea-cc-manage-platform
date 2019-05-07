@@ -168,12 +168,15 @@ export default {
         let rows = []
         table.data.map(tableRow => {
           if(newVal.indexOf(tableRow.pannelGroupId) > -1) {
-            let row = {
-              pannelGroupId: tableRow.pannelGroupId,
-              pannelGroupRemark: tableRow.pannelGroupRemark,
-              duplicateVersion: tableRow.duplicateVersion
-            }
-            rows.push(row)
+            // let row = {
+            //   pannelGroupId: tableRow.pannelGroupId,
+            //   pannelGroupRemark: tableRow.pannelGroupRemark,
+            //   duplicateVersion: tableRow.duplicateVersion,
+            //    pannelType: tableRow.pannelType
+            // }
+            console.log("AlbumPannelInfoList")
+              tableRow.type = 'AlbumPannelInfo'
+            rows.push(tableRow)
           }
         })
         this.$emit('input', rows)

@@ -143,7 +143,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReview(row)
+                      this.openReview(row, row.duplicateVersion)
                     }
                   }
                 },
@@ -177,12 +177,15 @@ export default {
         let rows = []
         table.data.map(tableRow => {
           if (newVal.indexOf(tableRow.pannelGroupId) > -1) {
-            let row = {
-              pannelGroupId: tableRow.pannelGroupId,
-              pannelGroupRemark: tableRow.pannelGroupRemark,
-              duplicateVersion: tableRow.duplicateVersion
-            }
-            rows.push(row)
+            // let row = {
+            //   pannelGroupId: tableRow.pannelGroupId,
+            //   pannelGroupRemark: tableRow.pannelGroupRemark,
+            //   duplicateVersion: tableRow.duplicateVersion,
+            //   pannelType: tableRow.pannelType,
+            // }
+             console.log("PrivatePannelInfo")
+             tableRow.type = 'PrivatePannelInfo'
+            rows.push(tableRow)
           }
         })
         this.$emit('input', rows)
@@ -261,8 +264,8 @@ export default {
         }
       }
     },
-    openReview(row) {
-      this.$emit('open-view-page', row)
+    openReview(row, version) {
+      this.$emit('open-view-page', row, version)
     },
     //查询
     handleFilterChange(type) {

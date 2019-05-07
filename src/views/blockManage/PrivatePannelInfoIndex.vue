@@ -2,7 +2,7 @@
   <div>
     <PrivatePannelInfoList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></PrivatePannelInfoList>
     <PrivatePannelInfoAdd v-if="model === 'add'" :editId="editId" :isCopy="isCopy" @open-list-page="openListPage" @go-back="goBack"></PrivatePannelInfoAdd>
-    <PrivatePannelInfoView v-if="model === 'view'" :viewData="viewData" @open-list-page="openListPage" @create-copy="createCopy" @go-back="goBack"></PrivatePannelInfoView>
+    <PrivatePannelInfoView v-if="model === 'view'" :viewData="viewData" :version="version" @open-list-page="openListPage" @create-copy="createCopy" @go-back="goBack"></PrivatePannelInfoView>
   </div>
 </template>
 <script>
@@ -20,7 +20,8 @@ export default {
       model: 'list',
       isCopy: false,
       editId: null,
-      viewData: null
+      viewData: null,
+      version: undefined
     }
   },
   methods: {
@@ -40,9 +41,10 @@ export default {
       this.$refs.list.fetchData() //更新页面
     },
     /**打开预览页 */
-    openViewPage(data) {
+    openViewPage(data, version) {
       this.model = 'view'
       this.viewData = data
+      this.version =version
     },
     /**返回事件 */
     goBack() {

@@ -9,6 +9,13 @@ export function getPolicyManagePageList (data) {
     data
   })
 }
+export function getTestPolicyManagePageList (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/testPolicyConf/pageList.html',
+    data
+  })
+}
 export function getChipAndModelPageList (data) {
   return this.fetch({
     method: 'post',
@@ -38,11 +45,25 @@ export function policyConfSave(data) {
     data
   })
 }
+export function testPolicyConfSave(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/testPolicyConf/save.html',
+    data
+  })
+}
 /* 删除 */
 export function policyConfRemove(data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/policyConf/remove.html',
+    data
+  })
+}
+export function testPolicyConfRemove(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/testPolicyConf/remove.html',
     data
   })
 }
@@ -84,7 +105,6 @@ export function getPolicyConfDetail(params) {
     params
   })
 }
-/** 编辑 */
 export function getTestPolicyConfDetail(params) {
   return this.fetch({
     method: 'get',

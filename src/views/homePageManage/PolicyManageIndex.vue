@@ -1,8 +1,27 @@
 <template>
   <div>
-    <PolicyManagePreview v-if="mode==='preview'" :editId="editId" @go-back="goBack"> </PolicyManagePreview>
-    <PolicyManageList v-show="mode==='list'" ref="list" @open-add-page="openAddPage" @open-preview-page="openPreviewPage"></PolicyManageList>
-    <PolicyManageAdd v-if="mode==='add'" :isReview="isReview" :editId="editId"  @add-home-page="addHomePage" @go-edit-Page="openListPage(editData, false)"  @open-list-page="openListPage" @go-back="goBack"></PolicyManageAdd>
+    <PolicyManagePreview 
+    v-if="mode==='preview'" 
+    :editId="editId" 
+    @upsert-end="handleUpsertEnd" 
+    @open-add-page="openAddPage"
+    @go-back="goBack"> 
+    </PolicyManagePreview>
+    <PolicyManageList 
+     v-show="mode==='list'" 
+     ref="list" 
+     @open-add-page="openAddPage"
+     @open-preview-page="openPreviewPage">
+     </PolicyManageList>
+    <PolicyManageAdd 
+      v-if="mode==='add'" 
+      :isReplicate="isReplicate" 
+      :editId="editId"
+      @add-home-page="addHomePage" 
+      @go-edit-Page="openListPage(editData, false)"  
+      @open-list-page="openListPage" 
+      @go-back="goBack">
+    </PolicyManageAdd>
     <!-- <PolicyManageAddHomePage v-if="mode==='addHomePage'"></PolicyManageAddHomePage> -->
   </div>
 </template>
@@ -21,7 +40,7 @@ export default {
     return {
       mode: 'list',
       editId: null,
-      isReview: false,
+      isReplicate: false,
       currentVersion: null
     };
   },
@@ -33,12 +52,16 @@ export default {
       this.mode = 'preview'
       this.editId = id
     },
+    handleUpsertEnd () {
+      this.$refs.list.fetchData();//更新页面
+      this.mode = 'list'
+    },
     /**
      * 打开新增编辑页面
     */
-    openAddPage(id, isReview) {
+    openAddPage(id, isReplicate) {
       this.editId = id
-      this.isReview = isReview
+      this.isReplicate = isReplicate
       this.mode = 'add'
     },
     /**

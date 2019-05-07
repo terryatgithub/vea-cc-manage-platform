@@ -13,8 +13,8 @@
         </div>
       </div>
       <div v-else>
-          <el-button type="warning" @click="$emit('submit-audit')">提交审核</el-button>
-          <el-button type="primary" @click="$emit('save-draft')">保存草稿</el-button>
+          <el-button type="primary" @click="$emit('submit-audit')">提交审核</el-button>
+          <el-button type="warning" @click="$emit('save-draft')">保存草稿</el-button>
       </div>
       <ReleaseTimeSetter 
         v-if="showReleaseTimeSetter" 

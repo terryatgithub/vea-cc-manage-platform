@@ -1,5 +1,5 @@
 <template>
-<div>
+<<<<<<< Updated upstream
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div>
       <CommonContent
@@ -96,6 +96,63 @@
         </div>
       </CommonContent>
     </div>
+=======
+<div>
+  <ContentCard :title="title" @go-back="$emit('go-back')" v-show="!isShowPannelInfoList">
+    <div v-show="!isShowPannelInfoList">
+    <div class="btns">
+      <el-button type="primary" @click="btnAudit">提交审核</el-button>
+      <el-button type="primary" @click="btnSave">保存草稿</el-button>
+    </div>
+    <div class="split-bar">
+      <i class="el-icon-edit">基本信息</i>
+    </div>
+    <el-form ref="form" :rules="rules" :model="form" label-width="90px" class="el-form-add">
+      <el-form-item label="版面名称" prop="tabName">
+        <el-input v-model="form.tabName" style="width: 240px"/>
+      </el-form-item>
+      <el-form-item label="业务分类">
+        <el-select v-model="form.tabCategory">
+          <el-option label="影视" value="0"/>
+          <el-option label="教育" value="1"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="内容源" v-if="form.tabCategory==='0'">
+        <el-radio-group v-model="form.tabResource"  @change.native.prevent="changeResource">
+          <el-radio label="qq">腾讯</el-radio>
+          <el-radio label="iqiyi">爱奇艺</el-radio>
+          <el-radio label="youku">优朋</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="频道">
+        <el-select v-model="pannel">
+          <el-option value="" label="不限"/>
+          <el-option v-for="(item, index) in pannelItems" :key="index" :label="item.label" :value="item.value"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="产品包">
+        <el-select v-model="product">
+          <el-option value="" label="不限"/>
+          <el-option v-for="(item, index) in productItems" :key="index" :label="item.label" :value="item.value"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="选择板块">
+        <el-button type="primary" @click="addModel">添加板块</el-button>
+      </el-form-item>
+      <el-form-item label="优先级">
+        <el-input-number v-model="form.priority" :min="1"/><span>注：数值越大优先级越高，数值越小优先级越低</span>
+      </el-form-item>
+    </el-form>
+    <div class="table">
+      <Table
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+      />
+    </div>
+    </div>
+
+>>>>>>> Stashed changes
   </ContentCard>
       <AddBlockFilter :parentPannelResource="parentResource" v-show="isShowPannelInfoList" @go-back="isShowPannelInfoList=false" @add-block="addBlock"/>
   </div>

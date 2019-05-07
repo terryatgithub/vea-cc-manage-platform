@@ -335,7 +335,7 @@ export default {
         this.form.policyStatus = status
         if (valid) {
           this.$service
-            .policyConfSave({ jsonStr: JSON.stringify(this.form) }, '保存成功')
+            .testPolicyConfSave({ jsonStr: JSON.stringify(this.form) }, '保存成功')
             .then(data => {
               this.$emit('open-list-page')
             })
@@ -344,7 +344,7 @@ export default {
     },
 
     getEditData() {
-      this.$service.getPolicyConfDetail({ id: this.editId }).then(data => {
+      this.$service.getTestPolicyConfDetail({ id: this.editId }).then(data => {
         this.form = {
           currentVersion: this.isReplicate?'': data.currentVersion,
           policyId: data.policyId,

@@ -158,7 +158,6 @@ export default {
   },
   methods: {
     rowClick(params){
-      debugger;
        this.$emit("row-click",params)
     },
     changePlatform($event){ 

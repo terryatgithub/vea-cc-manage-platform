@@ -117,7 +117,7 @@ export default {
     AuditDetailButton,
     HistoryTool
   },
-  props: ['viewData'],
+  props: ['viewData','version'],
   data() {
     const blockVideoTypeOptions = [
       {
@@ -150,7 +150,6 @@ export default {
     }
     return {
       id: null,
-      version: '',
       type: 'pannel',
       status: null,
       menuElId: 'privatePannelInfo',

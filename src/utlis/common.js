@@ -202,3 +202,17 @@ Vue.prototype.$getFilterSelectField = function (data, key, value) {
     return result
   }, {})
 }
+Vue.prototype.$sourceName = function (tabResource) {
+  const data = {
+    "yinhe": '爱奇艺',
+    "o_iqiyi": '爱奇艺',
+    "qq": '腾讯',
+    "o_tencent": '腾讯',
+    "o_youku": '优酷',
+    "tencent": '腾讯',
+    "o_voole": '优朋',
+    "voole": '优朋',
+    "voolesohu": '优朋搜狐'
+  }
+  return data[tabResource]
+}

@@ -179,12 +179,9 @@ export default {
         resetText: '重置'
       }
     })
-    if (this.parentPannelResource !== '') {
-      debugger
-      this.contentBlock.filter.pannelResource = this.parentPannelResource
-      this.albumBlock.filter.pannelResource = this.parentPannelResource
-      this.privateBlock.filter.pannelResource = this.parentPannelResource
-    }
+    this.contentBlock.filter.pannelResource = this.parentPannelResource
+    this.albumBlock.filter.pannelResource = this.parentPannelResource
+    this.privateBlock.filter.pannelResource = this.parentPannelResource
     this.contentBlock.filterSchema = filterSchema
     this.contentBlock.table = Object.assign({}, this.table)
     this.albumBlock.filterSchema = filterSchema

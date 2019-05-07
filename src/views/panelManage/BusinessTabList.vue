@@ -7,19 +7,18 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-            <!-- <ButtonGroupForListPage 
+      <!-- <ButtonGroupForListPage 
         pageName='tab' 
         @add="addUser"
         @edit="editData"
         @delete="batchDel"
         >
-        </ButtonGroupForListPage> -->
+      </ButtonGroupForListPage>-->
       <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
       </div>
-
       <Table
         :props="table.props"
         :header="table.header"
@@ -33,10 +32,9 @@
     </ContentWrapper>
   </ContentCard>
 </template>
-
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table } from 'admin-toolkit'
+import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 export default {
   components: {
@@ -45,7 +43,7 @@ export default {
     ButtonGroupForListPage
   },
 
-  data () {
+  data() {
     return {
       tabTypeOption: [
         { label: '第三方版面', value: '4' },
@@ -72,7 +70,9 @@ export default {
       appIdType: [],
       businessType: [],
       tabType: {},
+      tabTypeReverse: {},
       selected: [],
+      selectedItems: [],
       table: {
         props: {},
         data: [],
@@ -84,25 +84,28 @@ export default {
           {
             label: '名称',
             prop: 'tabName',
-             render: (createElement, { row }) => {
-              return createElement('el-button', {
-                attrs:{
-                  type: 'text'
-                },
-                on: {
-                  click: () => {
-                    this.openReview(row) 
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row)
+                    }
                   }
-                }
-              },row.tabName)
+                },
+                row.tabName
+              )
             }
           },
           {
             label: '版面属性',
             prop: 'tabType',
-            formatter: function (row) {
-                const v = row.tabType
-                return {'1': '普通版面', '2': '专题版面', '4': '第三方版面'}[v + ''] || '未知版面'
+            render: (h, { row }) => {
+              return this.tabTypeReverse[row.tabType]
             }
           },
           {
@@ -112,17 +115,16 @@ export default {
           {
             label: '内容源',
             prop: 'tabResource',
-            formatter: function (row) {
-                const v = row.tabResource
-                return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_voole': '优朋'}[v + ''] || ''
+            render: (h, { row }) => {
+              return this.$sourceName(row.tabResource)
             }
           },
           {
             label: 'AppId',
             prop: 'tabAppid',
-            formatter: (row) => {
-              return this.appIdType.map((item) => {
-                if(row.tabAppid.toString() === item.dictEnName){
+            formatter: row => {
+              return this.appIdType.map(item => {
+                if (row.tabAppid.toString() === item.dictEnName) {
                   return item.dictCnName
                 }
               })
@@ -131,19 +133,41 @@ export default {
           {
             label: '版本/状态',
             prop: 'tabStatus',
-            formatter: (row) => {
+            formatter: row => {
               const status = row.tabStatus
               const currentVersion = row.currentVersion
-              return currentVersion + '/' + this.tabStatusOption.map(function(item){
-                if(status.toString() === item.value){
-                  return item.label
-                }
-              }).join('')
+              return (
+                currentVersion +
+                '/' +
+                this.tabStatusOption
+                  .map(function(item) {
+                    if (status.toString() === item.value) {
+                      return item.label
+                    }
+                  })
+                  .join('')
+              )
             }
           },
           {
             label: '待审核副本',
-            prop: 'duplicateVersion'
+            prop: 'duplicateVersion',
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row, row.duplicateVersion)
+                    }
+                  }
+                },
+                row.duplicateVersion
+              )
+            }
           },
           {
             label: '更新时间',
@@ -159,27 +183,117 @@ export default {
           },
           {
             label: '操作',
-            prop: 'oper'
+            prop: 'oper',
+            width: 100,
+            render: this.createOperationRender(this)
           }
         ],
         selected: [],
         selectionType: 'multiple'
       }
-    };
+    }
   },
 
   methods: {
-    addTabInfo() {
-
+    createOperationRender(obj) {
+      return function render(h, {row}) {
+        let btn1 = h('el-button',
+            {
+              props: {
+                type: 'text'
+              },
+              on: {
+                click: () => {
+                  obj.handleCopy(row)
+                }
+              }
+            },
+            '复制'
+          )
+        let btn2 = null
+        if(row.collected) {
+           btn2 =  h('el-button',
+            {
+              props: {
+                type: 'text'
+              },
+              on: {
+                click: () => {
+                  obj.cancalCollect(row)
+                }
+              }
+            },
+            '取消'
+          )
+        } else {
+            btn2 = h('el-button',
+            {
+              props: {
+                type: 'text'
+              },
+              on: {
+                click: () => {
+                  obj.collect(row)
+                }
+              }
+            },
+            '收藏'
+          )
+        }
+        return [btn1, btn2]
+      }
     },
+    handleCopy(row) {
+      this.$emit('copy', row.tabId)
+    },
+    collect(row) {
+      this.$service.businessTabCollect({ resourceId: row.tabId }, '收藏成功').then(()=>{
+        this.fetchData()
+      })
+    },
+    cancalCollect(row) {
+      this.$service.businessTabCancelCollect({ resourceId: row.tabId }, '取消成功').then(()=>{
+        this.fetchData()
+      })
+    },
+    handleRead(row, version) {
+      this.$emit('read', row.tabId, version)
+    },
+    /**
+     * 新增
+     */
+    addData() {
+      this.$emit('create')
+    },
+    /**
+     * 编辑
+     */
     editData() {
-
+      if (this.$isAllowEdit(this.selected)) {
+        if (parseInt(this.selectedItems[0].tabStatus) === 2) {
+          this.$emit('edit', this.selected[0])
+        } else {
+          this.$message({
+            type: 'error',
+            message: '只有草稿状态才能编辑'
+          })
+        }
+      }
     },
+    /**
+     * 批量删除
+     */
     batchDel() {
-
-    },
-    openReview(row) {
-       this.$emit('open-review-page',row)
+      if (
+        this.$isAllowDelete(this.selected) &&
+        window.confirm('确定要删除吗')
+      ) {
+        this.$service
+          .testPolicyConfRemove({ id: this.selected.join(',') }, '删除成功')
+          .then(data => {
+            this.fetchData()
+          })
+      }
     },
     /**
      * 获取数据
@@ -218,7 +332,8 @@ export default {
       return this.$service.getTabType().then(data => {
         data.forEach(element => {
           this.tabType[element.label] = element.value
-        });
+          this.tabTypeReverse[element.value] = element.label
+        })
       })
     },
     /**
@@ -226,11 +341,15 @@ export default {
      */
     handleRowSelectionAdd(targetItem) {
       this.selected.push(targetItem.tabId)
+      this.selectedItems.push(targetItem)
       this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.tabId
+      })
+      this.targetItem = this.targetItem.filter(item => {
+        return item.tabId !== targetItem.tabId
       })
       this.updateTableSelected()
     },
@@ -239,6 +358,7 @@ export default {
         this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
         this.selected = []
+        this.selectedItems = []
         this.table.selected = []
       }
     },
@@ -279,7 +399,7 @@ export default {
         placeholder: '状态'
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 5,
         label: 0,
         wrapper: 20
@@ -304,13 +424,11 @@ export default {
       this.fetchData()
     })
     this.getBusinessType()
-
   }
-
 }
 </script>
 
 <style lang='stylus' scoped>
 .btns
-  margin-bottom 30px
+  margin-bottom: 30px
 </style>
