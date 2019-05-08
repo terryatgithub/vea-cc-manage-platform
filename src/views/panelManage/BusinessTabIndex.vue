@@ -53,7 +53,6 @@ export default {
       this.isShowList = false
     },
     handleRead(id, version) {
-      debugger
       this.id = id
       this.mode = 'read'
       this.version = version

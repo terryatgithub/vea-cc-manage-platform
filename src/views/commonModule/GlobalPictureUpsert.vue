@@ -103,7 +103,6 @@ export default {
     methods: {
         handleUpload(file, fileItem) {
             this.$refs.upload.getImageInfo(fileItem.dataUrl).then(function(imageInfo) {
-                debugger
                 const fileInfo = {
                     upload: fileItem,
                     materialTypeDictEnName: undefined,

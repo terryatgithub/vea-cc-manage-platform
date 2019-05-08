@@ -4,6 +4,16 @@
       <el-col class="login-logo">
         <img src="@/assets/logo.png">
       </el-col>
+      <div id="accout">
+        <el-row>
+          <el-col :span="10">
+            <el-button :class="{active:isNormalActive}" @click="changAccoutType('normal')">普通账号</el-button>
+          </el-col>
+          <el-col :span="10" :offset="4">
+            <el-button :class="{active:isDomainActive}" @click="changAccoutType('domain')">域账号</el-button>
+          </el-col>
+        </el-row>
+      </div>
       <GateSchemaForm ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin"></GateSchemaForm>
       <div id="verifyCode">
         <el-input v-model="user.valicode" placeholder="验证码"></el-input>
@@ -17,73 +27,98 @@
   </el-row>
 </template>
 <script>
-import { loginRedbg } from "../assets/loginRedbg.js";
-import _ from "gateschema";
-import { setTimeout } from 'timers';
+import { loginRedbg } from '../assets/loginRedbg.js'
+import _ from 'gateschema'
+import { setTimeout } from 'timers'
 const schema = _.map({
-  username: _.required.$msg("请输入登录名").string.other("form", {
-    placeholder: "登录名"
+  username: _.required.$msg('请输入登录名').string.other('form', {
+    placeholder: '登录名'
   }),
-  password: _.required.$msg("请输入密码").string.other("form", {
-    placeholder: "密码",
-    type: "password"
+  password: _.required.$msg('请输入密码').string.other('form', {
+    placeholder: '密码',
+    type: 'password'
   })
-}).other("form", {
+}).other('form', {
   cols: {
     label: 0,
     wrapper: 24
   }
-});
+})
 export default {
   data() {
     return {
       user: {
-        username: "yuanjunnan",
-        password: "yuanjunnan@yjn@",
-        valicode: "",
+        username: 'yuanjunnan',
+        password: 'yuanjunnan@yjn@',
+        valicode: ''
       },
-      codeUrl: "captcha.jpg"
-    };
-  },
-  components: {
-  },
-  computed: {
-    formSchema() {
-      return this.schema || schema;
+      codeUrl: 'captcha.jpg',
+      isNormalActive: true,
+      isDomainActive: false
     }
   },
-  props: ["schema"],
+  components: {},
+  computed: {
+    formSchema() {
+      return this.schema || schema
+    }
+  },
+  props: ['schema'],
   methods: {
+    changAccoutType(type) {
+      if (type === 'normal') {
+        this.isNormalActive = true
+        this.isDomainActive = false
+      } else {
+        this.isNormalActive = false
+        this.isDomainActive = true
+      }
+    },
     createCav() {
       if (
         !window.ActiveXObject &&
-        !!document.createElement("canvas").getContext
+        !!document.createElement('canvas').getContext
       ) {
       }
     },
     handleLogin(err) {
       if (err.length === 0) {
-        this.$login(this.user).then(data => {
-          /**
-           * 得到菜单路由
-           */
+        if (this.isDomainActive) {
+          this.user.ldapName = this.user.username
+          delete this.user.username
+        } else {
+          delete this.user.ldapName
+        }
+        if (window.localStorage) {
+          window.localStorage.setItem(
+            'loginType',
+            this.isDomainActive ? 'normal' : 'domain'
+          )
+        }
+        this.$login(this.user).then(
+          data => {
             this.$router.push({
-              path: this.$route.query.redirect || "/"
-            });
-
-        });
+              path: this.$route.query.redirect || '/'
+            })
+          },
+          () => {
+            if (this.isDomainActive) {
+              this.user.username = this.user.ldapName
+            }
+          }
+        )
       }
     },
     updateValicode() {
-      this.codeUrl += "?_=" + new Date().getTime();
+      this.codeUrl += '?_=' + new Date().getTime()
     }
   },
   created: function() {
-    loginRedbg();
+    loginRedbg()
   }
-};
+}
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 .login-form
   position: absolute
   top: 50%
@@ -121,11 +156,18 @@ export default {
   height: 50px
   background: #ffaa23
   border-color: #ffaa23
-  font-size 20px
+  font-size: 20px
 #verifyCode
   display: flex
   margin-bottom: 30px
   img
     margin-left: 10px
+#accout
+  margin-bottom: 20px
+#accout
+  >>> .el-button
+    width: 100%
+#accout .active
+  color: red
 </style>
 

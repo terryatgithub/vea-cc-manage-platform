@@ -118,6 +118,7 @@
         homepageStatusArray="4"
         v-if="mode==='HomePageModel'"
         @row-click="rowClick"
+         @row-selection-change="rowClick"
       ></HomePageModel>
 
       <span slot="footer" class="dialog-footer">

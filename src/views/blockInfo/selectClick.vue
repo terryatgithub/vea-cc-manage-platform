@@ -15,7 +15,7 @@
         :selected="table.selected"
         :selection-type="table.selectionType"
          @row-click="rowClick"
-        @row-selection-change="handleRowSelectionChange"
+        @row-selection-change="rowClick"
       />
     </ContentWrapper>
   </ContentCard>
@@ -94,10 +94,10 @@ export default {
       })
       this.updateTableSelected()
     },
-    handleRowSelectionChange(value, index) {
-      this.table.selected = index
-        this.$emit('clcik',value)
-    },
+    // handleRowSelectionChange(value, index) {
+    //   this.table.selected = index
+    //     this.$emit('clcik',value)
+    // },
     handleAllRowSelectionRemove() {
       this.selected = []
       this.table.selected = []

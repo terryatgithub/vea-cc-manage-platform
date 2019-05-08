@@ -155,7 +155,6 @@ export default {
     单选时回调函数
      */
     rowClick(row, type) {
-      debugger
       let callbackParams = this.callbackParam(type, row)
       this.$emit('confirm-click', callbackParams)
     },

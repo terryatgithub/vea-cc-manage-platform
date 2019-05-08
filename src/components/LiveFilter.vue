@@ -57,6 +57,7 @@
       :selected="table.selected"
       :selection-type="table.selectionType"
         @row-click="rowClick"
+         @row-selection-change="rowClick"
       @row-selection-add="handleRowSelectionAdd"
       @row-selection-remove="handleRowSelectionRemove"
       @all-row-selection-change="handleAllRowSelectionChange"
@@ -186,7 +187,6 @@ export default {
 
   methods: {
      rowClick(params) {
-       debugger;
        if (this.multi === 'single') {
          this.$emit("row-click",params)
        }

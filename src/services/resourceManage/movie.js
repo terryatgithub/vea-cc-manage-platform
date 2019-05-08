@@ -33,7 +33,6 @@ export function getCondition() {
       return data
     }
   })
-
 }
 // 影片单集资源
 export function getSegmentList(params) {

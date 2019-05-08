@@ -749,9 +749,6 @@ export default {
 
     // ??
     selectResource: function(type, form, selectType) {
-      debugger
-
-    //  debugger
       this.resourceVisible = true
       this.resourceOptions.activeTabName = 'video'
       this.currentForm = form

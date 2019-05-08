@@ -405,7 +405,6 @@ export default {
     },
 
     handleChannelChange(value) {
-      debugger
       this.filter.source = ''
       this.filter.source = value[0]
       this.filter.channel = value[1]

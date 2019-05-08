@@ -15,6 +15,7 @@
         :selected="table.selected"
         :selection-type="table.selectionType"
         @row-click="rowClick"
+        
         @row-selection-change="rowClick"
       />
     </ContentWrapper>
