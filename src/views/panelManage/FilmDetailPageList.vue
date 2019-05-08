@@ -173,8 +173,8 @@ export default {
               return row.category === '0'
                 ? '影视'
                 : row.category === '1'
-                ? '教育'
-                : ''
+                  ? '教育'
+                  : ''
             }
           },
           {
@@ -213,7 +213,23 @@ export default {
           {
             prop: 'duplicateVersion',
             label: '待审核副本',
-            sortable: true
+            sortable: true,
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  props: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.openReviewWithVersion(row)
+                    }
+                  }
+                },
+                row.duplicateVersion
+              )
+            }
           },
           {
             prop: 'lastUpdateDate',
@@ -411,6 +427,9 @@ export default {
     },
     openReview(row) {
       this.$emit('open-add-page', row.tabId, 'read')
+    },
+    openReviewWithVersion(row) {
+      this.$emit('open-add-page', row.tabId, 'read', row.duplicateVersion)
     }
   },
   created() {

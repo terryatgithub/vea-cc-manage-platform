@@ -1,24 +1,24 @@
 <template>
   <ContentCard title="预览页面" @go-back="$emit('go-back')" class="content">
-    <HistoryTool 
+    <HistoryTool
       type="theme"
-      :id="themeInfo.themeId" 
+      :id="themeInfo.themeId"
       :initialStatus="themeStatus"
       @change="changeVersion"
       @getHistoryList="getHistoryList"
     />
     <AuditDetailButton
       v-if="hackReset"
-      type="theme" 
+      type="theme"
       menuElId="themeInfo"
       :version="currentVersion"
-      :id="themeInfo.themeId" 
+      :id="themeInfo.themeId"
       :status="themeStatus"
       :notContainBtn="notContainBtn"
       @open-list-page="$emit('open-list-page')"
       @copy="copy"
     />
-    
+
     <div class="split-bar">
       <i class="el-icon-edit">基本信息</i>
     </div>
@@ -116,9 +116,8 @@ export default {
     },
     getHistoryList(list) {
       list.map(item => {
-        if(/待审核/.test(item.label)){
+        if (/待审核/.test(item.label)) {
           this.notContainBtn.push('copy')
-          return
         }
       })
     },

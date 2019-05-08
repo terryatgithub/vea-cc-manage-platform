@@ -9,6 +9,7 @@
       v-if="!isShow"
       :editId="editId"
       :initMode="mode"
+      :duplicateVersionVersion = "duplicateVersionVersion"
       @open-list-page="openListPage"
       @go-back="goBack"
     />
@@ -28,15 +29,17 @@ export default {
     return {
       isShow: true,
       editId: '',
-      mode: ''
+      mode: '',
+      duplicateVersionVersion: ''
     }
   },
 
   methods: {
-    openAddPage(editId, mode) {
+    openAddPage(editId, mode, version) {
       this.editId = editId
       this.isShow = false
       this.mode = mode
+      this.duplicateVersionVersion = version
     },
     goBack() {
       this.isShow = true

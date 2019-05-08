@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <!-- <ButtonGroupForListPage 
-        pageName='themeInfo' 
+      <!-- <ButtonGroupForListPage
+        pageName='themeInfo'
         @add="addUser"
         @edit="editData"
         @delete="batchDel"
@@ -80,11 +80,11 @@ export default {
             label: '主题名称',
             prop: 'themeName',
             sortable: true,
-            render: (h, {row}) => {
-              return h( Button,
+            render: (h, { row }) => {
+              return h(Button,
                 {
                   props: {
-                    type: 'text',
+                    type: 'text'
                   },
                   on: {
                     click: () => this.themeInfoPreview(row.themeId)
@@ -98,10 +98,10 @@ export default {
             prop: 'themeBrand',
             sortable: true,
             formatter: function(row) {
-              if (row.themeBrand === 'Coocaa'){
-                  return '创维酷开'
-              }else if(row.themeBrand === 'Other'){
-                  return '全部'
+              if (row.themeBrand === 'Coocaa') {
+                return '创维酷开'
+              } else if (row.themeBrand === 'Other') {
+                return '全部'
               }
             }
           },
@@ -132,14 +132,14 @@ export default {
             label: '主题预览图',
             prop: 'previewImgUrl',
             sortable: true,
-            render: (h, {row}) => {
-              if(!row.previewImgUrl) return
+            render: (h, { row }) => {
+              if (!row.previewImgUrl) return
               return h('img', {
                 attrs: {
                   src: row.previewImgUrl,
-                  width: "100px",
-                  height: "45px",
-                  class: "imgs"
+                  width: '100px',
+                  height: '45px',
+                  class: 'imgs'
                 },
                 on: {
                   click: () => {
@@ -154,12 +154,12 @@ export default {
             label: '待审核副本',
             prop: 'duplicateVersion',
             sortable: true,
-            render: (h, {row}) => {
-              if(!row.duplicateVersion) return
-              return h( Button,
+            render: (h, { row }) => {
+              if (!row.duplicateVersion) return
+              return h(Button,
                 {
                   props: {
-                    type: 'success',
+                    type: 'success'
                   },
                   on: {
                     click: () => this.duplicatePreview(row.themeId, row.duplicateVersion)
@@ -198,7 +198,7 @@ export default {
         selected: [],
         selectionType: 'multiple'
       }
-    };
+    }
   },
 
   methods: {
@@ -235,7 +235,7 @@ export default {
     },
     editData() {
       const selected = this.selected
-      if(selected.length !== 1) {
+      if (selected.length !== 1) {
         this.$message('只能选择一条数据')
         return false
       }
@@ -243,20 +243,20 @@ export default {
       const status = data.find(item => {
         return item.themeId === selected[0]
       }).themeStatus
-      if(status === 4) {
+      if (status === 4) {
         this.$alert('审核通过的数据无法编辑！', '操作提示')
         return false
       }
       this.$emit('open-add-page', selected[0])
     },
     batchDel() {
-      if(this.selected.length === 0) {
+      if (this.selected.length === 0) {
         this.$message('请选择数据后进行操作')
-        return 
+        return
       }
       if (window.confirm('确定要删除吗')) {
         const selected = this.selected.join(',')
-        this.$service.themeInfoRemove({id: selected}).then(() => {
+        this.$service.themeInfoRemove({ id: selected }).then(() => {
           this.selected = []
           this.fetchData()
         })
@@ -320,12 +320,12 @@ export default {
         component: 'Input',
         placeholder: '当前版本'
       }),
-      themeStatus: _.o.enum({'待审核': '3', '审核通过': '4', '审核不通过': '5'}).other('form', {
+      themeStatus: _.o.enum({ '待审核': '3', '审核通过': '4', '审核不通过': '5' }).other('form', {
         component: 'Select',
         placeholder: '状态'
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 5,
         label: 0,
         wrapper: 20

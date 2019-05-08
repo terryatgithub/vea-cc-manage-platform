@@ -7,9 +7,13 @@
         :mode="mode"
         :resource-info="resourceInfo"
         @edit="mode = 'edit'"
+        @replicate="mode = 'replicate'"
         @submit-audit="btnAudit"
         @save-draft="btnSave"
-
+        @select-version="fetchData"
+        @unaudit="fetchData"
+        @shelves="fetchData"
+        @audit="$emit('upsert-end')"
       >
         <div class="split-bar">
           <i class="el-icon-edit">基本信息</i>
@@ -20,7 +24,7 @@
               <el-input v-model="form.tabName" style="width: 240px"/>
             </el-form-item>
             <el-form-item label="业务分类">
-              <el-select v-model="form.tabCategory">
+              <el-select v-model="form.tabCategory" :disabled="categoryEdit">
                 <el-option label="影视" value="0"/>
                 <el-option label="教育" value="1"/>
               </el-select>
@@ -63,7 +67,7 @@
               {{form.tabName}}
             </el-form-item>
             <el-form-item label="业务分类" prop="tabCategory">
-                {{form.tabCategory === 0 ? '教育':'影视'}}
+                {{form.tabCategory == 0 ? '影视':'教育'}}
             </el-form-item>
             <el-form-item label="内容源" v-if="form.tabCategory==='0'" prop="tabResource">
               {{sourceText[form.tabResource]}}
@@ -97,8 +101,7 @@
       </CommonContent>
     </div>
   </ContentCard>
-      <AddBlockFilter :parentPannelResource="parentResource" v-show="isShowPannelInfoList" @go-back="isShowPannelInfoList=false" @add-block="addBlock"/>
-  </div>
+</div>
 </template>
 
 <script>
@@ -114,7 +117,7 @@ export default {
   },
 
   props: [
-    'editId', 'initMode'
+    'editId', 'initMode', 'duplicateVersionVersion'
   ],
 
   watch: {
@@ -122,7 +125,6 @@ export default {
       deep: true,
       handler: function(newVal, oldVal) {
         if (newVal === '1') {
-          console.log('------教育执行列表赋值')
           this.pannelItems = this.eduProductItems.categoryList
           this.productItems = this.eduProductItems.productList
           if (this.eduProductItems.categoryList.length === 0) { this.pannel = '不限' }
@@ -131,13 +133,11 @@ export default {
             this.product = ''
           }
         } else if (newVal === '0') {
-          console.log('------我是watch里面监听form.tabCategory的影视函数')
           this.handleTabResourceChange(this.form.tabResource)
         }
       }
     },
     'form.tabResource': function (value, oldVal) {
-      console.log('------我是watch里面的监听form.tabResource方法的执行')
       this.handleTabResourceChange(value)
     }
   },
@@ -329,7 +329,8 @@ export default {
         selected: [],
         selectionType: 'single'
       },
-      mode: ''
+      mode: '',
+      categoryEdit: false
     }
   },
 
@@ -369,8 +370,6 @@ export default {
             pannelJson: this.table.data
           }
           this.$service.saveFilmDetailPage({ jsonStr: JSON.stringify(jsonStr) }, '保存成功').then((data) => {
-            console.log('++++++++saveinfo')
-            console.log(data)
             this.$emit('open-list-page')
           })
         } else {
@@ -516,66 +515,50 @@ export default {
       table.data.forEach((item, index) => {
         this.$set(item, 'pannelSequence', index + 1)
       })
+    },
+    setFormInfo(data) {
+      this.form.tabName = data.filmDetail.tabName
+      this.form.tabCategory = data.filmDetail.category
+      this.form.priority = data.filmDetail.priority
+      this.form.tabResource = data.filmDetail.source
+      this.form.currentVersion = data.filmDetail.currentVersion
+      this.form.currentStatus = data.filmDetail.currentStatus
+      this.globalTabResource = data.filmDetail.source
+      this.pannel = data.filmDetail.channel
+      this.product = data.filmDetail.product
+      this.table.data = data.pannelList
+      let pannelNameList = []
+      data.pannelList.forEach((dataBack) => {
+        pannelNameList.push(dataBack.pannelName)
+      })
+      this.table.data.forEach((item, index) => {
+        item.pannelGroupRemark = pannelNameList[ index ]
+        item.pannelSequence = index + 1
+      })
+      this.tabResourceFlag = 0
+    },
+    fetchData(version) {
+      if (version !== undefined) { this.form.currentVersion = version }
+      this.$service.reviewFilmDetailPage({ id: this.editId, version }).then((data) => {
+        this.setFormInfo(data)
+      })
     }
   },
   created() {
     this.getMediaResourceInfos().then(() => {
       this.mode = this.initMode
-      console.log(this.mode)
       if (this.editId) {
+        this.form.tabResource = ''
         if (this.mode === 'edit') {
           this.title = '编辑页面'
-          this.form.tabResource = ''
           this.$service.editFilmDetailPage({ id: this.editId })
             .then((data) => {
-              console.log('编辑接口返回的数据')
-              console.log(data)
-              this.form.tabName = data.filmDetail.tabName
-              this.form.tabCategory = data.filmDetail.category
-              this.form.priority = data.filmDetail.priority
-              this.form.tabResource = data.filmDetail.source
-              this.form.currentVersion = data.filmDetail.currentVersion
-              this.globalTabResource = data.filmDetail.source
-              this.pannel = data.filmDetail.channel
-              this.product = data.filmDetail.product
-              this.table.data = data.pannelList
-              let pannelNameList = []
-              data.pannelList.forEach((dataBack) => {
-                pannelNameList.push(dataBack.pannelName)
-              })
-              this.table.data.forEach((item, index) => {
-                item.pannelGroupRemark = pannelNameList[ index ]
-                item.pannelSequence = index + 1
-              })
-              this.tabResourceFlag = 0
+              this.setFormInfo(data)
+              this.categoryEdit = true
             })
         } else if (this.mode === 'read') {
           this.title = '预览页面'
-          this.form.tabResource = ''
-          this.$service.reviewFilmDetailPage({ id: this.editId })
-            .then((data) => {
-              console.log('预览接口返回的数据')
-              console.log(data)
-              this.form.tabName = data.filmDetail.tabName
-              this.form.tabCategory = data.filmDetail.category
-              this.form.priority = data.filmDetail.priority
-              this.form.tabResource = data.filmDetail.source
-              this.form.currentVersion = data.filmDetail.currentVersion
-              this.form.currentStatus = data.filmDetail.currentStatus
-              this.globalTabResource = data.filmDetail.source
-              this.pannel = data.filmDetail.channel
-              this.product = data.filmDetail.product
-              this.table.data = data.pannelList
-              let pannelNameList = []
-              data.pannelList.forEach((dataBack) => {
-                pannelNameList.push(dataBack.pannelName)
-              })
-              this.table.data.forEach((item, index) => {
-                item.pannelGroupRemark = pannelNameList[ index ]
-                item.pannelSequence = index + 1
-              })
-              this.tabResourceFlag = 0
-            })
+          this.fetchData(this.duplicateVersionVersion)
         }
       } else {
         this.title = '新增页面'
