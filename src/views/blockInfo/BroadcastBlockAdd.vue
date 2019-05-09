@@ -245,9 +245,12 @@
         <el-form-item
           label="海报"
           prop="poster.pictureUrl"
-          @click.native="openPicture('poster', 'lowerForm')"
+          
         >
-          <el-card class="post-box" style="height: 180px">
+          <el-card class="post-box" style="height: 180px"
+           :disabled="disabled"
+          @click.native="openPicture('poster', 'lowerForm')"
+          >
             <img
               v-if="lowerForm.poster.pictureUrl"
               :src="lowerForm.poster.pictureUrl"
@@ -1054,6 +1057,8 @@ export default {
 
     // 打开海报和角标弹窗
     openPicture: function(type, form, index) {
+      if(this.disabled)
+      return
       this.pictureType = type
       this.currentForm = form
       if (type === 'poster'){
