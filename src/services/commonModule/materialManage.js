@@ -62,7 +62,7 @@ export function commonOnclickInfoSave (data) {
 export function commonOnclickInfoDelete (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/v1/onclickInfo/save.html',
+    url: 'api/v1/onclickInfo/remove.html',
     params
   })
 }

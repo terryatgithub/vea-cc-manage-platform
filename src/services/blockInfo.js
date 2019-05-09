@@ -192,17 +192,6 @@ export function getData(params) {
   })
 }
 /**
- * 多功能推荐位——审核
- */
-export function SaveAudit(params) {
-  return this.fetch({
-    method: 'get',
-    url: 'api/v1/audit/auditTask.html',
-    params
-  })
-}
-
-/**
  * 多功能推进位-删除
  */
 export function removeMulti(params) {

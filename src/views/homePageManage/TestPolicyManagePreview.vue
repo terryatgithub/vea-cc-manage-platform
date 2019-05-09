@@ -137,7 +137,7 @@ export default {
   },
   props: {
     editId: Number,
-    default: null
+    version: String
   },
   data() {
     return {
@@ -150,7 +150,6 @@ export default {
       platform: 'tencent', //内容源
       editHomePageData: {}, //编辑定向首页方案
       status: null,
-      version: null,
       form: {
         policyId: null,
         policyName: null,
@@ -182,7 +181,7 @@ export default {
           id: this.editId,
           type: 'policy',
           menuElId: 'policyConf',
-          version: this.version,
+          version: form.currentVersion,
           status: form.policyStatus
         }
       }
@@ -224,9 +223,9 @@ export default {
       this.$service
         .getTestPolicyConfDetail({ id: this.editId, version })
         .then(data => {
-          this.version = data.currentVersion
           this.status = data.policyStatus
           this.form = {
+            currentVersion: data.currentVersion,
             policyId: data.policyId,
             policyName: data.policyName,
             macStart: data.macStart,

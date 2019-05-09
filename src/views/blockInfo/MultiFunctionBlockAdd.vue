@@ -1,6 +1,9 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="multi-func-block-upsert">
+       <div class="form-legend-header">
+        <span>基本信息</span>
+      </div>
       <el-form ref="blockForm" :rules="rules" :model="block" label-width="140px" class="el-form-add">
         <el-form-item
           label="系统功能名称"
@@ -105,7 +108,7 @@
         </template>
         <template v-if="pluginParentType !== 'sign'">
           <div v-for="(item, index) in block.rlsInfo" :key="index">
-            <div class="base-tit">
+             <div class="form-legend-header">
               <span>{{ item.label }}</span>
             </div>
             <!--builtIn-->
@@ -226,8 +229,10 @@
                 <el-option label="第三方应用" value="app"></el-option>
               </el-select>
               <el-button
+                class="marginL"
                 v-if="item.openMode === 'app' "
                 type="primary"
+                plain
                 @click="handleSelectClickStart(index)"
               >快速填充</el-button>
             </el-form-item>
@@ -299,14 +304,23 @@
                 </el-upload>
               </el-form-item>
             </template>
-            <ccAppParamsForm
+            <!-- <ccAppParamsForm
               v-if="item.openMode === 'app'"
               v-model="item.onclick"
               label-width="140px"
               :prop-prefix="'rlsInfo.' + index + '.onclick.'"
-            />
+            /> -->
+             <AppParams
+              v-if="item.openMode === 'app'"
+              :prop-prefix="'rlsInfo.' + index + '.onclick.'"
+              v-model="item.onclick"
+              >
+            </AppParams>
           </div>
         </template>
+        <el-form-item>
+          <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
+        </el-form-item>
       </el-form>
       <!--海报素材弹框-->
       <el-dialog :visible.sync="dialogTableVisible" width="1200px">
@@ -318,7 +332,7 @@
       </el-dialog>
       <!--点击事件弹框-->
       <el-dialog :visible.sync="dialogClickTableVisible" width="1200px">
-        <selectClick @row-clcik="getClickData"></selectClick>
+        <selectClick @row-click="getClickData"></selectClick>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogClickTableVisible = false">取 消</el-button>
           <!-- <el-button type="primary" @click="dialogClickTableVisible = false;clickSubmit()">确 定</el-button> -->
@@ -332,9 +346,9 @@
           <!-- <el-button type="primary"  @click="showFocusImgSelectorVisible = false;selectImgSubmit()">确 定</el-button> -->
         </div>
       </el-dialog>
-       <div style="padding: 10px;text-align:right">
+       <!-- <div style="padding: 10px;text-align:right">
         <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-      </div>
+      </div> -->
     </div>
   </ContentCard>
 </template>
@@ -372,13 +386,15 @@ import ccTimeSpinner from './ccTimeSpinner'
 import selectResource from './selectResource'
 import selectClick from './selectClick'
 import selectImg from './selectImg'
+import { AppParams } from 'admin-toolkit'
 export default {
   components: {
     ccAppParamsForm,
     ccTimeSpinner,
     selectResource,
     selectClick,
-    selectImg
+    selectImg,
+    AppParams
   },
   props: {
     editId: Number,
@@ -555,10 +571,13 @@ export default {
   methods: {
     //时间处理-:转换为数值
     parseMinToStr(str) {
-      const timeArr = str.split(':')
-      const hours = parseInt(timeArr[0])
-      const mins = parseInt(timeArr[1])
-      return hours * 60 + mins
+      if(str !== undefined){
+        const timeArr = str.split(':')
+        const hours = parseInt(timeArr[0])
+        const mins = parseInt(timeArr[1])
+        return hours * 60 + mins
+      }
+
     },
     //转换位时间格式 ：hh:mm
     parseStrToMin(min) {
@@ -849,6 +868,7 @@ export default {
       )
     },
     setData(data) {
+      debugger
       const helper = this.block.helper
       const block = JSON.parse(JSON.stringify(data))
       const pluginParentType = block.pluginInfo.pluginParentType
@@ -1116,7 +1136,7 @@ export default {
     //   this.block.rlsInfo[this.selectingPostForIndex].poster = selectObj
     // },
     /**点击事件弹框 */
-    getClickData(data) {
+    getClickData1(data) {
       this.clickData = data
       this.dialogClickTableVisible = false
       var selectClick = this.clickData
@@ -1126,6 +1146,30 @@ export default {
       item.onclick = this.parseOnclick(selectClick)
       this.showselectClickor = false
       this.selectingClickForIndex = undefined
+    },
+    getClickData(data) {
+      this.dialogClickTableVisible = false
+      let params = JSON.parse(data.params) 
+      let keys = Object.keys(params)
+      let paramsArr = keys.reduce((result, current, index) => {
+         var obj = {}
+         obj.key = current
+         obj.value = params[current]
+         result.push(obj)
+         return result
+      },[])
+      let o ={
+                packagename: data.packagename,
+                versioncode: data.versioncode,
+                dowhat: data.dowhat,
+                bywhat: data.bywhat,
+                byvalue: data.byvalue,
+                params: paramsArr,
+                exception: data.exception
+        }
+      const index = this.selectingClickForIndex
+      const item = this.block.rlsInfo[index]
+      item.onclick = o;
     },
     clickSubmit() {
       // var selectClick = this.clickData

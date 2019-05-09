@@ -10,9 +10,9 @@
           <el-form-item label="备注" prop="remark">
             <el-input v-model="form.remark" placeholder="备注"></el-input>
           </el-form-item>
-          <el-form-item label="点击事件json串" prop="onlickJson">
+          <!-- <el-form-item label="点击事件json串" prop="onlickJson">
             <el-input type="textarea" v-model="form.onlickJson" placeholder="异常处理(exception)"></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <AppParams  prop-prefix="onclick." v-model="form.onclick"></AppParams>
           <el-form-item label="异常处理(exception)" prop="exception">
             <el-input type="textarea" v-model="form.exception" placeholder="异常处理(exception)"></el-input>
@@ -84,6 +84,7 @@ export default {
           })
           this.form.onclick.params = params
           this.form = Object.assign({},this.form,this.form.onclick)
+          this.form.onlickJson = JSON.stringify(this.form.onclick)
           delete this.form.onclick
           this.$service.commonOnclickInfoSave({jsonStr: JSON.stringify(this.form)}, "保存成功").then(data => {
             this.$emit("openListPage");

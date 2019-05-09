@@ -1,7 +1,7 @@
 <template>
  <ContentCard :title="title" @go-back="$emit('go-back')">
        <div class="multi-func-block-read" >    
-        <div class="base-tit">
+          <div class="form-legend-header">
             <span>基本信息</span>
         </div>
         <el-form ref="blockForm" label-width="140px">
@@ -57,7 +57,7 @@
             </template>
             <template v-if="pluginParentType !== 'sign'">
             <div  v-for="(item, index) in block.rlsInfo" :key="index" >
-                <div class="base-tit">
+                 <div class="form-legend-header">
                     <span>{{ item.label }}</span>
                 </div>
                 <template v-if="versionHasTitle">
@@ -143,6 +143,18 @@
                 />
             </div>
             </template>
+             <el-form-item>
+           <AuditDetailButton
+            v-if="id!==undefined"
+            :id="id"
+            :version="version"
+            type="systemPlugin"
+            :status="status"
+            menuElId="multiFunctionBlock"
+            @auditTask="$emit('open-list-page')"
+          >
+          </AuditDetailButton>
+        </el-form-item>
         </el-form>
         <el-dialog title="审核" :visible.sync="showAuditDialog">
             <el-form>
@@ -159,9 +171,9 @@
             <el-button type="primary" @click="handleAudit">确 定</el-button>
             </div>
         </el-dialog>
-          <div class="toolbar-container" style="padding: 16px;text-align:right">
+          <!-- <div class="toolbar-container" style="padding: 16px;text-align:right">
             <el-button type="primary" v-if="block.pluginInfo.pluginStatus === STATUS.waiting" @click="showAuditDialog = true">审核</el-button>
-        </div>
+        </div> -->
     </div>
  </ContentCard>
 </template>
@@ -169,6 +181,7 @@
 <script>
 import _ from 'gateschema'
 import { ContentWrapper, Table, utils, AppParamsRead } from 'admin-toolkit'
+import AuditDetailButton from './../../components/AuditDetailButton'
 const SOURCE_TEXT = {
     '0': '无',
     '1': '腾讯',
@@ -190,7 +203,8 @@ const STATUS = {
 }
 export default {
     components: {
-        AppParamsRead
+        AppParamsRead,
+        AuditDetailButton
     },
     props: {
     viewId: Number,
@@ -210,6 +224,9 @@ export default {
                 auditFlag: 4,
                 auditDesc: ''
             },
+            version: undefined,
+            status: undefined,
+            id: undefined,
             block: {
                 helper: {
                     title: undefined,
@@ -345,6 +362,9 @@ export default {
             const block = JSON.parse(JSON.stringify(data))
             const pluginParentType = block.pluginInfo.pluginParentType
             const pluginType = block.pluginInfo.pluginType
+            this.id = block.pluginInfo.pluginId
+            this.version = block.pluginInfo.currentVersion
+            this.status = block.pluginInfo.pluginStatus
             block.rlsInfo.forEach(function(item) {
                 item.openMode = item.params.split(',')[0].split('==')[1]
                 if (item.onclick) {

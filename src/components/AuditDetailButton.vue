@@ -88,11 +88,11 @@ export default {
                 auditFlag: this.auditForm.auditFlag,
                 auditDesc: this.auditForm.auditDesc
               },
-              '保存成功'
+              '审核成功'
             )
             .then(data => {
               this.auditDialog = false
-              this.$emit('open-list-page')
+              this.$emit('auditTask')
             })
         }
       })
@@ -175,6 +175,7 @@ export default {
           )
           .then(data => {
             this.auditDialog = false
+            this.$emit("revokedAudit")
           })
       }
     },
@@ -201,7 +202,7 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .actions
-  justify-content center
+  justify-content start
 </style>
 
 

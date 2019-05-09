@@ -101,7 +101,7 @@ export default {
     submitForm(data) {
       const auditFlag = data.auditFlag
       const auditDesc = data.auditDesc
-      this.$service.executionTask(
+      this.$service.auditTask(
         {
           resourceId: this.viewId,
           resourceType: 'icon',

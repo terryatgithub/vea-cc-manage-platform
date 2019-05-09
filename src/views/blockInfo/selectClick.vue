@@ -141,21 +141,18 @@ export default {
     let filterSchema = _.map({
       commonOnclickId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID  ',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: 'ID  '
       }),
       onlickName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '点击事件名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '点击事件名称'
       })
     }).other('form', {
+       cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       layout: 'inline',
       footer: {
         cols: {

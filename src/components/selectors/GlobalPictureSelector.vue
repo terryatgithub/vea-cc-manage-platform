@@ -73,6 +73,7 @@ export default {
   },
   methods: {
     handleRowSelectionChange(row,index){
+      debugger
       this.table.selected = index
     },
     handleFilterChange(type) {

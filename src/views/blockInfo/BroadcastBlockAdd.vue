@@ -182,10 +182,10 @@
 
         <div v-if="normalForm.sign === 'manualSet'">
             <el-form-item label="打开方式">
-              <el-select value="第三方应用" class="thirdApp">
+              <el-select value="第三方应用">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
-              <el-button type="primary" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
+              <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
             </el-form-item>
             <AppParams prop-prefix="onclick." v-model="normalForm.onclick"></AppParams>
             <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
@@ -281,27 +281,17 @@
         </div>
         <div v-if="lowerForm.coverType === 'custom'">
             <el-form-item label="打开方式">
-              <el-select value="第三方应用" class="thirdApp">
+              <el-select value="第三方应用" >
                 <el-option value="app">第三方应用</el-option>
               </el-select>
-              <el-button type="primary" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
+              <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
             </el-form-item>
              <AppParams prop-prefix="onclick." v-model="lowerForm.onclick" ref="openWayLower"></AppParams>
         </div>
-        
       </el-form>
     </div>
     <div class="submitCheck" >
       <el-button type="primary" v-if="!disabled"  @click="submitCheck">提交审核</el-button>
-      <HistoryTool
-      v-if="disabled"
-       :id="id"
-       :type="type"
-       :initialStatus="status"
-       @change="getVersion"
-      >
-
-      </HistoryTool>
        <AuditDetailButton
             v-if="disabled"
             :id="id"
@@ -322,7 +312,8 @@
           :title="customDialogPicture.title"
           :form="customDialogPicture.form"
           v-model="selectPicture"
-          @close-dialog="selectCancel"
+          v-if="customDialogPicture.visible"
+          @close-dialog="savePicture"
         ></DialogPicture>
         <div slot="footer" class="dialog-footer">
             <el-button @click="customDialogPicture.visible = false">取 消</el-button>
@@ -336,7 +327,9 @@
           v-model="selectPicture"
           :typePosition="customDialogCorner.index"
           :cornerIconTypeOptions="cornerIconTypeOptions"
-          :visible="customDialogCorner.visible">
+          v-if="customDialogCorner.visible"
+           @close-dialog="savePicture"
+          >
         </DialogCorner>
         <div slot="footer" class="dialog-footer">
             <el-button @click="customDialogCorner.visible = false">取 消</el-button>
@@ -367,7 +360,7 @@ import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
 import AuditDetailButton from '@/components/AuditDetailButton'
 import { AppParams } from 'admin-toolkit'
-import HistoryTool from './../../components/HistoryTool'
+// import HistoryTool from './../../components/HistoryTool'
 export default {
   components: {
     draggable,
@@ -378,7 +371,7 @@ export default {
     selectClick,
     AppParams,
     AuditDetailButton,
-    HistoryTool
+    // HistoryTool
   },
 
   props: {
@@ -607,7 +600,6 @@ export default {
   },
   methods: {
      getVersion(version){
-      debugger
     },
     goEditPage() {
        this.$emit("go-edit-Page")
@@ -1084,6 +1076,7 @@ export default {
         this.$message('请至少选择一项')
       } else {
         this.customDialogPicture.visible = false
+        this.customDialogCorner.visible = false
         if (this.pictureType === 'poster') {
           this[this.currentForm].poster = {
             pictureUrl: selectPicture.pictureUrl,
@@ -1434,8 +1427,5 @@ export default {
   margin-top: 20px;
   margin-left: 110px;
 }
-.thirdApp {
-  max-width:280px;
-  margin-right :10px;
-}
+
 </style>

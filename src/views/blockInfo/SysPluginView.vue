@@ -1,7 +1,7 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="multi-func-block-read">
-      <div class="base-tit">
+      <div class="form-legend-header">
         <span>基本信息</span>
       </div>
       <el-form ref="blockForm" label-width="140px">
@@ -44,7 +44,7 @@
         </template>
         <template v-if="pluginParentType !== 'sign'">
           <div v-for="(item, index) in block.rlsInfo" :key="index">
-            <div class="base-tit">
+            <div class="form-legend-header">
               <span>{{ item.label }}</span>
             </div>
             <template v-if="versionHasTitle">
@@ -109,8 +109,25 @@
             />
           </div>
         </template>
+        <el-form-item>
+          <!-- <el-button
+            type="primary"
+            v-if="block.pluginInfo.pluginStatus === STATUS.waiting"
+            @click="showAuditDialog = true"
+          >审核</el-button> -->
+           <AuditDetailButton
+            v-if="id!==undefined"
+            :id="id"
+            :version="version"
+            type="systemPlugin"
+            :status="status"
+            menuElId="sysPlugin"
+            @auditTask="$emit('open-list-page')"
+          >
+          </AuditDetailButton>
+        </el-form-item>
       </el-form>
-      <el-dialog title="审核" :visible.sync="showAuditDialog">
+      <!-- <el-dialog title="审核" :visible.sync="showAuditDialog">
         <el-form>
           <el-form-item label="审核意见">
             <el-radio class="radio" v-model="auditForm.auditFlag" :label="4">通过</el-radio>
@@ -124,20 +141,21 @@
           <el-button @click="showAuditDialog = false">取 消</el-button>
           <el-button type="primary" @click="handleAudit">确 定</el-button>
         </div>
-      </el-dialog>
-       <div class="toolbar-container" style="padding: 16px;text-align:right">
+      </el-dialog>  -->
+      <!-- <div class="toolbar-container" style="padding: 16px;text-align:right">
         <el-button
           type="primary"
           v-if="block.pluginInfo.pluginStatus === STATUS.waiting"
           @click="showAuditDialog = true"
         >审核</el-button>
-      </div>
+      </div>-->
     </div>
   </ContentCard>
 </template>
 
 <script>
 import _ from 'gateschema'
+import AuditDetailButton from './../../components/AuditDetailButton'
 import { ContentWrapper, Table, utils, AppParamsRead } from 'admin-toolkit'
 const SOURCE_TEXT = {
   '0': '无',
@@ -160,7 +178,8 @@ const STATUS = {
 }
 export default {
   components: {
-    AppParamsRead
+    AppParamsRead,
+    AuditDetailButton
   },
   props: {
     viewId: Number,
@@ -175,11 +194,14 @@ export default {
       OPEN_MODE_TEXT: OPEN_MODE_TEXT,
       pluginParentTypes: [],
       pluginTypes: [],
+      version: undefined,
+      status: undefined,
+      id: undefined,
       pluginVersions: {},
-      auditForm: {
-        auditFlag: 4,
-        auditDesc: ''
-      },
+      // auditForm: {
+      //   auditFlag: 4,
+      //   auditDesc: ''
+      // },
       block: {
         helper: {
           title: undefined,
@@ -341,6 +363,9 @@ export default {
       const block = JSON.parse(JSON.stringify(data))
       const pluginParentType = block.pluginInfo.pluginParentType
       const pluginType = block.pluginInfo.pluginType
+      this.id = block.pluginInfo.pluginId
+      this.version = block.pluginInfo.currentVersion
+      this.status = block.pluginInfo.pluginStatus
       block.rlsInfo.forEach(
         function(item) {
           item.openMode = item.params.split(',')[0].split('==')[1]
@@ -423,25 +448,29 @@ export default {
       }
       return onclick
     },
-    handleAudit() {
-      const block = this.block
-      const auditForm = this.auditForm
-      if (auditForm.auditDesc.trim() === '') {
-        this.$message('请填写意见说明')
-      } else {
-        this.$service
-          .SaveAudit({
-            id: block.pluginInfo.pluginId,
-            type: 'systemPlugin',
-            auditFlag: auditForm.auditFlag,
-            auditDesc: auditForm.auditDesc
-          }, '审核成功')
-          .then(data => {
-            this.showAuditDialog = false
-            this.$emit('open-list-page')
-          })
-      }
-    },
+    // handleAudit() {
+    //   const block = this.block
+    //   const auditForm = this.auditForm
+    //   if (auditForm.auditDesc.trim() === '') {
+    //     this.$message('请填写意见说明')
+    //   } else {
+    //     this.$service
+    //       .auditTask(
+    //         {
+    //           id: block.pluginInfo.pluginId,
+    //           type: 'systemPlugin',
+    //           version: this.version,
+    //           auditFlag: auditForm.auditFlag,
+    //           auditDesc: auditForm.auditDesc
+    //         },
+    //         '审核成功'
+    //       )
+    //       .then(data => {
+    //         this.showAuditDialog = false
+    //         this.$emit('open-list-page')
+    //       })
+    //   }
+    // },
     handleClose() {
       window.parent.$('#edit-view').dialog('close')
     }

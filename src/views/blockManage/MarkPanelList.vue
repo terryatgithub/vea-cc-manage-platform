@@ -7,18 +7,18 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-         <!-- <ButtonGroupForListPage 
-        pageName='userConfig' 
-        @add="addUser"
+         <ButtonGroupForListPage 
+        pageName='markPanel' 
+        @add="addData"
         @edit="editData"
-        @delete="batchDel"
+        @delete="deleteData"
         >
-        </ButtonGroupForListPage> -->
-      <div class="btns">
+        </ButtonGroupForListPage>
+      <!-- <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="deleteData">批量删除</el-button>
-      </div>
+      </div> -->
       <Table
         :props="table.props"
         :header="table.header"

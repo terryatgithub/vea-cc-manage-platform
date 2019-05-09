@@ -11,6 +11,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+         :select-on-row-click="true"
         @row-selection-change="handleRowSelectionChange"
       >
         <div class="box-list" slot="row" slot-scope="{row: item}">
@@ -77,88 +78,6 @@ export default {
       selected: [],
       table: {
         props: {},
-        header: [
-          {
-            label: 'ID',
-            prop: 'cornerIconId',
-            width: '70'
-          },
-          {
-            label: 'imgUrl',
-            prop: 'imgUrl',
-            width: '70',
-            render: (createElement, { row }) => {
-              return createElement('img', {
-                attrs: {
-                  src: row.imgUrl,
-                  width: '50px',
-                  height: '50px',
-                  class: 'imgs'
-                },
-                on: {
-                  click: () => {
-                    this.reviewPic(row)
-                  }
-                }
-              })
-            }
-          },
-          {
-            label: '角标名称',
-            width: '120',
-            prop: 'cornerIconName',
-            sortable: true
-          },
-          {
-            label: '状态',
-            prop: 'cornerStatus',
-            width: '90',
-            render: (createElement, { row }) => {
-              switch (row.cornerStatus) {
-                case 0:
-                  return '不可用'
-                  break
-                case 1:
-                  return '可用'
-                  break
-                case 2:
-                  return '待审核'
-                  break
-                case 3:
-                  return '审核不通过'
-                  break
-              }
-            }
-          },
-          {
-            label: '角标类型',
-            prop: 'cornerIconType',
-            width: '70',
-            render: (createElement, { row }) => {
-              return row.cornerIconType.length > 0
-                ? row.cornerIconType[0].typeName
-                : ''
-            }
-          },
-          {
-            label: '创建时间',
-            prop: 'createdDate',
-            sortable: true
-          },
-          {
-            label: '修改时间',
-            prop: 'lastUpdateDate',
-            sortable: true
-          },
-          {
-            label: '操作',
-            width: '200',
-            fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              editData: '编辑'
-            })
-          }
-        ],
         data: [],
         selected: undefined,
         selectionType: 'single'
@@ -168,11 +87,12 @@ export default {
   methods: {
     //选中时间
     handleRowSelectionChange(row, index) {
-      console.log(row)
-      // this.table.data = row
-      this.$emit('input', row)
-      let rowData = row
       this.table.selected = index
+      this.$emit('input', row)
+      if(this.table.selectionType === 'single') {
+         this.$emit("close-dialog",'savePicture')
+      }
+     
     },
     handleFilterChange(type) {
       if (type === 'query') {

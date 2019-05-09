@@ -1,7 +1,7 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="multi-func-block-upsert">
-      <div class="base-tit">
+       <div class="form-legend-header">
         <span>基本信息</span>
       </div>
       <el-form ref="blockForm" :rules="rules" :model="block" label-width="140px" class="el-form-add"> 
@@ -107,7 +107,7 @@
         </template>
         <template v-if="pluginParentType !== 'sign'">
           <div v-for="(item, index) in block.rlsInfo" :key="index">
-            <div class="base-tit">
+            <div class="form-legend-header">
               <span>{{ item.label }}</span>
             </div>
             <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
@@ -116,8 +116,19 @@
                 :prop="'rlsInfo.' + index + '.title'"
                 :rules="rules.barText"
               >
-                <el-input v-model.trim="item.title"></el-input>|
-                <el-input v-model.trim="item.subTitle"></el-input>
+              <el-row class="leftSide">
+                <el-col :span="11">
+                   <el-input v-model.trim="item.title"></el-input>
+                </el-col>
+                 <el-col :span="2" class="textAlignCenter">
+                 |
+                 </el-col>
+                 <el-col :span="11">
+                   <el-input v-model.trim="item.subTitle"></el-input>
+                </el-col>
+              </el-row>
+                <!-- <el-input v-model.trim="item.title"></el-input>|
+                <el-input v-model.trim="item.subTitle"></el-input> -->
               </el-form-item>
             </template>
             <template v-if="versionHasTitle">
@@ -222,8 +233,10 @@
                 <el-option label="第三方应用" value="app"></el-option>
               </el-select>
               <el-button
+                class="marginL"
                 v-if="item.openMode === 'app' "
                 type="primary"
+                plain 
                 @click="handleSelectClickStart(index)"
               >快速填充</el-button>
             </el-form-item>
@@ -294,15 +307,25 @@
                   <span slot="tip" class="el-upload__tip">提示:只能上传png/gif/jpg/bmp文件</span>
                 </el-upload>
               </el-form-item>
+             
             </template>
-            <ccAppParamsForm
+            <AppParams
+              v-if="item.openMode === 'app'"
+              :prop-prefix="'rlsInfo.' + index + '.onclick.'"
+              v-model="item.onclick"
+              >
+            </AppParams>
+            <!-- <ccAppParamsForm
               v-if="item.openMode === 'app'"
               v-model="item.onclick"
               label-width="140px"
               :prop-prefix="'rlsInfo.' + index + '.onclick.'"
-            />
+            /> -->
           </div>
         </template>
+         <el-form-item>
+                <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
+        </el-form-item>
       </el-form>
       <!--海报-->
       <el-dialog :visible.sync="dialogTableVisible" width="1200px">
@@ -328,9 +351,9 @@
           <!-- <el-button type="primary" @click="showFocusImgSelectorVisible = false;selectImgSubmit()">确 定</el-button> -->
         </div>
       </el-dialog>
-       <div style="padding: 10px;text-align:right">
+       <!-- <div style="padding: 10px;text-align:right">
         <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-      </div>
+      </div> -->
     </div>
   </ContentCard>
 </template>
@@ -363,18 +386,20 @@ const STATUS = {
   processing: 7
 }
 window.basicFn = {}
-import ccAppParamsForm from './ccAppParamsForm'
+// import ccAppParamsForm from './ccAppParamsForm'
 import ccTimeSpinner from './ccTimeSpinner'
 import selectResource from './selectResource'
 import selectClick from './selectClick'
 import selectImg from './selectImg'
+import { AppParams } from 'admin-toolkit'
 export default {
   components: {
-    ccAppParamsForm,
+    // ccAppParamsForm,
     ccTimeSpinner,
     selectResource,
     selectClick,
-    selectImg
+    selectImg,
+    AppParams
   },
   props: {
     editId: Number,
@@ -789,7 +814,7 @@ export default {
       this.dialogClickTableVisible = true
     },
     /**点击事件弹框 */
-    getClickData(data) {
+    getClickData1(data) {
       this.clickData = data
       this.dialogClickTableVisible = false
       var selectClick = this.clickData
@@ -799,6 +824,30 @@ export default {
       item.onclick = this.parseOnclick(selectClick)
       this.showselectClickor = false
       this.selectingClickForIndex = undefined
+    },
+      getClickData(data) {
+      this.dialogClickTableVisible = false
+      let params = JSON.parse(data.params) 
+      let keys = Object.keys(params)
+      let paramsArr = keys.reduce((result, current, index) => {
+         var obj = {}
+         obj.key = current
+         obj.value = params[current]
+         result.push(obj)
+         return result
+      },[])
+      let o ={
+                packagename: data.packagename,
+                versioncode: data.versioncode,
+                dowhat: data.dowhat,
+                bywhat: data.bywhat,
+                byvalue: data.byvalue,
+                params: paramsArr,
+                exception: data.exception
+        }
+      const index = this.selectingClickForIndex
+      const item = this.block.rlsInfo[index]
+      item.onclick = o;
     },
     clickSubmit() {
     },

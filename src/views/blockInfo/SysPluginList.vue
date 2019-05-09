@@ -185,7 +185,7 @@ export default {
     /**
      * 编辑
      */
-    editData({ row }) {
+    editData() {
       if (this.selected.length == 0) {
         this.$message('请选择一条数据')
       } else if (this.selected.length > 1) {

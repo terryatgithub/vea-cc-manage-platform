@@ -11,6 +11,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+         :select-on-row-click="true"
         @row-selection-change="handleRowSelectionChange"
       >
         <div class="box-list" slot="row" slot-scope="{row: item}">
@@ -63,94 +64,6 @@ export default {
       selected: [],
       table: {
         props: {},
-        header: [
-          {
-            label: 'ID',
-            prop: 'pictureId',
-            width: '70'
-          },
-          {
-            label: 'pictureUrl',
-            prop: 'pictureUrl',
-            width: '70',
-            render: (createElement, { row }) => {
-              return createElement('img', {
-                attrs: {
-                  src: row.pictureUrl,
-                  width: '50px',
-                  height: '50px',
-                  class: 'imgs'
-                },
-                on: {
-                  click: () => {
-                    this.reviewPic(row)
-                  }
-                }
-              })
-            }
-          },
-          {
-            label: '素材名称',
-            width: '120',
-            prop: 'pictureName',
-            sortable: true
-          },
-          {
-            label: '分辨率',
-            prop: 'pictureResolution',
-            width: '110',
-            sortable: true
-          },
-          {
-            label: '状态',
-            prop: 'pictureStatus',
-            width: '90',
-            render: (createElement, { row }) => {
-              switch (row.pictureStatus) {
-                case 0:
-                  return '不可用'
-                  break
-                case 1:
-                  return '可用'
-                  break
-                case 2:
-                  return '待审核'
-                  break
-                case 3:
-                  return '审核不通过'
-                  break
-              }
-            }
-          },
-          {
-            label: '素材类型',
-            prop: 'materialTypes',
-            width: '70',
-            render: (createElement, { row }) => {
-              return row.materialTypes.length > 0
-                ? row.materialTypes[0].dictCnName
-                : ''
-            }
-          },
-          {
-            label: '创建时间',
-            prop: 'createdDate',
-            sortable: true
-          },
-          {
-            label: '修改时间',
-            prop: 'lastUpdateDate',
-            sortable: true
-          },
-          {
-            label: '操作',
-            width: '200',
-            fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              editData: '编辑'
-            })
-          }
-        ],
         data: [],
         selected: undefined,
         selectionType: 'single'
@@ -160,12 +73,11 @@ export default {
   methods: {
     //选中事件
     handleRowSelectionChange(row, index) {
+      this.table.selected = index
       this.$emit('input', row)
       if(this.table.selectionType === 'single') {
          this.$emit("close-dialog",'savePicture')
       }
-      let rowData = row
-      this.table.selected = index
     },
     handleFilterChange(type) {
       if (type === 'query') {

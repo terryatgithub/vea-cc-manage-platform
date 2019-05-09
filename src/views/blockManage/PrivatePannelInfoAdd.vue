@@ -96,12 +96,12 @@
               </div>
             </el-form-item>
           </div>
-          <el-form-item
+          <!-- <el-form-item
             v-if="panel.panelGroupType === 9 || panel.panelGroupType === 10"
             label="内容免/付费比例"
-          >
+            class="leftSide"
+          > -->
             <el-form-item
-              class="amount-input"
               prop="pannelList.0.firstPageVipContentAmount"
               label="首屏付费内容数"
               :rules="rules.amount"
@@ -113,7 +113,6 @@
               />
             </el-form-item>
             <el-form-item
-              class="amount-input"
               prop="pannelList.0.vipContentAmount"
               label="总付费内容数"
               :rules="rules.amount"
@@ -124,7 +123,7 @@
               <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
               <el-button type="primary" plain @click="handleSaveDraft">保存草稿</el-button>
             </el-form-item>
-          </el-form-item>
+          <!-- </el-form-item> -->
         </el-form>
       </div>
     </div>

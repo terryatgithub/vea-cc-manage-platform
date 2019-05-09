@@ -3,6 +3,7 @@
     <PolicyManagePreview 
     v-if="mode==='preview'" 
     :editId="editId" 
+    :version='version'
     @upsert-end="handleUpsertEnd" 
     @open-add-page="openAddPage"
     @go-back="goBack"> 
@@ -41,16 +42,17 @@ export default {
       mode: 'list',
       editId: null,
       isReplicate: false,
-      currentVersion: null
+      version: undefined
     };
   },
   methods: {
     addHomePage(){
       this.mode = 'addHomePage'
     },
-    openPreviewPage(id){
+    openPreviewPage(id, version){
       this.mode = 'preview'
       this.editId = id
+      this.version = version
     },
     handleUpsertEnd () {
       this.$refs.list.fetchData();//更新页面

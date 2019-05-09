@@ -7,18 +7,19 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-         <!-- <ButtonGroupForListPage 
-        pageName='userConfig' 
-        @add="addUser"
+         <ButtonGroupForListPage 
+         v-if="dataList === undefined "
+        pageName='privatePanel' 
+        @add="addTabInfo"
         @edit="editData"
         @delete="batchDel"
         >
-        </ButtonGroupForListPage> -->
-      <div v-if="dataList === undefined " class="btns">
+        </ButtonGroupForListPage>
+      <!-- <div v-if="dataList === undefined " class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
-      </div>
+      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
