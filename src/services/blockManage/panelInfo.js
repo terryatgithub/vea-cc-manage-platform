@@ -23,3 +23,11 @@ export function panelGetDetail(params) {
     params
   })
 }
+
+export function panelUpsert(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/panel/save.html',
+    data: { jsonStr: JSON.stringify(data) }
+  })
+}

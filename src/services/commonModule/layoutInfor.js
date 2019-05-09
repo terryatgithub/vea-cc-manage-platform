@@ -1,8 +1,7 @@
-export function getLayoutInforPageList (data) {
+export function getLayoutInforPageList (params) {
   return this.fetch({
-    method: 'post',
     url: 'api/v1/layout/pageList.html',
-    data
+    params
   })
 }
 export function getLayoutInforBatchDel (data) {

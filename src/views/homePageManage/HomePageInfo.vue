@@ -1,94 +1,82 @@
 <template>
   <PageWrapper>
     <PageContentWrapper v-show="activePage == 'homepage'">
-      <ContentCard 
-        :title="title" 
-        @go-back="$emit('go-back')">
-          <CommonContent 
-            :mode="mode" 
-            :resource-info="resourceInfo"
-            @replicate="mode = 'replicate'"
-            @edit="mode = 'edit'"
-            @unaudit="fetchData"
-            @shelves="fetchData"
-            @audit="$emit('upsert-end')"
-            @copy="handleCopy"
-            @submit-audit="handleSubmitAudit"
-            @save-draft="handleSaveDraft"
-            @select-version="fetchData"
-          >
-            <div class="hompage-upsert" v-if="mode !== 'read'">
-              <el-form ref="homepageForm" :model="homepage" :rules="rules" label-width="140px">
-                <div class="form-legend-header">
-                    <span>基本信息</span>
-                </div>
-                <el-form-item label="首页名称" prop="homepageName">
-                  <el-input v-model="homepage.homepageName" placeholder="首页名称" />
-                </el-form-item>
-                <el-form-item label="首页模式" prop="homepageModel">
-                  <el-radio-group v-model="homepage.homepageModel">
-                    <el-radio label="normal">标准模式</el-radio>
-                    <el-radio label="child">儿童模式</el-radio>
-                    <el-radio label="old">老人模式</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-                <el-form-item label="首页版本号" prop="homepageVersion">
-                  <el-input v-model="homepage.homepageVersion" placeholder="首页版本号"></el-input>
-                </el-form-item>
+      <ContentCard :title="title" @go-back="$emit('go-back')">
+        <CommonContent
+          :mode="mode"
+          :resource-info="resourceInfo"
+          @replicate="mode = 'replicate'"
+          @edit="mode = 'edit'"
+          @unaudit="fetchData"
+          @shelves="fetchData"
+          @audit="$emit('upsert-end')"
+          @copy="handleCopy"
+          @submit-audit="handleSubmitAudit"
+          @save-draft="handleSaveDraft"
+          @select-version="fetchData"
+        >
+          <div class="hompage-upsert" v-if="mode !== 'read'">
+            <el-form ref="homepageForm" :model="homepage" :rules="rules" label-width="140px">
+              <div class="form-legend-header">
+                <span>基本信息</span>
+              </div>
+              <el-form-item label="首页名称" prop="homepageName">
+                <el-input v-model="homepage.homepageName" placeholder="首页名称"/>
+              </el-form-item>
+              <el-form-item label="首页模式" prop="homepageModel">
+                <el-radio-group v-model="homepage.homepageModel">
+                  <el-radio label="normal">标准模式</el-radio>
+                  <el-radio label="child">儿童模式</el-radio>
+                  <el-radio label="old">老人模式</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="首页版本号" prop="homepageVersion">
+                <el-input v-model="homepage.homepageVersion" placeholder="首页版本号"></el-input>
+              </el-form-item>
 
-                <div class="form-legend-header">
-                    <span>数据列表配置</span>
-                </div>
-                <el-form-item label="首页版面">
-                  <TabSelector
-                      @select-end="handleSelectTabEnd"
-                  />
-                  <el-button type="warning" @click="handleCreateTab">新建版面</el-button>
-                  <span class="cc-form-annotation">至少选择1个版面</span>
-                  <OrderableTable 
-                    v-model="tabGroupList"
-                    :header="tabGroupTableHeader"
-                    :hide-action="true"
-                  />
-                  <div>
+              <div class="form-legend-header">
+                <span>数据列表配置</span>
+              </div>
+              <el-form-item label="首页版面">
+                <TabSelector @select-end="handleSelectTabEnd"/>
+                <el-button type="warning" @click="handleCreateTab">新建版面</el-button>
+                <span class="cc-form-annotation">至少选择1个版面</span>
+                <OrderableTable
+                  v-model="tabGroupList"
+                  :header="tabGroupTableHeader"
+                  :hide-action="true"
+                />
+                <div></div>
+              </el-form-item>
+            </el-form>
+          </div>
 
-                      
-                  </div>
-                </el-form-item>
-              </el-form>
-            </div>
+          <div class="homepage-read" v-if="mode === 'read'">
+            <el-form label-width="140px">
+              <div class="form-legend-header">
+                <span>基本信息</span>
+              </div>
+              <el-form-item label="首页名称" prop="homepageName">{{ homepage.homepageName }}</el-form-item>
+              <el-form-item
+                label="首页模式"
+                prop="homepageModel"
+              >{{ HOME_MODE_MAP[homepage.homepageModel] }}</el-form-item>
+              <el-form-item label="首页版本号" prop="homepageVersion">{{ homepage.homepageVersion }}</el-form-item>
 
-            <div class="homepage-read" v-if="mode === 'read'">
-              <el-form label-width="140px">
-                <div class="form-legend-header">
-                    <span>基本信息</span>
-                </div>
-                <el-form-item label="首页名称" prop="homepageName">
-                  {{ homepage.homepageName }}
-                </el-form-item>
-                <el-form-item label="首页模式" prop="homepageModel">
-                  {{ HOME_MODE_MAP[homepage.homepageModel] }}
-                </el-form-item>
-                <el-form-item label="首页版本号" prop="homepageVersion">
-                  {{ homepage.homepageVersion }}
-                </el-form-item>
-
-                <div class="form-legend-header">
-                    <span>数据列表配置</span>
-                </div>
-                <el-form-item label="首页版面">
-                  <OrderableTable 
-                    v-model="tabGroupList"
-                    :header="tabGroupTableHeader"
-                    :readonly="true"
-                    :hide-action="true"
-                  />
-                </el-form-item>
-              </el-form>
-            </div>
-          </CommonContent>
-
-
+              <div class="form-legend-header">
+                <span>数据列表配置</span>
+              </div>
+              <el-form-item label="首页版面">
+                <OrderableTable
+                  v-model="tabGroupList"
+                  :header="tabGroupTableHeader"
+                  :readonly="true"
+                  :hide-action="true"
+                />
+              </el-form-item>
+            </el-form>
+          </div>
+        </CommonContent>
       </ContentCard>
     </PageContentWrapper>
 
@@ -105,13 +93,13 @@
     <PageContentWrapper v-if="activePage === 'tab'">
       <TabInfo
         :title-prefix="title"
-        :id="embedTab.id" 
+        :id="embedTab.id"
         :version="embedTab.version"
-        :init-mode="embedTab.mode" 
+        :init-mode="embedTab.mode"
         @upsert-end="handleTabEmbedBack"
-        @go-back="handleTabEmbedBack" />
+        @go-back="handleTabEmbedBack"
+      />
     </PageContentWrapper>
-
   </PageWrapper>
 </template>
 
@@ -158,7 +146,7 @@ export default {
         preview: '/homepageInfo/preview.html',
         edit: '/homepageInfo/edit.html',
         tools: '/buttonManage/getAuditDetailButton.html',
-        edit_history_view: '/homepageInfo/editHistory.html',
+        edit_history_view: '/homepageInfo/editHistory.html'
       },
       versionList: [],
       homepage: {
@@ -177,15 +165,9 @@ export default {
         old: '老人模式'
       },
       rules: {
-        homepageName: [
-          { required: true, message: '请输入首页名称'}
-        ],  
-        homepageModel: [
-          { required: true, message: '请选择首页模式'}
-        ],  
-        homepageVersion: [
-          { required: true, message: '请输入首页版本号'}
-        ]  
+        homepageName: [{ required: true, message: '请输入首页名称' }],
+        homepageModel: [{ required: true, message: '请选择首页模式' }],
+        homepageVersion: [{ required: true, message: '请输入首页版本号' }]
       }
     }
   },
@@ -217,15 +199,22 @@ export default {
             canBeDefaultFocusTab: false,
             tabList
           }
-          const tabItemToShow = tabList[defaultTabIndex > -1 ? defaultTabIndex : 0]
+          const tabItemToShow =
+            tabList[defaultTabIndex > -1 ? defaultTabIndex : 0]
           // 只有普通版面和已经设了默认版面的版面组可以默认落焦
-          if (defaultTabIndex > -1 || (tabItem.tabCount === 1 && tabItemToShow.dmpInfo === undefined)) {
+          if (
+            defaultTabIndex > -1 ||
+            (tabItem.tabCount === 1 && tabItemToShow.dmpInfo === undefined)
+          ) {
             tabItem.canBeDefaultFocusTab = true
           }
           Object.assign(tabItem, tabItemToShow)
           tabGroupList.push(tabItem)
         })
-        if (defaultFocusIndex !== undefined && !tabGroupList[defaultFocusIndex].canBeDefaultFocusTab) {
+        if (
+          defaultFocusIndex !== undefined &&
+          !tabGroupList[defaultFocusIndex].canBeDefaultFocusTab
+        ) {
           // 如果当前默认落焦不能被设为默认落焦, 则取消当前默认落焦
           homepage.defaultFocusIndex = undefined
         }
@@ -245,48 +234,58 @@ export default {
         {
           label: '版面名称',
           width: 180,
-          render: (h, {$index, row}) => {
-            return h('el-button', {
-              props: {
-                type: 'text'
-              },
-              on: {
-                click: () => {
-                  this.handleShowTabGroup($index)
+          render: (h, { $index, row }) => {
+            return h(
+              'el-button',
+              {
+                props: {
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.handleShowTabGroup($index)
+                  }
                 }
-              }
-            }, row.tabName)
+              },
+              row.tabName
+            )
           }
         },
         {
-          prop: "tabCnTitle",
-          label: "TAB标题(中文)",
+          prop: 'tabCnTitle',
+          label: 'TAB标题(中文)',
           width: 180
         },
         {
           label: '默认落焦',
           width: 80,
           align: 'center',
-          render: (h, {$index, row}) => {
+          render: (h, { $index, row }) => {
             const defaultFocusIndex = this.homepage.defaultFocusIndex
             if (this.mode === 'read') {
               return $index === defaultFocusIndex ? '是' : '否'
             }
-            return h('el-radio', {
-              attrs: {
-                title: row.canBeDefaultFocusTab ? '' : '只有普通版面或设了默认版面的定向版面组才能设为默认落焦'
-              },
-              props: {
-                disabled: !row.canBeDefaultFocusTab,
-                value: defaultFocusIndex,
-                label: $index
-              },
-              on: {
-                input: (val) => {
-                  this.homepage.defaultFocusIndex = val
+            return h(
+              'el-radio',
+              {
+                attrs: {
+                  title: row.canBeDefaultFocusTab
+                    ? ''
+                    : '只有普通版面或设了默认版面的定向版面组才能设为默认落焦'
+                },
+                props: {
+                  disabled: !row.canBeDefaultFocusTab,
+                  value: defaultFocusIndex,
+                  label: $index
+                },
+                on: {
+                  input: val => {
+                    this.homepage.defaultFocusIndex = val
+                  }
                 }
-              }
-            }, '')
+              },
+              ''
+            )
           }
         },
         {
@@ -297,7 +296,7 @@ export default {
         {
           label: '默认版面',
           width: 80,
-          render: (h, {$index, row}) => {
+          render: (h, { $index, row }) => {
             return row.isDefaultTab ? '有' : '否'
           }
         }
@@ -307,17 +306,21 @@ export default {
         header.push({
           label: '操作',
           width: 80,
-          render: (h, {$index, row}) => {
-            return h('el-button', {
-              props: {
-                type: 'text'
-              },
-              on: {
-                click: () => {
-                  this.handleRemoveTab($index)
+          render: (h, { $index, row }) => {
+            return h(
+              'el-button',
+              {
+                props: {
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.handleRemoveTab($index)
+                  }
                 }
-              }
-            }, '删除')
+              },
+              '删除'
+            )
           }
         })
       }
@@ -363,7 +366,7 @@ export default {
             if (data.defaultFocusIndex === undefined) {
               return cb('请选择默认落焦版面')
             }
-            
+
             // 检查重复版面
             // 默认版面与普通版面之间不能重复
             // 定向版面不能与默认版面和普通版面重复
@@ -371,11 +374,11 @@ export default {
             const normalTabListIndexed = {}
             const specTabListIndexed = {}
             // 普通版面重复检查
-            for(let i = 0, length = tabInfos.length; i < length; i++) {
+            for (let i = 0, length = tabInfos.length; i < length; i++) {
               const tabGroup = tabInfos[i]
               let tab
-              let isNormalTab 
-              if (tabGroup.length === 1 && tabGroup[0].dmpInfo === undefined){
+              let isNormalTab
+              if (tabGroup.length === 1 && tabGroup[0].dmpInfo === undefined) {
                 // 普通版面
                 isNormalTab = true
                 tab = tabGroup[0]
@@ -387,17 +390,26 @@ export default {
                 })
               }
               if (tab) {
-                const duplicateIndex = normalTabListIndexed[tab.tabId] 
+                const duplicateIndex = normalTabListIndexed[tab.tabId]
                 if (duplicateIndex !== undefined) {
-                  return cb('第 ' + (i + 1) + ' 个版面与第 ' + (duplicateIndex + 1) + ' 个版面或默认版面重复')
+                  return cb(
+                    '第 ' +
+                      (i + 1) +
+                      ' 个版面与第 ' +
+                      (duplicateIndex + 1) +
+                      ' 个版面或默认版面重复'
+                  )
                 } else {
                   normalTabListIndexed[tab.tabId] = i
                 }
               }
             }
-            
-            checkDmp:
-            for(let i = 0, length = tabInfos.length; i < length; i ++) {
+
+            checkDmp: for (
+              let i = 0, length = tabInfos.length;
+              i < length;
+              i++
+            ) {
               const tabGroup = tabInfos[i]
               // 定向版面之间不能重复
               // 也不能与其他的默认版面和普通版面重复
@@ -405,16 +417,30 @@ export default {
                 // 普通版面，跳过
                 continue
               }
-              for(let j = 0, lengthJ = tabGroup.length; j < lengthJ; j++) {
+              for (let j = 0, lengthJ = tabGroup.length; j < lengthJ; j++) {
                 // 不需要再检测同组的版面是否重复，因为在设定组内版面的时候保证了唯一
                 // 下面只需要判断定向的有没有与普通版面和默认版面重复
                 const duplicateIndex = normalTabListIndexed[tabGroup[j].tabId]
                 const dmpInfo = tabGroup[j].dmpInfo || {}
                 if (!tabGroup[j].isDefaultTab) {
                   if (dmpInfo.dmpCrowdId === undefined) {
-                    return cb('请设置第 ' + (i + 1) + ' 个组第 ' + (j+1) + ' 个版面的人群')
+                    return cb(
+                      '请设置第 ' +
+                        (i + 1) +
+                        ' 个组第 ' +
+                        (j + 1) +
+                        ' 个版面的人群'
+                    )
                   } else if (duplicateIndex !== undefined) {
-                    return cb('第 ' + (i + 1) + ' 个版面组里的第' + (j + 1) + '个版面与第 ' + (duplicateIndex + 1) + ' 个版面组的版面重复')
+                    return cb(
+                      '第 ' +
+                        (i + 1) +
+                        ' 个版面组里的第' +
+                        (j + 1) +
+                        '个版面与第 ' +
+                        (duplicateIndex + 1) +
+                        ' 个版面组的版面重复'
+                    )
                   }
                 }
               }
@@ -423,29 +449,35 @@ export default {
           cb()
         } else {
           cb('请把表单填写完整')
-        } 
+        }
       })
     },
     submit(data) {
-      this.validate(data, function(err) {
-        if (!err) {
-          this.$service.homePageInfoSave(this.parseDataToApi(data), '保存成功').then((result) => {
-            this.$emit('upsert-end')
-          })
-        } else {
-          this.$message({
-            type: 'error',
-            message: err
-          })
-        }
-      }.bind(this))
+      this.validate(
+        data,
+        function(err) {
+          if (!err) {
+            this.$service
+              .homePageInfoSave(this.parseDataToApi(data), '保存成功')
+              .then(result => {
+                this.$emit('upsert-end')
+              })
+          } else {
+            this.$message({
+              type: 'error',
+              message: err
+            })
+          }
+        }.bind(this)
+      )
     },
     parseApiToData(data) {
       const finalData = JSON.parse(JSON.stringify(data))
       const defaultFocusIndex = finalData.tabInfos.findIndex(function(item) {
         return item.tabIsFocus === 1
       })
-      finalData.defaultFocusIndex = defaultFocusIndex > -1 ? defaultFocusIndex : undefined
+      finalData.defaultFocusIndex =
+        defaultFocusIndex > -1 ? defaultFocusIndex : undefined
       const tabInfos = []
       ;(finalData.tabInfos || []).forEach(function(item, index) {
         const tabInfoItem = []
@@ -459,7 +491,7 @@ export default {
             currentVersion: item.currentVersion,
             isDefaultTab: false
           })
-        } 
+        }
         if (item.dmpTabList) {
           item.dmpTabList.forEach(function(dItem) {
             // 人群为 -1 的是默认版面
@@ -469,11 +501,11 @@ export default {
               tabName: dItem.tabName,
               tabCnTitle: dItem.tabCnTitle,
               tabEnTitle: dItem.tabEnTitle,
-              currentVersion: dItem.currentVersion,
+              currentVersion: dItem.currentVersion
             }
             if (dItem.dmpCrowdId === -1) {
               currentItem.isDefaultTab = true
-            } else if(dItem.dmpCrowdId !== undefined) {
+            } else if (dItem.dmpCrowdId !== undefined) {
               currentItem.dmpInfo = {
                 dmpPolicyId: dItem.dmpPolicyId,
                 dmpPolicyName: dItem.dmpPolicyName,
@@ -488,7 +520,7 @@ export default {
         tabInfos.push(tabInfoItem)
       })
       finalData.tabInfos = tabInfos
-      return finalData 
+      return finalData
     },
     parseDataToApi(data) {
       const finalData = JSON.parse(JSON.stringify(data))
@@ -535,7 +567,7 @@ export default {
               dmpPolicyName: '不限',
               dmpCrowdName: '不限',
               dmpPolicyId: -1,
-              dmpCrowdId: -1,
+              dmpCrowdId: -1
             })
             tabInfoItem.tabId = undefined
           }
@@ -563,9 +595,7 @@ export default {
     handleSelectTabEnd(data) {
       const tabInfos = this.homepage.tabInfos
       data.forEach(function(item) {
-        tabInfos.push([
-          Object.assign({}, item)
-        ])
+        tabInfos.push([Object.assign({}, item)])
       })
     },
     handleTabEmbedBack() {
@@ -578,23 +608,24 @@ export default {
       }
     },
     handleRemoveTab(index) {
-        const homepage = this.homepage
-        const defaultFocusIndex = homepage.defaultFocusIndex
-        this.homepage.tabInfos.splice(index, 1)
-        homepage.defaultFocusIndex = index < defaultFocusIndex
+      const homepage = this.homepage
+      const defaultFocusIndex = homepage.defaultFocusIndex
+      this.homepage.tabInfos.splice(index, 1)
+      homepage.defaultFocusIndex =
+        index < defaultFocusIndex
           ? defaultFocusIndex - 1
           : index === defaultFocusIndex
-            ? undefined
-            : defaultFocusIndex
+          ? undefined
+          : defaultFocusIndex
     },
     handleCopy() {
       const data = JSON.parse(JSON.stringify(this.homepage))
       data.homepageId = undefined
-      data.currentVersion = '';
+      data.currentVersion = ''
       this.submit(data)
     },
     fetchData(version) {
-      this.$service.homePageGetDetail({id: this.id, version}).then((data) => {
+      this.$service.homePageGetDetail({ id: this.id, version }).then(data => {
         this.setHomepage(data)
       })
     }
@@ -607,5 +638,4 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-</style>
+<style lang="stylus" scoped></style>

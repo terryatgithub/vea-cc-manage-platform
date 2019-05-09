@@ -38,8 +38,8 @@ const sourceOptions = [
     value: 'o_iqiyi'
   },
   {
-   label: '优酷',
-   value: 'o_youku' 
+    label: '优酷',
+    value: 'o_youku'
   }
 ]
 
@@ -50,11 +50,65 @@ const sourceOptionsWithEmpty = [
   }
 ].concat(sourceOptions)
 
+const sourceToPartner = {
+  'o_tencent': 'tencent',
+  'o_iqiyi': 'yinhe',
+  'o_youku': 'youku'
+}
+
 const sourceText = {
   o_tencent: '腾讯',
   o_iqiyi: '爱奇艺',
   o_youku: '优酷'
 }
+
+const partnerOptions = [
+  {
+    label: '腾讯',
+    value: 'tencent'
+  },
+  {
+    label: '爱奇艺',
+    value: 'yinhe'
+  },
+  {
+    label: '优酷',
+    value: 'youku'
+  }
+]
+
+const panelTypeOptions = [
+  {
+    label: '普通板块',
+    value: 'normal'
+  },
+  {
+    label: '分组板块',
+    value: 'group'
+  }
+]
+const panelTypeText = optionsToText(panelTypeOptions)
+
+const panelFocusOptions = [
+  {
+    label: '面落焦',
+    value: 1
+  },
+  {
+    label: '线落焦',
+    value: 0
+  }
+]
+
+const panelFocusText = optionsToText(panelFocusOptions)
+
+function optionsToText(options) {
+  return options.reduce((result, { label, value }) => {
+    result[value] = label
+    return result
+  }, {})
+}
+
 const idPrefix = '10'
 export default {
   status,
@@ -62,6 +116,12 @@ export default {
   statusOptions,
   sourceOptions,
   sourceOptionsWithEmpty,
+  sourceToPartner,
   sourceText,
+  partnerOptions,
+  panelFocusOptions,
+  panelFocusText,
+  panelTypeOptions,
+  panelTypeText,
   idPrefix
 }

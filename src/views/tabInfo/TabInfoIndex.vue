@@ -1,20 +1,20 @@
 <template>
   <div>
-    <TabInfoList 
-      v-show='isShowList' 
-      ref="list" 
+    <TabInfoList
+      v-show="isShowList"
+      ref="list"
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
       @copy="handleCopy"
     />
-    <TabInfo 
-      v-if='!isShowList' 
-      :id="id" 
+    <TabInfo
+      v-if="!isShowList"
+      :id="id"
       :init-mode="mode"
-      @upsert-end="handleUpsertEnd" 
-      @go-back="goBack">
-    </TabInfo>
+      @upsert-end="handleUpsertEnd"
+      @go-back="goBack"
+    ></TabInfo>
   </div>
 </template>
 <script>
@@ -25,7 +25,7 @@ export default {
     TabInfoList,
     TabInfo
   },
-  data () {
+  data() {
     return {
       isShowList: true,
       id: null,
@@ -54,14 +54,14 @@ export default {
       this.mode = 'copy'
       this.isShowList = false
     },
-    handleUpsertEnd () {
+    handleUpsertEnd() {
       this.isShowList = true
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData() //更新页面
       this.mode = 'list'
     },
-    goBack () {
-     this.isShowList = true
-     this.mode = 'list'
+    goBack() {
+      this.isShowList = true
+      this.mode = 'list'
     }
   }
 }

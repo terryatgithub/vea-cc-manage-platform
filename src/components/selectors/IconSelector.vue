@@ -30,7 +30,6 @@ export default {
         }
     },
     props: ['value'],
-    template: '#cc-icon-selector-tpl',
     methods: {
         handleClose() {
             this.selected = undefined

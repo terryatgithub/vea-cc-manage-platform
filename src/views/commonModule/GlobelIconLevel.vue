@@ -16,7 +16,7 @@
         </template>
       </el-table-column>
       <el-table-column prop label="优先级" width="100">
-        <template scope="scope">
+        <template slot-scope="scope">
           <OrderInput
             :key="Math.random().toString()"
             :value="scope.$index + 1"

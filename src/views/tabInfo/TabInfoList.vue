@@ -1,9 +1,6 @@
 <template>
   <ContentCard class="content">
-    <ContentWrapper
-      :pagination="pagination"
-      @filter-change="handleFilterChange"
-    >
+    <ContentWrapper :pagination="pagination" @filter-change="handleFilterChange">
       <!-- 筛选部分 -->
       <el-form inline ref="form" v-model="filter" label-width="90px" size="mini">
         <el-form-item label="版面ID">
@@ -14,33 +11,53 @@
         </el-form-item>
         <el-form-item label="版面属性">
           <el-select v-model="filter.tabType">
-            <el-option value="">请选择</el-option>
-            <el-option v-for="(item, index) in tabTypeOption" :key="index" :label="item.label" :value="item.value"/>
+            <el-option value>请选择</el-option>
+            <el-option
+              v-for="(item, index) in tabTypeOption"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="是否二级tab">
           <el-select v-model="filter.hasSubTab">
-            <el-option value="">请选择</el-option>
+            <el-option value>请选择</el-option>
             <el-option value="1">是</el-option>
             <el-option value="0">否</el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="业务分类">
           <el-select v-model="filter.tabCategory">
-            <el-option value="">请选择</el-option>
-            <el-option v-for="(item, index) in businessType" :key="index" :label="item.dictCnName" :value="item.dictId"/>
+            <el-option value>请选择</el-option>
+            <el-option
+              v-for="(item, index) in businessType"
+              :key="index"
+              :label="item.dictCnName"
+              :value="item.dictId"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="AppId">
           <el-select v-model="filter.tabAppid">
-            <el-option value="">请选择</el-option>
-            <el-option v-for="item in appIdType" :key="item.dictEnName" :label="item.dictCnName" :value="item.dictEnName"/>
+            <el-option value>请选择</el-option>
+            <el-option
+              v-for="item in appIdType"
+              :key="item.dictEnName"
+              :label="item.dictCnName"
+              :value="item.dictEnName"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="filter.tabStatus">
-            <el-option value="">请选择</el-option>
-            <el-option v-for="item in tabStatusOption" :key="item.label" :label="item.label" :value="item.value"/>
+            <el-option value>请选择</el-option>
+            <el-option
+              v-for="item in tabStatusOption"
+              :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -77,7 +94,7 @@ export default {
     Table
   },
 
-  data () {
+  data() {
     return {
       selected: [],
       tabTypeOption: [
@@ -114,25 +131,36 @@ export default {
           {
             label: '名称',
             prop: 'tabName',
-             render: (createElement, { row }) => {
-              return createElement('el-button', {
-                attrs:{
-                  type: 'text'
-                },
-                on: {
-                  click: () => {
-                    this.handleRead(row) 
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row)
+                    }
                   }
-                }
-              },row.tabName)
+                },
+                row.tabName
+              )
             }
           },
           {
             label: '版面属性',
             prop: 'tabType',
-            formatter: function (row) {
-                const v = row.tabType
-                return {'1': '普通版面', '2': '专题版面', '4': '第三方版面', '5': '信号源版面'}[v + ''] || '未知版面'
+            formatter: function(row) {
+              const v = row.tabType
+              return (
+                {
+                  '1': '普通版面',
+                  '2': '专题版面',
+                  '4': '第三方版面',
+                  '5': '信号源版面'
+                }[v + ''] || '未知版面'
+              )
             }
           },
           {
@@ -142,17 +170,21 @@ export default {
           {
             label: '内容源',
             prop: 'tabResource',
-            formatter: function (row) {
-                const v = row.tabResource
-                return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_voole': '优朋'}[v + ''] || ''
+            formatter: function(row) {
+              const v = row.tabResource
+              return (
+                { o_tencent: '腾讯', o_iqiyi: '爱奇艺', o_voole: '优朋' }[
+                  v + ''
+                ] || ''
+              )
             }
           },
           {
             label: 'AppId',
             prop: 'tabAppid',
-            formatter: (row) => {
-              return this.appIdType.map((item) => {
-                if(row.tabAppid.toString() === item.dictEnName){
+            formatter: row => {
+              return this.appIdType.map(item => {
+                if (row.tabAppid.toString() === item.dictEnName) {
                   return item.dictCnName
                 }
               })
@@ -161,14 +193,20 @@ export default {
           {
             label: '版本/状态',
             prop: 'tabStatus',
-            formatter: (row) => {
+            formatter: row => {
               const status = row.tabStatus
               const currentVersion = row.currentVersion
-              return currentVersion + '/' + this.tabStatusOption.map(function(item){
-                if(status.toString() === item.value){
-                  return item.label
-                }
-              }).join('')
+              return (
+                currentVersion +
+                '/' +
+                this.tabStatusOption
+                  .map(function(item) {
+                    if (status.toString() === item.value) {
+                      return item.label
+                    }
+                  })
+                  .join('')
+              )
             }
           },
           {
@@ -195,12 +233,12 @@ export default {
         selected: [],
         selectionType: 'multiple'
       }
-    };
+    }
   },
 
   methods: {
     handleRead(row) {
-       this.$emit('read',row)
+      this.$emit('read', row)
     },
     /**
      * 获取数据
@@ -243,9 +281,7 @@ export default {
       const target = table.data[selected[0]]
       this.$emit('edit', target)
     },
-    batchDel() {
-
-    },
+    batchDel() {},
     /**
      * 行选择操作
      */
@@ -290,11 +326,11 @@ export default {
     })
     this.getBusinessType()
   }
-
 }
 </script>
 
 <style lang='stylus' scoped>
-.btns
-  margin 30px 10px 30px
+.btns {
+  margin: 30px 10px 30px;
+}
 </style>
