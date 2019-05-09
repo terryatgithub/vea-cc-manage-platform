@@ -25,6 +25,7 @@
           @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
+          @cancel-timing="fetchData"
         >
           <div v-if="panelDataType == 1" class="base-info">
             <div>常规运营版块：</div>

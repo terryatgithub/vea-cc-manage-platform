@@ -48,6 +48,20 @@ export function getTimedTaskLimit() {
   })
 }
 
+export function getTimedTaskInfo(params) {
+  return this.fetch({
+    url: 'api/v1/timedTask/getTimedInfo.html',
+    params
+  })
+}
+
+export function timedTaskCancel(params) {
+  return this.fetch({
+    url: 'api/v1/timedTask/cancelTimedTask.html',
+    params
+  })
+}
+
 export function putOnShelves (data) {
   return this.fetch({
     method: 'post',
@@ -57,7 +71,9 @@ export function putOnShelves (data) {
 }
 
 const deleteUrlMap = {
-  homepage: 'api/homepageInfo/delHistory.html'
+  homepage: 'api/homepageInfo/delHistory.html',
+  pannel: 'api/panel/delHistory.html',
+  tab: 'api/tab/remove.html'
 }
 export function deleteVersion (data) {
   return this.fetch({
@@ -75,5 +91,3 @@ export function getAuditHistoryList (params) {
     params
   })
 }
-
-

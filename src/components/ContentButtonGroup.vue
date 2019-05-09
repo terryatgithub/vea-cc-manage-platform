@@ -1,15 +1,16 @@
 <template>
   <div>
-    <el-button 
-      v-for="(item, index) in buttons"
-      v-show="item.runComm !== 'copy' || options.isAllowCopy"
-      :key="index"
-      :disabled="item.runComm === 'claim' || item.runComm === 'unclaim'"
-      :type="warningButtons.indexOf(item.runComm) > -1 ? 'warning' : 'primary'"
-      @click="$emit(item.runComm)" 
-    >
-      {{ item.runName }}
-    </el-button>
+    <template v-for="(item, index) in buttons">
+      <el-button 
+        v-if="item.runComm !== 'copy' || options.isAllowCopy"
+        :key="index"
+        :disabled="item.runComm === 'claim' || item.runComm === 'unclaim'"
+        :type="warningButtons.indexOf(item.runComm) > -1 ? 'warning' : 'primary'"
+        @click="$emit(item.runComm)" 
+      >
+        {{ item.runName }}
+      </el-button>
+    </template>
     <el-button type="warning" @click="$emit('second-audit')" v-if="options.isNeedSecondAudit">
         二次审核
     </el-button>

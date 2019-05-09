@@ -31,6 +31,9 @@
           :resource-type="resourceInfo.type"
         /> -->
         <div>
+          <div class="release-info" v-if="releaseTime">
+            该版块为定时任务，审核通过后将于 {{ releaseTime }} 上线
+          </div>
           <VersionList 
             type="resourceInfo.type" 
             :status="resourceInfo.status"
@@ -49,6 +52,7 @@
             @audit="handleAuditStart"
             @shelves="handleShelves"
             @delete="handleDelete"
+            @cancel-timing="handleCancelTiming"
           />
 
           <!-- <cc-button-group
@@ -108,6 +112,7 @@ export default {
     return {
       showReleaseTimeSetter: false,
       showAuditDialog: false,
+      releaseTime: undefined,
       versionList: [],
       auditHistoryList: [],
       auditForm: {
@@ -144,8 +149,8 @@ export default {
         return status === draft || status === waiting || status === rejected
       })
       const currentVersionStatus = this.resourceInfo.status
-      const isAllowCancelTiming = status === processing
-      const isNeedSecondAudit = status === waiting2
+      const isAllowCancelTiming = currentVersionStatus === processing
+      const isNeedSecondAudit = currentVersionStatus === waiting2
       return {
         isAllowCopy,
         isNeedSecondAudit,
@@ -227,9 +232,32 @@ export default {
         this.auditHistoryList = []
       }
     },
+    getReleaseTime() {
+      this.releaseTime = undefined
+      const { type, id, version, status } = this.resourceInfo
+      const { processing, waiting } = this.$consts.status
+      if (status === processing || status === waiting) {
+        this.$service.getTimedTaskInfo({ id, type, version }).then((result) => {
+          this.releaseTime = result.releaseTime
+        })
+      }
+    },
+    handleCancelTiming() {
+      this.$confirm('您确定取消定时吗?', '提示')
+        .then(() => {
+          const { type, id, version, status } = this.resourceInfo
+          this.$service.timedTaskCancel({ id, type, version }).then((result) => {
+            this.$emit('cancel-timing')
+          })
+        })
+        .catch(() => {
+
+        })
+    },
     handleResourceChange() {
       this.getHistoryList()
       this.getAuditHistoryList()
+      this.getReleaseTime()
     }
   },
   created() {
@@ -238,5 +266,9 @@ export default {
 }
 
 </script>
-<style>
+<style lang="stylus">
+.release-info
+  margin-bottom 5px
+  color #ccc
+  font-size 14px
 </style>
