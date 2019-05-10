@@ -73,7 +73,15 @@ export function putOnShelves (data) {
 const deleteUrlMap = {
   homepage: 'api/homepageInfo/delHistory.html',
   pannel: 'api/panel/delHistory.html',
-  tab: 'api/tab/remove.html'
+  tab: 'api/tab/delHistory.html',
+  theme: 'api/v1/theme/delHistory.html', // 所有版块
+  policy: 'api/v1/policyConf/delHistory.html',
+  testPolicy: 'api/v1/testPolicyConf/delHistory.html',
+  systemPlugin: '', // 系统功能-所有系统功能
+  icon: '',
+  material: '', // 素材图片
+  layout: '', // 布局
+  block: ''  // 轮播推荐位
 }
 export function deleteVersion (data) {
   return this.fetch({

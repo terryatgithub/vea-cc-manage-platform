@@ -40,7 +40,7 @@
           :resource-info="resourceInfo"
           @replicate="mode = 'replicate'; title='创建副本'"
           @edit="mode = 'edit'; title='编辑'"
-          @unaudit="fetchData"
+          @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
           @select-version="fetchData"

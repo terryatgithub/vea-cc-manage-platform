@@ -3,7 +3,7 @@
 export function getMarkPanelList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/panel/pageList.html',
+    url: 'api/v1/panel/pageList.html',
     data
   })
 }
@@ -21,7 +21,7 @@ export function getMarkPanelList (data) {
 export function MarkPanelSave (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/panel/save.html',
+    url: 'api/v1/panel/save.html',
     data
   })
 }
@@ -29,7 +29,7 @@ export function MarkPanelSave (data) {
 export function deleteMarkPanel (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/panel/remove.html',
+    url: 'api/v1/panel/remove.html',
     params
   })
 }
@@ -37,7 +37,7 @@ export function deleteMarkPanel (params) {
 export function getViewData (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/panel/getDetailInfo.html',
+    url: 'api/v1/panel/getDetailInfo.html',
     params
   })
 }

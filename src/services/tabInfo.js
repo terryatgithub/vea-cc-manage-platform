@@ -4,7 +4,7 @@
 // 分页
 export function tabInfoList(params) {
   return this.fetch({
-    url: 'api/tabInfo/pageList.html',
+    url: 'api/v1/tab/pageList.html',
     params
   })
 }
@@ -81,7 +81,7 @@ export function tabIconList() {
 export function tabInfoGet(params) {
   return this.fetch({
     method: 'post',
-    url: 'api/tab/getDetailInfo.html',
+    url: 'api/v1/tab/getDetailInfo.html',
     params
   })
 }
@@ -89,7 +89,7 @@ export function tabInfoGet(params) {
 export function tabInfoUpsert(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/tab/save.html',
+    url: 'api/v1/tab/save.html',
     data: { jsonStr: JSON.stringify(data) }
   })
 }

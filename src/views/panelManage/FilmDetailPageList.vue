@@ -77,18 +77,13 @@
         </el-form-item>
       </el-form>
       </div>
-              <!-- <ButtonGroupForListPage
-        pageName='tab'
-        @add="addUser"
+        <ButtonGroupForListPage
+        pageName='filmDetailPage'
+        @add="addFilmDetail"
         @edit="editData"
         @delete="batchDel"
         >
-        </ButtonGroupForListPage> -->
-      <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addFilmDetail">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
-      </div>
+        </ButtonGroupForListPage>
 
       <Table
         :props="table.props"
@@ -105,12 +100,12 @@
 </template>
 
 <script>
-// import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   components: {
     ContentWrapper,
-    // ButtonGroupForListPage,
+    ButtonGroupForListPage,
     Table
   },
 

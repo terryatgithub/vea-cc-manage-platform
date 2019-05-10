@@ -7,18 +7,12 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <!-- <ButtonGroupForListPage 
-      pageName="baDept" 
+      <ButtonGroupForListPage 
+      pageName="sysDept" 
       @add="addDep" 
       @edit="editData" 
       @delete="batchDel">
-      </ButtonGroupForListPage> -->
-      <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addDep">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
-      </div>
-
+      </ButtonGroupForListPage>
       <Table
         :props="table.props"
         :header="table.header"

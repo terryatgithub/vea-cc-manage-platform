@@ -7,19 +7,19 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-         <!-- <ButtonGroupForListPage 
-        pageName='globalPicture' 
-        @add="addUser"
+        <ButtonGroupForListPage 
+        pageName='poster' 
+        @add="addItem"
         @edit="editData"
         @delete="batchDel"
         >
-        </ButtonGroupForListPage> -->
-      <div class="btns">
+        </ButtonGroupForListPage>
+      <!-- <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="batchAudit">批量审核</el-button>
-      </div>
+      </div> -->
       <Table
         :props="table.props"
         :header="table.header"

@@ -12,6 +12,7 @@
         @add="addItem"
         @edit="editData"
         @delete="batchDel"
+        @batch-audit="submitAudit"
         >
         </ButtonGroupForListPage>
       <Table

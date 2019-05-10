@@ -11,7 +11,7 @@
         @submit-audit="btnAudit"
         @save-draft="btnSave"
         @select-version="fetchData"
-        @unaudit="fetchData"
+        @unaudit="$emit('upsert-end')"
         @shelves="fetchData"
         @audit="$emit('upsert-end')"
       >
