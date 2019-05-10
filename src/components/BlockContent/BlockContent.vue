@@ -183,7 +183,7 @@ export default {
       })
     },
     setContentList() {
-      const block = JSON.parse(JSON.stringify(this.data.block))
+      const block = JSON.parse(JSON.stringify(this.data.block || '{}'))
       const normalContentList = block.videoContentList || []
       const specificContentList = block.specficContentList || []
       const parse = (data) => {
@@ -252,7 +252,9 @@ export default {
 
         return Object.assign(this.getDefaultContentForm(), data)
       }
-      this.normalContentList = normalContentList.map(parse)
+      this.normalContentList = normalContentList.length > 0 
+        ? normalContentList.map(parse)
+        : [this.getDefaultContentForm()]
       this.specificContentList = specificContentList.map(parse)
     },
     parseContentList() {

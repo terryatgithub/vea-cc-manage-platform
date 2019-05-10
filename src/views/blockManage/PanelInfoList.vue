@@ -271,8 +271,16 @@ export default {
       if (this.$isAllowDelete(this.selected) && window.confirm("确定要删除吗")) {
         this.$service.panelRemove({ 
           id: this.selected.map(item => item.pannelGroupId).join(',') 
-        }, "删除成功").then(this.fetchData);
+        }, "删除成功")
+        .then(() => {
+          this.clearSelected()
+          this.fetchData()
+        });
       }
+    },
+    clearSelected() {
+      this.selected = [],
+      this.table.selected = []
     }
   },
   created() {
