@@ -1688,6 +1688,7 @@ export default {
         }
       })
     })
+    debugger
     if (this.id) {
       this.fetchData(this.version)
     }

@@ -36,15 +36,15 @@
 
 <script>
 import { Button } from 'element-ui'
-// import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 
 export default {
   components: {
     ContentWrapper,
-    Table
-    // ButtonGroupForListPage
+    Table,
+     ButtonGroupForListPage
   },
 
   data () {

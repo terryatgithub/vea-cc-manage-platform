@@ -229,7 +229,7 @@ export function getHistoryList(params) {
 export function getBroadcastBlockEditData(data) {
   return this.fetch({
     method: 'POST',
-    url: 'api/v1/blockInfo/getDetailInfo.html',
+    url: 'api/blockInfo/getDetailInfo.html',
     data
   })
 }
