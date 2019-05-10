@@ -2,13 +2,13 @@
  * 版面管理 -> Tab版面管理
  */
 // 分页
-export function tabInfoList(data) {
-  return this.fetch({
-    method: 'post',
-    url: 'api/tabInfo/pageList.html',
-    data
-  })
-}
+// export function tabInfoList(data) {
+//   return this.fetch({
+//     method: 'post',
+//     url: 'api/v1/tabInfo/pageList.html',
+//     data
+//   })
+// }
 // 版面属性Option
 export function getAppIdType(data) {
   return this.fetch({

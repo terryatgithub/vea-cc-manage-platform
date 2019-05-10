@@ -19,7 +19,7 @@ export function panelDataList(data) {
 
 export function panelGetDetail(params) {
   return this.fetch({
-    url: 'api/panel/getDetailInfo.html',
+    url: 'api/v1/panel/getDetailInfo.html',
     params
   })
 }
@@ -27,7 +27,7 @@ export function panelGetDetail(params) {
 export function panelUpsert(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/panel/save.html',
+    url: 'api/v1/panel/save.html',
     data: { jsonStr: JSON.stringify(data) }
   })
 }

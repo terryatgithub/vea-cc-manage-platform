@@ -1,7 +1,7 @@
 export function getMenu (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/getMenus.html',
+    url: 'api/v1/getMenus.html',
     data
   }).then(data => {
     return data

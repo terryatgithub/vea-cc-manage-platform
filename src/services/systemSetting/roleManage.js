@@ -5,28 +5,28 @@
 export function getRoleList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysRole/pageList.html',
+    url: 'api/v1/sysRole/pageList.html',
     data
   })
 }
 export function userRoleList (params) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysRole/userList.html',
+    url: 'api/v1/sysRole/userList.html',
     params
   })
 }
 export function saveRoleData (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysRole/save.html',
+    url: 'api/v1/sysRole/save.html',
     data
   })
 }
 export function deleteRole (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/sysRole/remove.html',
+    url: 'api/v1/sysRole/remove.html',
     params
   })
 }
@@ -55,14 +55,14 @@ export function setCrowdAuthOfRole (data) {
 export function getAuthList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/sysRole/modifyRoleAuthView.html',
+    url: 'api/v1/sysRole/modifyRoleAuthView.html',
     params
   })
 }
 export function saveAuthOfRole (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysRole/modifyRoleAuthSave.html',
+    url: 'api/v1/sysRole/modifyRoleAuthSave.html',
     data
   })
 }

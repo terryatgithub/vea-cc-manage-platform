@@ -1,7 +1,7 @@
 export default function login(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/userlogin.html',
+    url: 'api/v1/userlogin.html',
     data
   }).then((user) => {
     this.state = user

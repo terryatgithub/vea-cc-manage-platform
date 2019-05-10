@@ -7,7 +7,7 @@
           :resource-info="resourceInfo"
           @replicate="mode = 'replicate'"
           @edit="mode = 'edit'"
-          @unaudit="fetchData"
+          @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
           @copy="handleCopy"
@@ -16,7 +16,7 @@
           @select-version="fetchData"
         >
           <div class="hompage-upsert" v-if="mode !== 'read'">
-            <el-form ref="homepageForm" :model="homepage" :rules="rules" label-width="140px">
+            <el-form ref="homepageForm" :model="homepage" :rules="rules" label-width="140px" class="el-form-add">
               <div class="form-legend-header">
                 <span>基本信息</span>
               </div>
@@ -39,12 +39,13 @@
               </div>
               <el-form-item label="首页版面">
                 <TabSelector @select-end="handleSelectTabEnd"/>
-                <el-button type="warning" @click="handleCreateTab">新建版面</el-button>
+                <el-button type="primary" plain @click="handleCreateTab">新建版面</el-button>
                 <span class="cc-form-annotation">至少选择1个版面</span>
                 <OrderableTable
                   v-model="tabGroupList"
                   :header="tabGroupTableHeader"
                   :hide-action="true"
+                  class="orderableTable"
                 />
                 <div></div>
               </el-form-item>
@@ -52,7 +53,7 @@
           </div>
 
           <div class="homepage-read" v-if="mode === 'read'">
-            <el-form label-width="140px">
+            <el-form label-width="140px" class="el-form-add">
               <div class="form-legend-header">
                 <span>基本信息</span>
               </div>
@@ -72,6 +73,7 @@
                   :header="tabGroupTableHeader"
                   :readonly="true"
                   :hide-action="true"
+                  class="orderableTable"
                 />
               </el-form-item>
             </el-form>
@@ -233,7 +235,6 @@ export default {
         },
         {
           label: '版面名称',
-          width: 180,
           render: (h, { $index, row }) => {
             return h(
               'el-button',
@@ -254,11 +255,13 @@ export default {
         {
           prop: 'tabCnTitle',
           label: 'TAB标题(中文)',
-          width: 180
+        },
+         {
+          prop: 'tabEnTitle',
+          label: 'TAB标题(英文)',
         },
         {
           label: '默认落焦',
-          width: 80,
           align: 'center',
           render: (h, { $index, row }) => {
             const defaultFocusIndex = this.homepage.defaultFocusIndex
@@ -638,4 +641,7 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped></style>
+<style lang='stylus' scoped>
+.el-form-add .orderableTable >>>.el-input
+   width 100%
+</style>

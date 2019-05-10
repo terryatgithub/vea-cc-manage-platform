@@ -18,7 +18,7 @@
           :resource-info="resourceInfo"
           @replicate="mode = 'replicate'"
           @edit="mode = 'edit'"
-          @unaudit="fetchData"
+          @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
           @copy="handleCopy"

@@ -7,14 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <!-- <div class="btns" >
-        <el-button type="primary"  v-for="(item, seq) in buttonList" :key="seq" @click="click(seq)">{{item.runName}}</el-button>
-      </div> -->
-      <div class="btns" >
-        <el-button type="primary" icon="el-icon-plus" @click="addData" >新增</el-button>
-        <el-button type="success" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="danger" icon="el-icon-delete" @click="deleteData">删除</el-button>
-      </div>
+
+           <ButtonGroupForListPage
+        pageName="homepage"
+        @add="addData"
+        @edit="editData"
+        @delete="deleteData"
+      ></ButtonGroupForListPage>
       <Table
         :props="table.props"
         :header="table.header"
@@ -32,13 +31,15 @@
 <script>
 import _ from "gateschema";
 import { Button } from 'element-ui'
-import ButtonList from "./../../components/ButtonLIst";
+import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
+// import ButtonList from "./../../components/ButtonLIst";
 import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
 export default {
   components: {
     ActionList,
     Table,
-    ContentWrapper
+    ContentWrapper,
+    ButtonGroupForListPage
   },
   data() {
     let _this = this
@@ -285,11 +286,11 @@ export default {
     /**
      * 获取menuInfoTree
      */
-    getSysMenuInfo () {
-      return this.$service.getHomePageInfoMenu().then(data => {
-        this.buttonList = data
-      })
-    }
+    // getSysMenuInfo () {
+    //   return this.$service.getHomePageInfoMenu().then(data => {
+    //     this.buttonList = data
+    //   })
+    // }
   },
   created() {
     const filterSchema = _.map({
@@ -337,7 +338,7 @@ export default {
     });
     this.filterSchema = filterSchema;
     this.fetchData();
-    this.getSysMenuInfo();
+    //this.getSysMenuInfo();
   }
 };
 </script>

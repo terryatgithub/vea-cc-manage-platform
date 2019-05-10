@@ -4,14 +4,14 @@
 export function broadcastBlockPageList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/blockInfo/pageList.html',
+    url: 'api/v1/blockInfo/pageList.html',
     data
   })
 }
 export function deleteBroadcastBlock (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/blockInfo/remove.html',
+    url: 'api/v1/blockInfo/remove.html',
     params
   })
 }
@@ -41,7 +41,7 @@ export function getMaterialTypes (params) {
 export function saveBlockInfo(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/blockInfo/save.html',
+    url: 'api/v1/blockInfo/save.html',
     data,
     isJSON: true
   })
@@ -52,7 +52,7 @@ export function saveBlockInfo(data) {
 export function getSysPlugin (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysPlugin/pageList.html?pluginParentType=builtIn',
+    url: 'api/v1/sysPlugin/pageList.html?pluginParentType=builtIn',
     data
   })
 }
@@ -62,12 +62,12 @@ export function getSysPlugin (data) {
 export function editSysPlugin (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/sysPlugin/edit.html',
+    url: 'api/v1/sysPlugin/getDetailInfo.html',
     params
   })
-    .then(data => {
-      return JSON.parse(data.match(/initPlugin = (\{.+\})/)[1])
-    })
+    // .then(data => {
+    //   return JSON.parse(data.match(/initPlugin = (\{.+\})/)[1])
+    // })
 }
 /**
  * 获取系统功能父类型数据字典
@@ -167,7 +167,7 @@ export function SavePlugin (data) {
   data = { jsonStr: JSON.stringify(data) }
   return this.fetch({
     method: 'post',
-    url: 'api/sysPlugin/save.html',
+    url: 'api/v1/sysPlugin/save.html',
     data
   })
 }
@@ -177,7 +177,7 @@ export function SavePlugin (data) {
 export function getMultiBlockList(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysPlugin/pageList.html?builtInNotShow=1',
+    url: 'api/v1/sysPlugin/pageList.html?builtInNotShow=1',
     data
   })
 }
@@ -187,7 +187,7 @@ export function getMultiBlockList(data) {
 export function getData(params) {
   return this.fetch({
     method: 'get',
-    url: 'api/sysPlugin/getDetailInfo.html',
+    url: 'api/v1/sysPlugin/getDetailInfo.html',
     params
   })
 }
@@ -197,7 +197,7 @@ export function getData(params) {
 export function removeMulti(params) {
   return this.fetch({
     method: 'get',
-    url: 'api/sysPlugin/remove.html',
+    url: 'api/v1/sysPlugin/remove.html',
     params
   })
 }
@@ -229,7 +229,7 @@ export function getHistoryList(params) {
 export function getBroadcastBlockEditData(data) {
   return this.fetch({
     method: 'POST',
-    url: 'api/blockInfo/getDetailInfo.html',
+    url: 'api/v1/blockInfo/getDetailInfo.html',
     data
   })
 }

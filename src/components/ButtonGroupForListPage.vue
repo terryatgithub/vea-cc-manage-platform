@@ -32,6 +32,9 @@ export default {
     },
     delete() {
       this.$emit('delete')
+    },
+    batchAudit(){
+      this.$emit('batch-audit')
     }
   },
   created() {

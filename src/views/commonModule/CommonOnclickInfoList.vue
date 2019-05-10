@@ -7,18 +7,13 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-        <!-- <ButtonGroupForListPage 
-        pageName='commonOnclickInfo' 
-        @add="addUser"
+        <ButtonGroupForListPage 
+        pageName='onclickInfo' 
+        @add="addData"
         @edit="editData"
-        @delete="batchDel"
+        @delete="deleteData"
         >
-        </ButtonGroupForListPage> -->
-      <div class="btns" >
-        <el-button type="primary" icon="el-icon-plus" @click="addData" >新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="deleteData">删除</el-button>
-      </div>
+        </ButtonGroupForListPage>
       <Table
         :props="table.props"
         :header="table.header"
@@ -36,7 +31,6 @@
 <script>
 import _ from "gateschema";
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-
 import ButtonList from "./../../components/ButtonLIst";
 import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
 export default {

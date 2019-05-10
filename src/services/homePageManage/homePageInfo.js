@@ -1,12 +1,12 @@
 /**
  * 首页方案管理-首页方案--系统菜单按钮
  */
-export function getHomePageInfoMenu () {
-  return this.fetch({
-    method: 'post',
-    url: 'api/homepageInfo/getMenuInfo.html'
-  })
-}
+// export function getHomePageInfoMenu () {
+//   return this.fetch({
+//     method: 'post',
+//     url: 'api/homepageInfo/getMenuInfo.html'
+//   })
+// }
 /**
  * 首页方案管理-首页方案--列表
  */
@@ -23,7 +23,7 @@ export function getHomePageInfoList (data) {
 export function homePageInfoSave (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/homepageInfo/save.html',
+    url: 'api/v1/homepageInfo/save.html',
     data: { data: JSON.stringify(data) }
   })
 }
@@ -42,7 +42,7 @@ export function homePageInfoDelete (params) {
 export function homePageGetDetail (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/homepageInfo/getDetailInfo.html',
+    url: 'api/v1/homepageInfo/getDetailInfo.html',
     params
   })
 }

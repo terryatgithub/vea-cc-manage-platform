@@ -35,7 +35,7 @@
 <script>
 import _ from 'gateschema'
 import { Button } from 'element-ui'
-import ButtonList from './../../components/ButtonLIst'
+// import ButtonList from './../../components/ButtonLIst'
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 export default {
