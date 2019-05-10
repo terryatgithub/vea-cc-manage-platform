@@ -1,6 +1,6 @@
 <template>
 <div>
-  <ContentCard :title="title" @go-back="$emit('go-back')">
+  <ContentCard :title="title" @go-back="$emit('go-back')" v-show="filmPageShow">
     <div>
       <CommonContent
         ref="commonContent"
@@ -101,6 +101,15 @@
       </CommonContent>
     </div>
   </ContentCard>
+  <panel-info
+    v-if='isShowPanelList'
+    :id="panelId"
+    :panel-data-type="1"
+    :init-mode="panelMode"
+    :version="panelVersion"
+    @upsert-end="handleUpsertEnd"
+    @go-back="handleUpsertEnd">
+  </panel-info>
 </div>
 </template>
 
@@ -109,11 +118,13 @@ import PanelSelector from '@/components/selectors/PanelSelector'
 import CommonContent from '@/components/CommonContent'
 import { Table } from 'admin-toolkit'
 import { Button } from 'element-ui'
+import panelInfo from '../blockManage/PanelInfo'
 export default {
   components: {
     Table,
     CommonContent,
-    'cc-panel-selector-el': PanelSelector
+    'cc-panel-selector-el': PanelSelector,
+    'panel-info': panelInfo
   },
 
   props: [
@@ -303,7 +314,19 @@ export default {
           },
           {
             label: '板块名称',
-            prop: 'pannelGroupRemark'
+            prop: 'pannelGroupRemark',
+            render: (createElement, { row }) => {
+              return createElement('el-button', {
+                attrs: {
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.showPanelList(row)
+                  }
+                }
+              }, row.pannelGroupRemark)
+            }
           },
           {
             label: '待审核副本',
@@ -331,7 +354,12 @@ export default {
         selectionType: 'single'
       },
       mode: '',
-      categoryEdit: false
+      categoryEdit: false,
+      isShowPanelList: false,
+      panelId: undefined,
+      panelMode: 'read',
+      panelVersion: undefined,
+      filmPageShow: true
     }
   },
 
@@ -538,6 +566,16 @@ export default {
         item.pannelSequence = index + 1
       })
       this.tabResourceFlag = 0
+    },
+    showPanelList (row) {
+      console.log(row)
+      this.filmPageShow = false
+      this.isShowPanelList = true
+      this.panelId = row.pannelGroupId
+    },
+    handleUpsertEnd () {
+      this.isShowPanelList = false
+      this.filmPageShow = true
     },
     fetchData(version) {
       if (version !== undefined) { this.form.currentVersion = version }
