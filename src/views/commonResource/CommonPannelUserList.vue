@@ -72,7 +72,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.openReview(row) 
+                    this.handleRead(row) 
                   }
                 }
               },row.pannelGroupRemark)
@@ -106,7 +106,19 @@ export default {
           },
           {
             label: '待审核副本',
-            prop: 'duplicateVersion'
+            prop: 'duplicateVersion',
+            render: (createElement, { row }) => {
+              return createElement('el-button', {
+                attrs:{
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.handleRead(row, row.duplicateVersion) 
+                  }
+                }
+              },row.duplicateVersion)
+            }
           },
           {
             label: '更新时间',
@@ -125,9 +137,9 @@ export default {
               label: '操作',
               width: '100',
               fixed: 'right',
-              render: utils.component.createOperationRender(this, {
-                copy: '复制',
-                cancelCollect: '取消收藏',
+               render: utils.component.createOperationRender(this, {
+                handleCopy: '复制',
+                cancalCollect: '取消收藏'
               })
             }
         ],
@@ -159,18 +171,17 @@ export default {
   },
 
   methods: {
-    copy(){
-
+    handleCopy({row}) {
+      this.$emit('copy', row.pannelGroupId)
     },
-    cancelCollect(){
-
+    cancalCollect({row}) {
+      this.$service.commonResourceCancelCollect({ resourceId: row.pannelGroupId }, '取消成功').then(()=>{
+        this.fetchData()
+      })
     },
-     openReview(row) {
-       this.$emit('open-review-page',row)
+    handleRead(row, version) {
+      this.$emit('read', row.pannelGroupId, version)
     },
-    /**
-     * 获取数据
-     */
     fetchData() {
       const filter = this.parseFilter()
         this.$service.commonPannelUserList(filter).then(data => {

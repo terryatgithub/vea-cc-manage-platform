@@ -7,16 +7,6 @@ export function getMarkPanelList (data) {
     data
   })
 }
-// 回显数据
-// export function getMarkEditData (params) {
-//   return this.fetch({
-//     method: 'get',
-//     url: 'api/markPanel/edit.html',
-//     params
-//   }).then(data => {
-//     return JSON.parse(data.match(/pannelInit = (\{.+\})/)[1])
-//   })
-// }
 // 保存
 export function MarkPanelSave (data) {
   return this.fetch({
