@@ -207,9 +207,9 @@ export default {
     },
     resourceInfo () {
       const form = this.form
-      if (this.editId) {
+      if (form.tabId) {
         return {
-          id: this.editId,
+          id: form.tabId,
           version: form.currentVersion,
           status: form.currentStatus,
           type: 'tab',
@@ -241,6 +241,7 @@ export default {
         youku: '优酷'
       },
       form: {
+        tabId: undefined,
         tabName: '',
         tabCategory: '0',
         tabResource: '',
@@ -352,7 +353,7 @@ export default {
         if (valid) {
           var jsonStr = {
             tabInfo: {
-              tabId: this.editId,
+              tabId: form.tabId,
               systemDefault: '',
               tabName: form.tabName,
               tabType: 3,
@@ -517,6 +518,7 @@ export default {
       })
     },
     setFormInfo(data) {
+      this.form.tabId = data.filmDetail.tabId
       this.form.tabName = data.filmDetail.tabName
       this.form.tabCategory = data.filmDetail.category
       this.form.priority = data.filmDetail.priority

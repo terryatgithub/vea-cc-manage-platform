@@ -42,15 +42,15 @@
 
 <script>
 import { Button } from 'element-ui'
-import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+// import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 
 export default {
   components: {
     ContentWrapper,
-    Table,
-    ButtonGroupForListPage
+    Table
+    // ButtonGroupForListPage
   },
 
   data () {
@@ -87,7 +87,7 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => this.themeInfoPreview(row.themeId)
+                    click: () => this.themeInfoPreview(row)
                   }
                 }, row.themeName
               )
@@ -162,7 +162,7 @@ export default {
                     type: 'success'
                   },
                   on: {
-                    click: () => this.duplicatePreview(row.themeId, row.duplicateVersion)
+                    click: () => this.duplicatePreview(row)
                   }
                 }, row.duplicateVersion
               )
@@ -247,7 +247,7 @@ export default {
         this.$alert('审核通过的数据无法编辑！', '操作提示')
         return false
       }
-      this.$emit('open-add-page', selected[0])
+      this.$emit('open-add-page', selected[0], 'edit')
     },
     batchDel() {
       if (this.selected.length === 0) {
@@ -294,16 +294,12 @@ export default {
       }, [])
     },
     // 预览主题
-    themeInfoPreview(id) {
-      this.$service.themeInfoDetail({ id }).then(data => {
-        this.$emit('open-preview-page', data)
-      })
+    themeInfoPreview(row) {
+      this.$emit('open-add-page', row.themeId, 'read')
     },
     // 副本
-    duplicatePreview(id, version) {
-      this.$service.themeInfoDetail({ id, version }).then(data => {
-        this.$emit('open-preview-page', data)
-      })
+    duplicatePreview(row) {
+      this.$emit('open-add-page', row.themeId, 'read', row.duplicateVersion)
     }
   },
   created() {

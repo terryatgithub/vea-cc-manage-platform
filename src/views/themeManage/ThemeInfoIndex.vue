@@ -4,21 +4,14 @@
       v-show="isShowList"
       ref="list"
       @open-add-page="openAddPage"
-      @open-preview-page="openPreviewPage"
     />
     <ThemeInfoAdd
-      v-if="!isShowList&&!isShowPreview"
+      v-if="!isShowList"
       :editId="editId"
       :version="version"
+      :initMode="mode"
       @open-list-page="openListPage"
       @go-back="goBack"
-    />
-    <ThemeInfoPreview
-      v-if="!isShowList && isShowPreview"
-      :themeInfo="themeInfo"
-      @go-back="preGoBack"
-      @open-list-page="openListPage"
-      @open-add-page="openAddPage"
     />
   </div>
 </template>
@@ -26,59 +19,35 @@
 <script>
 import ThemeInfoList from './ThemeInfoList'
 import ThemeInfoAdd from './ThemeInfoAdd'
-import ThemeInfoPreview from './ThemeInfoPreview'
 
 export default {
   components: {
     ThemeInfoList,
-    ThemeInfoAdd,
-    ThemeInfoPreview
+    ThemeInfoAdd
   },
 
   data() {
     return {
       isShowList: true,
-      isShowPreview: false,
       editId: null,
-      themeInfo: null,
-      version: null
+      version: null,
+      mode: ''
     }
   },
 
   methods: {
-    /**
-     * 打开新增编辑页面
-     */
-    openAddPage(editId, version) {
+    openAddPage(editId, mode, version) {
       this.editId = editId
+      this.isShowList = false
+      this.mode = mode
       this.version = version
-      this.isShowPreview = false
-      this.isShowList = false
     },
-    /**
-     * 预览
-     */
-    openPreviewPage(themeInfo) {
-      this.themeInfo = themeInfo
-      this.isShowList = false
-      this.isShowPreview = true
-    },
-    /**
-     * 打开列表页面
-     */
-    openListPage() {
-      this.isShowList = true
-      this.$refs.list.fetchData() // 更新页面
-    },
-    /**
-     * 新增编辑里面的返回事件
-     */
     goBack() {
       this.isShowList = true
     },
-    preGoBack() {
+    openListPage() {
       this.isShowList = true
-      this.isShowPreview = false
+      this.$refs.list.fetchData()
     }
   }
 }
