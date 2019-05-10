@@ -155,17 +155,22 @@ export default {
       })
     },
     handleSelectEnd() {
+      const selectionType = this.selectionType
+      const activeSelector = this.activeSelector
       const $refs = this.$refs
       $refs.wrapper.handleSelectEnd()
       const result = this.selectors.reduce((result, item) => {
         const ref = $refs[item + '-selector']
-        if (ref) {
+        if (selectionType === 'multiple' || selectionType === 'single' && item === activeSelector) {
           result[item] = ref.selected
           if (item === 'video') {
             result.episode = {...ref.selectedEpisodes}
           } 
         } else {
-          result[item] = []
+          result[item] = {}
+          if (item === 'video') {
+            result.episode = {}
+          }
         }
         return result
       }, {})

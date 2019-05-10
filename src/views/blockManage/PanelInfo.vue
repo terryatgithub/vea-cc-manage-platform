@@ -367,6 +367,7 @@ export default {
       }
     }
     return {
+      resourceName: this.panelDataType === 1 ? '板块' : '业务专辑',
       mode: 'create',
       activePage: 'panel_info',
       PANNEL_STATUS: {

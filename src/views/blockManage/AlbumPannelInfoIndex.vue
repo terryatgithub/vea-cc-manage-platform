@@ -1,51 +1,74 @@
 <template>
   <div>
-    <AlbumPannelInfoList v-show='isShowList' ref="list" @open-add-page="openAddPage"/>
-    <AlbumPannelInfoAdd v-if='!isShowList' :editId="editId" @open-list-page="openListPage" @go-back="goBack"/>
+    <AlbumPannelInfoList
+      v-show='isShowList' 
+      ref="list" 
+      @create="handleCreate"
+      @read="handleRead"
+      @edit="handleEdit"
+      @copy="handleCopy"
+    />
+    <PanelInfo 
+      v-if='!isShowList' 
+      :id="id" 
+      :panel-data-type="3"
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd" 
+      @go-back="goBack">
+    </PanelInfo>
   </div>
 </template>
-
 <script>
+import PanelInfo from './PanelInfo'
 import AlbumPannelInfoList from'./AlbumPannelInfoList'
-import AlbumPannelInfoAdd  from './AlbumPannelInfoAdd'
+const idField = 'pannelGroupId'
 export default {
   components: {
-    AlbumPannelInfoList,
-    AlbumPannelInfoAdd
+    PanelInfo,
+    AlbumPannelInfoList 
   },
-
   data () {
     return {
       isShowList: true,
-      editId: null
-    };
+      id: undefined,
+      mode: 'create',
+      version: undefined
+    }
   },
-
   methods: {
-    /** 
-     * 打开新增编辑页面
-    */
-    openAddPage (editId) {
-       this.editId = editId;
-       this.isShowList = false;
+    handleCreate() {
+      this.id = undefined
+      this.mode = 'create'
+      this.isShowList = false
     },
-    /** 
-     * 打开列表页面
-    */
-    openListPage () {
+    handleEdit(item) {
+      this.id = item[idField]
+      this.mode = 'edit'
+      this.isShowList = false
+    },
+    handleRead(item, version) {
+      this.id = item[idField]
+      this.mode = 'read'
+      this.version = version
+      this.isShowList = false
+    },
+    handleCopy(item) {
+      this.id = item[idField]
+      this.mode = 'copy'
+      this.isShowList = false
+    },
+    handleUpsertEnd () {
       this.isShowList = true
       this.$refs.list.fetchData();//更新页面
+      this.mode = 'list'
+      this.version = undefined
     },
-    /**  
-     * 新增编辑里面的返回事件
-    */
     goBack () {
      this.isShowList = true
+     this.mode = 'list'
+     this.version = undefined
     }
   }
-
 }
 </script>
-
-<style lang='stylus' scoped>
-</style>

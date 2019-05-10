@@ -263,10 +263,16 @@ export default {
       this.$emit('read', row)
     },
     handleEdit() {
-      this.$emit('edit', this.selected[0])
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('edit', this.selected[0])
+      }
     },
     handleDelete() {
-      this.$emit('delete', this.selected[0])
+      if (this.$isAllowDelete(this.selected) && window.confirm("确定要删除吗")) {
+        this.$service.panelRemove({ 
+          id: this.selected.map(item => item.pannelGroupId).join(',') 
+        }, "删除成功").then(this.fetchData);
+      }
     }
   },
   created() {

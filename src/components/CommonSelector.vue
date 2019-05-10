@@ -6,6 +6,7 @@
     :disabled="disabled">
       <el-radio 
         v-for="(item, key) in options"
+        :disabled="item.disabled"
         :key="key" 
         :label="item.value">
         {{ item.label }}

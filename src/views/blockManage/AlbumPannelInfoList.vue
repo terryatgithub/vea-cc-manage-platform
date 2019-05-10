@@ -10,9 +10,9 @@
        <ButtonGroupForListPage 
        v-if="dataList === undefined " 
         pageName='albumPanel' 
-        @add="addTabInfo"
-        @edit="editData"
-        @delete="batchDel"
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"
         >
         </ButtonGroupForListPage>
       <!-- <div v-if="dataList === undefined " class="btns">
@@ -38,7 +38,7 @@
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-
+const ID = 'pannelGroupId'
 export default {
   components: {
     ContentWrapper,
@@ -244,12 +244,12 @@ export default {
      * 行选择操作
      */
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.pannelGroupId)
+      this.selected.push(targetItem)
       this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.pannelGroupId
+        return item[ID] !== targetItem[ID]
       })
       this.updateTableSelected()
     },
@@ -262,25 +262,33 @@ export default {
       }
     },
     updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
+      const table = this.table;
+      const newSelectedIndex = this.selected.reduce((result, item) => (result[item[ID]] = true, result), {});
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.pannelGroupId) > -1) {
-          result.push(index)
+        if (newSelectedIndex[item[ID]]) {
+          result.push(index);
         }
-        return result
-      }, [])
+        return result;
+      }, []);
     },
-    // 按钮操作
-    addTabInfo() {
-
+    handleCreate() {
+      this.$emit('create')
     },
-    editData() {
-
+    handleRead(row) {
+      this.$emit('read', row)
     },
-    batchDel() {
-
+    handleEdit() {
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('edit', this.selected[0])
+      }
     },
+    handleDelete() {
+      if (this.$isAllowDelete(this.selected) && window.confirm("确定要删除吗")) {
+        this.$service.panelRemove({ 
+          id: this.selected.map(item => item.pannelGroupId).join(',') 
+        }, "删除成功").then(this.fetchData);
+      }
+    }
   },
   created() {
     this.pannelStatus = this.pannelStatusOption.reduce((result, item) => {

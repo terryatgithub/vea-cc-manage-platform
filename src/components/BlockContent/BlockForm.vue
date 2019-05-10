@@ -1,0 +1,861 @@
+<template>
+    <div v-if="mode === 'read'"></div>
+    <div v-else>
+      <el-form
+        class="block-content-form"
+        v-if="contentForm"
+        :model="contentForm"
+        :rules="contentRule"
+        ref="contentForm"
+        label-width="120px">
+        <template v-if="contentType === 'specific'">
+          <el-form-item label="内容类别" prop="resourceType">
+              <el-radio-group v-model="contentForm.resourceType" :disabled="isReadonly">
+                  <el-radio :label="0">内容</el-radio>
+                  <el-radio :label="1">活动</el-radio>
+              </el-radio-group>
+          </el-form-item>
+          <el-form-item label="关联定向人群" prop="dmpRegistryInfo">
+              <el-button type="primary" @click="handleSelectCrowdStart" :disabled="isReadonly">添加人群
+              </el-button>
+              <el-tag type="primary" v-if="contentForm.dmpRegistryInfo">
+                  已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}} / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}
+              </el-tag>
+          </el-form-item>
+        </template>
+        <el-form-item label="资源类别" prop="coverType">
+          <CommonSelector 
+            type="radio" 
+            :value="contentForm.coverType" 
+            @input="$emit('cover-type-change', $event)"
+            :options="coverTypeEnums" />
+        </el-form-item>
+
+        <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'media'">
+          <ResourceSelector 
+            ref="resourceSelector"
+            :is-live="true"
+            :selectors="['app', 'edu', 'pptv', 'live', 'topic', 'broadcast']"
+            selection-type="single"
+            :source="pannel.pannelResource" 
+            @select-end="handleSelectResourceEnd">
+            <el-button>选择资源</el-button>
+          </ResourceSelector>
+          <el-tag type="primary" v-if="contentForm.extraValue1">
+            已选择: {{ contentForm.extraValue1
+            }}
+          </el-tag>
+        </el-form-item>
+        <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
+          <el-button @click="openWin('app')" :disabled="isReadonly">选择资源</el-button>
+          <el-tag type="primary" v-if="contentForm.extraValue1">
+            已选择: {{ contentForm.extraValue1
+            }}
+          </el-tag>
+        </el-form-item>
+
+        <template v-if="contentType === 'specfic'">
+          <el-form-item label="内容类型" v-if="contentForm.coverType === 'custom'">
+              <el-select v-model="contentForm.blockResourceType" :disabled="isReadonly">
+                  <el-option label="影视" :value="1"></el-option>
+                  <el-option label="应用" :value="0"></el-option>
+                  <el-option label="其他" :value="-1"></el-option>
+              </el-select>
+          </el-form-item>
+        </template>
+
+        <el-form-item label="标题" prop="title">
+          <el-input v-model.trim="contentForm.title" :disabled="isReadonly"></el-input>
+          <el-checkbox
+            v-if="!hideTitleOptions"
+            :value="!contentForm.showTitle"
+            :disabled="isReadonly"
+            @input="contentForm.showTitle = $event ? 0 : 1"
+          >关闭标题栏，仅图片运营</el-checkbox>
+        </el-form-item>
+        <el-form-item label="副标题" prop="subTitle" v-if="contentForm.coverType !== 'block'">
+          <el-input v-model.trim="contentForm.subTitle" :disabled="isReadonly"></el-input>
+          <el-checkbox
+            :value="!contentForm.showSubTitle"
+            :disabled="isReadonly"
+            @input="contentForm.showSubTitle = $event ? 0 : 1"
+          >落焦不显示副标题</el-checkbox>
+        </el-form-item>
+        <el-form-item label="单集副标题" prop="singleSubTitle">
+          <el-input v-model.trim="contentForm.singleSubTitle" :disabled="isReadonly"></el-input>有单集副标题时，优先显示单集副标题
+        </el-form-item>
+
+        <el-form-item label="内容海报" prop="pictureUrl" v-if="contentForm.coverType !== 'block'">
+
+          <GlobalPictureSelector
+            :picture-resolution="resolution[0] + '*' + resolution[1]"
+            @select-end="handleSelectPostEnd"
+          >
+          <div
+            class="post-box corner-box"
+            :style="{ 
+              height: postSize.height + 'px',
+              width: postSize.width + 'px', 
+              cursor: 'pointer'
+            }"
+          >
+              <img :src="contentForm.pictureUrl" referrerpolicy="no-referrer">
+              <div class="post-info">
+                <div class="post-episode" v-if="[1, 4, 5].indexOf(contentForm.categoryId) > -1">
+                  <span class="episode">
+                    <template v-if="contentForm.categoryId === 1">
+                      {{
+                      contentForm.publishStatus === 'ended'
+                      ? contentForm.series
+                      ? contentForm.series + '集全'
+                      : '暂无'
+                      : contentForm.series
+                      ? '已更新至' + contentForm.series + '集'
+                      : '暂无'
+                      }}
+                    </template>
+                    <template v-else-if="contentForm.categoryId === 5">
+                      {{
+                      contentForm.publishStatus === 'ended'
+                      ? ''
+                      : contentForm.variety
+                      ? contentForm.variety
+                      : '暂无'
+                      }}
+                    </template>
+                  </span>
+                  <span class="score">{{ contentForm.score ? contentForm.score + '分' : ''}}</span>
+                </div>
+                <div
+                  v-show="contentForm.showTitle"
+                  class="post-title"
+                  :title="contentForm.title"
+                >{{ contentForm.title }}</div>
+                <div
+                  v-show="contentForm.showTitle && contentForm.showSubTitle"
+                  class="post-sub-title"
+                  :title="contentForm.singleSubTitle || contentForm.subTitle"
+                >{{ contentForm.singleSubTitle || contentForm.subTitle }}</div>
+              </div>
+            <template>
+              <span
+                v-for="(corner, cIndex) in contentForm.cornerList"
+                :class="['corner', 'corner-' + cIndex]"
+                :key="cIndex"
+                @click.stop="void(0)"
+              >
+                <CornerSelector
+                  :position="cIndex"
+                  @select-end="handleSelectCornerIconEnd($event, cIndex)"
+                >
+                  <span class="corner-img-wrapper" v-if="corner.imgUrl">
+                    <img :src="corner.imgUrl" referrerpolicy="no-referrer">
+                    <i
+                      v-show="!isReadonly"
+                      title="删除角标"
+                      class="el-icon-circle-close"
+                      @click.stop="handleRemoveCornerIcon(cIndex)"
+                    ></i>
+                  </span>
+                  <div class="corner-add-icon-wrapper" v-else>
+                    <i class="el-icon-plus"></i>
+                  </div>
+                </CornerSelector>
+              </span>
+            </template>
+          </div>
+
+          </GlobalPictureSelector>
+        </el-form-item>
+
+        <el-form-item label="替补海报" v-if="shouldHaveBackupPicture" prop="alternativePictureUrl">
+          <GlobalPictureSelector
+            :picture-resolution="resolution[0] + '*' + resolution[1]"
+            @select-end="handleSelectBackupPostEnd"
+          >
+            <div
+              class="post-box"
+              :style="{ height: postSize.height + 'px', width: postSize.width + 'px', cursor: 'pointer' }"
+            >
+              <img :src="contentForm.alternativePictureUrl" referrerpolicy="no-referrer">
+            </div>
+          </GlobalPictureSelector>
+        </el-form-item>
+
+        <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
+          <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
+        </el-form-item>
+        <el-form-item label="推荐位" prop="vContentId" v-if="contentForm.coverType === 'block'">
+          <el-button type="primary" @click="openWin('recommend')" :disabled="isReadonly">选择推荐位</el-button>
+          <el-tag type="primary" v-if="contentForm.vContentId">已选择: {{ contentForm.vContentId }}</el-tag>
+        </el-form-item>
+        <el-form-item label="价格" prop="price"
+          v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)">
+          <Price
+            v-model.trim="contentForm.price"
+            min="0"
+            style="margin-right: 10px"
+            :disabled="isReadonly"
+          ></Price>(元)
+        </el-form-item>
+        <el-form-item label="秒杀价"
+          prop="secKillPrice"
+          v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)">
+          <Price
+            v-model.trim="contentForm.secKillPrice"
+            min="0"
+            style="margin-right: 10px"
+            :disabled="isReadonly"
+          ></Price>(元)
+        </el-form-item>
+        <template v-if="contentType === 'normal'">
+          <el-form-item label="设置广告位"
+            v-if="data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (contentForm.coverType === 'media' || contentForm.coverType === 'app' || contentForm.coverType === 'custom')"
+            prop="flagIsSetad">
+            <el-radio-group v-model="contentForm.flagIsSetad" :disabled="isReadonly">
+              <el-radio :label="0">否</el-radio>
+              <el-radio :label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </template>
+        <template v-if="contentForm.coverType === 'custom'">
+          <el-form-item label="打开方式">
+            <el-select
+              v-model="contentForm.redundantParams.openMode"
+              @change="openChange($event)"
+              :disabled="isReadonly"
+            >
+              <el-option label="网页" value="webpage"></el-option>
+              <el-option label="视频" value="video"></el-option>
+              <el-option label="图片" value="picture"></el-option>
+              <el-option label="版面" value="tab"></el-option>
+              <el-option label="第三方应用" value="app"></el-option>
+            </el-select>
+            <el-button
+              v-if="contentForm.redundantParams.openMode === 'app'"
+              type="primary"
+              @click="openWin('onclick')"
+              :disabled="isReadonly"
+            >快速填充</el-button>
+          </el-form-item>
+          <template v-if="contentForm.redundantParams.openMode === 'webpage'">
+            <el-form-item label="网页类型" prop="webpageType">
+              <el-radio-group v-model="webpageTypeRadio" @change="openWeb" :disabled="isReadonly">
+                <el-radio label="1">浮窗网页</el-radio>
+                <el-radio label="2">全屏网页</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="网页地址" prop="webpageUrl">
+              <el-input
+                v-model.trim="contentForm.redundantParams.webpageUrl"
+                :disabled="isReadonly"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="应用版本号" prop="webAppVersion">
+              <el-input
+                v-model.trim="contentForm.redundantParams.webAppVersion"
+                :disabled="isReadonly"
+              ></el-input>
+            </el-form-item>
+          </template>
+          <template v-if="contentForm.redundantParams.openMode === 'video'">
+            <el-form-item label="视频名称"
+              prop="videoName">
+              <el-input v-model.trim="contentForm.redundantParams.videoName" :disabled="isReadonly"></el-input>
+            </el-form-item>
+            <el-form-item label="视频地址"
+              prop="videoUrl">
+              <el-input v-model.trim="contentForm.redundantParams.videoUrl" :disabled="isReadonly"></el-input>
+            </el-form-item>
+          </template>
+
+          <template v-if="contentForm.redundantParams.openMode === 'picture'">
+            <el-form-item label="选择图片"
+              prop="pictureUrl">
+              <el-upload
+                :action="urls.uploadImg"
+                :on-success="handleUploadSuccess"
+                :on-remove="handleUploadRemove"
+                :file-list="pictureList"
+                accept="image/png, image/gif, image/jpeg, image/bmp"
+                list-type="picture"
+              >
+                <el-button type="primary" :disabled="isReadonly">点击上传</el-button>
+                <span slot="tip" class="el-upload__tip">提示:只能上传png/gif/jpg/bmp文件</span>
+              </el-upload>
+            </el-form-item>
+          </template>
+
+          <template v-if="contentForm.redundantParams.openMode === 'tab'">
+            <el-form-item label="版面"
+              prop="tabId">
+              <el-button type="primary" @click="openWin('tab')" :disabled="isReadonly">选择版面</el-button>
+              <el-tag type="primary" v-if="contentForm.redundantParams.tabId">
+                已选择: {{
+                contentForm.redundantParams.tabId }}
+              </el-tag>
+            </el-form-item>
+          </template>
+
+          <template v-if="contentForm.redundantParams.openMode === 'app'">
+            <AppParamsForm
+              v-model="contentForm.redundantParams"
+              label-width="140px"
+              prop-prefix="redundantParams."
+            />
+          </template>
+        </template>
+      </el-form>
+      <CrowdSelector
+          v-if="showCrowdSelector"
+          @select-cancel="handleSelectCrowdCancel"
+          @select-end="handleSelectCrowdEnd"
+      />
+    </div>
+</template>
+
+<script>
+import Price from '@/components/Price'
+import AppParamsForm from './AppParamsForm'
+import BlockContentWrapper from './BlockContentWrapper'
+import CornerSelector from '@/components/selectors/CornerIconSelector'
+import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
+import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
+import CommonSelector from '@/components/CommonSelector'
+import CrowdSelector from '@/components/CrowdSelector.vue'
+export default {
+  components: {
+    Price,
+    AppParamsForm,
+    BlockContentWrapper,
+    CornerSelector,
+    GlobalPictureSelector,
+    ResourceSelector,
+    CommonSelector,
+    CrowdSelector
+  },
+  data() {
+    const isReadonly = this.isReadonly
+    const checkMannulVersionCode = function(rule, value, callback) {
+      // 当为教育资源时 保证所填值为空或大于7位
+      if (
+        _this.contentForm.contentType === 3 &&
+        (value.length > 0 && value.length < 7)
+      ) {
+        callback(new Error('教育版本号需为7位以上'))
+      } else {
+        callback()
+      }
+    }
+    const checkWebpageUrl = function(rule, value, callback) {
+      if (value === '') {
+        callback(new Error('请输入网页地址'))
+      } else if (
+        value.indexOf('https') === -1 &&
+        value.indexOf('http') === -1
+      ) {
+        callback(new Error('请输入https或http地址'))
+      } else {
+        callback()
+      }
+    }
+    const checkAttributeInfo = function(rule, value, callback) {
+      if (
+        _this.contentFormType === 'specific' &&
+        !_this.contentForm.attributeInfo &&
+        !_this.isReadonly
+      ) {
+        callback(new Error('请选择人群'))
+      } else {
+        callback()
+      }
+    }
+    const re = /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/
+    const checkPrice = function(rule, value, callback) {
+      if (!re.test(value)) {
+        value === 0 && value !== ''
+          ? callback()
+          : callback(new Error('请输入合法的价格'))
+      } else if (value.toString().indexOf('.') !== -1) {
+        callback(new Error('只允许输入小数点后两位'))
+      } else {
+        callback()
+      }
+    }
+
+    const checkSecKill = function(rule, value, callback) {
+      var re = /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/
+      // if (!re.test(value)) {
+      //     callback(new Error('请输入数字'));
+      // }
+
+      if (!re.test(value)) {
+        value === '' ? callback() : callback(new Error('请输入合法的价格'))
+      } else if (value.toString().indexOf('.') !== -1) {
+        callback(new Error('只允许输入小数点后两位'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      showCrowdSelector: false,
+      contentRule: {
+        moviePercent: [
+          {
+            type: 'number',
+            required: true,
+            message: '请输入进度',
+            trigger: 'blur'
+          }
+        ],
+        extraValue1: [
+          { required: true, message: '请选择资源', trigger: 'blur' }
+        ],
+        title: [
+          {
+            validator: function(_, value, cb) {
+              if (this.contentForm.showTitle && value.trim() === '') {
+                cb(new Error('请输入标题'))
+              } else {
+                cb()
+              }
+            }.bind(this)
+          },
+          { max: 50, message: '不超过 50 个字符', trigger: 'blur' }
+        ],
+        subTitle: [{ max: 50, message: '不超过 50 个字符', trigger: 'blur' }],
+        pictureUrl: [
+          { required: true, message: '请选择内容海报', trigger: 'blur' }
+        ],
+        alternativePictureUrl: [
+          { required: true, message: '请选择替补海报', trigger: 'blur' },
+          {
+            validator: function(_, pictureUrl, cb) {
+              if (pictureUrl && pictureUrl.slice(-4).toLowerCase() === 'webp') {
+                cb(new Error('替补海报不能选择动图'))
+              } else {
+                cb()
+              }
+            }
+          }
+        ],
+        vContentId: [
+          {
+            type: 'number',
+            required: true,
+            message: '请选择功能',
+            trigger: 'blur'
+          }
+        ],
+        attributeInfo: [{ validator: checkAttributeInfo, trigger: 'blur' }],
+        versionCode: [{ validator: checkMannulVersionCode, trigger: 'blur' }],
+        price: [{ required: true, validator: checkPrice, trigger: 'blur' }],
+        secKillPrice: [
+          { required: false, validator: checkSecKill, trigger: 'blur' }
+        ],
+        dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }]
+      }
+    }
+  },
+  props: ['contentType', 'mode', 'contentForm', 'data', 'pannel', 'hideTitleOptions'],
+  computed: {
+    isReadonly() {
+      return this.mode === 'read'
+    },
+    source() {
+      return this.data.pannelResource
+    },
+    resolution() {
+      const data = this.data
+      return [data.blockInfo.width, data.blockInfo.height]
+    },
+    postSize() {
+      const blockInfo = this.data.blockInfo || {}
+      const width = blockInfo.width || 200
+      const height = blockInfo.height || 200
+      const maxWidth = 800
+      const maxHeight = 600
+      let ratio = 1
+      if (width < height) {
+        let finalHeight = (height * 200) / width
+        if (finalHeight > maxHeight) {
+          ratio = maxHeight / finalHeight
+        }
+        return {
+          height: finalHeight * ratio,
+          width: 200 * ratio
+        }
+      } else {
+        let finalWidth = (width * 200) / height
+        if (finalWidth > maxWidth) {
+          ratio = maxWidth / finalWidth
+        }
+        return {
+          height: 200 * ratio,
+          width: finalWidth * ratio
+        }
+      }
+    },
+    isMall() {
+      return this.data.blockInfo.type === 'Mall'
+    },
+    shouldHaveBackupPicture() {
+      const contentForm = this.contentForm
+      const pictureUrl = contentForm.pictureUrl
+      return contentForm.coverType !== 'block' && !this.isNormalPicture(pictureUrl)
+    },
+    coverTypeEnums() {
+      const enums = [
+        {
+          label: '媒体资源',
+          value: 'media'
+        },
+        {
+          label: '应用圈',
+          value: 'app'
+        },
+        {
+          label: '自定义',
+          value: 'custom'
+        },
+        {
+          label: '推荐位管理',
+          value: 'block',
+          disabled: this.isMall
+        }
+      ]
+
+      if (this.contentType === 'specific') {
+        return enums.filter(item => item.value === 'media' || item.value === 'custom')
+      }
+
+      return enums
+    }
+  },
+  methods: {
+    handleSelectCrowdStart() {
+        this.showCrowdSelector = true
+    },
+    handleSelectCrowdCancel() {
+        this.showCrowdSelector = false
+    },
+    handleSelectCrowdEnd(policy, crowd) {
+        const specificContentList = this.specificContentList
+        let length = specificContentList.length
+        let existsIndex
+        let dmpRegistryInfo
+        while(--length >= 0) {
+            dmpRegistryInfo = specificContentList[length].dmpRegistryInfo
+            if (dmpRegistryInfo && dmpRegistryInfo.dmpCrowdId === crowd.value) {
+                existsIndex = length
+                break;
+            }
+        }
+        if (existsIndex !== undefined) {
+            this.$message({
+                type: 'error',
+                message: '第' + (existsIndex + 1) + '个精细化内容已关联该人群'
+            })
+        } else {
+            this.contentForm.dmpRegistryInfo = {
+                dmpPolicyId: policy.value,
+                dmpCrowdId: crowd.value,
+                dmpPolicyName: policy.label,
+                dmpCrowdName: crowd.label,
+            }
+            this.showCrowdSelector = false
+        }
+    },
+   
+    handleSelectResourceEnd(resources) {
+      let selectedType
+      let selected
+      let selectedEpisode
+      Object.keys(resources).forEach(key => {
+        const resource = resources[key][0]
+        if (resource) {
+          selectedType = key
+          if (key === 'episode') {
+            selectedEpisode = resource
+          } else {
+            selected = resource
+          }
+        }
+      })
+
+      const chopSubTitle = (title) => {
+        return (title || '').slice(0, 50)
+      }
+      const contentForm = this.contentForm
+      // 清空由app可能引起的遗留数据
+      Object.assign(contentForm, {
+        vContentId: '',
+        blockResourceType: '',
+        platformId: '',
+        versionCode: ''
+      })
+      if (selectedType === "video") {
+        // 影视中心
+        if (selectedEpisode) {
+          this.contentForm.contentType = 0;
+          this.contentForm.videoContentType = "movie";
+          if (this.source === "tencent") {
+              this.contentForm.extraValue1 = "_otx_" + selected.coocaaVId;
+              this.contentForm.extraValue5 = selectedEpisode.coocaaMId;
+          } else if (this.source === "yinhe") {
+              this.contentForm.extraValue1 = "_oqy_" + selected.coocaaVId;
+              this.contentForm.extraValue5 = selectedEpisode.coocaaMId;
+          } else if (this.source === "youku") {
+              this.contentForm.extraValue1 = "_oyk_" + selected.coocaaVId;
+              this.contentForm.extraValue5 = selectedEpisode.coocaaMId;
+          }
+          this.contentForm.singleId = selectedEpisode.coocaaMId;
+          this.contentForm.platformId = this.source;
+          this.contentForm.pictureUrl = selectedEpisode.thumb;
+          this.contentForm.title = selectedEpisode.urlTitle;
+          this.contentForm.subTitle = chopSubTitle(selectedEpisode.urlSubTitle);
+          this.contentForm.singleSubTitle = ''
+          this.contentForm.blockResourceType = 1;
+        } else {
+            if (this.source === "tencent") {
+                this.contentForm.extraValue1 = "_otx_" + selected.coocaaVId;
+            } else if (this.source === "yinhe") {
+                this.contentForm.extraValue1 = "_oqy_" + selected.coocaaVId;
+            } else if (this.source === "youku") {
+                this.contentForm.extraValue1 = "_oyk_" + selected.coocaaVId;
+            }
+            this.contentForm.singleId = "";
+            this.contentForm.singleId = "";
+            this.contentForm.contentType = 0;
+            this.contentForm.videoContentType = "movie";
+            this.contentForm.extraValue5 = null;
+            this.contentForm.platformId = selected.source;
+            this.contentForm.pictureUrl = selected.thumb;
+            this.contentForm.title = selected.title;
+            this.contentForm.subTitle = chopSubTitle(selected.subTitle);
+            this.contentForm.singleSubTitle = ''
+            this.contentForm.blockResourceType = 1;
+        }
+
+        const entity = selected.ccVideoSourceEntities[0]
+        const score = entity.score
+        const updatedSegment = entity.updatedSegment
+        const publishSegment = entity.publishSegment
+        const isUnknown = publishSegment == 0
+        const publishStatus = isUnknown
+            ? 'unknown'
+            : updatedSegment == publishSegment
+                ? 'ended'
+                : 'updating'
+        contentForm.publishStatus = publishStatus
+        contentForm.score = score
+        contentForm.series = isUnknown ? null : updatedSegment
+        contentForm.variety = entity.lastCollection
+      }
+      // else if (selectedType === 'app') { // 应用圈
+      //     this.contentForm.contentType = 2;
+      //     this.contentForm.videoContentType = 'app';
+      //     this.contentForm.extraValue1 = selected.appPackageName;
+      //     this.contentForm.pictureUrl = selected.appImageUrl;
+      //     this.contentForm.title = selected.appName;
+      //     this.contentForm.subTitle = selected.appName;
+      //     this.contentForm.blockResourceType = 0;
+      // }
+      else if (selectedType === "edu") {
+        // 教育中心
+        this.contentForm.contentType = 3;
+        this.contentForm.videoContentType = "edu";
+        this.contentForm.extraValue1 = "_otx_" + selected.coocaaVId;
+        this.contentForm.platformId = selected.source;
+        this.contentForm.pictureUrl = selected.thumb;
+        this.contentForm.title = selected.title;
+        this.contentForm.subTitle = chopSubTitle(selected.subTitle);
+        this.contentForm.singleSubTitle = ''
+        this.contentForm.blockResourceType = 1;
+        const ccVideoSourceEntities = selected.ccVideoSourceEntities
+        if (ccVideoSourceEntities && ccVideoSourceEntities[0] && ccVideoSourceEntities[0].isTvod === 1) {
+          // Sprint2.2 教育中心单点付费预置版本号
+          this.contentForm.versionCode = 3420000
+        }
+      } else if (selectedType === "pptv") {
+        // pptv
+        this.contentForm.contentType = 4;
+        this.contentForm.videoContentType = "pptv";
+        this.contentForm.extraValue1 =
+                "pptv_tvsports://tvsports_detail?section_id=" +
+                selected.pid +
+                "&from_internal=1";
+        this.contentForm.title = selected.pTitle;
+        this.contentForm.subTitle = chopSubTitle(selected.pTitle);
+        this.contentForm.singleSubTitle = ''
+        this.contentForm.blockResourceType = 1;
+      } else if (selectedType === "live") {
+        // 直播资源
+        this.contentForm.contentType = 6;
+        this.contentForm.videoContentType = "txLive";
+        this.contentForm.extraValue1 = "_otx_" + selected.vId + "";
+        this.contentForm.platformId = selected.source;
+        this.contentForm.pictureUrl = selected.thumb;
+        this.contentForm.title = selected.title;
+        this.contentForm.subTitle = chopSubTitle(selected.subTitle);
+        this.contentForm.singleSubTitle = ''
+        this.contentForm.blockResourceType = 1;
+      } else if (selectedType === "topic") {
+        // 专题资源
+        selected.dataSign === "parentTopic"
+                ? (this.contentForm.contentType = 8)
+                : (this.contentForm.contentType = 7);
+        selected.dataSign === "parentTopic"
+                ? (this.contentForm.videoContentType = "bigTopic")
+                : (this.contentForm.videoContentType = "topic");
+        this.contentForm.extraValue1 = selected.id + "";
+        this.contentForm.pictureUrl = selected.picture;
+        this.contentForm.title = selected.title;
+        this.contentForm.subTitle = chopSubTitle(selected.subTitle);
+        this.contentForm.singleSubTitle = ''
+        this.contentForm.blockResourceType = 1;
+      } else if (selectedType === "broadcast") {
+        // 轮播资源
+        this.contentForm.extraValue1 = selected.id + "";
+        this.contentForm.pictureUrl = selected.picture;
+        this.contentForm.title = selected.title;
+        this.contentForm.subTitle = chopSubTitle(selected.subTitle);
+        this.contentForm.singleSubTitle = ''
+        this.contentForm.blockResourceType = 1;
+        this.contentForm.videoContentType = "rotate";
+      }
+      this.contentForm.categoryId = selected.categoryId
+    },
+    isNormalPicture(pictureUrl) {
+      return !pictureUrl || pictureUrl.slice(-4).toLowerCase() !== 'webp'
+    },
+    handleSelectCornerIconEnd(icon, position) {
+      const cornerIcon = {
+        cornerIconId: icon.cornerIconId,
+        position: position,
+        imgUrl: icon.imgUrl
+      }
+      this.$set(this.contentForm.cornerList, position, cornerIcon)
+    },
+    handleRemoveCornerIcon(position) {
+      this.$set(this.contentForm.cornerList, position, {})
+    },
+    handleSelectPostEnd(post) {
+      this.contentForm.pictureUrl = post.pictureUrl
+    },
+    handleSelectBackupPostEnd(post) {
+      this.contentForm.alternativePictureUrl = post.pictureUrl
+    },
+    handleCoverTypeChange(val) {
+
+    },
+    validate(data, cb) {
+      cb()
+    }
+  },
+  created() {
+  }
+}
+</script>
+
+<style scoped>
+.block-content-form >>> .el-input {
+  max-width: 280px;
+}
+.post-box {
+  border: 1px solid #ccc;
+  overflow: hidden;
+}
+.post-box img {
+  width: 100%;
+}
+.post-info {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 5px;
+  line-height: 20px;
+  font-size: 12px;
+  background: #000;
+  opacity: 0.8;
+  color: #fff;
+}
+.post-info .post-title,
+.post-info .post-sub-title {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.post-info .episode,
+.post-info .score {
+  position: absolute;
+  top: -20px;
+  background: #000;
+  padding: 0 5px;
+}
+.post-info .score {
+  right: 0;
+}
+.post-info .episode {
+  left: 0;
+}
+
+.corner-box {
+  position: relative;
+}
+
+.corner-box span.corner {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.corner-box span.corner img {
+  width: 100%;
+  height: 100%;
+}
+
+.corner-box span.corner-0 {
+  top: 0;
+  left: 0;
+}
+
+.corner-box span.corner-1 {
+  top: 0;
+  right: 0;
+}
+
+.corner-box span.corner-2 {
+  bottom: 0;
+  right: 0;
+}
+
+.corner-box span.corner-3 {
+  bottom: 0;
+  left: 0;
+}
+
+.corner-add-icon-wrapper {
+  height: 24px;
+  padding: 0 8px;
+  line-height: 22px;
+  color: #12ce66;
+  border: 1px solid #12ce66;
+  background: #fff;
+}
+
+.corner-img-wrapper {
+  position: relative;
+}
+
+.corner-img-wrapper i {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #ff4949;
+  font-size: 20px;
+}
+</style>

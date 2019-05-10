@@ -230,9 +230,9 @@
                           <i class="el-icon-caret-bottom el-icon--right"></i>
                         </el-button>
                         <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item @click.native="openPannelWin(1)">常规版块</el-dropdown-item>
-                          <el-dropdown-item @click.native="openPannelWin(3)">业务专辑</el-dropdown-item>
-                          <el-dropdown-item @click.native="openPannelWin(5)">专属影院</el-dropdown-item>
+                          <el-dropdown-item @click.native="activePage = 'panel'">常规版块</el-dropdown-item>
+                          <el-dropdown-item @click.native="activePage = 'album_panel'">业务专辑</el-dropdown-item>
+                          <el-dropdown-item @click.native="activePage = 'private_panel'">专属影院</el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
                       <el-button @click="handleToggleAllPanel(false)">展开所有</el-button>
@@ -565,6 +565,34 @@
         @go-back="activePage = 'tab_info'"
       />
     </PageContentWrapper>
+    <PageContentWrapper v-if="activePage === 'panel'">
+      <PanelInfo
+        :title-prefix="title"
+        init-mode="create"
+        :panel-data-type="1"
+        @upsert-end="activePage = 'tab_info'"
+        @go-back="activePage = 'tab_info'"
+      />
+    </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'album_panel'">
+      <PanelInfo
+        :title-prefix="title"
+        init-mode="create"
+        :panel-data-type="3"
+        @upsert-end="activePage = 'tab_info'"
+        @go-back="activePage = 'tab_info'"
+      />
+    </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'private_panel'">
+      <PrivatePanelInfo
+        :title-prefix="title"
+        init-mode="create"
+        @upsert-end="activePage = 'tab_info'"
+        @go-back="activePage = 'tab_info'"
+      />
+    </PageContentWrapper>
   </PageWrapper>
 </template>
 
@@ -590,6 +618,8 @@ import InputOrder from '@/components/InputOrder'
 import { Affix } from 'vue-affix'
 import titleMixin from '@/mixins/title'
 import OrderableTable from '@/components/OrderableTable'
+import PanelInfo from '../blockManage/PanelInfo'
+import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
 export default {
   name: 'TabInfo',
   mixins: [titleMixin],
@@ -614,7 +644,9 @@ export default {
     InputOrder,
     OrderableTable,
     PageWrapper,
-    PageContentWrapper
+    PageContentWrapper,
+    PanelInfo,
+    PrivatePanelInfo
   },
   data() {
     const STATUS = {

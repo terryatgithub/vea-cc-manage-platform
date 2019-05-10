@@ -31,3 +31,10 @@ export function panelUpsert(data) {
     data: { jsonStr: JSON.stringify(data) }
   })
 }
+export function panelRemove(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/panel/remove.html',
+    data
+  })
+}
