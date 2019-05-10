@@ -84,7 +84,6 @@ export function deleteVersion (data) {
     }
   })
 }
-
 export function getAuditHistoryList (params) {
   return this.fetch({
     url: 'api/v1/audit/historyList.html',

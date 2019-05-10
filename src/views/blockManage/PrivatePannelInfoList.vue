@@ -173,15 +173,15 @@ export default {
         let rows = []
         table.data.map(tableRow => {
           if (newVal.indexOf(tableRow.pannelGroupId) > -1) {
-            // let row = {
-            //   pannelGroupId: tableRow.pannelGroupId,
-            //   pannelGroupRemark: tableRow.pannelGroupRemark,
-            //   duplicateVersion: tableRow.duplicateVersion,
-            //   pannelType: tableRow.pannelType,
-            // }
+            let row = {
+              pannelGroupId: tableRow.pannelGroupId,
+              pannelGroupRemark: tableRow.pannelGroupRemark,
+              duplicateVersion: tableRow.duplicateVersion,
+              pannelType: tableRow.pannelType,
+              type: 'PrivatePannelInfo'
+            }
              console.log("PrivatePannelInfo")
-             tableRow.type = 'PrivatePannelInfo'
-            rows.push(tableRow)
+            rows.push(row)
           }
         })
         this.$emit('input', rows)

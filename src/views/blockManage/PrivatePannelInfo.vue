@@ -148,7 +148,7 @@
           <el-form label-width="120px" label-position="right">
              <div class="form-legend-header">
               <span>基本信息</span>
-            </div>
+             </div>
             <el-form-item label="业务分类">
               <span>{{ getCategoryLabel(panel.panelGroupCategory) }}</span>
             </el-form-item>

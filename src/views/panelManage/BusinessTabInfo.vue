@@ -57,22 +57,23 @@
               </el-form-item>
               <el-form-item label="选择板块" prop="tags">
                 <el-button type="primary" plain @click="handleSlectPannelStart">选择板块</el-button>
-                <OrderableTable
+               
+                <el-dropdown>
+          <el-button type="primary" plain class="marginL">
+            添加板块<i class="el-icon-caret-bottom el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="openCreatePage('pannelInfo')">常规版块</el-dropdown-item>
+            <el-dropdown-item @click.native="openCreatePage('AlbumPannelInfo')">业务专辑</el-dropdown-item>
+            <el-dropdown-item @click.native="openCreatePage('PrivatePannelInfo')">专属影院</el-dropdown-item>
+          </el-dropdown-menu>
+                </el-dropdown>
+                 <OrderableTable
                   v-model="tab.pannelList"
                   :header="tabGroupTableHeader"
                   :hide-action="true"
                   class="orderableTable"
                 />
-                <!-- <el-dropdown>
-          <el-button type="warning">
-            添加板块<i class="el-icon-caret-bottom el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="openPannelWin(1)">常规版块</el-dropdown-item>
-            <el-dropdown-item @click.native="openPannelWin(3)">业务专辑</el-dropdown-item>
-            <el-dropdown-item @click.native="openPannelWin(5)">专属影院</el-dropdown-item>
-          </el-dropdown-menu>
-                </el-dropdown>-->
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="handleShowTimeShelf()">提交审核</el-button>
@@ -167,13 +168,25 @@
         </CommonContent>
       </ContentCard>
     </div>
-    <PrivatePannelInfoView
+    <PrivatePannelInfo
       @go-back="goBack"
-      :viewData="viewData"
+      @upsert-end="goBack"
+      :id="viewId"
       :version="duplicateVersion"
+      :initMode="viewId!==undefined? 'read':'create'"
       v-if="mode==='PrivatePannelInfo'"
     >
-    </PrivatePannelInfoView>
+    </PrivatePannelInfo>
+    <PanelInfo
+      @go-back="goBack"
+      @upsert-end="goBack"
+      :id="viewId"
+      :version="duplicateVersion"
+      :initMode="viewId!==undefined? 'read':'create'"
+      :panel-data-type="1"
+      v-if="mode==='pannelInfo'"
+    >
+    </PanelInfo>
     <ReleaseTimeSetter
       v-if="showTimeShelf"
       @cancel="showTimeShelf = false"
@@ -188,12 +201,15 @@ import { Table } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
 import OrderableTable from '@/components/OrderableTable'
 import ReleaseTimeSetter from './../../components/ReleaseTimeSetter'
-import PrivatePannelInfoView from './../blockManage/PrivatePannelInfoView'
+import PrivatePannelInfo from './../blockManage/PrivatePannelInfo'
+import PanelInfo from './../blockManage/PanelInfo'
+// import AlbumPannelInfo from './../blockManage/AlbumPannelInfo'
 export default {
   components: {
     AddBlockFilter,
     Table,
-    PrivatePannelInfoView,
+    PrivatePannelInfo,
+    PanelInfo,
     OrderableTable,
     ReleaseTimeSetter,
     SelectHourAndMinute,
@@ -521,9 +537,15 @@ export default {
     },
     handlePreviewPannel(row, version) {
       this.preMode = this.mode
-      this.viewData = row
+      this.viewId = row.pannelGroupId
       this.mode = row.type
       this.duplicateVersion = version
+    },
+    openCreatePage(mode){
+      this.preMode = this.mode
+      this.viewId = undefined
+      this.mode = mode
+      this.duplicateVersion = undefined
     },
     handleSlectPannelStart() {
       this.preMode = this.mode
