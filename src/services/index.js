@@ -28,7 +28,7 @@ import * as policyManage from './homePageManage/policyManage'
 import * as sysPlugin from './sysPlugin'
 import * as common from './common'
 import * as commonResource from './commonResource'
-// import * as businessTab from './panelManage/businessTab'
+import * as businessTab from './panelManage/businessTab'
 import * as mediaResource from './mediaResource'
 
 const service = {
@@ -61,7 +61,7 @@ const service = {
   ...sysPlugin,
   ...common,
   ...commonResource,
-  // ...businessTab,
+  ...businessTab,
   ...mediaResource
 }
 Vue.prototype.$service = utils.wrapService(service)
