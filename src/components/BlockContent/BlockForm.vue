@@ -35,22 +35,28 @@
           <ResourceSelector 
             ref="resourceSelector"
             :is-live="true"
-            :selectors="['app', 'edu', 'pptv', 'live', 'topic', 'broadcast']"
+            :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'broadcast']"
             selection-type="single"
             :source="pannel.pannelResource" 
-            @select-end="handleSelectResourceEnd">
+            @select-end="handleSelectMediaEnd">
             <el-button>选择资源</el-button>
           </ResourceSelector>
           <el-tag type="primary" v-if="contentForm.extraValue1">
-            已选择: {{ contentForm.extraValue1
-            }}
+            已选择: {{ contentForm.extraValue1 }}
           </el-tag>
         </el-form-item>
         <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
-          <el-button @click="openWin('app')" :disabled="isReadonly">选择资源</el-button>
+          <ResourceSelector 
+            ref="resourceSelector"
+            :is-live="true"
+            :selectors="['app']"
+            selection-type="single"
+            :source="pannel.pannelResource" 
+            @select-end="handleSelectAppEnd">
+            <el-button>选择资源</el-button>
+          </ResourceSelector>
           <el-tag type="primary" v-if="contentForm.extraValue1">
-            已选择: {{ contentForm.extraValue1
-            }}
+            已选择: {{ contentForm.extraValue1 }}
           </el-tag>
         </el-form-item>
 
@@ -336,10 +342,10 @@ export default {
   },
   data() {
     const isReadonly = this.isReadonly
-    const checkMannulVersionCode = function(rule, value, callback) {
+    const checkMannulVersionCode = (rule, value, callback) => {
       // 当为教育资源时 保证所填值为空或大于7位
       if (
-        _this.contentForm.contentType === 3 &&
+        this.contentForm.contentType === 3 &&
         (value.length > 0 && value.length < 7)
       ) {
         callback(new Error('教育版本号需为7位以上'))
@@ -567,7 +573,10 @@ export default {
         }
     },
    
-    handleSelectResourceEnd(resources) {
+    chopSubTitle(title) {
+      return (title || '').slice(0, 50)
+    },
+    handleSelectMediaEnd(resources) {
       let selectedType
       let selected
       let selectedEpisode
@@ -582,10 +591,7 @@ export default {
           }
         }
       })
-
-      const chopSubTitle = (title) => {
-        return (title || '').slice(0, 50)
-      }
+      const chopSubTitle = this.chopSubTitle
       const contentForm = this.contentForm
       // 清空由app可能引起的遗留数据
       Object.assign(contentForm, {
@@ -725,6 +731,20 @@ export default {
         this.contentForm.videoContentType = "rotate";
       }
       this.contentForm.categoryId = selected.categoryId
+      this.$refs.resourceSelector.clearSelected()
+    },
+    handleSelectAppEnd(resources) {
+      const selected = resources.app[0]
+      if (selected) {
+        this.contentForm.contentType = 2;
+        this.contentForm.videoContentType = "app";
+        this.contentForm.extraValue1 = selected.appPackageName;
+        this.contentForm.pictureUrl = selected.appImageUrl;
+        this.contentForm.title = selected.appName;
+        this.contentForm.subTitle = this.chopSubTitle(selected.appName);
+        this.contentForm.singleSubTitle = ''
+        this.contentForm.blockResourceType = 0;
+      }
     },
     isNormalPicture(pictureUrl) {
       return !pictureUrl || pictureUrl.slice(-4).toLowerCase() !== 'webp'

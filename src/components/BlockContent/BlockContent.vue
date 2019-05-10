@@ -186,6 +186,7 @@ export default {
       const block = JSON.parse(JSON.stringify(this.data.block || '{}'))
       const normalContentList = block.videoContentList || []
       const specificContentList = block.specficContentList || []
+      const defaultContentForm = this.getDefaultContentForm()
       const parse = (data) => {
         const redundantParams = data.redundantParams
         if (redundantParams) {
@@ -198,8 +199,16 @@ export default {
           if (redundantParams.versionCode) {
             redundantParams.webAppVersion = redundantParams.versionCode
           }
+        }
 
-          const cornerList = data.cornerList
+        const cornerList = data.cornerList
+        if (cornerList && cornerList.length > 0) {
+          data.cornerList = cornerList.reduce((result, item) => {
+            result[item.position] = item
+            return result
+          }, [])
+        } else {
+          data.cornerList = defaultContentForm.cornerList
         }
 
         if (data.coverType == "custom") {
@@ -250,7 +259,7 @@ export default {
             delete data.onclick
         }
 
-        return Object.assign(this.getDefaultContentForm(), data)
+        return Object.assign(defaultContentForm, data)
       }
       this.normalContentList = normalContentList.length > 0 
         ? normalContentList.map(parse)
