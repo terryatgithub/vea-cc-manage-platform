@@ -87,7 +87,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.preview(row)
+                      this.handleRead(row)
                     }
                   }
                 },
@@ -143,7 +143,23 @@ export default {
           {
             label: '待审核副本',
             prop: 'duplicateVersion',
-            width: '90'
+            width: '90',
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row, row.duplicateVersion)
+                    }
+                  }
+                },
+                row.duplicateVersion
+              )
+            }
           },
           {
             label: '更新时间',
@@ -178,7 +194,7 @@ export default {
     },
     /**新增 */
     addData() {
-      this.$emit('open-add-page', null)
+      this.$emit('create')
     },
     /**编辑 */
     editData() {
@@ -188,7 +204,7 @@ export default {
         this.$message('只能选择一条数据')
       } else {
         console.log(this.selected)
-        this.$emit('open-add-page', this.selected[0])
+        this.$emit('edit', this.selected[0])
       }
     },
     /**批量删除 */
@@ -206,8 +222,8 @@ export default {
       }
     },
     /**预览 */
-    preview(row) {
-      this.$emit('open-view-page', row)
+     handleRead(row, version) {
+      this.$emit('read', row.pannelGroupId, version)
     },
     /**获取业务分类 */
     getBusinessType() {

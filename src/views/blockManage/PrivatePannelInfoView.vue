@@ -1,13 +1,23 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
+          <CommonContent
+          :mode="mode"
+          :resource-info="resourceInfo"
+          @replicate="mode = 'replicate'"
+          @edit="mode = 'edit'"
+          @unaudit="fetchData"
+          @shelves="fetchData"
+          @audit="$emit('upsert-end')"
+          @select-version="fetchData"
+        >
     <div v-if="mode === 'read'" class="private-panel-info-read">
-      <div class="private-panel-info-wrapper">
+      <!-- <div class="private-panel-info-wrapper">
         <div style="margin-left: 10px">
           <el-form :inline="true" style="margin:10px 0px">
             <HistoryTool :id="id" :type="type" :initialStatus="status" ref="history" @change="changeVersionAndStatus"/>
           </el-form>
         </div>
-      </div>
+      </div> -->
       <div class="base-info">
         <div>专属影院版块：</div>
         <div>专属影院，影片数据 由大数据和媒资库提供，运营人员只需配置相应内容块的影片类型（0 会员影片，1 非会员影片，2 单点影片）。</div>
@@ -95,7 +105,7 @@
         </table>
       </div>
     </div>
-    <AuditDetailButton
+    <!-- <AuditDetailButton
       :id="id"
       :version="version"
       :type="type"
@@ -105,17 +115,20 @@
       @go-edit-Page="goEditPage"
       @delete-item="deleteItem"
       @copy="CreatCopy"
-    ></AuditDetailButton>
+    ></AuditDetailButton> -->
+          </CommonContent>
   </ContentCard>
 </template>
 
 <script>
 import AuditDetailButton from './../../components/AuditDetailButton'
 import HistoryTool from './../../components/HistoryTool'
+import CommonContent from '@/components/CommonContent.vue'
 export default {
   components: {
     AuditDetailButton,
-    HistoryTool
+    HistoryTool,
+    CommonContent
   },
   props: ['viewData','version'],
   data() {
@@ -245,6 +258,18 @@ export default {
         return target && target.value
       }
     },
+    resourceInfo() {
+      const tab = this.tab
+      if (tab.tabId) {
+        return {
+          id: tab.tabId,
+          type: 'tab',
+          menuElId: 'tabInfo',
+          version: tab.currentVersion,
+          status: tab.tabStatus
+        }
+      }
+    },
   },
   methods: {
     //业务分类
@@ -337,9 +362,9 @@ export default {
     CreatCopy() {
       this.$emit('create-copy', this.viewData.pannelGroupId)
     },
-    privatePannelInfoView() {
+    fetch(version) {
       this.$service
-        .privatePannelInfoView({ id: this.viewData.pannelGroupId })
+        .privatePannelInfoView({ id: this.viewData.pannelGroupId, version })
         .then(data => {
           this.setPanel(data)
            this.getHandlePerson(data)
@@ -363,7 +388,7 @@ export default {
     console.log(this.viewData)
     this.title = '预览'
     this.mode = 'read'
-    this.privatePannelInfoView() //预览
+    this.fetch(this.version) //预览
     this.id = this.viewData.pannelGroupId
     this.version = this.viewData.currentVersion
     this.status = parseInt(this.viewData.pannelStatus)

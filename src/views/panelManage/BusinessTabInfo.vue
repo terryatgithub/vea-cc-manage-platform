@@ -1,9 +1,12 @@
 <template>
   <div>
-    <div class="hompage-upsert" v-if="initMode !== 'read'">
+    <div class="hompage-upsert" v-if="mode!== 'read'">
       <ContentCard :title="title" @go-back="$emit('go-back')" v-show="isShow">
         <el-row :gutter="40">
           <el-col :span="24">
+             <div class="form-legend-header">
+                <span>基本信息</span>
+              </div>
             <el-form
               ref="tabForm"
               :rules="rules"
@@ -86,19 +89,22 @@
         @add-block="addBlock"
       />
     </div>
-    <div v-if="initMode === 'read'">
+    <div v-if="mode === 'read'">
       <ContentCard :title="title" @go-back="$emit('go-back')">
         <CommonContent
           :mode="mode"
           :resource-info="resourceInfo"
-          @replicate="mode = 'replicate'"
-          @edit="mode = 'edit'"
+          @replicate="mode = 'replicate'; title='创建副本'"
+          @edit="mode = 'edit'; title='编辑'"
           @unaudit="fetchData"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
           @copy="handleCopy"
           @select-version="fetchData"
         >
+         <div class="form-legend-header">
+                <span>基本信息</span>
+              </div>
           <el-row :gutter="40">
             <el-col :span="24">
               <el-form
@@ -302,13 +308,13 @@ export default {
     },
     isDisableTabType() {
       const mode = this.mode
-      return mode === 'edit' || mode === 'replica' || mode === 'copy'
+      return mode === 'edit' || mode === 'replicate' || mode === 'copy'
     },
     isShow() {
       const mode = this.mode
       return (
         mode === 'edit' ||
-        mode === 'replica' ||
+        mode === 'replicate' ||
         mode === 'copy' ||
         mode === 'create'
       )
@@ -497,7 +503,7 @@ export default {
     getFormData() {
       const data = JSON.parse(JSON.stringify(this.tab))
       const mode = this.mode
-      if (mode === 'replica') {
+      if (mode === 'replicate') {
         data.currentVersion = ''
       }
       if (mode === 'copy') {

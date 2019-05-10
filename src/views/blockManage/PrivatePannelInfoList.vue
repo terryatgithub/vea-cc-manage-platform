@@ -15,11 +15,6 @@
         @delete="batchDel"
         >
         </ButtonGroupForListPage>
-      <!-- <div v-if="dataList === undefined " class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
-      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
@@ -94,7 +89,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReview(row)
+                      this.handleRead(row)
                     }
                   }
                 },
@@ -144,7 +139,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReview(row, row.duplicateVersion)
+                      this.handleRead(row, row.duplicateVersion)
                     }
                   }
                 },
@@ -219,7 +214,7 @@ export default {
     },
     //新增
     addTabInfo() {
-      this.$emit('open-add-page', null)
+      this.$emit('create')
     },
     //编辑
     editData() {
@@ -232,7 +227,7 @@ export default {
         for (var j = 0; j < that.table.data.length; j++) {
           if (that.selected[0] == that.table.data[j].pannelGroupId) {
             if (that.table.data[j].pannelStatus == 2) {
-              that.$emit('open-add-page', that.selected[0])
+              that.$emit('edit', that.selected[0])
             } else {
               that.$message('该状态不允许编辑')
             }
@@ -265,8 +260,8 @@ export default {
         }
       }
     },
-    openReview(row, version) {
-      this.$emit('open-view-page', row, version)
+    handleRead(row, version) {
+      this.$emit('read', row.pannelGroupId, version)
     },
     //查询
     handleFilterChange(type) {

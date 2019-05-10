@@ -1,67 +1,79 @@
 <template>
   <div>
-    <MarkPanelList
-      v-show="model === 'list'"
-      ref="list"
-      @open-add-page="openAddPage"
-      @open-view-page="openViewPage"
-    ></MarkPanelList>
-    <MarkPanelAdd
-      v-if="model === 'add'"
-      :editId="editId"
-      @open-list-page="openListPage"
-      @go-back="goBack"
-    ></MarkPanelAdd>
-    <MarkPanelView
-      v-if="model === 'view'"
-      :viewData="viewData"
-      @pen-list-page="openListPage"
-      @open-add-page="openAddPage"
-      @go-back="goBack"
-    ></MarkPanelView>
+    <MarkPanelList 
+     v-show="isShowList" 
+     ref="list" 
+      @create="handleCreate"
+      @read="handleRead"
+      @edit="handleEdit"
+      @copy="handleCopy"
+     >
+     </MarkPanelList>
+    <MarkPanelInfo 
+      v-if="!isShowList" 
+       :id="id" 
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd" 
+      @go-back="goBack">
+    </MarkPanelInfo>
   </div>
 </template>
 <script>
-import MarkPanelList from './MarkPanelList'
-import MarkPanelAdd from './MarkPanelAdd'
-import MarkPanelView from './MarkPanelView'
+import MarkPanelList from  './MarkPanelList'
+import MarkPanelInfo from './MarkPanelInfo'
 export default {
   components: {
     MarkPanelList,
-    MarkPanelAdd,
-    MarkPanelView
+    MarkPanelInfo,
   },
   data() {
     return {
-      model: 'list',
-      editId: null,
-      viewData: null
-    }
+      isShowList: true,
+      id: undefined,
+      mode: 'create',
+      version: undefined
+    };
   },
   methods: {
-    /**打开新增编辑页 */
-    openAddPage(id) {
-      this.editId = id
-      this.model = 'add'
+    handleUpsertEnd () {
+      this.isShowList = true
+      this.$refs.list.fetchData();//更新页面
+      this.mode = 'list'
+      this.version = undefined
     },
-    /**打开详情页 */
-    openViewPage(data) {
-      this.viewData = data
-      this.model = 'view'
+    handleCreate() {
+      this.id = undefined
+      this.mode = 'create'
+      this.isShowList = false
     },
-    /**打开列表页 */
-    openListPage() {
-      this.model = 'list'
-      this.$refs.list.fetchData() //更新页面
+    handleEdit(id) {
+      this.id = id
+      this.mode = 'edit'
+      this.isShowList = false
     },
-    /**返回事件 */
-    goBack() {
-      this.model = 'list'
+    handleRead(id, version) {
+      this.id = id
+      this.mode = 'read'
+      this.version = version
+      this.isShowList = false
+    },
+    handleCopy(id) {
+      this.id = id
+      this.mode = 'copy'
+      this.isShowList = false
+    },
+    /**
+     * 新增编辑里面的返回事件
+    */
+    goBack () {
+     this.isShowList = true
+     this.mode = 'list'
+     this.version = undefined
     }
   }
 }
 </script>
+<!--声明语言，并且添加scoped-->
 <style lang="stylus" scoped>
 </style>
-
-

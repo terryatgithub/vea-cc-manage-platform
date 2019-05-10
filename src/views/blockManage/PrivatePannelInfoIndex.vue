@@ -1,58 +1,80 @@
 <template>
   <div>
-    <PrivatePannelInfoList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></PrivatePannelInfoList>
-    <PrivatePannelInfoAdd v-if="model === 'add'" :editId="editId" :isCopy="isCopy" @open-list-page="openListPage" @go-back="goBack"></PrivatePannelInfoAdd>
-    <PrivatePannelInfoView v-if="model === 'view'" :viewData="viewData" :version="version" @open-list-page="openListPage" @create-copy="createCopy" @go-back="goBack"></PrivatePannelInfoView>
+    <PrivatePannelInfoList 
+     v-show="isShowList" 
+     ref="list" 
+      @create="handleCreate"
+      @read="handleRead"
+      @edit="handleEdit"
+      @copy="handleCopy"
+     >
+     </PrivatePannelInfoList>
+    <PrivatePannelInfo 
+      v-if="!isShowList" 
+       :id="id" 
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd" 
+      @go-back="goBack">
+    </PrivatePannelInfo>
   </div>
 </template>
 <script>
-import PrivatePannelInfoList from './PrivatePannelInfoList'
-import PrivatePannelInfoAdd from './PrivatePannelInfoAdd'
-import PrivatePannelInfoView from './PrivatePannelInfoView'
+import PrivatePannelInfoList from  './PrivatePannelInfoList'
+import PrivatePannelInfo from './PrivatePannelInfo'
 export default {
   components: {
     PrivatePannelInfoList,
-    PrivatePannelInfoAdd,
-    PrivatePannelInfoView
+    PrivatePannelInfo,
   },
   data() {
     return {
-      model: 'list',
-      isCopy: false,
-      editId: null,
-      viewData: null,
+      isShowList: true,
+      id: undefined,
+      mode: 'create',
       version: undefined
-    }
+    };
   },
   methods: {
-    createCopy(id){
-      this.editId = id
-      this.model = 'add'
-      this.isCopy = true 
+    handleUpsertEnd () {
+      this.isShowList = true
+      this.$refs.list.fetchData();//更新页面
+      this.mode = 'list'
+      this.version = undefined
     },
-    /**打开新增编辑页 */
-    openAddPage(id) {
-      this.editId = id
-      this.model = 'add'
+    handleCreate() {
+      this.id = undefined
+      this.mode = 'create'
+      this.isShowList = false
     },
-    /**打开列表页 */
-    openListPage() {
-      this.model = 'list'
-      this.$refs.list.fetchData() //更新页面
+    handleEdit(id) {
+      this.id = id
+      this.mode = 'edit'
+      this.isShowList = false
     },
-    /**打开预览页 */
-    openViewPage(data, version) {
-      this.model = 'view'
-      this.viewData = data
-      this.version =version
+    handleRead(id, version) {
+      debugger
+      this.id = id
+      this.mode = 'read'
+      this.version = version
+      this.isShowList = false
     },
-    /**返回事件 */
-    goBack() {
-      this.model = 'list'
+    handleCopy(id) {
+      this.id = id
+      this.mode = 'copy'
+      this.isShowList = false
+    },
+    /**
+     * 新增编辑里面的返回事件
+    */
+    goBack () {
+     this.isShowList = true
+     this.mode = 'list'
+     this.version = undefined
     }
   }
 }
 </script>
-<style lang="stylus" scoped></style>
-
-
+<!--声明语言，并且添加scoped-->
+<style lang="stylus" scoped>
+</style>
