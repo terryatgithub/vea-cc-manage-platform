@@ -313,6 +313,7 @@
       <BlockContent
         :mode="mode"
         :data="blockContentProps"
+        :source="pannel.pannelResource"
         :pannel="pannel.pannelList[+activePannelIndex]"
         :hide-title-options="!!blockContentProps.blockInfo.title_info"
         @cancel="handleSetBlockContentCancle"
@@ -1688,7 +1689,6 @@ export default {
         }
       })
     })
-    debugger
     if (this.id) {
       this.fetchData(this.version)
     }

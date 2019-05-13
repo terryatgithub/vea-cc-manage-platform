@@ -26,7 +26,9 @@
               @click.stop=""
               @cover-type-change="handleCoverTypeChange"
               :mode="mode" 
+              :check-crowd="checkCrowd"
               content-type='normal'
+              :source="source"
               :data="data" 
               :pannel="pannel" 
               :content-form="contentForm" 
@@ -57,12 +59,14 @@
             </el-row>
             <BlockForm 
               v-if="activeType === 'specific'"
-              ref="specficBlockForm"
+              ref="specificBlockForm"
               @click.stop=""
               @cover-type-change="handleCoverTypeChange"
               content-type='specific'
               :mode="mode" 
+              :check-crowd="checkCrowd"
               :data="data" 
+              :source="source"
               :pannel="pannel" 
               :content-form="contentForm" 
               :hide-title-options="hideTitleOptions" />
@@ -86,7 +90,7 @@ export default {
       specificContentList: [],
     }
   },
-  props: ['mode', 'data', 'pannel', 'hideTitleOptions'],
+  props: ['mode', 'data', 'source', 'pannel', 'hideTitleOptions'],
   computed: {
     title() {
       if (this.mode === 'read') {
@@ -129,7 +133,7 @@ export default {
           // openMode: 'webpage',
           openMode: 'app',
           webpageUrl: '',
-          webpageType: '',
+          webpageType: '2',
           webAppVersion: '102007',
           videoName: '',
           videoUrl: '',
@@ -162,12 +166,36 @@ export default {
       this.$set(contentList, activeIndex, contentForm)
     },
     handleRemoveContent(index, contentType) {
-
+      const activeType = this.activeType
+      const activeIndex = this.activeIndex
+      const specficContentList = this.specificContentList
+      const normalContentList = this.normalContentList
+      const currentContentList = this[contentType + 'ContentList']
+      currentContentList.splice(index, 1)
+      if (activeType === contentType) {
+        if (currentContentList.length > 0) {
+          if (currentContentList[activeIndex] === undefined) {
+            this.handleActivate(contentType, index - 1)
+          }
+        } else {
+          this.handleActivate(contentType === 'normal' ? 'specific' : 'normal', 0)
+        }
+      }
     },
     handleAddContent(contentType) {
-      const contentList = this[contentType + 'ContentList']
-      contentList.push(this.getDefaultContentForm())
-      this.handleActivate(contentType, contentList.length - 1)
+      this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
+        if (!err) {
+          const contentList = this[contentType + 'ContentList']
+          contentList.push(this.getDefaultContentForm())
+          this.activeType = contentType
+          this.activeIndex = contentList.length - 1
+        } else {
+          this.$message({
+            type: 'error',
+            message: err
+          })
+        }
+      })
     },
     handleActivate(contentType, index) {
       this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
@@ -176,7 +204,7 @@ export default {
           this.activeIndex = index
         } else {
           this.$message({
-            type: 'erro',
+            type: 'error',
             message: err
           })
         }
@@ -268,6 +296,20 @@ export default {
     },
     parseContentList() {
 
+    },
+    checkCrowd(crowd) {
+      const specificContentList = this.specificContentList
+      let length = specificContentList.length
+      let existsIndex
+      let dmpRegistryInfo
+      while (--length >= 0) {
+        dmpRegistryInfo = specificContentList[length].dmpRegistryInfo
+        if (dmpRegistryInfo && dmpRegistryInfo.dmpCrowdId === crowd.value) {
+          existsIndex = length
+          break
+        }
+      }
+      return existsIndex
     }
   },
   created() {

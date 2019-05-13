@@ -58,6 +58,20 @@
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
+          <rotate-selector 
+            v-show="activeSelector === 'rotate'"
+            ref="rotate-selector" 
+            :source="source"
+            :selection-type="selectionType"
+            @select-cancel="handleSelectCancel"
+            @select-end="handleSelectEnd" />
+          <func-selector 
+            v-show="activeSelector === 'func'"
+            ref="func-selector" 
+            :source="source"
+            :selection-type="selectionType"
+            @select-cancel="handleSelectCancel"
+            @select-end="handleSelectEnd" />
           <broadcast-selector 
             v-show="activeSelector === 'broadcast'"
             ref="broadcast-selector" 
@@ -80,6 +94,9 @@ import LiveSelector from './LiveSelector'
 import PPTVSelector from './PPTVSelector'
 import EduSelector from './EduSelector'
 import VideoSelector from './VideoSelector'
+import FuncSelector from './FuncSelector'
+import RotateSelector from './RotateSelector'
+
 const SELECTORS = [
   {
     label: '影视中心',
@@ -107,6 +124,14 @@ const SELECTORS = [
   },
   {
     label: '轮播频道',
+    value: 'rotate'
+  },
+  {
+    label: '多功能推荐位',
+    value: 'func'
+  },
+  {
+    label: '轮播推荐位',
     value: 'broadcast'
   }
 ]
@@ -120,6 +145,8 @@ export default {
     'pptv-selector': PPTVSelector,
     EduSelector,
     VideoSelector,
+    FuncSelector,
+    RotateSelector
   },
   data() {
     return {
@@ -174,6 +201,12 @@ export default {
         }
         return result
       }, {})
+      if ($refs['video-selector']) {
+        Object.defineProperty(result, 'videoSource', {
+          value: $refs['video-selector'].filter.partner,
+          enumerable: false
+        })
+      }
       this.$emit('select-end', result)
     },
     handleSelectCancel() {
