@@ -38,3 +38,19 @@ export function panelRemove(data) {
     data
   })
 }
+
+export function panelCollect(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/commonResourceUser/pannel/collectResource.html',
+    data
+  })
+}
+
+export function panelUnCollect(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/commonResourceUser/pannel/cancelCollectResource.html',
+    data
+  })
+}

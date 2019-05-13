@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { ContentWrapper, Table } from 'admin-toolkit'
+import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 const ID = 'pannelGroupId'
@@ -126,7 +126,18 @@ export default {
           },
           {
             label: '待审核副本',
-            prop: 'duplicateVersion'
+            render: (h, { row }) => {
+              return h('el-button', {
+                attrs:{
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.handleRead(row, row.duplicateVersion) 
+                  }
+                }
+              }, row.duplicateVersion)
+            }
           },
           {
             label: '更新时间',
@@ -142,7 +153,31 @@ export default {
             prop: 'userName'
           },
           {
-            label: '操作'
+            label: '操作',
+            width: 140,
+            render: (h, {row}) => {
+              return h('div', [
+                h('el-button', {
+                  props: {type: 'text'},
+                  on: {
+                    click: () => {
+                      this.handleCopy(row)
+                    }
+                  }
+                }, '复制'),
+                h('el-button', {
+                  props: {type: 'text'},
+                  on: {
+                    click: () => {
+                      this.handleToggleCollect(row)
+                    }
+                  }
+                }, [
+                  h('el-icon', {class: row.collected ? 'el-icon-star-on' : 'el-icon-star-off'}),
+                  row.collected ? '取消' : '收藏'
+                ]),
+              ])
+            }
           }
         ],
         selected: [],
@@ -256,11 +291,27 @@ export default {
         return result;
       }, []);
     },
+    handleCopy(row) {
+      this.$emit('copy', row)
+    },
+    handleToggleCollect(row) {
+      if (row.collected) {
+        this.$service.panelUnCollect({resourceId: row.pannelGroupId}, '取消收藏成功')
+          .then(() => {
+            this.$set(row, 'collected', false)
+          })
+      } else {
+        this.$service.panelCollect({resourceId: row.pannelGroupId}, '收藏成功')
+          .then(() => {
+            this.$set(row, 'collected', true)
+          })
+      }
+    },
     handleCreate() {
       this.$emit('create')
     },
-    handleRead(row) {
-      this.$emit('read', row)
+    handleRead(row, version) {
+      this.$emit('read', row, version)
     },
     handleEdit() {
       if (this.$isAllowEdit(this.selected)) {
