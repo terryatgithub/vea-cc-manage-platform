@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-     <ButtonGroupForListPage 
-        pageName='sysUser' 
+     <ButtonGroupForListPage
+        pageName='sysUser'
         @add="addUser"
         @edit="editData"
         @delete="batchDel"
@@ -71,9 +71,9 @@ export default {
   data () {
     return {
       depts: {}, // 部门
-      roleData: [], //全部数据
-      roleValue: [], //右边数据
-      data1: [], //弹框数据
+      roleData: [], // 全部数据
+      roleValue: [], // 右边数据
+      data1: [], // 弹框数据
       user: [],
       roleDataSelected: null,
       roleDialogVisible: false, // 角色管理窗口开关
@@ -186,6 +186,8 @@ export default {
       var data2 = []
       var data3 = []
       this.roleDialogVisible = true
+      // 清空前面Push进去的id
+      this.user = []
       this.user.push(['userId', userId])
       this.$service.getNotRolesByUserId(object).then(data => {
         this.data1 = data
@@ -219,10 +221,9 @@ export default {
       const obj = this.selectedRole
       this.$service.saveUserRoles(obj, '保存成功')
     },
-    setData ({ row }) {},
     editData() {
-      if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selected[0])
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('open-add-page', this.selected[0])
       }
     },
     /**
@@ -354,6 +355,7 @@ export default {
     },
     // 保存用户数据权限
     saveProfession () {
+      debugger
       const dictIdGroupStr = this.checkedDictItems.join(',')
       this.$service.saveProfession({ userId: this.currentUserId, dicts: dictIdGroupStr }, '保存成功')
       this.dataPermissionWinVisible = false
@@ -361,15 +363,15 @@ export default {
   },
   created () {
     let filterSchema = _.map({
-      userName: _.o.string.other("form", {
-        component: "Input",
+      userName: _.o.string.other('form', {
+        component: 'Input',
         placeholder: '用户名称'
       }),
       deptId: _.o.enum(this.depts).other('form', {
         component: 'Select',
         placeholder: '所在部门'
       }),
-      loginName: _.o.string.format('email').other('form', {
+      loginName: _.o.string.other('form', {
         component: 'Input',
         placeholder: '登录账号'
       }),
@@ -387,11 +389,11 @@ export default {
       })
     })
       .other('form', {
-         cols: {
-        item: 6,
-        label: 0,
-        wrapper: 20
-      },
+        cols: {
+          item: 6,
+          label: 0,
+          wrapper: 20
+        },
         layout: 'inline',
         footer: {
           cols: {
@@ -408,7 +410,7 @@ export default {
       this.filterSchema = filterSchema
     })
     this.fetchData()
-  }}
+  } }
 </script>
 <style lang = 'stylus' scoped>
 .btns

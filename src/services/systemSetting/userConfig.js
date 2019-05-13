@@ -76,7 +76,7 @@ export function saveUserRoles (data) {
 export function userConfigBusinessType (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/v1/globalDictInfo/getTypes/businessType.html',
+    url: 'api/globalDictInfo/getTypes/businessType.html',
     params
   })
 }
