@@ -7,14 +7,19 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <ButtonGroupForListPage 
-        pageName='panel' 
-        @add="addTabInfo"
-        @edit="editData"
-        @delete="batchDel"
-        v-if="dataList === undefined "
+       <ButtonGroupForListPage 
+       v-if="dataList === undefined " 
+        pageName='albumPanel' 
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"
         >
         </ButtonGroupForListPage>
+      <!-- <div v-if="dataList === undefined " class="btns">
+        <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
+      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
@@ -33,13 +38,12 @@
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-
+const ID = 'pannelGroupId'
 export default {
   components: {
     ContentWrapper,
     Table,
     ButtonGroupForListPage
-
   },
 
   props: {
@@ -62,7 +66,7 @@ export default {
       pannelStatus: {},
       filter: {
         idPrefix: 10,
-        pannelType: 1
+        pannelType: 3
       },
       filterSchema: null,
       pagination: {
@@ -87,7 +91,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.openReview(row) 
+                    this.handleRead(row) 
                   }
                 }
               },row.pannelGroupRemark)
@@ -107,6 +111,10 @@ export default {
             formatter: (row) => {
                 return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_voole': '优朋'}[row.pannelList[0].pannelResource]
             }
+          },
+          {
+            label: '专辑数据',
+            prop: 'albumName'
           },
           {
             label: '引用状态',
@@ -160,15 +168,15 @@ export default {
         const table = this.table
         let rows = []
         table.data.map(tableRow => {
-          if(newVal.indexOf(tableRow.pannelGroupId) > -1) {
+          if(newVal.pannelGroupId.indexOf(tableRow.pannelGroupId) > -1) {
             let row = {
               pannelGroupId: tableRow.pannelGroupId,
               pannelGroupRemark: tableRow.pannelGroupRemark,
               duplicateVersion: tableRow.duplicateVersion,
-              pannelType: tableRow.pannelType,
-              type: 'pannelInfo'
+               pannelType: tableRow.pannelType,
+               type: 'AlbumPannelInfo'
             }
-            console.log("pannelInfoList")
+            console.log("AlbumPannelInfoList")
             rows.push(row)
           }
         })
@@ -176,7 +184,6 @@ export default {
       }
     }
   },
-
   methods: {
      openReview(row) {
        this.$emit('open-review-page',row)
@@ -237,12 +244,12 @@ export default {
      * 行选择操作
      */
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.pannelGroupId)
+      this.selected.push(targetItem)
       this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.pannelGroupId
+        return item[ID] !== targetItem[ID]
       })
       this.updateTableSelected()
     },
@@ -255,25 +262,41 @@ export default {
       }
     },
     updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
+      const table = this.table;
+      const newSelectedIndex = this.selected.reduce((result, item) => (result[item[ID]] = true, result), {});
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.pannelGroupId) > -1) {
-          result.push(index)
+        if (newSelectedIndex[item[ID]]) {
+          result.push(index);
         }
-        return result
-      }, [])
+        return result;
+      }, []);
     },
-    // 按钮操作
-    addTabInfo() {
-
+    handleCreate() {
+      this.$emit('create')
     },
-    editData() {
-
+    handleRead(row) {
+      this.$emit('read', row)
     },
-    batchDel() {
-
+    handleEdit() {
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('edit', this.selected[0])
+      }
     },
+    handleDelete() {
+      if (this.$isAllowDelete(this.selected) && window.confirm("确定要删除吗")) {
+        this.$service.panelRemove({ 
+          id: this.selected.map(item => item.pannelGroupId).join(',') 
+        }, "删除成功")
+        .then(() => {
+          this.clearSelected()
+          this.fetchData()
+        });
+      }
+    },
+    clearSelected() {
+      this.selected = [],
+      this.table.selected = []
+    }
   },
   created() {
     this.pannelStatus = this.pannelStatusOption.reduce((result, item) => {
@@ -297,6 +320,10 @@ export default {
         placeholder: '板块标题',
         component: 'Input'
       }),
+      vDataListName: _.o.string.other('form', {
+        placeholder: '关联专辑名',
+        component: 'Input'
+      }),
       tabName: _.o.string.other('form', {
         placeholder: '引用状态',
         component: 'Input'
@@ -309,24 +336,15 @@ export default {
         placeholder: '状态',
         component: 'Select'
       }),
-      pannelType: _.o.enum({'影视推荐板块': 6, '定向板块': 7, '常规板块': 1}).other('form', {
+      type: _.o.enum({'默认': -1, '置顶': 1, '下沉': 0}).other('form', {
         placeholder: '板块类别',
         component: 'Select'
-      }),
-      contentTitle: _.o.string.other('form', {
-        placeholder: '推荐位标题',
-        component: 'Input'
-      }),
-      contentPackageName: _.o.string.other('form', {
-        placeholder: '推荐位包名',
-        component: 'Input'
       })
-    })
-    .other('form', {
+    }).other('form', {
       cols: {
         item: 6,
         label: 0,
-        wrapper: 20
+        wrapper: 18
       },
       layout: 'inline',
       footer: {
@@ -356,6 +374,16 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
+.content >>> .content-list .filter-form .el-form
+  display inline
+.content >>> .content-list .filter-form .sf-item__label
+  width 100px
+  margin 0 10px
+  text-align center
+  border 1px solid #ddd
+  border-radius: 5px
+.content >>> .content-list .filter-form .sf-item--inline
+  margin 0
 .content >>> .el-table .cell
   display flex
   justify-content center

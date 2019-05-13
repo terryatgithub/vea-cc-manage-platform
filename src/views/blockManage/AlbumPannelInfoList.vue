@@ -7,19 +7,14 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-       <ButtonGroupForListPage 
-       v-if="dataList === undefined " 
+      <ButtonGroupForListPage 
         pageName='albumPanel' 
-        @add="handleCreate"
-        @edit="handleEdit"
-        @delete="handleDelete"
+        @add="addTabInfo"
+        @edit="editData"
+        @delete="batchDel"
+        v-if="dataList === undefined "
         >
         </ButtonGroupForListPage>
-      <!-- <div v-if="dataList === undefined " class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
-      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
@@ -38,12 +33,13 @@
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-const ID = 'pannelGroupId'
+
 export default {
   components: {
     ContentWrapper,
     Table,
     ButtonGroupForListPage
+
   },
 
   props: {
@@ -91,7 +87,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.handleRead(row) 
+                    this.openReview(row) 
                   }
                 }
               },row.pannelGroupRemark)
@@ -111,10 +107,6 @@ export default {
             formatter: (row) => {
                 return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_voole': '优朋'}[row.pannelList[0].pannelResource]
             }
-          },
-          {
-            label: '专辑数据',
-            prop: 'albumName'
           },
           {
             label: '引用状态',
@@ -173,10 +165,10 @@ export default {
               pannelGroupId: tableRow.pannelGroupId,
               pannelGroupRemark: tableRow.pannelGroupRemark,
               duplicateVersion: tableRow.duplicateVersion,
-               pannelType: tableRow.pannelType,
-               type: 'AlbumPannelInfo'
+              pannelType: tableRow.pannelType,
+              type: 'AlbumPannelInfo'
             }
-            console.log("AlbumPannelInfoList")
+            console.log("AlbumPannelInfo")
             rows.push(row)
           }
         })
@@ -184,6 +176,7 @@ export default {
       }
     }
   },
+
   methods: {
      openReview(row) {
        this.$emit('open-review-page',row)
@@ -244,12 +237,12 @@ export default {
      * 行选择操作
      */
     handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem)
+      this.selected.push(targetItem.pannelGroupId)
       this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
       this.selected = this.selected.filter(item => {
-        return item[ID] !== targetItem[ID]
+        return item !== targetItem.pannelGroupId
       })
       this.updateTableSelected()
     },
@@ -262,48 +255,32 @@ export default {
       }
     },
     updateTableSelected() {
-      const table = this.table;
-      const newSelectedIndex = this.selected.reduce((result, item) => (result[item[ID]] = true, result), {});
+      const table = this.table
+      const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex[item[ID]]) {
-          result.push(index);
+        if (newSelectedIndex.indexOf(item.pannelGroupId) > -1) {
+          result.push(index)
         }
-        return result;
-      }, []);
+        return result
+      }, [])
     },
-    handleCreate() {
-      this.$emit('create')
+    // 按钮操作
+    addTabInfo() {
+
     },
-    handleRead(row) {
-      this.$emit('read', row)
+    editData() {
+
     },
-    handleEdit() {
-      if (this.$isAllowEdit(this.selected)) {
-        this.$emit('edit', this.selected[0])
-      }
+    batchDel() {
+
     },
-    handleDelete() {
-      if (this.$isAllowDelete(this.selected) && window.confirm("确定要删除吗")) {
-        this.$service.panelRemove({ 
-          id: this.selected.map(item => item.pannelGroupId).join(',') 
-        }, "删除成功")
-        .then(() => {
-          this.clearSelected()
-          this.fetchData()
-        });
-      }
-    },
-    clearSelected() {
-      this.selected = [],
-      this.table.selected = []
-    }
   },
   created() {
     this.pannelStatus = this.pannelStatusOption.reduce((result, item) => {
       result[item.label] = item.value
       return result
     }, {})
-    let filterSchema = _.map({
+     let filterSchema = _.map({
       pannelCategory: _.o.enum(this.businessType).other('form', {
         placeholder: '业务分类',
         component: 'Select'
@@ -374,16 +351,6 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.content >>> .content-list .filter-form .el-form
-  display inline
-.content >>> .content-list .filter-form .sf-item__label
-  width 100px
-  margin 0 10px
-  text-align center
-  border 1px solid #ddd
-  border-radius: 5px
-.content >>> .content-list .filter-form .sf-item--inline
-  margin 0
 .content >>> .el-table .cell
   display flex
   justify-content center

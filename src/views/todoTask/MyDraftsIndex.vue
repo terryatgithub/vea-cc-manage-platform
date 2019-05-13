@@ -7,13 +7,13 @@
   </el-tabs>
 </template>
 <script>
-import MyDraftsTab from './MyDraftsTab'
+import MyDraftsIndex from './MyDraftsIndex'
 import MyDraftsHomePage from './MyDraftsHomePage'
 import MyDraftsPolicy from './MyDraftsPolicy'
 import MyDraftsPanel from './MyDraftsPanel'
 export default {
   components: {
-    MyDraftsTab,
+    MyDraftsIndex,
     MyDraftsHomePage,
     MyDraftsPolicy,
     MyDraftsPanel

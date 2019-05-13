@@ -124,13 +124,6 @@ export function queryLiveVideoResult (params) {
     params
   })
 }
-// export function getPluginVersions(data) {
-//   return this.fetch({
-//     method: 'post',
-//     url: 'api/dict/sysPlugin/',
-//     data
-//   })
-// }
 /**
  * 插件类型对应的数据类型
  */
