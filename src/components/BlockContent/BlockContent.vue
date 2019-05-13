@@ -1,76 +1,82 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('cancel')">
-    <el-collapse class="wrapper-collapse" v-model="activeNames" >
-        <el-collapse-item title="通用内容" name="normal">
-            <el-row class="addedContents-wrapper" :gutter="8">
-              <el-col 
-                v-for="(content, index) in normalContentList"
-                :span="3" 
-                :key="index">
-                  <el-card
-                    :class="{activeContent: activeType === 'normal' && index === activeIndex}"
-                    :body-style="{ padding: '0px' }"
-                    @click.native="handleActivate('normal', index)">
-                    <i 
-                      v-if="normalContentList.length > 1" 
-                      class="remove-handle el-icon-close"
-                      @click.stop.prevent="handleRemoveContent(index, 'normal')">
-                    </i>
-                    <img :src="content.pictureUrl" referrerpolicy="no-referrer">
-                  </el-card>
-              </el-col>
-            </el-row>
-            <BlockForm 
-              v-if="activeType === 'normal'"
-              ref="normalBlockForm"
-              @click.stop=""
-              @cover-type-change="handleCoverTypeChange"
-              :mode="mode" 
-              :check-crowd="checkCrowd"
-              content-type='normal'
-              :source="source"
-              :data="data" 
-              :pannel="pannel" 
-              :content-form="contentForm" 
-              :hide-title-options="hideTitleOptions" />
-        </el-collapse-item>
-        <el-collapse-item title="精细化定向内容" name="specific">
-            <el-row class="addedContents-wrapper" :gutter="8">
-              <el-col 
-                v-for="(content, index) in specificContentList"
-                :span="3" 
-                :key="index">
-                  <el-card
-                    :class="{activeContent: activeType === 'specific' && index === activeIndex}"
-                    :body-style="{ padding: '0px' }"
-                    @click.native="handleActivate('specific', index)">
-                    <i 
-                      class="remove-handle el-icon-close"
-                      @click.stop.prevent="handleRemoveContent(index, 'specific')">
-                    </i>
-                    <img :src="content.pictureUrl" referrerpolicy="no-referrer">
-                  </el-card>
-              </el-col>
-              <el-col :span="3">
-                  <el-card @click.native="handleAddContent('specific')">
-                      <i class="el-icon-plus">添加资源</i>
-                  </el-card>
-              </el-col>
-            </el-row>
-            <BlockForm 
-              v-if="activeType === 'specific'"
-              ref="specificBlockForm"
-              @click.stop=""
-              @cover-type-change="handleCoverTypeChange"
-              content-type='specific'
-              :mode="mode" 
-              :check-crowd="checkCrowd"
-              :data="data" 
-              :source="source"
-              :pannel="pannel" 
-              :content-form="contentForm" 
-              :hide-title-options="hideTitleOptions" />
-        </el-collapse-item>
+    <el-button 
+      v-if="mode !== 'read'" 
+      style="margin-bottom: 10px"
+      @click="handleSave" 
+      type="primary">
+      保存
+    </el-button>
+    <el-collapse class="wrapper-collapse" v-model="activeNames">
+      <el-collapse-item title="通用内容" name="normal">
+        <el-row class="addedContents-wrapper" :gutter="8">
+          <el-col v-for="(content, index) in normalContentList" :span="3" :key="index">
+            <el-card
+              :class="{activeContent: activeType === 'normal' && index === activeIndex}"
+              :body-style="{ padding: '0px' }"
+              @click.native="handleActivate('normal', index)"
+            >
+              <i
+                v-if="normalContentList.length > 1"
+                class="remove-handle el-icon-close"
+                @click.stop.prevent="handleRemoveContent(index, 'normal')"
+              ></i>
+              <img :src="content.pictureUrl" referrerpolicy="no-referrer">
+            </el-card>
+          </el-col>
+        </el-row>
+        <BlockForm
+          v-if="activeType === 'normal'"
+          ref="normalBlockForm"
+          @click.stop
+          @cover-type-change="handleCoverTypeChange"
+          :mode="mode"
+          :check-crowd="checkCrowd"
+          content-type="normal"
+          :source="source"
+          :data="data"
+          :pannel="pannel"
+          :content-form="contentForm"
+          :hide-title-options="hideTitleOptions"
+        />
+      </el-collapse-item>
+      <el-collapse-item title="精细化定向内容" name="specific">
+        <el-row class="addedContents-wrapper" :gutter="8">
+          <el-col v-for="(content, index) in specificContentList" :span="3" :key="index">
+            <el-card
+              :class="{activeContent: activeType === 'specific' && index === activeIndex}"
+              :body-style="{ padding: '0px' }"
+              @click.native="handleActivate('specific', index)"
+            >
+              <i
+                v-if="mode !== 'read'"
+                class="remove-handle el-icon-close"
+                @click.stop.prevent="handleRemoveContent(index, 'specific')"
+              ></i>
+              <img :src="content.pictureUrl" referrerpolicy="no-referrer">
+            </el-card>
+          </el-col>
+          <el-col :span="3" v-if="mode !== 'read'" >
+            <el-card @click.native="handleAddContent('specific')">
+              <i class="el-icon-plus">添加资源</i>
+            </el-card>
+          </el-col>
+        </el-row>
+        <BlockForm
+          v-if="activeType === 'specific'"
+          ref="specificBlockForm"
+          @click.stop
+          @cover-type-change="handleCoverTypeChange"
+          content-type="specific"
+          :mode="mode"
+          :check-crowd="checkCrowd"
+          :data="data"
+          :source="source"
+          :pannel="pannel"
+          :content-form="contentForm"
+          :hide-title-options="hideTitleOptions"
+        />
+      </el-collapse-item>
     </el-collapse>
   </ContentCard>
 </template>
@@ -106,6 +112,14 @@ export default {
     }
   },
   methods: {
+    handleSave() {
+      this.validateCurrentContent(() => {
+        this.$emit("save", {
+            videoContentList: this.parseContentList(this.normalContentList),
+            specificContentList: this.parseContentList(this.specificContentList)
+        });
+      })
+    },
     getDefaultContentForm() {
       return {
         // 如果是购物，默认是 custom 类型
@@ -168,8 +182,6 @@ export default {
     handleRemoveContent(index, contentType) {
       const activeType = this.activeType
       const activeIndex = this.activeIndex
-      const specficContentList = this.specificContentList
-      const normalContentList = this.normalContentList
       const currentContentList = this[contentType + 'ContentList']
       currentContentList.splice(index, 1)
       if (activeType === contentType) {
@@ -198,10 +210,15 @@ export default {
       })
     },
     handleActivate(contentType, index) {
+      this.validateCurrentContent(() => {
+        this.activeType = contentType
+        this.activeIndex = index
+      })
+    },
+    validateCurrentContent(cb) {
       this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
         if (!err) {
-          this.activeType = contentType
-          this.activeIndex = index
+          cb()
         } else {
           this.$message({
             type: 'error',
@@ -213,7 +230,7 @@ export default {
     setContentList() {
       const block = JSON.parse(JSON.stringify(this.data.block || '{}'))
       const normalContentList = block.videoContentList || []
-      const specificContentList = block.specficContentList || []
+      const specificContentList = block.specificContentList || []
       const defaultContentForm = this.getDefaultContentForm()
       const parse = (data) => {
         const redundantParams = data.redundantParams
@@ -287,15 +304,157 @@ export default {
             delete data.onclick
         }
 
-        return Object.assign(defaultContentForm, data)
+        return Object.assign({}, defaultContentForm, data)
       }
       this.normalContentList = normalContentList.length > 0 
         ? normalContentList.map(parse)
         : [this.getDefaultContentForm()]
       this.specificContentList = specificContentList.map(parse)
     },
-    parseContentList() {
+    parseContentList(contentList) {
+      contentList = JSON.parse(JSON.stringify(contentList))
 
+      function parse(content) {
+        const coverType = content.coverType
+        let onclick = ''
+        let params = ''
+        if (coverType === 'custom') {
+          content.contentType = 0
+        }
+        if (coverType === 'block') {
+          content.contentType = 1
+        }
+        if (coverType === 'custom') {
+          const currentOnclick = content.redundantParams;
+          const openMode = currentOnclick.openMode;
+          params = "openMode==" + openMode;
+          const versioncode = currentOnclick.webAppVersion;
+          const webpageType = currentOnclick.webpageType
+          switch (openMode) {
+              case "webpage": {
+                  if (webpageType === "1") {
+                      //浮窗网页
+                      onclick = JSON.stringify({
+                          packagename: "com.coocaa.app_browser",
+                          versioncode: versioncode,
+                          dowhat: "startActivity",
+                          bywhat: "action",
+                          byvalue: "coocaa.intent.action.browser",
+                          params: {
+                              url: currentOnclick.webpageUrl
+                          },
+                          exception: {}
+                      });
+                  } else if (webpageType === "2") {
+                      //全屏网页
+                      onclick = JSON.stringify({
+                          packagename: "com.coocaa.app_browser",
+                          versioncode: versioncode,
+                          dowhat: "startActivity",
+                          bywhat: "action",
+                          byvalue: "coocaa.intent.action.browser.no_trans",
+                          params: {
+                              url: currentOnclick.webpageUrl
+                          },
+                          exception: {}
+                      });
+                  }
+                  break;
+              }
+              case "video": {
+                  onclick = JSON.stringify({
+                      packagename: "com.tianci.movieplatform",
+                      versioncode: "-1",
+                      dowhat: "startService",
+                      bywhat: "action",
+                      byvalue: "coocaa.intent.player.video",
+                      params: {
+                          name: currentOnclick.videoName,
+                          url: currentOnclick.videoUrl,
+                          needParse: "false",
+                          url_type: "web"
+                      },
+                      exception: {}
+                  });
+                  break;
+              }
+              case "picture": {
+                  onclick = JSON.stringify({
+                      packagename: "com.tianci.movieplatform",
+                      versioncode: "",
+                      dowhat: "startService",
+                      bywhat: "action",
+                      byvalue: "coocaa.intent.player.image",
+                      params: {
+                          name: "",
+                          url: currentOnclick.pictureUrl
+                      },
+                      exception: {}
+                  });
+                  break;
+              }
+              case "tab": {
+                  var tabType = currentOnclick.tabType;
+                  params += ",tabType==" + tabType;
+                  onclick = JSON.stringify({
+                      packagename: "com.tianci.movieplatform",
+                      versioncode: "",
+                      dowhat: "startActivity",
+                      bywhat: "action",
+                      byvalue:
+                              tabType == 1
+                                      ? "coocaa.intent.action.HOME_COMMON_LIST"
+                                      : "coocaa.intent.action.HOME_SPECIAL_TOPIC",
+                      params: {
+                          id: currentOnclick.tabId
+                      },
+                      exception: {}
+                  });
+                  break;
+              }
+              case "app": {
+                  var convertedParams = {};
+                  var extendedParams = currentOnclick.extendedParams;
+                  for (var i = 0; i < extendedParams.length; i++) {
+                      var p = extendedParams[i];
+                      if (p.key !== "" && p.value !== "") {
+                          convertedParams[p.key] = p.value;
+                      }
+                  }
+                  onclick = JSON.stringify({
+                      byvalue: currentOnclick.byvalue,
+                      packagename: currentOnclick.packagename,
+                      dowhat: currentOnclick.dowhat,
+                      versioncode: currentOnclick.versioncode,
+                      params: convertedParams,
+                      bywhat: currentOnclick.bywhat,
+                      data: currentOnclick.data,
+                      exception: {
+                          name: "onclick_exception",
+                          value: {
+                              packagename: "com.tianci.appstore",
+                              dowhat: "startActivity",
+                              versioncode: "-1",
+                              params: {
+                                  id: currentOnclick.packagename
+                              },
+                              byvalue: "coocaa.intent.action.APP_STORE_DETAIL",
+                              bywhat: "action"
+                          }
+                      }
+                  });
+                  break;
+              }
+              default:
+                break;
+          }
+        }
+        content.onclick = onclick
+        content.params = params
+        delete content.redundantParams
+        return content
+      }
+      return contentList.map(parse) 
     },
     checkCrowd(crowd) {
       const specificContentList = this.specificContentList
@@ -319,102 +478,148 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.block-content-form >>> .el-input 
-  max-width 280px
-.post-box 
-	border 1px solid #ccc
-	overflow hidden
-	img 
-		width 100%
-.post-info 
-	position absolute
-	bottom 0
-	width 100%
-	box-sizing border-box
-	padding 0 5px
-	line-height 20px
-	font-size 12px
-	background #000
-	opacity 0.8
-	color #fff
-	.score 
-		right 0
-	.episode 
-		left 0
-.post-info .post-title,
-.post-info .post-sub-title 
-	white-space nowrap
-	text-overflow ellipsis
-	overflow hidden
-.post-info .episode,
-.post-info .score 
-	position absolute
-	top -20px
-	background #000
-	padding 0 5px
-.corner-box 
-	position relative
-	span 
-		&.corner 
-			position absolute
-			width 50px
-			height 50px
-			text-align center
-			cursor pointer
-			img 
-				width 100%
-				height 100%
-		&.corner-0 
-			top 0
-			left 0
-		&.corner-1 
-			top 0
-			right 0
-		&.corner-2 
-			bottom 0
-			right 0
-		&.corner-3 
-			bottom 0
-			left 0
-.corner-add-icon-wrapper 
-	height 24px
-	padding 0 8px
-	line-height 22px
-	color #12ce66
-	border 1px solid #12ce66
-	background #fff
-.corner-img-wrapper 
-	position relative
-	i 
-		position absolute
-		top 0
-		right 0
-		color #ff4949
-		font-size 20px
-.addedContents-wrapper 
-	margin-bottom 16px
-	padding 8px
-	border 2px dashed #C0CCDA
-	>>> .el-card 
-		position relative
-		height 120px
-		text-align center
-		cursor pointer
-		.remove-handle 
-			position absolute
-			top 0
-			right 0
-			padding 4px
-			color #FF4949
-			font-weight bolder
-		.audit-handle 
-			position absolute
-			top 0
-			right 0
-			padding 4px
-		img 
-			height 120px
-.activeContent 
-	border 2px dashed #F7BA2A
+.block-content-form >>> .el-input {
+  max-width: 280px;
+}
+
+.post-box {
+  border: 1px solid #ccc;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+  }
+}
+
+.post-info {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 5px;
+  line-height: 20px;
+  font-size: 12px;
+  background: #000;
+  opacity: 0.8;
+  color: #fff;
+
+  .score {
+    right: 0;
+  }
+
+  .episode {
+    left: 0;
+  }
+}
+
+.post-info .post-title, .post-info .post-sub-title {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.post-info .episode, .post-info .score {
+  position: absolute;
+  top: -20px;
+  background: #000;
+  padding: 0 5px;
+}
+
+.corner-box {
+  position: relative;
+
+  span {
+    &.corner {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      cursor: pointer;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    &.corner-0 {
+      top: 0;
+      left: 0;
+    }
+
+    &.corner-1 {
+      top: 0;
+      right: 0;
+    }
+
+    &.corner-2 {
+      bottom: 0;
+      right: 0;
+    }
+
+    &.corner-3 {
+      bottom: 0;
+      left: 0;
+    }
+  }
+}
+
+.corner-add-icon-wrapper {
+  height: 24px;
+  padding: 0 8px;
+  line-height: 22px;
+  color: #12ce66;
+  border: 1px solid #12ce66;
+  background: #fff;
+}
+
+.corner-img-wrapper {
+  position: relative;
+
+  i {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #ff4949;
+    font-size: 20px;
+  }
+}
+
+.addedContents-wrapper {
+  margin-bottom: 16px;
+  padding: 8px;
+  border: 2px dashed #C0CCDA;
+
+  >>> .el-card {
+    position: relative;
+    height: 120px;
+    text-align: center;
+    cursor: pointer;
+
+    .remove-handle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 4px;
+      color: #FF4949;
+      font-weight: bolder;
+    }
+
+    .audit-handle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 4px;
+    }
+
+    img {
+      height: 120px;
+    }
+  }
+}
+
+.activeContent {
+  border: 2px dashed #F7BA2A;
+}
 </style>
 

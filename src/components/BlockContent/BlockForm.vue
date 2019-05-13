@@ -1,5 +1,5 @@
 <template>
-  <div v-if="mode === 'read'"></div>
+  <div v-if="false && mode === 'read'"></div>
   <div v-else>
     <el-form
       class="block-content-form"
@@ -26,6 +26,7 @@
       </template>
       <el-form-item label="资源类别" prop="coverType">
         <CommonSelector
+          :disabled="isReadonly"
           type="radio"
           :value="contentForm.coverType"
           @input="$emit('cover-type-change', $event)"
@@ -36,6 +37,7 @@
       <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'media'">
         <ResourceSelector
           ref="resourceSelector"
+          v-if="!isReadonly"
           :is-live="true"
           :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
           selection-type="single"
@@ -49,6 +51,7 @@
       <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
         <ResourceSelector
           ref="resourceSelector"
+          v-if="!isReadonly"
           :is-live="true"
           :selectors="['app']"
           selection-type="single"
@@ -880,8 +883,14 @@ export default {
     },
     handleCoverTypeChange(val) {},
     validate(data, cb) {
+      const contentForm = this.contentForm
       this.$refs.contentForm.validate((valid) => {
         if (valid) {
+          if (contentForm.coverType === "custom") {
+            if (contentForm.price < contentForm.secKillPrice) {
+              return cb("价格小于秒杀价，建议重新填写！");
+            } 
+          }
           cb()
         } else {
           cb('请把表单填写完整')

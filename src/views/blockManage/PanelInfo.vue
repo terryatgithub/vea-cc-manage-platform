@@ -608,6 +608,7 @@ export default {
         activePannel.pannelType = 7
       }
       this.updatePosition()
+      this.activePage = 'panel_info'
     },
     handleSelectResourceEnd(selectedResources, _, partner) {
       const resourceSelector = this.$refs.resourceSelector
