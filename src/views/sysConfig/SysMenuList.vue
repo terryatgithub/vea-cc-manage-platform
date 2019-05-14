@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-        <ButtonGroupForListPage 
-        pageName='sysMenu' 
+        <ButtonGroupForListPage
+        pageName='sysMenu'
         @add="addData"
         @edit="editData"
         @delete="deleteData"
@@ -186,13 +186,18 @@ export default {
         this.$message('请选择再删除')
         return
       }
-      if (window.confirm('确定要删除吗')) {
+      this.$confirm('确定要删除吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
         this.$service
           .deleteMenuById({ id: this.selected.join(',') }, '删除成功')
           .then(data => {
+            this.handleAllRowSelectionRemove()
             this.fetchData()
           })
-      }
+      })
     },
     handleCreate() {
       this.$router.push({ name: 'prize-create' })
