@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-     <!-- <ButtonGroupForListPage 
-        pageName='dict' 
+     <!-- <ButtonGroupForListPage
+        pageName='dict'
         @add="addDict"
         @edit="editData"
         @delete="batchDel"
@@ -153,13 +153,18 @@ export default {
         this.$message('请选择一条数据')
       }
       if (this.selected.length == 1) {
-        if (window.confirm('确定要删除吗')) {
+        this.$confirm('确定删除此活动吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
           this.$service
             .DeleteDict({ id: this.selected[0] }, '删除成功')
             .then(data => {
+              this.handleAllRowSelectionRemove()
               this.fetchData()
             })
-        }
+        })
       }
       if (this.selected.length > 1) {
         this.$message('只能选择一条数据')

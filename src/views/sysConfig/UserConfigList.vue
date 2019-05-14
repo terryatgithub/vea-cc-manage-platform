@@ -232,20 +232,20 @@ export default {
     batchDel () {
       if (this.selected.length === 0) {
         this.$message('请选择再删除')
-      } else {
-        this.$confirm('确定要删除吗？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$service
-            .userConfigDelete({ id: this.selected.join(',') }, '删除成功')
-            .then(data => {
-              this.fetchData()
-              this.handleAllRowSelectionRemove()
-            })
-        })
+        return
       }
+      this.$confirm('确定要删除吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$service
+          .userConfigDelete({ id: this.selected.join(',') }, '删除成功')
+          .then(data => {
+            this.fetchData()
+            this.handleAllRowSelectionRemove()
+          })
+      })
     },
     handleCreate () {
       this.$router.push({ name: 'prize-create' })
