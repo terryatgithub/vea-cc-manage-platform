@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BusinessTabList 
+    <!-- <MyDraftsTab 
      v-show="isShowList" 
      ref="list" 
       @create="handleCreate"
@@ -8,24 +8,24 @@
       @edit="handleEdit"
       @copy="handleCopy"
      >
-     </BusinessTabList>
-    <BusinessTabInfo 
-      v-if="!isShowList" 
-       :id="id" 
-      :init-mode="mode"
-      :version="version"
-      @upsert-end="handleUpsertEnd" 
-      @go-back="goBack">
-    </BusinessTabInfo>
+     </MyDraftsTab> -->
+    <FilmDetailPageAdd
+      v-if="!isShow"
+      :editId="editId"
+      :initMode="mode"
+      :duplicateVersionVersion = "version"
+      @open-list-page="handleUpsertEnd"
+      @go-back="goBack"
+    />
   </div>
 </template>
 <script>
-import BusinessTabList from  './BusinessTabList'
-import BusinessTabInfo from './BusinessTabInfo'
+import FilmDetailPageAdd from  './../panelManage/FilmDetailPageAdd'
+// import MyDraftsTab from './MyDraftsTab'
 export default {
   components: {
-    BusinessTabList,
-    BusinessTabInfo,
+    FilmDetailPageAdd
+   // MyDraftsTab,
   },
   data() {
     return {

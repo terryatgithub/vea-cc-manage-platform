@@ -61,7 +61,8 @@ export default {
       ],
       pannelStatus: {},
       filter: {
-        idPrefix: 10
+        idPrefix: 10,
+        pannelType: 1
       },
       filterSchema: null,
       pagination: {

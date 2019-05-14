@@ -34,7 +34,7 @@ export function getLayoutInforById (params) {
 export function getAuditDetailButton (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/buttonManage/getAuditDetailButton.html',
+    url: 'api/v1/buttonManage/getAuditDetailButton.html',
     data
   })
 }

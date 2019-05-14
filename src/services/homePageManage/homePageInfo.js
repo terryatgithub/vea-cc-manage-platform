@@ -1,12 +1,4 @@
-/**
- * 首页方案管理-首页方案--系统菜单按钮
- */
-// export function getHomePageInfoMenu () {
-//   return this.fetch({
-//     method: 'post',
-//     url: 'api/homepageInfo/getMenuInfo.html'
-//   })
-// }
+
 /**
  * 首页方案管理-首页方案--列表
  */

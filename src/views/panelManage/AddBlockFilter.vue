@@ -137,6 +137,7 @@ export default {
 
   methods: {
     clickAdd() {
+      debugger
       const { pannelData, albumPannelData, privatePannelData } = this
       let block = [].concat(pannelData).concat(albumPannelData).concat(privatePannelData)
       this.$emit('add-block', block)

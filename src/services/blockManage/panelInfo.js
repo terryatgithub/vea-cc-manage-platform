@@ -34,7 +34,7 @@ export function panelUpsert(data) {
 export function panelRemove(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/panel/remove.html',
+    url: 'api/v1/panel/remove.html',
     data
   })
 }

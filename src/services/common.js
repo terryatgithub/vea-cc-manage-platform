@@ -71,9 +71,9 @@ export function putOnShelves (data) {
 }
 
 const deleteUrlMap = {
-  homepage: 'api/homepageInfo/delHistory.html',
-  pannel: 'api/panel/delHistory.html',
-  tab: 'api/tab/delHistory.html',
+  homepage: 'api/v1/homepageInfo/delHistory.html',
+  pannel: 'api/v1/panel/delHistory.html',
+  tab: 'api//v1/tab/delHistory.html',
   theme: 'api/v1/theme/delHistory.html', // 所有版块
   policy: 'api/v1/policyConf/delHistory.html',
   testPolicy: 'api/v1/testPolicyConf/delHistory.html',

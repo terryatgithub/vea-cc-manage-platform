@@ -1,7 +1,7 @@
 export function businessTabSave(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/tab/save.html',
+    url: 'api/v1/tab/save.html',
     data
   })
 }
@@ -9,7 +9,7 @@ export function businessTabSave(data) {
 export function businessTabEdit(params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tab/getDetailInfo.html',
+    url: 'api/v1/tab/getDetailInfo.html',
     params
   })
 }
@@ -17,7 +17,7 @@ export function businessTabEdit(params) {
 export function businessTabCollect(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/commonResourceUser/tab/collectResource.html',
+    url: 'api/v1/commonResourceUser/tab/collectResource.html',
     data
   })
 }
@@ -26,7 +26,7 @@ export function businessTabCollect(data) {
 export function businessTabCancelCollect(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/commonResourceUser/tab/cancelCollectResource.html',
+    url: 'api/v1/commonResourceUser/tab/cancelCollectResource.html',
     data
   })
 }
