@@ -226,3 +226,10 @@ export function getBroadcastBlockEditData(data) {
     data
   })
 }
+
+export function broadcastBlockDataList (params) {
+  return this.fetch({
+    url: 'api/blockInfo/dataList.html',
+    params
+  })
+}

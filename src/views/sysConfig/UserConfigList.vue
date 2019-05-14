@@ -232,14 +232,19 @@ export default {
     batchDel () {
       if (this.selected.length === 0) {
         this.$message('请选择再删除')
-        return
-      }
-      if (window.confirm('确定要删除吗')) {
-        this.$service
-          .userConfigDelete({ id: this.selected.join(',') }, '删除成功')
-          .then(data => {
-            this.fetchData()
-          })
+      } else {
+        this.$confirm('确定要删除吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$service
+            .userConfigDelete({ id: this.selected.join(',') }, '删除成功')
+            .then(data => {
+              this.fetchData()
+              this.handleAllRowSelectionRemove()
+            })
+        })
       }
     },
     handleCreate () {
@@ -306,6 +311,7 @@ export default {
     fetchData () {
       const filter = this.parseFilter()
       this.$service.userConfigPageList(filter).then(data => {
+        debugger
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -355,10 +361,10 @@ export default {
     },
     // 保存用户数据权限
     saveProfession () {
-      debugger
       const dictIdGroupStr = this.checkedDictItems.join(',')
-      this.$service.saveProfession({ userId: this.currentUserId, dicts: dictIdGroupStr }, '保存成功')
-      this.dataPermissionWinVisible = false
+      this.$service.saveProfession({ userId: this.currentUserId, dicts: dictIdGroupStr }, '保存成功').then(() => {
+        this.dataPermissionWinVisible = false
+      })
     }
   },
   created () {

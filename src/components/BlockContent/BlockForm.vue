@@ -1,102 +1,104 @@
 <template>
-    <div v-if="mode === 'read'"></div>
-    <div v-else>
-      <el-form
-        class="block-content-form"
-        v-if="contentForm"
-        :model="contentForm"
-        :rules="contentRule"
-        ref="contentForm"
-        label-width="120px">
-        <template v-if="contentType === 'specific'">
-          <el-form-item label="内容类别" prop="resourceType">
-              <el-radio-group v-model="contentForm.resourceType" :disabled="isReadonly">
-                  <el-radio :label="0">内容</el-radio>
-                  <el-radio :label="1">活动</el-radio>
-              </el-radio-group>
-          </el-form-item>
-          <el-form-item label="关联定向人群" prop="dmpRegistryInfo">
-              <el-button type="primary" @click="handleSelectCrowdStart" :disabled="isReadonly">添加人群
-              </el-button>
-              <el-tag type="primary" v-if="contentForm.dmpRegistryInfo">
-                  已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}} / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}
-              </el-tag>
-          </el-form-item>
-        </template>
-        <el-form-item label="资源类别" prop="coverType">
-          <CommonSelector 
-            type="radio" 
-            :value="contentForm.coverType" 
-            @input="$emit('cover-type-change', $event)"
-            :options="coverTypeEnums" />
+  <div v-if="false && mode === 'read'"></div>
+  <div v-else>
+    <el-form
+      class="block-content-form"
+      v-if="contentForm"
+      :model="contentForm"
+      :rules="contentRule"
+      ref="contentForm"
+      label-width="120px"
+    >
+      <template v-if="contentType === 'specific'">
+        <el-form-item label="内容类别" prop="resourceType">
+          <el-radio-group v-model="contentForm.resourceType" :disabled="isReadonly">
+            <el-radio :label="0">内容</el-radio>
+            <el-radio :label="1">活动</el-radio>
+          </el-radio-group>
         </el-form-item>
+        <el-form-item label="关联定向人群" prop="dmpRegistryInfo">
+          <el-button type="primary" @click="handleSelectCrowdStart" :disabled="isReadonly">添加人群</el-button>
+          <el-tag
+            type="primary"
+            v-if="contentForm.dmpRegistryInfo"
+          >已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}} / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}</el-tag>
+        </el-form-item>
+      </template>
+      <el-form-item label="资源类别" prop="coverType">
+        <CommonSelector
+          :disabled="isReadonly"
+          type="radio"
+          :value="contentForm.coverType"
+          @input="$emit('cover-type-change', $event)"
+          :options="coverTypeEnums"
+        />
+      </el-form-item>
 
-        <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'media'">
-          <ResourceSelector 
-            ref="resourceSelector"
-            :is-live="true"
-            :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'broadcast']"
-            selection-type="single"
-            :source="pannel.pannelResource" 
-            @select-end="handleSelectMediaEnd">
-            <el-button>选择资源</el-button>
-          </ResourceSelector>
-          <el-tag type="primary" v-if="contentForm.extraValue1">
-            已选择: {{ contentForm.extraValue1 }}
-          </el-tag>
-        </el-form-item>
-        <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
-          <ResourceSelector 
-            ref="resourceSelector"
-            :is-live="true"
-            :selectors="['app']"
-            selection-type="single"
-            :source="pannel.pannelResource" 
-            @select-end="handleSelectAppEnd">
-            <el-button>选择资源</el-button>
-          </ResourceSelector>
-          <el-tag type="primary" v-if="contentForm.extraValue1">
-            已选择: {{ contentForm.extraValue1 }}
-          </el-tag>
-        </el-form-item>
+      <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'media'">
+        <ResourceSelector
+          ref="resourceSelector"
+          v-if="!isReadonly"
+          :is-live="true"
+          :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
+          selection-type="single"
+          :source="source"
+          @select-end="handleSelectMediaEnd"
+        >
+          <el-button>选择资源</el-button>
+        </ResourceSelector>
+        <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
+      </el-form-item>
+      <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
+        <ResourceSelector
+          ref="resourceSelector"
+          v-if="!isReadonly"
+          :is-live="true"
+          :selectors="['app']"
+          selection-type="single"
+          :source="source"
+          @select-end="handleSelectAppEnd"
+        >
+          <el-button>选择资源</el-button>
+        </ResourceSelector>
+        <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
+      </el-form-item>
 
-        <template v-if="contentType === 'specfic'">
-          <el-form-item label="内容类型" v-if="contentForm.coverType === 'custom'">
-              <el-select v-model="contentForm.blockResourceType" :disabled="isReadonly">
-                  <el-option label="影视" :value="1"></el-option>
-                  <el-option label="应用" :value="0"></el-option>
-                  <el-option label="其他" :value="-1"></el-option>
-              </el-select>
-          </el-form-item>
-        </template>
-
-        <el-form-item label="标题" prop="title">
-          <el-input v-model.trim="contentForm.title" :disabled="isReadonly"></el-input>
-          <el-checkbox
-            v-if="!hideTitleOptions"
-            :value="!contentForm.showTitle"
-            :disabled="isReadonly"
-            @input="contentForm.showTitle = $event ? 0 : 1"
-          >关闭标题栏，仅图片运营</el-checkbox>
+      <template v-if="contentType === 'specfic'">
+        <el-form-item label="内容类型" v-if="contentForm.coverType === 'custom'">
+          <el-select v-model="contentForm.blockResourceType" :disabled="isReadonly">
+            <el-option label="影视" :value="1"></el-option>
+            <el-option label="应用" :value="0"></el-option>
+            <el-option label="其他" :value="-1"></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="副标题" prop="subTitle" v-if="contentForm.coverType !== 'block'">
-          <el-input v-model.trim="contentForm.subTitle" :disabled="isReadonly"></el-input>
-          <el-checkbox
-            :value="!contentForm.showSubTitle"
-            :disabled="isReadonly"
-            @input="contentForm.showSubTitle = $event ? 0 : 1"
-          >落焦不显示副标题</el-checkbox>
-        </el-form-item>
-        <el-form-item label="单集副标题" prop="singleSubTitle">
-          <el-input v-model.trim="contentForm.singleSubTitle" :disabled="isReadonly"></el-input>有单集副标题时，优先显示单集副标题
-        </el-form-item>
+      </template>
 
-        <el-form-item label="内容海报" prop="pictureUrl" v-if="contentForm.coverType !== 'block'">
+      <el-form-item label="标题" prop="title">
+        <el-input v-model.trim="contentForm.title" :disabled="isReadonly"></el-input>
+        <el-checkbox
+          v-if="!hideTitleOptions"
+          :value="!contentForm.showTitle"
+          :disabled="isReadonly"
+          @input="contentForm.showTitle = $event ? 0 : 1"
+        >关闭标题栏，仅图片运营</el-checkbox>
+      </el-form-item>
+      <el-form-item label="副标题" prop="subTitle" v-if="contentForm.coverType !== 'block'">
+        <el-input v-model.trim="contentForm.subTitle" :disabled="isReadonly"></el-input>
+        <el-checkbox
+          :value="!contentForm.showSubTitle"
+          :disabled="isReadonly"
+          @input="contentForm.showSubTitle = $event ? 0 : 1"
+        >落焦不显示副标题</el-checkbox>
+      </el-form-item>
+      <el-form-item label="单集副标题" prop="singleSubTitle">
+        <el-input v-model.trim="contentForm.singleSubTitle" :disabled="isReadonly"></el-input>有单集副标题时，优先显示单集副标题
+      </el-form-item>
 
-          <GlobalPictureSelector
-            :picture-resolution="resolution[0] + '*' + resolution[1]"
-            @select-end="handleSelectPostEnd"
-          >
+      <el-form-item label="内容海报" prop="pictureUrl" v-if="contentForm.coverType !== 'block'">
+        <GlobalPictureSelector
+          :picture-resolution="resolution[0] + '*' + resolution[1]"
+          @select-end="handleSelectPostEnd"
+        >
           <div
             class="post-box corner-box"
             :style="{ 
@@ -105,44 +107,44 @@
               cursor: 'pointer'
             }"
           >
-              <img :src="contentForm.pictureUrl" referrerpolicy="no-referrer">
-              <div class="post-info">
-                <div class="post-episode" v-if="[1, 4, 5].indexOf(contentForm.categoryId) > -1">
-                  <span class="episode">
-                    <template v-if="contentForm.categoryId === 1">
-                      {{
-                      contentForm.publishStatus === 'ended'
-                      ? contentForm.series
-                      ? contentForm.series + '集全'
-                      : '暂无'
-                      : contentForm.series
-                      ? '已更新至' + contentForm.series + '集'
-                      : '暂无'
-                      }}
-                    </template>
-                    <template v-else-if="contentForm.categoryId === 5">
-                      {{
-                      contentForm.publishStatus === 'ended'
-                      ? ''
-                      : contentForm.variety
-                      ? contentForm.variety
-                      : '暂无'
-                      }}
-                    </template>
-                  </span>
-                  <span class="score">{{ contentForm.score ? contentForm.score + '分' : ''}}</span>
-                </div>
-                <div
-                  v-show="contentForm.showTitle"
-                  class="post-title"
-                  :title="contentForm.title"
-                >{{ contentForm.title }}</div>
-                <div
-                  v-show="contentForm.showTitle && contentForm.showSubTitle"
-                  class="post-sub-title"
-                  :title="contentForm.singleSubTitle || contentForm.subTitle"
-                >{{ contentForm.singleSubTitle || contentForm.subTitle }}</div>
+            <img :src="contentForm.pictureUrl" referrerpolicy="no-referrer">
+            <div class="post-info">
+              <div class="post-episode" v-if="[1, 4, 5].indexOf(contentForm.categoryId) > -1">
+                <span class="episode">
+                  <template v-if="contentForm.categoryId === 1">
+                    {{
+                    contentForm.publishStatus === 'ended'
+                    ? contentForm.series
+                    ? contentForm.series + '集全'
+                    : '暂无'
+                    : contentForm.series
+                    ? '已更新至' + contentForm.series + '集'
+                    : '暂无'
+                    }}
+                  </template>
+                  <template v-else-if="contentForm.categoryId === 5">
+                    {{
+                    contentForm.publishStatus === 'ended'
+                    ? ''
+                    : contentForm.variety
+                    ? contentForm.variety
+                    : '暂无'
+                    }}
+                  </template>
+                </span>
+                <span class="score">{{ contentForm.score ? contentForm.score + '分' : ''}}</span>
               </div>
+              <div
+                v-show="contentForm.showTitle"
+                class="post-title"
+                :title="contentForm.title"
+              >{{ contentForm.title }}</div>
+              <div
+                v-show="contentForm.showTitle && contentForm.showSubTitle"
+                class="post-sub-title"
+                :title="contentForm.singleSubTitle || contentForm.subTitle"
+              >{{ contentForm.singleSubTitle || contentForm.subTitle }}</div>
+            </div>
             <template>
               <span
                 v-for="(corner, cIndex) in contentForm.cornerList"
@@ -170,157 +172,196 @@
               </span>
             </template>
           </div>
+        </GlobalPictureSelector>
+      </el-form-item>
 
-          </GlobalPictureSelector>
-        </el-form-item>
-
-        <el-form-item label="替补海报" v-if="shouldHaveBackupPicture" prop="alternativePictureUrl">
-          <GlobalPictureSelector
-            :picture-resolution="resolution[0] + '*' + resolution[1]"
-            @select-end="handleSelectBackupPostEnd"
+      <el-form-item label="替补海报" v-if="shouldHaveBackupPicture" prop="alternativePictureUrl">
+        <GlobalPictureSelector
+          :picture-resolution="resolution[0] + '*' + resolution[1]"
+          @select-end="handleSelectBackupPostEnd"
+        >
+          <div
+            class="post-box"
+            :style="{ height: postSize.height + 'px', width: postSize.width + 'px', cursor: 'pointer' }"
           >
-            <div
-              class="post-box"
-              :style="{ height: postSize.height + 'px', width: postSize.width + 'px', cursor: 'pointer' }"
-            >
-              <img :src="contentForm.alternativePictureUrl" referrerpolicy="no-referrer">
-            </div>
-          </GlobalPictureSelector>
-        </el-form-item>
+            <img :src="contentForm.alternativePictureUrl" referrerpolicy="no-referrer">
+          </div>
+        </GlobalPictureSelector>
+      </el-form-item>
 
-        <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
-          <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
+      <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
+        <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
+      </el-form-item>
+      <el-form-item label="推荐位" prop="vContentId" v-if="contentForm.coverType === 'block'">
+        <ResourceSelector
+          v-if="!isReadonly"
+          ref="blockSelector"
+          :is-live="true"
+          :selectors="['func', 'broadcast']"
+          selection-type="single"
+          :source="source"
+          @select-end="handleSelectBlockEnd"
+        >
+          <el-button>选择推荐位</el-button>
+        </ResourceSelector>
+        <el-tag type="primary" v-if="contentForm.vContentId">已选择: {{ contentForm.vContentId }}</el-tag>
+      </el-form-item>
+      <el-form-item
+        label="价格"
+        prop="price"
+        v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)"
+      >
+        <Price
+          v-model.trim="contentForm.price"
+          min="0"
+          style="margin-right: 10px"
+          :disabled="isReadonly"
+        ></Price>(元)
+      </el-form-item>
+      <el-form-item
+        label="秒杀价"
+        prop="secKillPrice"
+        v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)"
+      >
+        <Price
+          v-model.trim="contentForm.secKillPrice"
+          min="0"
+          style="margin-right: 10px"
+          :disabled="isReadonly"
+        ></Price>(元)
+      </el-form-item>
+      <template v-if="contentType === 'normal'">
+        <el-form-item
+          label="设置广告位"
+          v-if="data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (contentForm.coverType === 'media' || contentForm.coverType === 'app' || contentForm.coverType === 'custom')"
+          prop="flagIsSetad"
+        >
+          <el-radio-group v-model="contentForm.flagIsSetad" :disabled="isReadonly">
+            <el-radio :label="0">否</el-radio>
+            <el-radio :label="1">是</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="推荐位" prop="vContentId" v-if="contentForm.coverType === 'block'">
-          <el-button type="primary" @click="openWin('recommend')" :disabled="isReadonly">选择推荐位</el-button>
-          <el-tag type="primary" v-if="contentForm.vContentId">已选择: {{ contentForm.vContentId }}</el-tag>
-        </el-form-item>
-        <el-form-item label="价格" prop="price"
-          v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)">
-          <Price
-            v-model.trim="contentForm.price"
-            min="0"
-            style="margin-right: 10px"
+      </template>
+      <template v-if="contentForm.coverType === 'custom'">
+        <el-form-item label="打开方式">
+          <el-select
+            v-model="contentForm.redundantParams.openMode"
+            @change="handleOpenModeChange"
             :disabled="isReadonly"
-          ></Price>(元)
-        </el-form-item>
-        <el-form-item label="秒杀价"
-          prop="secKillPrice"
-          v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)">
-          <Price
-            v-model.trim="contentForm.secKillPrice"
-            min="0"
-            style="margin-right: 10px"
+          >
+            <el-option label="网页" value="webpage"></el-option>
+            <el-option label="视频" value="video"></el-option>
+            <el-option label="图片" value="picture"></el-option>
+            <el-option label="版面" value="tab"></el-option>
+            <el-option label="第三方应用" value="app"></el-option>
+          </el-select>
+          <el-button
+            v-if="contentForm.redundantParams.openMode === 'app'"
+            type="primary"
+            @click="openWin('onclick')"
             :disabled="isReadonly"
-          ></Price>(元)
+          >快速填充</el-button>
         </el-form-item>
-        <template v-if="contentType === 'normal'">
-          <el-form-item label="设置广告位"
-            v-if="data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (contentForm.coverType === 'media' || contentForm.coverType === 'app' || contentForm.coverType === 'custom')"
-            prop="flagIsSetad">
-            <el-radio-group v-model="contentForm.flagIsSetad" :disabled="isReadonly">
-              <el-radio :label="0">否</el-radio>
-              <el-radio :label="1">是</el-radio>
+        <template v-if="contentForm.redundantParams.openMode === 'webpage'">
+          <el-form-item label="网页类型" prop="webpageType">
+            <el-radio-group
+              v-model="contentForm.redundantParams.webpageType"
+              @change="handleWebPageTypeChange"
+              :disabled="isReadonly"
+            >
+              <el-radio label="1">浮窗网页</el-radio>
+              <el-radio label="2">全屏网页</el-radio>
             </el-radio-group>
           </el-form-item>
-        </template>
-        <template v-if="contentForm.coverType === 'custom'">
-          <el-form-item label="打开方式">
-            <el-select
-              v-model="contentForm.redundantParams.openMode"
-              @change="openChange($event)"
-              :disabled="isReadonly"
-            >
-              <el-option label="网页" value="webpage"></el-option>
-              <el-option label="视频" value="video"></el-option>
-              <el-option label="图片" value="picture"></el-option>
-              <el-option label="版面" value="tab"></el-option>
-              <el-option label="第三方应用" value="app"></el-option>
-            </el-select>
-            <el-button
-              v-if="contentForm.redundantParams.openMode === 'app'"
-              type="primary"
-              @click="openWin('onclick')"
-              :disabled="isReadonly"
-            >快速填充</el-button>
+          <el-form-item label="网页地址" prop="webpageUrl">
+            <el-input v-model.trim="contentForm.redundantParams.webpageUrl" :disabled="isReadonly"></el-input>
           </el-form-item>
-          <template v-if="contentForm.redundantParams.openMode === 'webpage'">
-            <el-form-item label="网页类型" prop="webpageType">
-              <el-radio-group v-model="webpageTypeRadio" @change="openWeb" :disabled="isReadonly">
-                <el-radio label="1">浮窗网页</el-radio>
-                <el-radio label="2">全屏网页</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="网页地址" prop="webpageUrl">
-              <el-input
-                v-model.trim="contentForm.redundantParams.webpageUrl"
-                :disabled="isReadonly"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="应用版本号" prop="webAppVersion">
-              <el-input
-                v-model.trim="contentForm.redundantParams.webAppVersion"
-                :disabled="isReadonly"
-              ></el-input>
-            </el-form-item>
-          </template>
-          <template v-if="contentForm.redundantParams.openMode === 'video'">
-            <el-form-item label="视频名称"
-              prop="videoName">
-              <el-input v-model.trim="contentForm.redundantParams.videoName" :disabled="isReadonly"></el-input>
-            </el-form-item>
-            <el-form-item label="视频地址"
-              prop="videoUrl">
-              <el-input v-model.trim="contentForm.redundantParams.videoUrl" :disabled="isReadonly"></el-input>
-            </el-form-item>
-          </template>
-
-          <template v-if="contentForm.redundantParams.openMode === 'picture'">
-            <el-form-item label="选择图片"
-              prop="pictureUrl">
-              <el-upload
-                :action="urls.uploadImg"
-                :on-success="handleUploadSuccess"
-                :on-remove="handleUploadRemove"
-                :file-list="pictureList"
-                accept="image/png, image/gif, image/jpeg, image/bmp"
-                list-type="picture"
-              >
-                <el-button type="primary" :disabled="isReadonly">点击上传</el-button>
-                <span slot="tip" class="el-upload__tip">提示:只能上传png/gif/jpg/bmp文件</span>
-              </el-upload>
-            </el-form-item>
-          </template>
-
-          <template v-if="contentForm.redundantParams.openMode === 'tab'">
-            <el-form-item label="版面"
-              prop="tabId">
-              <el-button type="primary" @click="openWin('tab')" :disabled="isReadonly">选择版面</el-button>
-              <el-tag type="primary" v-if="contentForm.redundantParams.tabId">
-                已选择: {{
-                contentForm.redundantParams.tabId }}
-              </el-tag>
-            </el-form-item>
-          </template>
-
-          <template v-if="contentForm.redundantParams.openMode === 'app'">
-            <AppParamsForm
-              v-model="contentForm.redundantParams"
-              label-width="140px"
-              prop-prefix="redundantParams."
-            />
-          </template>
+          <el-form-item label="应用版本号" prop="webAppVersion">
+            <el-input
+              v-model.trim="contentForm.redundantParams.webAppVersion"
+              :disabled="isReadonly"
+            ></el-input>
+          </el-form-item>
         </template>
-      </el-form>
-      <CrowdSelector
-          v-if="showCrowdSelector"
-          @select-cancel="handleSelectCrowdCancel"
-          @select-end="handleSelectCrowdEnd"
-      />
-    </div>
+        <template v-if="contentForm.redundantParams.openMode === 'video'">
+          <el-form-item label="视频名称" prop="videoName">
+            <el-input v-model.trim="contentForm.redundantParams.videoName" :disabled="isReadonly"></el-input>
+          </el-form-item>
+          <el-form-item label="视频地址" prop="videoUrl">
+            <el-input v-model.trim="contentForm.redundantParams.videoUrl" :disabled="isReadonly"></el-input>
+          </el-form-item>
+        </template>
+
+        <template v-if="contentForm.redundantParams.openMode === 'picture'">
+          <el-form-item label="选择图片" prop="pictureUrl">
+            <Upload 
+              :multiple="false" 
+              accept="image/jpg,image/jpeg,image/png,image/bmp,image/gif"  
+              ref="upload" 
+              @upload="handleUpload">
+              <div class="upload-pic-list" slot="preview" slot-scope="{fileList}">
+                <div class="upload-pic-list__add" @click="$refs.upload.handleSelectFile()">
+                  <i class="el-icon el-icon-plus"/>
+                </div>
+                <div class="upload-pic-list__item" v-for="file in fileList" :key="file.id">
+                  <div
+                    class="upload-pic-list__error"
+                    v-if="file.status === 'error'"
+                  >上传失败: {{ file.message }}</div>
+                  <div v-if="file.status === 'uploading'" class="upload-pic-list__progress">
+                    <el-progress :width="100" type="circle" :percentage="file.percentage"></el-progress>
+                  </div>
+                  <img v-else :src="file.dataUrl">
+                  <i
+                    v-if="file.status !== 'uploading'"
+                    class="upload-pic-list__remove el-icon el-icon-close"
+                    title="移除"
+                    @click="$refs.upload.handleRemove(file)"
+                  />
+                </div>
+              </div>
+            </Upload>
+            <!-- <el-upload
+              :action="uploadImgUrl"
+              :on-success="handleUploadSuccess"
+              :on-remove="handleUploadRemove"
+              :file-list="pictureList"
+              accept="image/png, image/gif, image/jpeg, image/bmp"
+              list-type="picture"
+            >-->
+            <span>提示:只能上传png/gif/jpg/bmp文件</span>
+          </el-form-item>
+        </template>
+
+        <template v-if="contentForm.redundantParams.openMode === 'tab'">
+          <el-form-item label="版面" prop="tabId">
+            <TabSelector title="选择版面" selection-type="single" :source="source" @select-end="handleSelectTabEnd"/>
+            <el-tag type="primary" v-if="contentForm.redundantParams.tabId">
+              已选择: {{
+              contentForm.redundantParams.tabId }}
+            </el-tag>
+          </el-form-item>
+        </template>
+
+        <template v-if="contentForm.redundantParams.openMode === 'app'">
+          <AppParamsForm
+            v-model="contentForm.redundantParams"
+            label-width="140px"
+            prop-prefix="redundantParams."
+          />
+        </template>
+      </template>
+    </el-form>
+    <CrowdSelector
+      v-if="showCrowdSelector"
+      @select-cancel="handleSelectCrowdCancel"
+      @select-end="handleSelectCrowdEnd"
+    />
+  </div>
 </template>
 
 <script>
+import { Upload } from 'admin-toolkit'
 import Price from '@/components/Price'
 import AppParamsForm from './AppParamsForm'
 import BlockContentWrapper from './BlockContentWrapper'
@@ -329,8 +370,10 @@ import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import CommonSelector from '@/components/CommonSelector'
 import CrowdSelector from '@/components/CrowdSelector.vue'
+import TabSelector from '@/components/selectors/TabSelector'
 export default {
   components: {
+    Upload,
     Price,
     AppParamsForm,
     BlockContentWrapper,
@@ -338,7 +381,8 @@ export default {
     GlobalPictureSelector,
     ResourceSelector,
     CommonSelector,
-    CrowdSelector
+    CrowdSelector,
+    TabSelector
   },
   data() {
     const isReadonly = this.isReadonly
@@ -405,6 +449,7 @@ export default {
     }
     return {
       showCrowdSelector: false,
+      uploadImg: '/uploadHomeImg.html', // 上传图片接口
       contentRule: {
         moviePercent: [
           {
@@ -463,13 +508,19 @@ export default {
       }
     }
   },
-  props: ['contentType', 'mode', 'contentForm', 'data', 'pannel', 'hideTitleOptions'],
+  props: [
+    'contentType',
+    'mode',
+    'contentForm',
+    'data',
+    'source',
+    'pannel',
+    'hideTitleOptions',
+    'checkCrowd',
+  ],
   computed: {
     isReadonly() {
       return this.mode === 'read'
-    },
-    source() {
-      return this.data.pannelResource
     },
     resolution() {
       const data = this.data
@@ -508,7 +559,9 @@ export default {
     shouldHaveBackupPicture() {
       const contentForm = this.contentForm
       const pictureUrl = contentForm.pictureUrl
-      return contentForm.coverType !== 'block' && !this.isNormalPicture(pictureUrl)
+      return (
+        contentForm.coverType !== 'block' && !this.isNormalPicture(pictureUrl)
+      )
     },
     coverTypeEnums() {
       const enums = [
@@ -532,47 +585,88 @@ export default {
       ]
 
       if (this.contentType === 'specific') {
-        return enums.filter(item => item.value === 'media' || item.value === 'custom')
+        return enums.filter(
+          item => item.value === 'media' || item.value === 'custom'
+        )
       }
 
       return enums
     }
   },
   methods: {
+    handleUpload(file, fileItem) {
+      fileItem.status = 'uploading'
+      this.$service
+        .uploadBlockImage({
+          file,
+          onUploadProgerss: evt => {
+            if (evt.lengthComputable) {
+              fileItem.percentage = evt.loaded / evt.total
+            }
+          }
+        })
+        .then(data => {
+          try {
+            fileItem.pictureName = data.fileName
+            fileItem.pictureType = data.fileType
+            fileItem.pictureUrl = data.url
+            fileItem.status = 'success'
+            this.contentForm.redundantParams.pictureUrl = data.url
+          } catch (e) {
+            fileItem.status = 'error'
+            fileItem.message = e.msg
+          }
+        })
+        .catch(() => {
+          fileItem.status = 'error'
+          fileItem.message = '网络错误'
+        })
+    },
+    handleSelectTabEnd(result) {
+      const selected = result[0]
+      if (selected) {
+        this.contentForm.redundantParams.tabId = selected.tabId + "";
+        this.contentForm.redundantParams.tabType = selected.tabType;
+      }
+    },
     handleSelectCrowdStart() {
-        this.showCrowdSelector = true
+      this.showCrowdSelector = true
     },
     handleSelectCrowdCancel() {
-        this.showCrowdSelector = false
+      this.showCrowdSelector = false
     },
     handleSelectCrowdEnd(policy, crowd) {
-        const specificContentList = this.specificContentList
-        let length = specificContentList.length
-        let existsIndex
-        let dmpRegistryInfo
-        while(--length >= 0) {
-            dmpRegistryInfo = specificContentList[length].dmpRegistryInfo
-            if (dmpRegistryInfo && dmpRegistryInfo.dmpCrowdId === crowd.value) {
-                existsIndex = length
-                break;
-            }
-        }
-        if (existsIndex !== undefined) {
-            this.$message({
-                type: 'error',
-                message: '第' + (existsIndex + 1) + '个精细化内容已关联该人群'
-            })
-        } else {
-            this.contentForm.dmpRegistryInfo = {
-                dmpPolicyId: policy.value,
-                dmpCrowdId: crowd.value,
-                dmpPolicyName: policy.label,
-                dmpCrowdName: crowd.label,
-            }
-            this.showCrowdSelector = false
-        }
+      const existsIndex = this.checkCrowd(crowd)
+      if (existsIndex !== undefined) {
+        this.$message({
+          type: 'error',
+          message: '第' + (existsIndex + 1) + '个精细化内容已关联该人群'
+        })
+      } else {
+        this.$set(this.contentForm, 'dmpRegistryInfo', {
+          dmpPolicyId: policy.value,
+          dmpCrowdId: crowd.value,
+          dmpPolicyName: policy.label,
+          dmpCrowdName: crowd.label
+        })
+        this.showCrowdSelector = false
+      }
     },
-   
+    handleOpenModeChange(val) {
+      const contentForm = this.contentForm
+      const redundantParams = contentForm.redundantParams
+      if (val === 'webpage') {
+        const webpageType = redundantParams.webpageType
+        redundantParams.webAppVersion = webpageType == '1' ? '1' : '102007'
+      }
+      if (val === 'app') {
+        redundantParams.versioncode = ''
+      }
+    },
+    handleWebPageTypeChange(val) {
+      this.contentForm.redundantParams.webAppVersion =
+        val == '1' ? '1' : '102007'
+    },
     chopSubTitle(title) {
       return (title || '').slice(0, 50)
     },
@@ -580,6 +674,7 @@ export default {
       let selectedType
       let selected
       let selectedEpisode
+      const partner = resources.videoSource
       Object.keys(resources).forEach(key => {
         const resource = resources[key][0]
         if (resource) {
@@ -600,47 +695,47 @@ export default {
         platformId: '',
         versionCode: ''
       })
-      if (selectedType === "video") {
+      if (selectedType === 'video') {
         // 影视中心
         if (selectedEpisode) {
-          this.contentForm.contentType = 0;
-          this.contentForm.videoContentType = "movie";
-          if (this.source === "tencent") {
-              this.contentForm.extraValue1 = "_otx_" + selected.coocaaVId;
-              this.contentForm.extraValue5 = selectedEpisode.coocaaMId;
-          } else if (this.source === "yinhe") {
-              this.contentForm.extraValue1 = "_oqy_" + selected.coocaaVId;
-              this.contentForm.extraValue5 = selectedEpisode.coocaaMId;
-          } else if (this.source === "youku") {
-              this.contentForm.extraValue1 = "_oyk_" + selected.coocaaVId;
-              this.contentForm.extraValue5 = selectedEpisode.coocaaMId;
+          this.contentForm.contentType = 0
+          this.contentForm.videoContentType = 'movie'
+          if (partner === 'tencent') {
+            this.contentForm.extraValue1 = '_otx_' + selected.coocaaVId
+            this.contentForm.extraValue5 = selectedEpisode.coocaaMId
+          } else if (partner === 'yinhe') {
+            this.contentForm.extraValue1 = '_oqy_' + selected.coocaaVId
+            this.contentForm.extraValue5 = selectedEpisode.coocaaMId
+          } else if (partner === 'youku') {
+            this.contentForm.extraValue1 = '_oyk_' + selected.coocaaVId
+            this.contentForm.extraValue5 = selectedEpisode.coocaaMId
           }
-          this.contentForm.singleId = selectedEpisode.coocaaMId;
-          this.contentForm.platformId = this.source;
-          this.contentForm.pictureUrl = selectedEpisode.thumb;
-          this.contentForm.title = selectedEpisode.urlTitle;
-          this.contentForm.subTitle = chopSubTitle(selectedEpisode.urlSubTitle);
+          this.contentForm.singleId = selectedEpisode.coocaaMId
+          this.contentForm.platformId = this.source
+          this.contentForm.pictureUrl = selectedEpisode.thumb
+          this.contentForm.title = selectedEpisode.urlTitle
+          this.contentForm.subTitle = chopSubTitle(selectedEpisode.urlSubTitle)
           this.contentForm.singleSubTitle = ''
-          this.contentForm.blockResourceType = 1;
+          this.contentForm.blockResourceType = 1
         } else {
-            if (this.source === "tencent") {
-                this.contentForm.extraValue1 = "_otx_" + selected.coocaaVId;
-            } else if (this.source === "yinhe") {
-                this.contentForm.extraValue1 = "_oqy_" + selected.coocaaVId;
-            } else if (this.source === "youku") {
-                this.contentForm.extraValue1 = "_oyk_" + selected.coocaaVId;
-            }
-            this.contentForm.singleId = "";
-            this.contentForm.singleId = "";
-            this.contentForm.contentType = 0;
-            this.contentForm.videoContentType = "movie";
-            this.contentForm.extraValue5 = null;
-            this.contentForm.platformId = selected.source;
-            this.contentForm.pictureUrl = selected.thumb;
-            this.contentForm.title = selected.title;
-            this.contentForm.subTitle = chopSubTitle(selected.subTitle);
-            this.contentForm.singleSubTitle = ''
-            this.contentForm.blockResourceType = 1;
+          if (partner === 'tencent') {
+            this.contentForm.extraValue1 = '_otx_' + selected.coocaaVId
+          } else if (partner === 'yinhe') {
+            this.contentForm.extraValue1 = '_oqy_' + selected.coocaaVId
+          } else if (partner === 'youku') {
+            this.contentForm.extraValue1 = '_oyk_' + selected.coocaaVId
+          }
+          this.contentForm.singleId = ''
+          this.contentForm.singleId = ''
+          this.contentForm.contentType = 0
+          this.contentForm.videoContentType = 'movie'
+          this.contentForm.extraValue5 = null
+          this.contentForm.platformId = selected.source
+          this.contentForm.pictureUrl = selected.thumb
+          this.contentForm.title = selected.title
+          this.contentForm.subTitle = chopSubTitle(selected.subTitle)
+          this.contentForm.singleSubTitle = ''
+          this.contentForm.blockResourceType = 1
         }
 
         const entity = selected.ccVideoSourceEntities[0]
@@ -649,86 +744,80 @@ export default {
         const publishSegment = entity.publishSegment
         const isUnknown = publishSegment == 0
         const publishStatus = isUnknown
-            ? 'unknown'
-            : updatedSegment == publishSegment
-                ? 'ended'
-                : 'updating'
+          ? 'unknown'
+          : updatedSegment == publishSegment
+          ? 'ended'
+          : 'updating'
         contentForm.publishStatus = publishStatus
         contentForm.score = score
         contentForm.series = isUnknown ? null : updatedSegment
         contentForm.variety = entity.lastCollection
-      }
-      // else if (selectedType === 'app') { // 应用圈
-      //     this.contentForm.contentType = 2;
-      //     this.contentForm.videoContentType = 'app';
-      //     this.contentForm.extraValue1 = selected.appPackageName;
-      //     this.contentForm.pictureUrl = selected.appImageUrl;
-      //     this.contentForm.title = selected.appName;
-      //     this.contentForm.subTitle = selected.appName;
-      //     this.contentForm.blockResourceType = 0;
-      // }
-      else if (selectedType === "edu") {
+      } else if (selectedType === 'edu') {
         // 教育中心
-        this.contentForm.contentType = 3;
-        this.contentForm.videoContentType = "edu";
-        this.contentForm.extraValue1 = "_otx_" + selected.coocaaVId;
-        this.contentForm.platformId = selected.source;
-        this.contentForm.pictureUrl = selected.thumb;
-        this.contentForm.title = selected.title;
-        this.contentForm.subTitle = chopSubTitle(selected.subTitle);
+        this.contentForm.contentType = 3
+        this.contentForm.videoContentType = 'edu'
+        this.contentForm.extraValue1 = '_otx_' + selected.coocaaVId
+        this.contentForm.platformId = selected.source
+        this.contentForm.pictureUrl = selected.thumb
+        this.contentForm.title = selected.title
+        this.contentForm.subTitle = chopSubTitle(selected.subTitle)
         this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1;
+        this.contentForm.blockResourceType = 1
         const ccVideoSourceEntities = selected.ccVideoSourceEntities
-        if (ccVideoSourceEntities && ccVideoSourceEntities[0] && ccVideoSourceEntities[0].isTvod === 1) {
+        if (
+          ccVideoSourceEntities &&
+          ccVideoSourceEntities[0] &&
+          ccVideoSourceEntities[0].isTvod === 1
+        ) {
           // Sprint2.2 教育中心单点付费预置版本号
           this.contentForm.versionCode = 3420000
         }
-      } else if (selectedType === "pptv") {
+      } else if (selectedType === 'pptv') {
         // pptv
-        this.contentForm.contentType = 4;
-        this.contentForm.videoContentType = "pptv";
+        this.contentForm.contentType = 4
+        this.contentForm.videoContentType = 'pptv'
         this.contentForm.extraValue1 =
-                "pptv_tvsports://tvsports_detail?section_id=" +
-                selected.pid +
-                "&from_internal=1";
-        this.contentForm.title = selected.pTitle;
-        this.contentForm.subTitle = chopSubTitle(selected.pTitle);
+          'pptv_tvsports://tvsports_detail?section_id=' +
+          selected.pid +
+          '&from_internal=1'
+        this.contentForm.title = selected.pTitle
+        this.contentForm.subTitle = chopSubTitle(selected.pTitle)
         this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1;
-      } else if (selectedType === "live") {
+        this.contentForm.blockResourceType = 1
+      } else if (selectedType === 'live') {
         // 直播资源
-        this.contentForm.contentType = 6;
-        this.contentForm.videoContentType = "txLive";
-        this.contentForm.extraValue1 = "_otx_" + selected.vId + "";
-        this.contentForm.platformId = selected.source;
-        this.contentForm.pictureUrl = selected.thumb;
-        this.contentForm.title = selected.title;
-        this.contentForm.subTitle = chopSubTitle(selected.subTitle);
+        this.contentForm.contentType = 6
+        this.contentForm.videoContentType = 'txLive'
+        this.contentForm.extraValue1 = '_otx_' + selected.vId + ''
+        this.contentForm.platformId = selected.source
+        this.contentForm.pictureUrl = selected.thumb
+        this.contentForm.title = selected.title
+        this.contentForm.subTitle = chopSubTitle(selected.subTitle)
         this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1;
-      } else if (selectedType === "topic") {
+        this.contentForm.blockResourceType = 1
+      } else if (selectedType === 'topic') {
         // 专题资源
-        selected.dataSign === "parentTopic"
-                ? (this.contentForm.contentType = 8)
-                : (this.contentForm.contentType = 7);
-        selected.dataSign === "parentTopic"
-                ? (this.contentForm.videoContentType = "bigTopic")
-                : (this.contentForm.videoContentType = "topic");
-        this.contentForm.extraValue1 = selected.id + "";
-        this.contentForm.pictureUrl = selected.picture;
-        this.contentForm.title = selected.title;
-        this.contentForm.subTitle = chopSubTitle(selected.subTitle);
+        selected.dataSign === 'parentTopic'
+          ? (this.contentForm.contentType = 8)
+          : (this.contentForm.contentType = 7)
+        selected.dataSign === 'parentTopic'
+          ? (this.contentForm.videoContentType = 'bigTopic')
+          : (this.contentForm.videoContentType = 'topic')
+        this.contentForm.extraValue1 = selected.id + ''
+        this.contentForm.pictureUrl = selected.picture
+        this.contentForm.title = selected.title
+        this.contentForm.subTitle = chopSubTitle(selected.subTitle)
         this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1;
-      } else if (selectedType === "broadcast") {
+        this.contentForm.blockResourceType = 1
+      } else if (selectedType === 'rotate') {
         // 轮播资源
-        this.contentForm.extraValue1 = selected.id + "";
-        this.contentForm.pictureUrl = selected.picture;
-        this.contentForm.title = selected.title;
-        this.contentForm.subTitle = chopSubTitle(selected.subTitle);
+        this.contentForm.extraValue1 = selected.id + ''
+        this.contentForm.pictureUrl = selected.picture
+        this.contentForm.title = selected.title
+        this.contentForm.subTitle = chopSubTitle(selected.subTitle)
         this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1;
-        this.contentForm.videoContentType = "rotate";
+        this.contentForm.blockResourceType = 1
+        this.contentForm.videoContentType = 'rotate'
       }
       this.contentForm.categoryId = selected.categoryId
       this.$refs.resourceSelector.clearSelected()
@@ -736,14 +825,14 @@ export default {
     handleSelectAppEnd(resources) {
       const selected = resources.app[0]
       if (selected) {
-        this.contentForm.contentType = 2;
-        this.contentForm.videoContentType = "app";
-        this.contentForm.extraValue1 = selected.appPackageName;
-        this.contentForm.pictureUrl = selected.appImageUrl;
-        this.contentForm.title = selected.appName;
-        this.contentForm.subTitle = this.chopSubTitle(selected.appName);
+        this.contentForm.contentType = 2
+        this.contentForm.videoContentType = 'app'
+        this.contentForm.extraValue1 = selected.appPackageName
+        this.contentForm.pictureUrl = selected.appImageUrl
+        this.contentForm.title = selected.appName
+        this.contentForm.subTitle = this.chopSubTitle(selected.appName)
         this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 0;
+        this.contentForm.blockResourceType = 0
       }
     },
     isNormalPicture(pictureUrl) {
@@ -766,15 +855,50 @@ export default {
     handleSelectBackupPostEnd(post) {
       this.contentForm.alternativePictureUrl = post.pictureUrl
     },
-    handleCoverTypeChange(val) {
-
+    handleSelectBlockEnd(resources) {
+      const selectedFunc = resources.func[0]
+      const selectedBroadcast = resources.broadcast[0]
+      if (selectedFunc) {
+        const selected = selectedFunc
+        this.contentForm.videoContentType = 'sysPlugin'
+        this.contentForm.title = selected.pluginName
+        this.contentForm.vContentId = selected.pluginId
+        this.contentForm.pictureUrl = selected.globalPicture
+          ? selected.globalPicture.pictureUrl
+          : ''
+        // if (selected.referenceData) {
+        //     this.contentForm.price = selected.referenceData.price / 100;
+        //     this.contentForm.secKillPrice =
+        //             selected.referenceData.secKillPrice / 100;
+        // }
+      }
+      if (selectedBroadcast) {
+        const selected = selectedBroadcast
+        this.contentForm.videoContentType = 'specific'
+        this.contentForm.title = selected.containerName
+        this.contentForm.vContentId = selected.id
+        this.contentForm.pictureUrl = selected.poster.pictureUrl
+      }
+      this.$refs.blockSelector.clearSelected()
     },
+    handleCoverTypeChange(val) {},
     validate(data, cb) {
-      cb()
+      const contentForm = this.contentForm
+      this.$refs.contentForm.validate((valid) => {
+        if (valid) {
+          if (contentForm.coverType === "custom") {
+            if (contentForm.price < contentForm.secKillPrice) {
+              return cb("价格小于秒杀价，建议重新填写！");
+            } 
+          }
+          cb()
+        } else {
+          cb('请把表单填写完整')
+        }
+      })
     }
   },
-  created() {
-  }
+  created() {}
 }
 </script>
 
@@ -877,5 +1001,65 @@ export default {
   right: 0;
   color: #ff4949;
   font-size: 20px;
+}
+</style>
+
+<style lang="stylus" scoped>
+$height = 100px;
+$width = 100px;
+
+.upload-pic-list__progress {
+  position: absolute;
+}
+
+.upload-pic-list__add, .upload-pic-list__item {
+  height: $height;
+  width: $width;
+  margin-right: 10px;
+  display: inline-block;
+  vertical-align: top;
+  border: 1px solid #ccc;
+}
+
+.upload-pic-list__add {
+  cursor: pointer;
+
+  i {
+    position: relative;
+    top: 50%;
+    margin: -10px auto;
+    display: block;
+    font-size: 20px;
+    text-align: center;
+  }
+}
+
+.upload-pic-list__item {
+  position: relative;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+.upload-pic-list__error {
+  position: absolute;
+  background: #000;
+  opacity: 0.7;
+  color: #fff;
+  width: 100%;
+  font-size: 12px;
+  padding: 5px;
+  display: block;
+  box-sizing: border-box;
+}
+
+.upload-pic-list__remove {
+  position: absolute;
+  color: red;
+  cursor: pointer;
+  top: 0;
+  right: 0;
 }
 </style>

@@ -16,7 +16,7 @@
     "element-ui": "^2.8.2",
     "gateschema": "^0.2.0",
     "gateschema-form-vue": "^0.2.2",
-    "jquery": "^3.4.0",
+    "jquery": "^3.4.1",
     "less-loader": "^4.1.0",
     "nprogress": "^0.2.0",
     "regenerator-runtime": "^0.13.2",

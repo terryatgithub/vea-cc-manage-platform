@@ -313,6 +313,7 @@
       <BlockContent
         :mode="mode"
         :data="blockContentProps"
+        :source="pannel.pannelResource"
         :pannel="pannel.pannelList[+activePannelIndex]"
         :hide-title-options="!!blockContentProps.blockInfo.title_info"
         @cancel="handleSetBlockContentCancle"
@@ -607,6 +608,7 @@ export default {
         activePannel.pannelType = 7
       }
       this.updatePosition()
+      this.activePage = 'panel_info'
     },
     handleSelectResourceEnd(selectedResources, _, partner) {
       const resourceSelector = this.$refs.resourceSelector
@@ -1688,7 +1690,6 @@ export default {
         }
       })
     })
-    debugger
     if (this.id) {
       this.fetchData(this.version)
     }

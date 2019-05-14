@@ -1,10 +1,10 @@
  <template>
-  <BaseSelector 
+  <BaseSelector
     ref="baseSelector"
-    id-field="id"
+    id-field="pluginId"
     :is-live="isLive"
     :selection-type="selectionType"
-    :table="table" 
+    :table="table"
     :pagination="pagination"
     :filter="filter"
     :filter-schema="filterSchema"
@@ -12,13 +12,19 @@
     @filter-change="fetchData"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
-    @select-end="$emit('select-end')">
-  </BaseSelector>
+    @select-end="$emit('select-end')"
+  ></BaseSelector>
 </template>
  
 <script>
-import _ from "gateschema";
+import _ from 'gateschema'
 import BaseSelector from './BaseSelector'
+const sourceValueMap = {
+  '': '0',
+  'o_tencent': '1',
+  'o_iqiyi': '2',
+  'o_youku': '3'
+}
 export default {
   components: {
     BaseSelector
@@ -35,13 +41,20 @@ export default {
         props: {},
         header: [
           {
-            label: '轮播入口ID',
             prop: 'id',
-            sortable: true
+            label: "轮播ID",
+            fixed: true,
+            searched: true
           },
           {
-            label: '轮播入口名称',
-            prop: 'title'
+            prop: 'containerName',
+              label: "轮播名称",
+              fixed: true,
+              searched: true
+          },
+          {
+            prop: 'lastUpdateDate',
+            label: "创建时间"
           }
         ],
         data: []
@@ -58,11 +71,7 @@ export default {
     getDefaultFilter() {
       return {
         id: undefined,
-        title: undefined,
-        resType: 'operation',
-        dataType: 'rotate',
-        levelType: 'rotateSta',
-        callback: 'result',
+        containerName: undefined
       }
     },
     getFilter() {
@@ -82,7 +91,7 @@ export default {
     },
     fetchData() {
       const filter = this.getFilter()
-      this.$service.getMediaVideoInfos(filter).then(result => {
+      this.$service.broadcastBlockDataList(filter).then(result => {
         this.pagination.total = result.total
         this.table.data = result.rows
       })
@@ -91,17 +100,15 @@ export default {
   created() {
     const filterSchema = _.map({
       id: _.o.number.other('form', {
-        component: 'Input',
-        placeholder: '轮播入口ID',
-        label: '轮播入口ID'
+        placeholder: '轮播ID',
+        label: '轮播ID'
       }),
-      title: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '轮播入口名称',
-        label: '轮播入口名称'
-      })
+      containerName: _.o.string.other('form', {
+        placeholder: '轮播名称',
+        label: '轮播名称'
+      }),
     }).other('form', {
-       cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20
@@ -123,5 +130,4 @@ export default {
 }
 </script>
  
- <style lang='stylus' scoped>
-</style>
+ <style lang='stylus' scoped></style>

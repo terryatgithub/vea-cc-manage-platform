@@ -7,10 +7,10 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <ButtonGroupForListPage 
-      pageName="sysDept" 
-      @add="addDep" 
-      @edit="editData" 
+      <ButtonGroupForListPage
+      pageName="sysDept"
+      @add="addDep"
+      @edit="editData"
       @delete="batchDel">
       </ButtonGroupForListPage>
       <Table
@@ -48,8 +48,6 @@ export default {
         order: undefined
       },
       pagination: {
-        currentPage: 1,
-        pageSize: 15
       },
       selected: [],
       table: {
@@ -138,6 +136,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      debugger
       const filter = this.parseFilter()
       this.$service.sysDeptPageList(filter).then(data => {
         this.pagination.total = data.total
