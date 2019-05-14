@@ -12,6 +12,7 @@
         @add="addItem"
         @edit="editData"
         @delete="batchDel"
+        @batchAudit="batchAudit"
         >
         </ButtonGroupForListPage>
       <!-- <div class="btns">
@@ -140,7 +141,24 @@ export default {
             label: "素材名称",
             width: "120",
             prop: "pictureName",
-            sortable: true
+            sortable: true,
+            render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row)
+                    }
+                  }
+                },
+                row.pictureName
+              )
+            }
+
           },
           {
             label: "分辨率",
@@ -198,6 +216,9 @@ export default {
     };
   },
   methods: {
+    handleRead(row) {
+      this.$emit('read', row)
+    },
     submitAudit() {
       this.$refs.auditForm.validate(valid => {
         if (valid) {
@@ -217,7 +238,6 @@ export default {
     addItem() {
        this.$emit('open-add-page')
     },
-    handleRead({ row }) {},
     handleChange(value, direction, movedKeys) {
       var str = [];
       for (var i = 0; i < value.length; i++) {

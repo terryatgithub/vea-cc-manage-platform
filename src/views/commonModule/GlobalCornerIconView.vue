@@ -2,7 +2,9 @@
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="global-picture">
       <el-form :model="form" ref="form" label-width="120px">
-        <div class="global-picture__label">角标图片</div>
+        <div class="form-legend-header">
+                <span>基本信息</span>
+              </div>
         <el-form-item label="角标标题" prop="cornerIconName">
           <div>{{form.cornerIconName}}</div>
         </el-form-item>
@@ -18,18 +20,22 @@
         <el-form-item label="审核状态" prop="cornerStatus">
           <div>{{form.cornerStatus}}</div>
         </el-form-item>
+      
+      <el-form-item>
+        <AuditDetailButton
+          v-if="status!==undefined"
+          :id="id"
+          :version="version"
+          :type="type"
+          :not-contain-btn="notContainBtn"
+          :status="status"
+          :hasHistory="hasHistory"
+          :menuElId="menuElId"
+          @go-edit-Page="goEditPage"
+          @delete-item="deleteItem"
+        ></AuditDetailButton>
+      </el-form-item>
       </el-form>
-      <AuditDetailButton
-        :id="id"
-        :version="version"
-        :type="type"
-        :not-contain-btn="notContainBtn"
-        :status="status"
-        :hasHistory="hasHistory"
-        :menuElId="menuElId"
-        @go-edit-Page="goEditPage"
-        @delete-item="deleteItem"
-      ></AuditDetailButton>
     </div>
   </ContentCard>
 </template>
@@ -42,7 +48,7 @@ export default {
   components: {
     Upload,
     GlobalIconAudit,
-     AuditDetailButton
+    AuditDetailButton
   },
   data() {
     return {
@@ -50,9 +56,9 @@ export default {
       dialogPLVisible: false,
       hasHistory: false,
       id: null,
-      version: '',
+      version: undefined,
       type: 'icon',
-      status: null,
+      status: undefined,
       menuElId: 'globalCornerIcon',
       notContainBtn: ['claim', 'unclaim', 'copy', 'unaudit']
     }
@@ -62,14 +68,21 @@ export default {
   },
   methods: {
     getDetailInfo() {
-      this.$service.getDetailInfo({ id: this.viewData.cornerIconId }).then(data => {
-        console.log(data)
+      this.$service.getDetailInfo({ id: this.id }).then(data => {
         this.form = data
+        this.status = data.cornerStatus
         this.form.cornerStatus = this.paraNumToNam(this.form.cornerStatus)
       })
     },
     paraNumToNam(status) {
-      const statusMap = ['下架', '上架', '草稿', '待审核','审核通过','审核不通过']
+      const statusMap = [
+        '下架',
+        '上架',
+        '草稿',
+        '待审核',
+        '审核通过',
+        '审核不通过'
+      ]
       const cornerStatus = statusMap[status]
       return cornerStatus
     },
@@ -91,24 +104,28 @@ export default {
     handleSubmit() {
       this.dialogPLVisible = true
     },
-    cancelSubmit(){
-      if(window.confirm('确定撤销审核吗')) {
-        this.$service.revokedAudit({resourceId: this.viewId,resourceType:'icon'}, '撤销审核成功').then(data =>{
-          this.$emit('open-list-page')
-        })
+    cancelSubmit() {
+      if (window.confirm('确定撤销审核吗')) {
+        this.$service
+          .revokedAudit(
+            { resourceId: this.viewId, resourceType: 'icon' },
+            '撤销审核成功'
+          )
+          .then(data => {
+            this.$emit('open-list-page')
+          })
       }
     },
     submitForm(data) {
       const auditFlag = data.auditFlag
       const auditDesc = data.auditDesc
-      this.$service.auditTask(
-        {
+      this.$service
+        .auditTask({
           resourceId: this.viewId,
           resourceType: 'icon',
           auditFlag: auditFlag,
           auditDesc: auditDesc
-        }
-      )
+        })
         .then(data => {
           this.$emit('open-list-page')
           this.$refs.auditForm.cancle()
@@ -125,9 +142,15 @@ export default {
   },
   created() {
     this.title = '预览'
+    let reviewData = this.viewData
+    if (typeof reviewData.cornerIconId !== 'undefined') {
+      this.id = reviewData.cornerIconId
+      // this.status = this.reviewData.cornerStatus
+      this.getDetailInfo()
+    } else {
+      this.id = reviewData.resourceId
+    }
     this.getDetailInfo()
-     this.id = this.viewData.cornerIconId
-      this.status = this.viewData.cornerStatus
   }
 }
 </script>

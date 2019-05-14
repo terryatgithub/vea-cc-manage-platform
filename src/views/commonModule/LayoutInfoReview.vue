@@ -18,6 +18,7 @@
           </el-form-item>
           <el-form-item>
            <AuditDetailButton
+           v-if="id!==undefined"
             :id="id"
             :version="version"
             :type="type"
@@ -53,7 +54,7 @@ export default {
       title: null,
       fileInfo: [],
       content: [],
-      id: null,
+      id: undefined,
       hasHistory: false,
       version: '',
       type: 'layout',
@@ -112,15 +113,15 @@ export default {
       })
       return layoutTypeName.length>0 ? layoutTypeName[0].name:''
     },
-    getEditData() {
+    getEditData(reviewData) {
       Object.keys(this.form).forEach(v => {
         if (v ==='layoutType') {
-          this.form[v] = this.getlLayoutTypeName(this.reviewData[v])
+          this.form[v] = this.getlLayoutTypeName(reviewData[v])
         } else if(v === 'layoutStatus') {
-          this.form[v] = this.$numToAuditStatus(this.reviewData[v])
+          this.form[v] = this.$numToAuditStatus(reviewData[v])
         }
         else {
-         this.form[v] = this.reviewData[v]
+         this.form[v] = reviewData[v]
         }
       })
       this.getLayoutJson({fileName:this.form.layoutName, content: this.form.layoutJson})
@@ -166,9 +167,20 @@ export default {
   created() {
     if (JSON.stringify(this.reviewData) !== '{}') {
       this.title = '预览'
-      this.getEditData()
-      this.id = this.reviewData.layoutId
-      this.status = this.reviewData.layoutStatus
+      let reviewData = this.reviewData
+      if (typeof(reviewData.layoutId)!=='undefined') {
+        this.id = reviewData.layoutId
+        this.status = this.reviewData.layoutStatus
+        this.getEditData(reviewData)
+      } else {
+        this.id = reviewData.resourceId
+        this.$service.getLayoutInforById({id: this.id}).then((data) => {
+           //this.reviewData = data
+           this.status = data.layoutStatus
+           this.getEditData(data)
+        })
+
+      }
     } 
   }
 }

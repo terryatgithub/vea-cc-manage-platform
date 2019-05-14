@@ -50,7 +50,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReview(row)
+                      this.handleRead(row)
                     }
                   }
                 },
@@ -72,8 +72,8 @@ export default {
     }
   },
   methods: {
-    openReview(row) {
-      this.$emit('open-review-page', row)
+    handleRead(row) {
+      this.$emit('read', row)
     },
     handleFilterChange(type) {
       if (type === 'query') {

@@ -53,7 +53,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReview(row)
+                      this.handleRead(row)
                     }
                   }
                 },
@@ -63,7 +63,23 @@ export default {
           },
           {
             label: '待处理的版本',
-            prop: 'resourceVersion'
+            prop: 'resourceVersion',
+             render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row)
+                    }
+                  }
+                },
+                row.taskName
+              )
+            }
           },
           {
             label: '内容源',
@@ -112,8 +128,8 @@ export default {
     }
   },
   methods: {
-    openReview(row) {
-      this.$emit('open-review-page', row)
+    handleRead(row) {
+      this.$emit('read', row, this.resourceType+"Preview")
     },
     handleFilterChange(type) {
       if (type === 'query') {
@@ -169,17 +185,7 @@ export default {
         })
         .other('form', {
           component: 'Select',
-          placeholder: '审核状态'
-        }),
-      currentOperator: _.o
-        .enum({
-          不限: '',
-          仅自己: 0,
-          仅他人: 1
-        })
-        .other('form', {
-          component: 'Select',
-          placeholder: '审核人'
+          placeholder: '内容源'
         })
     }).other('form', {
       cols: {

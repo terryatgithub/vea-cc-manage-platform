@@ -15,7 +15,7 @@ export function getHomePageInfoList (data) {
 export function homePageInfoSave (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/homepageInfo/save.html',
+    url: 'api/v1/homepage/save.html',
     data: { data: JSON.stringify(data) }
   })
 }
@@ -34,7 +34,7 @@ export function homePageInfoDelete (params) {
 export function homePageGetDetail (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/v1/homepageInfo/getDetailInfo.html',
+    url: 'api/v1/homepage/getDetailInfo.html',
     params
   })
 }

@@ -50,7 +50,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReview(row)
+                      this.handleRead(row)
                     }
                   }
                 },
@@ -65,6 +65,7 @@ export default {
           {
             label: '待处理的版本',
             prop: 'currentVersion'
+
           },
           {
             label: '更新时间',
@@ -79,8 +80,8 @@ export default {
     }
   },
   methods: {
-    openReview(row) {
-      this.$emit('open-review-page', row)
+    handleRead(row) {
+      this.$emit('read', row)
     },
     handleFilterChange(type) {
       if (type === 'query') {

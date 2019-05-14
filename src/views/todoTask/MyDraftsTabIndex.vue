@@ -1,38 +1,52 @@
 <template>
   <div>
-    <!-- <MyDraftsTab 
+    <MyDraftsTab 
      v-show="isShowList" 
      ref="list" 
-      @create="handleCreate"
       @read="handleRead"
-      @edit="handleEdit"
-      @copy="handleCopy"
      >
-     </MyDraftsTab> -->
+     </MyDraftsTab>
     <FilmDetailPageAdd
-      v-if="!isShow"
-      :editId="editId"
+      v-if="!isShowList&&tabParentType==='special'"
+      :editId="id"
       :initMode="mode"
       :duplicateVersionVersion = "version"
-      @open-list-page="handleUpsertEnd"
       @go-back="goBack"
     />
+      <BusinessTabInfo 
+      v-if="!isShowList&&tabParentType==='biz'"
+       :id="id" 
+      :init-mode="mode"
+      :version="version"
+      @go-back="goBack">
+    </BusinessTabInfo>
+      <TabInfo
+      v-if="!isShowList&&tabParentType==='home'"
+      :id="id"
+      :init-mode="mode"
+      @go-back="goBack"
+    ></TabInfo>
   </div>
 </template>
 <script>
-import FilmDetailPageAdd from  './../panelManage/FilmDetailPageAdd'
-// import MyDraftsTab from './MyDraftsTab'
+ import FilmDetailPageAdd from  './../panelManage/FilmDetailPageAdd'
+ import BusinessTabInfo from './../panelManage/BusinessTabInfo'
+ import TabInfo from './../tabInfo/TabInfo.vue'
+ import MyDraftsTab from './MyDraftsTab'
 export default {
   components: {
-    FilmDetailPageAdd
-   // MyDraftsTab,
+    FilmDetailPageAdd, //tabParentType = special
+    MyDraftsTab,
+    TabInfo, //tabParentType = home
+    BusinessTabInfo // tabParentType = biz 
   },
   data() {
     return {
       isShowList: true,
       id: undefined,
       mode: 'create',
-      version: undefined
+      version: undefined,
+      tabParentType: undefined
     };
   },
   methods: {
@@ -42,26 +56,13 @@ export default {
       this.mode = 'list'
       this.version = undefined
     },
-    handleCreate() {
-      this.id = undefined
-      this.mode = 'create'
-      this.isShowList = false
-    },
-    handleEdit(id) {
-      this.id = id
-      this.mode = 'edit'
-      this.isShowList = false
-    },
-    handleRead(id, version) {
-      this.id = id
+    handleRead(row) {
+      this.id = row.tabId
       this.mode = 'read'
-      this.version = version
+      this.version = row.currentVersion
       this.isShowList = false
-    },
-    handleCopy(id) {
-      this.id = id
-      this.mode = 'copy'
-      this.isShowList = false
+      this.tabParentType = row.tabParentType
+      console.log(row.tabParentType)
     },
     /**
      * 新增编辑里面的返回事件

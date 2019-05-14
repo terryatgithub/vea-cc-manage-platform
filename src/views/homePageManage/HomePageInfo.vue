@@ -634,6 +634,7 @@ export default {
     }
   },
   created() {
+    debugger
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

@@ -4,10 +4,12 @@
       v-show="isShowList" 
       ref="list" 
       @open-add-page="openAddPage"
+      @read="handleRead"
     />
     <GlobalPictureUpsert
       v-if="!isShowList"
       :edit-id="editId"
+      :initMode="mode"
       @show-list="openListPage"
       @go-back="goBack"
     />
@@ -24,7 +26,8 @@ export default {
   data() {
     return {
       isShowList: true,
-      editId: null
+      editId: null,
+      mode: undefined
     };
   },
   methods: {
@@ -54,6 +57,11 @@ export default {
     openAddPage(id) {
       this.editId = id
       this.isShowList = false
+      this.mode = 'create'
+    },
+    handleRead(row){
+      this.editId = row.pictureId
+      this.mode = 'read'
     },
     /**
      * 打开列表页面

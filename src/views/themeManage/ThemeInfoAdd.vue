@@ -355,6 +355,7 @@ export default {
     }
   },
   created() {
+    debugger
     this.mode = this.initMode
     if (this.editId) {
       if (this.mode === 'edit') {

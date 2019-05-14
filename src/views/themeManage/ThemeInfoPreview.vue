@@ -126,6 +126,7 @@ export default {
     }
   },
   created() {
+    debugger
     const { themeInfo, form } = this
     // 填写表单
     form.themeName = themeInfo.themeName
@@ -136,7 +137,6 @@ export default {
     form.thumbImgUrl = themeInfo.thumbImgUrl
     form.pictureEntitys = themeInfo.pictureEntitys
     form.tabBgEntitys = themeInfo.tabBgEntitys
-
     this.themeStatus = themeInfo.themeStatus
     this.currentVersion = themeInfo.currentVersion
   }
