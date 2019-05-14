@@ -214,7 +214,7 @@ export function saveSysMenu (data) {
 export function editSysMenu (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/v1/sysMenu/edit.html',
+    url: 'api/sysMenu/edit.html',
     params
   }).then(data => {
     return JSON.parse(data.match(/para = (\{.+\})/)[1])
@@ -226,7 +226,7 @@ export function editSysMenu (params) {
 export function getNotMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/sysMenu/getNotMenuByRunId.html',
+    url: 'api/sysMenu/getNotMenuByRunId.html',
     data
   })
 }
@@ -236,7 +236,7 @@ export function getNotMenuByRunId (data) {
 export function getMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/sysMenu/getMenuByRunId.html',
+    url: 'api/sysMenu/getMenuByRunId.html',
     data
   })
 }

@@ -74,67 +74,65 @@ export default {
         seq: null,
         modle: null,
         disabled: null,
-        pmid: null
+        pmid: null,
+        menuId: undefined
       },
       formRules: {
-        //表单规则
+        // 表单规则
         menuName: [
-          { required: true, message: "请输入菜单名称", trigger: "blur" }
+          { required: true, message: '请输入菜单名称', trigger: 'blur' }
         ],
-        elid: [{ required: true, message: "请输入元素ID", trigger: "blur" }],
+        elid: [{ required: true, message: '请输入元素ID', trigger: 'blur' }],
         iconClass: [
-          { required: true, message: "请输入图标样式", trigger: "blur" }
+          { required: true, message: '请输入图标样式', trigger: 'blur' }
         ],
-        tabId: [{ required: true, message: "请输入标签ID", trigger: "blur" }],
+        tabId: [{ required: true, message: '请输入标签ID', trigger: 'blur' }],
         tabTitle: [
-          { required: true, message: "请输入标签名称", trigger: "blur" }
+          { required: true, message: '请输入标签名称', trigger: 'blur' }
         ],
         tabIcon: [
-          { required: true, message: "请输入标签图标样式", trigger: "blur" }
+          { required: true, message: '请输入标签图标样式', trigger: 'blur' }
         ],
         iframeUrl: [
-          { required: true, message: "跳转地址URL", trigger: "blur" }
+          { required: true, message: '跳转地址URL', trigger: 'blur' }
         ],
-        disabled: [{ required: true, message: "禁用", trigger: "blur" }],
-        seq: [{ required: true, message: "请输入排序", trigger: "blur" }],
-        modle: [{ required: true, message: "请选择菜单目录", trigger: "blur" }],
-        pmid: [{ required: true, message: "请输入父菜单ID", trigger: "blur" }]
+        disabled: [{ required: true, message: '禁用', trigger: 'blur' }],
+        seq: [{ required: true, message: '请输入排序', trigger: 'blur' }],
+        modle: [{ required: true, message: '请选择菜单目录', trigger: 'blur' }],
+        pmid: [{ required: true, message: '请输入父菜单ID', trigger: 'blur' }]
       }
-    };
+    }
   },
   methods: {
     submitBtn() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          console.log(this.form);
-          this.$service.saveSysMenu({'jsonStr': JSON.stringify(this.form) }, "保存成功").then(data => {
-            this.$emit("open-list-page");
-          });
+          this.$service.saveSysMenu({ 'jsonStr': JSON.stringify(this.form) }, '保存成功').then(() => {
+            this.$emit('open-list-page')
+          })
         }
-      });
+      })
     },
     getEditData() {
-      let obj = this;
       this.$service.editSysMenu({ id: this.editId }).then(data => {
-        // console.log(data)
         Object.keys(this.form).forEach(v => {
-          if (v === "disabled") {
-            this.form[v] = data[v] + "";
+          if (v === 'disabled') {
+            this.form[v] = data[v] + ''
           } else {
-            this.form[v] = data[v];
+            this.form[v] = data[v]
           }
-        });
-      });
+        })
+      })
     }
   },
   created() {
     if (this.editId !== null && this.editId !== undefined) {
-      this.title = "编辑";
-      this.getEditData();
+      this.title = '编辑'
+      this.form.menuId = this.editId
+      this.getEditData()
     } else {
-      this.title = "新增";
+      this.title = '新增'
     }
   }
-};
+}
 </script>
-

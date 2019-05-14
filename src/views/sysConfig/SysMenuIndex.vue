@@ -19,25 +19,25 @@ export default {
     }
   },
   methods: {
-    /** 
+    /**
      * 打开新增编辑页面
     */
     openAddPage (menuId) {
-       this.editId = menuId
-       this.isShowList = false
+      this.editId = menuId
+      this.isShowList = false
     },
-     /** 
+    /**
      * 打开列表页面
     */
     openListPage () {
       this.isShowList = true
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
     },
-    /**  
+    /**
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.isShowList = true
+      this.isShowList = true
     }
   }
 }

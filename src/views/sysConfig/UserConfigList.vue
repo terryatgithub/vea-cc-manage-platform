@@ -311,7 +311,6 @@ export default {
     fetchData () {
       const filter = this.parseFilter()
       this.$service.userConfigPageList(filter).then(data => {
-        debugger
         this.pagination.total = data.total
         this.table.data = data.rows
       })

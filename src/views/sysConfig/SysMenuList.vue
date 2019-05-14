@@ -46,12 +46,10 @@
 
 <script>
 import _ from 'gateschema'
-import ButtonList from './../../components/ButtonLIst'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
   components: {
-    ActionList,
     Table,
     ContentWrapper,
     ButtonGroupForListPage
@@ -64,14 +62,14 @@ export default {
       },
       filterSchema: null,
       pagination: {},
-      setDialogVisible: false, //弹框默认关闭
-      svalue: [], //右边数据
-      sdata: [], //弹框全部数据
-      allData: [], //弹框数据
-      setMenu: [], //弹框对象
-      selectMenu: [], //选中数据
-      data1: [], //待选数据
-      data2: [], //已选数据
+      setDialogVisible: false, // 弹框默认关闭
+      svalue: [], // 右边数据
+      sdata: [], // 弹框全部数据
+      allData: [], // 弹框数据
+      setMenu: [], // 弹框对象
+      selectMenu: [], // 选中数据
+      data1: [], // 待选数据
+      data2: [], // 已选数据
       selected: [],
       buttonList: [],
       table: {
@@ -202,7 +200,7 @@ export default {
     handleCreate() {
       this.$router.push({ name: 'prize-create' })
     },
-    //表格操作
+    // 表格操作
     handleRowSelectionAdd(targetItem) {
       this.selected.push(targetItem.menuId)
       this.updateTableSelected()
@@ -235,7 +233,7 @@ export default {
         return result
       }, [])
     },
-    //查询
+    // 查询
     handleFilterChange(type) {
       if (type === 'query') {
         if (this.pagination) {
@@ -244,7 +242,7 @@ export default {
       }
       this.fetchData()
     },
-    //重置
+    // 重置
     handleFilterReset() {
       this.filter = {
         sort: undefined,
@@ -259,7 +257,6 @@ export default {
         filter.rows = pagination.pageSize
       }
       return filter
-      console.log(filter)
     },
     /**
      * 获取数据
@@ -290,16 +287,16 @@ export default {
       var rightData1 = []
       this.setMenu.push(['menuId', row.menuId])
       this.$service.getNotMenuByRunId(MenuObj).then(data => {
-        this.data1 = data //待选数据
+        this.data1 = data // 待选数据
         this.$service.getMenuByRunId(MenuObj).then(data => {
-          this.data2 = data //已选数据
+          this.data2 = data // 已选数据
           this.allData = this.data1.concat(this.data2)
-          //数组对象去重
+          // 数组对象去重
           const obj = {}
           this.allData = this.allData.reduce(function(item, next) {
             obj[next.runId] ? '' : (obj[next.runId] = true && item.push(next))
             return item
-          }, []) //全部数据
+          }, []) // 全部数据
           for (let i = 0; i < this.allData.length; i++) {
             newData.push({
               key: this.allData[i].runId,
@@ -321,11 +318,11 @@ export default {
         })
       })
     },
-    //选中操作
+    // 选中操作
     handleChange(value, direction, movedKeys) {
       var str = []
       var newStr = []
-      //去重
+      // 去重
       for (var i = 0; i < value.length; i++) {
         if (str.indexOf(value[i]) == -1) {
           str.push(value[i])
@@ -336,7 +333,7 @@ export default {
       }
       this.selectMenu = this.setMenu.concat(newStr)
     },
-    //弹框保存事件
+    // 弹框保存事件
     setSave() {
       const obj = this.selectMenu
       this.$service.saveMenuRun(obj, '保存成功')
@@ -373,7 +370,7 @@ export default {
         placeholder: '是否禁用'
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20
@@ -403,6 +400,3 @@ export default {
   flex-direction: row;
 }
 </style>
-
-
-

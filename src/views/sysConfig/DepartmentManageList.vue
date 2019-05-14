@@ -29,7 +29,7 @@
 
 <script>
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import { Input } from 'element-ui'
 import _ from 'gateschema'
 
@@ -136,7 +136,6 @@ export default {
      * 获取数据
      */
     fetchData() {
-      debugger
       const filter = this.parseFilter()
       this.$service.sysDeptPageList(filter).then(data => {
         this.pagination.total = data.total
@@ -151,11 +150,11 @@ export default {
       }
       return filter
     },
-    //新增页面
+    // 新增页面
     addDep() {
       this.$emit('open-add-page', null)
     },
-    //编辑页面
+    // 编辑页面
     editData() {
       if (this.$isAllowEdit(this.selected)) {
         this.$emit('open-add-page', this.selected[0])
