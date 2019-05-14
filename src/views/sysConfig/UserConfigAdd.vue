@@ -101,6 +101,13 @@ export default {
     submitBtn () {
       this.$refs.form.validate(valid => {
         if (valid) {
+          console.log(this.form)
+          // 处理dicts数组
+          debugger
+          let dictsData = this.form.dicts
+          dictsData.map(item => item).join(',')
+          console.log(dictsData)
+          this.form.dicts = dictsData
           this.$service.userConfigSave(this.form, '保存成功').then(data => {
             this.$emit('open-list-page')
           })
@@ -110,6 +117,7 @@ export default {
     getEditData () {
       let obj = this
       this.$service.userConfigEdit({ id: this.editId }).then(data => {
+        console.log(data)
         Object.keys(this.form).forEach(v => {
           if (v === 'disabled') {
             this.form[v] = data[v] + ''
@@ -122,6 +130,8 @@ export default {
     getDepts () {
       return this.$service.getDepts().then(data => {
         this.departmentList = data
+        console.log(data)
+        data.forEach((item) => { console.log(item.deptName + item.deptId) })
       })
     }
   },
