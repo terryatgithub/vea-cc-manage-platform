@@ -185,7 +185,7 @@ export default {
         this.$message('请选择再删除')
         return
       }
-      this.$confirm('确定删除此活动吗？', '提示', {
+      this.$confirm('确定要删除吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
