@@ -7,6 +7,7 @@
           :status="resourceInfo.status"
           :version="resourceInfo.version" 
           :version-list="versionList"
+          @select-version="$emit('select-version', $event)"
         />
         <div>
           <el-button type="primary" @click="$emit('copy')">确认复制</el-button>
