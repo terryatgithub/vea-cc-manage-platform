@@ -21,7 +21,7 @@
         <template v-if="mode !== 'read'" >
           <el-form ref="form" :rules="rules" :model="form" label-width="90px" class="el-form-add">
             <el-form-item label="版面名称" prop="tabName">
-              <el-input v-model="form.tabName" style="width: 240px"/>
+              <el-input v-model="form.tabName" />
             </el-form-item>
             <el-form-item label="业务分类">
               <el-select v-model="form.tabCategory" :disabled="categoryEdit">
@@ -254,11 +254,12 @@ export default {
       form: {
         tabId: undefined,
         tabName: '',
+        tabParentType: 'special',
         tabCategory: '0',
         tabResource: '',
         priority: 1,
         currentVersion: '',
-        currentStatus: ''
+        tabStatus: ''
       },
       globalTabResource: '',
       parentResource: '',
@@ -381,6 +382,7 @@ export default {
         if (valid) {
           var jsonStr = {
             tabInfo: {
+              tabParentType: 'special',
               tabId: form.tabId,
               systemDefault: '',
               tabName: form.tabName,
@@ -398,7 +400,7 @@ export default {
             },
             pannelJson: this.table.data
           }
-          this.$service.saveFilmDetailPage({ jsonStr: JSON.stringify(jsonStr) }, '保存成功').then((data) => {
+          this.$service.tabInfoUpsert(jsonStr, '保存成功').then((data) => {
             this.$emit('open-list-page')
           })
         } else {
@@ -579,7 +581,7 @@ export default {
     },
     fetchData(version) {
       if (version !== undefined) { this.form.currentVersion = version }
-      this.$service.reviewFilmDetailPage({ id: this.editId, version }).then((data) => {
+      this.$service.tabInfoGet({ id: this.editId, version }).then((data) => {
         this.setFormInfo(data)
       })
     }

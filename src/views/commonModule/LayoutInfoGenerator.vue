@@ -86,7 +86,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="reviewLayout('dynamicValidateForm')">预览布局</el-button>
-        <el-button type="primary" @click="submitForm()">生存布局</el-button>
+        <el-button type="primary" @click="submitForm()">生成布局</el-button>
         <el-button type="primary" @click="export_raw">导出布局文件</el-button>
         <el-button type="primary" v-if="!dynamicValidateForm.lengthwiseIs" @click="addDomain">添加行数</el-button>
         <el-button @click="resetForm('dynamicValidateForm')" type="primary">重置</el-button>

@@ -92,7 +92,7 @@ export default {
             )
             .then(data => {
               this.auditDialog = false
-              this.$emit('auditTask')
+              this.$emit('auditTask-end')
             })
         }
       })

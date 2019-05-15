@@ -12,14 +12,7 @@
       :editData="editData"
       @open-list-page="openListPage"
       @go-back="goBack"
-      @open-generator-page="openGeneratorPage"
-      :generatorLayoutData="generatorLayoutData"
     ></LayoutInfoAdd>
-    <LayoutInfoGenerator 
-     v-if="mode==='generator'" 
-     @go-back="goBack"
-     @generator-layout="generatorLayout">
-     </LayoutInfoGenerator>
       <LayoutInfoReview
       v-if="mode==='review'"
       :reviewData="reviewData"
@@ -32,21 +25,18 @@
 <script>
 import LayoutInfoAdd from './LayoutInfoAdd'
 import LayoutInfoList from './LayoutInfoList'
-import LayoutInfoGenerator from './LayoutInfoGenerator'
 import LayoutInfoReview from './LayoutInfoReview'
 export default {
   components: {
     LayoutInfoAdd,
     LayoutInfoList,
-    LayoutInfoGenerator,
     LayoutInfoReview
   },
   data() {
     return {
       mode: "list",
       editData: {},
-      reviewData: {},
-      generatorLayoutData: {} //生成布局产生的布局对象
+      reviewData: {}
     }
   },
   methods: {

@@ -28,6 +28,7 @@
             :menuElId="menuElId"
             @go-edit-Page="goEditPage"
             @delete-item="deleteItem"
+            @auditTask-end="$emit('open-list-page')"
            >
            </AuditDetailButton>
           </el-form-item>

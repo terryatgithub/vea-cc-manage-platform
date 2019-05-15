@@ -364,7 +364,7 @@ export default {
     },
     fetch(version) {
       this.$service
-        .privatePannelInfoView({ id: this.viewData.pannelGroupId, version })
+        .panelGetDetail({ id: this.viewData.pannelGroupId, version })
         .then(data => {
           this.setPanel(data)
            this.getHandlePerson(data)

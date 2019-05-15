@@ -16,7 +16,7 @@ export function homePageInfoSave (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/homepage/save.html',
-    data: { data: JSON.stringify(data) }
+    data: { jsonStr: JSON.stringify(data) }
   })
 }
 /**

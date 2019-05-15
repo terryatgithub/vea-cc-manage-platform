@@ -149,7 +149,7 @@ export function getResourceList (data) {
 export function getCornerList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/globalCornerIcon/pageList.html',
+    url: 'api/v1/cornerIcon/pageList.html',
     data
   })
 }
@@ -200,7 +200,7 @@ export function removeMulti(params) {
 export function getClickData(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/commonOnclickInfo/pageList.html',
+    url: 'api/v1/onclickInfo/pageList.html',
     data
   })
 }
@@ -222,7 +222,7 @@ export function getHistoryList(params) {
 export function getBroadcastBlockEditData(data) {
   return this.fetch({
     method: 'POST',
-    url: 'api/blockInfo/getDetailInfo.html',
+    url: 'api/v1/blockInfo/getDetailInfo.html',
     data
   })
 }

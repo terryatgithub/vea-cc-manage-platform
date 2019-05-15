@@ -7,7 +7,7 @@
           :model="form"
           :rules="formRules"
           ref="form"
-          label-width="100px"
+          label-width="110px"
           class="el-form-add"
         >
           <el-form-item label="策略名称" prop="policyName">
@@ -167,8 +167,8 @@ export default {
       form: {
         policyId: null,
         policyName: null,
-        macStart: null,
-        macEnd: null,
+        macStart: '000000000000',
+        macEnd: 'ffffffffffff',
         homePageVerEnd: '',
         homePageVerStart: '',
         priority: null,
@@ -191,7 +191,6 @@ export default {
           { required: true, message: '请输入策略名称', trigger: 'blur' }
         ],
         macStart: [
-          { required: true, message: '请输入MAC起始地址', trigger: 'blur' },
           {
             validator: this.$checkMacType,
             message: '请输入12位以字母数字组成的MAC地址',
@@ -199,7 +198,6 @@ export default {
           }
         ],
         macEnd: [
-          { required: true, message: '请输入MAC结束地址', trigger: 'blur' },
           {
             validator: this.$checkMacType,
             message: '请输入12位以字母数字组成的MAC地址',

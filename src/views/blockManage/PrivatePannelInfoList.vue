@@ -63,7 +63,8 @@ export default {
       },
       filter: {
         sort: undefined,
-        order: undefined
+        order: undefined,
+        pannelType: 5
       },
       filterSchema: null,
       pagination: {},
@@ -193,12 +194,12 @@ export default {
     fetchData() {
       const filter = this.parseFilter()
       if (this.dataList) {
-        this.$service.privatePannelInfo(filter).then(data => {
+        this.$service.panelPageList(filter).then(data => {
           this.pagination.total = data.total
           this.table.data = data.rows
         })
       } else {
-        this.$service.privatePannelInfo(filter).then(data => {
+        this.$service.panelPageList(filter).then(data => {
           this.pagination.total = data.total
           this.table.data = data.rows
         })

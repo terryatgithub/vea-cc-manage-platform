@@ -300,6 +300,7 @@ export default {
         pannelResource: 'o_tencent',
         panelGroupCategory: 67,
         panelGroupType: 9,
+        pannelType: 5,
         focusConfig: undefined,
         dictInfoList: '',
         content: '',
@@ -451,8 +452,8 @@ export default {
         function(err) {
           if (!err) {
             this.$service
-              .privatePanelUpsert(
-                { jsonStr: JSON.stringify(this.parseDataToApi(data)) },
+              .panelUpsert(
+                data,
                 '保存成功'
               )
               .then(data => {
@@ -539,7 +540,7 @@ export default {
     },
     fetchData(version) {
       this.$service
-        .privatePannelInfoView({ id: this.id, version })
+        .panelGetDetail({ id: this.id, version })
         .then(data => {
           this.setPanel(data)
           //  this.getHandlePerson(data)

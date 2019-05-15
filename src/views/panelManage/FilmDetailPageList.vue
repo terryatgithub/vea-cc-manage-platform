@@ -112,7 +112,9 @@ export default {
   data() {
     return {
       pannelValue: [],
-      filter: {},
+      filter: {
+        tabParentType: 'special'
+      },
       pagination: {
         currentPage: 1
       },
@@ -255,7 +257,7 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter()
-      this.$service.filmDetailPageList(filter).then(data => {
+      this.$service.tabInfoList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
         this.table.selected = []
