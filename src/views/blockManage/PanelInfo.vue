@@ -146,7 +146,9 @@
                 <ResourceSelector 
                   ref="resourceSelector"
                   v-show="selectedLayout"
+                  :selectors="['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate']"
                   :is-live="true"
+                  :disable-partner="true"
                   selection-type="multiple"
                   :source="pannel.pannelResource" 
                   @select-end="handleSelectResourceEnd">
@@ -610,8 +612,9 @@ export default {
       this.updatePosition()
       this.activePage = 'panel_info'
     },
-    handleSelectResourceEnd(selectedResources, _, partner) {
+    handleSelectResourceEnd(selectedResources) {
       const resourceSelector = this.$refs.resourceSelector
+      const partner = selectedResources.videoSource
       const selectedEpisodes = selectedResources.episode || {}
       const pannel = this.pannel
       const activePannel = this.pannel.pannelList[+this.activePannelIndex]

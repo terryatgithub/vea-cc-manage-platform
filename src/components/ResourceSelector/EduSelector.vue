@@ -12,7 +12,7 @@
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')">
 
-    <el-collapse slot="filter" value="1">
+    <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
         <el-form :inline="true" v-model="filter" label-width="72px">
           <el-form-item label="内容商">
@@ -249,6 +249,11 @@ export default {
   },
   props: ['isLive', 'selectionType'],
   methods: {
+    handleCollapseChange() {
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+      }, 1000)
+    },
     getDefaultFilter() {
       return {
         // 筛选条件表单

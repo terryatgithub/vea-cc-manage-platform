@@ -12,7 +12,7 @@
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')">
 
-    <el-collapse slot="filter" value="1">
+    <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
         <el-form :inline="true" :model="filter" class="search-form-inline" label-width="80px">
           <el-form-item label="渠道">
@@ -319,6 +319,11 @@ export default {
     'filter.category': 'onCategoryChange'
   },
   methods: {
+    handleCollapseChange() {
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+      }, 1000)
+    },
     handleSelectEpisode(movie) {
       this.currentVideoId = movie.coocaaVId
       this.$refs.episodeSelector.$refs.wrapper.handleSelectStart()

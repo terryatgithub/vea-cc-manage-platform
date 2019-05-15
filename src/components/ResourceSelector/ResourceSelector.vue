@@ -19,6 +19,7 @@
           <video-selector 
             v-show="activeSelector === 'video'"
             ref="video-selector" 
+            :disable-partner="disablePartner"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
@@ -157,6 +158,7 @@ export default {
   },
   props: {
     source: String,
+    disablePartner: Boolean,
     selectors: {
       type: Array,
       default() {
