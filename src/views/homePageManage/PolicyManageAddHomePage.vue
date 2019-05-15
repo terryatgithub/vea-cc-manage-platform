@@ -174,7 +174,12 @@ export default {
       // }
       // this.activeItem = undefined
       // this.itemType = undefined
-      this.$emit("create-home-page", this.form)
+      if(JSON.stringify(this.editHomePageData) !== '{}') {
+        this.$emit("create-home-page", this.form, true)
+      } else {
+         this.$emit("create-home-page", this.form, false)
+      }
+      
     },
     handleRemoveItem (itemType, item) {
       const specialHp = itemType === 'child'

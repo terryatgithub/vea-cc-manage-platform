@@ -22,7 +22,7 @@
             </el-table>
           </el-form-item>
         </el-form>
-        <div class="homePageView__action">
+        <div class="homePageView__action" v-if="mode!=='read'">
           <i class="el-icon-edit" @click="edit(item.homepageModel,index)"></i>
           <i class="el-icon-close" @click="remove(item.homepageModel,index)"></i>
         </div>
@@ -34,7 +34,8 @@
 export default {
   props: {
     dataArr: Array,
-    title: String
+    title: String,
+    mode: String
   },
   data() {
     return {}
