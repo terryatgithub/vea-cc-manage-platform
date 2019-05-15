@@ -1,7 +1,7 @@
 <template>
   <remote-selector-wrapper
     class="cc-tab-selector"
-    title="选择版面"
+    :title="title || '选择版面'"
     @select-start="handleSelectStart"
     @select-end="handleSelectEnd"
   >
@@ -201,7 +201,7 @@ export default {
       selected: []
     }
   },
-  props: ['isLive', 'initSelected', 'source', 'hasSubTab', 'selectionType'],
+  props: ['title', 'isLive', 'initSelected', 'source', 'hasSubTab', 'selectionType'],
   watch: {
     initSelected: 'setSelected',
     'pagination.currentPage': 'fetchData',
