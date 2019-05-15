@@ -33,7 +33,7 @@ export function addChipAndModel(data) {
 export function getHomePageModelPageList(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/homepageInfo/dataList.html',
+    url: 'api/v1/homepage/dataList.html',
     data
   })
 }

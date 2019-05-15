@@ -298,7 +298,6 @@ export default {
         },
         {
           label: '默认版面',
-          width: 80,
           render: (h, { $index, row }) => {
             return row.isDefaultTab ? '有' : '否'
           }
@@ -634,7 +633,6 @@ export default {
     }
   },
   created() {
-    debugger
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

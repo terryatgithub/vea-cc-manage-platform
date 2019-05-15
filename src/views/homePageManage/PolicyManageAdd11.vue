@@ -20,7 +20,7 @@
               plain
               @click="selectChipModel"
             >选择机型机芯</el-button>
-            <SelectedTag v-if="form.deviceInfos.length>0" >
+            <SelectedTag v-if="form.deviceInfos.length>0">
               <ul>
                 <li v-for="(item, index) in form.deviceInfos" :key="index">
                   <el-tag
@@ -49,7 +49,7 @@
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item label="Mac地址" required class="linkwork">
+          <el-form-item label="Mac地址" class="linkwork">
             <el-col :span="11" style="padding-left:0px;padding-right:0px;">
               <el-form-item prop="macStart">
                 <el-input placeholder="Mac地址起始" v-model="form.macStart" style="width: 100%;"></el-input>
@@ -107,10 +107,11 @@
       </el-col>
     </el-row>
     <el-dialog :dialogTitle="dialogTitle" :visible.sync="dialogVisible" width="80%">
-      <ChipModel ref="chipModelSelected" 
-      v-if="mode==='modelChip'" 
-      :selectionType="selectionType"
-      @row-click="ChipModelRowClick"
+      <ChipModel
+        ref="chipModelSelected"
+        v-if="mode==='modelChip'"
+        :selectionType="selectionType"
+        @row-click="ChipModelRowClick"
       ></ChipModel>
       <HomePageModel
         :homepageModel="model"
@@ -118,7 +119,7 @@
         homepageStatusArray="4"
         v-if="mode==='HomePageModel'"
         @row-click="rowClick"
-         @row-selection-change="rowClick"
+        @row-selection-change="rowClick"
       ></HomePageModel>
 
       <span slot="footer" class="dialog-footer">
@@ -223,12 +224,14 @@ export default {
     }
   },
   methods: {
-    ChipModelRowClick(row){
+    ChipModelRowClick(row) {
       this.dialogVisible = false
-      this.form.deviceInfos =[{
-        'chip': row.chip,
-        'model': row.model
-      }]
+      this.form.deviceInfos = [
+        {
+          chip: row.chip,
+          model: row.model
+        }
+      ]
     },
     cancel() {
       this.form.homepageInfoList = []
@@ -271,12 +274,26 @@ export default {
      * 生存一个定向首页方案
      */
     createHomePage(form) {
+      let crowdPolicyIds = form.attribute.crowdPolicyIds[0]
+      this.$service.getCrowdOfPolicy(crowdPolicyIds).then(data => {
+        form.attribute.crowdName = data[data.length-1].label
+        if (this.model === 'normal') {
+          this.form.specialNormalHp.push(form)
+        } else {
+          this.form.specialChildHp.push(form)
+        }
+      })
       this.addHomePageDialogVisible = false
-      if (this.model === 'normal') {
-        this.form.specialNormalHp.push(form)
-      } else {
-        this.form.specialChildHp.push(form)
-      }
+    },
+    getCrowdNames(data) {
+     let form = data.map((e) => {
+         let crowdPolicyIds = e.attribute.crowdPolicyIds[0]
+         this.$service.getCrowdOfPolicy(crowdPolicyIds).then(data => {
+           this.$set(e.attribute,'crowdName',data[data.length-1].label)
+         })
+         return e
+      })
+      return form
     },
     /**
      * 添加定向首页
@@ -327,14 +344,39 @@ export default {
     },
     submitBtn(status) {
       this.$refs.form.validate(valid => {
-        let obj = this.form.homepageInfoListObj
+        let form = this.form
+        let obj = form.homepageInfoListObj
         Object.keys(obj).forEach(e => {
-          this.form.homepageInfoList.push(obj[e])
+          form.homepageInfoList.push(obj[e])
         })
-        this.form.policyStatus = status
+        form.policyStatus = status
         if (valid) {
+          if (obj['normal'] === undefined) {
+            this.$message({
+              type: 'error',
+              message: '请选择标准模式首页'
+            })
+            return
+          }
+          if (obj['child'] === undefined) {
+            this.$message({
+              type: 'error',
+              message: '请选择儿童模式首页'
+            })
+            return
+          }
+          if (form.macStart === '' || form.macEnd === '') {
+            form.macStart = form.macEnd = ''
+          }
+          if (form.deviceInfos.length === 0 && form.macStart === '') {
+            this.$message({
+              type: 'error',
+              message: 'mac地址或者机型机芯至少选择一项'
+            })
+            return
+          }
           this.$service
-            .policyConfSave({ jsonStr: JSON.stringify(this.form) }, '保存成功')
+            .policyConfSave({ jsonStr: JSON.stringify(form) }, '保存成功')
             .then(data => {
               this.$emit('open-list-page')
             })
@@ -345,7 +387,7 @@ export default {
     getEditData() {
       this.$service.getPolicyConfDetail({ id: this.editId }).then(data => {
         this.form = {
-          currentVersion: this.isReplicate?'': data.currentVersion,
+          currentVersion: this.isReplicate ? '' : data.currentVersion,
           policyId: data.policyId,
           policyName: data.policyName,
           macStart: data.macStart,
@@ -354,25 +396,27 @@ export default {
           homePageVerStart: data.homepageVerStart,
           priority: data.priority,
           policyStatus: data.policyStatus,
-          deviceInfos: [{'chip': data.chip,'model': data.model}], //机型机芯{chip:'',model:''}
+          deviceInfos: [{ chip: data.chip, model: data.model }], //机型机芯{chip:'',model:''}
           homepageInfoList: data.homepageInfoList,
           homepageInfoListObj: {
-            normal: data.homepageInfoList.length > 0 ? data.homepageInfoList[0] : {},
-            child: data.homepageInfoList.length === 2 ? data.homepageInfoList[1] : {}
+            normal:
+              data.homepageInfoList.length > 0 ? data.homepageInfoList[0] : {},
+            child:
+              data.homepageInfoList.length === 2 ? data.homepageInfoList[1] : {}
           },
           schemeFilterEntity: {
             partner: data.platform
           },
           regionCityPairs: [],
-          specialNormalHp: data.specialNormalHp,
-          specialChildHp: data.specialChildHp
+          specialNormalHp: this.getCrowdNames(data.specialNormalHp),
+          specialChildHp: this.getCrowdNames(data.specialChildHp)
         }
       })
     }
   },
   created() {
     if (this.editId !== null && this.editId !== undefined) {
-      this.isReplicate ? this.title = '创建副本':this.title = '编辑'
+      this.isReplicate ? (this.title = '创建副本') : (this.title = '编辑')
       this.selectionType = 'single'
       this.getEditData()
     } else {

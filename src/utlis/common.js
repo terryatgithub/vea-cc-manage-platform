@@ -185,6 +185,9 @@ Vue.prototype.$platform = function (platform) {
 }
 /** 检验MAC地址是否正确 */
 Vue.prototype.$checkMacType = function (rule, value, callback) {
+  if (value === '') {
+    callback()
+  }
   value = value.replace(/(^\s*)|(\s*$)/g, '') // 去掉空格
   var reg = /^[a-zA-Z0-9]{12}$/
   if (reg.test(value)) {

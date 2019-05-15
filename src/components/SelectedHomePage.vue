@@ -5,7 +5,9 @@
       <div v-for="(item, index) in dataArr" :key="index" class="homePageView">
         <el-form label-width="80px">
           <el-form-item label="人群">
-            <el-tag type="success" size="medium"></el-tag>
+            <el-tag type="success" size="medium">
+             {{item.attribute.crowdName}}
+            </el-tag>
           </el-form-item>
           <el-form-item label="首页方案">
             <el-tag type="success" size="medium">{{item.homepageName}}</el-tag>
@@ -44,12 +46,6 @@ export default {
      remove(homepageModel, index) {
       this.$emit('remove-item',homepageModel ,index)
     }
-  },
-  created () {
-    debugger
-    this.$service.getCrowdOfPolicy('254').then((data)=>{
-      debugger
-    })
   }
 }
 </script>

@@ -6,23 +6,24 @@
       @read="handleRead"
      >
      </MyDraftsPolicy>
-     <PolicyManagePreview 
-    v-if='!isShowList' 
-    :editId="id" 
-    :version='version'
-    @upsert-end="handleUpsertEnd" 
-    @go-back="goBack"> 
-    </PolicyManagePreview>
+    <PolicyManageInfo 
+      v-if='!isShowList' 
+      :id="id" 
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd" 
+      @go-back="goBack">
+    </PolicyManageInfo>
   </div>
 </template>
 <script>
- import PolicyManagePreview from  './../homePageManage/PolicyManagePreview.vue' //常规运营
+ import PolicyManageInfo from  './../homePageManage/PolicyManageInfo' //常规运营
  import MyDraftsPolicy from './MyDraftsPolicy.vue'
  // pannelType 1 为 常规运营 8 为功能版块 3 为业务专辑 9 专属影院
 export default {
   components: {
     MyDraftsPolicy,
-    PolicyManagePreview
+    PolicyManageInfo
   },
   data() {
     return {

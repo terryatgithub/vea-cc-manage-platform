@@ -81,7 +81,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReview(row)
+                      this.handleRead(row)
                     }
                   }
                 },
@@ -134,7 +134,7 @@ export default {
                     },
                     on: {
                       click: () => {
-                        this.openReview(row, row.duplicateVersion)
+                        this.handleRead(row, row.duplicateVersion)
                       }
                     }
                   },
@@ -159,15 +159,14 @@ export default {
     }
   },
   methods: {
-    openReview(row, version) {
-      debugger
-      this.$emit('open-preview-page', row.policyId, version)
+    handleRead(row, version) {
+      this.$emit('read', row.policyId, version)
     },
     /**
      * 新增
      */
     addData() {
-      this.$emit('open-add-page', null)
+      this.$emit('create')
     },
     /**
      * 编辑
@@ -175,7 +174,7 @@ export default {
     editData() {
       if (this.$isAllowEdit(this.selected)) {
         if(parseInt(this.selectedItems[0].policyStatus) === 2){
-          this.$emit('open-add-page', this.selected[0])
+          this.$emit('edit', this.selected[0])
         } else {
           this.$message({
             type: 'error',

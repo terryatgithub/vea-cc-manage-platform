@@ -61,13 +61,14 @@
     </el-tab-pane>
     <el-tab-pane label="策略" name="policy">
       <MySubmitTasksList resourceType="policy" v-show="mode==='policyList'" @read="handleRead"></MySubmitTasksList>
-      <PolicyManagePreview
-        v-if="mode==='policyPreview'"
-        :editId="previewData.resourceId"
-        :version="undefined"
-        @upsert-end="handleUpsertEnd"
-        @go-back="goBack"
-      ></PolicyManagePreview>
+         <PolicyManageInfo 
+       v-if="mode==='policyPreview'"
+      :id="previewData.resourceId" 
+      :init-mode="'read'"
+      :version="undefined"
+      @upsert-end="handleUpsertEnd" 
+      @go-back="goBack">
+    </PolicyManageInfo>
     </el-tab-pane>
     <el-tab-pane label="主题" name="theme">
       <MySubmitTasksList resourceType="theme" v-show="mode==='themeList'" @read="handleRead"></MySubmitTasksList>
@@ -97,7 +98,7 @@ import PanelPreview from './PanelPreview'
 import GlobalPictureUpsert from './../commonModule/GlobalPictureUpsert'
 import LayoutInfoReview from './../commonModule/LayoutInfoReview'
 import HomePageInfo from './../homePageManage/HomePageInfo.vue'
-import PolicyManagePreview from './../homePageManage/PolicyManagePreview.vue'
+import PolicyManageInfo from './../homePageManage/PolicyManageInfo'
 import ThemeInfoAdd from './../themeManage/ThemeInfoAdd'
 import GlobalCornerIconView from './../commonModule/GlobalCornerIconView'
 import MultiFunctionBlockView from './../blockInfo/MultiFunctionBlockView'
@@ -109,7 +110,7 @@ export default {
     GlobalPictureUpsert,
     LayoutInfoReview,
     HomePageInfo,
-    PolicyManagePreview,
+    PolicyManageInfo,
     ThemeInfoAdd,
     GlobalCornerIconView,
     MultiFunctionBlockView

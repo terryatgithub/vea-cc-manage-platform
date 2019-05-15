@@ -8,7 +8,7 @@
       @filter-reset="handleFilterReset"
     >
       <ButtonGroupForListPage
-        pageName="testPolicyConf"
+        pageName="policyConf"
         @add="addData"
         @edit="editData"
         @delete="batchDel"
@@ -35,7 +35,7 @@
 <script>
 import _ from 'gateschema'
 import { Button } from 'element-ui'
-// import ButtonList from './../../components/ButtonLIst'
+import ButtonList from './../../components/ButtonLIst'
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 export default {
@@ -81,7 +81,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReview(row)
+                      this.handleRead(row)
                     }
                   }
                 },
@@ -134,7 +134,7 @@ export default {
                     },
                     on: {
                       click: () => {
-                        this.openReview(row, row.duplicateVersion)
+                        this.handleRead(row, row.duplicateVersion)
                       }
                     }
                   },
@@ -159,14 +159,14 @@ export default {
     }
   },
   methods: {
-    openReview(row, version) {
-      this.$emit('open-preview-page', row.policyId, version)
+    handleRead(row, version) {
+      this.$emit('read', row.policyId, version)
     },
     /**
      * 新增
      */
     addData() {
-      this.$emit('open-add-page', null)
+      this.$emit('create')
     },
     /**
      * 编辑
@@ -174,7 +174,7 @@ export default {
     editData() {
       if (this.$isAllowEdit(this.selected)) {
         if(parseInt(this.selectedItems[0].policyStatus) === 2){
-          this.$emit('open-add-page', this.selected[0])
+          this.$emit('edit', this.selected[0])
         } else {
           this.$message({
             type: 'error',
@@ -192,7 +192,7 @@ export default {
         window.confirm('确定要删除吗')
       ) {
         this.$service
-          .testPolicyConfRemove({ id: this.selected.join(',') }, '删除成功')
+          .policyConfRemove({ id: this.selected.join(',') }, '删除成功')
           .then(data => {
             this.fetchData()
           })
