@@ -1,49 +1,91 @@
 <template>
-  <ContentCard class="content">
-    <ContentWrapper
-      :filter="filter"
-      :filterSchema="filterSchema"
-      :pagination="pagination"
-      @filter-change="handleFilterChange"
-      @filter-reset="handleFilterReset"
-    >
+  <PageWrapper>
+    <PageContentWrapper v-show="activePage == 'homepage_list'">
+      <ContentCard class="content">
+        <ContentWrapper
+          :filter="filter"
+          :filterSchema="filterSchema"
+          :pagination="pagination"
+          @filter-change="handleFilterChange"
+          @filter-reset="handleFilterReset"
+        >
 
-           <ButtonGroupForListPage
-        pageName="homepage"
-        @add="addData"
-        @edit="editData"
-        @delete="deleteData"
-      ></ButtonGroupForListPage>
-      <Table
-        :props="table.props"
-        :header="table.header"
-        :data="table.data"
-        :selected="table.selected"
-        :selection-type="table.selectionType"
-        @row-selection-add="handleRowSelectionAdd"
-        @row-selection-remove="handleRowSelectionRemove"
-        @all-row-selection-change="handleAllRowSelectionChange"
-      />
-    </ContentWrapper>
-  </ContentCard>
+              <ButtonGroupForListPage
+            pageName="homepage"
+            @add="addData"
+            @edit="editData"
+            @delete="deleteData"
+          ></ButtonGroupForListPage>
+          <Table
+            :props="table.props"
+            :header="table.header"
+            :data="table.data"
+            :selected="table.selected"
+            :selection-type="table.selectionType"
+            @row-selection-add="handleRowSelectionAdd"
+            @row-selection-remove="handleRowSelectionRemove"
+            @all-row-selection-change="handleAllRowSelectionChange"
+          />
+          <el-dialog
+            title="机型机芯"
+            :visible.sync="showChipDialog">
+            <div class="tag-list tag-list__chip">
+              <span class="tag-item" v-for="(item, index) in chips" :key="index">
+                  {{ item }}
+              </span>
+            </div>
+          </el-dialog>
+          <el-dialog
+            title="关联策略"
+            :visible.sync="showPolicyNameDialog">
+            <div class="tag-list tag-list__policy-name">
+              <span @click="handleShowPolicy(item)" class="tag-item" v-for="(item, index) in policyNames" :key="index">
+                  {{ item }}
+              </span>
+            </div>
+          </el-dialog>
+        </ContentWrapper>
+      </ContentCard>
+    </PageContentWrapper>
+    <PageContentWrapper v-if="activePage == 'policy'">
+      <Policy 
+        init-mode="read"
+        :id="policyId" 
+        @upsert-end="handleShowPolicyEnd" 
+        @go-back="handleShowPolicyEnd"> 
+      </Policy>
+    </PageContentWrapper>
+  </PageWrapper>
 </template>
 
 <script>
 import _ from "gateschema";
 import { Button } from 'element-ui'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
-// import ButtonList from "./../../components/ButtonLIst";
 import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
+import Policy from './PolicyManageInfo'
+
 export default {
   components: {
     ActionList,
     Table,
     ContentWrapper,
-    ButtonGroupForListPage
+    ButtonGroupForListPage,
+    Policy,
+    PageWrapper,
+    PageContentWrapper,
   },
   data() {
     let _this = this
     return {
+      activePage: 'homepage_list',
+      showChipDialog: false,
+      showPolicyNameDialog: false,
+      policyId: undefined,
+      policyNames: [],
+      chips: [],
       filter: {
         sort: undefined,
         order: undefined
@@ -85,40 +127,19 @@ export default {
                 prop: 'relationPolicyName',
                 width: 300,
                 render: (h, { row }) => {
-                  const relationPolicyName = row.relationPolicyName
-                  if (relationPolicyName.length > 20) {
-                    return relationPolicyName.slice(0, 20) + '...'
-                  } 
-                  return relationPolicyName
-                  let content = row.relationPolicyName
-                  if(!content || content == '--'){
-                    return '--';
-                  }
-                  let pList = content.split(',')
-                  return h('div', 
-                  {
-                    style: {
-                      whiteSpace: 'nowrap'
-                    }
-                  },
-                  pList.map(function (item) {
-                    return h(Button, 
-                      { 
-                        ref: 'button',
-                        props: { },
-                        attrs: {
-                          title: '点击查看'
-                        },
-                        domProps: {
-                          innerHTML: item
-                        },
-                        on: {
-                          click: () => {
-                            _this.openPolicyDialog(_this.$regParenthesesContent(item))
-                          }
+                  const content = row.relationPolicyName
+                  if (content !== '--') {
+                    return h('el-button', {
+                      props: {
+                        type: 'text'
+                      },
+                      on: {
+                        click: () => {
+                          this.handleShowPolicyNames(content)
                         }
-                      })
-                  }))
+                      }
+                    }, '查看')
+                  } 
                 }
             },
             {
@@ -152,10 +173,25 @@ export default {
                     }
                   }
             },
-            // {
-            //       label: '机型机芯',
-            //       prop: 'chipModel',
-            // },
+            {
+                  label: '机型机芯',
+                  prop: 'chipModel',
+                  render: (h, { row }) => {
+                    const content = row.chipModel
+                    if (content !== '--') {
+                      return h('el-button', {
+                        props: {
+                          type: 'text'
+                        },
+                        on: {
+                          click: () => {
+                            this.handleShowChips(content)
+                          }
+                        }
+                      }, '查看')
+                    } 
+                }
+            },
             {
                   label: '更新时间',
                   prop: 'lastUpdateDate'
@@ -182,6 +218,24 @@ export default {
   computed: {
   },
   methods: {
+    handleShowChips(chipStr) {
+      this.chips = chipStr.split(',')
+      this.showChipDialog = true
+    },
+    handleShowPolicyNames(relationPolicyNames) {
+      this.policyNames = relationPolicyNames.split(',')
+      this.showPolicyNameDialog = true
+    },
+    handleShowPolicy(name) {
+      const id = name.match(/\((.+)\)/)[1]
+      this.policyId = +id
+      this.activePage = 'policy'
+      this.showPolicyNameDialog = false
+    },
+    handleShowPolicyEnd() {
+      this.showPolicyNameDialog = true
+      this.activePage = 'homepage_list'
+    },
     handleCopy({ row }) {
       this.$emit('copy', row)
     },
@@ -347,4 +401,13 @@ export default {
   margin-bottom 10px
   display flex
   flex-direction row
+.tag-list 
+  .tag-item
+    padding 5px
+    margin 5px
+    border 1px solid #ccc
+    display inline-block
+.tag-list__policy-name 
+  .tag-item
+    cursor pointer
 </style>
