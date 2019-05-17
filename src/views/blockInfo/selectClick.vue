@@ -74,6 +74,7 @@ export default {
   },
   methods: {
     rowClick(params) {
+      debugger
          this.$emit("row-click",params)
     },
     /**获取数据 */

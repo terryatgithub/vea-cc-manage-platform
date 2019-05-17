@@ -74,6 +74,7 @@ export default {
         email: null,
         disabled: null,
         remark: null,
+        superAdmin: 0,
         dicts: []
       },
       formRules: {
@@ -103,11 +104,8 @@ export default {
         if (valid) {
           console.log(this.form)
           // 处理dicts数组
-          debugger
-          let dictsData = this.form.dicts
-          dictsData.map(item => item).join(',')
-          console.log(dictsData)
-          this.form.dicts = dictsData
+          this.form.dicts = this.form.dicts.join(',')
+          
           this.$service.userConfigSave(this.form, '保存成功').then(data => {
             this.$emit('open-list-page')
           })

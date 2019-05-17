@@ -305,6 +305,7 @@
             :menuElId="menuElId"
             @go-edit-Page="goEditPage"
             @delete-item="deleteItem"
+            @auditTask-end="$emit('open-list-page')"
            >
         </AuditDetailButton>
     </div>
@@ -1172,6 +1173,7 @@ export default {
               var resultObj = Object.assign(obj, _this.basicForm)
               resultObj.status = 3
               resultObj.parentType = 'Block'
+              debugger
               console.log('resultObj',resultObj)
 
               _this.$service.saveBlockInfo(resultObj,'提交成功').then(() => {

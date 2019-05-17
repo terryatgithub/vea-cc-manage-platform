@@ -337,7 +337,7 @@
       </el-dialog>
       <!--点击事件弹框-->
       <el-dialog :visible.sync="dialogClickTableVisible" width="1200px">
-        <selectClick @row-clcik="getClickData"></selectClick>
+        <selectClick @row-click="getClickData"></selectClick>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogClickTableVisible = false">取 消</el-button>
           <!-- <el-button type="primary" @click="dialogClickTableVisible = false;clickSubmit()">确 定</el-button> -->
@@ -815,6 +815,7 @@ export default {
     },
     /**点击事件弹框 */
     getClickData1(data) {
+      debugger
       this.clickData = data
       this.dialogClickTableVisible = false
       var selectClick = this.clickData
@@ -826,6 +827,7 @@ export default {
       this.selectingClickForIndex = undefined
     },
       getClickData(data) {
+        debugger
       this.dialogClickTableVisible = false
       let params = JSON.parse(data.params) 
       let keys = Object.keys(params)

@@ -588,4 +588,19 @@ export default {
   margin-bottom: 10px
 .base-info div
   padding: 5px
+.content-list
+  display flex
+  flex-wrap wrap
+  .content-list__item
+     padding 10px 10px 10px 30px
+     margin 5px
+     border 1px solid #ccc
+     position relative
+     .content-list__item-id
+        position absolute
+        top 0px
+        left 5px
+        color red
+.content-list__item >>> .el-input, .content-list__item >>> .el-select
+   width 150px
 </style>
