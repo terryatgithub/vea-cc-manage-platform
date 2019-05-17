@@ -197,6 +197,7 @@ export default {
 
   methods: {
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.themeInfoPageList(filter).then(data => {
         this.pagination.total = data.total
@@ -276,6 +277,10 @@ export default {
         this.selected = []
         this.table.selected = []
       }
+    },
+      handleAllRowSelectionRemove () {
+      this.selected = []
+      this.table.selected = []
     },
     updateTableSelected() {
       const table = this.table

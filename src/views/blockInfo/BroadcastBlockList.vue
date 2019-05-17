@@ -258,6 +258,7 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter()
+      this.handleAllRowSelectionRemove()
       this.$service.broadcastBlockPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows

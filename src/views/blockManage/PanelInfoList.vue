@@ -212,6 +212,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      this.handleRowSelectionRemove()
       const filter = this.parseFilter()
       if(this.dataList) {
         this.$service.panelDataList(filter).then(data => {

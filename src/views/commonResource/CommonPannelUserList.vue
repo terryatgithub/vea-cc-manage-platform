@@ -183,6 +183,7 @@ export default {
       this.$emit('read', row.pannelGroupId, version)
     },
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
         this.$service.commonPannelUserList(filter).then(data => {
           this.pagination.total = data.total
@@ -244,6 +245,10 @@ export default {
         this.selected = []
         this.table.selected = []
       }
+    },
+     handleAllRowSelectionRemove() {
+      this.selected = []
+      this.table.selected = []
     },
     updateTableSelected() {
       const table = this.table

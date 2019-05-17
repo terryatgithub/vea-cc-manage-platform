@@ -35,7 +35,7 @@
                   :rules="rules.title"
                   label="素材标题"
                 >
-                  <el-input v-model="file.pictureName"/>
+                  <el-input v-model="file.pictureName"  maxlength="50" />
                 </el-form-item>
                 <el-form-item label="素材分辨率">{{ file.pictureResolution }}</el-form-item>
                 <el-form-item
@@ -86,7 +86,7 @@
     </div>
     <div class="global-picture" v-if="mode==='read'">
       <div class="global-picture__actions">
-        <el-button type="primary" @click="audit">审核</el-button>
+        <el-button type="primary" @click="audit" v-if="status===3">审核</el-button>
         <el-button @click="handleCancel">关闭</el-button>
       </div>
       <el-form ref="form" label-width="120px" :model="this">
@@ -170,6 +170,7 @@ export default {
   data() {
     return {
       mode: 'create',
+      status: undefined,
       showPicTypeSelector: false,
       pictureId: undefined,
       fileInfo: [],
@@ -291,7 +292,7 @@ export default {
       return data
     },
     setFormData(data) {
-      debugger
+      this.status = data.pictureStatus
       data = JSON.parse(JSON.stringify(data))
       const materialTypes = data.materialTypes
       data.materialTypeDictEnName = materialTypes[0].dictEnName

@@ -62,6 +62,7 @@ export default {
     handleRead(row){
       this.editId = row.pictureId
       this.mode = 'read'
+      this.isShowList = false
     },
     /**
      * 打开列表页面

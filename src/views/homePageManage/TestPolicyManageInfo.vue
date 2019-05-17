@@ -15,11 +15,7 @@
               <el-input v-model="form.policyName" placeholder="策略名称"></el-input>
             </el-form-item>
             <el-form-item label="机型机芯" prop="chipModel">
-              <el-button
-                type="primary"
-                plain
-                @click="selectChipModel"
-              >选择机型机芯</el-button>
+              <el-button type="primary" plain @click="selectChipModel">选择机型机芯</el-button>
               <SelectedTag v-if="form.deviceInfos.length>0">
                 <ul>
                   <li v-for="(item, index) in form.deviceInfos" :key="index">
@@ -100,7 +96,7 @@
       <CommonContent
         :mode="mode"
         :resource-info="resourceInfo"
-        @replicate="mode = 'replicate'"
+        @replicate="mode = 'replicate'; this.title='创建副本'"
         @edit="mode = 'edit'"
         @unaudit="$emit('upsert-end')"
         @shelves="fetchData"
@@ -121,11 +117,7 @@
                 <SelectedTag v-if="form.deviceInfos.length>0">
                   <ul>
                     <li v-for="(item, index) in form.deviceInfos" :key="index">
-                      <el-tag
-                        type="success"
-                        closable
-                        @close="modelChipSelectedRemove(item)"
-                      >{{item.model}}_{{item.chip}}</el-tag>
+                      <el-tag type="success">{{item.model}}_{{item.chip}}</el-tag>
                     </li>
                   </ul>
                 </SelectedTag>
@@ -275,7 +267,7 @@ export default {
       form: {
         policyId: null,
         policyName: null,
-        macStart: '000000000000',
+        macStart: undefined,
         macEnd: 'ffffffffffff',
         homePageVerEnd: '',
         homePageVerStart: '',
@@ -395,8 +387,14 @@ export default {
      */
     createHomePage(form) {
       let crowdPolicyIds = form.attribute.crowdPolicyIds[0]
+      let crowdId = form.attribute.crowdIds[0]
       this.$service.getCrowdOfPolicy(crowdPolicyIds).then(data => {
-        form.attribute.crowdName = data[data.length - 1].label
+        for (var i = 0; i < data.length; i++) {
+          if (data[i].value === crowdId) {
+            form.attribute.crowdName = data[i].label
+            break
+          }
+        }
         if (this.model === 'normal') {
           if (isEdit) {
             this.form.specialNormalHp[this.editHomePageIndex] = form
@@ -416,9 +414,14 @@ export default {
     getCrowdNames(data) {
       let form = data.map(e => {
         let crowdPolicyIds = e.attribute.crowdPolicyIds[0]
+        let crowdId = e.attribute.crowdIds[0]
         this.$service.getCrowdOfPolicy(crowdPolicyIds).then(data => {
-          if(data.length>0)
-          this.$set(e.attribute, 'crowdName', data[data.length - 1].label)
+          for (var i = 0; i < data.length; i++) {
+            if (data[i].value === crowdId) {
+              this.$set(e.attribute, 'crowdName', data[i].label)
+              break
+            }
+          }
         })
         return e
       })
@@ -517,7 +520,8 @@ export default {
         .getTestPolicyConfDetail({ id: this.id, version })
         .then(data => {
           this.form = {
-            currentVersion: this.isReplicate ? '' : data.currentVersion,
+            currentVersion:
+              this.mode === 'replicate' ? '' : data.currentVersion,
             policyId: data.policyId,
             policyName: data.policyName,
             macStart: data.macStart,

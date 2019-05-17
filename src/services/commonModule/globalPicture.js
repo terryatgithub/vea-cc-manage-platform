@@ -8,15 +8,14 @@ export function globalPictureUpsert (data) {
 
 export function globalPictureGet (params) {
   return this.fetch({
-    url: 'api/globalPicture/edit.html?id=' + params.id
-  }).then(result => {
-    return JSON.parse(result.match(/initData = (\{.+\})/)[1])
-  })
-}
-
-export function globalPictureList (params) {
-  return this.fetch({
-    url: 'api/globalPicture/dataList.html',
+    url: 'api/v1/poster/getDetailInfo.html',
+    method: 'get',
     params
   })
 }
+// export function globalPictureList (params) {
+//   return this.fetch({
+//     url: 'api/globalPicture/dataList.html',
+//     params
+//   })
+// }

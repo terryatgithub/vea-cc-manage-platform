@@ -192,6 +192,7 @@ export default {
   methods: {
     //初始化表格‘
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       if (this.dataList) {
         this.$service.panelPageList(filter).then(data => {

@@ -57,6 +57,7 @@ export default {
         }
       ],
       form: {
+        typeId: undefined,
         typeName: null,
         typePosition: null,
         typePriority: null
@@ -64,7 +65,8 @@ export default {
       formRules: {
         // 表单规则
         typeName: [
-          { required: true, message: '请输入角标名称', trigger: 'blur' }
+          { required: true, message: '请输入角标名称', trigger: 'blur' },
+           { max: 50, message: '不能超过50个字符', trigger: 'blur' }
         ],
         typePosition: [
           { required: true, message: '请输入角标位置', trigger: 'blur' }
@@ -101,7 +103,7 @@ export default {
   created() {
     if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
-      this.typeId = this.editId
+      this.form.typeId = this.editId
       this.getEditData()
     } else {
       this.title = '新增'

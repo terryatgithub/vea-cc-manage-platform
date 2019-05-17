@@ -330,6 +330,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter();
       this.$service.getHomePageInfoList(filter).then(data => {
         this.pagination.total = data.total;

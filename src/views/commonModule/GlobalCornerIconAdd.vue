@@ -31,15 +31,15 @@
                   :rules="rules.title"
                   label="角标标题"
                 >
-                  <el-input v-model="file.cornerIconName"/>
+                  <el-input v-model="file.cornerIconName" maxlength="50"/>
                 </el-form-item>
                 <!--角标分类-->
                 <el-form-item
                   :prop="'fileInfo.' + index + '.globalIconTypeId'"
                   :rules="rules.type"
-                  label="角标分类"
+                  label="角标分类1"
                 >
-                  <el-select v-model="fileInfo[index].globalIconTypeId">
+                  <el-select v-model="file.globalIconTypeId">
                     <el-option
                       v-for="(item, index) in attributes"
                       :key="index"
@@ -76,10 +76,12 @@
             >点击选择图片</el-button>
           </template>
         </Upload>
+        <el-form-item>
+          <div class="global_icon_actions">
+            <el-button type="primary" @click="handleSubmit">保存</el-button>
+          </div>
+        </el-form-item>
       </el-form>
-      <div class="global_icon_actions">
-        <el-button type="primary" @click="handleSubmit">提交审核</el-button>
-      </div>
     </div>
   </ContentCard>
 </template>
@@ -153,6 +155,7 @@ export default {
       })
     },
     handleSubmit() {
+
       this.validateFormData(err => {
         if (!err) {
           const data = this.getFormData()
@@ -167,13 +170,14 @@ export default {
     getFormData() {
       const attributesIndexed = this.attributesIndexed
       const jsonStr = this.getUploadedFiles().map(item => {
+        debugger
         return {
           cornerIconId: this.editId,
           cornerIconName: item.cornerIconName, //标题
           imgUrl: item.imgUrl, //url
           attributeCode: item.attributeCode, //分类
           typeRls: {
-            typeId: String(item.globalIconTypeId)
+            typeId: item.globalIconTypeId
           }
         }
       })
@@ -248,7 +252,6 @@ export default {
 .global_icon_actions {
   padding: 15px;
   margin-bottom: 20px;
-  text-align: right;
 }
 .global-picture .upload-pic-list__item,
 .global-picture .pic-info {

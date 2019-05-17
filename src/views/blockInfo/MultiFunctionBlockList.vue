@@ -162,6 +162,7 @@ export default {
   methods: {
     //获取table数据
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getMultiBlockList(filter).then(data => {
         this.pagination.total = data.total

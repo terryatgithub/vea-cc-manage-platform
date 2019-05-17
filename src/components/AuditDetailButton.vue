@@ -88,7 +88,7 @@ export default {
                 auditFlag: this.auditForm.auditFlag,
                 auditDesc: this.auditForm.auditDesc
               },
-              '审核成功'
+              this.auditForm.auditFlag==='4'? '审核成功' : '打回成功'
             )
             .then(data => {
               this.auditDialog = false

@@ -5,7 +5,7 @@
       <el-col :span="24">
         <el-form :model="form" :rules="formRules" ref="form" label-width="100px" class="el-form-add">
           <el-form-item label="用户名称" prop="userName">
-            <el-input v-model="form.userName" placeholder="用户名称"></el-input>
+            <el-input v-model="form.userName" placeholder="用户名称" maxlength="50"></el-input>
           </el-form-item>
           <el-form-item label="所在部门" prop="deptId">
             <el-select v-model="form.deptId" placeholder="所在部门">
@@ -18,10 +18,10 @@
             </el-select>
           </el-form-item>
           <el-form-item label="登录账号" prop="loginName">
-            <el-input v-model="form.loginName" placeholder="登录账号"></el-input>
+            <el-input v-model="form.loginName" placeholder="登录账号" maxlength="50">></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="loginPwd" v-if="isShowloginPwd">
-            <el-input v-model="form.loginPwd" placeholder="密码"></el-input>
+            <el-input v-model="form.loginPwd" placeholder="密码" maxlength="50">></el-input>
           </el-form-item>
           <el-form-item label="邮件地址" prop="email">
             <el-input type="email" v-model="form.email" placeholder="邮件地址"></el-input>

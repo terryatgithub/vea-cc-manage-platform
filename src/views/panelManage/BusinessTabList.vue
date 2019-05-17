@@ -294,6 +294,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.tabInfoList(filter).then(data => {
         this.pagination.total = data.total
@@ -347,6 +348,11 @@ export default {
         return item.tabId !== targetItem.tabId
       })
       this.updateTableSelected()
+    },
+    handleAllRowSelectionRemove() {
+      this.selected = []
+      this.selectedItems = []
+      this.table.selected = []
     },
     handleAllRowSelectionChange(value) {
       if (value) {

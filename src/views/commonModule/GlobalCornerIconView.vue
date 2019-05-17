@@ -33,6 +33,7 @@
           :menuElId="menuElId"
           @go-edit-Page="goEditPage"
           @delete-item="deleteItem"
+          @auditTask-end="$emit('open-list-page')"
         ></AuditDetailButton>
       </el-form-item>
       </el-form>
@@ -150,7 +151,7 @@ export default {
     } else {
       this.id = reviewData.resourceId
     }
-    this.getDetailInfo()
+   // this.getDetailInfo()
   }
 }
 </script>

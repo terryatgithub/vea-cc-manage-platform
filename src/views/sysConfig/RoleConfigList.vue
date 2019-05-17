@@ -453,6 +453,7 @@ export default {
       })
     },
     fetchData () {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getRoleList(filter).then((data) => {
         this.pagination.total = data.total

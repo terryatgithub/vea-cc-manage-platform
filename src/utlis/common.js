@@ -30,6 +30,22 @@ Vue.prototype.$isAllowDelete = function (selected) {
  *将数字转为对应的审核状态
  *0下架,1上架,2草稿,3待审核,4审核通过,5审核不通过
  */
+
+Vue.prototype.$status = function () {
+  return {
+    草稿: 2,
+    待审核: 3,
+    审核通过: 4,
+    审核不通过: 5
+  }
+}
+Vue.prototype.$baseStatus = function () {
+  return {
+    待审核: 3,
+    审核通过: 4,
+    审核不通过: 5
+  }
+}
 Vue.prototype.$numToAuditStatus = function (num) {
   let auditStatus = ''
   if (typeof (num) === 'number') {
@@ -218,4 +234,11 @@ Vue.prototype.$sourceName = function (tabResource) {
     "voolesohu": '优朋搜狐'
   }
   return data[tabResource]
+}
+Vue.prototype.$changeKeyToValue = function (obj) {
+  let keys = Object.keys(obj)
+  return keys.reduce((result, current) => {
+    result[obj[current]] = current
+    return result
+  }, {})
 }

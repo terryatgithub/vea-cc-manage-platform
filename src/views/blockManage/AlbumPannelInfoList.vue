@@ -185,6 +185,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       if(this.dataList) {
         this.$service.panelDataList(filter).then(data => {
@@ -253,6 +254,10 @@ export default {
         this.selected = []
         this.table.selected = []
       }
+    },
+     handleAllRowSelectionRemove() {
+      this.selected = []
+      this.table.selected = []
     },
     updateTableSelected() {
       const table = this.table

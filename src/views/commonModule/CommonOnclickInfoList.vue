@@ -96,7 +96,7 @@ export default {
             },  
             {
                 label: '创建人',
-                prop: 'createrName'
+                prop: 'modifierName'
             },
             {
                 label: '创建时间',
@@ -147,10 +147,10 @@ export default {
           });
       }
     },
-    handleCreate() {
-      this.$router.push({ name: "prize-create" });
-    },
-    //表格操作
+    // handleCreate() {
+    //   this.$router.push({ name: "prize-create" });
+    // },
+    // //表格操作
     handleRowSelectionAdd(targetItem) {
       this.selected.push(targetItem.commonOnclickId);
       this.updateTableSelected();
@@ -213,6 +213,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter();
       this.$service.getCommonOnclickInfoList(filter).then(data => {
         this.pagination.total = data.total;

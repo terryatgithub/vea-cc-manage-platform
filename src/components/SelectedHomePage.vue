@@ -12,7 +12,7 @@
           <el-form-item label="首页方案">
             <el-tag type="success" size="medium">{{item.homepageName}}</el-tag>
           </el-form-item>
-          <el-form-item label="AB测试">
+          <el-form-item label="AB测试" v-if="item.testHomeList.length>0">
             <!-- <el-tag type="success" v-for="(n, i) in item.testHomeList" :key="i">
             编号：{{n.distributeModel}},首页方案：{{n.homepageName}}
             </el-tag>-->
@@ -55,9 +55,8 @@ export default {
   display flex
   flex-wrap wrap
 .homePageView
-  width: 250px
   border: 1px solid #ccc
-  padding: 10px
+  padding: 10px 50px 10px 10px
   position: relative
   cursor: pointer
   margin 0 10px 10px 0

@@ -185,7 +185,7 @@ export default {
         })
         .other('form', {
           component: 'Select',
-          placeholder: '内容源'
+          placeholder: '审核状态'
         })
     }).other('form', {
       cols: {

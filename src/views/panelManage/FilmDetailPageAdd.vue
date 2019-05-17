@@ -7,7 +7,7 @@
         :mode="mode"
         :resource-info="resourceInfo"
         @edit="mode = 'edit'"
-        @replicate="mode = 'replicate'"
+       @replicate="mode = 'replicate'; this.title='创建副本'"
         @submit-audit="btnAudit"
         @save-draft="btnSave"
         @select-version="fetchData"

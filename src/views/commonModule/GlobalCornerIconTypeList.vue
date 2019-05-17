@@ -12,7 +12,7 @@
         @add="addItem"
         @edit="editData"
         @delete="batchDel"
-        @batch-audit="submitAudit"
+        @batch-audit="batchAudit"
         >
         </ButtonGroupForListPage>
       <Table
@@ -38,13 +38,13 @@
     <!-- 审核 -->
     <el-dialog title="预览图片" :visible.sync="auditDialogVisible" width="30%">
       <span>
-        <el-form ref="addForm" :model="addForm" :rules="auditFormRules" label-width="80px">
+        <el-form ref="auditForm" :model="auditForm" :rules="auditFormRules" label-width="80px">
           <el-form-item label="审核意见" prop="auditFlag">
-            <el-radio v-model="addForm.auditFlag" label="4">通过</el-radio>
-            <el-radio v-model="addForm.auditFlag" label="5">打回</el-radio>
+            <el-radio v-model="auditForm.auditFlag" label="4">通过</el-radio>
+            <el-radio v-model="auditForm.auditFlag" label="5">打回</el-radio>
           </el-form-item>
           <el-form-item label="意见说明" prop="auditDesc">
-            <el-input type="textarea" v-model="addForm.auditDesc"></el-input>
+            <el-input type="textarea" v-model="auditForm.auditDesc"></el-input>
           </el-form-item>
         </el-form>
       </span>
@@ -77,9 +77,16 @@ export default {
         右下: 2,
         左下: 3
       },
+       typePosition: {
+        //状态
+        左上: 0,
+        右上: 1,
+        右下: 2,
+        左下: 3
+      },
       picDialogVisible: false, //预览图片弹出框
       auditDialogVisible: false, //审核弹出框
-      addForm: {
+      auditForm: {
         idStr: null,
         auditFlag: '4',
         auditDesc: ''
@@ -117,12 +124,15 @@ export default {
             label: '角标位置',
             prop: 'typePosition',
             width: '110',
-            sortable: true
+            sortable: true,
+            render: (createElement, { row }) => {
+              return this.$changeKeyToValue(this.typePosition)[row.typePosition]
+            }
           },
           {
             label: '优先级(越小越靠前)',
             prop: 'typePriority',
-            width: '110',
+            width: '150',
             sortable: true
           },
           {
@@ -151,6 +161,16 @@ export default {
     }
   },
   methods: {
+    batchAudit() {
+      if (this.selected.length>0) {
+        this.auditDialogVisible = true
+      } else {
+        this.$message({
+          type: 'error',
+          message: '请选择再审核'
+        })
+      }
+    },
     submitAudit() {
       this.$refs.auditForm.validate(valid => {
         if (valid) {
@@ -260,6 +280,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getGlobalCornerIconTypePageList(filter).then(data => {
         this.pagination.total = data.total
@@ -277,7 +298,7 @@ export default {
         component: 'Input',
         placeholder: '角标名称'
       }),
-      pictureCategory: _.o.enum(this.typePosition).other('form', {
+      typePosition: _.o.enum(this.typePosition).other('form', {
         component: 'Select',
         placeholder: '角标位置'
       })

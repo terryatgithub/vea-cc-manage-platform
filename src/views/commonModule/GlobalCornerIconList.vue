@@ -7,20 +7,19 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-        <ButtonGroupForListPage 
-        pageName='cornerIcon' 
+      <ButtonGroupForListPage
+        pageName="cornerIcon"
         @add="addData"
         @edit="editData"
         @delete="deleteData"
-        >
-        </ButtonGroupForListPage>
+      ></ButtonGroupForListPage>
       <!-- <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
         <el-button type="primary" icon="el-icon-delete" @click="deleteData">删除</el-button>
         <el-button type="primary" icon="el-icon-edit-outline" @click="batchHandle">批量审核</el-button>
         <el-button type="primary" @click="changePriority">调整优先级</el-button>
-      </div> -->
+      </div>-->
       <Table
         :props="table.props"
         :header="table.header"
@@ -190,6 +189,7 @@ export default {
   methods: {
     //初始化表格
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getGlobalMgrList(filter).then(data => {
         console.log(data)
@@ -211,9 +211,22 @@ export default {
     },
     editData() {
       if (this.$isAllowEdit(this.selected)) {
-        this.$emit('open-add-page', this.selected[0])
+        this.table.data.forEach((e) => {
+           if (e['cornerIconId'] ===this.selected[0]) {
+             if (e.cornerStatus !== 4) {
+               this.$emit('open-add-page', this.selected[0])
+             } else {
+               this.$message({
+                 type: 'error',
+                 message: '审核通过的数据不能编辑'
+               })
+             }
+             return
+           }
+        })
       }
     },
+    
     deleteData() {
       if (this.selected.length == 0) {
         this.$message('请至少选择一条数据')
@@ -411,7 +424,6 @@ export default {
 </script>
 
 <style lang = 'stylus' scoped>
-.btns {
-  margin-bottom: 10px;
-}
+.btns
+  margin-bottom: 10px
 </style>

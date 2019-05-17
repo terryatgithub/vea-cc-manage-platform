@@ -36,7 +36,7 @@
                 v-if="panelGroupCategoryValue === 'common' || panelGroupCategoryValue === 'video'"
               >
                 <el-radio-group
-                  :value="panel.pannelResource"
+                  :value="panel.pannelList[0].pannelResource" 
                   @input="handlePannelResourceChange"
                   :disabled="mode==='replicate'"
                 >
@@ -54,7 +54,7 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="推荐维度">
-                  <el-radio-group v-model="panel.panelGroupType">
+                  <el-radio-group v-model="panel.panelGroupType" @change="setDefaultPanelTitle">
                     <el-radio :label="9">根据用户近期观影偏好推荐</el-radio>
                     <el-radio :label="10">根据用户近期观看的影片推荐</el-radio>
                   </el-radio-group>
@@ -289,54 +289,52 @@ export default {
       panel: {
         pannelGroupId: undefined,
         currentVersion: undefined,
-        parentType: 'normal',
+        parentType: 'function',
         groupTitle: '',
-        pannelName: undefined,
-        pannelTitle: undefined,
+        //pannelName: undefined,
+       // pannelTitle: undefined,
         showTitle: true,
         lucenyFlag: false,
-        pannelStatus: undefined,
-        layoutId: undefined,
-        pannelResource: 'o_tencent',
-        panelGroupCategory: 67,
+       // layoutId: undefined,
+       // pannelResource: 'o_tencent',
+        panelGroupCategory: 67, //业务分类
         panelGroupType: 9,
-        pannelType: 5,
-        focusConfig: undefined,
-        dictInfoList: '',
-        content: '',
-        priority: '1',
+     //   focusConfig: undefined,
+     //   dictInfoList: '',
+     //   content: '',
+       // priority: '1',
         pannelList: [
           {
             pannelId: undefined,
-            pannelCategory: undefined,
+            pannelCategory: 67,
             pannelName: undefined,
-            pannelTitle: undefined,
-            pannelResource: undefined,
-            pannelType: 5,
+            pannelTitle: '专属剧场',
+            pannelResource: 'o_tencent',
+            pannelType: 9,
             pannelStatus: undefined,
             showTitle: undefined,
             flagIs4k: 0,
-            layoutId: undefined,
-            panelIsFocus: undefined,
-            focusShape: undefined,
-            vipContentAmount: 2,
-            firstPageVipContentAmount: 5,
-            contentList: [
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 },
-              { blockVideoType: 0 }
+           // layoutId: undefined,
+          //  panelIsFocus: undefined,
+         //   focusShape: undefined,
+            vipContentAmount: 2,  //类型为9，10时候才有
+            firstPageVipContentAmount: 5, //类型为9，10时候才有
+            contentList: [  // pannelType为 5的时候才有
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 },
+              // { blockVideoType: 0 }
             ]
           }
         ]
@@ -362,7 +360,7 @@ export default {
           type: 'pannel',
           menuElId: 'privatePannelInfo',
           version: panel.currentVersion,
-          status: panel.pannelStatus
+          status: panel.pannelList[0].pannelStatus,
         }
       }
     },
@@ -394,6 +392,11 @@ export default {
     }
   },
   methods: {
+    
+    setDefaultPanelTitle(pannelType){
+      this.panel.pannelList[0].pannelType = pannelType
+      this.panel.pannelList[0].pannelTitle = pannelType === 10 ? '猜你喜欢' : '专属剧场'
+    },
     getCategoryLabel(value) {
       const selected = this.panelGroupCategoryOptions.find(function(item) {
         return item.id === value
@@ -421,22 +424,26 @@ export default {
         panelGroupCategoryValue === 'common' ||
         panelGroupCategoryValue === 'video'
       ) {
-        this.panel.pannelResource = 'o_tencent'
+        this.panel.pannelList[0].pannelResource = 'o_tencent'
       } else {
-        this.panel.pannelResource = ''
+        this.panel.pannelList[0].pannelResource = ''
       }
     },
     handlePannelResourceChange(val) {
-      this.panel.pannelResource = val
+      this.panel.pannelList[0].pannelResource = val  
     },
     handleSaveDraft() {
-      const data = JSON.parse(JSON.stringify(this.panel))
-      data.pannelStatus = 2
+    //  const data = JSON.parse(JSON.stringify(this.panel))
+      const data = this.panel
+      data.pannelList[0].pannelCategory = data.panelGroupCategory
+      data.pannelList[0].pannelStatus = 2
       this.submit(data)
     },
     handleSubmitAudit() {
+     // const data = JSON.parse(JSON.stringify(this.panel))
       const data = JSON.parse(JSON.stringify(this.panel))
-      data.pannelStatus = 3
+      data.pannelList[0].pannelCategory = data.panelGroupCategory
+      data.pannelList[0].pannelStatus = 3
       this.submit(data)
     },
     validate(data, cb) {
@@ -500,6 +507,7 @@ export default {
       return panel
     },
     parseApiToData(data) {
+      debugger
       const panel = JSON.parse(JSON.stringify(data))
       const firstPanel = data.pannelList[0]
       panel.pannelResource = firstPanel.pannelResource

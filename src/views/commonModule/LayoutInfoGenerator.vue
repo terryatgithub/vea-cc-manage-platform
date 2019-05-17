@@ -93,7 +93,7 @@
       </el-form-item>
     </el-form>
     <section>
-      <LayoutBloack :content="data.contents" @change-width="changeWidth" class="layoutBloack"></LayoutBloack>
+      <LayoutBloack :content="data.contents"  @change-width="changeWidth" class="layoutBloack"></LayoutBloack>
     </section>
   </ContentCard>
 </template>

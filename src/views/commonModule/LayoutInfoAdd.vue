@@ -68,7 +68,7 @@
                 <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submitBtn">提交审核</el-button>
+                <el-button type="primary" @click="submitBtn">保存</el-button>
               </el-form-item>
             </el-form>
           </el-col>
@@ -110,6 +110,7 @@ export default {
         }
       ],
       form: {
+        layoutId: undefined,
         layoutName: null,
         layoutType: null,
         layoutJson: {},

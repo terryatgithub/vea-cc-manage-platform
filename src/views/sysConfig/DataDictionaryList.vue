@@ -272,6 +272,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getDictList(filter).then(data => {
         console.log(data)
