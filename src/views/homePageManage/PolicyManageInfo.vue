@@ -530,6 +530,9 @@ export default {
             })
             return
           }
+          if (this.mode === 'replicate') {
+            form.currentVersion = ''
+          }
           this.$service
             .policyConfSave({ jsonStr: JSON.stringify(form) }, '保存成功')
             .then(data => {
@@ -540,9 +543,10 @@ export default {
     },
 
     fetchData(version) {
+      
       this.$service.getPolicyConfDetail({ id: this.id, version }).then(data => {
         this.form = {
-          currentVersion: this.mode === 'replicate' ? '' : data.currentVersion,
+          currentVersion: data.currentVersion,
           policyId: data.policyId,
           policyName: data.policyName,
           macStart: data.macStart,

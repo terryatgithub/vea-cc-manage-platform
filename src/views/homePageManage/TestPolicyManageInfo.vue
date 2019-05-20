@@ -96,7 +96,7 @@
       <CommonContent
         :mode="mode"
         :resource-info="resourceInfo"
-        @replicate="mode = 'replicate'; this.title='创建副本'"
+        @replicate="mode = 'replicate'; title='创建副本'"
         @edit="mode = 'edit'"
         @unaudit="$emit('upsert-end')"
         @shelves="fetchData"
@@ -505,6 +505,9 @@ export default {
               message: '机型机芯不能为空'
             })
             return
+          }
+          if (this.mode === 'replicate') {
+            form.currentVersion = ''
           }
           this.$service
             .testPolicyConfSave({ jsonStr: JSON.stringify(form) }, '保存成功')
