@@ -523,15 +523,18 @@
                   <el-form-item label="是否显示会员" prop="isShowvip">{{ tabInfo.isShowvip ? '是' : '否' }}</el-form-item>
 
                   <el-form-item label="专题版面大背景" prop="alumbTabBg">
-                    <img class="image-preview" v-if="tabInfo.alumbTabBg" :src="tabInfo.alumbTabBg">
+                    <div class="image-preview-wrapper" v-if="tabInfo.alumbTabBg">
+                      <img class="image-preview" :src="tabInfo.alumbTabBg">
+                    </div>
                   </el-form-item>
 
                   <el-form-item label="专题版面长图背景" prop="alumbTabLongBg">
-                    <img
-                      class="image-preview"
-                      v-if="tabInfo.alumbTabLongBg"
-                      :src="tabInfo.alumbTabLongBg"
-                    >
+                    <div class="image-preview-wrapper" v-if="tabInfo.alumbTabLongBg">
+                      <img
+                        class="image-preview"
+                        :src="tabInfo.alumbTabLongBg"
+                      />
+                    </div>
                   </el-form-item>
 
                   <el-form-item label="版面简介显示高">{{ tabInfo.sinkSize }}</el-form-item>
