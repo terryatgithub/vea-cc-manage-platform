@@ -327,13 +327,13 @@ export default {
       }, [])
     },
     getBusinessType() {
-      this.$service.getBusinessType().then(data => {
+      this.$service.getDictType({type: 'businessType'}).then(data => {
         this.businessType = data
       })
     }
   },
   created() {
-    this.$service.getAppIdType().then(data => {
+    this.$service.getDictType({type: 'appIdType'}).then(data => {
       this.appIdType = data
       this.fetchData()
     })

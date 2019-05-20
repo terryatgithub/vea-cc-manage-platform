@@ -5,7 +5,7 @@ export function uploadImage ({ file, onUploadProgress }) {
   formData.append('file', file)
   return axios({
     method: 'post',
-    url: 'api/upload/image.html',
+    url: 'api/v1/upload/image.html',
     data: formData,
     onUploadProgress
   }).then(({ data }) => {
@@ -18,7 +18,7 @@ export function uploadBlockImage ({ file, onUploadProgress }) {
   formData.append('file', file)
   return axios({
     method: 'post',
-    url: 'api/uploadHomeImg.html',
+    url: 'api/v1/uploadHomeImg.html',
     data: formData,
     onUploadProgress
   }).then(({ data }) => {
@@ -31,7 +31,7 @@ export function uploadLayoutFile ({ file, onUploadProgress }) {
   formData.append('file', file)
   return axios({
     method: 'post',
-    url: 'api/layoutInfo/getLayoutFile.html',
+    url: 'api/v1/layoutInfo/getLayoutFile.html',
     data: formData,
     onUploadProgress
   }).then(({ data }) => {
@@ -44,7 +44,7 @@ export function uploadApk ({ file, onUploadProgress }) {
   formData.append('file', file)
   return axios({
     method: 'post',
-    url: 'api/upload/apk.html',
+    url: 'api/v1/upload/apk.html',
     data: formData,
     onUploadProgress
   }).then(({ data }) => {
@@ -57,7 +57,7 @@ export function uploadZip ({ file, type, onUploadProgress }) {
   formData.append('file', file)
   return axios({
     method: 'post',
-    url: 'api/upload/zip.html?type=' + type,
+    url: 'api/v1/upload/zip.html?type=' + type,
     data: formData,
     onUploadProgress
   }).then(({ data }) => {

@@ -19,14 +19,14 @@ export function getTestPolicyManagePageList (data) {
 export function getChipAndModelPageList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/globalDeviceInfo/dataList.html',
+    url: 'api/v1/device/dataList.html',
     data
   })
 }
 export function addChipAndModel(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/globalDeviceInfo/save.html',
+    url: 'api/v1/device/save.html',
     data
   })
 }
@@ -83,20 +83,28 @@ export function getCrowdOfPolicyWithCache(id) {
   return cache.fetchCrowdPromise[id]
 }
 
-export function getCrowdOfPolicy(id) {
+export function getTaglist(params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tag/list.html?type=crowd&id=' + id
-  })
-}
-
-export function getCrowdPolicy(params) {
-  return this.fetch({
-    method: 'get',
-    url: 'api/tag/list.html?type=crowdPolicy',
+    url: 'api/v1/tag/list.html',
     params
   })
 }
+
+// export function getCrowdOfPolicy(id) {
+//   return this.fetch({
+//     method: 'get',
+//     url: 'api/tag/list.html?type=crowd&id=' + id
+//   })
+// }
+
+// export function getCrowdPolicy(params) {
+//   return this.fetch({
+//     method: 'get',
+//     url: 'api/tag/list.html?type=crowdPolicy',
+//     params
+//   })
+// }
 /** 编辑 */
 export function getPolicyConfDetail(params) {
   return this.fetch({

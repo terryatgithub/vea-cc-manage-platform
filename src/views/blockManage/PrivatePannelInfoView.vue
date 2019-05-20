@@ -321,7 +321,7 @@ export default {
     },
     //业务分类
     getDictType() {
-      this.$service.getDictType().then(data => {
+      this.$service.getDictType({type: 'businessType'}).then(data => {
         console.log(data)
         this.panelGroupCategoryOptions = data
       })

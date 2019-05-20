@@ -228,7 +228,7 @@ export default {
     },
     /**获取业务分类 */
     getBusinessType() {
-      return this.$service.getBusinessType().then(data => {
+      return this.$service.getDictType({type: 'businessType'}).then(data => {
         data.forEach(element => {
           this.businessTypes[element.dictCnName] = element.dictId
         })

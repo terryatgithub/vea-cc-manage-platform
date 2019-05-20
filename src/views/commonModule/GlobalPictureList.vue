@@ -367,7 +367,7 @@ export default {
      * 得到部门列表
      */
     getMaterialTypes() {
-      return this.$service.getMaterialTypes().then(data => {
+      return this.$service.getDictType({type: 'materialType'}).then(data => {
         data.forEach(element => {
           this.materialTypes[element.label] = element.id
         })

@@ -228,7 +228,7 @@ export default {
       this.fetchData()
     },
     getBusinessType() {
-      return this.$service.getBusinessType().then(data => {
+      return this.$service.getDictType({type: 'businessType'}).then(data => {
         data.forEach((item) => {
           this.businessType[item.dictCnName] = item.dictId
         })
@@ -340,7 +340,7 @@ export default {
         resetText: '重置'
       }
     })
-    this.getBusinessType().then(() => {
+    this.$service.getDictType({type: 'businessType'}).then(() => {
       this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
     })
     // 影片详情页中的板块

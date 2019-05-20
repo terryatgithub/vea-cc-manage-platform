@@ -52,7 +52,7 @@ export function getSegmentList(params) {
 export function getAppManagementList(params) {
   return this.fetch({
     methods: 'get',
-    url: 'api/appManagement/pageList.html',
+    url: 'api/v1/appManagement/pageList.html',
     params
   })
   // .then(data => {

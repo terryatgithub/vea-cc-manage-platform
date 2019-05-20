@@ -5,10 +5,3 @@ export function commonPannelUserList(data) {
     data
   })
 }
-export function commonResourceCancelCollect(data) {
-  return this.fetch({
-    method: 'post',
-    url: 'api/commonResourceUser/pannel/cancelCollectResource.html',
-    data
-  })
-}

@@ -28,11 +28,13 @@ export function getCornerTypes (params) {
 /**
  * 素材类型
  */
-export function getMaterialTypes (params) {
+export function getMaterialTypes (type) {
+  if (type === undefined) {
+    type = 'material'
+  }
   return this.fetch({
     method: 'get',
-    url: 'api/dict/poster/materialType.html',
-    params
+    url: `api/v1/dict/getTypes/poster/{type}.html`
   })
 }
 /**
@@ -75,7 +77,7 @@ export function editSysPlugin (params) {
 export function getPluginParentTypes(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/dict/sysPlugin/pluginParentType.html',
+    url: 'api/v1/dict/getTypes/sysPlugin/pluginParentType.html',
     data
   })
 }
@@ -85,7 +87,7 @@ export function getPluginParentTypes(data) {
 export function getPluginTypes(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/dict/sysPlugin/pluginType.html',
+    url: 'api/v1/dict/getTypes/sysPlugin/pluginType.html',
     data
   })
 }
@@ -139,7 +141,7 @@ export function getPluginVersions(data) {
 export function getResourceList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/globalPicture/dataList.html',
+    url: 'api/v1/poster/dataList.html',
     data
   })
 }
@@ -229,7 +231,7 @@ export function getBroadcastBlockEditData(data) {
 
 export function broadcastBlockDataList (params) {
   return this.fetch({
-    url: 'api/blockInfo/dataList.html',
+    url: 'api/v1/blockInfo/dataList.html',
     params
   })
 }

@@ -73,13 +73,13 @@ export function saveUserRoles (data) {
 /**
  * 得到数据权限列表
  */
-export function userConfigBusinessType (params) {
-  return this.fetch({
-    method: 'get',
-    url: 'api/globalDictInfo/getTypes/businessType.html',
-    params
-  })
-}
+// export function userConfigBusinessType (params) {
+//   return this.fetch({
+//     method: 'get',
+//     url: 'api/globalDictInfo/getTypes/businessType.html',
+//     params
+//   })
+// }
 /**
  * 编辑
  */
@@ -128,7 +128,7 @@ export function userConfigDelete (params) {
 export function getDictList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/dict/pageList.html',
+    url: 'api/dict/pageList.html', // 非运营使用
     data
   })
 }
@@ -139,7 +139,7 @@ export function getDictList (data) {
 export function SaveDictionary (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/dict/save.html',
+    url: 'api/dict/save.html', // 非运营使用
     data,
     isJSON: true
   })
@@ -150,7 +150,7 @@ export function SaveDictionary (data) {
 export function DeleteDict (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/dict/remove.html',
+    url: 'api/dict/remove.html', // 非运营使用
     data
   })
 }
@@ -161,7 +161,7 @@ export function DeleteDict (data) {
 export function getDictCategoryList () {
   return this.fetch({
     method: 'post',
-    url: 'api/dictCategory/list.html'
+    url: 'api/dictCategory/list.html' // 非运营使用
   })
 }
 /**
@@ -170,7 +170,7 @@ export function getDictCategoryList () {
 export function SaveDictCategory (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/dictCategory/save.html',
+    url: 'api/dictCategory/save.html', // 非运营使用
     data,
     isJSON: true
   })
@@ -214,10 +214,8 @@ export function saveSysMenu (data) {
 export function editSysMenu (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/sysMenu/edit.html',
+    url: 'api/v1/sysMenu/getDetailInfo.html',
     params
-  }).then(data => {
-    return JSON.parse(data.match(/para = (\{.+\})/)[1])
   })
 }
 /**
@@ -226,7 +224,7 @@ export function editSysMenu (params) {
 export function getNotMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysMenu/getNotMenuByRunId.html',
+    url: 'api/v1/sysMenu/getNotMenuByRunId.html',
     data
   })
 }
@@ -236,7 +234,7 @@ export function getNotMenuByRunId (data) {
 export function getMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/sysMenu/getMenuByRunId.html',
+    url: 'api/v1/sysMenu/getMenuByRunId.html',
     data
   })
 }

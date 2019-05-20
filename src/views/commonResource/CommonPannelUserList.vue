@@ -175,7 +175,7 @@ export default {
       this.$emit('copy', row.pannelGroupId)
     },
     cancalCollect({row}) {
-      this.$service.commonResourceCancelCollect({ resourceId: row.pannelGroupId }, '取消成功').then(()=>{
+      this.$service.collectCancel({ type: 'pannel', data: {resourceId: row.pannelGroupId }}, '取消成功').then(()=>{
         this.fetchData()
       })
     },
@@ -219,7 +219,7 @@ export default {
       this.fetchData()
     },
     getBusinessType() {
-      return this.$service.getBusinessType().then(data => {
+      return this.$service.getDictType({type: 'businessType'}).then(data => {
         data.forEach((item) => {
           this.businessType[item.dictCnName] = item.dictId
         })

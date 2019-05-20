@@ -228,7 +228,7 @@ export default {
       this.fetchData()
     },
     getBusinessType() {
-      return this.$service.getBusinessType().then(data => {
+      return this.$service.getDictType({type: 'businessType'}).then(data => {
         data.forEach((item) => {
           this.businessType[item.dictCnName] = item.dictId
         })

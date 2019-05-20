@@ -388,7 +388,7 @@ export default {
     createHomePage(form) {
       let crowdPolicyIds = form.attribute.crowdPolicyIds[0]
       let crowdId = form.attribute.crowdIds[0]
-      this.$service.getCrowdOfPolicy(crowdPolicyIds).then(data => {
+      this.$service.getTaglist({id: crowdPolicyIds, type: 'crowd' }).then(data => {
         for (var i = 0; i < data.length; i++) {
           if (data[i].value === crowdId) {
             form.attribute.crowdName = data[i].label
@@ -415,7 +415,7 @@ export default {
       let form = data.map(e => {
         let crowdPolicyIds = e.attribute.crowdPolicyIds[0]
         let crowdId = e.attribute.crowdIds[0]
-        this.$service.getCrowdOfPolicy(crowdPolicyIds).then(data => {
+        this.$service.getTaglist({id: crowdPolicyIds, type: 'crowd' }).then(data => {
           for (var i = 0; i < data.length; i++) {
             if (data[i].value === crowdId) {
               this.$set(e.attribute, 'crowdName', data[i].label)

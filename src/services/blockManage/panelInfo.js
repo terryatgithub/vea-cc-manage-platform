@@ -39,18 +39,18 @@ export function panelRemove(data) {
   })
 }
 
-export function panelCollect(data) {
+export function collectCancel(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/commonResourceUser/pannel/collectResource.html',
-    data
+    url: 'api/v1/collect/' + data.type + '/cancel.html',
+    data: data.data
   })
 }
-
-export function panelUnCollect(data) {
+export function collect(data) {
+  debugger
   return this.fetch({
     method: 'post',
-    url: 'api/commonResourceUser/pannel/cancelCollectResource.html',
-    data
+    url: 'api/v1/collect/' + data.type + '/collect.html',
+    data: data.data
   })
 }

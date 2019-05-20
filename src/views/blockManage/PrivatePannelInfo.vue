@@ -507,7 +507,6 @@ export default {
       return panel
     },
     parseApiToData(data) {
-      debugger
       const panel = JSON.parse(JSON.stringify(data))
       const firstPanel = data.pannelList[0]
       panel.pannelResource = firstPanel.pannelResource
@@ -541,7 +540,7 @@ export default {
     //     )
     // },
     getDictType() {
-      this.$service.getDictType().then(data => {
+      this.$service.getDictType({ type: 'businessType'}).then(data => {
         console.log(data)
         this.panelGroupCategoryOptions = data
       })

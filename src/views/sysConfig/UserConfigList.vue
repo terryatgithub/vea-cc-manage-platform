@@ -339,7 +339,7 @@ export default {
     async setData ({ row }) {
       this.currentUserId = row.userId
       // businessType
-      await this.userConfigBusinessType(row.userId)
+      await this.userConfigBusinessType()
       // user checked id
       this.checkedDictItems = []
       this.isLoading = true
@@ -352,10 +352,14 @@ export default {
       return this.$service.getDictCheckedByUserId({ userId: userId }).then((data) => {
         this.checkedDictItems = data
       })
+
+      //   return this.$service.getDictCheckedByUserId().then((data) => {
+      //   this.checkedDictItems = data
+      // })
     },
     // 数据权限项
-    userConfigBusinessType (userId) {
-      return this.$service.userConfigBusinessType({ userId: userId }).then(data => {
+    userConfigBusinessType () {
+      return this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.DataPermissionItems = data
       })
     },

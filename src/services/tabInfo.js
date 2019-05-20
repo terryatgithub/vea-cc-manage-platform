@@ -9,21 +9,21 @@ export function tabInfoList(params) {
   })
 }
 // 版面属性Option
-export function getAppIdType(data) {
-  return this.fetch({
-    method: 'post',
-    url: 'api/globalDictInfo/getTypes/appIdType.html',
-    data
-  })
-}
+// export function getAppIdType(data) {
+//   return this.fetch({
+//     method: 'post',
+//     url: 'api/globalDictInfo/getTypes/appIdType.html',
+//     data
+//   })
+// }
 // 业务分类
-export function getBusinessType(data) {
-  return this.fetch({
-    method: 'post',
-    url: 'api/globalDictInfo/getTypes/businessType.html',
-    data
-  })
-}
+// export function getBusinessType(data) {
+//   return this.fetch({
+//     method: 'post',
+//     url: 'api/globalDictInfo/getTypes/businessType.html',
+//     data
+//   })
+// }
 
 /**
  * 版面管理 -> 业务版面
@@ -31,7 +31,7 @@ export function getBusinessType(data) {
 export function getTabType(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/dict/tab/tabType.html?tabParentType=biz',
+    url: 'api/v1/dict/getTypes/tab/tabType.html',
     data
   })
 }
@@ -74,7 +74,7 @@ export function removeFilmDetailPage(params) {
 export function tabIconList() {
   return this.fetch({
     method: 'get',
-    url: 'api/tabInfo/getIconList.html'
+    url: 'api/v1/tab/getIconList.html'
   })
 }
 

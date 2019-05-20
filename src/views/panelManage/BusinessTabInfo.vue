@@ -574,7 +574,7 @@ export default {
         .catch(function() {})
     },
     getTabType() {
-      return this.$service.getTabType().then(data => {
+      return this.$service.getTabType({tabParentType: 'biz'}).then(data => {
         this.tabTypes = data.reduce((result, current) => {
           result.push({
             label: current.label,

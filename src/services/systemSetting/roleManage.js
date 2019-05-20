@@ -30,24 +30,24 @@ export function deleteRole (params) {
     params
   })
 }
-export function getPoliciesAndCrowds (params) {
-  return this.fetch({
-    method: 'get',
-    url: 'api/tag/list.html?type=crowdPolicy',
-    params
-  })
-}
-export function rolePageGetCrowdOfPolicy (params) {
-  return this.fetch({
-    method: 'get',
-    url: 'api/tag/list.html?type=crowd',
-    params
-  })
-}
+// export function getPoliciesAndCrowds (params) {
+//   return this.fetch({
+//     method: 'get',
+//     url: 'api/tag/list.html?type=crowdPolicy',
+//     params
+//   })
+// }
+// export function rolePageGetCrowdOfPolicy (params) {
+//   return this.fetch({
+//     method: 'get',
+//     url: 'api/tag/list.html?type=crowd',
+//     params
+//   })
+// }
 export function setCrowdAuthOfRole (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/tag/save.html',
+    url: 'api/v1/tag/save.html',
     data,
     isJSON: true
   })

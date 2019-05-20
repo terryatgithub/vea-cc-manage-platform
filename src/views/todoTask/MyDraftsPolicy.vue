@@ -23,7 +23,8 @@ export default {
     return {
       filter: {
         sort: undefined,
-        order: undefined
+        order: undefined,
+           type: 'myDrafts'
       },
       filterSchema: null,
       pagination: {},
@@ -104,7 +105,7 @@ export default {
     fetchData() {
       const filter = this.parseFilter()
       filter.resourceType = 'policy'
-      this.$service.myDraftsPageList(filter).then(data => {
+      this.$service.getTotal(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })

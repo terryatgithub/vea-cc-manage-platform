@@ -25,14 +25,11 @@ export function getIconAttributes(params) {
 }
 //角标素材管理-编辑
 export function globalCornerIconEdit(params) {
-    return this.fetch({
-        method: 'get',
-        url: 'api/globalCornerIcon/edit.html',
-        params
-    })
-        .then(data => {
-            return JSON.parse(data.match(/para = (\{.+\})/)[1])
-        })
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/cornerIcon/getDetailInfo.html',
+    params
+  })
 }
 //角标素材管理-保存
 export function globalCornerIconSave(data) {

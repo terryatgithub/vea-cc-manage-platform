@@ -388,10 +388,10 @@ export default {
       })
     },
     fetchPolicies (roleId) {
-      this.$service.getPoliciesAndCrowds({ roleId: roleId }).then((data) => {
+      this.$service.getTaglist({ roleId: roleId ,type: 'crowdPolicy'}).then((data) => {
         this.policies = data
         data.forEach((item) => {
-          this.$service.rolePageGetCrowdOfPolicy({ id: item.value, roleId: roleId })
+          this.$service.getTaglist({ id: item.value, roleId: roleId ,type: 'crowd'})
             .then((crowds) => {
               console.log(crowds)
               this.$set(item, 'crowds', crowds)

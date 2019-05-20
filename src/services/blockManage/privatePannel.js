@@ -8,13 +8,7 @@
 //     })
 // }
 /**获取数据字典 */
-export function getDictType(data) {
-    return this.fetch({
-        method: 'post',
-        url: 'api/dict/businessType.html',
-        data
-    })
-}
+
 /**历史版本 */
 export function getHistory(params) {
     return this.fetch({

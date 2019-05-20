@@ -95,7 +95,7 @@ export default {
   },
   methods: {
     userConfigBusinessType () {
-      this.$service.userConfigBusinessType().then(data => {
+      this.$service.getDictType({type: 'businessType'}).then(data => {
         this.dictEnNameList = data
       })
     },

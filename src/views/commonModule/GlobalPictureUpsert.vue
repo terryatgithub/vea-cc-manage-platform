@@ -351,7 +351,7 @@ export default {
       this.$emit('go-back')
     },
     getMaterialTypes() {
-      this.$service.getMaterialTypes().then(data => {
+      this.$service.getDictType({type: 'materialType'}).then(data => {
         this.picTypeOptions = data || []
         this.picTypeOptionsIndexed = this.picTypeOptions.reduce(function(
           result,

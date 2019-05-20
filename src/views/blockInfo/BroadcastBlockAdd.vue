@@ -1232,7 +1232,7 @@ export default {
       this.disabled = false
     }
     // 素材类型获取
-    this.$service.getMaterialTypes().then(data => {
+    this.$service.getDictType({type: 'materialType'}).then(data => {
       var materialTypeOptions = []
       for (var i = 0; i < data.length; i++) {
         var materialTypeOption = {

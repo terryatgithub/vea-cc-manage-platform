@@ -1681,7 +1681,7 @@ export default {
   },
   created() {
     this.mode = this.initMode || 'create'
-    this.$service.getBusinessType().then(data => {
+    this.$service.getDictType({type: 'businessType'}).then(data => {
       this.businessTypeEnums = data.map(item => {
         return {
           label: item.dictCnName,

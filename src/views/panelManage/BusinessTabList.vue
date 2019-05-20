@@ -242,12 +242,12 @@ export default {
       this.$emit('copy', row.tabId)
     },
     collect(row) {
-      this.$service.businessTabCollect({ resourceId: row.tabId }, '收藏成功').then(()=>{
+      this.$service.collect({ type: 'tab', data: {resourceId: row.tabId} }, '收藏成功').then(()=>{
         this.fetchData()
       })
     },
     cancalCollect(row) {
-      this.$service.businessTabCancelCollect({ resourceId: row.tabId }, '取消成功').then(()=>{
+      this.$service.collectCancel({ type: 'tab', data: {resourceId: row.tabId} },'取消成功').then(()=>{
         this.fetchData()
       })
     },
@@ -325,7 +325,7 @@ export default {
       this.fetchData()
     },
     getTabType() {
-      return this.$service.getTabType().then(data => {
+      return this.$service.getTabType({tabParentType: 'biz'}).then(data => {
         data.forEach(element => {
           this.tabType[element.label] = element.value
           this.tabTypeReverse[element.value] = element.label
@@ -374,7 +374,7 @@ export default {
       }, [])
     },
     getBusinessType() {
-      this.$service.getBusinessType().then(data => {
+      this.$service.getDictType({type: 'businessType'}).then(data => {
         this.businessType = data
       })
     }
@@ -420,7 +420,7 @@ export default {
     this.getTabType().then(() => {
       this.filterSchema = filterSchema
     })
-    this.$service.getAppIdType().then(data => {
+    this.$service.getDictType({type: 'appIdType'}).then(data => {
       this.appIdType = data
       this.fetchData()
     })

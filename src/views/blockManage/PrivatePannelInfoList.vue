@@ -288,7 +288,7 @@ export default {
     },
     //获取业务分类
     getDictType() {
-      return this.$service.getDictType().then(data => {
+      return this.$service.getDictType({type: 'businessType'}).then(data => {
         data.forEach(element => {
           this.pannelCategories[element.label] = element.id
         })

@@ -255,7 +255,7 @@ export default {
       this.fetchData()
     },
     getBusinessType() {
-      return this.$service.getBusinessType().then(data => {
+      return this.$service.getDictType({type: 'businessType'}).then(data => {
         data.forEach((item) => {
           this.businessType[item.dictCnName] = item.dictId
         })
@@ -297,12 +297,12 @@ export default {
     },
     handleToggleCollect(row) {
       if (row.collected) {
-        this.$service.panelUnCollect({resourceId: row.pannelGroupId}, '取消收藏成功')
+        this.$service.collectCancel({ type: 'pannel', data: {resourceId: row.pannelGroupId}}, '取消收藏成功')
           .then(() => {
             this.$set(row, 'collected', false)
           })
       } else {
-        this.$service.panelCollect({resourceId: row.pannelGroupId}, '收藏成功')
+        this.$service.collect({ type: 'pannel', data: {resourceId: row.pannelGroupId}}, '收藏成功')
           .then(() => {
             this.$set(row, 'collected', true)
           })

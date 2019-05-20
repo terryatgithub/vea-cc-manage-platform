@@ -1,11 +1,11 @@
 
-export function getMaterialTypes (data) {
-  return this.fetch({
-    method: 'post',
-    url: 'api/dict/materialType.html',
-    data
-  })
-}
+// export function getMaterialTypes (data) {
+//   return this.fetch({
+//     method: 'post',
+//     url: 'api/dict/materialType.html',
+//     data
+//   })
+// }
 export function getMaterialPageList (data) {
   return this.fetch({
     method: 'post',

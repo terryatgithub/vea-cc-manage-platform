@@ -304,7 +304,7 @@ export default {
     }
   },
   created() {
-    this.$service.getBusinessType().then(data => {
+    this.$service.getDictType({type: 'businessType'}).then(data => {
       this.panelCategoryOptions = data
       this.pannelCategoryOptionsIndexed = data.reduce(function(result, item) {
         result[item.dictId] = item.dictCnName
