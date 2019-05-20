@@ -22,9 +22,18 @@
 //   })
 // } 
 
-export function getTotal (type) {
+export function getTotal (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/' + type + '/getTotal.html',
+    url: 'api/v1/' + data.type + '/getTotal.html',
+    data
   })
-} 
+}
+
+export function todoTaskPageList (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/' + data.type + '/pageList.html',
+    data
+  })
+}

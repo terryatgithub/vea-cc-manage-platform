@@ -161,7 +161,7 @@ export default {
     fetchData() {
       const filter = this.parseFilter()
       filter.resourceType = this.resourceType
-      this.$service.getTotal(filter).then(data => {
+      this.$service.todoTaskPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })

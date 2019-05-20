@@ -43,7 +43,7 @@ export default {
     methods: {
     },
     created() {
-        this.$service.getAppIdType().then((data) => {
+        this.$service.getDictType({type: 'appIdType'}).then((data) => {
             this.options = data.map(function(item) {
                 return {
                     label: item.dictCnName,
