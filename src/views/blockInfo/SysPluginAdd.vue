@@ -577,6 +577,7 @@ export default {
   methods: {
     //时间处理-:转换为数值
     parseMinToStr(str) {
+      debugger
       const timeArr = str.split(':')
       const hours = parseInt(timeArr[0])
       const mins = parseInt(timeArr[1])

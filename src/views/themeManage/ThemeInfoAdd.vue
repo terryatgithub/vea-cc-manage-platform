@@ -101,7 +101,7 @@
             :mode="mode"
             :resource-info="resourceInfo"
             @edit="mode = 'edit'"
-           @replicate="mode = 'replicate'; this.title='创建副本'"
+           @replicate="mode = 'replicate'; title='创建副本'"
             @submit-audit="btnSave"
             @select-version="fetchData"
             @unaudit="fetchData"
