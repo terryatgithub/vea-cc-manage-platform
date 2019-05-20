@@ -7,6 +7,7 @@
     :pagination="pagination"
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
+    @pagination-change="fetchData"
     @select-end="handleSelectEnd"
     @select-start="fetchData"
   >
@@ -23,8 +24,7 @@
         </p>
         <p class="list-title">{{item.pictureName}}</p>
         <div>
-          <span v-if="item.pictureStatus==1">审核通过</span>
-          <span v-else>待审核</span>
+          <span>{{ $consts.statusText[item.pictureStatus] }}</span>
           <span>{{item.pictureResolution}}</span>
         </div>
       </div>
@@ -58,11 +58,12 @@ export default {
       auditDialogVisible: false, //审核弹出框
       reviewPicUrl: null,
       filter: {
-        sort: undefined,
-        order: undefined
       },
       filterSchema: null,
-      pagination: {},
+      pagination: {
+        currentPage: 1,
+        pageSize: 15,
+      },
       selected: [],
       table: {
         props: {},
@@ -86,10 +87,8 @@ export default {
       this.fetchData()
     },
     handleFilterReset() {
-      this.filter = {
-        sort: undefined,
-        order: undefined
-      }
+      this.filter = {}
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {
@@ -98,7 +97,7 @@ export default {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
-      return filter
+      return {...filter}
     },
     //获取数据
     fetchData() {

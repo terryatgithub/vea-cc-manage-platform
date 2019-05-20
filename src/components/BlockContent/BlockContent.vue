@@ -233,7 +233,7 @@ export default {
       const specificContentList = block.specificContentList || []
       const defaultContentForm = this.getDefaultContentForm()
       const parse = (data) => {
-        const redundantParams = data.redundantParams
+        let redundantParams = data.redundantParams
         if (redundantParams) {
           if (redundantParams.byvalue === 'coocaa.intent.action.browser') {
             data.webpageTypeRadio = '1'

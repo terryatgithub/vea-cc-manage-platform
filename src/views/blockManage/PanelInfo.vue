@@ -377,7 +377,7 @@ export default {
         draft: 2,
         waiting: 3,
         accepted: 4,
-        reject: 5
+        rejected: 5
       },
       showResourceSelector: false,
       selectedLayout: null,
@@ -434,7 +434,7 @@ export default {
       activePannelIndex: '0',
     }
   },
-  props: ['id', 'initMode', 'version', 'panelDataType'],
+  props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
     resourceInfo() {
       const panel = this.pannel
@@ -518,7 +518,7 @@ export default {
   },
   methods: {
     fetchData(version) {
-      this.$service.panelGetDetail({ id: this.id, version }).then(data => {
+      return this.$service.panelGetDetail({ id: this.id, version }).then(data => {
         this.setPanelInfoData(data)
       })
     },
@@ -1670,15 +1670,12 @@ export default {
       this.updateAllPosition()
     },
     clickBlock() {
-      const href = location.href
-      const match = location.href.match(
-        /clickActiveIndex=(\d+)&clickBlockIndex=(\d+)/
-      )
-      if (match) {
-        const clickActiveIndex = +match[1]
-        const clickBlockIndex = +match[2]
-        this.activePannelIndex = match[1]
-        this.handleClickBlock(clickBlockIndex)
+      const { initGroupIndex, initBlockIndex } = this
+      if (initGroupIndex !== undefined) {
+        this.activePannelIndex = initGroupIndex
+      }
+      if (initBlockIndex !== undefined) {
+        this.handleClickBlock(initBlockIndex)
       }
     }
   },
@@ -1693,12 +1690,13 @@ export default {
         }
       })
     })
-    if (this.id) {
-      this.fetchData(this.version)
-    }
   },
   mounted() {
-    this.clickBlock()
+    if (this.id) {
+      this.fetchData(this.version).then(() => {
+        this.clickBlock()
+      })
+    }
   }
 }
 </script>

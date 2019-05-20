@@ -198,7 +198,7 @@ const STATUS = {
     draft: 2,
     waiting: 3,
     accepted: 4,
-    reject: 5,
+    rejected: 5,
     processing: 7 
 }
 export default {

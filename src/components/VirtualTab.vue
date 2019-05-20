@@ -22,6 +22,8 @@
         }"
     :style="{width: width + 'px'}"
   >
+
+    <!-- placeholder top -->
     <div
       v-if="!readOnly"
       class="panel-placeholder panel-placeholder__normal"
@@ -30,6 +32,8 @@
       @dragover="handleDragOver"
       @drop="handleDrop($event, {type: 'NORMAL', index: -1})"
     ></div>
+
+
     <template v-for="(panelItem, index) in panels">
       <div
         :class="{
@@ -43,6 +47,7 @@
         @shadow-drag-start="handleDragStart($event, index)"
         @shadow-drag-end="handleDragEnd"
       >
+
         <div class="panel-group-title">
           <i
             v-if="!panelItem.isCollapse"
@@ -72,7 +77,9 @@
             class="tab-placeholder__group-remove el-icon-close"
           ></i>
         </div>
+
         <div class="panel-group-content">
+          <!-- SPEC panel -->
           <div v-if="panelItem.type === 'SPEC'">
             <div
               v-if="!readOnly"
@@ -80,10 +87,11 @@
               @dragenter="handleDragEnter"
               @dragleave="handleDragLeave"
               @dragover="handleDragOver"
-              @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: -1})"
-            ></div>
+              @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: -1})"></div>
+
             <template v-for="(item, crowdIndex) in panelItem.crowdPanels">
               <cc-var
+                :key="crowdIndex"
                 v-show="isDragging || panelItem.isShowAll || crowdIndex === 0"
                 :class="{
                                     'tab-placeholder__panel-wrapper': true, 
@@ -95,18 +103,25 @@
                 @shadow-drag-end.native="handleDragEnd"
                 :panel="getPanelInfo(item)"
               >
-                <template v-if="!readOnly" slot-scope="{panel: panel}">
-                  <i
-                    title="删除"
-                    @click="handleRemovePanel(index, crowdIndex)"
-                    class="tab-placeholder__panel-remove el-icon-close"
-                  ></i>
-                  <a
-                    v-if="panelItem.crowdPanels.length === 1"
-                    @click="$emit('toggle-type', index)"
-                    class="btn-crowd btn-crowd--unset"
-                  >取消定向</a>
-                  <a v-else class="btn-crowd btn-crowd--disabled" title="请将板块移出板块组，再取消定向">取消定向</a>
+                <template slot-scope="{panel: panel}">
+                  <template v-if="!readOnly">
+                    <i
+                      title="删除"
+                      @click="handleRemovePanel(index, crowdIndex)"
+                      class="tab-placeholder__panel-remove el-icon-close"
+                    ></i>
+                    <a
+                      v-if="panelItem.crowdPanels.length === 1"
+                      @click="$emit('toggle-type', index)"
+                      class="btn-crowd btn-crowd--unset"
+                    >取消定向</a>
+                    <a 
+                      v-else 
+                      class="btn-crowd btn-crowd--disabled" 
+                      title="请将板块移出板块组，再取消定向">
+                      取消定向
+                    </a>
+                  </template>
 
                   <div class="tab-plcacholder-info">
                     <div class="tab-placeholder-info__link" @click="handleOpenPanel(panel)">
@@ -156,8 +171,7 @@
                 @dragenter="handleDragEnter"
                 @dragleave="handleDragLeave"
                 @dragover="handleDragOver"
-                @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: crowdIndex})"
-              ></div>
+                @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: crowdIndex})"></div>
             </template>
             <div
               class="btn-show-all"
@@ -169,6 +183,7 @@
               </a>
             </div>
           </div>
+          <!-- normal panel -->
           <div v-else class="tab-placeholder__normal-panel">
             <cc-var
               :class="{
@@ -178,13 +193,13 @@
               :panel="getPanelInfo(panelItem.panel)"
             >
               <template slot-scope="{panel: panel}">
-                <i
-                  v-show="!readOnly"
-                  title="删除"
-                  @click="handleRemovePanel(index)"
-                  class="tab-placeholder__panel-remove el-icon-close"
-                ></i>
-                <a class="btn-crowd btn-crowd--set" @click="$emit('toggle-type', index)">设置定向</a>
+                <template v-if="!readOnly">
+                  <i
+                    title="删除"
+                    @click="handleRemovePanel(index)"
+                    class="tab-placeholder__panel-remove el-icon-close"></i>
+                  <a class="btn-crowd btn-crowd--set" @click="$emit('toggle-type', index)">设置定向</a>
+                </template>
                 <div class="tab-plcacholder-info">
                   <div class="tab-placeholder-info__link" @click="handleOpenPanel(panel)">
                     {{ panel.panelId }}
@@ -221,6 +236,8 @@
           </div>
         </div>
       </div>
+
+      <!-- placeholder bottom -->
       <div
         v-if="!readOnly"
         class="panel-placeholder panel-placeholder__normal"

@@ -71,7 +71,7 @@ export function putOnShelves (data) {
 }
 
 const deleteUrlMap = {
-  homepage: 'api/v1/homepageInfo/delHistory.html',
+  homepage: 'api/v1/homepage/delHistory.html',
   pannel: 'api/v1/panel/delHistory.html',
   tab: 'api//v1/tab/delHistory.html',
   theme: 'api/v1/theme/delHistory.html', // 所有版块

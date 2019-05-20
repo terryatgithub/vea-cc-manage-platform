@@ -565,6 +565,29 @@
         @go-back="activePage = 'tab_info'"
       />
     </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'panel_preview'">
+      <PanelInfo
+        v-if="panelPreview.dataType == 1 || panelPreview.dataType == 3"
+        :title-prefix="title"
+        :init-mode="panelPreview.initMode"
+        :id="panelPreview.id"
+        :version="panelPreview.vesion"
+        :panel-data-type="panelPreview.dataType"
+        :init-group-index="panelPreview.initGroupIndex"
+        :init-block-index="panelPreview.initBlockIndex"
+        @upsert-end="handlePreviewPanelEnd"
+        @go-back="handlePreviewPanelEnd"
+      />
+      <PrivatePanelInfo
+        v-if="panelPreview.dataType == 5 "
+        :title-prefix="title"
+        :init-mode="panelPreview.initMode"
+        @upsert-end="handlePreviewPanelEnd"
+        @go-back="handlePreviewPanelEnd"
+      />
+    </PageContentWrapper>
+
     <PageContentWrapper v-if="activePage === 'panel'">
       <PanelInfo
         :title-prefix="title"
@@ -597,6 +620,7 @@
 </template>
 
 <script>
+import { getAppIDByTabCategory } from '../../utlis/bizUtil'
 import { Table } from 'admin-toolkit'
 import Var from '@/components/Var'
 import PageWrapper from '@/components/PageWrapper'
@@ -614,12 +638,14 @@ import FloatWindowSelector from '@/components/selectors/FloatWindowSelector'
 import IconSelector from '@/components/selectors/IconSelector'
 import TimeSpinner from '@/components/TimeSpinner'
 import VirtualTab from '@/components/VirtualTab'
+import CrowdSelector from '@/components/CrowdSelector'
 import InputOrder from '@/components/InputOrder'
 import { Affix } from 'vue-affix'
 import titleMixin from '@/mixins/title'
 import OrderableTable from '@/components/OrderableTable'
 import PanelInfo from '../blockManage/PanelInfo'
 import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
+import { unlink } from 'fs';
 export default {
   name: 'TabInfo',
   mixins: [titleMixin],
@@ -636,6 +662,7 @@ export default {
     'cc-icon-selector': IconSelector,
     'cc-time-spinner': TimeSpinner,
     'cc-virtual-tab': VirtualTab,
+    'cc-crowd-selector': CrowdSelector,
     Table,
     CommonContent,
     Affix,
@@ -653,7 +680,7 @@ export default {
       draft: 2,
       waiting: 3,
       accepted: 4,
-      reject: 5,
+      rejected: 5,
       processing: 7
     }
     const STATUS_TEXT = {
@@ -667,6 +694,14 @@ export default {
     return {
       mode: 'create',
       activePage: 'tab_info',
+      panelPreview: {
+        panel: null,
+        id: undefined,
+        version: undefined,
+        initMode: undefined,
+        initGroupIndex: undefined,
+        initBlockIndex: undefined
+      },
       resourceName: '版面',
       embedTab: undefined,
       isCollapseBase: false,
@@ -976,7 +1011,7 @@ export default {
         if (!(tabCategory == 60 || tabCategory == 61 || tabCategory == 66)) {
           tabInfo.systemDefault = 0
         }
-        tabInfo.tabAppid = +this.FastDevTool.getAppIDByTabCategory(tabCategory)
+        tabInfo.tabAppid = +getAppIDByTabCategory(tabCategory)
         tabInfo.tabCategory = tabCategory
         if (shouldClearContents) {
           this.clearContents()
@@ -1030,31 +1065,28 @@ export default {
     handlePreviewPanel(panel) {
       const row = this.panelListIndexed[panel.panelId]
       const version = row.duplicateVersion || row.currentVersion
-      const url =
-        this.basicFn.numToPannelTypeUrl(row.pannelType) +
-        '/preview.html?id=' +
-        row.pannelGroupId +
-        '&version=' +
+      this.activePage = 'panel_preview'
+      this.panelPreview = {
+        panel: row,
+        initMode: 'read',
+        id: row.pannelGroupId,
+        dataType: row.pannelType,
         version
-      this.FastDevTool.createDialogWin('edit-view', {
-        confirmInfo: false,
-        fit: true,
-        iconCls: 'icon-edit',
-        minimizable: false,
-        maximizable: true,
-        title: '预览页面',
-        content: this.FastDevTool.createIframe(url),
-        onClose: function() {
-          this.updatePanelVersion(
-            row,
-            function() {
-              this.loadPanelDetail(row)
-            }.bind(this)
-          )
+      }
+    },
+    handlePreviewPanelEnd() {
+      const panel = this.panelPreview.panel
+      this.updatePanelVersion(
+        panel,
+        function() {
+          this.loadPanelDetail(panel)
         }.bind(this)
-      })
+      )
+      this.panelPreview = null
+      this.activePage = 'tab_info'
     },
     handleClickBlock(data) {
+      const idPrefix = this.$consts.idPrefix
       const index = data.index
       const crowdIndex = data.crowdIndex
       const activeIndex = data.activeIndex
@@ -1065,72 +1097,37 @@ export default {
       const STATUS = this.STATUS
 
       const version = panelData.duplicateVersion || panelData.currentVersion
-      const isJiangSu = $idPrefix === '11' ? true : false
-      let url
+      const isJiangSu = idPrefix === '11' ? true : false
+      const panelPreview = {
+        panel: panelData,
+        dataType: panelData.pannelType,
+        initMode: 'read',
+        id: panelData.pannelGroupId,
+        version: panelData.currentVersion,
+        initGroupIndex: undefined,
+        initBlockIndex: undefined
+      }
       switch (true) {
         case isJiangSu && panelData.pannelGroupId.toString().indexOf(10) === 0:
           // 江苏泰州的不能编辑酷开(10)这边的
-          url =
-            this.basicFn.numToPannelTypeUrl(panelData.pannelType) +
-            '/preview.html?id=' +
-            panelData.pannelGroupId +
-            '&version=' +
-            version
           break
         case panelStatus === STATUS.draft:
           // 如果是草稿，直接修改
-          url =
-            this.basicFn.numToPannelTypeUrl(panelData.pannelType) +
-            '/edit.html?id=' +
-            panelData.pannelGroupId +
-            '&version=' +
-            version
-          url +=
-            '&clickActiveIndex=' +
-            activeIndex +
-            '&clickBlockIndex=' +
-            blockIndex
+          panelPreview.initMode = 'edit'
+          panelPreview.initGroupIndex = activeIndex
+          panelPreview.initBlockIndex = blockIndex
           break
         case panelStatus === STATUS.accepted:
           // 创建副本
-          url =
-            this.basicFn.numToPannelTypeUrl(panelData.pannelType) +
-            '/editHistory.html?id=' +
-            panelData.pannelGroupId +
-            '&version=' +
-            version
-          url +=
-            '&clickActiveIndex=' +
-            activeIndex +
-            '&clickBlockIndex=' +
-            blockIndex
+          panelPreview.initMode = 'replicate'
+          panelPreview.initGroupIndex = activeIndex
+          panelPreview.initBlockIndex = blockIndex
           break
         case panelStatus === STATUS.waiting:
-          url =
-            this.basicFn.numToPannelTypeUrl(panelData.pannelType) +
-            '/preview.html?id=' +
-            panelData.pannelGroupId +
-            '&version=' +
-            version
           break
       }
-      this.FastDevTool.createDialogWin('edit-view', {
-        confirmInfo: false,
-        fit: true,
-        iconCls: 'icon-edit',
-        minimizable: false,
-        maximizable: true,
-        title: '预览页面',
-        content: this.FastDevTool.createIframe(url),
-        onClose: function() {
-          this.updatePanelVersion(
-            panelData,
-            function() {
-              this.loadPanelDetail(panelData)
-            }.bind(this)
-          )
-        }.bind(this)
-      })
+      this.panelPreview = panelPreview
+      this.activePage = 'panel_preview'
     },
     handleChangeSource(val) {
       this.$confirm(

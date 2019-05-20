@@ -227,7 +227,6 @@ export default {
       const { type, id, version } = this.resourceInfo
       if (id) {
         this.$service.getAuditHistoryList({ id, type, version }).then((result) => {
-          debugger
           this.auditHistoryList = result
         })
       } else {

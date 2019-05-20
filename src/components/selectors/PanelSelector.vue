@@ -254,6 +254,7 @@ export default {
       this.$service.panelPageList(filter).then(data => {
         this.table.data = data.rows
         this.pagination.total = data.total
+        this.updateTableSelected()
       })
     },
     handleTableRowSelectionChange(item, index) {
