@@ -211,7 +211,7 @@ export default {
         let arr = []
         arr.push(this.dynamicValidateForm.rows.shift())
         this.dynamicValidateForm.rows = arr
-        this.getLayoutData()
+       // this.getLayoutData()
       }
     },
     /*

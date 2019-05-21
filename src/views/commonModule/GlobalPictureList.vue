@@ -369,7 +369,7 @@ export default {
     getMaterialTypes() {
       return this.$service.getDictType({type: 'materialType'}).then(data => {
         data.forEach(element => {
-          this.materialTypes[element.label] = element.id
+          this.materialTypes[element.dictCnName] = element.dictId
         })
       })
     }

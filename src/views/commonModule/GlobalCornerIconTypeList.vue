@@ -137,7 +137,7 @@ export default {
           },
           {
             label: '修改人',
-            prop: 'modifierUser',
+            prop: 'modifierName',
             width: '90',
             render: (createElement, { row }) => {
               return row.userName

@@ -275,7 +275,7 @@ export default {
     //业务分类
     getCategoryLabel(value) {
       const selected = this.panelGroupCategoryOptions.find(function(item) {
-        return item.id === value
+        return item.dictId === value
       })
       return selected && selected.label
     },
@@ -322,7 +322,6 @@ export default {
     //业务分类
     getDictType() {
       this.$service.getDictType({type: 'businessType'}).then(data => {
-        console.log(data)
         this.panelGroupCategoryOptions = data
       })
     },

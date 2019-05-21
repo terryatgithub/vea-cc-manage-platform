@@ -357,7 +357,7 @@ export default {
           result,
           item
         ) {
-          result[item.value] = item
+          result[item.dictId] = item
           return result
         },
         {})

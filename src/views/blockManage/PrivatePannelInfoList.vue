@@ -290,7 +290,7 @@ export default {
     getDictType() {
       return this.$service.getDictType({type: 'businessType'}).then(data => {
         data.forEach(element => {
-          this.pannelCategories[element.label] = element.id
+          this.pannelCategories[element.dictCnName] = element.dictId
         })
       })
     },

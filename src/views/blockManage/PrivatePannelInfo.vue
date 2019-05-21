@@ -317,8 +317,8 @@ export default {
            // layoutId: undefined,
           //  panelIsFocus: undefined,
          //   focusShape: undefined,
-            vipContentAmount: 2,  //类型为9，10时候才有
-            firstPageVipContentAmount: 5, //类型为9，10时候才有
+            vipContentAmount: 5,  //类型为9，10时候才有
+            firstPageVipContentAmount: 2, //类型为9，10时候才有
             contentList: [  // pannelType为 5的时候才有
               // { blockVideoType: 0 },
               // { blockVideoType: 0 },
@@ -399,7 +399,7 @@ export default {
     },
     getCategoryLabel(value) {
       const selected = this.panelGroupCategoryOptions.find(function(item) {
-        return item.id === value
+        return item.dictId === value
       })
       return selected && selected.label
     },
@@ -441,9 +441,18 @@ export default {
     },
     handleSubmitAudit() {
      // const data = JSON.parse(JSON.stringify(this.panel))
-      const data = JSON.parse(JSON.stringify(this.panel))
-      data.pannelList[0].pannelCategory = data.panelGroupCategory
-      data.pannelList[0].pannelStatus = 3
+    //  const data = JSON.parse(JSON.stringify(this.panel))
+      const data = this.panel
+      const pannelList =  data.pannelList[0]
+      pannelList.pannelCategory = data.panelGroupCategory
+      pannelList.pannelStatus = 3
+      if (pannelList.firstPageVipContentAmount > pannelList.vipContentAmount ) {
+        this.$message({
+          type: 'error',
+          message: '首屏付费内容数不能大于总付费内容数'
+        })
+        return
+      }
       this.submit(data)
     },
     validate(data, cb) {
