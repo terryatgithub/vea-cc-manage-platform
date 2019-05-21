@@ -224,7 +224,7 @@ export function editSysMenu (params) {
 export function getNotMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/sysMenu/getNotMenuByRunId.html',
+    url: 'api/v1/sysMenu/getNotRunByMenuId.html',
     data
   })
 }
@@ -234,7 +234,7 @@ export function getNotMenuByRunId (data) {
 export function getMenuByRunId (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/sysMenu/getMenuByRunId.html',
+    url: 'api/v1/sysMenu/getRunByMenuId.html',
     data
   })
 }

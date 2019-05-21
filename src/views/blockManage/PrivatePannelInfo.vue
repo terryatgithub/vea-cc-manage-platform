@@ -23,10 +23,10 @@
                   @input="handlePanelGroupCategoryChange"
                 >
                   <el-option
-                    :label="item.label"
+                    :label="item.dictCnName"
                     v-for="(item,index) in panelGroupCategoryOptions"
                     :key="index"
-                    :value="item.id"
+                    :value="item.dictId"
                   ></el-option>
                 </el-select>
                 <span class="spform marginL">注：只有一个权限的操作者不能选择业务分类</span>
@@ -347,9 +347,9 @@ export default {
       const panelGroupCategory = this.panel.panelGroupCategory
       if (options) {
         const target = options.find(function(item) {
-          return item.id === panelGroupCategory
+          return item.dictId === panelGroupCategory
         })
-        return target && target.value
+        return target && target.dictEnName
       }
     },
     resourceInfo() {
@@ -550,7 +550,6 @@ export default {
     // },
     getDictType() {
       this.$service.getDictType({ type: 'businessType'}).then(data => {
-        console.log(data)
         this.panelGroupCategoryOptions = data
       })
     },
