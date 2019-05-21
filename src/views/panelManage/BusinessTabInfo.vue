@@ -577,9 +577,9 @@ export default {
       return this.$service.getTabType({tabParentType: 'biz'}).then(data => {
         this.tabTypes = data.reduce((result, current) => {
           result.push({
-            label: current.label,
-            value: current.value,
-            disabled: current.value !== '6'
+            label: current.dictCnName,
+            value: current.dictEnName,
+            disabled: current.dictEnName !== '6'
           })
           return result
         }, [])

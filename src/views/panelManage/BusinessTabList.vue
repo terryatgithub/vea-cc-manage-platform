@@ -327,8 +327,8 @@ export default {
     getTabType() {
       return this.$service.getTabType({tabParentType: 'biz'}).then(data => {
         data.forEach(element => {
-          this.tabType[element.label] = element.value
-          this.tabTypeReverse[element.value] = element.label
+          this.tabType[element.dictCnName] = element.dictEnName
+          this.tabTypeReverse[element.dictEnName] = element.dictCnName
         })
       })
     },
