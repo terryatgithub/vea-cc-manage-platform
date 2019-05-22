@@ -431,7 +431,8 @@ export default {
         id: undefined,
         containerName: '',
         containerType: 'REFERENCE_BROADCASTING',
-        configModel: 'broadcast'
+        configModel: 'broadcast',
+        currentVersion: undefined
       },
       normalForm: {},
       lowerForm: {
@@ -1217,7 +1218,7 @@ export default {
           data.lowerVersionContent.thirdIdOrPackageName = JSON.parse(data.lowerVersionContent.params).id
         }
         this.lowerVersionContent = this.lowerForm = data.lowerVersionContent
-        debugger
+        this.basicForm.currentVersion = data.currentVersion
         this.basicForm.configModel = data.configModel
         this.basicForm.containerName = data.containerName
         this.basicForm.containerType = data.containerType

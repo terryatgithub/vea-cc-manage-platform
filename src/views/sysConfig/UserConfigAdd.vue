@@ -102,11 +102,7 @@ export default {
     submitBtn () {
       this.$refs.form.validate(valid => {
         if (valid) {
-          console.log(this.form)
-          // 处理dicts数组
-          this.form.dicts = this.form.dicts.join(',')
-          
-          this.$service.userConfigSave(this.form, '保存成功').then(data => {
+          this.$service.userConfigSave({jsonStr: JSON.stringify(this.form)}, '保存成功').then(data => {
             this.$emit('open-list-page')
           })
         }

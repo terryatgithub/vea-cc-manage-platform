@@ -83,7 +83,12 @@
     </el-tab-pane>
     <el-tab-pane label="角标" name="icon">
       <MySubmitTasksList resourceType="icon" v-show="mode==='iconList'" @read="handleRead"></MySubmitTasksList>
-      <GlobalCornerIconView  v-if="mode==='iconPreview'" :viewData="previewData" @open-list-page="handleUpsertEnd" @go-back="goBack"></GlobalCornerIconView>
+      <GlobalCornerIconView  
+      v-if="mode==='iconPreview'" 
+      :viewData="previewData" 
+      @open-list-page="handleUpsertEnd" 
+      @go-back="goBack">
+      </GlobalCornerIconView>
     </el-tab-pane>
     <el-tab-pane label="系统功能" name="sysPlugin">
       <MySubmitTasksList resourceType="sysPlugin" v-show="mode==='sysPluginList'" @read="handleRead"></MySubmitTasksList>

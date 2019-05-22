@@ -47,8 +47,8 @@
                     <el-option
                       v-for="(item, index) in picTypeOptions"
                       :key="index"
-                      :value="item.value"
-                      :label="item.label"
+                      :value="item.dictEnName"
+                      :label="item.dictCnName"
                     ></el-option>
                   </el-select>
                 </el-form-item>
@@ -305,9 +305,9 @@ export default {
     },
     parseMaterialType(item) {
       return {
-        dictId: item.id,
-        dictEnName: item.value,
-        dictCnName: item.label
+        dictId: item.dictId,
+        dictEnName: item.dictEnName,
+        dictCnName: item.dictCnName
       }
     },
     validateFormData(cb) {
@@ -357,7 +357,7 @@ export default {
           result,
           item
         ) {
-          result[item.dictId] = item
+          result[item.dictEnName] = item
           return result
         },
         {})
