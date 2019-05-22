@@ -49,7 +49,6 @@
                 filterable
                 v-model="searchForm.category"
                 @change="categorySelectChange"
-                size="small"
               >
                 <el-option label="请选择/输入" value></el-option>
                 <el-option
@@ -261,6 +260,10 @@ export default {
         {
           label: '爱奇艺',
           value: 'yinhe'
+        },
+         {
+          label: '优酷',
+          value: 'youku'
         }
       ],
       originPartner: undefined,

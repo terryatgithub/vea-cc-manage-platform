@@ -14,11 +14,6 @@
         @delete="deleteData"
         >
         </ButtonGroupForListPage>
-      <!-- <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="deleteData">批量删除</el-button>
-      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
@@ -118,6 +113,9 @@ export default {
                   case 'o_voole':
                     return '优朋'
                     break
+                  case 'o_youku':
+                    return '优酷'
+                    break
                 }
               }
             }
@@ -198,14 +196,21 @@ export default {
       this.$emit('create')
     },
     /**编辑 */
-    editData() {
-      if (this.selected.length == 0) {
-        this.$message('请选择一条数据')
-      } else if (this.selected.length > 1) {
-        this.$message('只能选择一条数据')
-      } else {
-        console.log(this.selected)
-        this.$emit('edit', this.selected[0])
+      editData() {
+      if (this.$isAllowEdit(this.selected)) {
+        this.table.data.forEach(e => {
+          if (e['pannelGroupId'] === this.selected[0]) {
+            if (e.pannelStatus === 2) {
+              this.$emit('edit', this.selected[0])
+            } else {
+              this.$message({
+                type: 'error',
+                message: '只有草稿才能编辑'
+              })
+            }
+            return
+          }
+        })
       }
     },
     /**批量删除 */

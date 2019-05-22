@@ -45,7 +45,8 @@ export default {
       source: {
         无: 0,
         腾讯: 1,
-        爱奇艺: 2
+        爱奇艺: 2,
+        优酷: 3
       },
       channel: {
         影视: 'movie',

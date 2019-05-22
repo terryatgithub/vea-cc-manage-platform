@@ -247,16 +247,19 @@ export default {
      */
     editData() {
       if (this.$isAllowEdit(this.selected)) {
-        let selected = this.selected[0]
-        debugger
-        if (selected.pluginStatus !== 4) {
-          this.$emit('open-add-page', selected)
-        } else {
-          this.$message({
-            type: 'error',
-            message: '审核通过的数据不能编辑'
-          })
-        }
+        this.table.data.forEach(e => {
+          if (e['pluginId'] === this.selected[0]) {
+            if (e.pluginStatus !== 4) {
+              this.$emit('open-add-page', this.selected[0])
+            } else {
+              this.$message({
+                type: 'error',
+                message: '审核通过的数据不能编辑'
+              })
+            }
+            return
+          }
+        })
       }
     },
     //预览

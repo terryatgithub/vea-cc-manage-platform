@@ -61,6 +61,7 @@
           :options="{group: 'normalVersion' }"
           @start="onDragStart($event)"
           @end="onDragtEnd($event)"
+          v-if="!disabled"
         >
           <el-card
             v-for="(normal, index) in normalVersionContent"
@@ -70,10 +71,11 @@
             @click.native="switchNormal(index)"
           >
             <i
-              v-if="normalVersionContent.length > 1"
+              v-if="normalVersionContent.length > 1 &&!disabled"
               class="el-icon-close"
               @click.stop="deleteNormal(index)"
             ></i>
+            
             <img
               v-if="normal.poster.pictureUrl"
               :src="normal.poster.pictureUrl"
@@ -82,6 +84,21 @@
             <span>{{normal.title}}</span>
           </el-card>
         </draggable>
+          <el-card
+            v-else
+            v-for="(normal, index) in normalVersionContent"
+            :key="index"
+            :class="{ active: index === currentIndex}"
+            class="normal-version-wrap"
+            @click.native="switchNormal(index)"
+          >
+            <img
+              v-if="normal.poster.pictureUrl"
+              :src="normal.poster.pictureUrl"
+              referrerpolicy="no-referrer"
+            >
+            <span>{{normal.title}}</span>
+          </el-card>
         <el-card style="cursor: pointer;" v-if="!disabled">
           <span class="add-version" @click="addNormal" >+添加资源</span>
         </el-card>
@@ -1174,10 +1191,9 @@ export default {
               var resultObj = Object.assign(obj, _this.basicForm)
               resultObj.status = 3
               resultObj.parentType = 'Block'
-              debugger
               console.log('resultObj',resultObj)
-
-              _this.$service.saveBlockInfo(resultObj,'提交成功').then(() => {
+               
+              _this.$service.saveBlockInfo({jsonStr: JSON.stringify(resultObj)},'提交成功').then(() => {
                    _this.$emit('open-list-page')
               })
              

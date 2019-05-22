@@ -453,6 +453,9 @@ export default {
         })
         return
       }
+       if (this.mode === 'replicate') {
+        data.currentVersion = ''
+      }
       this.submit(data)
     },
     validate(data, cb) {

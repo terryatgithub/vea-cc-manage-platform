@@ -603,9 +603,9 @@ export default {
                   }, {})
                   this.block.rlsInfo = versions.reduce(
                     function(result, item) {
-                      const rlsItem = rlsInfoIndexed[item.value]
+                      const rlsItem = rlsInfoIndexed[item.dictEnName]
                       if (rlsItem) {
-                        this.$set(rlsItem, 'label', item.label)
+                        this.$set(rlsItem, 'label', item.dictCnName)
                         result.push(rlsItem)
                       }
                       return result
@@ -742,8 +742,8 @@ export default {
               function(item) {
                 return this.genRlsInfo(
                   {
-                    label: item.label,
-                    dataType: +item.value
+                    label: item.dictCnName,
+                    dataType: +item.dictEnName
                   },
                   val
                 )
@@ -868,7 +868,6 @@ export default {
       )
     },
     setData(data) {
-      debugger
       const helper = this.block.helper
       const block = JSON.parse(JSON.stringify(data))
       const pluginParentType = block.pluginInfo.pluginParentType

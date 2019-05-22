@@ -155,7 +155,7 @@ export default {
   },
   methods: {
     submitEnd (status, data) {
-       if(data !== undefined) {
+       if(data === undefined) {
           data = this.form
        }
       data.pannelList[0].pannelStatus = status

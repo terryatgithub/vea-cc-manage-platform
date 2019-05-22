@@ -68,7 +68,7 @@
 
                 <el-form-item label="TAB对应的icon" prop="pictureName">
                   <el-button @click="handleSelectIconStart">选择</el-button>
-                  <span v-if="tabInfo.iconTypeName">已选择： {{ tabInfo.iconTypeName }}</span>
+                  <span v-if="tabInfo.iconTypeName" class="marginL">已选择： {{ tabInfo.iconTypeName }}</span>
                 </el-form-item>
 
                 <el-form-item label="标题图片">
@@ -530,10 +530,7 @@
 
                   <el-form-item label="专题版面长图背景" prop="alumbTabLongBg">
                     <div class="image-preview-wrapper" v-if="tabInfo.alumbTabLongBg">
-                      <img
-                        class="image-preview"
-                        :src="tabInfo.alumbTabLongBg"
-                      />
+                      <img class="image-preview" :src="tabInfo.alumbTabLongBg">
                     </div>
                   </el-form-item>
 
@@ -648,7 +645,7 @@ import titleMixin from '@/mixins/title'
 import OrderableTable from '@/components/OrderableTable'
 import PanelInfo from '../blockManage/PanelInfo'
 import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
-import { unlink } from 'fs';
+import { unlink } from 'fs'
 export default {
   name: 'TabInfo',
   mixins: [titleMixin],
@@ -2281,30 +2278,21 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-.image-preview-wrapper {
-  position: relative;
-  max-width: 400px;
-
-  .el-icon-close {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    cursor: pointer;
-    color: red;
-  }
-}
-
-.image-preview {
-  max-width: 100%;
-  display: block;
-  margin-top: 10px;
-}
-
-.image-preview-wrapper--long {
-  max-width: unset;
-}
-
-.image-preview-wrapper--long img {
-  height: 300px;
-}
+.image-preview-wrapper
+  position: relative
+  max-width: 400px
+  .el-icon-close
+    position: absolute
+    top: 5px
+    left: 5px
+    cursor: pointer
+    color: red
+.image-preview
+  max-width: 100%
+  display: block
+  margin-top: 10px
+.image-preview-wrapper--long
+  max-width: unset
+.image-preview-wrapper--long img
+  height: 300px
 </style>

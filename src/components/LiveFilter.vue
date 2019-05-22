@@ -91,7 +91,8 @@ export default {
       options: {
         source: [
           { label: '腾讯', value: 'tencent' },
-          { label: '爱奇艺', value: 'yinhe' }
+          { label: '爱奇艺', value: 'yinhe' },
+          { label: '优酷', value: 'youku' }
         ],
         nodeType: [
           { label: '直播', value: 'live' },

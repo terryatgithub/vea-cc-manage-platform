@@ -1,10 +1,16 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="multi-func-block-upsert">
-       <div class="form-legend-header">
+      <div class="form-legend-header">
         <span>基本信息</span>
       </div>
-      <el-form ref="blockForm" :rules="rules" :model="block" label-width="140px" class="el-form-add"> 
+      <el-form
+        ref="blockForm"
+        :rules="rules"
+        :model="block"
+        label-width="140px"
+        class="el-form-add"
+      >
         <el-form-item
           label="系统功能名称"
           prop="pluginInfo.pluginName"
@@ -116,19 +122,17 @@
                 :prop="'rlsInfo.' + index + '.title'"
                 :rules="rules.barText"
               >
-              <el-row class="leftSide">
-                <el-col :span="11">
-                   <el-input v-model.trim="item.title"></el-input>
-                </el-col>
-                 <el-col :span="2" class="textAlignCenter">
-                 |
-                 </el-col>
-                 <el-col :span="11">
-                   <el-input v-model.trim="item.subTitle"></el-input>
-                </el-col>
-              </el-row>
+                <el-row class="leftSide">
+                  <el-col :span="11">
+                    <el-input v-model.trim="item.title"></el-input>
+                  </el-col>
+                  <el-col :span="2" class="textAlignCenter">|</el-col>
+                  <el-col :span="11">
+                    <el-input v-model.trim="item.subTitle"></el-input>
+                  </el-col>
+                </el-row>
                 <!-- <el-input v-model.trim="item.title"></el-input>|
-                <el-input v-model.trim="item.subTitle"></el-input> -->
+                <el-input v-model.trim="item.subTitle"></el-input>-->
               </el-form-item>
             </template>
             <template v-if="versionHasTitle">
@@ -236,7 +240,7 @@
                 class="marginL"
                 v-if="item.openMode === 'app' "
                 type="primary"
-                plain 
+                plain
                 @click="handleSelectClickStart(index)"
               >快速填充</el-button>
             </el-form-item>
@@ -307,24 +311,22 @@
                   <span slot="tip" class="el-upload__tip">提示:只能上传png/gif/jpg/bmp文件</span>
                 </el-upload>
               </el-form-item>
-             
             </template>
             <AppParams
               v-if="item.openMode === 'app'"
               :prop-prefix="'rlsInfo.' + index + '.onclick.'"
               v-model="item.onclick"
-              >
-            </AppParams>
+            ></AppParams>
             <!-- <ccAppParamsForm
               v-if="item.openMode === 'app'"
               v-model="item.onclick"
               label-width="140px"
               :prop-prefix="'rlsInfo.' + index + '.onclick.'"
-            /> -->
+            />-->
           </div>
         </template>
-         <el-form-item>
-                <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
+        <el-form-item>
+          <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
         </el-form-item>
       </el-form>
       <!--海报-->
@@ -351,9 +353,9 @@
           <!-- <el-button type="primary" @click="showFocusImgSelectorVisible = false;selectImgSubmit()">确 定</el-button> -->
         </div>
       </el-dialog>
-       <!-- <div style="padding: 10px;text-align:right">
+      <!-- <div style="padding: 10px;text-align:right">
         <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-      </div> -->
+      </div>-->
     </div>
   </ContentCard>
 </template>
@@ -364,6 +366,7 @@ const PARENT_TYPES = {
   builtIn: 'builtIn',
   secKill: 'secKill'
 }
+
 const SOURCE = {
   none: {
     label: '无',
@@ -376,6 +379,10 @@ const SOURCE = {
   iqiyi: {
     label: '爱奇艺',
     value: 2
+  },
+  youku: {
+     label: '优酷',
+    value: 3
   }
 }
 const STATUS = {
@@ -463,6 +470,9 @@ export default {
           pluginName: [
             { required: true, message: '请输入系统功能名称', trigger: 'blur' },
             { max: 50, message: '不超过 50 个字符', trigger: 'blur' }
+          ],
+           refreshTime: [
+            { required: true, message: '请选择固定刷新时间', trigger: 'blur' }
           ],
           pluginParentType: [
             { required: true, message: '请选择类型', trigger: 'blur' }
@@ -608,9 +618,9 @@ export default {
                   }, {})
                   this.block.rlsInfo = versions.reduce(
                     function(result, item) {
-                      const rlsItem = rlsInfoIndexed[item.value]
+                      const rlsItem = rlsInfoIndexed[item.dictEnName]
                       if (rlsItem) {
-                        this.$set(rlsItem, 'label', item.label)
+                        this.$set(rlsItem, 'label', item.dictCnName)
                         result.push(rlsItem)
                       }
                       return result
@@ -751,8 +761,8 @@ export default {
               function(item) {
                 return this.genRlsInfo(
                   {
-                    label: item.label,
-                    dataType: +item.value
+                    label: item.dictCnName,
+                    dataType: +item.dictEnName
                   },
                   val
                 )
@@ -807,8 +817,7 @@ export default {
       }
       this.block.rlsInfo[this.selectingPostForIndex].poster = selectObj
     },
-    selectSubmit() {
-    },
+    selectSubmit() {},
     /**快速填充 */
     handleSelectClickStart(index) {
       this.selectingClickForIndex = index
@@ -827,35 +836,33 @@ export default {
       this.showselectClickor = false
       this.selectingClickForIndex = undefined
     },
-      getClickData(data) {
-        debugger
+    getClickData(data) {
       this.dialogClickTableVisible = false
-      let params = JSON.parse(data.params) 
+      let params = JSON.parse(data.params)
       let keys = Object.keys(params)
       let paramsArr = keys.reduce((result, current, index) => {
-         var obj = {}
-         obj.key = current
-         obj.value = params[current]
-         result.push(obj)
-         return result
-      },[])
-      let o ={
-                packagename: data.packagename,
-                versioncode: data.versioncode,
-                dowhat: data.dowhat,
-                bywhat: data.bywhat,
-                byvalue: data.byvalue,
-                params: paramsArr,
-                exception: data.exception
-        }
+        var obj = {}
+        obj.key = current
+        obj.value = params[current]
+        result.push(obj)
+        return result
+      }, [])
+      let o = {
+        packagename: data.packagename,
+        versioncode: data.versioncode,
+        dowhat: data.dowhat,
+        bywhat: data.bywhat,
+        byvalue: data.byvalue,
+        params: paramsArr,
+        exception: data.exception
+      }
       const index = this.selectingClickForIndex
       const item = this.block.rlsInfo[index]
-      item.onclick = o;
+      item.onclick = o
     },
-    clickSubmit() {
-    },
+    clickSubmit() {},
     /**异形焦点选择 */
-     handleSelectFocusImgStart(index) {
+    handleSelectFocusImgStart(index) {
       this.showFocusImgSelectorVisible = true
       this.selectingFocusImgForIndex = index
     },
@@ -867,8 +874,7 @@ export default {
       this.$set(item.extendInfo, 'focusImgUrl', this.selectImgData.pictureUrl)
       this.selectingFocusImgForIndex = undefined
     },
-    selectImgSubmit() {
-    },
+    selectImgSubmit() {},
     handleSelectTabStart(index) {
       this.showTabSelector = true
       this.selectingTabForIndex = index
@@ -1017,9 +1023,15 @@ export default {
         this.block.pluginInfo.refreshTime
       )
       for (let i = 0; i < this.block.rlsInfo.length; i++) {
-        this.block.rlsInfo[i].extendInfo.aliveTime = this.parseStrToMin(
-          this.block.rlsInfo[i].extendInfo.aliveTime
-        )
+        if (typeof this.block.rlsInfo[i].extendInfo !== 'undefined') {
+          if (
+            typeof this.block.rlsInfo[i].extendInfo.aliveTime !== 'undefined'
+          ) {
+            this.block.rlsInfo[i].extendInfo.aliveTime = this.parseStrToMin(
+              this.block.rlsInfo[i].extendInfo.aliveTime
+            )
+          }
+        }
       }
     },
     parseData(data) {
@@ -1198,9 +1210,15 @@ export default {
             formData.pluginInfo.refreshTime
           )
           for (let i = 0; i < formData.rlsInfo.length; i++) {
-            formData.rlsInfo[i].extendInfo.aliveTime = this.parseMinToStr(
-              formData.rlsInfo[i].extendInfo.aliveTime
-            )
+            if (typeof formData.rlsInfo[i].extendInfo !== 'undefined') {
+              if (
+                typeof formData.rlsInfo[i].extendInfo.aliveTime !== 'undefined'
+              ) {
+                formData.rlsInfo[i].extendInfo.aliveTime = this.parseMinToStr(
+                  formData.rlsInfo[i].extendInfo.aliveTime
+                )
+              }
+            }
           }
           formData = this.parseData(formData)
           console.log(formData)

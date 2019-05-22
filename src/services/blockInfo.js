@@ -34,7 +34,7 @@ export function getMaterialTypes (type) {
   }
   return this.fetch({
     method: 'get',
-    url: `api/v1/dict/getTypes/poster/{type}.html`
+    url: `api/v1/dict/getTypes/poster/${type}.html`
   })
 }
 /**
@@ -132,6 +132,12 @@ export function queryLiveVideoResult (params) {
 //     url: 'api/dict/sysPlugin/' + data + '.html'
 //   })
 // }
+export function getPluginVersions(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/dict/getTypes/sysPlugin/' + data + '.html'
+  })
+}
 export function getPluginType(data) {
   return this.fetch({
     method: 'post',

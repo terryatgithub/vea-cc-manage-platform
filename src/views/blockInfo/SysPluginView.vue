@@ -303,9 +303,9 @@ export default {
                 }, {})
                 this.block.rlsInfo = versions.reduce(
                   function(result, item) {
-                    const rlsItem = rlsInfoIndexed[item.value]
+                    const rlsItem = rlsInfoIndexed[item.dictEnName]
                     if (rlsItem) {
-                      this.$set(rlsItem, 'label', item.label)
+                      this.$set(rlsItem, 'label', item.dictCnName)
                       result.push(rlsItem)
                     }
                     return result
