@@ -30,7 +30,7 @@ export function getCornerTypes (params) {
  */
 export function getMaterialTypes (type) {
   if (type === undefined) {
-    type = 'material'
+    type = 'materialType'
   }
   return this.fetch({
     method: 'get',
@@ -44,8 +44,7 @@ export function saveBlockInfo(data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/blockInfo/save.html',
-    data,
-    isJSON: true
+    data
   })
 }
 /**

@@ -12,6 +12,7 @@
       v-if="!isShowList"
       :id="id"
       :init-mode="mode"
+      :version="version"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack"
     ></TabInfo>
@@ -44,9 +45,10 @@ export default {
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(item) {
+    handleRead(item, version) {
       this.id = item.tabId
       this.mode = 'read'
+      this.version = version
       this.isShowList = false
     },
     handleCopy(item) {

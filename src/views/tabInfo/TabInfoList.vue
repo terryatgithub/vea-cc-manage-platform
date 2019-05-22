@@ -2,16 +2,15 @@
   <ContentCard class="content">
     <ContentWrapper :pagination="pagination" @filter-change="handleFilterChange">
       <!-- 筛选部分 -->
-      <el-form inline ref="form" v-model="filter" label-width="90px" size="mini">
-        <el-form-item label="版面ID">
-          <el-input v-model="filter.tabId"/>
+      <el-form inline ref="form" v-model="filter" label-width="90px" class="form">
+        <el-form-item class="el-col-6">
+          <el-input v-model="filter.tabId" placeholder="版面ID"/>
         </el-form-item>
-        <el-form-item label="版面标题">
-          <el-input v-model="filter.tabName"/>
+        <el-form-item class="el-col-6">
+          <el-input v-model="filter.tabName" placeholder="版面标题"/>
         </el-form-item>
-        <el-form-item label="版面属性">
-          <el-select v-model="filter.tabType">
-            <el-option value>请选择</el-option>
+        <el-form-item class="el-col-6">
+          <el-select v-model="filter.tabType" placeholder="版面属性">
             <el-option
               v-for="(item, index) in tabTypeOption"
               :key="index"
@@ -20,15 +19,15 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="是否二级tab">
-          <el-select v-model="filter.hasSubTab">
+        <el-form-item class="el-col-6">
+          <el-select v-model="filter.hasSubTab" placeholder="是否二级tab">
             <el-option value>请选择</el-option>
             <el-option value="1">是</el-option>
             <el-option value="0">否</el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="业务分类">
-          <el-select v-model="filter.tabCategory">
+        <el-form-item class="el-col-6">
+          <el-select v-model="filter.tabCategory" placeholder="业务分类">
             <el-option value>请选择</el-option>
             <el-option
               v-for="(item, index) in businessType"
@@ -38,9 +37,8 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="AppId">
-          <el-select v-model="filter.tabAppid">
-            <el-option value>请选择</el-option>
+        <el-form-item class="el-col-6">
+          <el-select v-model="filter.tabAppid" placeholder="AppId">
             <el-option
               v-for="item in appIdType"
               :key="item.dictEnName"
@@ -49,8 +47,8 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="filter.tabStatus">
+        <el-form-item class="el-col-6">
+          <el-select v-model="filter.tabStatus" placeholder="状态">
             <el-option value>请选择</el-option>
             <el-option
               v-for="item in tabStatusOption"
@@ -60,9 +58,9 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="el-icon-search" @click="handleFilterChange">查询</el-button>
-          <el-button icon="el-icon-delete" @click="handleFilterReset">重置</el-button>
+        <el-form-item class="el-form-item-submit">
+          <el-button type="primary"  @click="handleFilterChange">查询</el-button>
+          <el-button  @click="handleFilterReset">重置</el-button>
         </el-form-item>
       </el-form>
       <!-- 筛选部分end -->
@@ -220,7 +218,23 @@ export default {
           },
           {
             label: '待审核副本',
-            prop: 'duplicateVersion'
+            prop: 'duplicateVersion',
+             render: (createElement, { row }) => {
+              return createElement(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row, row.duplicateVersion)
+                    }
+                  }
+                },
+                row.duplicateVersion
+              )
+            }
           },
           {
             label: '更新时间',
@@ -246,8 +260,8 @@ export default {
   },
 
   methods: {
-    handleRead(row) {
-      this.$emit('read', row)
+    handleRead(row, version) {
+      this.$emit('read', row, version)
     },
     /**
      * 获取数据
@@ -343,8 +357,13 @@ export default {
 }
 </script>
 
-<style lang='stylus' scoped>
-.btns {
-  margin: 30px 10px 30px;
-}
+<style lang = 'stylus' scoped>
+.form >>>.el-form-item__content
+  width: 83.33333%
+  .el-select
+    width: 100%
+.form >>>.el-form-item
+  margin-right: 0px
+.el-form-item-submit
+  width: 200px
 </style>

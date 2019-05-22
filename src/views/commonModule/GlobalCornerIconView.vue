@@ -146,12 +146,10 @@ export default {
     let reviewData = this.viewData
     if (typeof reviewData.cornerIconId !== 'undefined') {
       this.id = reviewData.cornerIconId
-      // this.status = this.reviewData.cornerStatus
-      this.getDetailInfo()
     } else {
       this.id = reviewData.resourceId
     }
-   // this.getDetailInfo()
+   this.getDetailInfo()
   }
 }
 </script>

@@ -578,7 +578,6 @@ export default {
   },
 
   computed: {
-   
     classObject: function() {
       if (this.normalForm.sign === 'autoSet') {
         return {
@@ -1134,7 +1133,6 @@ export default {
 
     // 快速填充
     lowerFill: function() {
-
       var newForm = Object.assign({}, this.normalVersionContent[0])
       this.lowerForm = newForm
     },
@@ -1169,7 +1167,6 @@ export default {
       })
     },
     submitCheck: function() {
-      //debugger
       var _this = this
       this.$refs.basicForm.validate(function(valid) {
         if (valid) {
@@ -1220,7 +1217,7 @@ export default {
           data.lowerVersionContent.thirdIdOrPackageName = JSON.parse(data.lowerVersionContent.params).id
         }
         this.lowerVersionContent = this.lowerForm = data.lowerVersionContent
-
+        debugger
         this.basicForm.configModel = data.configModel
         this.basicForm.containerName = data.containerName
         this.basicForm.containerType = data.containerType
