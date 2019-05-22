@@ -1,7 +1,7 @@
 <template>
  <div>
     <MultiFunctionBlockList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></MultiFunctionBlockList>
-    <MultiFunctionBlockAdd v-if="model === 'add'" :editData="editData"  @open-list-page="openListPage" @go-back="goBack"></MultiFunctionBlockAdd>
+    <MultiFunctionBlockAdd v-if="model === 'add'" :editId="editId"  @open-list-page="openListPage" @go-back="goBack"></MultiFunctionBlockAdd>
     <MultiFunctionBlockView v-if="model ==='view'" :viewId="viewId" @open-list-page="openListPage" @go-back="goBack"></MultiFunctionBlockView>
  </div>
 </template>
@@ -26,8 +26,8 @@ methods: {
     /** 
      * 打开新增编辑页面
     */
-    openAddPage (row) {
-       this.editData = row
+    openAddPage (editId) {
+       this.editId = editId
        this.model = 'add'
     },
     /**

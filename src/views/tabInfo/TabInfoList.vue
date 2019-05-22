@@ -111,7 +111,8 @@ export default {
         { label: '专题版面', value: '2' },
         { label: '普通版面', value: '1' }
       ],
-      tabStatusOption: [
+      tabStatusOption: 
+      [
         { label: '下架', value: '0' },
         { label: '上架', value: '1' },
         { label: '草稿', value: '2' },

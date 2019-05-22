@@ -16,7 +16,7 @@
       </div>
       <GateSchemaForm ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin"></GateSchemaForm>
       <div id="verifyCode">
-        <el-input v-model="user.valicode" placeholder="验证码"></el-input>
+        <el-input v-model="user.valicode" placeholder="验证码" @keyup.native="keyupSubmit"></el-input>
         <img :src="codeUrl" alt="验证码" @click="updateValicode">
       </div>
       <el-button class="login-form__btn" type="primary" @click="$refs.loginForm.handleSubmit()">登 录</el-button>
@@ -65,6 +65,11 @@ export default {
   },
   props: ['schema'],
   methods: {
+    keyupSubmit(event) {
+      if(event.keyCode === 13) {
+        this.$refs.loginForm.handleSubmit()
+      }
+    },
     changAccoutType(type) {
       if (type === 'normal') {
         this.isNormalActive = true

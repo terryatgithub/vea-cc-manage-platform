@@ -189,7 +189,7 @@ export default {
               type,
               auditFlag,
               auditDesc
-          },'审核成功')
+          }, parseInt(auditFlag) === 4 ? '审核成功' : '打回成功')
             .then(data => {
                this.auditDialog = false
                this.$emit('audit')

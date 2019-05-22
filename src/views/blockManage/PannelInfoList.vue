@@ -62,6 +62,8 @@ export default {
       pannelStatus: {},
       filter: {
         idPrefix: 10,
+        sort: undefined,
+        order: undefined,
         pannelType: 1
       },
       filterSchema: null,
@@ -222,7 +224,10 @@ export default {
         console.log(this.filter);
       }else {
         this.filter = {
-          idPrefix: 10
+           idPrefix: 10,
+          sort: undefined,
+          order: undefined,
+          pannelType: 1
         }
       }
       this.fetchData()

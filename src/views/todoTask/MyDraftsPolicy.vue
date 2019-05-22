@@ -87,7 +87,8 @@ export default {
     handleFilterReset() {
       this.filter = {
         sort: undefined,
-        order: undefined
+        order: undefined,
+         type: 'myDrafts'
       }
       this.fetchData()
     },

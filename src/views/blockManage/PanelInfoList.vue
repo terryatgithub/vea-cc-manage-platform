@@ -60,7 +60,9 @@ export default {
       ],
       pannelStatus: {},
       filter: {
-        idPrefix: 10
+        idPrefix: 10,
+        sort: undefined,
+        order: undefined,
       },
       filterSchema: null,
       pagination: {
@@ -249,7 +251,9 @@ export default {
         console.log(this.filter);
       }else {
         this.filter = {
-          idPrefix: 10
+          idPrefix: 10,
+          sort: undefined,
+          order: undefined,
         }
       }
       this.fetchData()

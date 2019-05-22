@@ -283,7 +283,9 @@ export default {
       this.fetchData()
     },
     handleFilterReset() {
-      this.filter = {}
+      this.filter = {
+         tabParentType: 'special'
+      }
       this.pannelValue = []
       this.fetchData()
     },

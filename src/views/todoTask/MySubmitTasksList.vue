@@ -143,7 +143,8 @@ export default {
     handleFilterReset() {
       this.filter = {
         sort: undefined,
-        order: undefined
+        order: undefined,
+         type: 'mySubmittedTasks'
       }
       this.fetchData()
     },

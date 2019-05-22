@@ -56,7 +56,9 @@ export default {
       tabStatus: {},
       filter: {
         tabParentType: 'biz',
-        idPrefix: 10
+        idPrefix: 10,
+          sort: undefined,
+        order: undefined,
       },
       filterSchema: null,
       pagination: {
@@ -320,7 +322,9 @@ export default {
     handleFilterReset() {
       this.filter = {
         tabParentType: 'biz',
-        idPrefix: 10
+        idPrefix: 10,
+          sort: undefined,
+        order: undefined,
       }
       this.fetchData()
     },

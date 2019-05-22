@@ -67,9 +67,6 @@ export function editSysPlugin (params) {
     url: 'api/v1/sysPlugin/getDetailInfo.html',
     params
   })
-    // .then(data => {
-    //   return JSON.parse(data.match(/initPlugin = (\{.+\})/)[1])
-    // })
 }
 /**
  * 获取系统功能父类型数据字典
@@ -129,10 +126,17 @@ export function queryLiveVideoResult (params) {
 /**
  * 插件类型对应的数据类型
  */
-export function getPluginVersions(data) {
+// export function getPluginVersions(data) {
+//   return this.fetch({
+//     method: 'post',
+//     url: 'api/dict/sysPlugin/' + data + '.html'
+//   })
+// }
+export function getPluginType(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/dict/sysPlugin/' + data + '.html'
+    url: 'api/v1/dict/getTypes/sysPlugin/pluginType.html',
+    data
   })
 }
 /**

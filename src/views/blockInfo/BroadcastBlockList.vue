@@ -179,7 +179,15 @@ export default {
     },
     editData() {
       if (this.$isAllowEdit(this.selected)) {
-        this.$emit('open-add-page', this.selected[0], false)
+         let selected = this.selected[0]
+         if (selected.status !== 4) {
+            this.$emit('open-add-page', selected, false)
+         } else {
+            this.$message({
+                 type: 'error',
+                 message: '审核通过的数据不能编辑'
+               })
+         }
       }
     },
     batchDel() {
@@ -231,6 +239,7 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
+         console.log('handleFilterChange'+' ' + type)
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
@@ -239,6 +248,7 @@ export default {
       this.fetchData()
     },
     handleFilterReset() {
+      console.log('handleFilterReset')
       this.filter = {
         sort: undefined,
         order: undefined

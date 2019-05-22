@@ -399,7 +399,7 @@ export default {
       cornerTypes: [],
       materialTypes: null,
       resourceVisible: false, //是否打开资源选择器
-       resourceOptions: { // 资源弹出框配置
+      resourceOptions: { // 资源弹出框配置
                 multi: false, // 单选
                 activeTabName: 'video',
                 tabShow: {
@@ -411,6 +411,7 @@ export default {
                 }
             },
       basicForm: {
+        id: undefined,
         containerName: '',
         containerType: 'REFERENCE_BROADCASTING',
         configModel: 'broadcast'
@@ -1203,6 +1204,7 @@ export default {
           data.lowerVersionContent.thirdIdOrPackageName = JSON.parse(data.lowerVersionContent.params).id
         }
         this.lowerVersionContent = this.lowerForm = data.lowerVersionContent
+
         this.basicForm.configModel = data.configModel
         this.basicForm.containerName = data.containerName
         this.basicForm.containerType = data.containerType
@@ -1216,7 +1218,7 @@ export default {
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
     if (JSON.stringify(this.editData) !=='{}') {
-      this.id = this.editData.id
+      this.basicForm.id = this.id = this.editData.id
       this.version = this.editData.currentVersion
       this.status = this.editData.status
        if (this.isReview) {

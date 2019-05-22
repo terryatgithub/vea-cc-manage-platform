@@ -80,7 +80,7 @@ export default {
           {
             label: '名称',
             prop: 'pannelGroupRemark',
-            width: '100',
+            width: '200',
             render: (createElement, { row }) => {
               return createElement(
                 'el-button',
@@ -101,7 +101,7 @@ export default {
           {
             label: '业务分类',
             prop: 'categoryName',
-            width: '90'
+            width: '70'
           },
           {
             label: '引用状态',
@@ -277,11 +277,11 @@ export default {
     handleFilterReset() {
       if (this.dataList) {
         this.filter = Object.assign({}, this.dataList.filter)
-        console.log(this.filter)
       } else {
         this.filter = {
           sort: undefined,
-          order: undefined
+          order: undefined,
+          pannelType: 5
         }
       }
       this.fetchData()

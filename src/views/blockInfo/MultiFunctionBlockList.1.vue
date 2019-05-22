@@ -7,68 +7,17 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <!-- 筛选部分 -->
-      <el-form inline ref="form" v-model="filter" label-width="0px" class="form">
-        <el-form-item class="el-col-6">
-          <el-input v-model="filter.pluginId" placeholder="ID"/>
-        </el-form-item>
-        <el-form-item class="el-col-6">
-          <el-input v-model="filter.pluginName" placeholder="功能名称"/>
-        </el-form-item>
-        <el-form-item class="el-col-6">
-          <el-select v-model="filter.pluginParentType" placeholder="父功能分类" @change="getPluginType">
-            <el-option
-              v-for="(item, index) in parentTypes"
-              :key="index"
-              :label="item.dictCnName"
-              :value="item.dictEnName"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item class="el-col-6">
-          <el-select v-model="filter.pluginType" placeholder="功能分类">
-            <el-option
-              v-for="(item, index) in pluginType"
-              :key="index"
-              :label="item.dictCnName"
-              :value="item.dictEnName"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item class="el-col-6">
-          <el-select v-model="filter.pluginStatus" placeholder="状态">
-            <el-option
-              v-for="(item, index) in pictureStatus"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item class="el-col-6">
-          <el-select v-model="filter.source" placeholder="内容源">
-            <el-option value>请选择</el-option>
-            <el-option
-              v-for="(item, index) in source"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item class="el-form-item-submit">
-          <el-button type="primary" @click="handleFilterChange">查询</el-button>
-          <el-button @click="handleFilterReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-      <div></div>
-      <!-- 筛选部分end -->
       <ButtonGroupForListPage
         pageName="multiFunctionBlock"
         @add="addData"
         @edit="editData"
         @delete="batchDel"
       ></ButtonGroupForListPage>
+      <!-- <div class="btns">
+        <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
+        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
+      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
@@ -95,23 +44,31 @@ export default {
   },
   data() {
     return {
-      pluginType: [],
-      parentTypes: [],
+      pluginType: {
+
+      },
+      parentTypes: {
+        多版本推荐位: 'multi',
+        标记推荐位: 'sign',
+        秒杀推荐位: 'secKill'
+      }, //父功能名称
       childTypes: {}, //功能分类
-      pictureStatus: [
-        { label: '下架', value: '0' },
-        { label: '上架', value: '1' },
-        { label: '草稿', value: '2' },
-        { label: '待审核', value: '3' },
-        { label: '审核通过', value: '4' },
-        { label: '审核不通过', value: '5' }
-      ],
-      source: [
-        { label: '无', value: 0 },
-        { label: '腾讯', value: 1 },
-        { label: '爱奇艺', value: 2 }
-      ],
-      filter: {},
+      pictureStatus: {
+        下架: 0,
+        上架: 1,
+        草稿: 2,
+        待审核: 3,
+        审核通过: 4,
+        审核不通过: 5
+      },
+      source: {
+        无: 0,
+        腾讯: 1,
+        爱奇艺: 2
+      },
+      filter: {
+        pluginParentType: null
+      },
       filterSchema: null,
       pagination: {},
       selected: [],
@@ -205,13 +162,6 @@ export default {
     }
   },
   methods: {
-    getPluginType() {
-      this.$service
-        .getPluginType({ pluginParentType: this.filter.pluginParentType })
-        .then(data => {
-          this.pluginType = data
-        })
-    },
     //获取table数据
     fetchData() {
       this.handleAllRowSelectionRemove()
@@ -224,20 +174,23 @@ export default {
     //获取功能父分类
     getPluginParentTypes() {
       this.$service.getPluginParentTypes().then(data => {
-        this.parentTypes = data
+        console.log(data)
+        // data.forEach(element => {
+        //   this.parentTypes[element.label] = element.value
+        // })
       })
     },
-    // //数据字典查询
-    // getPluginTypes() {
-    //   this.$service.getPluginTypes().then(data => {
-    //     console.log(data)
-    //     if (data.code == 0) {
-    //       data.forEach(element => {
-    //         this.childTypes[element.label] = element.id
-    //       })
-    //     }
-    //   })
-    // },
+    //数据字典查询
+    getPluginTypes() {
+      this.$service.getPluginTypes().then(data => {
+        console.log(data)
+        if (data.code == 0) {
+          data.forEach(element => {
+            this.childTypes[element.label] = element.id
+          })
+        }
+      })
+    },
     //新增
     addData() {
       this.$emit('open-add-page', null)
@@ -245,18 +198,13 @@ export default {
     /**
      * 编辑
      */
-    editData() {
-      if (this.$isAllowEdit(this.selected)) {
-        let selected = this.selected[0]
-        debugger
-        if (selected.pluginStatus !== 4) {
-          this.$emit('open-add-page', selected)
-        } else {
-          this.$message({
-            type: 'error',
-            message: '审核通过的数据不能编辑'
-          })
-        }
+    editData({ row }) {
+      if (this.selected.length == 0) {
+        this.$message('请选择一条数据')
+      } else if (this.selected.length > 1) {
+        this.$message('只能选择一条')
+      } else {
+        this.$emit('open-add-page', this.selected[0])
       }
     },
     //预览
@@ -337,24 +285,66 @@ export default {
         filter.rows = pagination.pageSize
       }
       return filter
+    },
+    aa(a,b) {
+      debugger
     }
   },
   created() {
+    let filterSchema = _.map({
+      pluginId: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: 'ID'
+      }),
+      pluginName: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '功能名称'
+      }),
+      pluginParentType: _.o.enum(this.parentTypes).other('form', {
+        component: 'Select',
+        placeholder: '父功能分类'
+      }),
+       pluginType: _.o.enum(this.pluginType).other('form', {
+        component: 'Select',
+        placeholder: '功能分类'
+      }),
+      pluginStatus: _.o.enum(this.pictureStatus).other('form', {
+        component: 'Select',
+        placeholder: '状态'
+      }),
+      source: _.o.enum(this.source).other('form', {
+        component: 'Select',
+        placeholder: '内容源'
+      })
+    }).other('form', {
+       cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
+      layout: 'inline',
+      footer: {
+       cols: {
+            label: 0,
+            wrapper: 24
+          },
+        showSubmit: true,
+        submitText: '查询',
+        showReset: true,
+        resetText: '重置'
+      }
+    })
     this.getPluginParentTypes()
-    // this.getPluginTypes()
+    this.getPluginTypes()
+    this.filterSchema = filterSchema
+     debugger
     this.fetchData()
   }
 }
 </script>
 <style lang = 'stylus' scoped>
+.btns
+  margin-bottom: 10px
 .checkItemStyle
   margin: 10px
-.form >>>.el-form-item__content
-  width: 83.33333%
-  .el-select
-    width: 100%
-.form >>>.el-form-item
-  margin-right: 0px
-.el-form-item-submit
-  width: 200px
 </style>
