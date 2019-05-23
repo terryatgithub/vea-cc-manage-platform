@@ -82,7 +82,11 @@ export function getCrowdOfPolicyWithCache(id) {
   }
   return cache.fetchCrowdPromise[id]
 }
-
+/** 
+id 否	Integer	人群策略ID，请求具体人群数据时，需要传
+type	 	是	String	crowdPolicy-人群策略， crowd-具体人群
+roleId	 	否	Integer	角色ID,人群权限设置处获取标签数据，需要传
+*/
 export function getTaglist(params) {
   return this.fetch({
     method: 'get',

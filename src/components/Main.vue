@@ -122,6 +122,7 @@ export default {
       const mainRoute = this.$router.options.routes.find(item => {
         return item.path === '/'
       })
+      mainRoute.children.pop()
       function gen({ name, meta = {}, children }) {
         if (!meta.hideInMenu) {
           const currentMenuItem = {
@@ -184,6 +185,16 @@ export default {
     },
     saveTags() {
       const tags = this.$refs.tag.tags
+      if (tags.length > 0 && tags[0].name !== 'desktop') {
+        tags.unshift({
+          fullPath: '/desktop',
+          meta: {
+            title: '我的桌面',
+            tagId: 'desktop'
+          },
+          name: 'desktop'
+        })
+      }
       this.$appState.$set('tags', tags)
     }
   },
@@ -256,18 +267,17 @@ body, html, #app, section.el-container, .aside__menu
   overflow-x: hidden
 .modifyPwd
   margin-top: 10px
-
 /* width */
 .left-aside::-webkit-scrollbar
-  width 2px
-  height 2px
+  width: 2px
+  height: 2px
 /* Track */
 .left-aside::-webkit-scrollbar-track
   background: #f1f1f1
 /* Handle */
-.left-aside::-webkit-scrollbar-thumb 
+.left-aside::-webkit-scrollbar-thumb
   background: #888
 /* Handle on hover */
 .left-aside::-webkit-scrollbar-thumb:hover
-  background: #555 
+  background: #555
 </style>

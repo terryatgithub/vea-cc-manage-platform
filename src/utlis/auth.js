@@ -41,7 +41,9 @@ import MyReviewTasks from '../views/todoTask/MyReviewTasksIndex'
 import MySubmitTasks from '../views/todoTask/MySubmitTasksIndex'
 import FilmDetailAdBit from '../views/adBitMgr/FilmDetailAdBit.vue'
 import Main from '@/components/Main'
+import Desktop from '@/views/Desktop'
 const routerMap = {
+  //desktop: Desktop,
   broadcastBlock: BroadcastBlock,
   multiFunctionBlock: MultiFunctionBlock,
   sysPlugin: SysPlugin,
@@ -115,6 +117,15 @@ function getInitData (app) {
         })
       }
       children.push(obj)
+    })
+    children.push({
+      name: 'desktop',
+      path: '/desktop',
+      component: Desktop,
+      meta: {
+        title: '我的桌面',
+        tagId: 'desktop'
+      }
     })
     let filterRoutes = []
     filterRoutes.push({
