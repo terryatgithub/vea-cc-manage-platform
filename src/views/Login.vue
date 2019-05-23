@@ -103,7 +103,7 @@ export default {
         this.$login(this.user).then(
           data => {
             this.$router.push({
-              path: this.$route.query.redirect || '/'
+              path: this.$route.query.redirect || '/desktop'
             })
           },
           () => {

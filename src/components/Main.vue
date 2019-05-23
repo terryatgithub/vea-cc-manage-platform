@@ -94,6 +94,7 @@ export default {
       isShowSetting: false,
       isShowTagNav: true,
       modifyDialogVisible: false,
+     // initTags: [],
       form: {
         oldpwd: null,
         newpwd: null,
@@ -185,7 +186,7 @@ export default {
     },
     saveTags() {
       const tags = this.$refs.tag.tags
-      if (tags.length > 0 && tags[0].name !== 'desktop') {
+      if( tags.length === 0) {
         tags.unshift({
           fullPath: '/desktop',
           meta: {
@@ -194,8 +195,20 @@ export default {
           },
           name: 'desktop'
         })
+      } else {
+        if(tags[0].name !=='desktop') {
+          tags.unshift({
+          fullPath: '/desktop',
+          meta: {
+            title: '我的桌面',
+            tagId: 'desktop'
+          },
+          name: 'desktop'
+        })
+        }
       }
-      this.$appState.$set('tags', tags)
+   // this.initTags = tags
+    this.$appState.$set('tags', tags)
     }
   },
   created() {
@@ -205,6 +218,7 @@ export default {
     })
   },
   mounted() {
+  //  this.saveTags()
     window.addEventListener('beforeunload', this.saveTags)
   },
   destroyed() {
