@@ -53,7 +53,7 @@
 
                 <el-form-item label="AppId" prop="tabAppid">
                   <cc-appid-selector
-                    :disabled="tabInfo.tabAppid !== -1"
+                    :disabled="disableAppId"
                     v-model="tabInfo.tabAppid"
                   />
                 </el-form-item>
@@ -567,8 +567,15 @@
     </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'panel_preview'">
+      <PrivatePanelInfo
+        v-if="panelPreview.dataType == 5 "
+        :title-prefix="title"
+        :init-mode="panelPreview.initMode"
+        @upsert-end="handlePreviewPanelEnd"
+        @go-back="handlePreviewPanelEnd"
+      />
       <PanelInfo
-        v-if="panelPreview.dataType == 1 || panelPreview.dataType == 3"
+        v-else
         :title-prefix="title"
         :init-mode="panelPreview.initMode"
         :id="panelPreview.id"
@@ -576,13 +583,6 @@
         :panel-data-type="panelPreview.dataType"
         :init-group-index="panelPreview.initGroupIndex"
         :init-block-index="panelPreview.initBlockIndex"
-        @upsert-end="handlePreviewPanelEnd"
-        @go-back="handlePreviewPanelEnd"
-      />
-      <PrivatePanelInfo
-        v-if="panelPreview.dataType == 5 "
-        :title-prefix="title"
-        :init-mode="panelPreview.initMode"
         @upsert-end="handlePreviewPanelEnd"
         @go-back="handlePreviewPanelEnd"
       />
@@ -909,6 +909,9 @@ export default {
     hasSource() {
       const tabCategory = this.tabInfo.tabCategory
       return tabCategory == 67 || tabCategory == 31
+    },
+    disableAppId() {
+      return  +getAppIDByTabCategory(this.tabInfo.tabCategory) != -1
     }
   },
   watch: {},
@@ -1249,13 +1252,12 @@ export default {
       this.handleSelectCrowdStart()
     },
     handleSelectPanelEnd(data) {
-      console.log(data)
       // 新添加的，将成为普通板块加在最后面
       const pannelList = this.tabInfo.pannelList
       const start = pannelList.length - 1
       data.forEach(
         function(item, index) {
-          this.doInsertPanel(item.data, {
+          this.doInsertPanel(item, {
             index: start + index,
             type: 'NORMAL'
           })

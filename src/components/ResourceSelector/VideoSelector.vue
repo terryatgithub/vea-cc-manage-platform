@@ -111,7 +111,7 @@
 </template>
  
 <script>
-import BaseSelector from './BaseSelector'
+import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
 import EpisodeSelector from './EpisodeSelector'
 export default {
@@ -312,7 +312,7 @@ export default {
         .map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
     }
   },
-  props: ['isLive', 'partner', 'disablePartner', 'selection-type', 'source'],
+  props: ['isLive', 'disablePartner', 'selection-type', 'source'],
   watch: {
     'filter.partner': 'onPartnerChange',
     'filter.sources': 'onSourceChange',
@@ -407,7 +407,7 @@ export default {
       return {
         resType: 'vod',
         callbackparam: 'result',
-        partner: this.$consts.sourceToPartner[this.partner || this.$consts.sourceOptions[0].value],
+        partner: this.$consts.sourceToPartner[this.source || this.$consts.sourceOptions[0].value],
         sources: '', // 内容源
         category: '', // 频道类型
         videoTypes: '', // 影片类型

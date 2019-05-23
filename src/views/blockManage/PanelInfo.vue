@@ -27,11 +27,11 @@
           @select-version="fetchData"
           @cancel-timing="fetchData"
         >
-          <div v-if="panelDataType == 1" class="base-info">
+          <div v-if="currentPanelDataType == 1" class="base-info">
             <div>常规运营版块：</div>
             <div>运营人员纯手工运营的版块，可以通过此版块自主配置影片、频道、活动、系统功能等，此类版块适合首屏比较固定的内容版块，不做个性推荐积累。</div>
           </div>
-          <div v-if="panelDataType == 3" class="base-info">
+          <div v-if="currentPanelDataType == 3" class="base-info">
             <div>业务专辑：</div>
             <div>运营人员可以把业务站点专辑，关联映射至此版块中，可以多个进行排序。</div>
           </div>
@@ -118,7 +118,7 @@
               <el-form-item label="落焦形式" required>
                 <CommonSelector
                   v-model="pannel.focusShape"
-                  :options="$consts.panelFosucOptions"
+                  :options="$consts.panelFocusOptions"
                   placeholder="请选择"
                 />
                 <BinCheckBox v-model="isShowfocusImgUrl" v-show="pannel.focusShape === 0" label="设置异形焦点" />
@@ -147,7 +147,7 @@
                   ref="resourceSelector"
                   v-show="selectedLayout"
                   :selectors="['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate']"
-                  :is-live="true"
+                  :is-live="false"
                   :disable-partner="true"
                   selection-type="multiple"
                   :source="pannel.pannelResource" 
@@ -171,7 +171,8 @@
                 <div class="pannel-blocks">
                   <template v-if="pannel.parentType === 'group'">
                     <el-tabs
-                      v-model="activePannelIndex"
+                      :value="activePannelIndex + ''"
+                      @input="activePannelIndex = +$event"
                       type="card"
                       closable
                       @tab-remove="handleRemoveTab"
@@ -370,7 +371,6 @@ export default {
       }
     }
     return {
-      resourceName: this.panelDataType === 1 ? '板块' : '业务专辑',
       mode: 'create',
       activePage: 'panel_info',
       PANNEL_STATUS: {
@@ -436,6 +436,9 @@ export default {
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
+    resourceName() {
+      return this.currentPanelDataType === 3 ? '业务专辑' : '板块'
+    },
     resourceInfo() {
       const panel = this.pannel
       if (panel.pannelGroupId) {
@@ -447,6 +450,13 @@ export default {
           menuElId: 'pannelInfo'
         }
       }
+    },
+    currentPanelDataType() {
+      const panel = this.pannel
+      if (panel.pannelGroupId) {
+        panel.pannelList[0].pannelType
+      }
+      return this.panelDataType
     },
     pannelStatusText() {
       const pannelStatus = this.pannel.pannelList[0].pannelStatus
@@ -1279,7 +1289,7 @@ export default {
     },
     parseDataToApi(data) {
       const mode = this.mode
-      const panelDataType = this.panelDataType
+      const panelDataType = this.currentPanelDataType
       const layout = this.selectedLayout
       const pannel = JSON.parse(JSON.stringify(data))
 

@@ -538,10 +538,7 @@ export default {
           pannelGroupRemark: '相关明星'
         }
       ]
-      table.data = table.data.concat(initial)
-      blockData.forEach((item, index) => {
-        table.data.push(item.data)
-      })
+      table.data = table.data.concat(initial).concat(blockData)
       // table.data = table.data.concat(blockData)
       table.data.forEach((item, index) => {
         this.$set(item, 'pannelSequence', index + 1)
