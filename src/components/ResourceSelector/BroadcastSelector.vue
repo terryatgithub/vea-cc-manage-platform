@@ -18,7 +18,7 @@
  
 <script>
 import _ from 'gateschema'
-import BaseSelector from './BaseSelector'
+import BaseSelector from '../BaseSelector'
 const sourceValueMap = {
   '': '0',
   'o_tencent': '1',

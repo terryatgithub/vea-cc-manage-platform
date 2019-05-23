@@ -81,7 +81,7 @@ export default {
     }
   },
   watch: {
-    data: 'updateTableSelected'
+    'table.data': 'updateTableSelected'
   },
   methods: {
     clearSelected() {

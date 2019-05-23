@@ -95,20 +95,13 @@ export function getTaglist(params) {
   })
 }
 
-// export function getCrowdOfPolicy(id) {
-//   return this.fetch({
-//     method: 'get',
-//     url: 'api/tag/list.html?type=crowd&id=' + id
-//   })
-// }
+export function getCrowdOfPolicy(id) {
+  return this.getTaglist({ id, type: 'crowd' })
+}
 
-// export function getCrowdPolicy(params) {
-//   return this.fetch({
-//     method: 'get',
-//     url: 'api/tag/list.html?type=crowdPolicy',
-//     params
-//   })
-// }
+export function getCrowdPolicy() {
+  return this.getTaglist({ type: 'crowdPolicy' })
+}
 /** 编辑 */
 export function getPolicyConfDetail(params) {
   return this.fetch({

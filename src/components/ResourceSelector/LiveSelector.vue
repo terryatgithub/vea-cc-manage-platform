@@ -48,7 +48,7 @@
 </template>
  
 <script>
-import BaseSelector from './BaseSelector'
+import BaseSelector from '../BaseSelector'
 import SourceSelector from '@/components/SourceSelector'
 export default {
   components: {

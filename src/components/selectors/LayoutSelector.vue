@@ -31,7 +31,7 @@
         </el-form-item>
       </el-form>
       <div class="filter-form__actions">
-        <el-button type="primary" @click="fetchData">查询</el-button>
+        <el-button type="primary" @click="handleFilter">查询</el-button>
         <el-button type="warning" @click="handleResetFilter">重置</el-button>
       </div>
     </div>
@@ -209,11 +209,18 @@ export default {
         layoutIsTitle: undefined
       }
     },
-    handleResetFilter() {
+    resetPageAndSelect() {
       this.selected = []
       this.table.selected = undefined
-      this.filter = this.getDefaultFilter()
       this.pagination.page = 1
+    },
+    handleFilter() {
+      this.resetPageAndSelect()
+      this.fetchData()
+    },
+    handleResetFilter() {
+      this.filter = this.getDefaultFilter()
+      this.resetPageAndSelect()
       this.fetchData()
     },
     handleSelectStart() {

@@ -41,7 +41,7 @@
 
 <script>
 import _ from "gateschema";
-import BaseSelector from './BaseSelector'
+import BaseSelector from '../BaseSelector'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 
 const episodeTypeEnums = [

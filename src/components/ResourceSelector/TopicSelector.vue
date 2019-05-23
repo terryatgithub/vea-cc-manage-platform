@@ -1,7 +1,7 @@
  <template>
   <BaseSelector 
     ref="baseSelector"
-    id-field="topicId"
+    id-field="id"
     :is-live="isLive"
     :selection-type="selectionType"
     :table="table" 
@@ -34,7 +34,7 @@
 </template>
  
 <script>
-import BaseSelector from './BaseSelector'
+import BaseSelector from '../BaseSelector'
 export default {
   components: {
     BaseSelector

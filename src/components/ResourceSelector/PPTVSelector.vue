@@ -27,7 +27,7 @@
 </template>
  
 <script>
-import BaseSelector from './BaseSelector'
+import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
 export default {
   components: {

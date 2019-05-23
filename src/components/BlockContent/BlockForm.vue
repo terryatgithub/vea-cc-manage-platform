@@ -366,7 +366,6 @@
 import { Upload } from 'admin-toolkit'
 import Price from '@/components/Price'
 import AppParamsForm from './AppParamsForm'
-import BlockContentWrapper from './BlockContentWrapper'
 import CornerSelector from '@/components/selectors/CornerIconSelector'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
@@ -378,7 +377,6 @@ export default {
     Upload,
     Price,
     AppParamsForm,
-    BlockContentWrapper,
     CornerSelector,
     GlobalPictureSelector,
     ResourceSelector,
