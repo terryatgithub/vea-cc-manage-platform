@@ -267,12 +267,14 @@ export default {
     },
     //查询
     handleFilterChange(type) {
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      if(this.$isNumber(this.filter.pannelId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       if (this.dataList) {

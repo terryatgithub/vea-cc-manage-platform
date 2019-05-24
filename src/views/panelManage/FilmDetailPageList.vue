@@ -274,13 +274,15 @@ export default {
       return filter
     },
     // 表单筛选
-    handleFilterChange(type) {
-      if (type !== 'pagination') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+     handleFilterChange(type) {
+      if(this.$isNumber(this.filter.tabId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {

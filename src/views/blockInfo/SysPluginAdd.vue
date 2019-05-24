@@ -97,9 +97,9 @@
           >
             <el-option
               v-for="item in pluginTypes"
-              :key="item.id"
-              :label="item.label"
-              :value="item.value"
+              :key="item.dictId"
+              :label="item.dictCnName"
+              :value="item.dictEnName"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -381,7 +381,7 @@ const SOURCE = {
     value: 2
   },
   youku: {
-     label: '优酷',
+    label: '优酷',
     value: 3
   }
 }
@@ -471,7 +471,7 @@ export default {
             { required: true, message: '请输入系统功能名称', trigger: 'blur' },
             { max: 50, message: '不超过 50 个字符', trigger: 'blur' }
           ],
-           refreshTime: [
+          refreshTime: [
             { required: true, message: '请选择固定刷新时间', trigger: 'blur' }
           ],
           pluginParentType: [

@@ -129,13 +129,15 @@ export default {
         return result
       }, [])
     },
-    handleFilterChange(type) {
-      if (type === 'filter') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+   handleFilterChange(type) {
+      if(this.$isNumber(this.filter.id)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {
@@ -172,7 +174,7 @@ export default {
       }),
       id: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '用户ID  '
+        placeholder: 'ID  '
       }),
       loginIp: _.o.string.other('form', {
         component: 'Input',

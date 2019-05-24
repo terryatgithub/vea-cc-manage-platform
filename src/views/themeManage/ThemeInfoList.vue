@@ -213,12 +213,14 @@ export default {
       return filter
     },
     handleFilterChange(type) {
-      if (type !== 'pagination') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      if(this.$isNumber(this.filter.themeId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {}
@@ -305,7 +307,7 @@ export default {
     let filterSchema = _.map({
       themeId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '主题ID'
+        placeholder: 'ID'
       }),
       themeName: _.o.string.other('form', {
         component: 'Input',

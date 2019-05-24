@@ -204,7 +204,8 @@
               </el-select>
               <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
             </el-form-item>
-            <AppParams prop-prefix="onclick." v-model="normalForm.onclick"></AppParams>
+            <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled"></AppParams>
+            <AppParamsRead :value="normalForm.onclick" v-if="disabled"/>
             <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
         </div>
       </el-form>
@@ -306,7 +307,8 @@
               </el-select>
               <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
             </el-form-item>
-             <AppParams prop-prefix="onclick." v-model="lowerForm.onclick" ref="openWayLower"></AppParams>
+             <AppParams prop-prefix="onclick." v-model="lowerForm.onclick" ref="openWayLower" v-if="!disabled"></AppParams>
+              <AppParamsRead :value="lowerForm.onclick" v-if="disabled"/>
         </div>
       </el-form>
     </div>
@@ -380,7 +382,7 @@ import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
 import AuditDetailButton from '@/components/AuditDetailButton'
-import { AppParams } from 'admin-toolkit'
+import { AppParams, AppParamsRead} from 'admin-toolkit'
 // import HistoryTool from './../../components/HistoryTool'
 export default {
   components: {
@@ -391,6 +393,7 @@ export default {
     DialogCorner,
     selectClick,
     AppParams,
+    AppParamsRead,
     AuditDetailButton,
     // HistoryTool
   },
@@ -1211,9 +1214,12 @@ export default {
         this.normalVersionContent = data.normalVersionContent.map((e) => {
            let p = JSON.parse(e.params)
            e.thirdIdOrPackageName = typeof(p.id) !== 'undefined'? p.id : p.rotateId
+           e.onclick = JSON.parse(e.onclick)
            return e
         })
+       
         this.normalForm = this.normalVersionContent[0] 
+         debugger
         if ( typeof(JSON.parse(data.lowerVersionContent.params).id) !== 'undefined') {
           data.lowerVersionContent.thirdIdOrPackageName = JSON.parse(data.lowerVersionContent.params).id
         }

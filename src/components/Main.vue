@@ -36,7 +36,7 @@
           <i class="el-icon-setting"></i>
         </div>
       </el-header>
-      <TagNav ref="tag" :init-tags="initTags" v-show="isShowTagNav"/>
+      <TagNav ref="tag" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
       <el-main>
         <keep-alive>
           <router-view v-if="isKeepAlive"/>
@@ -193,7 +193,8 @@ export default {
             title: '我的桌面',
             tagId: 'desktop'
           },
-          name: 'desktop'
+          name: 'desktop',
+          isCloseable: false
         })
       } else {
         if(tags[0].name !=='desktop') {
@@ -203,7 +204,8 @@ export default {
             title: '我的桌面',
             tagId: 'desktop'
           },
-          name: 'desktop'
+          name: 'desktop',
+          isCloseable: false
         })
         }
       }
@@ -293,5 +295,10 @@ body, html, #app, section.el-container, .aside__menu
   background: #888
 /* Handle on hover */
 .left-aside::-webkit-scrollbar-thumb:hover
-  background: #555
+  background #555
 </style>
+<style lang="stylus" scoped>
+.tagNav >>> li:first-child .tag-nav__close-item
+  display none
+</style>
+

@@ -78,13 +78,15 @@ export default {
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
     },
-    handleFilterChange(type) {
-      if (type === 'filter') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      handleFilterChange(type) {
+      if(this.$isNumber(this.filter.pictureId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {}
@@ -127,7 +129,7 @@ export default {
     let filterSchema = _.map({
       pictureId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '素材ID',
+        placeholder: 'ID',
         cols: {
           item: 3,
           label: 0

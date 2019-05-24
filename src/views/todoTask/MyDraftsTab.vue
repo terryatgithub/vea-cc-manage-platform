@@ -85,12 +85,14 @@ export default {
       this.$emit('read', row)
     },
     handleFilterChange(type) {
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      if(this.$isNumber(this.filter.taskId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {

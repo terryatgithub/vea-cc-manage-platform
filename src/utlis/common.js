@@ -243,3 +243,19 @@ Vue.prototype.$changeKeyToValue = function (obj) {
     return result
   }, {})
 }
+Vue.prototype.$isNumber = function(id) {
+  let reg = /^\+?[1-9][0-9]*$/
+  if (id === undefined) {
+    return true
+  }
+  let flag = reg.test(id)
+  if(!flag){
+    this.$message({
+      type: 'error',
+      message: 'ID只能是正数字'
+    })
+    return false
+  } else {
+    return true
+  }
+}

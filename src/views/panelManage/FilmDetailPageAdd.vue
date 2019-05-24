@@ -6,7 +6,7 @@
         ref="commonContent"
         :mode="mode"
         :resource-info="resourceInfo"
-        @edit="mode = 'edit'"
+        @edit="mode = 'edit';title='编辑'"
         @replicate="mode = 'replicate'; title='创建副本'"
         @submit-audit="btnAudit"
         @save-draft="btnSave"

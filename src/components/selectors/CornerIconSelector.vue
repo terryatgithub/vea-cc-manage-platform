@@ -75,12 +75,14 @@ export default {
       this.table.selected = index
     },
     handleFilterChange(type) {
-      if (type === "filter") {
-        if (this.pagination) {
-          this.pagination.currentPage = 1;
+      if(this.$isNumber(this.filter.cornerIconId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData();
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter();
@@ -129,8 +131,8 @@ export default {
       }, {})
       const filterSchema = _.map({
         cornerIconId: _.o.string.other("form", {
-          label: '角标ID',
-          placeholder: "角标ID",
+          label: 'ID',
+          placeholder: "ID",
           cols: {
             item: 5,
             label: 6,

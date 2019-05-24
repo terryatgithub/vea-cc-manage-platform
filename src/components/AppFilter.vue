@@ -145,12 +145,14 @@ export default {
       }, []);
     },
     handleFilterChange(type) {
-      if (type === "filter") {
-        if (this.pagination) {
-          this.pagination.currentPage = 1;
+      if(this.$isNumber(this.filter.appId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData();
     },
     handleFilterReset() {
       this.filter = {
@@ -185,7 +187,7 @@ export default {
     let filterSchema = _.map({
       appId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '应用ID'
+        placeholder: 'ID'
       }),
       appName: _.o.string.other('form', {
         component: 'Input',

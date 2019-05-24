@@ -235,12 +235,14 @@ export default {
     },
     // 查询
     handleFilterChange(type) {
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      if(this.$isNumber(this.filter.elid)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     // 重置
     handleFilterReset() {
@@ -348,7 +350,7 @@ export default {
       }),
       elid: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '元素ID'
+        placeholder: 'ID'
       }),
       tabId: _.o.string.other('form', {
         component: 'Input',

@@ -108,13 +108,15 @@ export default {
       }),
         this.fetchData()
     },
-    handleFilterChange(type) {
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+   handleFilterChange(type) {
+      if(this.$isNumber(this.filter.id)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
 
       handleRowSelectionAdd(targetItem) {
@@ -157,7 +159,7 @@ export default {
     let filterSchema = _.map({
       id: _.o.number.other('form', {
         component: 'Input',
-        placeholder: '轮播入口ID',
+        placeholder: 'ID',
         label: '轮播入口ID'
       }),
       title: _.o.string.other('form', {

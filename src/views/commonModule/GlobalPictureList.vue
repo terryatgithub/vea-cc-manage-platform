@@ -330,12 +330,14 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
-      if (type === 'filter') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      if(this.$isNumber(this.filter.pictureId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {
@@ -378,7 +380,7 @@ export default {
     let filterSchema = _.map({
       pictureId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '素材ID'
+        placeholder: 'ID'
       }),
       pictureName: _.o.string.other('form', {
         component: 'Input',

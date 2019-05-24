@@ -24,7 +24,6 @@
 <script>
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
   components: {
@@ -102,6 +101,9 @@ export default {
                   break
                 case 2:
                   return '爱奇艺'
+                  break
+                 case 3:
+                  return '优酷'
                   break
               }
             }
@@ -235,13 +237,15 @@ export default {
       }, [])
     },
     //查询
-    handleFilterChange(type) {
-      if (type === 'filter') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+     handleFilterChange(type) {
+      if(this.$isNumber(this.filter.pluginId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     //重置
     handleFilterReset() {

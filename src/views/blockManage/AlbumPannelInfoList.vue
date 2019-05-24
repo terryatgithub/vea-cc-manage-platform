@@ -209,13 +209,15 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type) {
-      if (type !== 'pagination') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      handleFilterChange(type) {
+      if(this.$isNumber(this.filter.pannelId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       console.log(this.dataList);
@@ -296,7 +298,7 @@ export default {
         component: 'Select'
       }),
       pannelId: _.o.string.other('form', {
-        placeholder: '版块ID',
+        placeholder: 'ID',
         component: 'Input'
       }),
       pannelName: _.o.string.other('form', {

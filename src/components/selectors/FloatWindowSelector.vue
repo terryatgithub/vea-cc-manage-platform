@@ -56,7 +56,7 @@ export default {
       },
       filterSchema: _.map({
         pluginId: _.o.number.other('form', {
-          label: '功能ID',
+          label: 'ID',
           cols: { item: 6, label: { offset: 1, span: 5 }, wrapper: 18 }
         }),
         pluginName: _.o.string.other('form', {
@@ -94,13 +94,15 @@ export default {
     handleRowSelectionChange(row, index) {
       this.table.selected = index
     },
-    handleFilterChange(type) {
-      if (type === 'filter') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+     handleFilterChange(type) {
+      if(this.$isNumber(this.filter.pluginId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {

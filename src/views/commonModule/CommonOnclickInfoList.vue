@@ -184,13 +184,15 @@ export default {
       }, []);
     },
     //查询
-    handleFilterChange(type) {
-      if (type === "filter") {
-        if (this.pagination) {
-          this.pagination.currentPage = 1;
+  handleFilterChange(type) {
+      if(this.$isNumber(this.filter.commonOnclickId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData();
     },
     //重置
     handleFilterReset() {

@@ -253,13 +253,15 @@ export default {
         return result
       }, [])
     },
-    handleFilterChange(type) {
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+   handleFilterChange(type) {
+      if(this.$isNumber(this.filter.typeId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {
@@ -292,7 +294,7 @@ export default {
     let filterSchema = _.map({
       typeId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标分类ID'
+        placeholder: 'ID'
       }),
       typeName: _.o.string.other('form', {
         component: 'Input',

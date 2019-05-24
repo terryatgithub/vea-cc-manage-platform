@@ -239,13 +239,14 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
-         console.log('handleFilterChange'+' ' + type)
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      if(this.$isNumber(this.filter.id)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       console.log('handleFilterReset')
@@ -277,7 +278,7 @@ export default {
   },
   created() {
     let filterSchema = _.map({
-      id: _.o.number.other('form', {
+      id: _.o.string.other('form', {
         component: 'Input',
         placeholder: '推荐位ID'
       }),

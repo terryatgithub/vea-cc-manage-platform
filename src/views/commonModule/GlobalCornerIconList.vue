@@ -296,12 +296,14 @@ export default {
     },
     //查询
     handleFilterChange(type) {
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      if(this.$isNumber(this.filter.cornerIconId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     //重置
     handleFilterReset() {
@@ -375,7 +377,7 @@ export default {
       }),
       cornerIconId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标ID'
+        placeholder: 'ID'
       }),
       typeId: _.o.enum(this.globalTypes).other('form', {
         component: 'Select',

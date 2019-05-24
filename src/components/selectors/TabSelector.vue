@@ -7,7 +7,7 @@
   >
     <div slot="filter">
       <el-form :inline="true">
-        <el-form-item label="版面ID">
+        <el-form-item label="ID">
           <el-input v-model="filter.tabId"></el-input>
         </el-form-item>
         <el-form-item label="版面名称">
@@ -237,8 +237,10 @@ export default {
       }
     },
     handleFilterChange(type) {
+      if(this.$isNumber(this.filter.tabId)) {
       this.pagination.currentPage = 1
-      this.fetchData()
+      this.fetchData() 
+      }
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()

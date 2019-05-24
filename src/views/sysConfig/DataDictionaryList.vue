@@ -245,12 +245,14 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
-      if (type === 'filter') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      if(this.$isNumber(this.filter.dictId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {
@@ -285,7 +287,7 @@ export default {
     let filterSchema = _.map({
       dictId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '字典ID'
+        placeholder: 'ID'
       }),
       dictCnName: _.o.string.other('form', {
         component: 'Input',

@@ -95,12 +95,14 @@ export default {
      
     },
     handleFilterChange(type) {
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
+      if(this.$isNumber(this.filter.cornerIconId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
         }
+        this.fetchData() 
       }
-      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {
@@ -136,7 +138,7 @@ export default {
     let filterSchema = _.map({
       cornerIconId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标ID'
+        placeholder: 'ID'
       }),
       cornerIconName: _.o.string.other('form', {
         component: 'Input',
