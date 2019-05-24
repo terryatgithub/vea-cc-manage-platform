@@ -391,7 +391,7 @@ export default {
 
       // 设置推荐位内容窗口
       blockContentProps: {},
-      // 板块类型，1-常规板块，2-排行榜，3-业务专辑，4-智能推荐板块，5-专属影院板块，6-影片详情页，7-定向板块等
+      // 版块类型，1-常规版块，2-排行榜，3-业务专辑，4-智能推荐版块，5-专属影院版块，6-影片详情页，7-定向版块等
       pannelType: 1,
 
       // ----
@@ -437,7 +437,7 @@ export default {
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
     resourceName() {
-      return this.currentPanelDataType === 3 ? '业务专辑' : '板块'
+      return this.currentPanelDataType === 3 ? '业务专辑' : '版块'
     },
     resourceInfo() {
       const panel = this.pannel
@@ -586,7 +586,7 @@ export default {
       this.pannel.focusImgUrl = item.pictureUrl
     },
 
-    // 设置板块内容
+    // 设置版块内容
     handleClickBlock(index) {
       const pannel = this.pannel
       const selectedLayout = this.selectedLayout
@@ -873,7 +873,7 @@ export default {
     },
 
     handleRemoveTab(indexString) {
-      this.$confirm('确认删除该子板块?', '提示', {
+      this.$confirm('确认删除该子版块?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -985,7 +985,7 @@ export default {
         .catch(function() {})
     },
     handleParentTypeChange(val) {
-      this.$confirm('切换板块类型将清空推荐位内容, 确定切换?', '提示', {
+      this.$confirm('切换版块类型将清空推荐位内容, 确定切换?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -1169,7 +1169,7 @@ export default {
       if (type === 'Expander' || type === 'Lengthwise') {
         // 如果时横线拓展布局或者纵向拓展布局, 按照资源数量或者设定的推荐位个数填充
         const calculate = calculateFactory()
-        // 分组板块不支持自动拓展
+        // 分组版块不支持自动拓展
         const count =
           pannel.parentType === 'group' && type === 'Lengthwise'
             ? blockCount
@@ -1364,7 +1364,7 @@ export default {
           pannelName: pannel.pannelName,
           pannelTitle: item.pannelTitle,
           pannelResource: pannel.pannelResource,
-          // item.pannelType 有可能有值 7, 如果是定向板块
+          // item.pannelType 有可能有值 7, 如果是定向版块
           pannelType: hasSpecific ? 7 : panelDataType,
           showTitle: pannel.showTitle,
           flagIs4k: pannel.flagIs4k,
@@ -1390,13 +1390,13 @@ export default {
       const status = pannel.pannelStatus
 
       if (!pannel.pannelName) {
-        return cb('请输入板块名称')
+        return cb('请输入版块名称')
       }
       if (pannel.parentType === 'normal' && !pannel.pannelList[0].pannelTitle) {
-        return cb('请输入板块标题')
+        return cb('请输入版块标题')
       }
       if (pannel.parentType === 'group' && !pannel.groupTitle) {
-        return cb('请输入板块标题')
+        return cb('请输入版块标题')
       }
 
       if (!this.selectedLayout) {

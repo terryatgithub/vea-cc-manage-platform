@@ -1,4 +1,4 @@
-/** 板块管理——功能板块 */
+/** 版块管理——功能版块 */
 // 表格list
 export function getMarkPanelList (data) {
   return this.fetch({

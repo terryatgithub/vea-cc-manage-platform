@@ -43,7 +43,7 @@ export default {
   },
 
   props: {
-    // 影片详情页中添加板块
+    // 影片详情页中添加版块
     dataList: {
       type: Object
     }
@@ -296,15 +296,15 @@ export default {
         component: 'Select'
       }),
       pannelId: _.o.string.other('form', {
-        placeholder: '板块ID',
+        placeholder: '版块ID',
         component: 'Input'
       }),
       pannelName: _.o.string.other('form', {
-        placeholder: '板块名称',
+        placeholder: '版块名称',
         component: 'Input'
       }),
       pannelTitle: _.o.string.other('form', {
-        placeholder: '板块标题',
+        placeholder: '版块标题',
         component: 'Input'
       }),
       vDataListName: _.o.string.other('form', {
@@ -324,7 +324,7 @@ export default {
         component: 'Select'
       }),
       type: _.o.enum({'默认': -1, '置顶': 1, '下沉': 0}).other('form', {
-        placeholder: '板块类别',
+        placeholder: '版块类别',
         component: 'Select'
       })
     }).other('form', {
@@ -348,7 +348,7 @@ export default {
     this.$service.getDictType({type: 'businessType'}).then(() => {
       this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
     })
-    // 影片详情页中的板块
+    // 影片详情页中的版块
     const dataList = this.dataList
     if(dataList) {
       this.filter = Object.assign({}, dataList.filter)

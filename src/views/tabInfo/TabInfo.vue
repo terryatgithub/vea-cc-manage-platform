@@ -208,7 +208,7 @@
                   </el-form-item>
                 </template>
 
-                <el-form-item label="选择板块" v-if="tabInfo.hasSubTab === 0">
+                <el-form-item label="选择版块" v-if="tabInfo.hasSubTab === 0">
                   <div
                     class="tab-info__virtual-tab-menu"
                     :style="{visibility: isPanelDragging ? 'hidden' : 'visible'}"
@@ -296,7 +296,7 @@
                       title="选择长图素材"
                       @select-end="handleSelectLongBgEnd"
                       :query-long-poster="1"
-                    />长图下最多支持6个板块
+                    />长图下最多支持6个版块
                     <div
                       class="image-preview-wrapper image-preview-wrapper--long"
                       v-if="tabInfo.alumbTabLongBg"
@@ -319,7 +319,7 @@
                     />&nbsp;注:数值范围0-880
                   </el-form-item>
 
-                  <el-form-item label="板块标题颜色">
+                  <el-form-item label="版块标题颜色">
                     <el-color-picker v-model="tabInfo.pannelTitleColor"/>
                   </el-form-item>
 
@@ -488,7 +488,7 @@
                   </el-form-item>
                 </template>
 
-                <el-form-item label="选择板块" v-if="tabInfo.hasSubTab === 0">
+                <el-form-item label="选择版块" v-if="tabInfo.hasSubTab === 0">
                   <div class="tab-info__virtual-tab-menu">
                     <affix
                       relative-element-selector=".tab-info__virtual-tab"
@@ -536,7 +536,7 @@
 
                   <el-form-item label="版面简介显示高">{{ tabInfo.sinkSize }}</el-form-item>
 
-                  <el-form-item label="板块标题颜色">
+                  <el-form-item label="版块标题颜色">
                     <input disabled type="color" :value="tabInfo.pannelTitleColor">
                   </el-form-item>
 
@@ -886,7 +886,8 @@ export default {
     rules() {
       return {
         tabName: [
-          { required: true, message: '请输入版面名称', trigger: 'blur' }
+          { required: true, message: '请输入版面名称', trigger: 'blur' },
+          { max: 50, message: '不超过 50 个字符'}
         ],
         tabCnTitle: [
           { required: true, message: '请输入中文标题', trigger: 'blur' }
@@ -1235,7 +1236,7 @@ export default {
         if (length >= 0) {
           return this.$message({
             type: 'error',
-            message: '该定向板块组第' + (length + 1) + '个板块已选择该人群'
+            message: '该定向版块组第' + (length + 1) + '个版块已选择该人群'
           })
         }
         // 检查重复
@@ -1252,7 +1253,7 @@ export default {
       this.handleSelectCrowdStart()
     },
     handleSelectPanelEnd(data) {
-      // 新添加的，将成为普通板块加在最后面
+      // 新添加的，将成为普通版块加在最后面
       const pannelList = this.tabInfo.pannelList
       const start = pannelList.length - 1
       data.forEach(
@@ -1384,23 +1385,23 @@ export default {
           break
         }
         case dragType === 'SPEC' && dropType === 'CROWD': {
-          // 拖动整个定向组到别的定向板块组里
+          // 拖动整个定向组到别的定向版块组里
           this.$message({
             type: 'error',
-            message: '定向板块组不能拖到别的定向板块组里边'
+            message: '定向版块组不能拖到别的定向版块组里边'
           })
           break
         }
         case dragType === 'CROWD' && dropType === 'NORMAL': {
-          // 拖动定向板块到某个外面某个位置
-          // 创建新的定向板块
+          // 拖动定向版块到某个外面某个位置
+          // 创建新的定向版块
           const panelItem = {
             type: 'SPEC',
             crowdPanels: [dragPanelItem.crowdPanels[dragCrowdIndex]]
           }
           // 从旧的地方删除
           if (dragPanelItem.crowdPanels.length === 1) {
-            // 由于只有一个定向板块，移除后，整个组将被移除
+            // 由于只有一个定向版块，移除后，整个组将被移除
             this.doRemovePanel(dragIndex, dragCrowdIndex)
             panelList.splice(
               dragIndex <= dropIndex ? Math.max(dropIndex, 0) : dropIndex + 1,
@@ -1414,13 +1415,13 @@ export default {
           break
         }
         case dragType === 'CROWD' && dropType === 'CROWD': {
-          // 拖动定向板块到另外一个定向板块位置
+          // 拖动定向版块到另外一个定向版块位置
           const dragCrowdPanels = panelList[dragIndex].crowdPanels
           const dropCrowdPanels = panelList[dropIndex].crowdPanels
           const panelItem = dragCrowdPanels[dragCrowdIndex]
 
           if (dragIndex === dropIndex) {
-            // 定向板块内部调整
+            // 定向版块内部调整
             dropCrowdPanels.splice(dragCrowdIndex, 1)
             dropCrowdPanels.splice(
               dragCrowdIndex <= dropCrowdIndex
@@ -1442,10 +1443,10 @@ export default {
             if (length >= 0) {
               return this.$message({
                 type: 'error',
-                message: '该定向板块组第' + (length + 1) + '个板块已选择该人群'
+                message: '该定向版块组第' + (length + 1) + '个版块已选择该人群'
               })
             }
-            // 拖向另外一个定向板块
+            // 拖向另外一个定向版块
             // 先插入到新的位置
             dropCrowdPanels.splice(dropCrowdIndex + 1, 0, panelItem)
             // 从旧的地方删除
@@ -1465,7 +1466,7 @@ export default {
           break
         }
         case dragType === 'NORMAL' && dropType === 'CROWD': {
-          // 拖动一个普通板块到某个定向板块组
+          // 拖动一个普通版块到某个定向版块组
           this.selectCrowdCallback = function(dmpInfo) {
             this.$set(dragPanelItem.panel, 'dmpInfo', dmpInfo)
             // 插入
@@ -1505,11 +1506,11 @@ export default {
         // 删除组
         const id = this.getPanelIdByIndex(index, 0)
         const panelData = this.panelListIndexed[id]
-        msg = '是否确定删除板块组 ' + panelData.pannelGroupRemark
+        msg = '是否确定删除版块组 ' + panelData.pannelGroupRemark
       } else {
         const id = this.getPanelIdByIndex(index, crowdIndex)
         const panelData = this.panelListIndexed[id]
-        msg = '是否确定删除板块 ' + panelData.pannelGroupRemark
+        msg = '是否确定删除版块 ' + panelData.pannelGroupRemark
       }
       this.$confirm(msg)
         .then(
@@ -1706,8 +1707,8 @@ export default {
           const panel = item.panel
           const pannelGroupId = panel.id
 
-          // 所有板块 索引
-          // 普通板块不能跟任何一个重复
+          // 所有版块 索引
+          // 普通版块不能跟任何一个重复
           if (normalPanelIndexd[pannelGroupId]) {
             normalDuplicates[pannelGroupId] = true
           } else {
@@ -1930,9 +1931,9 @@ export default {
                 error = '请选择二级版面'
               }
             } else if (data.pannelList.length === 0) {
-              error = '请选择板块'
+              error = '请选择版块'
             } else {
-              // 检查重复板块
+              // 检查重复版块
               const panelList = data.pannelList
               checkPanelDuplicated: for (
                 let i = 0, length = panelList.length;
@@ -1942,7 +1943,7 @@ export default {
                 const item = panelList[i]
                 if (item.type === 'NORMAL') {
                   if (item.panel.isDuplicate) {
-                    error = '含有重复板块'
+                    error = '含有重复版块'
                     break checkPanelDuplicated
                   }
                 } else {
@@ -1953,7 +1954,7 @@ export default {
                     j++
                   ) {
                     if (crowdPanels[j].isDuplicate) {
-                      error = '含有重复板块'
+                      error = '含有重复版块'
                       break checkPanelDuplicated
                     }
                   }

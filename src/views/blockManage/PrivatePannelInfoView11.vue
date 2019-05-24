@@ -175,7 +175,7 @@ export default {
       panelGroupCategoryOptions: [],
       blockVideoTypeOptions: blockVideoTypeOptions,
       rules: {
-        pannelName: [{ required: true, message: '请填写板块名称' }],
+        pannelName: [{ required: true, message: '请填写版块名称' }],
         pannelTitle: [{ required: true, message: '请填写标题' }],
         amount: [
           {

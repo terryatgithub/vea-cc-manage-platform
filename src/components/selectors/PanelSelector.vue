@@ -18,15 +18,15 @@
         <el-form slot="filter" :inline="true" v-model="filter">
           <el-form-item label="类型">
             <el-select v-model="filter.pannelType">
-              <el-option :value="1" label="内容板块"></el-option>
-              <el-option :value="3" label="专辑板块"></el-option>
-              <el-option :value="5" label="专属影院板块"></el-option>
+              <el-option :value="1" label="内容版块"></el-option>
+              <el-option :value="3" label="专辑版块"></el-option>
+              <el-option :value="5" label="专属影院版块"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="板块ID">
+          <el-form-item label="版块ID">
             <el-input v-model="filter.pannelId"></el-input>
           </el-form-item>
-          <el-form-item label="板块名称">
+          <el-form-item label="版块名称">
             <el-input v-model="filter.pannelName"></el-input>
           </el-form-item>
           <el-form-item label="业务分类">
@@ -51,7 +51,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="板块组类型">
+          <el-form-item label="版块组类型">
             <el-select v-model="filter.parentType">
               <el-option
                 v-for="(item, index) in parentTypeOptions"
@@ -101,11 +101,11 @@ export default {
       panelStatusOptionsIndexed,
       parentTypeOptions: [
         {
-          label: '分组板块',
+          label: '分组版块',
           value: 'group'
         },
         {
-          label: '功能板块',
+          label: '功能版块',
           value: 'function'
         }
       ],

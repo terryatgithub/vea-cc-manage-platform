@@ -79,11 +79,11 @@ const partnerOptions = [
 
 const panelTypeOptions = [
   {
-    label: '普通板块',
+    label: '普通版块',
     value: 'normal'
   },
   {
-    label: '分组板块',
+    label: '分组版块',
     value: 'group'
   }
 ]
@@ -110,6 +110,7 @@ function optionsToText(options) {
 }
 
 const idPrefix = '10'
+
 export default {
   status,
   statusText,

@@ -10,11 +10,11 @@
           @filter-reset="handleFilterReset"
         >
 
-              <ButtonGroupForListPage
+          <ButtonGroupForListPage
             pageName="homepage"
-            @add="addData"
-            @edit="editData"
-            @delete="deleteData"
+            @add="handleCreate"
+            @edit="handleEdit"
+            @delete="handleDelete"
           ></ButtonGroupForListPage>
           <Table
             :props="table.props"
@@ -22,6 +22,7 @@
             :data="table.data"
             :selected="table.selected"
             :selection-type="table.selectionType"
+            :select-on-row-click="true"
             @row-selection-add="handleRowSelectionAdd"
             @row-selection-remove="handleRowSelectionRemove"
             @all-row-selection-change="handleAllRowSelectionChange"
@@ -66,8 +67,10 @@ import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import Policy from './PolicyManageInfo'
+import BaseList from '@/components/BaseList'
 
 export default {
+  extends: BaseList,
   components: {
     ActionList,
     Table,
@@ -80,6 +83,7 @@ export default {
   data() {
     let _this = this
     return {
+      resourceType: 'homepage',
       activePage: 'homepage_list',
       showChipDialog: false,
       showPolicyNameDialog: false,
@@ -115,7 +119,8 @@ export default {
                         type: 'text'
                       },
                       on: {
-                        click: () => {
+                        click: (event) => {
+                          event.stopPropagation()
                           this.handleRead(row)
                         }
                       }
@@ -134,7 +139,8 @@ export default {
                         type: 'text'
                       },
                       on: {
-                        click: () => {
+                        click: (event) => {
+                          event.stopPropagation()
                           this.handleShowPolicyNames(content)
                         }
                       }
@@ -165,7 +171,8 @@ export default {
                             type: 'text'
                           },
                           on: {
-                            click: (value) => {
+                            click: (event) => {
+                              event.stopPropagation()
                               this.handleRead(row, row.duplicateVersion)
                             }
                           }
@@ -184,7 +191,8 @@ export default {
                           type: 'text'
                         },
                         on: {
-                          click: () => {
+                          click: (event) => {
+                            event.stopPropagation()
                             this.handleShowChips(content)
                           }
                         }
@@ -204,9 +212,19 @@ export default {
               label: '操作',
               width: '100',
               fixed: 'right',
-              render: utils.component.createOperationRender(this, {
-                handleCopy: '复制'
-              })
+              render: (h, { row }) => {
+                return h('el-button', {
+                  props: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleCopy(row)
+                    }
+                  }
+                }, '复制')
+              }
             }
         ],
         data: [],
@@ -236,70 +254,6 @@ export default {
       this.showPolicyNameDialog = true
       this.activePage = 'homepage_list'
     },
-    handleCopy({ row }) {
-      this.$emit('copy', row)
-    },
-    addData(){
-        this.$emit("create")
-    },
-    editData(){
-      if (this.$isAllowEdit(this.selected)) {
-        this.$emit('edit', this.selected[0])
-      }
-    },
-    handleRead(item, version) {
-      this.$emit('read', item, version)
-    },
-    deleteData() {
-      if (this.$isAllowDelete(this.selected) && window.confirm("确定要删除吗")) {
-        this.$service.homePageInfoDelete({ 
-          id: this.selected.map(item => item.homepageId).join(',') 
-        }, "删除成功").then(this.fetchData);
-      }
-    },
-    /**
-     * 查看关联策略
-     */
-    openPolicyDialog(arr) {
-      console.log(arr[0])
-    },
-    handleCreate() {
-      this.$router.push({ name: "prize-create" });
-    },
-    //表格操作
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem);
-      this.updateTableSelected();
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.homepageId;
-      });
-      this.updateTableSelected();
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd);
-      } else {
-        this.selected = [];
-        this.table.selected = [];
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = [];
-      this.table.selected = [];
-    },
-    updateTableSelected() {
-      const idField = 'homepageId'
-      const table = this.table;
-      const newSelectedIndex = this.selected.reduce((result, item) => (result[item[idField]] = true, result), {});
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex[item[idField]]) {
-          result.push(index);
-        }
-        return result;
-      }, []);
-    },
     //查询
     handleFilterChange(type) {
       if (type === "filter") {
@@ -324,18 +278,15 @@ export default {
         filter.rows = pagination.pageSize;
       }
       return filter;
-      console.log(filter);
     },
     /**
      * 获取数据
      */
     fetchData() {
-      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter();
       this.$service.getHomePageInfoList(filter).then(data => {
         this.pagination.total = data.total;
         this.table.data = data.rows;
-        this.updateTableSelected()
       });
     },
     /**
@@ -349,8 +300,8 @@ export default {
   },
   created() {
     const filterSchema = _.map({
-      homepageId: _.o.string.other("form", {
-        component: "Input",
+      homepageId: _.o.number.other("form", {
+        component: "InputNumber",
         placeholder: "ID"
       }),
       homepageName: _.o.string.other("form", {

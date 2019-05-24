@@ -118,7 +118,7 @@
                     <a 
                       v-else 
                       class="btn-crowd btn-crowd--disabled" 
-                      title="请将板块移出板块组，再取消定向">
+                      title="请将版块移出版块组，再取消定向">
                       取消定向
                     </a>
                   </template>
@@ -177,9 +177,9 @@
               class="btn-show-all"
               v-show="!isDragging && !panelItem.isShowAll && panelItem.crowdPanels.length > 1"
             >
-              <a @click="handleShowAllPanels(index)" title="显示所有板块">
+              <a @click="handleShowAllPanels(index)" title="显示所有版块">
                 <i class="el-icon-arrow-down"></i>
-                共 {{ panelItem.crowdPanels.length }} 个板块
+                共 {{ panelItem.crowdPanels.length }} 个版块
               </a>
             </div>
           </div>
@@ -345,7 +345,7 @@ export default {
       setTimeout(
         function() {
           if (dragInfo.pannelGroupId) {
-            // 插入板块
+            // 插入版块
             this.$emit('insert-panel', dragInfo, dropInfo)
           } else {
             this.$emit('reorder-panel', dragInfo, dropInfo)

@@ -55,12 +55,12 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="选择板块" prop="tags">
-                <el-button type="primary" plain @click="handleSlectPannelStart">选择板块</el-button>
+              <el-form-item label="选择版块" prop="tags">
+                <el-button type="primary" plain @click="handleSlectPannelStart">选择版块</el-button>
                
                 <el-dropdown>
           <el-button type="primary" plain class="marginL">
-            添加板块<i class="el-icon-caret-bottom el-icon--right"></i>
+            添加版块<i class="el-icon-caret-bottom el-icon--right"></i>
           </el-button>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item @click.native="openCreatePage('pannelInfo', 1)">常规版块</el-dropdown-item>
@@ -153,7 +153,7 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="选择的板块" prop="tags">
+                <el-form-item label="选择的版块" prop="tags">
                   <OrderableTable
                     v-model="tab.pannelList"
                     :header="tabGroupTableHeader"
@@ -265,7 +265,7 @@ export default {
       isReplica: false, //是否创建副本
       // viewData: undefined,
       // version: undefined,
-      // isShowPannelInfoList: false, // 添加板块弹窗
+      // isShowPannelInfoList: false, // 添加版块弹窗
       tab: {
         tabId: undefined,
         currentVersion: undefined,
@@ -338,11 +338,11 @@ export default {
     tabGroupTableHeader() {
       const header = [
         {
-          label: '板块ID',
+          label: '版块ID',
           prop: 'pannelGroupId'
         },
         {
-          label: '板块名称',
+          label: '版块名称',
           width: 180,
           render: (h, { $index, row }) => {
             return h(
@@ -446,7 +446,7 @@ export default {
             // showError('请把表单填写完整')
           } else {
             if (data.pannelList.length === 0) {
-              error = '请选择板块'
+              error = '请选择版块'
             }
             if (error) {
               showError(error)

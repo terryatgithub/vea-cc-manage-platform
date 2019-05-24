@@ -8,8 +8,8 @@
       @filter-reset="handleFilterReset"
     >
       <el-table :data="tab.pannelList" border style="margin-top: 20px; max-width: 80%">
-      <el-table-column prop="cornerIconId" label="板块ID"></el-table-column>
-      <el-table-column prop="cornerIconName" label="板块名称" ></el-table-column>
+      <el-table-column prop="cornerIconId" label="版块ID"></el-table-column>
+      <el-table-column prop="cornerIconName" label="版块名称" ></el-table-column>
       <el-table-column label="图片" prop >
         <template slot-scope="scope">
           <img :src="scope.row.imgUrl" width="70px">

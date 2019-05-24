@@ -1,21 +1,22 @@
 <template>
   <div>
-    <HomePageInfoList 
-      v-show='isShowList' 
-      ref="list" 
+    <HomePageInfoList
+      v-show="isShowList"
+      ref="list"
       @create="handleCreate"
+      @delete="handleDelete"
       @read="handleRead"
       @edit="handleEdit"
       @copy="handleCopy"
     />
-    <HomePageInfo 
-      v-if='!isShowList' 
-      :id="id" 
+    <HomePageInfo
+      v-if="!isShowList"
+      :id="id"
       :init-mode="mode"
       :version="version"
-      @upsert-end="handleUpsertEnd" 
-      @go-back="goBack">
-    </HomePageInfo>
+      @upsert-end="handleUpsertEnd"
+      @go-back="goBack"
+    ></HomePageInfo>
   </div>
 </template>
 <script>
@@ -26,7 +27,7 @@ export default {
     HomePageInfo,
     HomePageInfoList
   },
-  data () {
+  data() {
     return {
       isShowList: true,
       id: undefined,
@@ -51,21 +52,30 @@ export default {
       this.version = version
       this.isShowList = false
     },
+    handleDelete(selected) {
+      this.$service
+        .homePageInfoDelete({
+          id: this.selected.map(item => item.homepageId).join(',')
+        },'删除成功')
+        .then(() => {
+          this.$refs.list.fetchData()
+        })
+    },
     handleCopy(item) {
       this.id = item.homepageId
       this.mode = 'copy'
       this.isShowList = false
     },
-    handleUpsertEnd () {
+    handleUpsertEnd() {
       this.isShowList = true
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData() //更新页面
       this.mode = 'list'
       this.version = undefined
     },
-    goBack () {
-     this.isShowList = true
-     this.mode = 'list'
-     this.version = undefined
+    goBack() {
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

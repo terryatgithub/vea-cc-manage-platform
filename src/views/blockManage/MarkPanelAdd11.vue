@@ -80,10 +80,10 @@ export default {
       rules: {
         //表单规则
         'pannelList[0].pannelName': [
-          { required: true, message: '请输入板块名称', trigger: 'blur' }
+          { required: true, message: '请输入版块名称', trigger: 'blur' }
         ],
         'pannelList[0].pannelTitle': [
-          { required: true, message: '请输入板块标题', trigger: 'blur' }
+          { required: true, message: '请输入版块标题', trigger: 'blur' }
         ],
         clientType: [
           { required: true, message: '请输入功能类型', trigger: 'blur' }

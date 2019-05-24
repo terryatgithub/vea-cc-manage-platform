@@ -1,13 +1,13 @@
 <template>
-  <ContentCard title="选择板块" @go-back="$emit('go-back')">
+  <ContentCard title="选择版块" @go-back="$emit('go-back')">
     <el-tabs type="card">
-      <el-tab-pane label="内容板块">
+      <el-tab-pane label="内容版块">
         <PannelInfoList ref="pannel" :dataList="contentBlock" v-model="pannelData"/>
       </el-tab-pane>
-      <el-tab-pane label="专属板块">
+      <el-tab-pane label="专属版块">
         <AlbumPannelInfoList ref="albumPannel" :dataList="albumBlock" v-model="albumPannelData"/>
       </el-tab-pane>
-      <el-tab-pane label="专属影院板块">
+      <el-tab-pane label="专属影院版块">
         <PrivatePannelInfoList :dataList="privateBlock" v-model="privatePannelData"/>
       </el-tab-pane>
     </el-tabs>
@@ -147,11 +147,11 @@ export default {
   created() {
     let filterSchema = _.map({
       pannelId: _.o.string.other('form', {
-        placeholder: '板块ID',
+        placeholder: '版块ID',
         component: 'Input'
       }),
       pannelName: _.o.string.other('form', {
-        placeholder: '板块名称',
+        placeholder: '版块名称',
         component: 'Input'
       }),
       tabName: _.o.string.other('form', {

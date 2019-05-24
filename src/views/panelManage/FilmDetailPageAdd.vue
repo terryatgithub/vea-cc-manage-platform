@@ -48,13 +48,13 @@
                 <el-option v-for="(item, index) in productItems" :key="index" :label="item.label" :value="item.value"/>
               </el-select>
             </el-form-item>
-            <el-form-item label="选择板块">
+            <el-form-item label="选择版块">
               <cc-panel-selector-el
                 ref="panelSelector"
                 :source="form.tabResource"
                 @select-end="handleSelectPanelEnd"
               ></cc-panel-selector-el>
-              <!--<el-button type="primary" @click="addModel">添加板块</el-button>-->
+              <!--<el-button type="primary" @click="addModel">添加版块</el-button>-->
             </el-form-item>
             <el-form-item label="优先级">
               <el-input-number v-model="form.priority" :min="1"/><span>注：数值越大优先级越高，数值越小优先级越低</span>
@@ -84,7 +84,7 @@
                 <el-option v-for="(item, index) in productItems" :key="index" :label="item.label" :value="item.value"/>
               </el-select>
             </el-form-item>
-            <el-form-item label="选择板块">
+            <el-form-item label="选择版块">
             </el-form-item>
             <el-form-item label="优先级" prop="priority">
               {{form.priority}}
@@ -272,7 +272,7 @@ export default {
       product: '',
       productItems: [],
       eduProductItems: [],
-      blockTable: [], // 板块列表
+      blockTable: [], // 版块列表
       table: {
         props: {},
         data: [],
@@ -310,11 +310,11 @@ export default {
             }
           },
           {
-            label: '板块ID',
+            label: '版块ID',
             prop: 'pannelGroupId'
           },
           {
-            label: '板块名称',
+            label: '版块名称',
             prop: 'pannelGroupRemark',
             render: (createElement, { row }) => {
               return createElement('el-button', {
@@ -511,7 +511,7 @@ export default {
       }
     },
     handleSelectPanelEnd(blockData) {
-      // 新添加的，将成为普通板块加在最后面
+      // 新添加的，将成为普通版块加在最后面
       // const pannelList = this.tabInfo.pannelList
       // const start = pannelList.length - 1
       // data.forEach(function(item, index) {
