@@ -25,8 +25,8 @@ export default {
     position relative
     padding 20px
     background #fff
-    >>> .el-input__inner
-        max-width 280px
+    // >>> .el-input__inner
+    //     max-width 280px
 .content-card__header
     position relative
     height 50px

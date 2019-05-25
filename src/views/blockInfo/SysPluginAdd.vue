@@ -52,8 +52,8 @@
             <el-option
               v-for="item in pluginParentTypes"
               :key="item.id"
-              :label="item.label"
-              :value="item.value"
+              :label="item.dictCnName"
+              :value="item.dictEnName"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -117,7 +117,7 @@
               <span>{{ item.label }}</span>
             </div>
             <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
-              <el-form-item
+              <el-form-item 
                 label="状态栏文字"
                 :prop="'rlsInfo.' + index + '.title'"
                 :rules="rules.barText"
@@ -479,7 +479,9 @@ export default {
           ],
           pluginType: [{ required: true, message: '不能为空', trigger: 'blur' }]
         },
-        barText: [{ max: 50, message: '不超过 50 个字符', trigger: 'blur' }],
+        barText: [{ max: 50, message: '不超过 50 个字符', trigger: 'blur' },
+         { required: true, message: '请输入状态栏文字', trigger: 'blur' },
+        ],
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' },
           { max: 50, message: '不超过 50 个字符', trigger: 'blur' }
@@ -640,7 +642,7 @@ export default {
         console.log(data)
         if (data) {
           this.pluginParentTypes = data.filter(function(item) {
-            return item.value !== 'builtIn'
+            return item.dictEnName !== 'builtIn'
           })
         }
       })

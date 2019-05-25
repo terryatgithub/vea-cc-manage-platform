@@ -192,7 +192,7 @@
       :data="table.data"
       :selected="table.selected"
       :selection-type="table.selectionType"
-      @row-click="rowClick"
+       @row-click="rowClick"
        @row-selection-change="rowClick"
       @row-selection-add="handleRowSelectionAdd"
       @row-selection-remove="handleRowSelectionRemove"

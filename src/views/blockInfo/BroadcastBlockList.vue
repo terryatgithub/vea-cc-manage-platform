@@ -180,14 +180,7 @@ export default {
     editData() {
       if (this.$isAllowEdit(this.selected)) {
          let selected = this.selected[0]
-         if (selected.status !== 4) {
-            this.$emit('open-add-page', selected, false)
-         } else {
-            this.$message({
-                 type: 'error',
-                 message: '审核通过的数据不能编辑'
-               })
-         }
+         this.$emit('open-add-page', selected, false)
       }
     },
     batchDel() {

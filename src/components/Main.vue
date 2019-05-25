@@ -117,7 +117,7 @@ export default {
       return meta && meta.isCache !== false
     },
     initTags() {
-      return this.$appState.$get('tags') || []
+      return this.$appState.$get('tags'+ '_' + this.$appState.user.name ) || []
     },
     defaultMenu() {
       const mainRoute = this.$router.options.routes.find(item => {
@@ -210,7 +210,7 @@ export default {
         }
       }
    // this.initTags = tags
-    this.$appState.$set('tags', tags)
+    this.$appState.$set('tags'+ '_' + this.$appState.user.name , tags)
     }
   },
   created() {

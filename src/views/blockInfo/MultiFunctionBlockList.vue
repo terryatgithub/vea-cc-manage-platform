@@ -109,7 +109,8 @@ export default {
       source: [
         { label: '无', value: 0 },
         { label: '腾讯', value: 1 },
-        { label: '爱奇艺', value: 2 }
+        { label: '爱奇艺', value: 2 },
+        { label: '优酷', value: 3 }
       ],
       filter: {},
       filterSchema: null,
@@ -247,20 +248,8 @@ export default {
      */
     editData() {
       if (this.$isAllowEdit(this.selected)) {
-        this.table.data.forEach(e => {
-          if (e['pluginId'] === this.selected[0]) {
-            if (e.pluginStatus !== 4) {
-              this.$emit('open-add-page', this.selected[0])
-            } else {
-              this.$message({
-                type: 'error',
-                message: '审核通过的数据不能编辑'
-              })
-            }
-            return
-          }
-        })
-      }
+          this.$emit('open-add-page', this.selected[0])
+        }
     },
     //预览
     previewData(row) {

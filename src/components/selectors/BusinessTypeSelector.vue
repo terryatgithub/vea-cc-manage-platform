@@ -38,7 +38,7 @@ export default {
       this.options = data.map(function(item) {
         return {
           label: item.dictCnName,
-          value: item.dictId
+          value: item.dictEnName
         }
       })
     })

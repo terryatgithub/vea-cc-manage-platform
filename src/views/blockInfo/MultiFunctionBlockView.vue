@@ -151,12 +151,12 @@
             type="systemPlugin"
             :status="status"
             menuElId="multiFunctionBlock"
-            @auditTask="$emit('open-list-page')"
+             @auditTask-end="$emit('open-list-page')"
           >
           </AuditDetailButton>
         </el-form-item>
         </el-form>
-        <el-dialog title="审核" :visible.sync="showAuditDialog">
+        <!-- <el-dialog title="审核" :visible.sync="showAuditDialog">
             <el-form>
             <el-form-item label="审核意见">
                 <el-radio class="radio" v-model="auditForm.auditFlag" :label="4">通过</el-radio>
@@ -170,7 +170,7 @@
             <el-button @click="showAuditDialog = false">取 消</el-button>
             <el-button type="primary" @click="handleAudit">确 定</el-button>
             </div>
-        </el-dialog>
+        </el-dialog> -->
           <!-- <div class="toolbar-container" style="padding: 16px;text-align:right">
             <el-button type="primary" v-if="block.pluginInfo.pluginStatus === STATUS.waiting" @click="showAuditDialog = true">审核</el-button>
         </div> -->
@@ -268,10 +268,10 @@ export default {
             const pluginParentTypes = this.pluginParentTypes
             if (pluginParentTypes.length > 0) {
                 const target =  pluginParentTypes.find(function(item) {
-                    return item.value === pluginParentType
+                    return item.dictEnName === pluginParentType
                 })
                 if (target) {
-                    return target.label
+                    return target.dictCnName
                 }
             }
         },
@@ -282,10 +282,10 @@ export default {
             console.log(pluginTypes)
             if (pluginTypes.length > 0) {
                 const target = pluginTypes.find(function(item) {
-                    return item.value === pluginType
+                    return item.dictEnName === pluginType
                 })
                 if (target) {
-                    return target.label
+                    return target.dictCnName
                 }
             }
         },
@@ -322,7 +322,7 @@ export default {
                 console.log(data)
                 if(data) {
                     this.pluginParentTypes = data.filter(function(item) {
-                        return item.value !== 'builtIn'
+                        return item.dictEnName !== 'builtIn'
                     })
                 } 
                 if (data) {
@@ -435,30 +435,28 @@ export default {
             }
             return onclick
         },
-        handleAudit() {
-            const block = this.block
-            const auditForm = this.auditForm
-            if (auditForm.auditDesc.trim() === '') {
-                this.$message('请填写意见说明');
-            } else {
-                this.$service.SaveAudit(
-                    {
-                        id: block.pluginInfo.pluginId,
-                        type: 'systemPlugin',
-                        auditFlag: auditForm.auditFlag,
-                        auditDesc: auditForm.auditDesc
-                    }
-                    , '审核成功').then(data => {
-                        if (data) {
-                            this.showAuditDialog = false
-                            this.$emit('open-list-page')
-                        } 
-                    })
-            }
-        },
-        handleClose() {
-            window.parent.$('#edit-view').dialog('close');
-        }
+        // handleAudit() {
+        //     const block = this.block
+        //     const auditForm = this.auditForm
+        //     if (auditForm.auditDesc.trim() === '') {
+        //         this.$message('请填写意见说明');
+        //     } else {
+        //         this.$service.SaveAudit(
+        //             {
+        //                 id: block.pluginInfo.pluginId,
+        //                 type: 'systemPlugin',
+        //                 auditFlag: auditForm.auditFlag,
+        //                 auditDesc: auditForm.auditDesc
+        //             }
+        //             , '审核成功').then(data => {
+        //                     this.showAuditDialog = false
+        //                     this.$emit('open-list-page')
+        //             })
+        //     }
+        // },
+        // handleClose() {
+        //     window.parent.$('#edit-view').dialog('close');
+        // }
 
     },
     created() {

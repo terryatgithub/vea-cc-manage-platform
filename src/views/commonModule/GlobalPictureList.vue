@@ -12,14 +12,8 @@
         @add="addItem"
         @edit="editData"
         @delete="batchDel"
-        @batchAudit="batchAudit"
+        @batch-audit="batchAudit"
       ></ButtonGroupForListPage>
-      <!-- <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addItem">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchAudit">批量审核</el-button>
-      </div>-->
       <Table
         :props="table.props"
         :header="table.header"
@@ -43,7 +37,7 @@
     </el-dialog>
     <!-- 预览图片 --->
     <!-- 审核 -->
-    <el-dialog title="预览图片" v-if="auditDialogVisible" width="30%">
+    <el-dialog title="预览图片" :visible.sync="auditDialogVisible" width="30%">
       <span>
         <el-form ref="auditForm" :model="auditForm" :rules="auditFormRules" label-width="80px">
           <el-form-item label="审核意见" prop="auditFlag">
@@ -108,6 +102,7 @@ export default {
       filterSchema: null,
       pagination: {},
       selected: [],
+      status:[],//选中数据的状态
       table: {
         props: {},
         header: [
@@ -170,20 +165,6 @@ export default {
             width: '90',
             render: (createElement, { row }) => {
               return this.$numToAuditStatus(row.pictureStatus)
-              // switch (row.pictureStatus) {
-              //   case 0:
-              //     return "不可用";
-              //     break;
-              //   case 1:
-              //     return "可用";
-              //     break;
-              //   case 2:
-              //     return "待审核";
-              //     break;
-              //   case 3:
-              //     return "审核不通过";
-              //     break;
-              // }
             }
           },
           {
@@ -222,7 +203,7 @@ export default {
         if (valid) {
           this.auditForm.idStr = this.selected.join(',')
           this.$service
-            .materialBatchAudit(this.auditForm, '审批成功')
+            .materialBatchAudit(this.auditForm, this.auditForm.auditFlag ===4 ?'审批成功': '打回成功')
             .then(data => {
               this.fetchData()
               this.auditDialogVisible = false
@@ -251,31 +232,39 @@ export default {
         this.$message('请选择再审批')
         return
       }
+      let error = ''
+      this.status.forEach((item, index) => {
+        if(item === 4) {
+          if(error === '') {
+            error += 'ID=' + this.selected[index]
+          } else {
+            error += 'ID=' + ','  + this.selected[index]
+          }
+        }
+      })
+      if (error !=='') {
+          this.$message({
+                type: 'error',
+                message: error + " 已经审核通过了，不需要再审核"
+              })
+          return false
+      }
       this.auditDialogVisible = true
-      //  if (window.confirm("确定要审批吗")) {
-
-      // }
     },
-
     reviewPic(row) {
       this.reviewPicUrl = row.pictureUrl
       this.picDialogVisible = true
     },
     editData() {
       if (this.$isAllowEdit(this.selected)) {
-        this.table.data.forEach(e => {
-          if (e['pictureId'] === this.selected[0]) {
-            if (e.pictureStatus !== 4) {
-              this.$emit('open-add-page', this.selected[0])
-            } else {
-              this.$message({
+        if(this.status[0]!==4) {
+           this.$emit('open-add-page', this.selected[0])
+        } else {
+             this.$message({
                 type: 'error',
                 message: '审核通过的的数据不能编辑'
               })
-            }
-            return
-          }
-        })
+        }
       }
     },
     /**
@@ -295,16 +284,20 @@ export default {
       }
     },
     handleRowSelectionAdd(targetItem) {
-      // this.selected = this.selected.concat({
-      //   id: targetItem.userId
-      // });
       this.selected.push(targetItem.pictureId)
+      this.status.push(targetItem.pictureStatus)
       this.updateTableSelected()
     },
     handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.pictureId
+      let removeIndex = null
+      this.selected = this.selected.filter((item, index) => {
+        if (item !== targetItem.pictureId) {
+          return item
+        } else {
+          removeIndex = index
+        }
       })
+      this.status.splice(removeIndex, 1);
       this.updateTableSelected()
     },
     handleAllRowSelectionChange(value) {
@@ -313,11 +306,13 @@ export default {
       } else {
         this.selected = []
         this.table.selected = []
+        this.status = []
       }
     },
     handleAllRowSelectionRemove() {
       this.selected = []
       this.table.selected = []
+      this.status = []
     },
     updateTableSelected() {
       const table = this.table

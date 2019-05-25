@@ -45,9 +45,9 @@
           >
             <el-option
               v-for="item in pluginParentTypes"
-              :key="item.id"
-              :label="item.label"
-              :value="item.value"
+              :key="item.dictId"
+              :label="item.dictCnName"
+              :value="item.dictEnName"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -92,9 +92,9 @@
           >
             <el-option
               v-for="item in pluginTypes"
-              :key="item.id"
-              :label="item.label"
-              :value="item.value"
+              :key="item.dictId"
+              :label="item.dictCnName"
+              :value="item.dictEnName"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -624,7 +624,7 @@ export default {
       this.$service.getPluginParentTypes().then(data => {
         if (data) {
           this.pluginParentTypes = data.filter(function(item) {
-            return item.value !== 'builtIn'
+            return item.dictEnName !== 'builtIn'
           })
         }
       })

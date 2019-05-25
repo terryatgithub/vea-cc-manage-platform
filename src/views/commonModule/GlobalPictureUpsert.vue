@@ -81,7 +81,7 @@
           v-for="(item, index) in picTypeOptions"
           :key="index"
           @click.native="handleBatchSetPicType(item)"
-        >{{ item.label }}</el-tag>
+        >{{ item.dictCnName }}</el-tag>
       </el-dialog>
     </div>
     <div class="global-picture" v-if="mode==='read'">
@@ -268,7 +268,7 @@ export default {
     },
     handleBatchSetPicType(type) {
       this.fileInfo.forEach(function(item) {
-        item.materialTypeDictEnName = type.value
+        item.materialTypeDictEnName = type.dictEnName
       })
       this.showPicTypeSelector = false
     },

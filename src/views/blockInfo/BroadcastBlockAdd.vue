@@ -1209,7 +1209,92 @@ export default {
     close: function() {
       window.parent.$('#add-view').dialog('_close')
     },
-    getEditData(){
+    getEditData() {
+      this.$service.getBroadcastBlockEditData({ id: this.id, version: this.version}).then((data) => { 
+               let _this = this
+                _this.basicForm.containerName = data.containerName;
+                _this.basicForm.containerType = 'REFERENCE_BROADCASTING';
+                _this.basicForm.configModel = data.configModel;
+                _this.basicForm.source = data.source;
+                var newFormNoraml = Object.assign({}, _this.normalForm);
+                 data.normalVersionContent.forEach((item,j) => {
+                    var corners = [{}, {}, {}, {}];
+                    if (!item.cornerIconList || item.cornerIconList.length === 0) {
+                        item.cornerIconList = corners;
+                    } else {
+                        var list = item.cornerIconList;
+                        for (var ii = 0; ii < list.length; ii++) {
+                            var l = list[ii];
+                            corners[l.position] = l;
+                        }
+                        item.cornerIconList = corners;
+                    }
+                    if (item.sign === 'manualSet') {  // 手动设置
+                        var packageName = Object.values(JSON.parse(item.params))[0];
+                        item = Object.assign({}, item, { 'thirdIdOrPackageName': packageName });
+                    } else {
+                        var packageName = Object.values(JSON.parse(item.clickParams))[0];
+                        item = Object.assign({}, item, { 'thirdIdOrPackageName': packageName });
+                    }
+                    item.onclick = JSON.parse(item.onclick)
+                    data.normalVersionContent.splice(j, 1, item)
+                });
+
+                _this.normalVersionContent = data.normalVersionContent;
+
+                newFormNoraml = data.normalVersionContent[0];
+                newFormNoraml.poster = data.normalVersionContent[0].poster;
+                if (newFormNoraml.sign === 'manualSet') {
+                    _this.referenceDataNormal = {
+                        onclick: newFormNoraml.onclick,
+                        params: 'openMode==app'
+                    };
+                }
+                _this.normalForm = newFormNoraml;
+                      if (_this.normalForm.type === 'url') {
+                      _this.autoWrite = false
+                    } else {
+                      _this.autoWrite = true
+                    }
+                    if (_this.normalForm.sign === 'manualSet') {
+                      _this.referenceDataNormal = {
+                        onclick: _this.normalForm.onclick,
+                        params: 'openMode==app'
+                      }
+                      _this.normalForm.type === 'url'
+                        ? (_this.signDisabled = true)
+                        : (_this.signDisabled = false)
+                    } else {
+                      _this.signDisabled = false
+                    }
+                var lowerData = data.lowerVersionContent;
+                 
+                _this.lowerForm = lowerData;
+                 _this.lowerForm.onclick = JSON.parse( _this.lowerForm.onclick)
+                _this.lowerForm.thirdIdOrPackageName = Object.values(JSON.parse(lowerData.clickParams))[0];
+                var corners = [{}, {}, {}, {}];
+                if (lowerData.cornerIconList.length === 0) {
+                    lowerData.cornerIconList = corners;
+                } else {
+                    var list = lowerData.cornerIconList;
+                    for (var ii = 0; ii < list.length; ii++) {
+                        var l = list[ii];
+                        corners[l.position] = l;
+                    }
+                    _this.lowerForm.cornerIconList = corners;
+                }
+                var corverTypep = lowerData.coverType;
+                if (corverTypep === 'app' || corverTypep === 'custom') {
+                    _this.referenceDataLower = {
+                        onclick: lowerData.onclick,
+                        params: 'openMode==app'
+                    };
+                }
+                _this.modelType = data.configModel;
+                _this.$watch('lowerForm.coverType', _this.cleanLowerForm)
+      })
+    },
+    getEditData1(){
       this.$service.getBroadcastBlockEditData({ id: this.id, version: this.version}).then((data) => { 
         this.normalVersionContent = data.normalVersionContent.map((e) => {
            let p = JSON.parse(e.params)
@@ -1219,7 +1304,25 @@ export default {
         })
        
         this.normalForm = this.normalVersionContent[0] 
-         debugger
+        debugger
+        /** 设置*/
+        if (this.normalForm.type === 'url') {
+          this.autoWrite = false
+        } else {
+          this.autoWrite = true
+        }
+        if (this.normalForm.sign === 'manualSet') {
+          this.referenceDataNormal = {
+            onclick: this.normalForm.onclick,
+            params: 'openMode==app'
+          }
+          this.normalForm.type === 'url'
+            ? (this.signDisabled = true)
+            : (this.signDisabled = false)
+        } else {
+          this.signDisabled = false
+        }
+        /*end* */
         if ( typeof(JSON.parse(data.lowerVersionContent.params).id) !== 'undefined') {
           data.lowerVersionContent.thirdIdOrPackageName = JSON.parse(data.lowerVersionContent.params).id
         }

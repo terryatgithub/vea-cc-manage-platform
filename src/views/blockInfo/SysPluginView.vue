@@ -122,7 +122,7 @@
             type="systemPlugin"
             :status="status"
             menuElId="sysPlugin"
-            @auditTask="$emit('open-list-page')"
+            @auditTask-end="$emit('open-list-page')"
           >
           </AuditDetailButton>
         </el-form-item>
@@ -242,10 +242,10 @@ export default {
       const pluginParentTypes = this.pluginParentTypes
       if (pluginParentTypes.length > 0) {
         const target = pluginParentTypes.find(function(item) {
-          return item.value === pluginParentType
+          return item.dictEnName === pluginParentType
         })
         if (target) {
-          return target.label
+          return target.dictCnName
         }
       }
     },
@@ -256,10 +256,10 @@ export default {
       console.log(pluginTypes)
       if (pluginTypes.length > 0) {
         const target = pluginTypes.find(function(item) {
-          return item.value === pluginType
+          return item.dictEnName === pluginType
         })
         if (target) {
-          return target.label
+          return target.dictCnName
         }
       }
     },
@@ -324,7 +324,7 @@ export default {
         console.log(data)
         if (data) {
           this.pluginParentTypes = data.filter(function(item) {
-            return item.value !== 'builtIn'
+            return item.dictEnName !== 'builtIn'
           })
         }
       })

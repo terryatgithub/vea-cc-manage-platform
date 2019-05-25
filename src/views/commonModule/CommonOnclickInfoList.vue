@@ -20,9 +20,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
-        @row-selection-add="handleRowSelectionAdd"
-        @row-selection-remove="handleRowSelectionRemove"
-        @all-row-selection-change="handleAllRowSelectionChange"
+        @row-selection-change="rowClick"
       />
     </ContentWrapper>
   </ContentCard>
@@ -49,7 +47,7 @@ export default {
       filterSchema: null,
       pagination: {},
       setDialogVisible: false, //弹框默认关闭
-      selected: [],
+      selected: undefined,
       buttonList:[],
       table: {
         props: {},
@@ -112,12 +110,16 @@ export default {
             }
         ],
         data: [],
-        selected: [],
-        selectionType: "multiple"
+        selected: undefined,
+        selectionType: "single"
       }
     };
   },
   methods: {
+    rowClick(row ,index) {
+      this.table.selected = index
+      this.selected = row.commonOnclickId
+    },
     /**
      * 新增
      */
@@ -128,60 +130,18 @@ export default {
      * 编辑
      */
     editData(){
-      if (this.$isAllowEdit(this.selected)) {
-        this.$emit('open-add-page', this.selected[0])
-      }
+        this.$emit('open-add-page', this.selected)
     },
     /**
      * 批量删除
      */
     deleteData() {
-      if (this.selected.length === 0) {
-        this.$message("请选择再删除");
-        return;
-      }
       if (window.confirm("确定要删除吗")) {
-        this.$service.commonOnclickInfoDelete({ id: this.selected.join(",") }, "删除成功")
+        this.$service.commonOnclickInfoDelete({ id: this.selected }, "删除成功")
           .then(data => {
             this.fetchData();
           });
       }
-    },
-    // handleCreate() {
-    //   this.$router.push({ name: "prize-create" });
-    // },
-    // //表格操作
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.commonOnclickId);
-      this.updateTableSelected();
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.commonOnclickId;
-      });
-      this.updateTableSelected();
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd);
-      } else {
-        this.selected = [];
-        this.table.selected = [];
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = [];
-      this.table.selected = [];
-    },
-    updateTableSelected() {
-      const table = this.table;
-      const newSelectedIndex = this.selected;
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.commonOnclickId) > -1) {
-          result.push(index);
-        }
-        return result;
-      }, []);
     },
     //查询
   handleFilterChange(type) {
@@ -215,7 +175,8 @@ export default {
      * 获取数据
      */
     fetchData() {
-      this.handleAllRowSelectionRemove()
+      this.selected = undefined
+      this.table.selected = undefined
       const filter = this.parseFilter();
       this.$service.getCommonOnclickInfoList(filter).then(data => {
         this.pagination.total = data.total;

@@ -138,10 +138,7 @@ export default {
           {
             label: '修改人',
             prop: 'modifierName',
-            width: '90',
-            render: (createElement, { row }) => {
-              return row.userName
-            }
+            width: '90'
           },
           {
             label: '创建时间',
