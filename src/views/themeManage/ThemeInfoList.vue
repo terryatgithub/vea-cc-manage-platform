@@ -44,7 +44,7 @@ export default {
   components: {
     ContentWrapper,
     Table,
-     ButtonGroupForListPage
+    ButtonGroupForListPage
   },
 
   data () {
@@ -219,7 +219,7 @@ export default {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {

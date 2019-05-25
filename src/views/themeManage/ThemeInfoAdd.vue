@@ -224,6 +224,8 @@ export default {
         form.price = '0'
         form.discountPrice = '0'
       }
+      /* 任何情况提交审核，状态都改为3 */
+      this.form.themeStatus = 3
       const editForm = this.editForm
       const formData = Object.assign({}, form, editForm)
       console.log('formData', formData)
@@ -349,13 +351,11 @@ export default {
     fetchData(version) {
       if (version !== undefined) { this.form.currentVersion = version }
       this.$service.themeInfoDetail({ id: this.editId, version }).then((data) => {
-        console.log(data)
         this.setFormData(data)
       })
     }
   },
   created() {
-    debugger
     this.mode = this.initMode
     if (this.editId) {
       if (this.mode === 'edit') {

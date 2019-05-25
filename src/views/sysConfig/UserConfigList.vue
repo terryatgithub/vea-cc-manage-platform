@@ -138,7 +138,14 @@ export default {
           },
           {
             label: '是否禁用',
-            prop: 'disabled'
+            prop: 'disabled',
+            formatter: function(row) {
+              if (row.disabled === 0) {
+                return '否'
+              } else if (row.disabled === 1) {
+                return '是'
+              }
+            }
           },
           {
             label: '创建时间',
