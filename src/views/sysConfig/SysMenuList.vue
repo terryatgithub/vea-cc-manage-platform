@@ -66,6 +66,7 @@ export default {
       svalue: [], // 右边数据
       sdata: [], // 弹框全部数据
       allData: [], // 弹框数据
+      setMenuId: [], // 弹窗对象Id
       setMenu: [], // 弹框对象
       selectMenu: [], // 选中数据
       data1: [], // 待选数据
@@ -235,13 +236,13 @@ export default {
     },
     // 查询
     handleFilterChange(type) {
-      if(this.$isNumber(this.filter.elid)) {
+      if (this.$isNumber(this.filter.elid)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     // 重置
@@ -288,7 +289,7 @@ export default {
       var newData = []
       var rightData = []
       var rightData1 = []
-      this.setMenu.push(['menuId', row.menuId])
+      this.setMenuId = row.menuId
       this.$service.getNotMenuByRunId(MenuObj).then(data => {
         this.data1 = data // 待选数据
         this.$service.getMenuByRunId(MenuObj).then(data => {
@@ -324,22 +325,23 @@ export default {
     // 选中操作
     handleChange(value, direction, movedKeys) {
       var str = []
-      var newStr = []
       // 去重
       for (var i = 0; i < value.length; i++) {
         if (str.indexOf(value[i]) == -1) {
           str.push(value[i])
         }
       }
-      for (var j = 0; j < str.length; j++) {
-        newStr.push(['runIds', str[j]])
-      }
-      this.selectMenu = this.setMenu.concat(newStr)
+      const select = str.join(',')
+      this.setMenu = select
     },
     // 弹框保存事件
     setSave() {
-      const obj = this.selectMenu
-      this.$service.saveMenuRun(obj, '保存成功')
+      const menuId = this.setMenuId
+      const runIds = this.setMenu
+      this.$service.saveMenuRun({ menuId: menuId, runIds: runIds }, '保存成功').then(() => {
+        this.setDialogVisible = false
+        this.fetchData()
+      })
     }
   },
   created() {

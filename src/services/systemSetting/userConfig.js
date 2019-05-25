@@ -221,31 +221,27 @@ export function editSysMenu (params) {
 /**
  * 系统菜单操作——待选操作
  */
-export function getNotMenuByRunId (data) {
+export function getNotMenuByRunId (params) {
   return this.fetch({
-    method: 'post',
+    method: 'get',
     url: 'api/v1/sysMenu/getNotRunByMenuId.html',
-    data
+    params
   })
 }
 /**
  * 系统菜单操作——已选操作
  */
-export function getMenuByRunId (data) {
+export function getMenuByRunId (params) {
   return this.fetch({
-    method: 'post',
+    method: 'get',
     url: 'api/v1/sysMenu/getRunByMenuId.html',
-    data
+    params
   })
 }
 /**
  * 系统菜单操作——保存
  */
 export function saveMenuRun (data) {
-  data = data.reduce((result, item) => {
-    result += '&' + item[0] + '=' + item[1]
-    return result
-  }, '').slice(1)
   return this.fetch({
     method: 'post',
     url: 'api/v1/sysMenu/saveMenuRun.html',
