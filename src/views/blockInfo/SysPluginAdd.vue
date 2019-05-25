@@ -827,7 +827,6 @@ export default {
     },
     /**点击事件弹框 */
     getClickData1(data) {
-      debugger
       this.clickData = data
       this.dialogClickTableVisible = false
       var selectClick = this.clickData

@@ -371,6 +371,10 @@ const SOURCE = {
   iqiyi: {
     label: '爱奇艺',
     value: 2
+  },
+  youku: {
+    label: '优酷',
+    value: 3
   }
 }
 const STATUS = {

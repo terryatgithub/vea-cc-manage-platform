@@ -117,7 +117,6 @@
         <el-form-item
           :label="normalResourceBtn"
           prop="thirdIdOrPackageName"
-          style="width: 400px"
         >
              <el-button v-if="autoWrite"  :disabled="disabled" type="primary" plain v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', 'normalForm')">选择资源</el-button>
           <el-input
@@ -140,7 +139,7 @@
           >手动填写播放串</a>
           <a
             class="write-play"
-            v-if="!autoWrite && basicForm.configModel === 'group' "
+            v-if="!autoWrite && basicForm.configModel === 'group'&&!disabled "
             href="#"
             @click="autoWriteFun"
             style="float: left"
@@ -199,7 +198,7 @@
 
         <div v-if="normalForm.sign === 'manualSet'">
             <el-form-item label="打开方式">
-              <el-select value="第三方应用">
+              <el-select value="第三方应用" disabled="disabled">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
               <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
@@ -302,7 +301,7 @@
         </div>
         <div v-if="lowerForm.coverType === 'custom'">
             <el-form-item label="打开方式">
-              <el-select value="第三方应用" >
+              <el-select value="第三方应用" disabled="disabled">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
               <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>

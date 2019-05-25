@@ -87,6 +87,7 @@ export default {
   methods: {
     //选中时间
     handleRowSelectionChange(row, index) {
+      debugger
       this.table.selected = index
       this.$emit('input', row)
       if(this.table.selectionType === 'single') {

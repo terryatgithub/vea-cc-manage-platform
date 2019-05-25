@@ -203,7 +203,7 @@ export default {
         if (valid) {
           this.auditForm.idStr = this.selected.join(',')
           this.$service
-            .materialBatchAudit(this.auditForm, this.auditForm.auditFlag ===4 ?'审批成功': '打回成功')
+            .materialBatchAudit(this.auditForm, this.auditForm.auditFlag ==='4' ?'审批成功': '打回成功')
             .then(data => {
               this.fetchData()
               this.auditDialogVisible = false
@@ -238,7 +238,8 @@ export default {
           if(error === '') {
             error += 'ID=' + this.selected[index]
           } else {
-            error += 'ID=' + ','  + this.selected[index]
+            error+=","
+            error += 'ID=' + this.selected[index]
           }
         }
       })
@@ -325,13 +326,16 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
-      if(this.$isNumber(this.filter.pictureId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
-        }
-        this.fetchData() 
+      // if(this.$isNumber(this.filter.pictureId)) {
+      //   if (type === 'query') {
+      //     if (this.pagination) {
+      //       this.pagination.currentPage = 1
+      //     }
+      //   }
+      //   this.fetchData() 
+      // }
+      if(this.$isNumber([{label: 'tagID',value:this.filter.pictureId},{label: 'pannelID',value:this.filter.pictureId}])) { 
+        debugger
       }
     },
     handleFilterReset() {

@@ -196,6 +196,9 @@ export default {
     }
   },
   created() {
+    if(this.status === 5) {//审核不通过
+      this.notContainBtn.push('edit','delete')
+    } 
     this.getAuditDetailButton()
   }
 }

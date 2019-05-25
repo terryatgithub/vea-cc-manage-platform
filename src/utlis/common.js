@@ -243,19 +243,37 @@ Vue.prototype.$changeKeyToValue = function (obj) {
     return result
   }, {})
 }
+/*
+[
+{label: 'tagID',value:this.filter.pictureId}
+,{label: 'pannelID',value:this.filter.pictureId}
+] 
+传数组的格式如上，label为提示语，value 为字段的值
+*/
 Vue.prototype.$isNumber = function(id) {
   let reg = /^\+?[1-9][0-9]*$/
-  if (id === undefined) {
-    return true
-  }
-  let flag = reg.test(id)
-  if(!flag){
-    this.$message({
-      type: 'error',
-      message: 'ID只能是正数字'
+  let error = ''
+  if (id instanceof Array) {
+    id.forEach((item) => {
+        if(!(item.value === undefined || reg.test(item.value)) ) {
+          error === '' ? error = item.label : error += ',' + item.label
+        }
     })
-    return false
+    if (error !=='') {
+      error += '只能是正数字'
+    }
   } else {
-    return true
+    if (!(id === undefined || reg.test(id))) {
+      error = 'ID只能是正数字'
+    }
+  }
+  if (error !== '') {
+     this.$message({
+      type: 'error',
+      message: error
+    })
+    return false 
+  } else {
+    return true 
   }
 }

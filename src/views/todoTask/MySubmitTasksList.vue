@@ -182,7 +182,6 @@ export default {
       }),
       auditFlag: _.o
         .enum({
-          审核中: 6,
           待审核: 3,
           审核通过: 4,
           审核不通过: 5
