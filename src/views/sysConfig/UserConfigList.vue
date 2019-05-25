@@ -96,7 +96,8 @@ export default {
           {
             label: 'ID',
             prop: 'userId',
-            width: '70'
+            width: '70',
+            sortable: true
           },
           {
             label: '用户名称',

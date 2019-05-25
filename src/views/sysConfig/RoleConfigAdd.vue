@@ -60,7 +60,7 @@ export default {
     saveRoleInfo () {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$service.saveRoleData(this.formData, '保存成功').then(data => {
+          this.$service.saveRoleData({ jsonStr: JSON.stringify(this.formData) }, '保存成功').then(data => {
             this.$emit('open-list-page')
           })
         }
@@ -69,10 +69,10 @@ export default {
     getEditData () {
       this.$service.getRoleDetailById({ id: this.editId }).then(data => {
         Object.keys(this.formData).forEach(v => {
-            this.formData[v] = data[v]
+          this.formData[v] = data[v]
         })
       })
-    },
+    }
   },
   created () {
     if (this.editId !== null && this.editId !== undefined) {
