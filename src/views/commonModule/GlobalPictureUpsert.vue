@@ -35,7 +35,7 @@
                   :rules="rules.title"
                   label="素材标题"
                 >
-                  <el-input v-model="file.pictureName"  maxlength="50" />
+                  <el-input v-model="file.pictureName"  />
                 </el-form-item>
                 <el-form-item label="素材分辨率">{{ file.pictureResolution }}</el-form-item>
                 <el-form-item
@@ -178,7 +178,10 @@ export default {
       picTypeOptions: [],
       picTypeOptionsIndexed: [],
       rules: {
-        title: [{ required: true, message: '请填写素材标题' }],
+        title: [
+         { required: true, message: '请填写素材标题' },
+         { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
+        ],
         type: [{ required: true, message: '请选择素材类型' }]
       },
         auditForm: {

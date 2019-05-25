@@ -232,6 +232,7 @@ export default {
           pannelType: 1
         }
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     getBusinessType() {

@@ -296,6 +296,7 @@ export default {
       this.filter = {
         idPrefix: this.$consts.idPrefix
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     addTabInfo() {

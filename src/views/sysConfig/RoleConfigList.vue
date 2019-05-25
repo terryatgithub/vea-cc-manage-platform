@@ -302,6 +302,7 @@ export default {
       this.filter = {
         roleName: undefined
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     handleRowSelectionAdd (targetItem) {

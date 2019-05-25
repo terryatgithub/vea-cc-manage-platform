@@ -326,16 +326,13 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
-      // if(this.$isNumber(this.filter.pictureId)) {
-      //   if (type === 'query') {
-      //     if (this.pagination) {
-      //       this.pagination.currentPage = 1
-      //     }
-      //   }
-      //   this.fetchData() 
-      // }
-      if(this.$isNumber([{label: 'tagID',value:this.filter.pictureId},{label: 'pannelID',value:this.filter.pictureId}])) { 
-        debugger
+      if(this.$isNumber(this.filter.pictureId)) {
+        if (type === 'query') {
+          if (this.pagination) {
+            this.pagination.currentPage = 1
+          }
+        }
+        this.fetchData() 
       }
     },
     handleFilterReset() {
@@ -343,6 +340,7 @@ export default {
         sort: undefined,
         order: undefined
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {

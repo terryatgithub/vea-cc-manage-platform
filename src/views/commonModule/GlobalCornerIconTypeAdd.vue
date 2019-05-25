@@ -66,7 +66,7 @@ export default {
         // 表单规则
         typeName: [
           { required: true, message: '请输入角标名称', trigger: 'blur' },
-           { max: 50, message: '不能超过50个字符', trigger: 'blur' }
+           { max: 45, message: '不能超过45个字符', trigger: 'blur' }
         ],
         typePosition: [
           { required: true, message: '请输入角标位置', trigger: 'blur' }

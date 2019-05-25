@@ -472,9 +472,9 @@ export default {
               }
             }.bind(this)
           },
-          { max: 50, message: '不超过 50 个字符', trigger: 'blur' }
+          { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
-        subTitle: [{ max: 50, message: '不超过 50 个字符', trigger: 'blur' }],
+        subTitle: [{ max: 45, message: '不超过 45 个字符', trigger: 'blur' }],
         pictureUrl: [
           { required: true, message: '请选择内容海报', trigger: 'blur' }
         ],

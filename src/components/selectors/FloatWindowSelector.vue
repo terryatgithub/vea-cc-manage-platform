@@ -109,6 +109,7 @@ export default {
         pluginId: undefined,
         pluginName: undefined
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {

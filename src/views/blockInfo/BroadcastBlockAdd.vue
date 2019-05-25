@@ -118,7 +118,7 @@
           :label="normalResourceBtn"
           prop="thirdIdOrPackageName"
         >
-             <el-button v-if="autoWrite"  :disabled="disabled" type="primary" plain v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', 'normalForm')">选择资源</el-button>
+       <el-button v-if="autoWrite"  :disabled="disabled" type="primary" plain v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', 'normalForm')">选择资源</el-button>
           <el-input
             v-if="!autoWrite"
             v-model="normalForm.thirdIdOrPackageName"

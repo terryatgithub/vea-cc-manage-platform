@@ -296,6 +296,7 @@ export default {
     handleFilterReset() {
       this.filter = { tabType: 3 }
       this.pannelValue = []
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     // 按钮操作

@@ -887,7 +887,7 @@ export default {
       return {
         tabName: [
           { required: true, message: '请输入版面名称', trigger: 'blur' },
-          { max: 50, message: '不超过 50 个字符'}
+          { max: 45, message: '不超过 45 个字符'}
         ],
         tabCnTitle: [
           { required: true, message: '请输入中文标题', trigger: 'blur' }

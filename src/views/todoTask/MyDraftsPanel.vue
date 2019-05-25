@@ -99,6 +99,7 @@ export default {
         order: undefined,
          type: 'myDrafts'
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {

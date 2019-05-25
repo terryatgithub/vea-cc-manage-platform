@@ -148,6 +148,7 @@ export default {
         order: undefined,
          type: 'myAuditTasks'
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {

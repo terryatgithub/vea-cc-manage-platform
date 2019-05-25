@@ -110,6 +110,7 @@ export default {
         page: 1,
         rows: 10
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {

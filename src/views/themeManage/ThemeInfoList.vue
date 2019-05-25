@@ -224,6 +224,7 @@ export default {
     },
     handleFilterReset() {
       this.filter = {}
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     // 按钮操作

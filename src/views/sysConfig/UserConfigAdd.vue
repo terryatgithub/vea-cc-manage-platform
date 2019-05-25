@@ -80,12 +80,16 @@ export default {
       formRules: {
         // 表单规则
         userName: [
-          { required: true, message: '请输入用户名称', trigger: 'blur' }
+          { required: true, message: '请输入用户名称', trigger: 'blur' },
+          { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
         loginName: [
-          { required: true, message: '请输入登录账号', trigger: 'blur' }
+          { required: true, message: '请输入登录账号', trigger: 'blur' },
+          { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
-        loginPwd: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        loginPwd: [{ required: true, message: '请输入密码', trigger: 'blur' },
+        { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
+        ],
         email: [
           { required: true, message: '请输入邮件地址', trigger: 'blur' },
           { type: 'email', message: '邮件地址格式不正确', trigger: 'blur' }

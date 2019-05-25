@@ -469,7 +469,7 @@ export default {
         pluginInfo: {
           pluginName: [
             { required: true, message: '请输入系统功能名称', trigger: 'blur' },
-            { max: 50, message: '不超过 50 个字符', trigger: 'blur' }
+            { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
           ],
           refreshTime: [
             { required: true, message: '请选择固定刷新时间', trigger: 'blur' }
@@ -479,12 +479,12 @@ export default {
           ],
           pluginType: [{ required: true, message: '不能为空', trigger: 'blur' }]
         },
-        barText: [{ max: 50, message: '不超过 50 个字符', trigger: 'blur' },
+        barText: [{ max: 45, message: '不超过 45 个字符', trigger: 'blur' },
          { required: true, message: '请输入状态栏文字', trigger: 'blur' },
         ],
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' },
-          { max: 50, message: '不超过 50 个字符', trigger: 'blur' }
+          { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
         subTitle: [{ max: 100, message: '不超过 100 个字符', trigger: 'blur' }],
         openMode: [
@@ -492,7 +492,7 @@ export default {
         ],
         goodsId: [
           { required: true, message: '请填写商品ID', trigger: 'blur' },
-          { max: 50, message: '不超过 50 个字符', trigger: 'blur' }
+          { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
         webpageUrl: [
           { required: true, message: '请填写网页地址', trigger: 'blur' }

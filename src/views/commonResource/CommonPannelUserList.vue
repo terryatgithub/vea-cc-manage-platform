@@ -222,6 +222,7 @@ export default {
         idPrefix: 10
         }
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     getBusinessType() {

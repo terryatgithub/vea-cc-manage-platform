@@ -244,6 +244,7 @@ export default {
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
+      this.pagination.currentPage = 1
       this.handleFilterChange()
     },
     getFilter() {

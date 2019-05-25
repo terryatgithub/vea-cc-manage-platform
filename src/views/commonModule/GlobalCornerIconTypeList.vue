@@ -265,6 +265,7 @@ export default {
         sort: undefined,
         order: undefined
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {

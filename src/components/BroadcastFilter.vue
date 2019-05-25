@@ -98,14 +98,15 @@ export default {
       return filter
     },
     handleFilterReset() {
-      ;(this.filter = {
+      this.filter = {
         resType: 'operation',
         dataType: 'rotate',
         levelType: 'rotateSta',
         callback: 'result',
         page: 1,
         rows: 10
-      }),
+      },
+       this.pagination.currentPage = 1
         this.fetchData()
     },
    handleFilterChange(type) {

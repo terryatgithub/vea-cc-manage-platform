@@ -237,6 +237,7 @@ export default {
         chip: undefined,
         model: undefined
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {

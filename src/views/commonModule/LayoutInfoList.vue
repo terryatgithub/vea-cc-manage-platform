@@ -288,8 +288,9 @@ export default {
     handleFilterReset() {
       this.filter = {
         sort: undefined,
-        order: undefined
+        order: undefined,
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {

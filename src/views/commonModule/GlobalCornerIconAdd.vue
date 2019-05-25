@@ -31,7 +31,7 @@
                   :rules="rules.title"
                   label="角标标题"
                 >
-                  <el-input v-model="file.cornerIconName" maxlength="50"/>
+                  <el-input v-model="file.cornerIconName"/>
                 </el-form-item>
                 <!--角标分类-->
                 <el-form-item
@@ -99,7 +99,9 @@ export default {
       attributes: [], //角标分类
       attributesIndexed: [],
       rules: {
-        title: [{ required: true, message: '请填写素材标题' }],
+        title: [{ required: true, message: '请填写素材标题' },
+        { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
+        ],
         type: [{ required: true, message: '请选择角标类别' }],
         code: [{ required: true, message: '请选择角标分类' }]
       }

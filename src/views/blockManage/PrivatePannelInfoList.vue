@@ -286,6 +286,7 @@ export default {
           pannelType: 5
         }
       }
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     //获取业务分类
