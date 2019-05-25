@@ -25,11 +25,11 @@
             </el-form-item>
             <el-form-item label="业务分类">
               <el-select v-model="form.tabCategory" :disabled="categoryEdit">
-                <el-option label="影视" value="0"/>
-                <el-option label="教育" value="1"/>
+                <el-option label="影视" :value="0"/>
+                <el-option label="教育" :value="1"/>
               </el-select>
             </el-form-item>
-            <el-form-item label="内容源" v-if="form.tabCategory==='0'">
+            <el-form-item label="内容源" v-if="form.tabCategory == 0">
               <el-radio-group v-model="form.tabResource"  @change.native.prevent="changeResource">
                 <el-radio label="qq">腾讯</el-radio>
                 <el-radio label="iqiyi">爱奇艺</el-radio>
@@ -69,7 +69,7 @@
             <el-form-item label="业务分类" prop="tabCategory">
                 {{form.tabCategory == 0 ? '影视':'教育'}}
             </el-form-item>
-            <el-form-item label="内容源" v-if="form.tabCategory==='0'" prop="tabResource">
+            <el-form-item label="内容源" v-if="form.tabCategory == 0" prop="tabResource">
               {{sourceText[form.tabResource]}}
             </el-form-item>
             <el-form-item label="频道">
@@ -135,7 +135,7 @@ export default {
     'form.tabCategory': {
       deep: true,
       handler: function(newVal, oldVal) {
-        if (newVal === '1') {
+        if (newVal === 1) {
           this.pannelItems = this.eduProductItems.categoryList
           this.productItems = this.eduProductItems.productList
           if (this.eduProductItems.categoryList.length === 0) { this.pannel = '不限' }
@@ -143,7 +143,7 @@ export default {
             this.pannel = ''
             this.product = ''
           }
-        } else if (newVal === '0') {
+        } else if (newVal === 0) {
           this.handleTabResourceChange(this.form.tabResource)
         }
       }
@@ -255,11 +255,11 @@ export default {
         tabId: undefined,
         tabName: '',
         tabParentType: 'special',
-        tabCategory: '0',
+        tabCategory: 0,
         tabResource: '',
         priority: 1,
         currentVersion: '',
-        tabStatus: ''
+        currentStatus: ''
       },
       globalTabResource: '',
       parentResource: '',
@@ -381,25 +381,28 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           var jsonStr = {
-            tabInfo: {
-              tabParentType: 'special',
-              tabId: form.tabId,
-              systemDefault: '',
-              tabName: form.tabName,
-              tabType: 3,
-              tabStatus: status,
-              tabResource: form.tabCategory === '0' ? form.tabResource : '',
-              currentVersion: form.currentVersion
-            },
-            filmDetail: {
-              source: form.tabCategory === '0' ? form.tabResource : '',
+            // tabInfo: {
+            tabParentType: 'special',
+            tabId: form.tabId,
+            tabName: form.tabName,
+            tabType: 3,
+            tabStatus: status,
+            tabResource: form.tabCategory === 0 ? form.tabResource : '',
+            currentVersion: form.currentVersion,
+            tabCategory: form.tabCategory,
+            hasSubTab: 0,
+            tabCnTitle: form.tabName,
+            // },
+            filmDetailPageInfo: {
+              source: form.tabCategory === 0 ? form.tabResource : '',
               product: this.product || '0',
               channel: this.pannel || '0',
               category: form.tabCategory,
               priority: form.priority
             },
-            pannelJson: this.table.data
+            panelInfoList: this.table.data
           }
+          console.log(jsonStr)
           this.$service.tabInfoUpsert(jsonStr, '保存成功').then((data) => {
             this.$emit('open-list-page')
           })
@@ -511,17 +514,6 @@ export default {
       }
     },
     handleSelectPanelEnd(blockData) {
-      // 新添加的，将成为普通版块加在最后面
-      // const pannelList = this.tabInfo.pannelList
-      // const start = pannelList.length - 1
-      // data.forEach(function(item, index) {
-      //   this.doInsertPanel(item.data, {
-      //     index: start + index,
-      //     type: 'NORMAL',
-      //   })
-      // }.bind(this))
-      // this.showPanelSelector = false
-      // this.$refs.virtualTab.isDragging = false
       const table = this.table
       table.data = []
       const initial = [
@@ -538,26 +530,29 @@ export default {
           pannelGroupRemark: '相关明星'
         }
       ]
-      table.data = table.data.concat(initial).concat(blockData)
-      // table.data = table.data.concat(blockData)
+      table.data = table.data.concat(initial)
+      blockData.forEach((item, index) => {
+        table.data.push(item.data)
+      })
       table.data.forEach((item, index) => {
         this.$set(item, 'pannelSequence', index + 1)
+        this.$set(item, 'isDmpPanel', 0)
       })
     },
     setFormInfo(data) {
-      this.form.tabId = data.filmDetail.tabId
-      this.form.tabName = data.filmDetail.tabName
-      this.form.tabCategory = data.filmDetail.category
-      this.form.priority = data.filmDetail.priority
-      this.form.tabResource = data.filmDetail.source
-      this.form.currentVersion = data.filmDetail.currentVersion
-      this.form.currentStatus = data.filmDetail.currentStatus
-      this.globalTabResource = data.filmDetail.source
-      this.pannel = data.filmDetail.channel
-      this.product = data.filmDetail.product
-      this.table.data = data.pannelList
+      this.form.tabId = data.tabId
+      this.form.tabName = data.tabName
+      this.form.tabCategory = data.tabCategory
+      this.form.priority = data.filmDetailPageInfo.priority
+      this.form.tabResource = data.tabResource
+      this.form.currentVersion = data.currentVersion
+      this.form.currentStatus = data.tabStatus
+      this.globalTabResource = data.tabResource
+      this.pannel = data.filmDetailPageInfo.channel
+      this.product = data.filmDetailPageInfo.product
+      this.table.data = data.panelInfoList
       let pannelNameList = []
-      data.pannelList.forEach((dataBack) => {
+      data.panelInfoList.forEach((dataBack) => {
         pannelNameList.push(dataBack.pannelName)
       })
       this.table.data.forEach((item, index) => {
@@ -590,7 +585,7 @@ export default {
         this.form.tabResource = ''
         if (this.mode === 'edit') {
           this.title = '编辑页面'
-          this.$service.editFilmDetailPage({ id: this.editId })
+          this.$service.tabInfoGet({ id: this.editId, tabType: 3 })
             .then((data) => {
               this.setFormInfo(data)
               this.categoryEdit = true

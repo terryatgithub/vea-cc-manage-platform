@@ -10,20 +10,20 @@
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input v-model="filter.tabName" placeholder="版面标题"/>
+            <el-input v-model="filter.tabName" placeholder="版面名称"/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
             <el-select
-              v-model="filter.source"
+              v-model="filter.tabResource"
               placeholder="内容源"
               clearable
               @change="pannelValue=[];filter.channel=''"
             >
-              <el-option value="qq" label="腾讯"/>
-              <el-option value="iqiyi" label="爱奇艺"/>
-              <el-option value="youku" label="优酷"/>
+              <el-option value="o_tencent" label="腾讯"/>
+              <el-option value="o_iqiyi" label="爱奇艺"/>
+              <el-option value="o_youku" label="优酷"/>
             </el-select>
           </div>
         </el-form-item>
@@ -41,7 +41,7 @@
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-select v-model="filter.category" clearable placeholder="业务分类">
+            <el-select v-model="filter.tabCategory" clearable placeholder="业务分类">
               <el-option value="0" label="影视"/>
               <el-option value="1" label="教育"/>
             </el-select>
@@ -113,7 +113,8 @@ export default {
     return {
       pannelValue: [],
       filter: {
-        tabParentType: 'special'
+        tabType: 3,
+        idPrefix: '10'
       },
       pagination: {
         currentPage: 1
@@ -158,29 +159,29 @@ export default {
             }
           },
           {
-            prop: 'priority',
+            prop: 'filmDetailPageInfo.priority',
             label: '优先级',
             sortable: true
           },
           {
-            prop: 'category',
+            prop: 'tabCategory',
             label: '业务分类',
             sortable: true,
             formatter: row => {
-              return row.category === '0'
+              return row.tabCategory == 0 || row.tabCategory == 67
                 ? '影视'
-                : row.category === '1'
+                : row.tabCategory == 1
                   ? '教育'
                   : ''
             }
           },
           {
-            prop: 'source',
+            prop: 'filmDetailPageInfo.source',
             label: '内容源',
             sortable: true,
             formatter: row => {
-              if (row.category == 0) {
-                switch (row.source) {
+              if (row.tabCategory === 0 || row.tabCategory === 67) {
+                switch (row.filmDetailPageInfo.source) {
                   case 'qq':
                     return '腾讯'
                   case 'iqiyi':
@@ -202,7 +203,7 @@ export default {
                 row.currentVersion +
                 '/' +
                 ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过'][
-                  row.currentStatus
+                  row.tabStatus
                 ]
               )
             }
@@ -234,7 +235,7 @@ export default {
             sortable: true
           },
           {
-            prop: 'currentOperator',
+            prop: 'modifierName',
             label: '更新人',
             sortable: true
           },
@@ -274,20 +275,26 @@ export default {
       return filter
     },
     // 表单筛选
-     handleFilterChange(type) {
-      if(this.$isNumber(this.filter.tabId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
+    // handleFilterChange(type) {
+    //   if (this.$isNumber(this.filter.tabId)) {
+    //     if (type === 'query') {
+    //       if (this.pagination) {
+    //         this.pagination.currentPage = 1
+    //       }
+    //     }
+    //     this.fetchData()
+    //   }
+    // },
+    handleFilterChange(type) {
+      if (type !== 'pagination') {
+        if (this.pagination) {
+          this.pagination.currentPage = 1
         }
-        this.fetchData() 
       }
+      this.fetchData()
     },
     handleFilterReset() {
-      this.filter = {
-         tabParentType: 'special'
-      }
+      this.filter = { tabType: 3 }
       this.pannelValue = []
       this.fetchData()
     },
@@ -302,10 +309,9 @@ export default {
         return false
       }
       this.$service
-        .filmDetailPageList({ tabId: selected.join() })
+        .tabInfoGet({ id: selected.join(), tabType: 3 })
         .then(data => {
-          const row = data.rows[0]
-          if (row.currentStatus !== 2) {
+          if (data.tabStatus !== 2) {
             this.$alert('该状态不允许编辑！', '操作提示', {
               confirmButtonText: '确定'
             })
@@ -350,7 +356,7 @@ export default {
         this.table.selected = []
       }
     },
-        handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove() {
       this.selected = []
       this.table.selected = []
     },
