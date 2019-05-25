@@ -129,8 +129,8 @@
                     <el-option
                       v-for="(item, index) in picTypeOptions"
                       :key="index"
-                      :value="item.value"
-                      :label="item.label"
+                      :value="item.dictEnName"
+                      :label="item.dictCnName"
                     ></el-option>
                   </el-select>
                 </el-form-item>
