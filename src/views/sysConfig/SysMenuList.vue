@@ -236,7 +236,11 @@ export default {
     },
     // 查询
     handleFilterChange(type) {
-      if (this.$isNumber(this.filter.elid)) {
+      if (this.$isNumber([
+        { label: 'ID', value: this.filter.elid },
+        { label: '标签ID', value: this.filter.tabId },
+        { label: '菜单父ID', value: this.filter.pmid }
+      ])) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
