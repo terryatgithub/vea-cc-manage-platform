@@ -291,12 +291,13 @@ export default {
       }, [])
     },
     handleFilterChange (type) {
+
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }
       }
-      this.fetchData()
+        this.fetchData()
     },
     handleFilterReset () {
       this.filter = {
@@ -321,6 +322,7 @@ export default {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.userConfigPageList(filter).then(data => {
+        debugger
         this.pagination.total = data.total
         this.table.data = data.rows
       })

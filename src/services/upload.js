@@ -31,7 +31,7 @@ export function uploadLayoutFile ({ file, onUploadProgress }) {
   formData.append('file', file)
   return axios({
     method: 'post',
-    url: 'api/v1/layoutInfo/getLayoutFile.html',
+    url: 'api/v1/layout/getLayoutFile.html',
     data: formData,
     onUploadProgress
   }).then(({ data }) => {

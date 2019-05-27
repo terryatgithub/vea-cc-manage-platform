@@ -196,7 +196,7 @@ export default {
     getLayoutJson(data) {
       let d = JSON.parse(data.content) //布局内容
       this.form.layoutModel = d.type
-      this.form.layoutName = data.fileName.substr(0, 45)
+      this.form.layoutName = data.fileName.replace('.txt','')
       let layoutjson = {}
       this.content = d.contents
       if (d.type === 'Expander') {

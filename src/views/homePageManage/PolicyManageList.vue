@@ -13,11 +13,6 @@
         @edit="editData"
         @delete="batchDel"
       ></ButtonGroupForListPage>
-      <!-- <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">删除</el-button>
-      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
@@ -267,7 +262,10 @@ export default {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+      let pagination = this.pagination
+      if (pagination.currentPage * pagination.pageSize - pagination.total < pagination.pageSize) {
+        this.fetchData()
+      }
       }
     },
     //重置

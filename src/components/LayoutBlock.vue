@@ -134,6 +134,8 @@ export default {
   },
   methods: {
     init() {
+      this.maxY = 0
+      this.maxX = 0
       this.content.forEach(val => {
         val = val.resize ? val.resize : val
         this.maxX = Math.max(this.maxX, val.x + val.width)

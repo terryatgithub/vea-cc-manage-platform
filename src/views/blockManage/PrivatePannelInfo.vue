@@ -401,7 +401,7 @@ export default {
       const selected = this.panelGroupCategoryOptions.find(function(item) {
         return item.dictId === value
       })
-      return selected && selected.label
+      return selected && selected.dictCnName
     },
     getPanelGroupTypeLabel(value) {
       const labelMap = {
@@ -519,7 +519,8 @@ export default {
       return panel
     },
     parseApiToData(data) {
-      const panel = JSON.parse(JSON.stringify(data))
+      debugger
+      const panel = data
       const firstPanel = data.pannelList[0]
       panel.pannelResource = firstPanel.pannelResource
       panel.showTitle = firstPanel.showTitle == 1 ? true : false
@@ -577,7 +578,7 @@ export default {
       case 'edit':
         this.title = '编辑'
         break
-      case 'replica':
+      case 'replicate':
         this.title = '创建副本'
       case 'read':
         this.title = '预览'

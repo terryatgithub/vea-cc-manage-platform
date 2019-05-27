@@ -40,7 +40,9 @@ export default {
         },
       filter: {
         sort: undefined,
-        order: undefined
+        order: undefined,
+        rows: 5
+
       },
       filterSchema: null,
       pagination: {},
@@ -166,22 +168,19 @@ export default {
     let filterSchema = _.map({
        urlIsTrailer: _.o.enum(this.urlIsTrailers).other("form", {
         component: "Select",
-        placeholder: "素材类型",
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: "素材类型"
       }),
       urlTitle: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '单集名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '单集名称'
       })
     }).other('form', {
       layout: 'inline',
+       cols: {
+        item: 6,
+        label: 0,
+        wrapper: 20
+      },
       footer: {
         cols: {
           label: 0,

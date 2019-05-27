@@ -204,7 +204,6 @@
                     <el-tooltip :content="orderTip">
                       <el-button
                         :icon="searchForm.order === 'asc' ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"
-                        size="mini"
                         @click="changeSort()"
                       ></el-button>
                     </el-tooltip>
@@ -228,7 +227,7 @@
                   </el-form-item>
                   <el-form-item label="主演">
                     <el-select v-model="searchForm.actors" filterable allow-create size="small">
-                      <el-option label="请选择/输入" value></el-option>'
+                      <el-option label="请选择/输入" value></el-option>
                       <!-- <el-option
                         v-for="(actor, aIndex) in conditionList.actors"
                         :key="actor.tagId"
@@ -546,6 +545,7 @@ export default {
         areas: '' // 地区
       }
       this.searchForm.ccSearchReset = true
+         this.pagination.currentPage = 1
       this.searchParams = this.deepClone(this.searchForm)
       if (this.partner !== 'tencent') {
         this.partner = 'tencent'
@@ -722,8 +722,10 @@ export default {
       }
       if (this.searchForm.orderBy) {
         mediaObj.orderBy = this.searchForm.orderBy //排序方式
+        mediaObj.order = this.searchForm.order //排序方式
       } else {
-        delete matchMedia.orderBy
+        delete mediaObj.orderBy
+        delete mediaObj.order
       }
       if (this.searchForm.directors) {
         mediaObj.directors = this.searchForm.directors //导演

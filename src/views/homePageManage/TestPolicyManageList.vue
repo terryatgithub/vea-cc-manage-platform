@@ -267,7 +267,10 @@ export default {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+      let pagination = this.pagination
+      if (pagination.currentPage * pagination.pageSize - pagination.total < pagination.pageSize) {
+        this.fetchData()
+      }
       }
     },
     //重置
