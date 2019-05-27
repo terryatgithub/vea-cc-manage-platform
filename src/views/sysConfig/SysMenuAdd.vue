@@ -86,7 +86,7 @@ export default {
         iconClass: [
           { required: true, message: '请输入图标样式', trigger: 'blur' }
         ],
-        tabId: [{ required: true, message: '请输入标签ID', trigger: 'blur' }],
+        tabId: [{ required: false, message: '请输入标签ID', trigger: 'blur' }],
         tabTitle: [
           { required: true, message: '请输入标签名称', trigger: 'blur' }
         ],
