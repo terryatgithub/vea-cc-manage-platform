@@ -167,8 +167,8 @@ export default {
               pannelGroupId: tableRow.pannelGroupId,
               pannelGroupRemark: tableRow.pannelGroupRemark,
               duplicateVersion: tableRow.duplicateVersion,
-              pannelType: tableRow.pannelType,
-              type: 'AlbumPannelInfo'
+              pannelType: tableRow.pannelType
+            //  type: 'AlbumPannelInfo'
             }
             console.log("AlbumPannelInfo")
             rows.push(row)

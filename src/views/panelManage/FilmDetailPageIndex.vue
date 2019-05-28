@@ -7,9 +7,9 @@
     />
     <FilmDetailPageAdd
       v-if="!isShow"
-      :editId="editId"
+      :id="editId"
       :initMode="mode"
-      :duplicateVersionVersion = "duplicateVersionVersion"
+      :version = "duplicateVersionVersion"
       @open-list-page="openListPage"
       @go-back="goBack"
     />

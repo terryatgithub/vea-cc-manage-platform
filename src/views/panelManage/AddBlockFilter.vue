@@ -62,7 +62,7 @@ export default {
       },
       privateBlock: {
         filter: {
-          pannelType: 4,
+          pannelType: 5,
           resourceIsNull: true,
           pannelResource: 'qq',
           multiStatus: '3,4'

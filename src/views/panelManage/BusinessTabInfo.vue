@@ -4,9 +4,9 @@
       <ContentCard :title="title" @go-back="$emit('go-back')" v-show="isShow">
         <el-row :gutter="40">
           <el-col :span="24">
-             <div class="form-legend-header">
-                <span>基本信息</span>
-              </div>
+            <div class="form-legend-header">
+              <span>基本信息</span>
+            </div>
             <el-form
               ref="tabForm"
               :rules="rules"
@@ -57,18 +57,19 @@
               </el-form-item>
               <el-form-item label="选择版块" prop="tags">
                 <el-button type="primary" plain @click="handleSlectPannelStart">选择版块</el-button>
-               
+
                 <el-dropdown>
-          <el-button type="primary" plain class="marginL">
-            添加版块<i class="el-icon-caret-bottom el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="openCreatePage('pannelInfo', 1)">常规版块</el-dropdown-item>
-            <el-dropdown-item @click.native="openCreatePage('AlbumPannelInfo' ,3)">业务专辑</el-dropdown-item>
-            <el-dropdown-item @click.native="openCreatePage('PrivatePannelInfo')">专属影院</el-dropdown-item>
-          </el-dropdown-menu>
+                  <el-button type="primary" plain class="marginL">
+                    添加版块
+                    <i class="el-icon-caret-bottom el-icon--right"></i>
+                  </el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item @click.native="openCreatePage('pannelInfo', 1)">常规版块</el-dropdown-item>
+                    <el-dropdown-item @click.native="openCreatePage('AlbumPannelInfo' ,3)">业务专辑</el-dropdown-item>
+                    <el-dropdown-item @click.native="openCreatePage('PrivatePannelInfo')">专属影院</el-dropdown-item>
+                  </el-dropdown-menu>
                 </el-dropdown>
-                 <OrderableTable
+                <OrderableTable
                   v-model="tab.pannelList"
                   :header="tabGroupTableHeader"
                   :hide-action="true"
@@ -85,8 +86,8 @@
       </ContentCard>
       <AddBlockFilter
         :parentPannelResource="tab.tabResource"
-        v-if="mode==='selectBlockResource'"
-        @go-back="isShowPannelInfoList=false"
+        v-show="mode==='selectBlockResource'"
+        @go-back="goBack"
         @add-block="addBlock"
       />
     </div>
@@ -103,9 +104,9 @@
           @copy="handleCopy"
           @select-version="fetchData"
         >
-         <div class="form-legend-header">
-                <span>基本信息</span>
-              </div>
+          <div class="form-legend-header">
+            <span>基本信息</span>
+          </div>
           <el-row :gutter="40">
             <el-col :span="24">
               <el-form
@@ -175,8 +176,7 @@
       :version="duplicateVersion"
       :initMode="viewId!==undefined? 'read':'create'"
       v-if="mode==='PrivatePannelInfo'"
-    >
-    </PrivatePannelInfo>
+    ></PrivatePannelInfo>
     <PanelInfo
       @go-back="goBack"
       @upsert-end="goBack"
@@ -185,8 +185,7 @@
       :initMode="viewId!==undefined? 'read':'create'"
       :panel-data-type="panelDataType"
       v-if="mode==='pannelInfo' || mode==='AlbumPannelInfo'"
-    >
-    </PanelInfo>
+    ></PanelInfo>
     <ReleaseTimeSetter
       v-if="showTimeShelf"
       @cancel="showTimeShelf = false"
@@ -219,7 +218,7 @@ export default {
     initMode: String,
     version: {
       type: String,
-      default(){
+      default() {
         return ''
       }
     }
@@ -251,7 +250,7 @@ export default {
         step: '00:01',
         end: '00:59'
       },
-      panelDataType: 1,//1 为常规运营，3为业务专辑
+      panelDataType: 1, //1 为常规运营，3为业务专辑
       initSumTime: 120,
       STATUS: STATUS,
       STATUS_TEXT: STATUS_TEXT,
@@ -310,7 +309,7 @@ export default {
     }
   },
   computed: {
-     resourceInfo() {
+    resourceInfo() {
       const tab = this.tab
       if (tab.tabId) {
         return {
@@ -409,7 +408,7 @@ export default {
     }
   },
   methods: {
-    handleCopy(){
+    handleCopy() {
       const data = this.getFormData()
       data.tabStatus = this.STATUS.waiting
       data.tabId = undefined
@@ -529,6 +528,7 @@ export default {
       return data
     },
     goBack() {
+      debugger
       this.mode = this.preMode
     },
     addBlock(rows) {
@@ -538,10 +538,25 @@ export default {
     handlePreviewPannel(row, version) {
       this.preMode = this.mode
       this.viewId = row.pannelGroupId
-      this.mode = row.type
+      switch (row.pannelType) {
+        case 1:
+          this.mode = 'pannelInfo'
+          break
+        case 3:
+          this.mode = 'AlbumPannelInfo'
+          break
+        case 5:
+        case 9:
+        case 10:
+          this.mode = 'PrivatePannelInfo'
+          break
+      }
+      //  else {
+      //   this.mode = row.type
+      // }
       this.duplicateVersion = version
     },
-    openCreatePage(mode, panelDataType){
+    openCreatePage(mode, panelDataType) {
       this.preMode = this.mode
       this.viewId = undefined
       this.mode = mode
@@ -574,7 +589,7 @@ export default {
         .catch(function() {})
     },
     getTabType() {
-      return this.$service.getTabType({tabParentType: 'biz'}).then(data => {
+      return this.$service.getTabType({ tabParentType: 'biz' }).then(data => {
         this.tabTypes = data.reduce((result, current) => {
           result.push({
             label: current.dictCnName,
@@ -628,7 +643,7 @@ export default {
             e.pannelGroupRemark = e.pannelName
             return e
           })
-          this.status ? data.currentVersion: this.status
+          this.status ? data.currentVersion : this.status
           data.tabType = data.tabType.toString()
           this.initSumTime = data.timeCycle
           this.tab = Object.assign({}, this.tab, data)

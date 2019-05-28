@@ -24,9 +24,9 @@ function afterEach (to) {
   const breadcrumb = to.matched.slice(1).map(({ name, meta }) => {
     return {
       name: meta.title,
-      to: name
-        ? { name }
-        : undefined
+      to: undefined
+        // ? { name }
+        // : undefined
     }
   })
   app.$nextTick(() => {

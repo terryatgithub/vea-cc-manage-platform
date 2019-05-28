@@ -208,14 +208,14 @@ export default {
     getIDs (item) {
       let ids = []
       let items = []
-       if (typeof item.children !== 'undefined') {
+      ids.push(item.policyId)
+      items.push(item)
+      if (typeof item.children !== 'undefined') {
         item.children.forEach(e => {
           ids.push(e.policyId)
           items.push(e)
         })
-      }
-      ids.push(item.policyId)
-      items.push(item)
+      } 
       return {
         ids: ids,
         items: items
