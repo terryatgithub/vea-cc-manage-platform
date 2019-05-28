@@ -625,8 +625,8 @@ export default {
     handleSelectTabEnd(result) {
       const selected = result[0]
       if (selected) {
-        this.contentForm.redundantParams.tabId = selected.tabId + "";
-        this.contentForm.redundantParams.tabType = selected.tabType;
+        this.$set(this.contentForm.redundantParams, 'tabId', selected.tabId + '')
+        this.$set(this.contentForm.redundantParams, 'tabType', selected.tabType + '')
       }
     },
     handleSelectCrowdStart() {

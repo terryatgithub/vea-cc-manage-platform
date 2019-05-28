@@ -148,7 +148,6 @@ export default {
           openMode: 'app',
           webpageUrl: '',
           webpageType: '2',
-          webAppVersion: '102007',
           videoName: '',
           videoUrl: '',
           pictureUrl: '',
@@ -159,7 +158,7 @@ export default {
           bywhat: 'action',
           byvalue: '',
           data: undefined,
-          extendedParams: [{ key: '', value: '' }]
+          params: [{ key: '', value: '' }]
         }
       }
     },
@@ -233,19 +232,7 @@ export default {
       const specificContentList = block.specificContentList || []
       const defaultContentForm = this.getDefaultContentForm()
       const parse = (data) => {
-        let redundantParams = data.redundantParams
-        if (redundantParams) {
-          if (redundantParams.byvalue === 'coocaa.intent.action.browser') {
-            data.webpageTypeRadio = '1'
-          }
-          if (redundantParams.byvalue === 'coocaa.intent.action.browser.no_trans') {
-            data.webpageTypeRadio = '2'
-          }
-          if (redundantParams.versionCode) {
-            redundantParams.webAppVersion = redundantParams.versionCode
-          }
-        }
-
+        let redundantParams
         const cornerList = data.cornerList
         if (cornerList && cornerList.length > 0) {
           data.cornerList = cornerList.reduce((result, item) => {
@@ -263,12 +250,17 @@ export default {
               const [key, val] = item.split('==')
               result[key] = val
               return result
-            })
+            }, {})
             const openMode = params.openMode || 'app' // 为兼容业务专辑中没有openMode的params参数 采用app作为默认值
-  
             switch (openMode) {
                 case "webpage": {
                     onclick.webpageUrl = onclick.params.url;
+                    if (onclick.byvalue === 'coocaa.intent.action.browser') {
+                      onclick.webpageType= '1'
+                    }
+                    if (onclick.byvalue === 'coocaa.intent.action.browser.no_trans') {
+                      onclick.webpageType= '2'
+                    }
                     break;
                 }
                 case "video": {
@@ -287,7 +279,7 @@ export default {
                 }
                 case "app": {
                     const onclickParams = onclick.params
-                    onclick.extendedParams = Object.keys(onclick.params).map(key => {
+                    onclick.params = Object.keys(onclick.params).map(key => {
                       return {
                         key,
                         value: onclickParams[key]
@@ -304,6 +296,9 @@ export default {
             delete data.onclick
         }
 
+        if (redundantParams) {
+          data.redundantParams = redundantParams
+        }
         return Object.assign({}, defaultContentForm, data)
       }
       this.normalContentList = normalContentList.length > 0 
@@ -328,7 +323,6 @@ export default {
           const currentOnclick = content.redundantParams;
           const openMode = currentOnclick.openMode;
           params = "openMode==" + openMode;
-          const versioncode = currentOnclick.webAppVersion;
           const webpageType = currentOnclick.webpageType
           switch (openMode) {
               case "webpage": {
@@ -336,7 +330,7 @@ export default {
                       //浮窗网页
                       onclick = JSON.stringify({
                           packagename: "com.coocaa.app_browser",
-                          versioncode: versioncode,
+                          versioncode: currentOnclick.versioncode,
                           dowhat: "startActivity",
                           bywhat: "action",
                           byvalue: "coocaa.intent.action.browser",
@@ -349,7 +343,7 @@ export default {
                       //全屏网页
                       onclick = JSON.stringify({
                           packagename: "com.coocaa.app_browser",
-                          versioncode: versioncode,
+                          versioncode: currentOnclick.versioncode,
                           dowhat: "startActivity",
                           bywhat: "action",
                           byvalue: "coocaa.intent.action.browser.no_trans",
@@ -413,10 +407,10 @@ export default {
                   break;
               }
               case "app": {
-                  var convertedParams = {};
-                  var extendedParams = currentOnclick.extendedParams;
-                  for (var i = 0; i < extendedParams.length; i++) {
-                      var p = extendedParams[i];
+                  let convertedParams = {};
+                  let params = currentOnclick.params;
+                  for (var i = 0; i < params.length; i++) {
+                      var p = params[i];
                       if (p.key !== "" && p.value !== "") {
                           convertedParams[p.key] = p.value;
                       }
