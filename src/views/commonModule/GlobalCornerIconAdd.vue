@@ -37,7 +37,7 @@
                 <el-form-item
                   :prop="'fileInfo.' + index + '.globalIconTypeId'"
                   :rules="rules.type"
-                  label="角标分类1"
+                  label="角标分类"
                 >
                   <el-select v-model="file.globalIconTypeId">
                     <el-option

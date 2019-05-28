@@ -16,7 +16,7 @@
         <el-input v-model="basicForm.containerName" :disabled="disabled"></el-input>
       </el-form-item>
       <el-form-item label="推荐位类型">
-        <el-select v-model="basicForm.containerType">
+        <el-select v-model="basicForm.containerType" :disabled="disabled">
           <el-option label="视频列表" value="REFERENCE_BROADCASTING"></el-option>
         </el-select>
       </el-form-item>
@@ -190,7 +190,7 @@
         </el-form-item>
 
         <el-form-item label="点击事件" prop="sign" v-if="basicForm.configModel === 'group'">
-          <el-radio-group v-model="normalForm.sign" :disabled="signDisabled" size="mini">
+          <el-radio-group v-model="normalForm.sign" :disabled="signDisabled">
             <el-radio label="autoSet" :disabled="disabled">自动生成</el-radio>
             <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
           </el-radio-group>
@@ -198,11 +198,11 @@
 
         <div v-if="normalForm.sign === 'manualSet'">
             <el-form-item label="打开方式">
-              <el-select value="第三方应用" disabled="disabled">
+              <el-select value="第三方应用" :disabled="disabled">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
               <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
-            </el-form-item>
+            </el-form-item> 
             <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled"></AppParams>
             <AppParamsRead :value="normalForm.onclick" v-if="disabled"/>
             <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
@@ -301,11 +301,11 @@
         </div>
         <div v-if="lowerForm.coverType === 'custom'">
             <el-form-item label="打开方式">
-              <el-select value="第三方应用" disabled="disabled">
+              <el-select value="第三方应用" :disabled="disabled">
                 <el-option value="app">第三方应用</el-option>
               </el-select>
               <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='lower'">快速填充</el-button>
-            </el-form-item>
+            </el-form-item> 
              <AppParams prop-prefix="onclick." v-model="lowerForm.onclick" ref="openWayLower" v-if="!disabled"></AppParams>
               <AppParamsRead :value="lowerForm.onclick" v-if="disabled"/>
         </div>

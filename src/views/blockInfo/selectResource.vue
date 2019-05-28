@@ -172,7 +172,7 @@ export default {
       this.table.selected = index
     },
    handleFilterChange(type) {
-      if(this.$isNumber(this.filter.pictureId)) {
+      if(this.$validateId(this.filter.pictureId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1

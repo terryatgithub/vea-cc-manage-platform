@@ -25,6 +25,7 @@
           @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
+           @delete="$emit('upsert-end')"
           @cancel-timing="fetchData"
         >
           <div v-if="currentPanelDataType == 1" class="base-info">

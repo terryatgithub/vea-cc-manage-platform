@@ -1,5 +1,5 @@
 import Vue from 'vue'
-
+import _ from 'lodash'
 /*
  *提示语
  *列表页选择数据进行--编辑查看
@@ -250,30 +250,30 @@ Vue.prototype.$changeKeyToValue = function (obj) {
 ] 
 传数组的格式如上，label为提示语，value 为字段的值
 */
-Vue.prototype.$isNumber = function(id) {
+Vue.prototype.$validateId = function (id) {
   let reg = /^\+?[1-9][0-9]*$/
   let error = ''
   if (id instanceof Array) {
     id.forEach((item) => {
-        if(!(item.value === undefined || reg.test(item.value)) ) {
-          error === '' ? error = item.label : error += ',' + item.label
-        }
+      if (!(item.value === undefined || _.trim(id) === '' || reg.test(item.value))) {
+        error === '' ? error = item.label : error += ',' + item.label
+      }
     })
-    if (error !=='') {
+    if (error !== '') {
       error += '只能是正数字'
     }
   } else {
-    if (!(id === undefined || reg.test(id))) {
+    if (!(id === undefined || _.trim(id) === '' || reg.test(id))) {
       error = 'ID只能是正数字'
     }
   }
   if (error !== '') {
-     this.$message({
+    this.$message({
       type: 'error',
       message: error
     })
-    return false 
+    return false
   } else {
-    return true 
+    return true
   }
 }

@@ -245,7 +245,7 @@ export default {
       }, [])
     },
     handleFilterChange(type) {
-      if(this.$isNumber(this.filter.dictId)) {
+      if(this.$validateId(this.filter.dictId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1

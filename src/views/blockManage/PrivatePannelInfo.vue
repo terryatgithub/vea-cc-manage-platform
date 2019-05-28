@@ -140,6 +140,7 @@
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
           @select-version="fetchData"
+           @delete="$emit('upsert-end')"
         >
           <!-- <div class="base-info">
             <div>专属影院版块：</div>

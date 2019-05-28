@@ -17,6 +17,9 @@
         <el-form-item label="角标类别" prop="attributeName">
           <div>{{form.attributeName}}</div>
         </el-form-item>
+        <el-form-item label="角标分类" prop="attributeName">
+          <div>{{form.cornerIconType.typeName}}</div>
+        </el-form-item>
         <el-form-item label="审核状态" prop="cornerStatus">
           <div>{{form.cornerStatus}}</div>
         </el-form-item>

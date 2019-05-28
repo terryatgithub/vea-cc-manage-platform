@@ -236,7 +236,7 @@ export default {
     },
     // 查询
     handleFilterChange(type) {
-      if (this.$isNumber([
+      if (this.$validateId([
         { label: 'ID', value: this.filter.elid },
         { label: '标签ID', value: this.filter.tabId },
         { label: '菜单父ID', value: this.filter.pmid }

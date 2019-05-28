@@ -267,7 +267,7 @@ export default {
     },
     //查询
     handleFilterChange(type) {
-      if(this.$isNumber(this.filter.pannelId)) {
+      if(this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1

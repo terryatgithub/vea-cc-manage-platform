@@ -103,6 +103,7 @@
           @audit="$emit('upsert-end')"
           @copy="handleCopy"
           @select-version="fetchData"
+           @delete="$emit('upsert-end')"
         >
           <div class="form-legend-header">
             <span>基本信息</span>

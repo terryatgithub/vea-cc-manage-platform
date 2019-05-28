@@ -12,18 +12,21 @@
       :initMode="mode"
       :duplicateVersionVersion = "version"
       @go-back="goBack"
+      @open-list-page="handleUpsertEnd"
     />
       <BusinessTabInfo 
       v-if="!isShowList&&tabParentType==='biz'"
        :id="id" 
       :init-mode="mode"
       :version="version"
+       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </BusinessTabInfo>
       <TabInfo
       v-if="!isShowList&&tabParentType==='home'"
       :id="id"
       :init-mode="mode"
+      @upsert-end="handleUpsertEnd"
       @go-back="goBack"
     ></TabInfo>
   </div>

@@ -14,6 +14,7 @@
           @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
+          @delete="$emit('upsert-end')"
         >
           <template v-if="mode !== 'read'">
             <el-form ref="tabForm" :rules="rules" :model="tabInfo" label-width="170px">

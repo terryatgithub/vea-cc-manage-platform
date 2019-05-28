@@ -251,7 +251,7 @@ export default {
       }, [])
     },
    handleFilterChange(type) {
-      if(this.$isNumber(this.filter.typeId)) {
+      if(this.$validateId(this.filter.typeId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1

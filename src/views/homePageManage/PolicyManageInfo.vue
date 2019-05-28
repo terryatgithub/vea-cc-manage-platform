@@ -119,6 +119,7 @@
         @shelves="fetchData"
         @audit="$emit('upsert-end')"
         @select-version="fetchData"
+         @delete="$emit('upsert-end')"
       >
         <div>
           <div class="form-legend-header">

@@ -168,10 +168,14 @@ export default {
       const { type, id, version } = this.resourceInfo
       this.$confirm('确认删除该版本吗?', '提示').then(() => {
         this.$service.deleteVersion({type,id,version}, '删除成功').then(() => {
-          const nextVersion = this.versionList.find((item) => {
-            return item.value !== version
-          }).value
-          this.$emit('select-version', nextVersion)
+          if (this.versionList.length === 0) {
+             this.$emit('delete') // 当只有草稿一个版本时
+          } else {
+            const nextVersion = this.versionList.find((item) => {
+              return item.value !== version
+            }).value
+            this.$emit('select-version', nextVersion)
+          }
         })
       }).catch(() => {})
     },

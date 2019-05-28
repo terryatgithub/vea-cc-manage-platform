@@ -107,6 +107,7 @@
             @unaudit="fetchData"
             @shelves="fetchData"
             @audit="$emit('upsert-end')"
+             @delete="$emit('upsert-end')"
           >
             <div class="split-bar">
               <i class="el-icon-edit">基本信息</i>

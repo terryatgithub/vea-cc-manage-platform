@@ -341,6 +341,10 @@ export default {
         {
           label: '爱奇艺',
           value: 'yinhe'
+        },
+         {
+          label: '优酷',
+          value: 'youku'
         }
       ],
       source: [],

@@ -14,6 +14,7 @@
           @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
+           @delete="$emit('upsert-end')"
         >
           <div class="form-legend-header">
             <span>基本信息</span>
@@ -126,6 +127,9 @@
                   />
                 </el-select>
               </el-form-item>
+              <el-form-item label="优先级" prop="priority">
+              {{form.priority}}
+            </el-form-item>
               <el-form-item label="选择的版块" prop="tags">
                 <OrderableTable
                   v-model="form.panelInfoList"
@@ -380,6 +384,13 @@ export default {
     },
     handlePreviewPannel(row, version) {
       this.preMode = this.mode
+      if (row.pannelGroupId < 0 ) {
+        this.$message({
+          type: 'error',
+          message: '来自第三方数据'
+        })
+        return
+      }
       this.viewId = row.pannelGroupId
       switch (row.pannelType) {
         case 1:
@@ -405,7 +416,24 @@ export default {
     },
     addBlock(rows) {
       this.mode = this.preMode
-      this.form.panelInfoList = rows
+      let panelInfoList = []
+         const initial = [
+        {
+          pannelGroupId: '-1002',
+          pannelGroupRemark: '花絮'
+        },
+        {
+          pannelGroupId: '-1001',
+          pannelGroupRemark: '相关推荐'
+        },
+        {
+          pannelGroupId: '-1003',
+          pannelGroupRemark: '相关明星'
+        }
+      ]
+     panelInfoList = panelInfoList.concat(initial)
+     panelInfoList = panelInfoList.concat(rows)
+     this.form.panelInfoList = panelInfoList
     },
     handleSlectPannelStart() {
       this.preMode = this.mode
@@ -492,8 +520,8 @@ export default {
           // this.form.tabResource = 'qq'
         })
     },
-    clearResource() {
-      this.table.data = []
+    handleRemovePannel(index) {
+      this.form.panelInfoList.splice(index, 1)
     },
     // 服务
     getMediaResourceInfos() {
@@ -604,32 +632,6 @@ export default {
           this.productItems = []
         }
       }
-    },
-    handleSelectPanelEnd(blockData) {
-      const table = this.table
-      table.data = []
-      const initial = [
-        {
-          pannelGroupId: '-1002',
-          pannelGroupRemark: '花絮'
-        },
-        {
-          pannelGroupId: '-1001',
-          pannelGroupRemark: '相关推荐'
-        },
-        {
-          pannelGroupId: '-1003',
-          pannelGroupRemark: '相关明星'
-        }
-      ]
-      table.data = table.data.concat(initial)
-      blockData.forEach((item, index) => {
-        table.data.push(item.data)
-      })
-      table.data.forEach((item, index) => {
-        this.$set(item, 'pannelSequence', index + 1)
-        this.$set(item, 'isDmpPanel', 0)
-      })
     },
     setFormInfo(data) {
       this.form.tabId = data.tabId

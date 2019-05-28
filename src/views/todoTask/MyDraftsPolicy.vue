@@ -77,7 +77,7 @@ export default {
       this.$emit('read', row)
     },
       handleFilterChange(type) {
-      if(this.$isNumber(this.filter.taskId)) {
+      if(this.$validateId(this.filter.taskId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1

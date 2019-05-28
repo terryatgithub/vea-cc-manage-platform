@@ -9,6 +9,7 @@
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
           @select-version="fetchData"
+           @delete="$emit('upsert-end')"
         >
     <div v-if="mode === 'read'" class="private-panel-info-read">
       <!-- <div class="private-panel-info-wrapper">
