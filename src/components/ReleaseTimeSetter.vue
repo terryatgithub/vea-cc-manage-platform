@@ -22,7 +22,7 @@
     </el-form>
     <div slot="footer">
         <el-button type="primary" @click="judgeTask" size="small">确 定</el-button>
-        <el-button size="small" @click="$emit('cancel')">取 消</el-button>
+        <el-button size="small" @click="showDialog = false">取 消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -47,6 +47,13 @@ export default {
                 releaseTime: [
                     { required: true, message: '请选择时间', trigger: 'change' }
                 ],
+            }
+        }
+    },
+    watch: {
+        showDialog(val) {
+            if (val === false) {
+                this.$emit('cancel')
             }
         }
     },

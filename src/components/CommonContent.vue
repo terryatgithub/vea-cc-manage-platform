@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="common-content">
     <template v-if="mode !== 'read'">
       <div v-if="mode === 'copy'">
         <VersionList 
@@ -267,9 +267,16 @@ export default {
 }
 
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 .release-info
   margin-bottom 5px
   color #ccc
   font-size 14px
+.common-content 
+    >>> .el-input__inner,
+    >>> .el-select
+        max-width 450px
+    >>> .el-input + .el-checkbox
+    >>> .el-select + .el-checkbox
+      margin-left 10px
 </style>

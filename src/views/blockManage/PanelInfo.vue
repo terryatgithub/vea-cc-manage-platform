@@ -255,10 +255,10 @@
 
             <el-form ref="form" :model="pannel" label-width="120px">
               <el-form-item v-if="pannel.parentType === 'normal'" label="版块标题" required>
-                <div>{{pannel.groupTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
+                <div>{{pannel.pannelList[0].pannelTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
               </el-form-item>
               <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
-                <div>{{pannel.pannelList[0].pannelTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
+                <div>{{pannel.groupTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
               </el-form-item>
               <el-form-item label="版块布局" v-if="selectedLayout">
                 <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
@@ -1385,7 +1385,17 @@ export default {
       console.log('panel', pannel)
       return pannel
     },
-    validate(pannel, cb) {
+    validate(pannel, callback) {
+      const cb = (err) => {
+        if (!err) {
+          callback()
+        } else {
+          this.$message({
+            type: 'error',
+            message: err
+          })
+        }
+      }
       const PANNEL_STATUS = this.$consts.status
       const status = pannel.pannelStatus
 
@@ -1587,41 +1597,33 @@ export default {
       data.isTiming = undefined
       data.releaseTime = undefined
       data.pannelStatus = this.$consts.status.draft
-      this.upsertPanelInfo(data)
+      this.validate(data, () => {
+        this.upsertPanelInfo(data)
+      })
     },
     handleSubmitAudit(timing) {
       const data = this.getFormData()
       data.pannelStatus = this.$consts.status.waiting
-      if (this.$consts.idPrefix == '10'){
-        if (timing) {
-          data.isTiming = timing.isTiming
-          data.releaseTime = timing.releaseTime
-          this.upsertPanelInfo(data)
+      this.validate(data, () => {
+        if (this.$consts.idPrefix == '10'){
+          if (timing) {
+            data.isTiming = timing.isTiming
+            data.releaseTime = timing.releaseTime
+            this.upsertPanelInfo(data)
+          } else {
+            this.$refs.commonContent.showReleaseTimeSetter = true
+          }
         } else {
-          this.$refs.commonContent.showReleaseTimeSetter = true
+          this.upsertPanelInfo(data)
         }
-      } else {
-        this.upsertPanelInfo(data)
-      }
+      })
     },
     upsertPanelInfo(data) {
-      this.validate(
-        data,
-        (err) => {
-          if (!err) {
-            this.$service
-              .panelUpsert(this.parseDataToApi(data), '保存成功')
-              .then(result => {
-                this.$emit('upsert-end')
-              })
-          } else {
-            this.$message({
-              type: 'error',
-              message: err
-            })
-          }
-        }
-      )
+      this.$service
+        .panelUpsert(this.parseDataToApi(data), '保存成功')
+        .then(result => {
+          this.$emit('upsert-end')
+        })
     },
     setPanelInfoData(panelInit) {
       const initData = panelInit

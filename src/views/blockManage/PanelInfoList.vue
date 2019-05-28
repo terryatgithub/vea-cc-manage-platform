@@ -20,6 +20,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -29,11 +30,13 @@
 </template>
 
 <script>
+import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 const ID = 'pannelGroupId'
 export default {
+  extends: BaseList,
   components: {
     ContentWrapper,
     Table,
@@ -50,6 +53,7 @@ export default {
 
   data () {
     return {
+      resourceType: 'panelInfo',
       pannelStatusOption: [
         { label: '下架', value: '0' },
         { label: '上架', value: '1' },
@@ -86,7 +90,8 @@ export default {
                   type: 'text'
                 },
                 on: {
-                  click: () => {
+                  click: (event) => {
+                    event.stopPropagation()
                     this.handleRead(row) 
                   }
                 }
@@ -105,7 +110,7 @@ export default {
             label: '内容源',
             prop: 'pannelResource',
             formatter: (row) => {
-                return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_voole': '优朋'}[row.pannelList[0].pannelResource]
+                return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_youku': '优酷'}[row.pannelList[0].pannelResource]
             }
           },
           {
@@ -134,7 +139,8 @@ export default {
                   type: 'text'
                 },
                 on: {
-                  click: () => {
+                  click: (event) => {
+                    event.stopPropagation()
                     this.handleRead(row, row.duplicateVersion) 
                   }
                 }
@@ -162,7 +168,8 @@ export default {
                 h('el-button', {
                   props: {type: 'text'},
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleCopy(row)
                     }
                   }
@@ -170,7 +177,8 @@ export default {
                 h('el-button', {
                   props: {type: 'text'},
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleToggleCollect(row)
                     }
                   }
@@ -214,7 +222,6 @@ export default {
      * 获取数据
      */
     fetchData() {
-      this.handleRowSelectionRemove()
       const filter = this.parseFilter()
       if(this.dataList) {
         this.$service.panelDataList(filter).then(data => {
@@ -268,40 +275,6 @@ export default {
         })
       })
     },
-    /**
-     * 行选择操作
-     */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item[ID] !== targetItem[ID]
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-    updateTableSelected() {
-      const table = this.table;
-      const newSelectedIndex = this.selected.reduce((result, item) => (result[item[ID]] = true, result), {});
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex[item[ID]]) {
-          result.push(index);
-        }
-        return result;
-      }, []);
-    },
-    handleCopy(row) {
-      this.$emit('copy', row)
-    },
     handleToggleCollect(row) {
       if (row.collected) {
         this.$service.collectCancel({ type: 'pannel', data: {resourceId: row.pannelGroupId}}, '取消收藏成功')
@@ -315,32 +288,6 @@ export default {
           })
       }
     },
-    handleCreate() {
-      this.$emit('create')
-    },
-    handleRead(row, version) {
-      this.$emit('read', row, version)
-    },
-    handleEdit() {
-      if (this.$isAllowEdit(this.selected)) {
-        this.$emit('edit', this.selected[0])
-      }
-    },
-    handleDelete() {
-      if (this.$isAllowDelete(this.selected) && window.confirm("确定要删除吗")) {
-        this.$service.panelRemove({ 
-          id: this.selected.map(item => item.pannelGroupId).join(',') 
-        }, "删除成功")
-        .then(() => {
-          this.clearSelected()
-          this.fetchData()
-        });
-      }
-    },
-    clearSelected() {
-      this.selected = [],
-      this.table.selected = []
-    }
   },
   created() {
     this.pannelStatus = this.pannelStatusOption.reduce((result, item) => {

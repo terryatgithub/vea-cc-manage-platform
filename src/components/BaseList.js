@@ -35,7 +35,7 @@ export default {
       const id = item[field.id]
       const status = item[field.status]
       const STATUS = this.$consts.status
-      if (status !== STATUS.draft || status !== STATUS.rejected) {
+      if (status !== STATUS.draft && status !== STATUS.rejected) {
         return this.$message({
           type: 'error',
           message: '该状态不允许编辑'

@@ -55,7 +55,7 @@ export default {
     handleDelete(selected) {
       this.$service
         .homePageInfoDelete({
-          id: this.selected.map(item => item.homepageId).join(',')
+          id: selected.map(item => item.homepageId).join(',')
         },'删除成功')
         .then(() => {
           this.$refs.list.fetchData()
