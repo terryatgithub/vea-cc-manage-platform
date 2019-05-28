@@ -18,7 +18,7 @@
             <i class="el-icon-location"></i> 内容运营平台
           </div>
         </div>
-        <span>&nbsp;&nbsp;/</span>
+        <span role="presentation" class="el-breadcrumb__separator">/</span>
         <Breadcrumb class="breadcrumb" :items="breadcrumb"/>
         <div class="user-info">
           <el-dropdown :hide-on-click="false" @command="handleDropdownCommand">
@@ -244,9 +244,6 @@ export default {
 .collpase-btn:hover, .collpase-btn:focus
   color: #fff
   background: #e44907
-.breadcrumb
-  margin-left: 10px
-  padding-top: 8px
 .user-info
   margin-left: auto
 .menu:not(.el-menu--collapse)

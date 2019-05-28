@@ -178,8 +178,8 @@ export default {
               pannelGroupId: tableRow.pannelGroupId,
               pannelGroupRemark: tableRow.pannelGroupRemark,
               duplicateVersion: tableRow.duplicateVersion,
-              pannelType: tableRow.pannelType,
-              type: 'PrivatePannelInfo'
+              pannelType: tableRow.pannelType
+              //type: 'PrivatePannelInfo'
             }
              console.log("PrivatePannelInfo")
             rows.push(row)

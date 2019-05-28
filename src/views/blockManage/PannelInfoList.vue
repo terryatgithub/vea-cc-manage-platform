@@ -167,8 +167,8 @@ export default {
               pannelGroupId: tableRow.pannelGroupId,
               pannelGroupRemark: tableRow.pannelGroupRemark,
               duplicateVersion: tableRow.duplicateVersion,
-              pannelType: tableRow.pannelType,
-              type: 'pannelInfo'
+              pannelType: tableRow.pannelType
+            //  type: 'pannelInfo'
             }
             console.log("pannelInfoList")
             rows.push(row)
