@@ -17,7 +17,7 @@
           :mode="mode"
           :resource-info="resourceInfo"
           @replicate="mode = 'replicate'"
-         @edit="mode = 'edit'; title='编辑'"
+          @edit="mode = 'edit'"
           @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
