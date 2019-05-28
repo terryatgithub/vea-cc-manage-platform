@@ -278,9 +278,9 @@
           <el-form-item label="网页地址" prop="webpageUrl">
             <el-input v-model.trim="contentForm.redundantParams.webpageUrl" :disabled="isReadonly"></el-input>
           </el-form-item>
-          <el-form-item label="应用版本号" prop="webAppVersion">
+          <el-form-item label="应用版本号" prop="versioncode">
             <el-input
-              v-model.trim="contentForm.redundantParams.webAppVersion"
+              v-model.trim="contentForm.redundantParams.versioncode"
               :disabled="isReadonly"
             ></el-input>
           </el-form-item>
@@ -657,14 +657,14 @@ export default {
       const redundantParams = contentForm.redundantParams
       if (val === 'webpage') {
         const webpageType = redundantParams.webpageType
-        redundantParams.webAppVersion = webpageType == '1' ? '1' : '102007'
+        redundantParams.versioncode = webpageType == '1' ? '1' : '102007'
       }
       if (val === 'app') {
         redundantParams.versioncode = ''
       }
     },
     handleWebPageTypeChange(val) {
-      this.contentForm.redundantParams.webAppVersion =
+      this.contentForm.redundantParams.versioncode =
         val == '1' ? '1' : '102007'
     },
     chopSubTitle(title) {
@@ -898,7 +898,8 @@ export default {
       })
     }
   },
-  created() {}
+  created() {
+  }
 }
 </script>
 
