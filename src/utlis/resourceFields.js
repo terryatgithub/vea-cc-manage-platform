@@ -6,5 +6,6 @@ export default {
   panelInfo: {
     id: 'pannelGroupId',
     status: 'pannelStatus'
-  }
+  },
+  
 }

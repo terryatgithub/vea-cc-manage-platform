@@ -7,6 +7,7 @@
       @read="handleRead"
       @edit="handleEdit"
       @copy="handleCopy"
+      @delete="handleDelete"
     />
     <PanelInfo 
       v-if='!isShowList' 
@@ -63,6 +64,14 @@ export default {
       this.$refs.list.fetchData();//更新页面
       this.mode = 'list'
       this.version = undefined
+    },
+    handleDelete(selected) {
+      this.$service.panelRemove({ 
+        id: selected.map(item => item.pannelGroupId).join(',') 
+      }, "删除成功")
+      .then(() => {
+        this.$refs.list.fetchData()
+      })
     },
     goBack () {
      this.isShowList = true

@@ -8,12 +8,11 @@
       @filter-reset="handleFilterReset"
     >
       <ButtonGroupForListPage 
-        pageName='albumPanel' 
-        @add="addTabInfo"
-        @edit="editData"
-        @delete="batchDel"
         v-if="dataList === undefined "
-        >
+        pageName='albumPanel' 
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete">
         </ButtonGroupForListPage>
       <Table
         :props="table.props"
@@ -21,6 +20,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -30,11 +30,13 @@
 </template>
 
 <script>
+import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 
 export default {
+  extends: BaseList,
   components: {
     ContentWrapper,
     Table,
@@ -51,6 +53,8 @@ export default {
 
   data () {
     return {
+      resourceType: 'panelInfo',
+      businessType: {},
       pannelStatusOption: [
         { label: '下架', value: '0' },
         { label: '上架', value: '1' },
@@ -61,8 +65,6 @@ export default {
       ],
       pannelStatus: {},
       filter: {
-         sort: undefined,
-        order: undefined,
         idPrefix: 10,
         pannelType: 3
       },
@@ -107,7 +109,7 @@ export default {
             label: '内容源',
             prop: 'pannelResource',
             formatter: (row) => {
-                return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_voole': '优朋'}[row.pannelList[0].pannelResource]
+                return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_youku': '优酷'}[row.pannelList[0].pannelResource]
             }
           },
           {
@@ -146,7 +148,33 @@ export default {
             prop: 'userName'
           },
           {
-            label: '操作'
+            label: '操作',
+            width: 140,
+            render: (h, {row}) => {
+              return h('div', [
+                h('el-button', {
+                  props: {type: 'text'},
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleCopy(row)
+                    }
+                  }
+                }, '复制'),
+                h('el-button', {
+                  props: {type: 'text'},
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleToggleCollect(row)
+                    }
+                  }
+                }, [
+                  h('el-icon', {class: row.collected ? 'el-icon-star-on' : 'el-icon-star-off'}),
+                  row.collected ? '取消' : '收藏'
+                ]),
+              ])
+            }
           }
         ],
         selected: [],
@@ -242,51 +270,19 @@ export default {
         })
       })
     },
-    /**
-     * 行选择操作
-     */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.pannelGroupId)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.pannelGroupId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
+    handleToggleCollect(row) {
+      if (row.collected) {
+        this.$service.collectCancel({ type: 'pannel', data: {resourceId: row.pannelGroupId}}, '取消收藏成功')
+          .then(() => {
+            this.$set(row, 'collected', false)
+          })
       } else {
-        this.selected = []
-        this.table.selected = []
+        this.$service.collect({ type: 'pannel', data: {resourceId: row.pannelGroupId}}, '收藏成功')
+          .then(() => {
+            this.$set(row, 'collected', true)
+          })
       }
-    },
-     handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.pannelGroupId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
-    },
-    // 按钮操作
-    addTabInfo() {
-
-    },
-    editData() {
-
-    },
-    batchDel() {
-
-    },
+    }
   },
   created() {
     this.pannelStatus = this.pannelStatusOption.reduce((result, item) => {
@@ -348,7 +344,7 @@ export default {
         resetText: '重置'
       }
     })
-    this.$service.getDictType({type: 'businessType'}).then(() => {
+    this.getBusinessType().then(() => {
       this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
     })
     // 影片详情页中的版块

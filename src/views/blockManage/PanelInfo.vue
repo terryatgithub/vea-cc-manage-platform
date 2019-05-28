@@ -541,7 +541,9 @@ export default {
         '&version=' +
         pannel.currentVersion
     },
-    handleCopy() {},
+    handleCopy() {
+      this.handleSaveDraft()
+    },
     // 布局
     handleSelectLayoutEnd(layout, blockCount) {
       this.selectedLayout = layout
