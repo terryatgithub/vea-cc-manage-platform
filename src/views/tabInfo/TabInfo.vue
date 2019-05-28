@@ -1861,31 +1861,33 @@ export default {
       )
     },
     handleCopy() {
-      const data = this.getFormData()
-      this.validateFormData(
-        data,
-        function() {
-          this.upsertTabInfo(data)
-        }.bind(this)
-      )
+      this.handleSaveDraft()
     },
     handleSaveDraft() {
       const data = this.getFormData()
       data.isTiming = undefined
       data.releaseTime = undefined
       data.tabStatus = this.$consts.status.draft
-      this.upsertTabInfo(data)
+      this.validateFormData(data, () => {
+        this.upsertTabInfo(data)
+      })
     },
     handleSubmitAudit(timing) {
       const data = this.getFormData()
       data.tabStatus = this.$consts.status.waiting
-      if (timing) {
-        data.isTiming = timing.isTiming
-        data.releaseTime = timing.releaseTime
-        this.upsertTabInfo(data)
-      } else {
-        this.$refs.commonContent.showReleaseTimeSetter = true
-      }
+      this.validateFormData(data, () => {
+        if (this.$consts.idPrefix == '10') {
+          if (timing) {
+            data.isTiming = timing.isTiming
+            data.releaseTime = timing.releaseTime
+            this.upsertTabInfo(data)
+          } else {
+            this.$refs.commonContent.showReleaseTimeSetter = true
+          }
+        } else {
+          this.updateTabInfo(data)
+        }
+      })
     },
     getFormData() {
       const data = JSON.parse(JSON.stringify(this.tabInfo))

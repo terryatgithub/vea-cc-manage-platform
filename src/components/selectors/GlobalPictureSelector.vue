@@ -45,7 +45,7 @@ export default {
     CardList,
     RemoteSelectorWrapper
   },
-  props: ['title', 'pictureResolution'],
+  props: ['title', 'pictureResolution', 'queryLongPoster'],
   data() {
     return {
       materialTypes: {}, //素材类型
@@ -78,7 +78,7 @@ export default {
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
     },
-      handleFilterChange(type) {
+    handleFilterChange(type) {
       if(this.$isNumber(this.filter.pictureId)) {
         if (type === 'query') {
           if (this.pagination) {
@@ -104,8 +104,13 @@ export default {
     //获取数据
     fetchData() {
       const filter = this.parseFilter()
-      if (this.pictureResolution) {
-        filter.pictureResolution = this.pictureResolution
+      const pictureResolution = this.pictureResolution
+      if (pictureResolution) {
+        filter.pictureResolution = pictureResolution
+      }
+      const queryLongPoster = this.queryLongPoster
+      if (queryLongPoster !== undefined) {
+        filter.queryLongPoster = queryLongPoster
       }
       this.$service.getResourceList(filter).then(data => {
         this.pagination.total = data.total

@@ -269,6 +269,12 @@ export default {
     fetchData() {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
+      if (filter.tabId && !/^\d+$/.test(filter.tabId)) {
+        return this.$message({
+          type: 'error',
+          message: 'ID 必须为正整数'
+        })
+      }
       this.$service.tabInfoList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
@@ -282,15 +288,13 @@ export default {
       }
       return filter
     },
-   handleFilterChange(type) {
-      if(this.$isNumber(this.filter.tabId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
+    handleFilterChange(type) {
+      if (type === 'query') {
+        if (this.pagination) {
+          this.pagination.currentPage = 1
         }
-        this.fetchData() 
       }
+      this.fetchData() 
     },
     handleFilterReset() {
       this.filter = {
