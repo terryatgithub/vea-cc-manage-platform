@@ -7,5 +7,8 @@ export default {
     id: 'pannelGroupId',
     status: 'pannelStatus'
   },
-  
+  tabInfo: {
+    id: 'tabId',
+    status: 'tabStatus'
+  }
 }

@@ -70,10 +70,10 @@
         <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
       </div> -->
          <ButtonGroupForListPage 
-        pageName='tab' 
-        @add="addTabInfo"
-        @edit="editData"
-        @delete="batchDel"
+          pageName='tab' 
+          @add="handleCreate"
+          @edit="handleEdit"
+          @delete="handleDelete"
         >
         </ButtonGroupForListPage>
       <Table
@@ -82,6 +82,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -91,9 +92,11 @@
 </template>
 
 <script>
+import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 export default {
+  extends: BaseList,
   components: {
     ContentWrapper,
     Table,
@@ -102,6 +105,7 @@ export default {
 
   data() {
     return {
+      resourceType: 'tabInfo',
       selected: [],
       tabTypeOption: [
         { label: '信号源版面', value: '5' },
@@ -250,7 +254,32 @@ export default {
           },
           {
             label: '操作',
-            prop: 'oper'
+            width: 140,
+            render: (h, {row}) => {
+              return h('div', [
+                h('el-button', {
+                  props: {type: 'text'},
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleCopy(row)
+                    }
+                  }
+                }, '复制'),
+                h('el-button', {
+                  props: {type: 'text'},
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleToggleCollect(row)
+                    }
+                  }
+                }, [
+                  h('el-icon', {class: row.collected ? 'el-icon-star-on' : 'el-icon-star-off'}),
+                  row.collected ? '取消' : '收藏'
+                ]),
+              ])
+            }
           }
         ],
         selected: [],
@@ -260,9 +289,6 @@ export default {
   },
 
   methods: {
-    handleRead(row, version) {
-      this.$emit('read', row, version)
-    },
     /**
      * 获取数据
      */
@@ -314,47 +340,24 @@ export default {
       const target = table.data[selected[0]]
       this.$emit('edit', target)
     },
-    batchDel() {},
-    /**
-     * 行选择操作
-     */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.tabId)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.tabId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-      handleAllRowSelectionRemove () {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.tabId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
-    },
     getBusinessType() {
       this.$service.getDictType({type: 'businessType'}).then(data => {
         this.businessType = data
       })
-    }
+    },
+    handleToggleCollect(row) {
+      if (row.collected) {
+        this.$service.collectCancel({ type: 'tab', data: {resourceId: row.tabId}}, '取消收藏成功')
+          .then(() => {
+            this.$set(row, 'collected', false)
+          })
+      } else {
+        this.$service.collect({ type: 'tab', data: {resourceId: row.tabId}}, '收藏成功')
+          .then(() => {
+            this.$set(row, 'collected', true)
+          })
+      }
+    },
   },
   created() {
     this.$service.getDictType({type: 'appIdType'}).then(data => {
