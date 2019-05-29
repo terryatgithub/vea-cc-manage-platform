@@ -75,6 +75,7 @@ export default {
       roleValue: [], // 右边数据
       data1: [], // 弹框数据
       user: [],
+      setRolesId: [],
       roleDataSelected: null,
       roleDialogVisible: false, // 角色管理窗口开关
       currentUserId: null,
@@ -189,14 +190,11 @@ export default {
     },
     handleRead ({ row }) {},
     setRole ({ row }) {
-      const userId = row.userId
-      const object = { userId: userId }
+      const object = { userId: row.userId }
       var data2 = []
       var data3 = []
       this.roleDialogVisible = true
-      // 清空前面Push进去的id
-      this.user = []
-      this.user.push(['userId', userId])
+      this.user = row.userId
       this.$service.getNotRolesByUserId(object).then(data => {
         this.data1 = data
         this.$service.getRolesByUserId(object).then(data => {
@@ -220,14 +218,23 @@ export default {
     handleChange (value, direction, movedKeys) {
       var str = []
       for (var i = 0; i < value.length; i++) {
-        str.push(['roleIds', value[i]])
+        if (str.indexOf(value[i]) == -1) {
+          str.push(value[i])
+        }
+        // str.push(['roleIds', value[i]])
       }
-      this.selectedRole = this.user.concat(str)
+      const select = str.join(',')
+      this.setRolesId = select
+      // this.selectedRole = this.user.concat(str)
     },
     // 弹框确定事件
     add () {
-      const obj = this.selectedRole
-      this.$service.saveUserRoles(obj, '保存成功')
+      const userId = this.user
+      const roleIds = this.setRolesId
+      this.$service.saveUserRoles({ userId: userId, roleIds: roleIds }, '保存成功').then(() => {
+        this.roleDialogVisible = false
+        this.fetchData()
+      })
     },
     editData() {
       if (this.$isAllowEdit(this.selected)) {
@@ -291,13 +298,12 @@ export default {
       }, [])
     },
     handleFilterChange (type) {
-
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }
       }
-        this.fetchData()
+      this.fetchData()
     },
     handleFilterReset () {
       this.filter = {
@@ -322,7 +328,6 @@ export default {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.userConfigPageList(filter).then(data => {
-        debugger
         this.pagination.total = data.total
         this.table.data = data.rows
       })
