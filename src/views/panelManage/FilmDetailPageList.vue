@@ -16,14 +16,14 @@
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
             <el-select
-              v-model="filter.tabResource"
+              v-model="filter['filmDetailPageInfo.source']"
               placeholder="内容源"
               clearable
-              @change="pannelValue=[];filter.channel=''"
+              @change="pannelValue=[];filter['filmDetailPageInfo.channel']=[]"
             >
-              <el-option value="o_tencent" label="腾讯"/>
-              <el-option value="o_iqiyi" label="爱奇艺"/>
-              <el-option value="o_youku" label="优酷"/>
+              <el-option value="qq" label="腾讯"/>
+              <el-option value="iqiyi" label="爱奇艺"/>
+              <el-option value="youku" label="优酷"/>
             </el-select>
           </div>
         </el-form-item>
@@ -41,7 +41,7 @@
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-select v-model="filter.tabCategory" clearable placeholder="业务分类">
+            <el-select v-model="filter['filmDetailPageInfo.category']" clearable placeholder="业务分类">
               <el-option value="0" label="影视"/>
               <el-option value="1" label="教育"/>
             </el-select>
@@ -51,7 +51,7 @@
           <div class="el-col-20">
             <el-cascader
               placeholder="频道"
-              :value="pannelValue"
+              :value="filter['filmDetailPageInfo.channel']"
               :options="channelOptions"
               expand-trigger="hover"
               clearable
@@ -61,7 +61,7 @@
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-select v-model="filter.product" clearable placeholder="产品包">
+            <el-select v-model="filter['filmDetailPageInfo.product']" clearable placeholder="产品包">
               <el-option
                 v-for="(item, index) in productOptions"
                 :key="index"
@@ -112,10 +112,7 @@ export default {
   data() {
     return {
       pannelValue: [],
-      filter: {
-        tabType: 3,
-        idPrefix: '10'
-      },
+      filter: this.getDefaultFilter(),
       pagination: {
         currentPage: 1
       },
@@ -253,6 +250,19 @@ export default {
   },
 
   methods: {
+    getDefaultFilter() {
+      return {
+        tabType: 3,
+        idPrefix: '10',
+        tabId: undefined,
+        tabName: undefined,
+        tabStatus: undefined,
+        'filmDetailPageInfo.source': undefined,
+        'filmDetailPageInfo.channel': [],
+        'filmDetailPageInfo.category': undefined,
+        'filmDetailPageInfo.product': undefined
+      }
+    },
     /**
      * 获取数据
      */
@@ -267,10 +277,15 @@ export default {
       })
     },
     parseFilter() {
-      const { filter, pagination } = this
+      const { pagination } = this
+      const filter = JSON.parse(JSON.stringify(this.filter))
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
+      }
+      const channel = filter['filmDetailPageInfo.channel'][1]
+      if (channel) {
+        filter['filmDetailPageInfo.channel'] = channel
       }
       return filter
     },
@@ -294,7 +309,7 @@ export default {
       this.fetchData()
     },
     handleFilterReset() {
-      this.filter = { tabType: 3 }
+      this.filter = this.getDefaultFilter()
       this.pannelValue = []
       this.pagination.currentPage = 1
       this.fetchData()
@@ -434,9 +449,8 @@ export default {
     },
 
     handleChannelChange(value) {
-      this.filter.source = ''
-      this.filter.source = value[0]
-      this.filter.channel = value[1]
+      this.filter['filmDetailPageInfo.source'] = ''
+      this.filter['filmDetailPageInfo.source'] = value[0]
     },
     openReview(row) {
       this.$emit('open-add-page', row.tabId, 'read')
