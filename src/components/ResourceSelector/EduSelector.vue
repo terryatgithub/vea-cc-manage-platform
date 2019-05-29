@@ -65,7 +65,6 @@
             </el-form-item>
             <el-form-item label="地区">
               <el-select v-model="filter.areas" filterable allow-create size="small">
-                <el-option label="请选择/输入" value></el-option>
                 <el-option
                   v-for="area in conditionList.areas"
                   :key="area.tagId"
@@ -274,7 +273,7 @@ export default {
         updateStatus: undefined, // 是否全集(integer)
         synDate: undefined, // 同步时间
         cartoonStar: undefined, // 动漫明星
-        areas: undefined, // 地区
+        areas: '', // 地区
         yearStart: undefined, // 开始年代
         yearEnd: undefined, // 结束年代
         businessType: 1 // 业务线类型:0影视, 1教育

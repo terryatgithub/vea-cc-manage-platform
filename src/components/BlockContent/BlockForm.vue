@@ -275,10 +275,10 @@
               <el-radio label="2">全屏网页</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="网页地址" prop="webpageUrl">
+          <el-form-item label="网页地址" prop="redundantParams.webpageUrl" :rules="contentRule.webpageUrl">
             <el-input v-model.trim="contentForm.redundantParams.webpageUrl" :disabled="isReadonly"></el-input>
           </el-form-item>
-          <el-form-item label="应用版本号" prop="versioncode">
+          <el-form-item label="应用版本号" prop="redundantParams.versioncode" :rules="[{required: true, message: '请输入版本号', trigger: 'blur'}]">
             <el-input
               v-model.trim="contentForm.redundantParams.versioncode"
               :disabled="isReadonly"

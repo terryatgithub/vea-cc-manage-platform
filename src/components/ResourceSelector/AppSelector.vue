@@ -76,6 +76,9 @@ export default {
   methods: {
     getDefaultFilter() {
       return {
+        appId: undefined,
+        appName: undefined,
+        appPackageName: undefined
       }
     },
     getFilter() {
@@ -102,15 +105,20 @@ export default {
   },
   created() {
     let filterSchema = _.map({
-      id: _.o.number.other('form', {
+      appId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'Input',
-        placeholder: '轮播入口ID',
-        label: '轮播入口ID'
+        placeholder: '应用ID',
+        label: '应用ID'
       }),
-      title: _.o.string.other('form', {
+      appName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '轮播入口名称',
-        label: '轮播入口名称'
+        placeholder: '应用名称',
+        label: '应用名称'
+      }),
+      appPackageName: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '应用包名',
+        label: '应用包名'
       })
     }).other('form', {
        cols: {

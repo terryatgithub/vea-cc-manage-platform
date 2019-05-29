@@ -22,7 +22,7 @@
           <img class="list-img" :src="item.globalPicture.pictureUrl">
         </p>
         <p class="list-title">{{item.pluginName}}</p>
-        <div>{{ item.pluginStatus }}</div>
+        <div>{{ item.pluginId }} / {{ item.modifierName }} / {{ item.createdDate }}</div>
       </div>
     </CardList>
     <slot/>
@@ -55,7 +55,8 @@ export default {
         pluginName: undefined
       },
       filterSchema: _.map({
-        pluginId: _.o.number.other('form', {
+        pluginId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
+          component: 'Input',
           label: 'ID',
           cols: { item: 6, label: { offset: 1, span: 5 }, wrapper: 18 }
         }),

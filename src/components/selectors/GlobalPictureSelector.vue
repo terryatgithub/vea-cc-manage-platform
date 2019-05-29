@@ -79,14 +79,12 @@ export default {
       this.$refs.selectorWrapper.handleSelectEnd()
     },
     handleFilterChange(type) {
-      if(this.$validateId(this.filter.pictureId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
+      if (type === 'query') {
+        if (this.pagination) {
+          this.pagination.currentPage = 1
         }
-        this.fetchData() 
       }
+      this.fetchData() 
     },
     handleFilterReset() {
       this.filter = {}
@@ -119,8 +117,8 @@ export default {
     },
     getMaterialTypes() {
       return this.$service.getMaterialTypes().then(data => {
-        data.forEach(element => {
-          this.materialTypes[element.label] = element.id
+        data.forEach(item => {
+          this.materialTypes[item.dictCnName] = item.dictId
         })
       })
     },
@@ -132,36 +130,40 @@ export default {
   },
   created() {
     let filterSchema = _.map({
-      pictureId: _.o.string.other('form', {
+      pictureId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
+        label: ' ',
         component: 'Input',
         placeholder: 'ID',
         cols: {
           item: 3,
-          label: 0
+          wrapper: 18
         }
       }),
       pictureName: _.o.string.other('form', {
+        label: ' ',
         component: 'Input',
         placeholder: '素材名称',
         cols: {
           item: 3,
-          label: 0
+          wrapper: 18
         }
       }),
       pictureCategory: _.o.enum(this.materialTypes).other('form', {
+        label: ' ',
         component: 'Select',
         placeholder: '素材类别',
         cols: {
           item: 3,
-          label: 0
+          wrapper: 18
         }
       }),
       pictureStatus: _.o.enum(this.pictureStatus).other('form', {
+        label: ' ',
         component: 'Select',
         placeholder: '审核状态',
         cols: {
           item: 3,
-          label: 0
+          wrapper: 18
         }
       })
     }).other('form', {
