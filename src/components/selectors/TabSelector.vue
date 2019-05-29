@@ -237,7 +237,7 @@ export default {
       }
     },
     handleFilterChange(type) {
-      if(this.$isNumber(this.filter.tabId)) {
+      if(this.$validateId(this.filter.tabId)) {
       this.pagination.currentPage = 1
       this.fetchData() 
       }

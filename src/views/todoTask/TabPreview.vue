@@ -2,9 +2,9 @@
   <div class="el-tab-pane-preview">
     <FilmDetailPageAdd
       v-if="tabParentType==='special'&&id!==undefined"
-      :editId="id"
+      :id="id"
       :initMode="mode"
-      :duplicateVersionVersion = "version"
+      :version = "version"
       @open-list-page="handleUpsertEnd" 
       @go-back="goBack"
     />

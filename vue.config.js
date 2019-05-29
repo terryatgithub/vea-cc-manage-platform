@@ -1,5 +1,5 @@
 const ENV = process.env.NODE_ENV
-const BACKEND = process.env.BACKEND || 'localhost:9090' // 172.20.155.91:8090
+const BACKEND = process.env.BACKEND || '172.20.155.91:8090' // 172.20.155.91:8090 localhost:9090
 // const path = require('path')
 // const dist = path.resolve('./dist')
 const baseUrl = ENV === 'production' ? '' : 'http://127.0.0.1:8081'

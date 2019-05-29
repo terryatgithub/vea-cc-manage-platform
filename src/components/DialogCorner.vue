@@ -96,7 +96,7 @@ export default {
      
     },
     handleFilterChange(type) {
-      if(this.$isNumber(this.filter.cornerIconId)) {
+      if(this.$validateId(this.filter.cornerIconId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1

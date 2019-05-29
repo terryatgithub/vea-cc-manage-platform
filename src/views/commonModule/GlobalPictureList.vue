@@ -37,7 +37,7 @@
     </el-dialog>
     <!-- 预览图片 --->
     <!-- 审核 -->
-    <el-dialog title="预览图片" :visible.sync="auditDialogVisible" width="30%">
+    <el-dialog title="审核"  :visible="auditDialogVisible" width="30%">
       <span>
         <el-form ref="auditForm" :model="auditForm" :rules="auditFormRules" label-width="80px">
           <el-form-item label="审核意见" prop="auditFlag">
@@ -249,6 +249,11 @@ export default {
                 message: error + " 已经审核通过了，不需要再审核"
               })
           return false
+      }
+       this.auditForm = {
+        idStr: null,
+        auditFlag: '4',
+        auditDesc: ''
       }
       this.auditDialogVisible = true
     },

@@ -150,7 +150,7 @@ export default {
     let filterSchema = _.map({
       keyword: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '请输入影片ID/名称'
+        placeholder: '影片名称/引用状态'
       })
     }).other('form', {
       cols: {

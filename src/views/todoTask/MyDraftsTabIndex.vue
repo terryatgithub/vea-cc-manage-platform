@@ -8,9 +8,9 @@
      </MyDraftsTab>
     <FilmDetailPageAdd
       v-if="!isShowList&&tabParentType==='special'"
-      :editId="id"
+      :id="id"
       :initMode="mode"
-      :duplicateVersionVersion = "version"
+      :version = "version"
       @go-back="goBack"
       @open-list-page="handleUpsertEnd"
     />

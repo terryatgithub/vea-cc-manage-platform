@@ -40,7 +40,7 @@
                 <el-radio-group v-model="form.tabResource" @change.native.prevent="changeResource">
                   <el-radio label="qq">腾讯</el-radio>
                   <el-radio label="iqiyi">爱奇艺</el-radio>
-                  <el-radio label="youku">优朋</el-radio>
+                  <el-radio label="youku">优酷</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="频道">
@@ -251,7 +251,7 @@ export default {
         tabName: '',
         tabParentType: 'special',
         tabCategory: 0,
-        tabResource: '',
+        tabResource: 'qq',
         priority: 1,
         currentVersion: '',
         currentStatus: '',
@@ -509,15 +509,13 @@ export default {
             type: 'success',
             message: '内容源切换成功!'
           })
-          // this.form.tabResource = this.tabResource
-          this.clearResource()
+           this.form.panelInfoList = []
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消切换'
           })
-          // this.form.tabResource = 'qq'
         })
     },
     handleRemovePannel(index) {
@@ -696,7 +694,9 @@ export default {
         this.title = '预览'
         break
     }
+   
     this.getMediaResourceInfos().then(() => {
+      this.handleTabResourceChange(this.form.tabResource) //给频道，产品包赋值
       if (this.id) {
         this.categoryEdit = true
         this.form.tabResource = ''

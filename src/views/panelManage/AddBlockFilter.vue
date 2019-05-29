@@ -4,7 +4,7 @@
       <el-tab-pane label="内容版块">
         <PannelInfoList ref="pannel" :dataList="contentBlock" v-model="pannelData"/>
       </el-tab-pane>
-      <el-tab-pane label="专属版块">
+      <el-tab-pane label="专辑版块">
         <AlbumPannelInfoList ref="albumPannel" :dataList="albumBlock" v-model="albumPannelData"/>
       </el-tab-pane>
       <el-tab-pane label="专属影院版块">
@@ -137,7 +137,6 @@ export default {
 
   methods: {
     clickAdd() {
-      debugger
       const { pannelData, albumPannelData, privatePannelData } = this
       let block = [].concat(pannelData).concat(albumPannelData).concat(privatePannelData)
       this.$emit('add-block', block)
@@ -188,7 +187,9 @@ export default {
     this.albumBlock.filterSchema = filterSchema
     this.albumBlock.table = Object.assign({}, this.table)
     this.privateBlock.filterSchema = filterSchema
-    this.privateBlock.table = Object.assign({}, this.table)
+    let table = JSON.parse(JSON.stringify(this.table))
+    table.header.splice(3,1)
+    this.privateBlock.table = Object.assign({}, table)
   }
 
 }

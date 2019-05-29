@@ -145,7 +145,7 @@ export default {
       }, []);
     },
     handleFilterChange(type) {
-      if(this.$isNumber(this.filter.appId)) {
+      if(this.$validateId(this.filter.appId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
