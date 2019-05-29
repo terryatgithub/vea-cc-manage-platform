@@ -174,6 +174,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter();
       Object.assign(filter, this.params)
       this.$service.getAppManagementList(filter).then(data => {

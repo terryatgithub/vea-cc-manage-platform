@@ -252,7 +252,7 @@ export default {
      * 获取数据
      */
     fetchData() {
-      this.table.selected = []
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getChipAndModelPageList(filter).then(data => {
         this.pagination.total = data.total

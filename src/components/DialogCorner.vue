@@ -92,7 +92,6 @@ export default {
       if(this.table.selectionType === 'single') {
          this.$emit("close-dialog",'savePicture')
       }
-     
     },
     handleFilterChange(type) {
       if(this.$validateId(this.filter.cornerIconId)) {
@@ -129,6 +128,7 @@ export default {
     },
     //获取数据
     fetchData() {
+      this.table.selected = undefined
       const filter = this.parseFilter()
       this.$service.getCornerList(filter).then(data => {
         this.pagination.total = data.total

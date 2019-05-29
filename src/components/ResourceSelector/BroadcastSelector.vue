@@ -100,6 +100,7 @@ export default {
       this.fetchData()
     },
     fetchData() {
+      
       const filter = this.getFilter()
       this.$service.broadcastBlockDataList(filter).then(result => {
         this.pagination.total = result.total

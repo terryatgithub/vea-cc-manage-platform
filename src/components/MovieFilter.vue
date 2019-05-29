@@ -519,6 +519,7 @@ export default {
       this.fetchData()
     },
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getMediaVideoInfos(filter).then(data => {
         this.pagination.total = data.total

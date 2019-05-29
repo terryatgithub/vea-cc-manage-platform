@@ -201,6 +201,7 @@ export default {
       this.fetchData()
     },
     fetchData() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.queryLiveVideoResult(filter).then(data => {
         data = JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))

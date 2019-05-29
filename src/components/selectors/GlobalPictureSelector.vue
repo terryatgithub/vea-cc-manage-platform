@@ -97,6 +97,7 @@ export default {
     },
     //获取数据
     fetchData() {
+      this.table.selected = undefined
       const filter = this.parseFilter()
       const pictureResolution = this.pictureResolution
       if (pictureResolution) {

@@ -96,6 +96,7 @@ export default {
       this.fetchData()
     },
     fetchData() {
+      
       const filter = this.getFilter()
       this.$service.getAppManagementList(filter).then(data => {
         this.pagination.total = data.total;

@@ -177,7 +177,7 @@
             >
               <span class="corner-img-wrapper" v-if="corner.imgUrl" @click="openPicture('corner', 'normalForm', index)">
                 <img :src="corner.imgUrl" referrerpolicy="no-referrer">
-                <i class="el-icon-delete" @click.stop="deleteCorner(normalForm, index)"></i>
+                <i class="el-icon-delete" v-if="!disabled" @click.stop="deleteCorner(normalForm, index)"></i>
               </span>
               <el-tag v-else type="success" @click="openPicture('corner', 'normalForm', index)">
                 <i class="el-icon-plus"></i>
@@ -199,7 +199,7 @@
                 <el-option value="app">第三方应用</el-option>
               </el-select>
               <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
-            </el-form-item> 
+            </el-form-item>  {{normalForm.onclick}}11
             <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled"></AppParams>
             <AppParamsRead :value="normalForm.onclick" v-if="disabled"/>
             <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
@@ -282,7 +282,7 @@
             >
               <span class="corner-img-wrapper" v-if="corner.imgUrl"  @click="openPicture('corner', 'lowerForm', index)">
                 <img :src="corner.imgUrl" referrerpolicy="no-referrer">
-                <i class="el-icon-delete" @click.stop="deleteCorner(lowerForm, index)"></i>
+                <i class="el-icon-delete" v-if="!disabled" @click.stop="deleteCorner(lowerForm, index)"></i>
               </span>
               <el-tag v-else type="success"  @click="openPicture('corner', 'lowerForm', index)">
                 <i class="el-icon-plus"></i>
@@ -608,7 +608,7 @@ export default {
             // 手动设置
             this.normalForm.coverType = 'custom'
             this.normalForm.contentType = 'custom'
-            this.normalForm.onclick = ''
+           // this.normalForm.onclick = ''
             if (this.autoWrite === false) {
               // autoWrite为true时，选择资源  coverType为custom
               this.normalForm.type = 'url'
@@ -626,7 +626,6 @@ export default {
        this.$emit("go-edit-Page")
     },
     deleteItem() {
-     // this.$service.getLayoutInforBatchDel({ id: this.id },'删除成功')
       this.$emit("open-list-page")
     },
     clickThirdpartSubmit() {
@@ -663,6 +662,7 @@ export default {
     },
     // 第三方应用快速填充
     getClickData(data) {
+      this.onclickEventVisible = false
       this.clickData = data
       let params = JSON.parse(data.params) 
       let keys = Object.keys(params)
@@ -683,6 +683,9 @@ export default {
                 exception: data.exception
         }
       this[this.onclickEventVisibleFlag+"Form"]['onclick'] = o;
+      //  if (this.onclickEventVisibleFlag === 'normal') {
+      //      this.normalVersionContent.splice(this.currentIndex, 1, this[this.onclickEventVisibleFlag+"Form"])
+      //  }
     },
     // 自动填写表单
     autoWriteFun: function() {
@@ -1046,7 +1049,6 @@ export default {
     },
     // 组合模式->normalForm切换
     switchNormal: function(index) {
-    //  debugger
       var _this = this
       this.checkNormalForm(function() {
         //_this.$message('请填充或修改当前表单的内容！')

@@ -107,6 +107,7 @@ export default {
     },
     //获取数据
     fetchData() {
+      this.table.selected = undefined
       const filter = this.parseFilter()
       this.$service.getResourceList(filter).then(data => {
       this.pagination.total = data.total

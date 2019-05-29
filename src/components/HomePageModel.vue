@@ -137,6 +137,7 @@ export default {
      * 获取数据
      */
     fetchData() {
+      
       const filter = this.parseFilter()
       filter.homepageModel = this.homepageModel
       filter.homepageResource = this.homepageResource

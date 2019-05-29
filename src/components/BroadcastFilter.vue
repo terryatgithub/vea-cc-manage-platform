@@ -82,6 +82,7 @@ export default {
        }
     },
     fetchData: function() {
+      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getMediaVideoInfos(filter).then(result => {
         this.pagination.total = result.total
