@@ -101,13 +101,13 @@
             :mode="mode"
             :resource-info="resourceInfo"
             @edit="mode = 'edit';title='编辑'"
-           @replicate="mode = 'replicate'; title='创建副本'"
+            @replicate="mode = 'replicate'; title='创建副本'"
             @submit-audit="btnSave"
             @select-version="fetchData"
             @unaudit="fetchData"
             @shelves="fetchData"
             @audit="$emit('upsert-end')"
-             @delete="$emit('upsert-end')"
+            @delete="$emit('upsert-end')"
           >
             <div class="split-bar">
               <i class="el-icon-edit">基本信息</i>
@@ -233,7 +233,7 @@ export default {
       this.$service
         .savethemeInfo({ jsonStr: JSON.stringify(formData) }, '保存成功')
         .then(() => {
-          this.$emit('open-list-page')
+          this.$emit('upsert-end')
         })
     },
     handleApk(picData) {

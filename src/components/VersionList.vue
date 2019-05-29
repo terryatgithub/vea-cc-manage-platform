@@ -17,7 +17,9 @@
         </el-select>
     </el-form-item>
     <el-form-item>
-        <div class="status"> {{ $consts.statusText[status] }}</div>
+        <div class="status"> 
+         {{ $consts.statusText[status] }}
+          </div>
     </el-form-item>
   </el-form>
 </template>
@@ -43,6 +45,7 @@ export default {
   background: #4fc71b;
   color: #fff;
   text-align: center;
+  border-radius: 3px;
 }
 </style>
 

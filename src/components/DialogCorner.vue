@@ -87,7 +87,6 @@ export default {
   methods: {
     //选中时间
     handleRowSelectionChange(row, index) {
-      debugger
       this.table.selected = index
       this.$emit('input', row)
       if(this.table.selectionType === 'single') {
@@ -122,8 +121,10 @@ export default {
       this.cornerIconType.typeId = filter.cornerIconType
       this.cornerIconType.typePosition = this.typePosition
       filter.cornerIconType = undefined
-      filter['cornerIconType.typeId'] = this.cornerIconType.typeId
-      filter['cornerIconType.typePosition'] = this.cornerIconType.typePosition
+     // filter['cornerIconType.typeId'] = this.cornerIconType.typeId
+    //  filter['cornerIconType.typePosition'] = this.cornerIconType.typePosition
+      filter['typeId'] = this.cornerIconType.typeId
+      filter['typePosition'] = this.cornerIconType.typePosition
       return filter
     },
     //获取数据

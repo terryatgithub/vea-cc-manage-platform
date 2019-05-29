@@ -10,7 +10,7 @@
       :editId="editId"
       :version="version"
       :initMode="mode"
-      @open-list-page="openListPage"
+      @upsert-end="openListPage"
       @go-back="goBack"
     />
   </div>

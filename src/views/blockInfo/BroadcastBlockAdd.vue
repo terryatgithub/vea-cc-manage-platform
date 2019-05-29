@@ -1,6 +1,5 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-
     <div class="split-bar">
       基本信息
     </div>
@@ -26,9 +25,7 @@
           <el-radio label="group" :disabled="disabled">组合模式</el-radio>
         </el-radio-group>
       </el-form-item>
-      
     </el-form>
-
     <div class="split-bar">
       内容配置
     </div>
@@ -262,7 +259,6 @@
         <el-form-item
           label="海报"
           prop="poster.pictureUrl"
-          
         >
           <el-card class="post-box" style="height: 180px"
            :disabled="disabled"
@@ -612,6 +608,7 @@ export default {
             // 手动设置
             this.normalForm.coverType = 'custom'
             this.normalForm.contentType = 'custom'
+            this.normalForm.onclick = ''
             if (this.autoWrite === false) {
               // autoWrite为true时，选择资源  coverType为custom
               this.normalForm.type = 'url'
@@ -942,7 +939,6 @@ export default {
      
     // 校验normalForm
     checkNormalForm: function(cb) {
-    //  debugger
       var _this = this
       this.$refs.normalForm.validate(function(valid) {
         if (valid) {
@@ -1303,7 +1299,6 @@ export default {
         })
        
         this.normalForm = this.normalVersionContent[0] 
-        debugger
         /** 设置*/
         if (this.normalForm.type === 'url') {
           this.autoWrite = false

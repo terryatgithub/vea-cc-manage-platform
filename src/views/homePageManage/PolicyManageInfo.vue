@@ -234,10 +234,10 @@
         @row-click="ChipModelRowClick"
       ></ChipModel>
       <HomePageModel
-        :homepageModel="model"
+        :homepageModel="mode"
         :homepageResource="platform"
         homepageStatusArray="4"
-        v-if="mode==='HomePageModel'"
+        v-if="selectHomePageDialogVisible"
         @row-click="rowClick"
         @row-selection-change="rowClick"
       ></HomePageModel>
@@ -249,7 +249,7 @@
     </el-dialog>
     <PolicyManageAddHomePage
       v-if="addHomePageDialogVisible"
-      :itemType="model"
+      :itemType="mode"
       :editHomePageData="editHomePageData"
       @add-home-page-close="addHomePageClose"
       @create-home-page="createHomePage"
@@ -279,13 +279,14 @@ export default {
       title: null,
       selectionType: 'multiple',
       dialogTitle: null,
-      mode: null,
+      mode: 'normal',
       dialogVisible: false,
+      selectHomePageDialogVisible: false,
       addHomePageDialogVisible: false, //是否显示addHomePage组件
-      model: 'normal',
+      //model: 'normal',
       platform: 'tencent', //内容源
       editHomePageData: {}, //编辑定向首页方案
-      editHomePageMode: undefined, //编辑定向首页方案的模式 normal,child
+    //  editHomePageMode: undefined, //编辑定向首页方案的模式 normal,child
       editHomePageIndex: undefined, //编辑定向首页方案数据索引
       form: {
         policyId: null,
@@ -376,7 +377,7 @@ export default {
     /** 关联首页选择*/
     rowClick(row) {
       this.dialogVisible = false
-      this.form.homepageInfoListObj[this.model] = {
+      this.form.homepageInfoListObj[this.mode] = {
         homepageId: row.homepageId,
         homepageModel: row.homepageModel,
         homepageName: row.homepageName,
@@ -389,7 +390,8 @@ export default {
     /*定向首页方案编辑*/
     editHomePage(mode, index) {
       this.addHomePageDialogVisible = true
-      this.editHomePageMode = mode
+    //  this.editHomePageMode = mode
+      this.mode = mode 
       this.editHomePageIndex = index
       if (mode === 'normal') {
         this.editHomePageData = this.form.specialNormalHp[index]
@@ -418,21 +420,43 @@ export default {
             break
           }
         }
-        if (this.model === 'normal') {
+        if (this.mode === 'normal') {
           if (isEdit) {
             this.form.specialNormalHp[this.editHomePageIndex] = form
           } else {
-            this.form.specialNormalHp.push(form)
+
+            if (!this.isContainCrowdName(this.form.specialNormalHp, crowdId) ) {
+                 this.form.specialNormalHp.push(form)
+            } else {
+              this.$message({
+                type: 'error',
+                message: '已经存在相同的人群'
+              })
+            }
+         
           }
         } else {
           if (isEdit) {
             this.form.specialChildHp[this.editHomePageIndex] = form
           } else {
-            this.form.specialChildHp.push(form)
+              if (!this.isContainCrowdName(this.form.specialChildHp, crowdId) ) {
+                 this.form.specialChildHp.push(form)
+            } else {
+              this.$message({
+                type: 'error',
+                message: '已经存在相同的人群'
+              })
+            }
+         
           }
         }
       })
       this.addHomePageDialogVisible = false
+    },
+    isContainCrowdName(form, crowdId) {
+     return form.some((item) => {
+         return item.attribute.crowdIds[0] === crowdId
+      })
     },
     getCrowdNames(data) {
       let form = data.map(e => {
@@ -453,10 +477,10 @@ export default {
     /**
      * 添加定向首页
      */
-    addHomePage(model) {
+    addHomePage(mode) {
       this.addHomePageDialogVisible = true
       // this.title = '添加定向首页方案'
-      this.model = model
+      this.mode = mode
       this.editHomePageData = {}
     },
     /*
@@ -491,11 +515,12 @@ export default {
       this.dialogTitle = '选择机型机芯'
       this.mode = 'modelChip'
     },
-    selectHomePageModel(model) {
+    selectHomePageModel(mode) {
       this.dialogVisible = true
       this.dialogTitle = '选择首页方案模式'
-      this.mode = 'HomePageModel'
-      this.model = model
+    //  this.mode = 'HomePageModel'
+      this.mode = mode
+      this.selectHomePageDialogVisible = true
     },
     submitBtn(status) {
       this.$refs.form.validate(valid => {
