@@ -91,7 +91,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.openReview(row) 
+                    this.handleRead(row) 
                   }
                 }
               },row.pannelGroupRemark)
@@ -208,9 +208,6 @@ export default {
   },
 
   methods: {
-     openReview(row) {
-       this.$emit('open-review-page',row)
-    },
     /**
      * 获取数据
      */
@@ -254,10 +251,8 @@ export default {
         console.log(this.filter);
       }else {
         this.filter = {
-        sort: undefined,
-        order: undefined,
-        idPrefix: 10,
-        pannelType: 3
+          idPrefix: 10,
+          pannelType: 3
         }
       }
       this.pagination.currentPage = 1

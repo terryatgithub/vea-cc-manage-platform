@@ -303,8 +303,8 @@ export default {
   },
   created() {
     const filterSchema = _.map({
-      homepageId: _.o.number.other("form", {
-        component: "InputNumber",
+      homepageId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other("form", {
+        component: "Input",
         placeholder: "ID"
       }),
       homepageName: _.o.string.other("form", {

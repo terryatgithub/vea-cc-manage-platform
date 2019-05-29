@@ -78,7 +78,7 @@ export default {
           },
           {
             label: '名称',
-            width: '170',
+            width: '200',
             prop: 'layoutName',
             sortable: true,
             render: (createElement, { row }) => {
@@ -137,24 +137,24 @@ export default {
               }
             }
           },
-          {
-            label: '间距',
-            prop: 'space',
-            width: 70,
-            sortable:true
-          },
-          {
-            label: '高度',
-            prop: 'height',
-             width: 70,
-            sortable: true
-          },
-           {
-            label: '宽度',
-            prop: 'width',
-            width: 70,
-            sortable: true
-          },
+          // {
+          //   label: '间距',
+          //   prop: 'space',
+          //   width: 70,
+          //   sortable:true
+          // },
+          // {
+          //   label: '高度',
+          //   prop: 'height',
+          //    width: 70,
+          //   sortable: true
+          // },
+          //  {
+          //   label: '宽度',
+          //   prop: 'width',
+          //   width: 70,
+          //   sortable: true
+          // },
             {
             label: '状态',
             prop: 'layoutStatus',

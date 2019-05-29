@@ -453,6 +453,15 @@ export default {
       showCrowdSelector: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
       contentRule: {
+        webpageUrl: [
+            {required: true, validator: checkWebpageUrl, trigger: "blur"}
+        ],
+        videoName: [
+            {required: true, message: "请输入视频名称", trigger: "blur"}
+        ],
+        videoUrl: [
+            {required: true, message: "请输入视频地址", trigger: "blur"}
+        ],
         moviePercent: [
           {
             type: 'number',
@@ -478,7 +487,7 @@ export default {
         ],
         subTitle: [{ max: 45, message: '不超过 45 个字符', trigger: 'blur' }],
         pictureUrl: [
-          { required: true, message: '请选择内容海报', trigger: 'blur' }
+          { required: true, message: '不能为空', trigger: 'blur' }
         ],
         alternativePictureUrl: [
           { required: true, message: '请选择替补海报', trigger: 'blur' },
