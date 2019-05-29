@@ -74,18 +74,13 @@ export default {
     handleRowSelectionChange(row,index){
       this.table.selected = index
     },
-    handleFilterChange(type) {
-      if(this.$validateId(this.filter.cornerIconId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
-        }
-        this.fetchData() 
-      }
+    handleFilterChange() {
+      this.pagination.currentPage = 1
+      this.fetchData() 
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter();
+      this.pagination.currentPage = 1
       this.fetchData();
     },
     parseFilter() {
@@ -130,7 +125,8 @@ export default {
         return (result[item.typeName] = item.typeId) && result
       }, {})
       const filterSchema = _.map({
-        cornerIconId: _.o.string.other("form", {
+        cornerIconId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other("form", {
+          component: 'Input',
           label: 'ID',
           placeholder: "ID",
           cols: {

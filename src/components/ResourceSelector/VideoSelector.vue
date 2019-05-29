@@ -95,7 +95,7 @@
               size="small"
               @click="isMore = !isMore"
             >{{ isMore ? '收起' : '展开'}}</el-button>
-            <el-button size="small" type="primary" @click="fetchData">查询</el-button>
+            <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
             <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
           </div>
         </el-form>
@@ -444,9 +444,14 @@ export default {
       }
       return filter
     },
+    handleFilterChange() {
+      this.pagination.currentPage = 1
+      this.fetchData()
+    },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
+      this.fetchData()
     },
     fetchData() {
       const filter = this.getFilter()

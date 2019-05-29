@@ -95,15 +95,9 @@ export default {
     handleRowSelectionChange(row, index) {
       this.table.selected = index
     },
-     handleFilterChange(type) {
-      if(this.$validateId(this.filter.pluginId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
-        }
-        this.fetchData() 
-      }
+    handleFilterChange() {
+      this.pagination.currentPage = 1
+      this.fetchData() 
     },
     handleFilterReset() {
       this.filter = {

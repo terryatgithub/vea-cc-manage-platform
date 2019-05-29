@@ -15,7 +15,7 @@
         :filter-schema="filterSchema"
         :pagination="pagination"
         @pagination-change="fetchData"
-        @filter-change="fetchData"
+        @filter-change="handleFilterChange"
         @filter-reset="handleResetFilter"
         @select-cancel="handleSelectCancel"
         @select-end="handleSelectEnd">
@@ -104,8 +104,13 @@ export default {
       return {
       }
     },
+    handleFilterChange() {
+      this.pagination.currentPage = 1
+      this.fetchData()
+    },
     handleResetFilter() {
       this.filter = this.getDefaultFilter()
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {

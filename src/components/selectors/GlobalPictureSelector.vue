@@ -78,12 +78,8 @@ export default {
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
     },
-    handleFilterChange(type) {
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
-        }
-      }
+    handleFilterChange() {
+      this.pagination.currentPage = 1
       this.fetchData() 
     },
     handleFilterReset() {

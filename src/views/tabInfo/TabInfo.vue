@@ -7,6 +7,7 @@
           :mode="mode"
           :resource-info="resourceInfo"
           @replicate="mode = 'replicate'"
+          @copy="handleCopy"
           @edit="mode = 'edit'"
           @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
@@ -633,7 +634,6 @@ import PanelSelector from '@/components/selectors/PanelSelector'
 import TabSelector from '@/components/selectors/TabSelector'
 import BusinessTypeSelector from '@/components/selectors/BusinessTypeSelector'
 import AppIdSelector from '@/components/selectors/AppIdSelector'
-import PostSelector from '@/components/selectors/PostSelector'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import FloatWindowSelector from '@/components/selectors/FloatWindowSelector'
 import IconSelector from '@/components/selectors/IconSelector'
@@ -657,7 +657,6 @@ export default {
     'cc-panel-selector-el': PanelSelector,
     'cc-business-type-selector': BusinessTypeSelector,
     'cc-appid-selector': AppIdSelector,
-    'cc-post-selector': PostSelector,
     'cc-global-picture-selector': GlobalPictureSelector,
     'cc-float-window-selector': FloatWindowSelector,
     'cc-icon-selector': IconSelector,

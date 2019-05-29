@@ -69,7 +69,7 @@
             </el-select>
           </el-form-item>
 
-          <el-button type="primary" @click="fetchData">查询</el-button>
+          <el-button type="primary" @click="handleFilterChange">查询</el-button>
           <el-button type="warning" @click="handleResetFilter">重置</el-button>
         </el-form>
       </BaseSelector>
@@ -213,8 +213,13 @@ export default {
         resourceIsNull: true
       }
     },
+    handleFilterChange() {
+      this.pagination.currentPage = 1
+      this.fetchData()
+    },
     handleResetFilter() {
       this.filter = this.getDefaultFilter()
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     fetchData() {

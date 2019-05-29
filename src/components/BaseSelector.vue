@@ -104,6 +104,7 @@ export default {
     },
     handleFilter (err) {
       if (!err || err.length === 0) {
+        this.$set(this.pagination, 'currentPage', 1)
         this.$emit('filter-change')
       }
     },

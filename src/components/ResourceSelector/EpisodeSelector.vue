@@ -31,7 +31,7 @@
         <el-form-item label="单集名称">
           <el-input v-model="filter.urlTitle"/>
         </el-form-item>
-        <el-button size="small" type="primary" @click="fetchData">查询</el-button>
+        <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
         <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
       </el-form>
     </BaseSelector>
@@ -145,6 +145,10 @@ export default {
         filter.rows = pagination.pageSize
       }
       return filter
+    },
+    handleFilterChange() {
+      this.pagination.currentPage = 1
+      this.fetchData()
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()

@@ -7,6 +7,7 @@
       @read="handleRead"
       @edit="handleEdit"
       @copy="handleCopy"
+      @delete="handleDelete"
     />
     <TabInfo
       v-if="!isShowList"
@@ -55,6 +56,14 @@ export default {
       this.id = item.tabId
       this.mode = 'copy'
       this.isShowList = false
+    },
+    handleDelete(selected) {
+      this.$service.tabInfoRemove({ 
+        id: selected.map(item => item.tabId).join(',') 
+      }, "删除成功")
+      .then(() => {
+        this.$refs.list.fetchData()
+      })
     },
     handleUpsertEnd() {
       this.isShowList = true

@@ -94,6 +94,14 @@ export function tabInfoUpsert(data) {
   })
 }
 
+export function tabInfoRemove(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/tab/remove.html',
+    data
+  })
+}
+
 // 编辑
 export function editFilmDetailPage(params) {
   return this.fetch({
