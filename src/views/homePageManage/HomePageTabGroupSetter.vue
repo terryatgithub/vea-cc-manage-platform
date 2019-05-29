@@ -133,7 +133,7 @@ export default {
           label: '人群',
           render: (h, { $index, row }) => {
             if (this.readonly) {
-              return row.dmpInfo && dmpInfo.dmpCrowdName
+              return row.dmpInfo && row.dmpInfo.dmpCrowdName
             }
             if (row.dmpInfo) {
               return h('el-button', {

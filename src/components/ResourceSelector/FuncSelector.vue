@@ -54,9 +54,9 @@ export default {
             label: '内容源',
             width: '120',
             options: [],
-            customFormatter: function(row, column) {
-              var content = ''
-              switch (column) {
+            render: (h, {row}) => {
+              let content = ''
+              switch (row.source) {
                 case 0:
                   content = '无'
                   break
@@ -75,6 +75,34 @@ export default {
               }
               return content
             }
+          },
+          {
+            prop: 'globalPicture.pictureId',
+            label: '通用内容图片',
+            render: (h, {row}) => {
+              const globalPicture = row.globalPicture
+              const imgSrc = globalPicture && globalPicture.pictureUrl
+              if (imgSrc) {
+                return h('img', {
+                  style: {
+                    'max-height': '64px',
+                    'max-width': '120px'
+                  },
+                  attrs: {
+                    src: imgSrc,
+                    'referrer-policy': 'noreferrer'
+                  }
+                })
+              }
+            }
+          },
+          {
+            prop: 'createdDate',
+            label: '创建时间'
+          },
+          {
+            prop: 'modifierName',
+            label: '更新人'
           }
         ],
         data: []
@@ -129,7 +157,8 @@ export default {
       return result
     }, {})
     const filterSchema = _.map({
-      pluginId: _.o.number.other('form', {
+      pluginId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
+        component: 'Input',
         placeholder: '功能ID',
         label: '功能ID'
       }),

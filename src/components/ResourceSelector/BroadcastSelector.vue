@@ -53,6 +53,15 @@ export default {
               searched: true
           },
           {
+            prop: 'source',
+            label: '内容源',
+            width: '120',
+            options: [],
+            render: (h, {row}) => {
+              return this.$consts.sourceText[row.source] || '未知'
+            }
+          },
+          {
             prop: 'lastUpdateDate',
             label: "创建时间"
           }
@@ -61,7 +70,7 @@ export default {
       }
     }
   },
-  props: ['isLive', 'selectionType'],
+  props: ['isLive', 'selectionType', 'source'],
   computed: {
     selected() {
       return this.$refs.baseSelector.selected.slice()
@@ -71,7 +80,8 @@ export default {
     getDefaultFilter() {
       return {
         id: undefined,
-        containerName: undefined
+        containerName: undefined,
+        source: undefined
       }
     },
     getFilter() {
@@ -99,7 +109,8 @@ export default {
   },
   created() {
     const filterSchema = _.map({
-      id: _.o.number.other('form', {
+      id: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
+        component: 'Input',
         placeholder: '轮播ID',
         label: '轮播ID'
       }),

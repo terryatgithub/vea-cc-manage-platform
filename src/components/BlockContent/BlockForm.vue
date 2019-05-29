@@ -39,7 +39,7 @@
           ref="resourceSelector"
           v-if="!isReadonly"
           :is-live="true"
-          :disable-partner="true"
+          :disable-partner="!!source"
           :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
           selection-type="single"
           :source="source"
@@ -55,7 +55,7 @@
           v-if="!isReadonly"
           :is-live="true"
           :selectors="['app']"
-          :disable-partner="true"
+          :disable-partner="!!source"
           selection-type="single"
           :source="source"
           @select-end="handleSelectAppEnd"
@@ -257,12 +257,12 @@
             <el-option label="版面" value="tab"></el-option>
             <el-option label="第三方应用" value="app"></el-option>
           </el-select>
-          <el-button
-            v-if="contentForm.redundantParams.openMode === 'app'"
-            type="primary"
-            @click="openWin('onclick')"
-            :disabled="isReadonly"
-          >快速填充</el-button>
+          <ClickEventSelector
+            v-if="!isReadonly"
+            v-show="contentForm.redundantParams.openMode === 'app'"
+            @select-end="handleSelectClickEventEnd">
+            <el-button type="primary">快速填充</el-button>
+          </ClickEventSelector>
         </el-form-item>
         <template v-if="contentForm.redundantParams.openMode === 'webpage'">
           <el-form-item label="网页类型" prop="webpageType">
@@ -372,6 +372,7 @@ import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import CommonSelector from '@/components/CommonSelector'
 import CrowdSelector from '@/components/CrowdSelector.vue'
 import TabSelector from '@/components/selectors/TabSelector'
+import ClickEventSelector from '@/components/selectors/ClickEventSelector'
 export default {
   components: {
     Upload,
@@ -382,7 +383,8 @@ export default {
     ResourceSelector,
     CommonSelector,
     CrowdSelector,
-    TabSelector
+    TabSelector,
+    ClickEventSelector
   },
   data() {
     const isReadonly = this.isReadonly
@@ -835,6 +837,33 @@ export default {
         this.contentForm.blockResourceType = 0
       }
     },
+    handleSelectClickEventEnd(data) {
+      const clickEvent = data[0]
+      const {packagename, versioncode, dowhat, bywhat, byvalue, params: paramsStr, exception} = clickEvent
+      const contentForm = this.contentForm
+      let params = []
+      if (paramsStr) {
+        const paramsObj = JSON.parse(paramsStr)
+        params = Object.keys(paramsObj).map((key) => {
+          return {
+            key,
+            value: paramsObj[key]
+          }
+        })
+      }
+      if (params.length === 0) {
+        params.push({key: undefined, value: undefined})
+      }
+      contentForm.redundantParams = Object.assign({}, contentForm.redundantParams, {
+        packagename,
+        versioncode,
+        dowhat,
+        bywhat,
+        byvalue,
+        params,
+        exception
+      })
+    },
     isNormalPicture(pictureUrl) {
       return !pictureUrl || pictureUrl.slice(-4).toLowerCase() !== 'webp'
     },
@@ -881,7 +910,6 @@ export default {
       }
       this.$refs.blockSelector.clearSelected()
     },
-    handleCoverTypeChange(val) {},
     validate(data, cb) {
       const contentForm = this.contentForm
       this.$refs.contentForm.validate((valid) => {

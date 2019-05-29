@@ -13,7 +13,7 @@
     @select-end="$emit('select-end')">
     <el-form slot="filter" :inline="true" v-model="filter" label-width="72px">
       <el-form-item label="专题类别">
-        <el-select v-model="filter.leveltype">
+        <el-select v-model="filter.levelType" clearable>
           <el-option
             v-for="option in options"
             :key="option.label"
@@ -139,7 +139,7 @@ export default {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(data => {
         this.pagination.total = data.total
-        this.table.data = data.rows
+        this.table.data = data.rows || []
       })
     }
   }

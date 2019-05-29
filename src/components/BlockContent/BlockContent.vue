@@ -125,7 +125,8 @@ export default {
         // 如果是购物，默认是 custom 类型
         coverType: this.isMall ? 'custom' : 'media',
         title: '',
-        showTitle: 0,
+        // hideTitleOptions 表示强制需要标题，无法关闭
+        showTitle: this.hideTitleOptions ? 1 : 0,
         subTitle: '',
         showSubTitle: 0,
         singleSubTitle: '',
@@ -179,19 +180,25 @@ export default {
       this.$set(contentList, activeIndex, contentForm)
     },
     handleRemoveContent(index, contentType) {
-      const activeType = this.activeType
-      const activeIndex = this.activeIndex
-      const currentContentList = this[contentType + 'ContentList']
-      currentContentList.splice(index, 1)
-      if (activeType === contentType) {
-        if (currentContentList.length > 0) {
-          if (currentContentList[activeIndex] === undefined) {
-            this.handleActivate(contentType, index - 1)
+      this.$confirm('确认删除该内容', '提示',  {
+        callback: (result) => {
+          if (result === 'confirm') {
+            const activeType = this.activeType
+            const activeIndex = this.activeIndex
+            const currentContentList = this[contentType + 'ContentList']
+            currentContentList.splice(index, 1)
+            if (activeType === contentType) {
+              if (currentContentList.length > 0) {
+                if (currentContentList[activeIndex] === undefined) {
+                  this.handleActivate(contentType, index - 1)
+                }
+              } else {
+                this.handleActivate(contentType === 'normal' ? 'specific' : 'normal', 0)
+              }
+            }
           }
-        } else {
-          this.handleActivate(contentType === 'normal' ? 'specific' : 'normal', 0)
         }
-      }
+      })
     },
     handleAddContent(contentType) {
       this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
@@ -209,10 +216,16 @@ export default {
       })
     },
     handleActivate(contentType, index) {
-      this.validateCurrentContent(() => {
+      if (this[this.activeType + 'ContentList'][this.activeIndex]) {
+        this.validateCurrentContent(() => {
+          this.activeType = contentType
+          this.activeIndex = index
+        })
+      } else {
+        // 内容被删除
         this.activeType = contentType
         this.activeIndex = index
-      })
+      }
     },
     validateCurrentContent(cb) {
       this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {

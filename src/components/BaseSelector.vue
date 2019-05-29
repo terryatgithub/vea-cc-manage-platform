@@ -89,6 +89,12 @@ export default {
       this.tableSelected = []
     },
     handleSelectEnd () {
+      if (this.selected.length === 0) {
+        return this.$message({
+          type: 'error',
+          message: '请选择数据'
+        })
+      }
       this.$emit('select-end', this.selected.slice())
     },
     handleSelectCancel () {

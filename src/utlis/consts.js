@@ -57,6 +57,7 @@ const sourceToPartner = {
 }
 
 const sourceText = {
+  '': '无',
   o_tencent: '腾讯',
   o_iqiyi: '爱奇艺',
   o_youku: '优酷'

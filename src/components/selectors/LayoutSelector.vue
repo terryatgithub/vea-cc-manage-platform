@@ -56,7 +56,7 @@
           :rules="formBlockRules"
         >
           <el-form-item label="推荐位个数" prop="count">
-            <el-input v-model.number="formBlock.count" :placeholder="blockCountPlaceholder"></el-input>
+            <el-input @keypress.prevent.stop v-model.number="formBlock.count" :placeholder="blockCountPlaceholder"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -274,6 +274,8 @@ export default {
       this.$service.getLayoutInforPageList(filter).then(data => {
         this.table.data = data.rows
         this.pagination.total = data.total
+        this.selected = []
+        this.table.selected = undefined
       })
     },
     handleTableRowSelectionChange(item, index) {

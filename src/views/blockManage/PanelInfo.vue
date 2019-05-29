@@ -149,7 +149,7 @@
                   v-show="selectedLayout"
                   :selectors="['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate']"
                   :is-live="false"
-                  :disable-partner="true"
+                  :disable-partner="!!pannel.pannelResource"
                   selection-type="multiple"
                   :source="pannel.pannelResource" 
                   @select-end="handleSelectResourceEnd">
@@ -804,7 +804,7 @@ export default {
               }
             })
 
-            const selectedBroadcast = selectedResources.broadcast.map(function(
+            const selectedBroadcast = selectedResources.rotate.map(function(
               item
             ) {
               return {
@@ -871,6 +871,7 @@ export default {
           }.bind(this)
         )
         .catch((e) => {
+          console.log(e)
           resourceSelector.$refs.wrapper.handleSelectStart()
         })
     },

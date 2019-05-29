@@ -953,6 +953,7 @@ export default {
       )
     },
     handleCreateTab() {
+      this.activePage = 'tab'
       this.embedTab = {
         mode: 'create'
       }
