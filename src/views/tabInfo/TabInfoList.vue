@@ -20,10 +20,9 @@
           </el-select>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.hasSubTab" placeholder="是否二级tab">
-            <el-option value>请选择</el-option>
-            <el-option value="1">是</el-option>
-            <el-option value="0">否</el-option>
+          <el-select v-model="filter.hasSubTab" clearable placeholder="是否二级tab">
+            <el-option value="1" label="是"></el-option>
+            <el-option value="0" label="否"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item class="el-col-6">
@@ -118,7 +117,7 @@ export default {
       ],
       businessType: [],
       filter: {
-        idPrefix: 10
+        idPrefix: this.$consts.idPrefix
       },
       appIdType: [],
       filterSchema: null,

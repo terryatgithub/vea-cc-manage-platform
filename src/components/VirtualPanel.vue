@@ -20,25 +20,27 @@
           :style="block.style"
         >
           <img class="cc-virtual-pannel__block-post" v-if="block.img" :src="block.img">
+
+          <template v-for="(corner, index) in block.cornerList">
+            <img
+              class="corner-img"
+              v-if="corner.imgUrl"
+              :src="corner.imgUrl"
+              :key="index"
+              :style="{
+                  position: 'absolute',
+                  top: corner.position === 0 || corner.position === 1 ? 0 : undefined,
+                  buttom: corner.position === 2 || corner.position === 3 ? 0 : undefined ,
+                  left: corner.position === 0 || corner.position === 3 ? 0 : undefined,
+                  right: corner.position === 1 || corner.position === 2 ? 0 : undefined,
+              }"
+            />
+          </template>
+
           <div class="cc-virtual-pannel__block-base-info">
             <span class="seq-num">{{ block.content.vContentId || (index + 1) }}</span>
             <span class="size-mark">{{ block.width }}*{{ block.height }}</span>
           </div>
-
-          <div
-            v-for="(corner, index) in block.cornerList"
-            class="corner-img"
-            v-if="corner.imgUrl"
-            :key="index"
-            :style="{
-                        position: 'absolute',
-                        top: corner.position === 0 || corner.position === 1 ? 0 : undefined,
-                        buttom: corner.position === 2 || corner.position === 3 ? 0 : undefined ,
-                        left: corner.position === 0 || corner.position === 3 ? 0 : undefined,
-                        right: corner.position === 1 || corner.position === 2 ? 0 : undefined,
-                        'background-image': 'url(' + corner.imgUrl + ')'
-                    }"
-          ></div>
 
           <span
             v-if="block.isExtra"
@@ -300,5 +302,14 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 8px;
+}
+.corner-img {
+  max-width: 40px;
+  max-height: 28px;
+}
+.corner-img + .cc-virtual-pannel__block-base-info {
+  position: relative;
+  top: 28px;
+  padding: 0;
 }
 </style>

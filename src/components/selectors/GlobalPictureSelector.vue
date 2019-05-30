@@ -57,8 +57,7 @@ export default {
       picDialogVisible: false, //预览图片弹出框
       auditDialogVisible: false, //审核弹出框
       reviewPicUrl: null,
-      filter: {
-      },
+      filter: this.getDefaultFilter(),
       filterSchema: null,
       pagination: {
         currentPage: 1,
@@ -74,6 +73,13 @@ export default {
     }
   },
   methods: {
+    getDefaultFilter() {
+      const filter = {}
+      if (this.$consts.idPrefix != '10') {
+        filter.idPrefix = this.$consts.idPrefix
+      }
+      return filter
+    },
     handleRowSelectionChange(row, index) {
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
@@ -83,7 +89,7 @@ export default {
       this.fetchData() 
     },
     handleFilterReset() {
-      this.filter = {}
+      this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -176,6 +182,20 @@ export default {
         resetText: '重置'
       }
     })
+    if (this.$consts.idPrefix != '10') {
+      filterSchema.map({
+        idPrefix: _.o.enum(this.$consts.idPrefixEnums).other('form', {
+          label: ' ',
+          placeholder: '数据来源',
+          component: 'Select',
+          layout: 'inline',
+          cols: {
+            item: 3,
+            wrapper: 18
+          }
+        })
+      })
+    }
     this.getMaterialTypes().then(() => {
       this.filterSchema = filterSchema
     })

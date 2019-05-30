@@ -13,19 +13,6 @@ export function uploadImage ({ file, onUploadProgress }) {
   })
 }
 
-export function uploadBlockImage ({ file, onUploadProgress }) {
-  const formData = new FormData()
-  formData.append('file', file)
-  return axios({
-    method: 'post',
-    url: 'api/uploadHomeImg.html',
-    data: formData,
-    onUploadProgress
-  }).then(({ data }) => {
-    return data
-  })
-}
-
 export function uploadLayoutFile ({ file, onUploadProgress }) {
   const formData = new FormData()
   formData.append('file', file)

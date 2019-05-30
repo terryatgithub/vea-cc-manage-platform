@@ -66,10 +66,12 @@ export default {
   },
   methods: {
     getDefaultFilter() {
+      const idPrefix = this.$consts.idPrefix
       return {
         cornerIconId: undefined,
         cornerIconName: undefined,
-        'cornerIconType.typeId': undefined
+        typeId: undefined,
+        idPrefix: idPrefix != '10' ? idPrefix : undefined
       }
     },
     handleRowSelectionChange(row,index){
@@ -91,7 +93,7 @@ export default {
         filter.rows = pagination.pageSize;
       }
       if (position !== undefined) {
-        filter['cornerIconType.typePosition'] = position
+        filter.typePosition = position
       }
       return filter;
     },
@@ -129,39 +131,36 @@ export default {
       const filterSchema = _.map({
         cornerIconId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other("form", {
           component: 'Input',
-          label: 'ID',
+          label: ' ',
           placeholder: "ID",
           cols: {
-            item: 5,
-            label: 6,
-            wrapper: 18
+            item: 3,
+            wrapper: 23
           }
         }),
         cornerIconName: _.o.string.other("form", {
-          label: '角标名称',
+          label: ' ',
           placeholder: " 角标名称",
           cols: {
-            item: 5,
-            label: 6,
-            wrapper: 18
+            item: 3,
+            wrapper: 23
           }
         }),
-        'cornerIconType.typeId': _.o.enum(cornerTypeEnums).other("form", {
+        typeId: _.o.enum(cornerTypeEnums).other("form", {
           component: "Select",
-          label: '角标类型',
+          label: ' ',
           placeholder: "角标类型",
           cols: {
-            item: 5,
-            label: 6,
-            wrapper: 18
+            item: 3,
+            wrapper: 23
           }
         })
       }).other("form", {
         layout: "inline",
         footer: {
           cols: {
-            label: 5,
-            wrapper: 19
+            item: 3,
+            wrapper: 24
           },
           showSubmit: true,
           submitText: "查询",
@@ -169,6 +168,23 @@ export default {
           resetText: "重置"
         }
       })
+
+      const idPrefix = this.$consts.idPrefix
+      if (idPrefix != '10') {
+        filterSchema.map({
+          idPrefix: _.o.enum(this.$consts.idPrefixEnums).other('form', {
+            label: ' ',
+            placeholder: '数据来源',
+            component: 'Select',
+            layout: 'inline',
+            cols: {
+              item: 3,
+              wrapper: 23
+            }
+          })
+        })
+      }
+
       this.filterSchema = filterSchema;
     })
   }

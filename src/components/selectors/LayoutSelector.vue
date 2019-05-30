@@ -44,6 +44,7 @@
         :props="table.props"
         :selection-type="selectionType || table.selectionType"
         :select-on-row-click="true"
+        @row-dblclick="handleRowDblClick"
         @row-selection-change="handleTableRowSelectionChange"
       ></Table>
 
@@ -199,6 +200,10 @@ export default {
       } else {
         callback()
       }
+    },
+    handleRowDblClick(row) {
+      this.handleTableRowSelectionChange(row, this.table.data.indexOf(row))
+      this.handleSelectEnd()
     },
     getDefaultFilter() {
       return {

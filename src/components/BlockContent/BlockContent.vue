@@ -243,9 +243,9 @@ export default {
       const block = JSON.parse(JSON.stringify(this.data.block || '{}'))
       const normalContentList = block.videoContentList || []
       const specificContentList = block.specificContentList || []
-      const defaultContentForm = this.getDefaultContentForm()
       const parse = (data) => {
         let redundantParams
+        const defaultContentForm = this.getDefaultContentForm()
         data.cornerList = (data.cornerList || []).reduce((result, item) => {
           result[item.position] = item
           return result

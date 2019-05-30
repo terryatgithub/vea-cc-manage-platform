@@ -1,3 +1,17 @@
+function optionsToText(options) {
+  return options.reduce((result, { label, value }) => {
+    result[value] = label
+    return result
+  }, {})
+}
+
+function optionsToEnums(options) {
+  return options.reduce((result, item) => {
+    result[item.label] = item.value
+    return result
+  }, {})
+}
+
 const status = {
   offShelves: 0,
   onShelves: 1,
@@ -28,6 +42,13 @@ const statusOptions = Object.keys(statusText).map((k) => {
   }
 })
 
+const statusEnums = Object.keys(statusText).reduce((result, key) => {
+  if (key < 6) {
+    result[statusText[key]] = key
+  }
+  return result
+}, {})
+
 const sourceOptions = [
   {
     label: '腾讯',
@@ -42,6 +63,8 @@ const sourceOptions = [
     value: 'o_youku'
   }
 ]
+
+const sourceEnums = optionsToEnums(sourceOptions)
 
 const sourceOptionsWithEmpty = [
   {
@@ -103,20 +126,26 @@ const panelFocusOptions = [
 
 const panelFocusText = optionsToText(panelFocusOptions)
 
-function optionsToText(options) {
-  return options.reduce((result, { label, value }) => {
-    result[value] = label
-    return result
-  }, {})
-}
-
 const idPrefix = '10'
+const idPrefixOptions = [
+  {
+    label: '酷开',
+    value: '10'
+  },
+  {
+    label: '江苏有线',
+    value: '11'
+  }
+]
+const idPrefixEnums = optionsToEnums(idPrefixOptions)
 
 export default {
   status,
   statusText,
   statusOptions,
+  statusEnums,
   sourceOptions,
+  sourceEnums,
   sourceOptionsWithEmpty,
   sourceToPartner,
   sourceText,
@@ -125,5 +154,7 @@ export default {
   panelFocusText,
   panelTypeOptions,
   panelTypeText,
-  idPrefix
+  idPrefix,
+  idPrefixOptions,
+  idPrefixEnums
 }

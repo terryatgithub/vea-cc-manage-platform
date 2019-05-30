@@ -51,10 +51,9 @@
           <SourceSelector v-model="filter.tabResource"/>
         </el-form-item>
 
-        <el-form-item v-show="$consts.idPrefix != 10" label="数据来源">
+        <el-form-item v-show="$consts.idPrefix != '10'" label="数据来源">
           <el-select v-model="filter.idPrefix">
-            <el-option label="酷开" value="10"></el-option>
-            <el-option label="江苏广电" value="11"></el-option>
+            <el-option v-for="item in $consts.idPrefixOptions" :label="item.label" :value="item.value" :key="item.value"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -227,8 +226,9 @@ export default {
       this.$emit('select-end', this.selected.slice())
     },
     getDefaultFilter() {
+      const {idPrefix} = this.$consts
       return {
-        idPrefix: this.$consts.idPrefix,
+        idPrefix: idPrefix != '10' ? idPrefix : undefined,
         tabId: undefined,
         tabName: undefined,
         tabCategory: undefined,

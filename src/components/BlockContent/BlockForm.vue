@@ -331,15 +331,7 @@
                 </div>
               </div>
             </Upload>
-            <!-- <el-upload
-              :action="uploadImgUrl"
-              :on-success="handleUploadSuccess"
-              :on-remove="handleUploadRemove"
-              :file-list="pictureList"
-              accept="image/png, image/gif, image/jpeg, image/bmp"
-              list-type="picture"
-            >-->
-            <span>提示:只能上传png/gif/jpg/bmp文件</span>
+            <span v-if="!isReadonly">提示:只能上传png/gif/jpg/bmp文件</span>
           </el-form-item>
         </template>
 
@@ -622,7 +614,7 @@ export default {
       this.$refs.upload.fileList = [fileItem]
       fileItem.status = 'uploading'
       this.$service
-        .uploadBlockImage({
+        .uploadImage({
           file,
           onUploadProgerss: evt => {
             if (evt.lengthComputable) {
@@ -631,15 +623,16 @@ export default {
           }
         })
         .then(data => {
-          try {
-            fileItem.pictureName = data.fileName
-            fileItem.pictureType = data.fileType
-            fileItem.pictureUrl = data.url
+          if (data.success) {
+            const img = data.data[0]
+            fileItem.pictureName = img.fileName
+            fileItem.pictureType = img.fileType
+            fileItem.pictureUrl = img.url
             fileItem.status = 'success'
-            this.contentForm.redundantParams.pictureUrl = data.url
-          } catch (e) {
+            this.contentForm.redundantParams.pictureUrl = img.url
+          } else {
             fileItem.status = 'error'
-            fileItem.message = e.msg
+            fileItem.message = data.msg
           }
         })
         .catch(() => {
@@ -952,7 +945,7 @@ export default {
   mounted() {
     const redundantParams = this.contentForm.redundantParams
     if (redundantParams.openMode === 'picture' && redundantParams.pictureUrl) {
-      this.$refs.upload.fileLIst = [{
+      this.$refs.upload.fileList = [{
         status: 'success',
         dataUrl: redundantParams.pictureUrl
       }]

@@ -55,14 +55,6 @@ export default {
     return {
       resourceType: 'panelInfo',
       businessType: {},
-      pannelStatusOption: [
-        { label: '下架', value: '0' },
-        { label: '上架', value: '1' },
-        { label: '草稿', value: '2' },
-        { label: '待审核', value: '3' },
-        { label: '审核通过', value: '4' },
-        { label: '审核不通过', value: '5' }
-      ],
       pannelStatus: {},
       filter: {
         idPrefix: 10,
@@ -109,7 +101,7 @@ export default {
             label: '内容源',
             prop: 'pannelResource',
             formatter: (row) => {
-                return {'o_tencent': '腾讯', 'o_iqiyi': '爱奇艺', 'o_youku': '优酷'}[row.pannelList[0].pannelResource]
+                return this.$consts.sourceText[row.pannelList[0].pannelResource]
             }
           },
           {
@@ -123,11 +115,7 @@ export default {
             formatter: (row) => {
               const status = row.pannelStatus
               const currentVersion = row.currentVersion
-              return currentVersion + '/' + this.pannelStatusOption.map(function(item){
-                if(status.toString() === item.value){
-                  return item.label
-                }
-              }).join('')
+              return currentVersion + '/' + this.$consts.statusText[status] 
             }
           },
           {
@@ -280,10 +268,6 @@ export default {
     }
   },
   created() {
-    this.pannelStatus = this.pannelStatusOption.reduce((result, item) => {
-      result[item.label] = item.value
-      return result
-    }, {})
      let filterSchema = _.map({
       pannelCategory: _.o.enum(this.businessType).other('form', {
         placeholder: '业务分类',
@@ -309,11 +293,11 @@ export default {
         placeholder: '引用状态',
         component: 'Input'
       }),
-      pannelResource: _.o.enum({'腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优朋': 'o_voole'}).other('form', {
+      pannelResource: _.o.enum(this.$consts.sourceEnums).other('form', {
         placeholder: '内容源',
         component: 'Select'
       }),
-      pannelStatus: _.o.enum(this.pannelStatus).other('form', {
+      pannelStatus: _.o.enum(this.$consts.statusEnums).other('form', {
         placeholder: '状态',
         component: 'Select'
       }),

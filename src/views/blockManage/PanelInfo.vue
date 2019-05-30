@@ -1635,6 +1635,7 @@ export default {
       })
     },
     upsertPanelInfo(data) {
+      console.log(JSON.stringify(this.parseDataToApi(data)))
       this.$service
         .panelUpsert(this.parseDataToApi(data), '保存成功')
         .then(result => {
