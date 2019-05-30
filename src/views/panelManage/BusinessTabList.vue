@@ -286,7 +286,7 @@ export default {
         window.confirm('确定要删除吗')
       ) {
         this.$service
-          .testPolicyConfRemove({ id: this.selected.join(',') }, '删除成功')
+          .businessTabDelete({ id: this.selected.join(',') }, '删除成功')
           .then(data => {
             this.fetchData()
           })

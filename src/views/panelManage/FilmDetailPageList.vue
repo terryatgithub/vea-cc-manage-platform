@@ -345,7 +345,7 @@ export default {
       if (window.confirm('确定要删除吗')) {
         const select = this.selected.join(',')
         this.$service
-          .removeFilmDetailPage({ id: select }, '删除成功')
+          .businessTabDelete({ id: select }, '删除成功')
           .then(() => {
             this.fetchData()
           })

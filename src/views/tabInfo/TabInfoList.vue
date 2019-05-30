@@ -63,12 +63,6 @@
           <el-button  @click="handleFilterReset">重置</el-button>
         </el-form-item>
       </el-form>
-      <!-- 筛选部分end -->
-      <!-- <div class="btns">
-        <el-button type="primary" icon="el-icon-plus" @click="addTabInfo">新增</el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
-        <el-button type="primary" icon="el-icon-delete" @click="batchDel">批量删除</el-button>
-      </div> -->
          <ButtonGroupForListPage 
           pageName='tab' 
           @add="handleCreate"

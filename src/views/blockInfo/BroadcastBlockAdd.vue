@@ -622,7 +622,6 @@ export default {
   },
   methods: {
     signChange(value) {
-      debugger
        if (value === 'manualSet') {
             // 手动设置
             this.normalForm.coverType = 'custom'

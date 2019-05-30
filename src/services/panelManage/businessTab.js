@@ -5,6 +5,14 @@ export function businessTabSave(data) {
     data
   })
 }
+export function businessTabDelete(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/tab/remove.html',
+    data
+  })
+}
+
 
 export function businessTabEdit(params) {
   return this.fetch({

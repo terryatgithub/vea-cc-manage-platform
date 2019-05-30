@@ -57,7 +57,7 @@
                 @handleRemove="form.thumbImgUrl=''"
               />
             </el-form-item>
-            <el-form-item label="图标库">
+            <el-form-item label="图标库zip文件">
               <ThemeFileUpload
                 ref="pictureEntitys"
                 accept="application/zip"
