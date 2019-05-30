@@ -15,7 +15,7 @@
                 type="datetime" 
                 :clearable="false" 
                 :picker-options="pickerOptions"
-                value-format="yyyy-MM-dd hh:mm:ss"
+                value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
         </el-form-item>

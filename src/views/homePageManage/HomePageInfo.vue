@@ -221,11 +221,18 @@ export default {
           // 如果当前默认落焦不能被设为默认落焦, 则取消当前默认落焦
           homepage.defaultFocusIndex = undefined
         }
-        console.log('tabGroupList='+tabGroupList)
         return tabGroupList
       },
       set(val) {
-        this.homepage.tabInfos = val.map(item => item.tabList)
+        const homepage = this.homepage
+        const originTabInfos = homepage.tabInfos
+        const defaultFocusTabInfo = originTabInfos[homepage.defaultFocusIndex]
+        const tabInfos = val.map(item => item.tabList)
+        if(defaultFocusTabInfo) {
+          const defaultFocusIndex = tabInfos.findIndex(item => item === defaultFocusTabInfo)
+          homepage.defaultFocusIndex = defaultFocusIndex > -1 ? defaultFocusIndex : undefined
+        }
+        this.homepage.tabInfos = tabInfos
       }
     },
     tabGroupTableHeader() {

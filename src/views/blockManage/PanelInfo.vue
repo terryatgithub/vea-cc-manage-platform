@@ -466,7 +466,7 @@ export default {
     currentPanelDataType() {
       const panel = this.pannel
       if (panel.pannelGroupId) {
-        return panel.pannelList[0].pannelType
+        return panel.panelGroupType
       }
       return this.panelDataType
     },

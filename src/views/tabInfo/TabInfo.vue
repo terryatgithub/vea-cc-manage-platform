@@ -119,15 +119,8 @@
                 </el-form-item>
 
                 <el-form-item label="固定刷新时间" prop="timeCycle">
-                  <div class="el-input" style="max-width: 400px">
-                    <cc-time-spinner
-                      v-model="tabInfo.timeCycle"
-                      :options="{
-                            min: '00:05',
-                            height: 32
-                        }"
-                    ></cc-time-spinner>
-                  </div>
+                  <InputMinute v-model="tabInfo.timeCycle" :min="5" :max="360" />
+                  <span class="hint">设置范围:5分钟-6小时</span>
                 </el-form-item>
               </div>
               <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
@@ -646,6 +639,7 @@ import titleMixin from '@/mixins/title'
 import OrderableTable from '@/components/OrderableTable'
 import PanelInfo from '../blockManage/PanelInfo'
 import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
+import InputMinute from '@/components/InputMinute'
 import { unlink } from 'fs'
 export default {
   name: 'TabInfo',
@@ -673,7 +667,8 @@ export default {
     PageWrapper,
     PageContentWrapper,
     PanelInfo,
-    PrivatePanelInfo
+    PrivatePanelInfo,
+    InputMinute
   },
   data() {
     const STATUS = {

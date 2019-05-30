@@ -305,29 +305,28 @@
               @upload="handleUpload">
               <div class="upload-pic-list" slot="preview" slot-scope="{fileList}">
                 <div 
-                  v-show="!isReadonly"
+                  v-show="!isReadonly && fileList.length === 0"
                   class="upload-pic-list__add" 
                   @click="$refs.upload.handleSelectFile()">
-                  <i class="el-icon el-icon-plus"/>
                 </div>
                 <div 
+                  v-if="fileList.length > 0"
                   class="upload-pic-list__item" 
-                  v-for="file in fileList" 
-                  :key="file.id">
+                  @click="$refs.upload.handleSelectFile()">
                   <div
                     class="upload-pic-list__error"
-                    v-if="file.status === 'error'"
-                  >上传失败: {{ file.message }}</div>
-                  <div v-if="file.status === 'uploading'" class="upload-pic-list__progress">
-                    <el-progress :width="100" type="circle" :percentage="file.percentage"></el-progress>
+                    v-if="fileList[0].status === 'error'">
+                    上传失败: {{ fileList[0].message }}
                   </div>
-                  <img v-else :src="file.dataUrl">
+                  <div v-if="fileList[0].status === 'uploading'" class="upload-pic-list__progress">
+                    <el-progress :width="100" type="circle" :percentage="fileList[0].percentage"></el-progress>
+                  </div>
+                  <img v-else :src="fileList[0].dataUrl">
                   <i
-                    v-if="file.status !== 'uploading' && !isReadonly"
+                    v-if="fileList[0].status !== 'uploading' && !isReadonly"
                     class="upload-pic-list__remove el-icon el-icon-close"
                     title="移除"
-                    @click="$refs.upload.handleRemove(file)"
-                  />
+                    @click.stop="$refs.upload.handleRemove(fileList[0])"/>
                 </div>
               </div>
             </Upload>
