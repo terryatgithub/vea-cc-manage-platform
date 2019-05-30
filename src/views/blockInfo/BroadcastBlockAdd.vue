@@ -187,7 +187,7 @@
         </el-form-item>
 
         <el-form-item label="点击事件" prop="sign" v-if="basicForm.configModel === 'group'">
-          <el-radio-group v-model="normalForm.sign" :disabled="signDisabled">
+          <el-radio-group v-model="normalForm.sign" :disabled="signDisabled" @change="signChange">
             <el-radio label="autoSet" :disabled="disabled">自动生成</el-radio>
             <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
           </el-radio-group>
@@ -199,7 +199,7 @@
                 <el-option value="app">第三方应用</el-option>
               </el-select>
               <el-button type="primary" class="marginL" plain :disabled="disabled" @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'">快速填充</el-button>
-            </el-form-item>  {{normalForm.onclick}}11
+            </el-form-item>  
             <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled"></AppParams>
             <AppParamsRead :value="normalForm.onclick" v-if="disabled"/>
             <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
@@ -600,28 +600,41 @@ export default {
             this.normalResourceBtn = '轮播资源'
           }
         }
-      },
-      'normalForm.sign': {
-        deep: true,
-        handler: function(newVal, oldVal) {
-          if (newVal === 'manualSet') {
+      }
+      // ,
+      // 'normalForm.sign': {
+      //   deep: true,
+      //   handler: function(newVal, oldVal) {
+      //     if (newVal === 'manualSet') {
+      //       // 手动设置
+      //       this.normalForm.coverType = 'custom'
+      //       this.normalForm.contentType = 'custom'
+      //      // this.normalForm.onclick = ''
+      //       if (this.autoWrite === false) {
+      //         // autoWrite为true时，选择资源  coverType为custom
+      //         this.normalForm.type = 'url'
+      //       }
+      //     }
+      //   }
+      // },
+      // autoWrite: function(newVal, oldVal) {
+      // }
+  },
+  methods: {
+    signChange(value) {
+      debugger
+       if (value === 'manualSet') {
             // 手动设置
             this.normalForm.coverType = 'custom'
             this.normalForm.contentType = 'custom'
-           // this.normalForm.onclick = ''
+            this.normalForm.onclick = ''
             if (this.autoWrite === false) {
               // autoWrite为true时，选择资源  coverType为custom
               this.normalForm.type = 'url'
             }
           }
-        }
-      },
-      // autoWrite: function(newVal, oldVal) {
-      // }
-  },
-  methods: {
-     getVersion(version){
     },
+
     goEditPage() {
        this.$emit("go-edit-Page")
     },
