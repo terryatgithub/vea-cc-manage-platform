@@ -15,6 +15,7 @@
           @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
+          @cancel-timing="fetchData(tabInfo.currentVersion)"
           @delete="$emit('upsert-end')"
         >
           <template v-if="mode !== 'read'">
@@ -2212,14 +2213,6 @@ export default {
       this.$service.tabInfoUpsert(formData, '操作成功').then(() => {
         this.$emit('upsert-end')
       })
-    },
-    handleSelectVersion(version) {
-      const tab = this.tabInfo
-      let href = location.pathname + '?id=' + tab.tabId + '&version=' + version
-      if (this.mode === 'copy') {
-        href += '&typePage=copy'
-      }
-      location.href = href
     },
     fetchData(version) {
       this.$service.tabInfoGet({ id: this.id, version }).then(data => {

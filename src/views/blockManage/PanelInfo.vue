@@ -25,8 +25,8 @@
           @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
-           @delete="$emit('upsert-end')"
-          @cancel-timing="fetchData"
+          @delete="$emit('upsert-end')"
+          @cancel-timing="fetchData(pannel.currentVersion)"
         >
           <div slot="copy-confirm">
             复制到
@@ -1635,7 +1635,6 @@ export default {
       })
     },
     upsertPanelInfo(data) {
-      console.log(JSON.stringify(this.parseDataToApi(data)))
       this.$service
         .panelUpsert(this.parseDataToApi(data), '保存成功')
         .then(result => {
