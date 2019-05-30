@@ -115,7 +115,7 @@ export default {
         total: 0
       },
       filter: {
-        idPrefix: window.$idPrefix,
+        idPrefix: this.$consts.idPrefix,
         pannelType: 1,
         panelId: undefined,
         pannelName: undefined,

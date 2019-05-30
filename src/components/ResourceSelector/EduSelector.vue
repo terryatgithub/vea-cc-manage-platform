@@ -90,7 +90,6 @@
             </el-form-item>
             <el-form-item label="排序方式">
               <el-select v-model="filter.orderBy" size="small" style="width: 85px;">
-                <el-option label="请选择" value></el-option>
                 <el-option
                   v-for="order in conditionList.orderBy"
                   :key="order.tagId"
@@ -101,7 +100,6 @@
               <el-tooltip :content="filter.order === 'asc' ? '升序' : '降序'">
                 <el-button
                   :icon="filter.order === 'asc' ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"
-                  size="mini"
                   @click="changeSort()"
                 ></el-button>
               </el-tooltip>

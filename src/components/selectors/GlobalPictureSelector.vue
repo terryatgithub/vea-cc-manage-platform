@@ -25,7 +25,7 @@
         </p>
         <p class="list-title">{{item.pictureName}}</p>
         <div>
-          ??{{ item.pictureId }} / {{ $consts.statusText[item.pictureStatus] }} / {{item.pictureResolution}}
+          {{ item.pictureId }} / {{ $consts.statusText[item.pictureStatus] }} / {{item.pictureResolution}}
         </div>
       </div>
     </CardList>

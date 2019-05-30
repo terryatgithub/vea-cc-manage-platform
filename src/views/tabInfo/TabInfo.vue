@@ -890,10 +890,12 @@ export default {
           { max: 45, message: '不超过 45 个字符'}
         ],
         tabCnTitle: [
-          { required: true, message: '请输入中文标题', trigger: 'blur' }
+          { required: true, message: '请输入中文标题', trigger: 'blur' },
+          { max: 45, message: '不超过 45 个字符'}
         ],
         tabEnTitle: [
-          { required: true, message: '请输入英文标题', trigger: 'blur' }
+          { required: true, message: '请输入英文标题', trigger: 'blur' },
+          { max: 45, message: '不超过 45 个字符'}
         ],
         pictureName: [
           { required: true, message: '请选择Tab对应的icon', trigger: 'blur' }

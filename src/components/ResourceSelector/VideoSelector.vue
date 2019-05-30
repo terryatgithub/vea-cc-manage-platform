@@ -44,14 +44,14 @@
               size="small"
               v-model="filter.yearStart"
               @blur="yearStartListen"
-              style="width: 48px;"
+              style="width: 100px;"
             ></el-input>
             -
             <el-input
               size="small"
               v-model="filter.yearEnd"
               @blur="yearEndListen"
-              style="width: 48px;"
+              style="width: 100px;"
             ></el-input>
           </el-form-item>
           <span v-show="isMore">
@@ -71,13 +71,14 @@
                   :value="order.tagEnName"
                 ></el-option>
               </el-select>
+
               <el-tooltip :content="filter.order === 'asc' ? '升序' : '降序'">
                 <el-button
-                  :icon="filter.order === 'asc' ? 'arrow-up' : 'arrow-down'"
-                  size="mini"
+                  :icon="filter.order === 'asc' ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"
                   @click="changeSort()"
                 ></el-button>
               </el-tooltip>
+
             </el-form-item>
             <el-form-item label="导演">
               <CommonSelector v-model="filter.directors" placeholder="请选择/输入" filterable allow-create :options="directorEnums"  />
