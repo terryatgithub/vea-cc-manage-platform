@@ -209,7 +209,7 @@ export default {
           },
           {
             label: '创建人',
-            prop: 'createUid'
+            prop: 'creatorName'
           },
           {
             label: '创建时间',
@@ -219,7 +219,7 @@ export default {
           },
           {
             label: '修改人',
-            prop: 'modifyUid'
+            prop: 'modifierName'
           },
           {
             label: '修改时间',
@@ -389,10 +389,10 @@ export default {
       })
     },
     fetchPolicies (roleId) {
-      this.$service.getTaglist({ roleId: roleId ,type: 'crowdPolicy'}).then((data) => {
+      this.$service.getTaglist({ roleId: roleId, type: 'crowdPolicy' }).then((data) => {
         this.policies = data
         data.forEach((item) => {
-          this.$service.getTaglist({ id: item.value, roleId: roleId ,type: 'crowd'})
+          this.$service.getTaglist({ id: item.value, roleId: roleId, type: 'crowd' })
             .then((crowds) => {
               console.log(crowds)
               this.$set(item, 'crowds', crowds)
