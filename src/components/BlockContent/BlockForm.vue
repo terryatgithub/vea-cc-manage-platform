@@ -98,6 +98,7 @@
 
       <el-form-item label="内容海报" prop="pictureUrl" v-if="contentForm.coverType !== 'block'">
         <GlobalPictureSelector
+          :disabled="isReadonly"
           :picture-resolution="resolution[0] + '*' + resolution[1]"
           @select-end="handleSelectPostEnd"
         >
@@ -155,6 +156,7 @@
                 @click.stop="void(0)"
               >
                 <CornerSelector
+                  :disabled="isReadonly"
                   :position="cIndex"
                   @select-end="handleSelectCornerIconEnd($event, cIndex)"
                 >
@@ -302,10 +304,16 @@
               ref="upload" 
               @upload="handleUpload">
               <div class="upload-pic-list" slot="preview" slot-scope="{fileList}">
-                <div class="upload-pic-list__add" @click="$refs.upload.handleSelectFile()">
+                <div 
+                  v-show="!isReadonly"
+                  class="upload-pic-list__add" 
+                  @click="$refs.upload.handleSelectFile()">
                   <i class="el-icon el-icon-plus"/>
                 </div>
-                <div class="upload-pic-list__item" v-for="file in fileList" :key="file.id">
+                <div 
+                  class="upload-pic-list__item" 
+                  v-for="file in fileList" 
+                  :key="file.id">
                   <div
                     class="upload-pic-list__error"
                     v-if="file.status === 'error'"
@@ -315,7 +323,7 @@
                   </div>
                   <img v-else :src="file.dataUrl">
                   <i
-                    v-if="file.status !== 'uploading'"
+                    v-if="file.status !== 'uploading' && !isReadonly"
                     class="upload-pic-list__remove el-icon el-icon-close"
                     title="移除"
                     @click="$refs.upload.handleRemove(file)"
@@ -337,7 +345,12 @@
 
         <template v-if="contentForm.redundantParams.openMode === 'tab'">
           <el-form-item label="版面" prop="tabId">
-            <TabSelector title="选择版面" selection-type="single" :source="source" @select-end="handleSelectTabEnd"/>
+            <TabSelector 
+              :disabled="isReadonly"
+              title="选择版面" 
+              selection-type="single" 
+              :source="source" 
+              @select-end="handleSelectTabEnd"/>
             <el-tag type="primary" v-if="contentForm.redundantParams.tabId">
               已选择: {{
               contentForm.redundantParams.tabId }}
@@ -606,6 +619,7 @@ export default {
   },
   methods: {
     handleUpload(file, fileItem) {
+      this.$refs.upload.fileList = [fileItem]
       fileItem.status = 'uploading'
       this.$service
         .uploadBlockImage({
@@ -935,7 +949,14 @@ export default {
       })
     }
   },
-  created() {
+  mounted() {
+    const redundantParams = this.contentForm.redundantParams
+    if (redundantParams.openMode === 'picture' && redundantParams.pictureUrl) {
+      this.$refs.upload.fileLIst = [{
+        status: 'success',
+        dataUrl: redundantParams.pictureUrl
+      }]
+    }
   }
 }
 </script>

@@ -9,6 +9,7 @@
     @filter-reset="handleFilterReset"
     @select-end="handleSelectEnd"
     @select-start="fetchData"
+    :disabled="disabled"
   >
       <CardList
         slot="item-list"
@@ -44,7 +45,7 @@ export default {
     CardList,
     RemoteSelectorWrapper, 
   },
-  props: ['title', 'position'],
+  props: ['title', 'position', 'disabled'],
   data() {
     return {
       reviewPicUrl: null,

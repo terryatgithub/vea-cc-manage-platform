@@ -2,7 +2,7 @@
   <div class="remote-selector-wrapper">
     <div @click="handleSelectStart">
       <slot>
-        <Button>
+        <Button :disabled="disabled">
           {{ title }}
         </Button>
       </slot>
@@ -94,6 +94,12 @@ export default {
       default() {
         return true
       }
+    },
+    disabled: {
+      type: Boolean,
+      default() {
+        return false
+      }
     }
   },
   data () {
@@ -104,8 +110,10 @@ export default {
   },
   methods: {
     handleSelectStart () {
-      this.showDialog = true
-      this.$emit('select-start')
+      if (!this.disabled) {
+        this.showDialog = true
+        this.$emit('select-start')
+      }
     },
     handleSelectEnd () {
       this.showDialog = false

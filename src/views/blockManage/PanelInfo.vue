@@ -28,6 +28,16 @@
            @delete="$emit('upsert-end')"
           @cancel-timing="fetchData"
         >
+          <div slot="copy-confirm">
+            复制到
+            <el-select v-model="copyToPanelDataType">
+              <el-option :value="1" label="常规运营"></el-option>
+              <el-option :value="3" label="业务专辑"></el-option>
+            </el-select>
+            &nbsp;
+            <el-button type="primary" @click="handleCopy">确认复制</el-button>
+          </div>
+
           <div v-if="currentPanelDataType == 1" class="base-info">
             <div>常规运营版块：</div>
             <div>运营人员纯手工运营的版块，可以通过此版块自主配置影片、频道、活动、系统功能等，此类版块适合首屏比较固定的内容版块，不做个性推荐积累。</div>
@@ -282,8 +292,6 @@
                     <el-tabs
                       v-model="activePannelIndex"
                       type="card"
-                      closable
-                      @tab-remove="handleRemoveTab"
                     >
                       <el-tab-pane
                         v-for="(item, index) in pannel.pannelList"
@@ -390,6 +398,9 @@ export default {
       selectedFocusImgUrl: undefined,
       selectedBlocksAndResources: [],
 
+      // 复制到
+      copyToPanelDataType: this.panelDataType,
+
       // 设置推荐位内容窗口
       blockContentProps: {},
       // 版块类型，1-常规版块，2-排行榜，3-业务专辑，4-智能推荐版块，5-专属影院版块，6-影片详情页，7-定向版块等
@@ -455,7 +466,7 @@ export default {
     currentPanelDataType() {
       const panel = this.pannel
       if (panel.pannelGroupId) {
-        panel.pannelList[0].pannelType
+        return panel.pannelList[0].pannelType
       }
       return this.panelDataType
     },
@@ -543,6 +554,7 @@ export default {
         pannel.currentVersion
     },
     handleCopy() {
+      this.pannel.pannelList[0].pannelType = this.copyToPanelDataType
       this.handleSaveDraft()
     },
     // 布局

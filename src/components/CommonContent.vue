@@ -9,9 +9,11 @@
           :version-list="versionList"
           @select-version="$emit('select-version', $event)"
         />
-        <div>
-          <el-button type="primary" @click="$emit('copy')">确认复制</el-button>
-        </div>
+        <slot name="copy-confirm">
+          <div>
+            <el-button type="primary" @click="$emit('copy')">确认复制</el-button>
+          </div>
+        </slot>
       </div>
       <div v-else>
           <el-button type="primary" @click="$emit('submit-audit')">提交审核</el-button>

@@ -215,8 +215,17 @@ export default {
     },
     gradeEnums() {
       const gradeList = this.conditionList.gradeList
-      if (gradeList) {
-        return gradeList.map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+      const teachType = this.filter.teachTypes
+      const teachTypeRange = {
+        '幼儿': [0, 2],
+        '小学': [2, 8],
+        '初中': [8, 11],
+        '高中': [11, 14],
+      }
+      const range = teachTypeRange[teachType]
+      if (range && gradeList) {
+        const allGrade = gradeList.map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+        return allGrade.slice(range[0], range[1])
       }
       return []
     },

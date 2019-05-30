@@ -4,6 +4,7 @@
     :title="title || '选择版面'"
     @select-start="handleSelectStart"
     @select-end="handleSelectEnd"
+    :disabled="disabled"
   >
     <div slot="filter">
       <el-form :inline="true">
@@ -201,7 +202,7 @@ export default {
       selected: []
     }
   },
-  props: ['title', 'isLive', 'initSelected', 'source', 'hasSubTab', 'selectionType'],
+  props: ['title', 'isLive', 'initSelected', 'source', 'hasSubTab', 'selectionType', 'disabled'],
   watch: {
     initSelected: 'setSelected',
     'pagination.currentPage': 'fetchData',

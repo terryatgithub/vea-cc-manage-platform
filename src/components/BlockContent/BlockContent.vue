@@ -246,15 +246,10 @@ export default {
       const defaultContentForm = this.getDefaultContentForm()
       const parse = (data) => {
         let redundantParams
-        const cornerList = data.cornerList
-        if (cornerList && cornerList.length > 0) {
-          data.cornerList = cornerList.reduce((result, item) => {
-            result[item.position] = item
-            return result
-          }, [])
-        } else {
-          data.cornerList = defaultContentForm.cornerList
-        }
+        data.cornerList = (data.cornerList || []).reduce((result, item) => {
+          result[item.position] = item
+          return result
+        }, defaultContentForm.cornerList)
 
         if (data.coverType == "custom") {
             const onclick = JSON.parse(data.onclick);

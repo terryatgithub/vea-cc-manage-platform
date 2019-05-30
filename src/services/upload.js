@@ -18,7 +18,7 @@ export function uploadBlockImage ({ file, onUploadProgress }) {
   formData.append('file', file)
   return axios({
     method: 'post',
-    url: 'api/v1/uploadHomeImg.html',
+    url: 'api/uploadHomeImg.html',
     data: formData,
     onUploadProgress
   }).then(({ data }) => {

@@ -10,6 +10,7 @@
     @pagination-change="fetchData"
     @select-end="handleSelectEnd"
     @select-start="fetchData"
+    :disabled="disabled"
   >
     <CardList
       slot="item-list"
@@ -24,8 +25,7 @@
         </p>
         <p class="list-title">{{item.pictureName}}</p>
         <div>
-          <span>{{ $consts.statusText[item.pictureStatus] }}</span>
-          <span>{{item.pictureResolution}}</span>
+          ??{{ item.pictureId }} / {{ $consts.statusText[item.pictureStatus] }} / {{item.pictureResolution}}
         </div>
       </div>
     </CardList>
@@ -45,7 +45,7 @@ export default {
     CardList,
     RemoteSelectorWrapper
   },
-  props: ['title', 'pictureResolution', 'queryLongPoster'],
+  props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled'],
   data() {
     return {
       materialTypes: {}, //素材类型
@@ -189,18 +189,22 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
 }
+.card-list  >>> .card-item__selection {
+  display: none
+}
+.card-list >>> .card-item-wrapper:hover {
+  border: 1px solid #444
+}
 .card-list >>> .card-item-wrapper {
   width: 17%;
-  border: 1px solid #d8bebe;
+  border: 1px solid #ccc;
   margin: 5px;
   padding: 10px;
+  cursor: pointer;
 }
 .list-p >>> img {
   width: 100%;
   height: 200px;
   object-fit: cover;
-}
-p {
-  margin: 0;
 }
 </style>
