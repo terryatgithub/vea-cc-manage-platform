@@ -44,7 +44,8 @@
         style="float: right;"
         selection-type="multiple"
         :disabled="disabled"
-        @select-end="handleSelectNormalmultipleResourceEnd">
+        @select-end="handleSelectNormalmultipleResourceEnd"
+        >
         <el-button type="primary" plain>批量选择资源</el-button>
       </ResourceSelector>
       <!-- <el-button
@@ -126,14 +127,24 @@
           :label="normalResourceBtn"
           prop="thirdIdOrPackageName"
         >
-         <ResourceSelector 
+          <ResourceSelector 
             ref="resourceSelector"
-             v-if="autoWrite"  
+             v-if="autoWrite&&normalResourceBtn==='轮播资源'"  
              :disabled="disabled" 
             :selectors="['rotate']"
             :is-live="false"
             selection-type="single"
-            @select-end="handleSelectNormalSingleResourceEnd">
+            @select-end="handleSelectNormalSingleResourceEnd($event, 'single')">
+            <el-button type="primary" plain>选择资源</el-button>
+          </ResourceSelector>
+            <ResourceSelector 
+            ref="resourceSelector"
+             v-if="autoWrite&&normalResourceBtn==='播放资源'" 
+             :disabled="disabled" 
+            :selectors="resourceOptions"
+            :is-live="false"
+            selection-type="single"
+            @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')">
             <el-button type="primary" plain>选择资源</el-button>
           </ResourceSelector>
        <!-- <el-button v-if="autoWrite"  :disabled="disabled" type="primary" plain  @click.native="selectResource('normal', 'normalForm')">选择资源</el-button> -->
@@ -807,8 +818,18 @@ export default {
       this.normalVersionContent = arr
     },
     /**轮播模式，正常版本选择资源回掉函数 */
-    handleSelectNormalSingleResourceEnd(selectedResources) {
-     let data = this.callbackParam('rotate', selectedResources.rotate[0])
+    handleSelectNormalSingleResourceEnd(selectedResources, mode) {
+     let data = undefined
+     if (mode === 'single') {
+        data = this.callbackParam('rotate', selectedResources.rotate[0])
+     } else {
+        let resourceOptions =this.resourceOptions
+        for (var i =0; i<resourceOptions.length; i++) {
+          if (selectedResources[resourceOptions[i]].length === 1) {
+            data = this.callbackParam(resourceOptions[i], selectedResources[resourceOptions[i]][0], selectedResources.videoSource)
+          }
+        }
+     }
      this.resourceConfirm(data, 'normalForm')
     },
     handleSelectNormalmultipleResourceEnd(selectedResources) {
@@ -822,14 +843,14 @@ export default {
      this.resourceConfirm(dataArr, 'normalForm')
     },
     handleSelectLowerSingleResourceEnd(selectedResources) {
-      let dataArr = []
+      let data = undefined
       let resourceOptions =this.resourceOptions
       for (var i =0; i<resourceOptions.length; i++) {
         if (selectedResources[resourceOptions[i]].length === 1) {
-            dataArr.push(this.callbackParam(resourceOptions[i], selectedResources[resourceOptions[i]][0], selectedResources.videoSource))
+            data = this.callbackParam(resourceOptions[i], selectedResources[resourceOptions[i]][0], selectedResources.videoSource)
         }
       }
-     this.resourceConfirm(dataArr, 'lowerForm')
+     this.resourceConfirm(data, 'lowerForm')
     },
     /** 
      * 资源转换
@@ -902,7 +923,7 @@ export default {
           s.type = 'live'
           break
         }
-        case 'topics': {
+        case 'topic': {
           selected.dataSign === 'parentTopic'
             ? (s.contentType = 'bigTopic')
             : (s.contentType = 'topic')
@@ -1089,14 +1110,19 @@ export default {
         return e.type !== ''
       })
       if (callbackData instanceof Array) {
-       this.normalVersionContent = callbackData.reduce((result, current) => {
+        console.log('array')
+       let data = callbackData.reduce((result, current) => {
             result.push(this.packageFormParam(current))
             return result
-         },this.normalVersionContent)
-        this[form] = this.normalVersionContent[0]
+         },[])
+        this.normalVersionContent.splice(this.currentIndex, 0,  ...data)
+        this[form] = data[0]
       } else {
+         console.log(' no array')
          this[form] = this.packageFormParam(callbackData)
-         this.normalVersionContent.push(this.packageFormParam(callbackData, form))
+         if (form === 'normalForm') {
+          this.normalVersionContent.push(this.packageFormParam(callbackData, form))
+         }
       } 
     },
     // 校验normalForm
@@ -1645,7 +1671,7 @@ export default {
 
 .normal-version-wrap {
   width: 160px;
-  height: 120px;
+  min-height: 120px;
   position: relative;
   margin-bottom: 10px;
   text-align: center;
