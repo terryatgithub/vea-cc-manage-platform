@@ -187,17 +187,19 @@ export default {
      * 获取数据
      */
     fetchData() {
-      this.handleRowSelectionRemove()
+      this.selected = []
       const filter = this.parseFilter()
       if(this.dataList) {
         this.$service.panelDataList(filter).then(data => {
           this.pagination.total = data.total
           this.table.data = data.rows
+          this.updateTableSelected()
         })
       }else {
         this.$service.panelPageList(filter).then(data => {
           this.pagination.total = data.total
           this.table.data = data.rows
+          this.updateTableSelected()
         })
       }
     },
@@ -209,7 +211,8 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if(this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {
@@ -226,9 +229,7 @@ export default {
         console.log(this.filter);
       }else {
         this.filter = {
-           idPrefix: 10,
-          sort: undefined,
-          order: undefined,
+          idPrefix: 10,
           pannelType: 1
         }
       }

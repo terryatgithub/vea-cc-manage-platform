@@ -42,20 +42,24 @@
       </el-collapse-item>
       <el-collapse-item title="精细化定向内容" name="specific">
         <el-row class="addedContents-wrapper" :gutter="8">
-          <el-col v-for="(content, index) in specificContentList" :span="3" :key="index">
-            <el-card
-              :class="{activeContent: activeType === 'specific' && index === activeIndex}"
-              :body-style="{ padding: '0px' }"
-              @click.native="handleActivate('specific', index)"
-            >
-              <i
-                v-if="mode !== 'read'"
-                class="remove-handle el-icon-close"
-                @click.stop.prevent="handleRemoveContent(index, 'specific')"
-              ></i>
-              <img :src="content.pictureUrl" referrerpolicy="no-referrer">
-            </el-card>
-          </el-col>
+          <draggable
+            v-model="specificContentList"
+            @start="handleDragConentStart"
+            @end="handleDragConentEnd">
+            <el-col v-for="(content, index) in specificContentList" :span="3" :key="index">
+              <el-card
+                :class="{activeContent: activeType === 'specific' && index === activeIndex}"
+                :body-style="{ padding: '0px' }"
+                @click.native="handleActivate('specific', index)">
+                <i
+                  v-if="mode !== 'read'"
+                  class="remove-handle el-icon-close"
+                  @click.stop.prevent="handleRemoveContent(index, 'specific')"
+                ></i>
+                <img :src="content.pictureUrl" referrerpolicy="no-referrer">
+              </el-card>
+            </el-col>
+          </draggable>
           <el-col :span="3" v-if="mode !== 'read'" >
             <el-card @click.native="handleAddContent('specific')">
               <i class="el-icon-plus">添加资源</i>
@@ -82,9 +86,11 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 import BlockForm from './BlockForm'
 export default {
   components: {
+    draggable,
     BlockForm
   },
   data() {
@@ -112,6 +118,10 @@ export default {
     }
   },
   methods: {
+    handleDragConentStart(event) {
+    },
+    handleDragConentEnd(event) {
+    },
     handleSave() {
       this.validateCurrentContent(() => {
         this.$emit("save", {

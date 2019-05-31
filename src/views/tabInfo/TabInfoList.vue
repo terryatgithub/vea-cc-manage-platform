@@ -1,6 +1,6 @@
 <template>
   <ContentCard class="content">
-    <ContentWrapper :pagination="pagination" @filter-change="handleFilterChange">
+    <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <!-- 筛选部分 -->
       <el-form inline ref="form" v-model="filter" label-width="90px" class="form">
         <el-form-item class="el-col-6">
@@ -309,13 +309,9 @@ export default {
     },
    handleFilterChange(type) {
       if(this.$validateId(this.filter.tabId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
-        }
+        this.pagination.currentPage = 1
+        this.fetchData() 
       }
-      this.fetchData() 
     },
     handleFilterReset() {
       this.filter = {
