@@ -31,13 +31,13 @@
             <el-form-item label="首页版本号" required class="linkwork">
               <el-col :span="11" style="padding-left:0px;padding-right:0px;">
                 <el-form-item prop="homePageVerStart">
-                  <el-input-number v-model="form.homePageVerStart" :min="1000000" :max="9999999"></el-input-number>
+                  <el-input-number v-model="form.homePageVerStart" :min="0" :max="9999999"></el-input-number>
                 </el-form-item>
               </el-col>
               <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
               <el-col :span="11" style="padding-left:0px;padding-right:0px;">
                 <el-form-item prop="homePageVerEnd">
-                  <el-input-number v-model="form.homePageVerEnd" :min="1000000" :max="9999999"></el-input-number>
+                  <el-input-number v-model="form.homePageVerEnd" :min="0" :max="9999999"></el-input-number>
                   <!-- <el-input placeholder="首页版本号结尾" v-model="form.homePageVerEnd" style="width: 100%;"></el-input> -->
                 </el-form-item>
               </el-col>
@@ -72,6 +72,7 @@
               <SelectedHomePage
                 :dataArr="form.specialNormalHp"
                 @edit-item="editHomePage"
+                  :mode="mode"
                 @remove-item="removeHomePage"
                 title="标准模式"
                 v-if="form.specialNormalHp.length>0"
@@ -79,6 +80,7 @@
               <SelectedHomePage
                 :dataArr="form.specialChildHp"
                 @edit-item="editHomePage"
+                  :mode="mode"
                 @remove-item="removeHomePage"
                 v-if="form.specialChildHp.length>0"
                 title="儿童模式"
@@ -129,7 +131,7 @@
                     <el-input-number
                       v-model="form.homePageVerStart"
                       disabled="disabled"
-                      :min="1000000"
+                      :min="0"
                       :max="9999999"
                     ></el-input-number>
                   </el-form-item>
@@ -140,35 +142,17 @@
                     <el-input-number
                       v-model="form.homePageVerEnd"
                       disabled="disabled"
-                      :min="1000000"
+                      :min="0"
                       :max="9999999"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
               </el-form-item>
               <el-form-item label="Mac地址" required class="linkwork">
-                <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                  <el-form-item prop="macStart">
-                    <el-input
-                      placeholder="Mac地址起始"
-                      disabled="disabled"
-                      v-model="form.macStart"
-                      style="width: 100%;"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
-                <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                  <el-form-item prop="macEnd">
-                    <el-input
-                      placeholder="Mac地址起始"
-                      disabled="disabled"
-                      v-model="form.macEnd"
-                      style="width: 100%;"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
+              <el-form-item prop="macStart">
+                {{form.macStart}}
               </el-form-item>
+            </el-form-item>
               <el-form-item label="策略优先级" prop="priority">
                 {{form.priority}}
                 <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
@@ -188,12 +172,14 @@
                   :dataArr="form.specialNormalHp"
                   @edit-item="editHomePage"
                   @remove-item="removeHomePage"
+                  :mode="mode"
                   title="标准模式"
                   v-if="form.specialNormalHp.length>0"
                 ></SelectedHomePage>
                 <SelectedHomePage
                   :dataArr="form.specialChildHp"
                   @edit-item="editHomePage"
+                  :mode="mode"
                   @remove-item="removeHomePage"
                   v-if="form.specialChildHp.length>0"
                   title="儿童模式"
@@ -272,7 +258,7 @@ export default {
         policyName: null,
         macStart: undefined,
         macEnd: 'ffffffffffff',
-        homePageVerEnd: '',
+        homePageVerEnd: '9999999',
         homePageVerStart: '',
         priority: null,
         policyStatus: 3,
@@ -372,8 +358,10 @@ export default {
     editHomePage(mode, index) {
       this.addHomePageDialogVisible = true
       if (mode === 'normal') {
+        this.selectedCrowds = this.form.specialNormalHp
         this.editHomePageData = this.form.specialNormalHp[index]
       } else {
+        this.selectedCrowds = this.form.specialChildHp
         this.editHomePageData = this.form.specialChildHp[index]
       }
     },

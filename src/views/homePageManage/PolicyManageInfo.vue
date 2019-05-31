@@ -38,13 +38,13 @@
             <el-form-item label="首页版本号" required class="linkwork">
               <el-col :span="11" style="padding-left:0px;padding-right:0px;">
                 <el-form-item prop="homePageVerStart">
-                  <el-input-number v-model="form.homePageVerStart" :min="1000000" :max="9999999"></el-input-number>
+                  <el-input-number v-model="form.homePageVerStart" :min="0" :max="9999999"></el-input-number>
                 </el-form-item>
               </el-col>
               <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
               <el-col :span="11" style="padding-left:0px;padding-right:0px;">
                 <el-form-item prop="homePageVerEnd">
-                  <el-input-number v-model="form.homePageVerEnd" :min="1000000" :max="9999999"></el-input-number>
+                  <el-input-number v-model="form.homePageVerEnd" :min="0" :max="9999999"></el-input-number>
                   <!-- <el-input placeholder="首页版本号结尾" v-model="form.homePageVerEnd" style="width: 100%;"></el-input> -->
                 </el-form-item>
               </el-col>
@@ -149,7 +149,7 @@
                     <el-input-number
                       v-model="form.homePageVerStart"
                       disabled="disabled"
-                      :min="1000000"
+                      :min="0"
                       :max="9999999"
                     ></el-input-number>
                   </el-form-item>
@@ -160,7 +160,7 @@
                     <el-input-number
                       v-model="form.homePageVerEnd"
                       disabled="disabled"
-                      :min="1000000"
+                      :min="0"
                       :max="9999999"
                     ></el-input-number>
                   </el-form-item>
@@ -295,7 +295,7 @@ export default {
         policyName: null,
         macStart: '000000000000',
         macEnd: 'ffffffffffff',
-        homePageVerEnd: '',
+        homePageVerEnd: '9999999',
         homePageVerStart: '',
         priority: null,
         policyStatus: 3,
@@ -396,8 +396,10 @@ export default {
       this.mode = mode 
       this.editHomePageIndex = index
       if (mode === 'normal') {
+        this.selectedCrowds = this.form.specialNormalHp
         this.editHomePageData = this.form.specialNormalHp[index]
       } else {
+        this.selectedCrowds = this.form.specialChildHp
         this.editHomePageData = this.form.specialChildHp[index]
       }
     },

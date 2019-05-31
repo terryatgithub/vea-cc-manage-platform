@@ -10,7 +10,7 @@
       :id="editId"
       :initMode="mode"
       :version = "duplicateVersionVersion"
-      @open-list-page="openListPage"
+      @upsert-end="openListPage"
       @go-back="goBack"
     />
   </div>

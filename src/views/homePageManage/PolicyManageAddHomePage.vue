@@ -55,7 +55,6 @@
       <CrowdSelector
       v-if="showSelectCrowdDialog"
       @select-cancel="handleSelectCrowdCancel"
-      :selected-crowds="selectedCrowds"
       @select-end="handleSelectCrowdEnd"
     />
     <el-dialog title="选择首页" :visible.sync="showHomePageDialogVisible" width="80%" append-to-body>
@@ -82,7 +81,7 @@ export default {
   data() {
     return {
       form: {},
-     dialogVisible: true,
+      dialogVisible: true,
       showSelectCrowdDialog: false,
       showHomePageDialogVisible: false,
       specialNormalHp: [],
@@ -183,30 +182,30 @@ export default {
       }
       
     },
-    handleRemoveItem (itemType, item) {
-      const specialHp = itemType === 'child'
-        ? this.specialChildHp
-        : this.specialNormalHp
-      specialHp.splice(specialHp.indexOf(item), 1)
-    },
-    handleEditItem (itemType, item) {
-      let form
-      if (item) {
-        form = JSON.parse(JSON.stringify(item))
-        this.activeItem = item
-      } else {
-        form = itemType === 'child'
-          ? this.getInitSpecialChild()
-          : this.getInitSpecialNormal()
-        this.activeItem = undefined
-      }
-      form.useABTest = form.testHomeList.length > 0
-      this.form = form
-      this.itemType = itemType
-      // this.tableList.home.url = itemType === 'child'
-      //   ? $basePath + '/homepageInfo/dataList.html?homepageModel=child&&homepageStatusArray=4&&homepageResource=tencent'
-      //   : $basePath + '/homepageInfo/dataList.html?homepageModel=normal&&homepageStatusArray=4&&homepageResource=tencent'
-    },
+    // handleRemoveItem (itemType, item) {
+    //   const specialHp = itemType === 'child'
+    //     ? this.specialChildHp
+    //     : this.specialNormalHp
+    //   specialHp.splice(specialHp.indexOf(item), 1)
+    // },
+    // handleEditItem (itemType, item) {
+    //   let form
+    //   if (item) {
+    //     form = JSON.parse(JSON.stringify(item))
+    //     this.activeItem = item
+    //   } else {
+    //     form = itemType === 'child'
+    //       ? this.getInitSpecialChild()
+    //       : this.getInitSpecialNormal()
+    //     this.activeItem = undefined
+    //   }
+    //   form.useABTest = form.testHomeList.length > 0
+    //   this.form = form
+    //   this.itemType = itemType
+    //   // this.tableList.home.url = itemType === 'child'
+    //   //   ? $basePath + '/homepageInfo/dataList.html?homepageModel=child&&homepageStatusArray=4&&homepageResource=tencent'
+    //   //   : $basePath + '/homepageInfo/dataList.html?homepageModel=normal&&homepageStatusArray=4&&homepageResource=tencent'
+    // },
     rowClick(row) {
         if(this.useABTestHomePage !== undefined) {
           this.useABTestHomePage.homepageId = row.homepageId,
@@ -234,35 +233,41 @@ export default {
     handleSelectCrowdCancel() {},
     /**选择人群 */
     handleSelectCrowdEnd(policy, crowd) {
-      const specialNormalHp = this.specialNormalHp
-      const specialChildHp = this.specialChildHp
-      let length
-      let duplicate
-      let duplicateIndex
-      length = specialNormalHp.length
-      while (--length >= 0) {
-        if (specialNormalHp[length].attribute.crowdIds[0] === crowd.value) {
-          duplicate = '首页模式'
-          duplicateIndex = length
-          break
-        }
+      // const specialNormalHp = this.specialNormalHp
+      // const specialChildHp = this.specialChildHp
+      // let length
+      // let duplicate
+      // let duplicateIndex
+      // length = specialNormalHp.length
+      // while (--length >= 0) {
+      //   if (specialNormalHp[length].attribute.crowdIds[0] === crowd.value) {
+      //     duplicate = '首页模式'
+      //     duplicateIndex = length
+      //     break
+      //   }
+      // }
+      // length = specialChildHp.length
+      // while (--length >= 0) {
+      //   if (specialChildHp[length].attribute.crowdIds[0] === crowd.value) {
+      //     duplicate = '儿童模式'
+      //     duplicateIndex = length
+      //     break
+      //   }
+      // }
+      // if (duplicate) {
+      //   return this.$message({
+      //     type: 'error',
+      //     message:
+      //       duplicate + ' 第' + (duplicateIndex + 1) + '个方案已选择该人群'
+      //   })
+      // }
+     if(this.isContainCrowdName(crowd.value)) {
+          this.$message({
+                type: 'error',
+                message: '已经存在相同的人群'
+           })
+           return
       }
-      length = specialChildHp.length
-      while (--length >= 0) {
-        if (specialChildHp[length].attribute.crowdIds[0] === crowd.value) {
-          duplicate = '儿童模式'
-          duplicateIndex = length
-          break
-        }
-      }
-      if (duplicate) {
-        return this.$message({
-          type: 'error',
-          message:
-            duplicate + ' 第' + (duplicateIndex + 1) + '个方案已选择该人群'
-        })
-      }
-
       this.$set(this.crowdsIndexed, crowd.value, crowd)
       this.form.attribute = {
         crowdIds: [crowd.value],
@@ -270,7 +275,13 @@ export default {
         crowdPolicyName: policy.label,
         crowdPolicyIds: [policy.value]
       }
+     
       this.showSelectCrowdDialog = false
+    },
+    isContainCrowdName(crowdId) {
+     return this.selectedCrowds.some((item) => {
+         return item.attribute.crowdIds[0] === crowdId
+      })
     },
     getSelectedCrowdNames(specialItem) {
       console.log(specialItem)

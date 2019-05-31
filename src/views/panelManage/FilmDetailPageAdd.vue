@@ -486,7 +486,7 @@ export default {
           }
           console.log(jsonStr)
           this.$service.tabInfoUpsert(jsonStr, '保存成功').then(data => {
-            this.$emit('open-list-page')
+            this.$emit('upsert-end')
           })
         } else {
           this.$message('请将表单填写完整')

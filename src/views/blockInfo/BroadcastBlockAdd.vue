@@ -37,16 +37,15 @@
         type="warning"
       >短标题模式需至少运营四个资源，长标题模式至少6个，才能填满布局哦~</el-tag>
       <ResourceSelector 
-        v-if="basicForm.configModel === 'group' "
+        v-if="basicForm.configModel === 'group'&&!disabled "
         ref="resourceSelector"
         :selectors="resourceOptions"
         :is-live="false"
         style="float: right;"
         selection-type="multiple"
-        :disabled="disabled"
         @select-end="handleSelectNormalmultipleResourceEnd"
         >
-        <el-button type="primary" plain>批量选择资源</el-button>
+        <el-button type="primary" plain  >批量选择资源</el-button>
       </ResourceSelector>
       <!-- <el-button
         v-if="basicForm.configModel === 'group' "
@@ -129,18 +128,16 @@
         >
           <ResourceSelector 
             ref="resourceSelector"
-             v-if="autoWrite&&normalResourceBtn==='轮播资源'"  
-             :disabled="disabled" 
+             v-if="autoWrite&&normalResourceBtn==='轮播资源'&&!disabled "  
             :selectors="['rotate']"
             :is-live="false"
             selection-type="single"
             @select-end="handleSelectNormalSingleResourceEnd($event, 'single')">
-            <el-button type="primary" plain>选择资源</el-button>
+            <el-button type="primary" plain  >选择资源</el-button>
           </ResourceSelector>
             <ResourceSelector 
-            ref="resourceSelector"
-             v-if="autoWrite&&normalResourceBtn==='播放资源'" 
-             :disabled="disabled" 
+             ref="resourceSelector"
+             v-if="autoWrite&&normalResourceBtn==='播放资源'&&!disabled " 
             :selectors="resourceOptions"
             :is-live="false"
             selection-type="single"
@@ -271,7 +268,7 @@
         >
           <ResourceSelector 
             ref="resourceSelector"
-            :disabled="disabled" 
+            v-if="!disabled "
             :selectors="resourceOptions"
             :is-live="false"
             selection-type="single"
@@ -783,6 +780,7 @@ export default {
     },
     // 模式切换
     modelChange: function(val) {
+      this.autoWrite = true
       var _this = this
       this.$confirm('切换后配置数据将被清空, 是否确认切换?', '提示', {
         confirmButtonText: '确定',
@@ -1119,9 +1117,9 @@ export default {
         this[form] = data[0]
       } else {
          console.log(' no array')
-         this[form] = this.packageFormParam(callbackData)
+         this[form] = this.packageFormParam(callbackData,form)
          if (form === 'normalForm') {
-          this.normalVersionContent.push(this.packageFormParam(callbackData, form))
+           this.normalVersionContent.splice(this.currentIndex, 0,  this[form])
          }
       } 
     },

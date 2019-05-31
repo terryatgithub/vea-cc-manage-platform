@@ -59,7 +59,7 @@ export default {
       pannelResources: {
         腾讯: 'o_tencent',
         爱奇艺: 'o_iqiyi',
-        优朋: 'o_voole'
+        优酷: 'o_youku'
       },
       filter: {
         sort: undefined,
