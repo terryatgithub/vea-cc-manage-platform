@@ -119,7 +119,7 @@
         @shelves="fetchData"
         @audit="$emit('upsert-end')"
         @select-version="fetchData"
-         @delete="$emit('upsert-end')"
+        @delete="$emit('upsert-end')"
       >
         <div>
           <div class="form-legend-header">
@@ -250,6 +250,7 @@
     <PolicyManageAddHomePage
       v-if="addHomePageDialogVisible"
       :itemType="mode"
+      :selected-crowds="selectedCrowds"
       :editHomePageData="editHomePageData"
       @add-home-page-close="addHomePageClose"
       @create-home-page="createHomePage"
@@ -285,6 +286,7 @@ export default {
       addHomePageDialogVisible: false, //是否显示addHomePage组件
       //model: 'normal',
       platform: 'tencent', //内容源
+      selectedCrowds:[],
       editHomePageData: {}, //编辑定向首页方案
     //  editHomePageMode: undefined, //编辑定向首页方案的模式 normal,child
       editHomePageIndex: undefined, //编辑定向首页方案数据索引
@@ -481,6 +483,11 @@ export default {
       this.addHomePageDialogVisible = true
       // this.title = '添加定向首页方案'
       this.mode = mode
+      if (mode === 'normal') {
+        this.selectedCrowds = this.form.specialNormalHp
+      } else {
+        this.selectedCrowds = this.form.specialChildHp
+      }
       this.editHomePageData = {}
     },
     /*

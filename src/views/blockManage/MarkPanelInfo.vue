@@ -2,9 +2,9 @@
   <div>
     <div class="hompage-upsert" v-if="mode!== 'read'">
       <ContentCard :title="title" @go-back="$emit('go-back')">
-         <div class="form-legend-header">
-                <span>基本信息</span>
-              </div>
+        <div class="form-legend-header">
+          <span>基本信息</span>
+        </div>
         <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="el-form-add">
           <el-form-item label="版块名称" prop="pannelList[0].pannelName">
             <el-input v-model="form.pannelList[0].pannelName" placeholder="版块名称"></el-input>
@@ -46,26 +46,38 @@
           @select-version="fetchData"
           @delete="$emit('upsert-end')"
         >
-         <div class="form-legend-header">
-                <span>基本信息</span>
-              </div>
-        <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="el-form-add">
-          <el-form-item label="版块名称" prop="pannelList[0].pannelName">
-            {{form.pannelList[0].pannelName}}
-          </el-form-item>
-          <el-form-item label="版块标题" prop="pannelList[0].pannelTitle">
-            {{form.pannelList[0].pannelTitle}}{{ form.pannelList[0].showTitle === 0 ? '(前端不显示)' : '' }}
-          </el-form-item>
-          <el-form-item label="功能类型" prop="clientType">
-            {{form.clientType}}
-          </el-form-item>
-          <el-form-item label="内容源" prop="pannelList[0].pannelResource">
-            <el-radio v-model="form.pannelList[0].pannelResource" :disabled="true" label>不限</el-radio>
-            <el-radio v-model="form.pannelList[0].pannelResource" :disabled="true"  label="o_tencent">腾讯</el-radio>
-            <el-radio v-model="form.pannelList[0].pannelResource" :disabled="true"  label="o_iqiyi">爱奇艺</el-radio>
-            <el-radio v-model="form.pannelList[0].pannelResource" :disabled="true"  label="o_youku">优酷</el-radio>
-          </el-form-item>
-        </el-form>
+          <div class="form-legend-header">
+            <span>基本信息</span>
+          </div>
+          <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="el-form-add">
+            <el-form-item
+              label="版块名称"
+              prop="pannelList[0].pannelName"
+            >{{form.pannelList[0].pannelName}}</el-form-item>
+            <el-form-item
+              label="版块标题"
+              prop="pannelList[0].pannelTitle"
+            >{{form.pannelList[0].pannelTitle}}{{ form.pannelList[0].showTitle === 0 ? '(前端不显示)' : '' }}</el-form-item>
+            <el-form-item label="功能类型" prop="clientType">{{form.clientType}}</el-form-item>
+            <el-form-item label="内容源" prop="pannelList[0].pannelResource">
+              <el-radio v-model="form.pannelList[0].pannelResource" :disabled="true" label>不限</el-radio>
+              <el-radio
+                v-model="form.pannelList[0].pannelResource"
+                :disabled="true"
+                label="o_tencent"
+              >腾讯</el-radio>
+              <el-radio
+                v-model="form.pannelList[0].pannelResource"
+                :disabled="true"
+                label="o_iqiyi"
+              >爱奇艺</el-radio>
+              <el-radio
+                v-model="form.pannelList[0].pannelResource"
+                :disabled="true"
+                label="o_youku"
+              >优酷</el-radio>
+            </el-form-item>
+          </el-form>
         </CommonContent>
       </ContentCard>
     </div>
@@ -95,7 +107,7 @@ export default {
     }
   },
   data() {
-     const STATUS = {
+    const STATUS = {
       draft: 2,
       waiting: 3,
       accepted: 4,
@@ -155,21 +167,27 @@ export default {
     }
   },
   methods: {
-    submitEnd (status, data) {
-       if(data === undefined) {
-          data = this.form
-       }
+    submitEnd(status, data) {
+      if (data === undefined) {
+        data = this.form
+      }
       data.pannelList[0].pannelStatus = status
-      data.pannelList[0]['showTitle'] ? data.pannelList[0]['showTitle'] = 1 : data.pannelList[0]['showTitle'] = 0
-      if (this.mode ==='replicate') {
+      data.pannelList[0]['showTitle']
+        ? (data.pannelList[0]['showTitle'] = 1)
+        : (data.pannelList[0]['showTitle'] = 0)
+      if (this.mode === 'replicate') {
         data.currentVersion = ''
       }
       const jsonStr = JSON.stringify(data)
-      this.$service
-        .MarkPanelSave({ jsonStr: jsonStr }, '保存成功')
-        .then(data => {
-          this.$emit('upsert-end')
-        })
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          this.$service
+            .MarkPanelSave({ jsonStr: jsonStr }, '保存成功')
+            .then(data => {
+              this.$emit('upsert-end')
+            })
+        }
+      })
     },
     handleSubmitAudit(timing) {
       const data = this.form
@@ -190,11 +208,13 @@ export default {
     fetchData(version) {
       this.$service.getViewData({ id: this.id, version }).then(data => {
         this.form = data
-         if(version!==''&&version!==undefined) {
-          this.$service.getTimedInfo({id: this.id,version,type: 'pannel'}).then(data => {
-            this.releaseTime = data.releaseTime
-          })
-         }
+        if (version !== '' && version !== undefined) {
+          this.$service
+            .getTimedInfo({ id: this.id, version, type: 'pannel' })
+            .then(data => {
+              this.releaseTime = data.releaseTime
+            })
+        }
       })
     }
   },

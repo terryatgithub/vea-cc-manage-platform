@@ -158,6 +158,9 @@ export default {
                 case 2:
                   return '爱奇艺'
                   break
+                 case 3:
+                  return '优酷'
+                  break
               }
             }
           },
