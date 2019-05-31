@@ -236,7 +236,7 @@ export default {
     },
     // 查询
     handleFilterChange(type, filter) {
-      this.filter = filter
+      if (filter) { this.filter = filter}
       if (this.$validateId([
         { label: 'ID', value: this.filter.elid },
         { label: '标签ID', value: this.filter.tabId },

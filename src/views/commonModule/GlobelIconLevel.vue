@@ -132,7 +132,7 @@ export default {
     },
     //查询
     handleFilterChange(type, filter) {
-      this.filter = filter
+      if (filter) { this.filter = filter}
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
