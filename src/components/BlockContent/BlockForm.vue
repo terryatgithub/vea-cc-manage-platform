@@ -277,10 +277,10 @@
               <el-radio label="2">全屏网页</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="网页地址" prop="redundantParams.webpageUrl" :rules="contentRule.webpageUrl">
+          <el-form-item key="webpageUrl" label="网页地址" prop="redundantParams.webpageUrl" :rules="contentRule.webpageUrl">
             <el-input v-model.trim="contentForm.redundantParams.webpageUrl" :disabled="isReadonly"></el-input>
           </el-form-item>
-          <el-form-item label="应用版本号" prop="redundantParams.versioncode" :rules="[{required: true, message: '请输入版本号', trigger: 'blur'}]">
+          <el-form-item key="webpage-versioncode" label="应用版本号" prop="redundantParams.versioncode" :rules="[{required: true, message: '请输入版本号', trigger: 'blur'}]">
             <el-input
               v-model.trim="contentForm.redundantParams.versioncode"
               :disabled="isReadonly"
@@ -288,16 +288,16 @@
           </el-form-item>
         </template>
         <template v-if="contentForm.redundantParams.openMode === 'video'">
-          <el-form-item label="视频名称" prop="videoName">
+          <el-form-item key="videoName" label="视频名称" prop="redundantParams.videoName" :rules="contentRule.videoName">
             <el-input v-model.trim="contentForm.redundantParams.videoName" :disabled="isReadonly"></el-input>
           </el-form-item>
-          <el-form-item label="视频地址" prop="videoUrl">
+          <el-form-item key="videoUrl" label="视频地址" prop="redundantParams.videoUrl" :rules="contentRule.videoUrl">
             <el-input v-model.trim="contentForm.redundantParams.videoUrl" :disabled="isReadonly"></el-input>
           </el-form-item>
         </template>
 
         <template v-if="contentForm.redundantParams.openMode === 'picture'">
-          <el-form-item label="选择图片" prop="pictureUrl">
+          <el-form-item key="pictureUrl" label="选择图片" prop="redundantParams.pictureUrl" :rules="contentRule.pictureUrl">
             <Upload 
               :multiple="false" 
               accept="image/jpg,image/jpeg,image/png,image/bmp,image/gif"  
@@ -307,12 +307,12 @@
                 <div 
                   v-show="!isReadonly && fileList.length === 0"
                   class="upload-pic-list__add" 
-                  @click="$refs.upload.handleSelectFile()">
+                  @click="!isReadonly && $refs.upload.handleSelectFile()">
                 </div>
                 <div 
                   v-if="fileList.length > 0"
                   class="upload-pic-list__item" 
-                  @click="$refs.upload.handleSelectFile()">
+                  @click="!isReadonly && $refs.upload.handleSelectFile()">
                   <div
                     class="upload-pic-list__error"
                     v-if="fileList[0].status === 'error'">
@@ -335,7 +335,7 @@
         </template>
 
         <template v-if="contentForm.redundantParams.openMode === 'tab'">
-          <el-form-item label="版面" prop="tabId">
+          <el-form-item key="tabId" label="版面" prop="reduantParams.tabId">
             <TabSelector 
               :disabled="isReadonly"
               title="选择版面" 
@@ -352,6 +352,7 @@
 
         <template v-if="contentForm.redundantParams.openMode === 'app'">
           <AppParamsForm
+            key="app"
             v-model="contentForm.redundantParams"
             label-width="140px"
             prop-prefix="redundantParams."
@@ -680,6 +681,7 @@ export default {
       if (val === 'app') {
         redundantParams.versioncode = ''
       }
+      this.$refs.contentForm.$forceUpdate()
     },
     handleWebPageTypeChange(val) {
       this.contentForm.redundantParams.versioncode =
