@@ -5,7 +5,7 @@
       <el-form :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input v-model="filter.tabId" placeholder="板面ID"/>
+            <el-input v-model="filter.tabId" placeholder="版面ID"/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">

@@ -15,12 +15,19 @@
         <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
           <el-form-item label="固定刷新时间" prop="pluginInfo.refreshTime">
             <div class="el-input" style="max-width: 400px">
-              <el-time-select
+              <!-- <el-time-select
                 v-model="block.pluginInfo.refreshTime"
                 :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
                 placeholder="选择时间"
                 @change="handleTime"
-              ></el-time-select>
+              ></el-time-select> -->
+              <el-time-picker
+              v-model="block.pluginInfo.refreshTime"
+              :picker-options="{
+              selectableRange: '00:01:01 - 23:59:59'
+              }"
+              placeholder="选择时间">
+            </el-time-picker>
             </div>
           </el-form-item>
           <el-form-item label="活动形式" prop="hasActivity">
@@ -190,12 +197,19 @@
                 :rules="rules.aliveTime"
               >
                 <div class="el-input" style="max-width: 400px">
-                  <el-time-select
+                  <!-- <el-time-select
                     v-model="item.extendInfo.aliveTime"
-                    :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
+                    :picker-options="{  start: '00:10', step: '00:05',  end: '24:00' }"
                     placeholder="选择时间"
                     @change="handleTime1"
-                  ></el-time-select>
+                  ></el-time-select> -->
+                  <el-time-picker
+                   v-model="item.extendInfo.aliveTime"
+                  :picker-options="{
+                    selectableRange: '00:01:01 - 23:59:59'
+                  }"
+                  placeholder="选择时间">
+                </el-time-picker>
                   <!-- <ccTimeSpinner
                     v-model.number="item.extendInfo.aliveTime"
                     :options="{ min: '00:05',height: 34}"

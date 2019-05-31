@@ -305,7 +305,7 @@ export default {
         placeholder: '引用状态',
         component: 'Input'
       }),
-      pannelResource: _.o.enum({'腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优朋': 'o_voole'}).other('form', {
+      pannelResource: _.o.enum({'腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优酷': 'o_youku'}).other('form', {
         placeholder: '内容源',
         component: 'Select'
       }),
