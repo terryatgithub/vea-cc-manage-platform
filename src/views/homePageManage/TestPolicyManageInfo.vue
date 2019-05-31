@@ -212,10 +212,10 @@
         @row-click="ChipModelRowClick"
       ></ChipModel>
       <HomePageModel
-        :homepageModel="model"
+        :homepageModel="mode"
         :homepageResource="platform"
         homepageStatusArray="4"
-        v-if="mode==='HomePageModel'"
+        v-if="selectHomePageDialogVisible"
         @row-click="rowClick"
         @row-selection-change="rowClick"
       ></HomePageModel>
@@ -225,9 +225,10 @@
         <el-button type="primary" @click="dialogSubmit">确 定</el-button>
       </span>
     </el-dialog>
-    <PolicyManageAddHomePage
+  <PolicyManageAddHomePage
       v-if="addHomePageDialogVisible"
-      :itemType="model"
+      :itemType="mode"
+      :selected-crowds="selectedCrowds"
       :editHomePageData="editHomePageData"
       @add-home-page-close="addHomePageClose"
       @create-home-page="createHomePage"
@@ -257,11 +258,12 @@ export default {
       title: null,
       selectionType: 'multiple',
       dialogTitle: null,
-      mode: null,
       dialogVisible: false,
+       selectHomePageDialogVisible: false,
       addHomePageDialogVisible: false, //是否显示addHomePage组件
-      model: 'normal',
+      //model: 'normal',
       platform: 'tencent', //内容源
+      selectedCrowds:[],
       editHomePageData: {}, //编辑定向首页方案
       editHomePageMode: undefined, //编辑定向首页方案的模式 normal,child
       editHomePageIndex: undefined, //编辑定向首页方案数据索引
@@ -356,7 +358,7 @@ export default {
     /** 关联首页选择*/
     rowClick(row) {
       this.dialogVisible = false
-      this.form.homepageInfoListObj[this.model] = {
+      this.form.homepageInfoListObj[this.mode] = {
         homepageId: row.homepageId,
         homepageModel: row.homepageModel,
         homepageName: row.homepageName,
@@ -367,17 +369,17 @@ export default {
       this.addHomePageDialogVisible = false
     },
     /*定向首页方案编辑*/
-    editHomePage(model, index) {
+    editHomePage(mode, index) {
       this.addHomePageDialogVisible = true
-      if (model === 'normal') {
+      if (mode === 'normal') {
         this.editHomePageData = this.form.specialNormalHp[index]
       } else {
         this.editHomePageData = this.form.specialChildHp[index]
       }
     },
     /*定向首页方案编辑*/
-    removeHomePage(model, index) {
-      if (model === 'normal') {
+    removeHomePage(mode, index) {
+      if (mode === 'normal') {
         this.editHomePageData = this.form.specialNormalHp.splice(index, 1)
       } else {
         this.editHomePageData = this.form.specialChildHp.splice(index, 1)
@@ -386,7 +388,7 @@ export default {
     /**
      * 生存一个定向首页方案
      */
-    createHomePage(form) {
+    createHomePage(form, isEdit) {
       let crowdPolicyIds = form.attribute.crowdPolicyIds[0]
       let crowdId = form.attribute.crowdIds[0]
       this.$service.getTaglist({id: crowdPolicyIds, type: 'crowd' }).then(data => {
@@ -396,7 +398,7 @@ export default {
             break
           }
         }
-        if (this.model === 'normal') {
+        if (this.mode === 'normal') {
           if (isEdit) {
             this.form.specialNormalHp[this.editHomePageIndex] = form
           } else {
@@ -431,10 +433,15 @@ export default {
     /**
      * 添加定向首页
      */
-    addHomePage(model) {
+    addHomePage(mode) {
       this.addHomePageDialogVisible = true
       // this.title = '添加定向首页方案'
-      this.model = model
+      this.mode = mode
+      if (mode === 'normal') {
+        this.selectedCrowds = this.form.specialNormalHp
+      } else {
+        this.selectedCrowds = this.form.specialChildHp
+      }
       this.editHomePageData = {}
     },
     /*
@@ -469,11 +476,12 @@ export default {
       this.dialogTitle = '选择机型机芯'
       this.mode = 'modelChip'
     },
-    selectHomePageModel(model) {
+    selectHomePageModel(mode) {
       this.dialogVisible = true
       this.dialogTitle = '选择首页方案模式'
-      this.mode = 'HomePageModel'
-      this.model = model
+    //  this.mode = 'HomePageModel'
+      this.mode = mode
+      this.selectHomePageDialogVisible = true
     },
     submitBtn(status) {
       this.$refs.form.validate(valid => {

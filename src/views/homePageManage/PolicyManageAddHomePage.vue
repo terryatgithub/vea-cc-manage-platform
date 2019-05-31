@@ -55,6 +55,7 @@
       <CrowdSelector
       v-if="showSelectCrowdDialog"
       @select-cancel="handleSelectCrowdCancel"
+      :selected-crowds="selectedCrowds"
       @select-end="handleSelectCrowdEnd"
     />
     <el-dialog title="选择首页" :visible.sync="showHomePageDialogVisible" width="80%" append-to-body>
@@ -72,7 +73,8 @@ export default {
   }, 
   props: {
     itemType: String,
-    editHomePageData: Object
+    editHomePageData: Object,
+    selectedCrowds:Array
   },
   watch: {
     'form.useABTest': 'handleToggleABTest'

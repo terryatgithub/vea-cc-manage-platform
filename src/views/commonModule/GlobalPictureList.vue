@@ -109,7 +109,7 @@ export default {
           {
             label: 'ID',
             prop: 'pictureId',
-            width: '70'
+            width: '90'
           },
           {
             label: 'ID',

@@ -70,8 +70,13 @@ export default {
       }
     }
   },
-  props: ['selectedPolicyId', 'selectedCrowdId'],
+  props: ['selectedPolicyId', 'selectedCrowdId','selectedCrowds'],
   methods: {
+   isContainCrowdName(crowdId) {
+     return this.selectedCrowds.some((item) => {
+         return item.attribute.crowdIds[0] === crowdId
+      })
+    },
     handleClose () {
       this.showCrowdSelector = false
       this.showPolicySelector = false
@@ -97,6 +102,13 @@ export default {
       }.bind(this))
     },
     handleSelectCrowd (item) {
+      if(this.isContainCrowdName(item.value)) {
+          this.$message({
+                type: 'error',
+                message: '已经存在相同的人群'
+           })
+           return
+      }
       this.selectedCrowd = item
       this.selectEnd()
     },
