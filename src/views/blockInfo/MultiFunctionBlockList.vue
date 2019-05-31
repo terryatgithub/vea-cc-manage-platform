@@ -310,7 +310,7 @@ export default {
         return result
       }, [])
     },
-   handleFilterChange(type) {
+   handleFilterChange() {
       if(this.$validateId(this.filter.pluginId)) {
         this.pagination.currentPage = 1
         this.fetchData() 

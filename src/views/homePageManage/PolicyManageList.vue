@@ -255,7 +255,8 @@ export default {
       }, [])
     },
     //查询
-      handleFilterChange(type) {
+      handleFilterChange(type, filter) {
+        this.filter = filter
       if(this.$validateId(this.filter.policyId)) {
         if (type === 'query') {
           if (this.pagination) {

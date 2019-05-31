@@ -132,7 +132,8 @@ export default {
     handleRead(row) {
       this.$emit('read', row, this.resourceType+"Preview")
     },
-    handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if(this.$validateId(this.filter.taskId)) {
         if (type === 'query') {
           if (this.pagination) {

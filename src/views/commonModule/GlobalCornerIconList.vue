@@ -295,7 +295,8 @@ export default {
       this.$emit('open-view-page', row)
     },
     //查询
-    handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if(this.$validateId(this.filter.cornerIconId)) {
         if (type === 'query') {
           if (this.pagination) {

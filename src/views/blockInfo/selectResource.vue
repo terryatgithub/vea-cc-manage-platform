@@ -171,7 +171,8 @@ export default {
       let rowData = row
       this.table.selected = index
     },
-   handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if(this.$validateId(this.filter.pictureId)) {
         if (type === 'query') {
           if (this.pagination) {
@@ -179,7 +180,7 @@ export default {
           }
         }
         this.fetchData() 
-      }
+    }
     },
     handleFilterReset() {
       this.filter = {

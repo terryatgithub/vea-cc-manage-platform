@@ -111,7 +111,8 @@ export default {
       let version = paramPannel[1];
       this.$emit('read', id, version)
     },
-    handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1

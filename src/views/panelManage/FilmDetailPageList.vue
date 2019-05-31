@@ -1,6 +1,6 @@
 <template>
   <ContentCard class="content">
-    <ContentWrapper :pagination="pagination" @filter-change="handleFilterChange">
+    <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <div class="el-row">
       <el-form :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
@@ -289,23 +289,8 @@ export default {
       }
       return filter
     },
-    // 表单筛选
-    // handleFilterChange(type) {
-    //   if (this.$validateId(this.filter.tabId)) {
-    //     if (type === 'query') {
-    //       if (this.pagination) {
-    //         this.pagination.currentPage = 1
-    //       }
-    //     }
-    //     this.fetchData()
-    //   }
-    // },
-    handleFilterChange(type) {
-      if (type !== 'pagination') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
-        }
-      }
+    handleFilterChange() {
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     handleFilterReset() {

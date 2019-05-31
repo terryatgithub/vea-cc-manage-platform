@@ -79,7 +79,8 @@ export default {
          this.$emit("close-dialog",'savePicture')
       }
     },
-    handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if(this.$validateId(this.filter.pictureId)) {
         if (type === 'query') {
           if (this.pagination) {

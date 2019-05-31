@@ -255,7 +255,8 @@ export default {
       this.activePage = 'homepage_list'
     },
     //查询
-  handleFilterChange(type) {
+  handleFilterChange(type, filter) {
+    this.filter = filter
       if(this.$validateId(this.filter.homepageId)) {
         if (type === 'query') {
           if (this.pagination) {

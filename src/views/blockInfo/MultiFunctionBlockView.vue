@@ -180,7 +180,7 @@
 
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table, utils, AppParamsRead } from 'admin-toolkit'
+import { Table, utils, AppParamsRead } from 'admin-toolkit'
 import AuditDetailButton from './../../components/AuditDetailButton'
 const SOURCE_TEXT = {
     '0': '无',

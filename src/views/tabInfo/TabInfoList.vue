@@ -307,7 +307,7 @@ export default {
       }
       return filter
     },
-   handleFilterChange(type) {
+   handleFilterChange() {
       if(this.$validateId(this.filter.tabId)) {
         this.pagination.currentPage = 1
         this.fetchData() 

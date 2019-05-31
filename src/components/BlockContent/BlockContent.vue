@@ -42,10 +42,10 @@
       </el-collapse-item>
       <el-collapse-item title="精细化定向内容" name="specific">
         <el-row class="addedContents-wrapper" :gutter="8">
-          <draggable
+          <component :is="mode === 'read' ? 'div': 'draggable'"
             v-model="specificContentList"
             @start="handleDragConentStart"
-            @end="handleDragConentEnd">
+            @end="handleDragConentEnd($event, 'specific')">
             <el-col v-for="(content, index) in specificContentList" :span="3" :key="index">
               <el-card
                 :class="{activeContent: activeType === 'specific' && index === activeIndex}"
@@ -59,7 +59,7 @@
                 <img :src="content.pictureUrl" referrerpolicy="no-referrer">
               </el-card>
             </el-col>
-          </draggable>
+          </component>
           <el-col :span="3" v-if="mode !== 'read'" >
             <el-card @click.native="handleAddContent('specific')">
               <i class="el-icon-plus">添加资源</i>
@@ -120,7 +120,15 @@ export default {
   methods: {
     handleDragConentStart(event) {
     },
-    handleDragConentEnd(event) {
+    handleDragConentEnd(event, type) {
+      const {newIndex, oldIndex} = event
+      if (this.activeType === type) {
+        if (this.activeIndex === oldIndex) {
+          this.activeIndex = newIndex
+        } else if (this.activeIndex === newIndex) {
+          this.activeIndex = oldIndex
+        }
+      }
     },
     handleSave() {
       this.validateCurrentContent(() => {

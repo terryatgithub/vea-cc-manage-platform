@@ -4,7 +4,7 @@
       :filter="filter"
       :filterSchema="filterSchema"
       :pagination="pagination"
-      @filter-change="handleFilterChange"
+      @filter-change="fetchData"
       @filter-reset="handleFilterReset"
     >
       <div class="cc-movie-filter">
@@ -517,6 +517,7 @@ export default {
     },
     search: function() {
       this.searchForm.ccSearchReset = false
+      this.pagination.currentPage = 1
       this.searchParams = this.deepClone(this.searchForm)
       this.fetchData()
       var newParam = Object.assign({}, this.singleObj)
@@ -634,12 +635,8 @@ export default {
       }, [])
     },
     //查询
-    handleFilterChange(type) {
-     if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
-        }
-      }
+    handleFilterChange() {
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     //重置

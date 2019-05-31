@@ -136,7 +136,8 @@ export default {
         return result
       }, [])
     },
-    handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1

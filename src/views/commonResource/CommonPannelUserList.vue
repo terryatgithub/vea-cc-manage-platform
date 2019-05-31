@@ -200,7 +200,8 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if(this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {

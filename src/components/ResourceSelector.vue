@@ -72,13 +72,12 @@ import LiveFilter from './LiveFilter'
 import TopicsFilter from './TopicsFilter'
 import AppFilter from './AppFilter'
 import _ from 'gateschema'
-import { RemoteSelect, ContentWrapper, Table } from 'admin-toolkit'
+import { RemoteSelect, Table } from 'admin-toolkit'
 import { filter } from 'minimatch'
 import MovieSingleFilter from './MovieSingleFilter'
 export default {
   components: {
     RemoteSelect,
-    ContentWrapper,
     Table,
     BroadcastFilter,
     MovieFilter,

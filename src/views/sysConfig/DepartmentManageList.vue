@@ -170,7 +170,8 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1

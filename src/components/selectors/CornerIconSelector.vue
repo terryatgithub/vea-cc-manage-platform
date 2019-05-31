@@ -37,11 +37,10 @@
 <script>
 import _ from "gateschema";
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
-import { ContentWrapper, Table, CardList, utils } from "admin-toolkit";
+import { Table, CardList, utils } from "admin-toolkit";
 export default {
   components: {
     Table,
-    ContentWrapper,
     CardList,
     RemoteSelectorWrapper, 
   },

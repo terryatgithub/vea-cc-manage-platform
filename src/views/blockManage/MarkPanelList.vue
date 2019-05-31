@@ -272,7 +272,8 @@ export default {
       }, [])
     },
     //查询
-   handleFilterChange(type) {
+   handleFilterChange(type, filter) {
+     this.filter
       if(this.$validateId(this.filter.pannelGroupId)) {
         if (type === 'query') {
           if (this.pagination) {

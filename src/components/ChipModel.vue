@@ -220,12 +220,13 @@ export default {
       }, [])
     },
     //查询
-    handleFilterChange(type) {
-     if (type === 'query') {
+    handleFilterChange(type, filter) {
+      this.filter = filter
+      if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }
-     }
+      }
       this.fetchData()
     },
     //重置
