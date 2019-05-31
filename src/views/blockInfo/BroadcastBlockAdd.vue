@@ -409,7 +409,6 @@
 
 <script>
 import draggable from 'vuedraggable'
-import BroadcastSource from '@/components/BroadcastSource'
 // import ResourceSelector from '@/components/ResourceSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import DialogPicture from '@/components/DialogPicture'
@@ -421,7 +420,6 @@ import { AppParams, AppParamsRead} from 'admin-toolkit'
 export default {
   components: {
     draggable,
-    BroadcastSource,
     ResourceSelector,
     DialogPicture,
     DialogCorner,

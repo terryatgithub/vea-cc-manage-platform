@@ -116,17 +116,8 @@ export default {
         pageSize: 15,
         total: 0
       },
-      filter: {
-        idPrefix: this.$consts.idPrefix,
-        pannelType: 1,
-        panelId: undefined,
-        pannelName: undefined,
-        pannelCategory: undefined,
-        pannelStatus: undefined,
-        parentType: undefined,
-        pannelResource: undefined,
-        resourceIsNull: true
-      },
+      filter: this.genDefaultFilter(),
+      efficientFilter: this.genDefaultFilter(),
       table: {
         data: [],
         selected: [],
@@ -221,11 +212,12 @@ export default {
     },
     handleResetFilter() {
       this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
     fetchData() {
-      const filter = JSON.parse(JSON.stringify(this.filter))
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       const pagination = this.pagination
       if (pagination) {
         filter.page = pagination.currentPage

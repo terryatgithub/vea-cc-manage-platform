@@ -7,7 +7,6 @@
     :table="table" 
     :pagination="pagination"
     @pagination-change="fetchData"
-    @filter-change="fetchData"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')">
@@ -132,6 +131,7 @@ export default {
         pageSize: 15
       },
       filter: this.getDefaultFilter(),
+      efficientFilter: this.getDefaultFilter(),
       table: {
         props: {},
         header: [
@@ -431,7 +431,7 @@ export default {
     },
     getFilter() {
       const pagination = this.pagination
-      const originFilter = this.filter
+      const originFilter = this.efficientFilter
       const filter = Object.keys(originFilter).reduce((result, key) => {
         if (originFilter[key] !== '') {
           result[key] = originFilter[key]
@@ -446,11 +446,14 @@ export default {
       return filter
     },
     handleFilterChange() {
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
+      this.onPartnerChange()
       this.pagination.currentPage = 1
       this.fetchData()
     },
