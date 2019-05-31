@@ -91,11 +91,20 @@ export function getAuditHistoryList (params) {
   })
 }
 
-export function getDictType(data) {
-  return this.fetch({
-    method: 'post',
-    //  url: 'api/dict/businessType.html',
-    url: 'api/v1/dict/getTypes/' + data.type + '.html',
-    data: data.data
-  })
+const DICT_TYPE_CACHE = {}
+export function getDictType({ type, isFilter }) {
+  const key = isFilter ? `${type}_filtered` : type
+  const cache = DICT_TYPE_CACHE[key]
+  if (cache) {
+    return Promise.resolve(cache)
+  } else {
+    return this.fetch({
+      method: 'post',
+      url: 'api/v1/dict/getTypes/' + type + '.html',
+      data: { isFilter }
+    }).then(data => {
+      DICT_TYPE_CACHE[key] = data
+      return data
+    })
+  }
 }

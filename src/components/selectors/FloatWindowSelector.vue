@@ -1,5 +1,6 @@
 <template>
   <RemoteSelectorWrapper
+    ref="wrapper"
     title="选择浮窗"
     :filter="filter"
     :filterSchema="filterSchema"
@@ -25,6 +26,7 @@
         <div>{{ item.pluginId }} / {{ item.modifierName }} / {{ item.createdDate }}</div>
       </div>
     </CardList>
+    <div slot="actions"></div>
     <slot/>
   </RemoteSelectorWrapper>
 </template>
@@ -57,19 +59,20 @@ export default {
       filterSchema: _.map({
         pluginId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
           component: 'Input',
-          label: 'ID',
-          cols: { item: 6, label: { offset: 1, span: 5 }, wrapper: 18 }
+          label: ' ',
+          placeholder: 'ID',
+          cols: { item: 3, wrapper: 23 }
         }),
         pluginName: _.o.string.other('form', {
-          label: '功能名称',
-          cols: { item: 6, label: { offset: 1, span: 5 }, wrapper: 18 }
+          label: ' ',
+          placeholder: '功能名称',
+          cols: { item: 3, wrapper: 23 }
         })
       }).other('form', {
         layout: 'inline',
         footer: {
           cols: {
-            item: 6,
-            label: 1,
+            item: 3,
             wrapper: 23
           },
           showSubmit: true,
@@ -84,6 +87,7 @@ export default {
       },
       selected: [],
       table: {
+        loading: false,
         props: {},
         data: [],
         selected: undefined,
@@ -94,6 +98,7 @@ export default {
   methods: {
     handleRowSelectionChange(row, index) {
       this.table.selected = index
+      this.$refs.wrapper.handleSelectEnd()
     },
     handleFilterChange() {
       this.pagination.currentPage = 1
@@ -149,16 +154,20 @@ export default {
 }
 .card-list >>> .card-item-wrapper {
   width: 17%;
-  border: 1px solid #d8bebe;
+  border: 1px solid #ccc;
   margin: 5px;
   padding: 10px;
+  cursor: pointer;
+}
+.card-list  >>> .card-item__selection {
+  display: none
+}
+.card-list >>> .card-item-wrapper:hover {
+  border: 1px solid #444
 }
 .list-p >>> img {
   width: 100%;
   height: 200px;
   object-fit: cover;
-}
-p {
-  margin: 0;
 }
 </style>

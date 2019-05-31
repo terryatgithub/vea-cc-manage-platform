@@ -1,7 +1,6 @@
 import qs from 'qs'
 import axios from 'axios'
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
+import Vue from 'vue'
 export default function fetch({
   method = 'get',
   url,
@@ -9,7 +8,9 @@ export default function fetch({
   params,
   isJSON = false
 }) {
-  NProgress.start()
+  const loading = Vue.prototype.$loading({
+    lock: true
+  })
   let option = {
     method,
     url,
@@ -18,7 +19,7 @@ export default function fetch({
   }
   return axios(option)
     .then(function ({ data }) {
-      NProgress.done()
+      loading.close()
       if (typeof data.success !== 'undefined' && typeof data.msg !== 'undefined') {//返回success
         if (!data.success) {
           throw new Error(data.msg)
@@ -63,7 +64,7 @@ export default function fetch({
       }
     })
     .catch(e => {
-      NProgress.done()
+      loading.close()
       throw e
     })
 }

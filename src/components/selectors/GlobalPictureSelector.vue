@@ -139,7 +139,7 @@ export default {
         placeholder: 'ID',
         cols: {
           item: 3,
-          wrapper: 18
+          wrapper: 23
         }
       }),
       pictureName: _.o.string.other('form', {
@@ -148,7 +148,7 @@ export default {
         placeholder: '素材名称',
         cols: {
           item: 3,
-          wrapper: 18
+          wrapper: 23
         }
       }),
       pictureCategory: _.o.enum(this.materialTypes).other('form', {
@@ -157,7 +157,7 @@ export default {
         placeholder: '素材类别',
         cols: {
           item: 3,
-          wrapper: 18
+          wrapper: 23
         }
       }),
       pictureStatus: _.o.enum(this.pictureStatus).other('form', {
@@ -166,15 +166,15 @@ export default {
         placeholder: '审核状态',
         cols: {
           item: 3,
-          wrapper: 18
+          wrapper: 23
         }
       })
     }).other('form', {
       layout: 'inline',
       footer: {
         cols: {
-          label: 0,
-          wrapper: 24
+          item: 3,
+          wrapper: 23
         },
         showSubmit: true,
         submitText: '查询',
