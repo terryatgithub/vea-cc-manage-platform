@@ -130,7 +130,7 @@ export default {
       }, [])
     },
    handleFilterChange(type, filter) {
-     this.filter = filter
+     if (filter) { this.filter = filter}
       if(this.$validateId(this.filter.id)) {
         if (type === 'query') {
           if (this.pagination) {

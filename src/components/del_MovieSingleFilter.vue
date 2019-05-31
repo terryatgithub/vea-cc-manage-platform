@@ -13,7 +13,7 @@
         :selected="table.selected"
         :selection-type="table.selectionType"
          @row-click="rowClick"
-        @row-selection-change="rowClick"
+          @row-selection-change="rowClick"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -52,31 +52,39 @@ export default {
         props: {},
         header: [
           {
-            label: "ID",
-            prop: "appId",
+            label: "集数名",
+            prop: "urlCollection",
             width: "70"
           },
            {
-            label: "应用名称",
-            prop: "appName",
+            label: "单集ID",
+            prop: "coocaaMId",
             width: "100"
           },
            {
-            label: "应用包名",
-            prop: "appPackageName",
+            label: "单集名称",
+            prop: "urlTitle",
           },
           {
             label: "图片",
-            prop: "appImageUrl",
+            prop: "thumb",
             render: (createElement, { row }) => {
               return createElement("img", {
                 attrs: {
-                  src: row.appImageUrl,
+                  src: row.thumb,
                   width: "50px",
                   height: "50px",
                   class: "imgs"
                 }
               });
+            }
+          },
+          {
+            label: "素材类型",
+            width: "120",
+            prop: "urlIsTrailer",
+            render: (createElement, {row}) => {
+              return row.urlIsTrailer === '1'?'非正片': '正片'
             }
           }
         ],
@@ -97,7 +105,7 @@ export default {
     // },
     rowClick(params) {
        if (this.multi === 'single') {
-          this.$emit("row-click",params)
+         this.$emit("single-select",params)
        }
     },
     selectCancel() {
@@ -135,32 +143,30 @@ export default {
     updateTableSelected() {
       const table = this.table;
       const newSelectedIndex = this.selected.map((e) => {
-        return e.appId
+        return e.coocaaMId
       });
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.appId) > -1) {
+        if (newSelectedIndex.indexOf(item.coocaaMId) > -1) {
           result.push(index);
         }
         return result;
       }, []);
     },
     handleFilterChange(type, filter) {
-      this.filter = filter
-      if(this.$validateId(this.filter.appId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
+      if (filter) { this.filter = filter}
+      if (type === "query") {
+        if (this.pagination) {
+          this.pagination.currentPage = 1;
         }
-        this.fetchData() 
       }
+      this.fetchData();
     },
     handleFilterReset() {
       this.filter = {
         sort: undefined,
         order: undefined
       };
-       this.pagination.currentPage = 1
+      this.pagination.currentPage = 1
       this.fetchData();
     },
     parseFilter() {
@@ -177,8 +183,9 @@ export default {
     fetchData() {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter();
+     // debugger
       Object.assign(filter, this.params)
-      this.$service.getAppManagementList(filter).then(data => {
+      this.$service.getSegmentList(filter).then(data => {
        // data =JSON.parse(data.replace("result(",'').replace(/\)$/,''))
         this.pagination.total = data.total;
         this.table.data = data.rows;
@@ -188,21 +195,17 @@ export default {
   created() {
      this.table.selectionType = this.multi
     let filterSchema = _.map({
-      appId: _.o.string.other('form', {
+      urlIsTrailer: _.o.enum({'非正片': '1', '正片': '0'}).other("form", {
+        component: "Select",
+        placeholder: "素材类型"
+      }), 
+      urlTitle: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID'
-      }),
-      appName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '应用名称'
-      }),
-       appPackageName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '应用包名'
+        placeholder: '单集名称'
       }),
 
     }).other("form", {
-       cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20

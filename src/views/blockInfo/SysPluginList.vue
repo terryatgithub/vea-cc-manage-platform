@@ -238,7 +238,7 @@ export default {
     },
     //查询
      handleFilterChange(type, filter) {
-      this.filter = filter
+      if (filter) { this.filter = filter}
       if(this.$validateId(this.filter.pluginId)) {
         if (type === 'query') {
           if (this.pagination) {

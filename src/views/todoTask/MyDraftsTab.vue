@@ -85,7 +85,7 @@ export default {
       this.$emit('read', row)
     },
     handleFilterChange(type, filter) {
-      this.filter = filter
+      if (filter) { this.filter = filter}
       if(this.$validateId(this.filter.taskId)) {
         if (type === 'query') {
           if (this.pagination) {

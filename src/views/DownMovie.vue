@@ -112,7 +112,7 @@ export default {
       this.$emit('read', id, version)
     },
     handleFilterChange(type, filter) {
-      this.filter = filter
+      if (filter) { this.filter = filter}
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1

@@ -108,7 +108,7 @@ export default {
         this.$emit("row-click",params)
     },
     handleFilterChange(type, filter) {
-      this.filter = filter
+      if (filter) { this.filter = filter}
       if(this.$validateId(this.filter.homepageId)) {
         if (type === 'query') {
           if (this.pagination) {
