@@ -144,8 +144,11 @@ export default {
         price: '',
         secKillPrice: '',
         flagIsSetad: 0,
-        redundantParams: {
-          // openMode: 'webpage',
+        redundantParams: this.getDefaultParams()
+      }
+    },
+    getDefaultParams() {
+      return {
           openMode: 'app',
           webpageUrl: '',
           webpageType: '2',
@@ -161,7 +164,6 @@ export default {
           data: undefined,
           params: [{ key: '', value: '' }]
         }
-      }
     },
     handleCoverTypeChange(coverType) {
       if (this.mode === 'read') {

@@ -618,6 +618,24 @@ export default {
     }
   },
   methods: {
+    genParams(openMode) {
+      return {
+          openMode: openMode || 'app',
+          webpageUrl: '',
+          webpageType: '2',
+          videoName: '',
+          videoUrl: '',
+          pictureUrl: '',
+          tabId: '',
+          packagename: '',
+          versioncode: openMode === 'webpage' ? '102007' : '-1',
+          dowhat: 'startActivity',
+          bywhat: 'action',
+          byvalue: '',
+          data: undefined,
+          params: [{ key: '', value: '' }]
+        }
+    },
     handleUpload(file, fileItem) {
       this.$refs.upload.fileList = [fileItem]
       fileItem.status = 'uploading'
@@ -683,15 +701,7 @@ export default {
       }
     },
     handleOpenModeChange(val) {
-      const contentForm = this.contentForm
-      const redundantParams = contentForm.redundantParams
-      if (val === 'webpage') {
-        redundantParams.webpageType = '2'
-        redundantParams.versioncode = '102007'
-      }
-      if (val === 'app') {
-        redundantParams.versioncode = ''
-      }
+      this.contentForm.redundantParams = this.genParams(val)
     },
     handleWebPageTypeChange(val) {
       this.contentForm.redundantParams.versioncode =
