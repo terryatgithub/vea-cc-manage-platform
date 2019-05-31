@@ -130,7 +130,7 @@ export default {
     parseFilter() {
       const { filter, pagination } = this
       if (pagination) {
-        filter.currentPage = pagination.currentPage
+        filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
       return filter

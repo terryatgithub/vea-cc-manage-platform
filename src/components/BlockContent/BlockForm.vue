@@ -330,7 +330,7 @@
                 </div>
               </div>
             </Upload>
-            <span v-if="!isReadonly">提示:只能上传png/gif/jpg/bmp文件</span>
+            <span>提示:只能上传png/gif/jpg/bmp文件</span>
           </el-form-item>
         </template>
 
@@ -341,7 +341,8 @@
               title="选择版面" 
               selection-type="single" 
               :source="source" 
-              @select-end="handleSelectTabEnd"/>
+              :selected-close="true"
+              @select-single="handleSelectTabEnd"/>
             <el-tag type="primary" v-if="contentForm.redundantParams.tabId">
               已选择: {{
               contentForm.redundantParams.tabId }}
@@ -640,7 +641,7 @@ export default {
         })
     },
     handleSelectTabEnd(result) {
-      const selected = result[0]
+      const selected = result
       if (selected) {
         this.$set(this.contentForm.redundantParams, 'tabId', selected.tabId + '')
         this.$set(this.contentForm.redundantParams, 'tabType', selected.tabType + '')

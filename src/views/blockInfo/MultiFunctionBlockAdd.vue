@@ -280,7 +280,8 @@
                 :prop="'rlsInfo.' + index + '.onclick.tab'"
                 :rules="rules.tab"
               >
-                <el-button type="primary" @click="handleSelectTabStart(index)">选择版面</el-button>
+              <TabSelector selectionType="single" :selected-close="true" @select-single="handleSelectTabEnd($event, item)"/>
+                <!-- <el-button type="primary" @click="handleSelectTabStart(index)">选择版面</el-button> -->
                 <el-tag type="primary" v-if="item.onclick.tab">已选择: {{ item.onclick.tab.tabId }}</el-tag>
               </el-form-item>
             </template>
@@ -388,6 +389,7 @@ window.basicFn = {}
 import ccAppParamsForm from './ccAppParamsForm'
 import ccTimeSpinner from './ccTimeSpinner'
 import selectResource from './selectResource'
+import TabSelector from '@/components/selectors/TabSelector'
 import selectClick from './selectClick'
 import selectImg from './selectImg'
 import { AppParams } from 'admin-toolkit'
@@ -398,7 +400,8 @@ export default {
     selectResource,
     selectClick,
     selectImg,
-    AppParams
+    AppParams,
+    TabSelector
   },
   props: {
     editId: Number,
@@ -573,6 +576,10 @@ export default {
   },
   watch: {},
   methods: {
+       /** 选择版面*/
+    handleSelectTabEnd(data, item){
+      this.$set(item.onclick, 'tab', data)
+    },
     //时间处理-:转换为数值
     parseMinToStr(str) {
       if(str !== undefined){

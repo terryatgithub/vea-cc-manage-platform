@@ -36,13 +36,25 @@
         v-if="basicForm.configModel === 'group' "
         type="warning"
       >短标题模式需至少运营四个资源，长标题模式至少6个，才能填满布局哦~</el-tag>
-      <el-button
+      <ResourceSelector 
+        v-if="basicForm.configModel === 'group' "
+        ref="resourceSelector"
+        :selectors="resourceOptions"
+        :is-live="false"
+        style="float: right;"
+        selection-type="multiple"
+        :disabled="disabled"
+        @select-end="handleSelectNormalmultipleResourceEnd">
+        <el-button type="primary" plain>批量选择资源</el-button>
+      </ResourceSelector>
+      <!-- <el-button
         v-if="basicForm.configModel === 'group' "
         type="primary" plain
         style="float: right;"
         :disabled="disabled"
         @click.native="selectResource('normal', 'normalForm', 'multiSelect')"
-      >批量选择资源</el-button>
+      >批量选择资源
+      </el-button> -->
     </div>
     <!-- {{normalVersionContent正常版本}} -->
     <div class="form-wrap">
@@ -72,7 +84,6 @@
               class="el-icon-close"
               @click.stop="deleteNormal(index)"
             ></i>
-            
             <img
               v-if="normal.poster.pictureUrl"
               :src="normal.poster.pictureUrl"
@@ -115,7 +126,17 @@
           :label="normalResourceBtn"
           prop="thirdIdOrPackageName"
         >
-       <el-button v-if="autoWrite"  :disabled="disabled" type="primary" plain v-model="normalForm.thirdIdOrPackageName" @click.native="selectResource('normal', 'normalForm')">选择资源</el-button>
+         <ResourceSelector 
+            ref="resourceSelector"
+             v-if="autoWrite"  
+             :disabled="disabled" 
+            :selectors="['rotate']"
+            :is-live="false"
+            selection-type="single"
+            @select-end="handleSelectNormalSingleResourceEnd">
+            <el-button type="primary" plain>选择资源</el-button>
+          </ResourceSelector>
+       <!-- <el-button v-if="autoWrite"  :disabled="disabled" type="primary" plain  @click.native="selectResource('normal', 'normalForm')">选择资源</el-button> -->
           <el-input
             v-if="!autoWrite"
             v-model="normalForm.thirdIdOrPackageName"
@@ -237,7 +258,16 @@
           prop="thirdIdOrPackageName"
           v-if="lowerForm.coverType === 'media' || lowerForm.coverType === 'app' "
         >
-            <el-button type="primary" plain :disabled="disabled"  v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', 'lowerForm')">选择资源</el-button>
+          <ResourceSelector 
+            ref="resourceSelector"
+            :disabled="disabled" 
+            :selectors="resourceOptions"
+            :is-live="false"
+            selection-type="single"
+            @select-end="handleSelectLowerSingleResourceEnd">
+            <el-button type="primary" plain>选择资源</el-button>
+          </ResourceSelector>
+            <!-- <el-button type="primary" plain :disabled="disabled"  v-model="lowerForm.thirdIdOrPackageName" @click.native="selectResource('lower', 'lowerForm')">选择资源</el-button> -->
           <el-tag
             type="success"
             class="marginL"
@@ -365,14 +395,15 @@
     </el-dialog>
     <!-- 第三方运用快速填充弹框end -->
      <!-- 选择资源 -->
-    <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector>
+    <!-- <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector> -->
   </ContentCard>
 </template>
 
 <script>
 import draggable from 'vuedraggable'
 import BroadcastSource from '@/components/BroadcastSource'
-import ResourceSelector from '@/components/ResourceSelector'
+// import ResourceSelector from '@/components/ResourceSelector'
+import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
@@ -413,18 +444,19 @@ export default {
       cornerIconTypeOptions: {},
       cornerTypes: [],
       materialTypes: null,
-      resourceVisible: false, //是否打开资源选择器
-      resourceOptions: { // 资源弹出框配置
-                multi: false, // 单选
-                activeTabName: 'video',
-                tabShow: {
-                    'video': true,
-                    'app': true,
-                    'edu': true,
-                    'live': true,
-                    'broadcast': true
-                }
-            },
+      // resourceVisible: false, //是否打开资源选择器
+      // resourceOptions: { // 资源弹出框配置
+      //           multi: false, // 单选
+      //           activeTabName: 'video',
+      //           tabShow: {
+      //               'video': true,
+      //               'app': true,
+      //               'edu': true,
+      //               'live': true,
+      //               'broadcast': true
+      //           }
+      //       },
+      resourceOptions: ['video', 'edu', 'live', 'topic', 'rotate'],
       basicForm: {
         id: undefined,
         containerName: '',
@@ -774,53 +806,173 @@ export default {
       arr.push(this.normalForm)
       this.normalVersionContent = arr
     },
-
-    // ??
-    selectResource: function(type, form, selectType) {
-      this.resourceVisible = true
-      this.resourceOptions.activeTabName = 'video'
-      this.currentForm = form
-      var newOptions = Object.assign({}, this.resourceOptions)
-      newOptions.multi = false
-      if (selectType === 'multiSelect') {
-        newOptions.multi = true
-      }
-      newOptions.activeTabName = 'video'
-      if (type === 'normal') {
-        if (this.basicForm.configModel === 'broadcast') {
-          newOptions.tabShow = {
-            broadcast: true
-          }
-          newOptions.activeTabName = 'broadcast'
-        } else if (this.basicForm.configModel === 'group') {
-          newOptions.tabShow = {
-            video: true,
-            edu: true,
-            live: true,
-            topics: false,
-            broadcast: true
-          }
-        }
-      } else if (type === 'lower') {
-        if (this.lowerForm.coverType === 'media') {
-          newOptions.tabShow = {
-            video: true,
-            // 'app': true,
-            edu: true,
-            live: true,
-            topics: true,
-            broadcast: true
-          }
-        } else if (this.lowerForm.coverType === 'app') {
-          newOptions.tabShow = {
-            app: true
-          }
-          newOptions.activeTabName = 'app'
-        }
-      }
-      this.resourceOptions = newOptions
-      
+    /**轮播模式，正常版本选择资源回掉函数 */
+    handleSelectNormalSingleResourceEnd(selectedResources) {
+     let data = this.callbackParam('rotate', selectedResources.rotate[0])
+     this.resourceConfirm(data, 'normalForm')
     },
+    handleSelectNormalmultipleResourceEnd(selectedResources) {
+      let dataArr = []
+      let resourceOptions =this.resourceOptions
+      for (var i =0; i<resourceOptions.length; i++) {
+          selectedResources[resourceOptions[i]].forEach((item) => {
+            dataArr.push(this.callbackParam(resourceOptions[i], item, selectedResources.videoSource))
+          })
+      }
+     this.resourceConfirm(dataArr, 'normalForm')
+    },
+    handleSelectLowerSingleResourceEnd(selectedResources) {
+      let dataArr = []
+      let resourceOptions =this.resourceOptions
+      for (var i =0; i<resourceOptions.length; i++) {
+        if (selectedResources[resourceOptions[i]].length === 1) {
+            dataArr.push(this.callbackParam(resourceOptions[i], selectedResources[resourceOptions[i]][0], selectedResources.videoSource))
+        }
+      }
+     this.resourceConfirm(dataArr, 'lowerForm')
+    },
+    /** 
+     * 资源转换
+    */
+   callbackParam(tabName, selected, sourceType) {
+      let s = {
+        type: '', // 面向客户端
+        contentType: '', // 面向管理后台
+        thirdIdOrPackageName: ''
+      }
+      switch (tabName) {
+        case 'video': {
+          s.contentType = 'movie'
+          switch(sourceType) {
+            case "yinhe":
+            case "o_iqiyi":
+               s.thirdIdOrPackageName = '_oqy_' + selected.coocaaVId
+              break
+            case "o_tencent":
+            case "tencent":
+               s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
+              break
+            default:
+               s.thirdIdOrPackageName = selected.coocaaVId
+              break
+          }
+          s.singleId = selected.singleId
+          s.pictureUrl = selected.thumb
+          s.title = selected.title
+          s.subTitle = selected.subTitle
+          s.type = 'res'
+          break
+        }
+        case 'app': {
+          s.contentType = 'app'
+          s.coverType = 'app'
+          s.thirdIdOrPackageName = selected.appPackageName
+          s.pictureUrl = selected.appImageUrl
+          s.title = selected.appName
+          s.type = 'app'
+          break
+        }
+        case 'edu': {
+          s.contentType = 'edu'
+          s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
+          s.platformId = selected.source
+          s.pictureUrl = selected.thumb
+          s.title = selected.title
+          s.subTitle = selected.subTitle
+          s.type = 'res'
+          break
+        }
+        case 'pptv': {
+          s.contentType = 'pptv'
+          s.thirdIdOrPackageName =
+            'pptv_tvsports://tvsports_detail?section_id=' +
+            selected.pid +
+            '&from_internal=1'
+          s.title = selected.pTitle
+          s.type = ''
+          break
+        }
+        case 'live': {
+          s.contentType = 'txLive'
+          s.thirdIdOrPackageName = '_otx_' + selected.vId + ''
+          s.platformId = selected.source
+          s.pictureUrl = selected.thumb
+          s.title = selected.title
+          s.subTitle = selected.subTitle
+          s.type = 'live'
+          break
+        }
+        case 'topics': {
+          selected.dataSign === 'parentTopic'
+            ? (s.contentType = 'bigTopic')
+            : (s.contentType = 'topic')
+          s.thirdIdOrPackageName = selected.id + ''
+          s.pictureUrl = selected.picture
+          s.title = selected.title
+          s.subTitle = selected.subTitle
+          s.type = 'topic'
+          break
+        }
+        case 'rotate': {
+          s.contentType = 'rotate'
+          s.thirdIdOrPackageName = selected.id + ''
+          s.pictureUrl = selected.picture
+          s.title = selected.title
+          s.subTitle = selected.subTitle
+          s.type = 'rotate'
+          break
+        }
+        default:
+          break
+      }
+      return s
+    },
+    // // ??
+    // selectResource1: function(type, form, selectType) {
+    //   this.resourceVisible = true
+    //   this.resourceOptions.activeTabName = 'video'
+    //   this.currentForm = form
+    //   var newOptions = Object.assign({}, this.resourceOptions)
+    //   newOptions.multi = false
+    //   if (selectType === 'multiSelect') {
+    //     newOptions.multi = true
+    //   }
+    //   newOptions.activeTabName = 'video'
+    //   if (type === 'normal') {
+    //     if (this.basicForm.configModel === 'broadcast') {
+    //       newOptions.tabShow = {
+    //         broadcast: true
+    //       }
+    //       newOptions.activeTabName = 'broadcast'
+    //     } else if (this.basicForm.configModel === 'group') {
+    //       newOptions.tabShow = {
+    //         video: true,
+    //         edu: true,
+    //         live: true,
+    //         topics: false,
+    //         broadcast: true
+    //       }
+    //     }
+    //   } else if (type === 'lower') {
+    //     if (this.lowerForm.coverType === 'media') {
+    //       newOptions.tabShow = {
+    //         video: true,
+    //         // 'app': true,
+    //         edu: true,
+    //         live: true,
+    //         topics: true,
+    //         broadcast: true
+    //       }
+    //     } else if (this.lowerForm.coverType === 'app') {
+    //       newOptions.tabShow = {
+    //         app: true
+    //       }
+    //       newOptions.activeTabName = 'app'
+    //     }
+    //   }
+    //   this.resourceOptions = newOptions
+      
+    // },
 
     paramIdFun: function(form, seledted) {
       // 封装保存的id
@@ -941,17 +1093,12 @@ export default {
             result.push(this.packageFormParam(current))
             return result
          },this.normalVersionContent)
-         
         this[form] = this.normalVersionContent[0]
       } else {
          this[form] = this.packageFormParam(callbackData)
          this.normalVersionContent.push(this.packageFormParam(callbackData, form))
       } 
     },
-    // closeResource: function() {
-    //   this.resourceVisible = false
-    // },
-     
     // 校验normalForm
     checkNormalForm: function(cb) {
       var _this = this
@@ -1150,6 +1297,11 @@ export default {
       this.lowerForm = newForm
     },
     cleanLowerForm: function(val) {
+      if (val === 'app') {
+        this.resourceOptions = ['app']
+      } else {
+        this.resourceOptions = ['video', 'edu', 'live', 'topic', 'rotate']
+      }
       var newForm = Object.assign({}, this.versionForm)
       newForm.type = val
       newForm.coverType = val
@@ -1558,7 +1710,7 @@ export default {
 
 .corner-img-wrapper i {
   position: absolute;
-  bottom: -10px;
+  bottom: 0px;
   right: 0;
   color: #FF4949;
   font-size: 20px;

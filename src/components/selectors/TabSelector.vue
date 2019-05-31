@@ -1,10 +1,12 @@
 <template>
   <remote-selector-wrapper
+    ref="dialog"
     class="cc-tab-selector"
     :title="title || '选择版面'"
     @select-start="handleSelectStart"
     @select-end="handleSelectEnd"
     :disabled="disabled"
+    :hide-submit="selectedClose"
   >
     <div slot="filter">
       <el-form :inline="true">
@@ -69,9 +71,9 @@
       :props="table.props"
       :selection-type="selectionType || table.selectionType"
       :select-on-row-click="true"
+      @row-selection-change="handleSingleRow"
       @row-selection-add="handleTableRowSelectionAdd"
       @row-selection-remove="handleTableRowSelectionRemove"
-      @row-selection-change="handleTableRowSelectionChange"
       @all-row-selection-change="handleTableAllRowSelectionChange"
     />
 
@@ -201,7 +203,7 @@ export default {
       selected: []
     }
   },
-  props: ['title', 'isLive', 'initSelected', 'source', 'hasSubTab', 'selectionType', 'disabled'],
+  props: ['title', 'isLive', 'initSelected', 'source', 'hasSubTab', 'selectionType', 'disabled','selectedClose'],
   watch: {
     initSelected: 'setSelected',
     'pagination.currentPage': 'fetchData',
@@ -209,6 +211,11 @@ export default {
     'table.data': 'updateTableSelected'
   },
   methods: {
+    handleSingleRow(row, index){ //单行选择
+      this.$refs.dialog.showDialog = false
+      this.table.selected = index
+      this.$emit('select-single', row)
+    },
     setSelected() {
       this.selected = this.initSelected || []
     },

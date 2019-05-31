@@ -50,7 +50,7 @@
             </div>
             <div class="remote-selector-main__actions">
               <slot name="actions">
-                  <Button type="primary" @click="handleSelectEnd">  
+                  <Button type="primary" @click="handleSelectEnd" v-if="!hideSubmit">  
                     确定
                   </Button>
                   <Button @click="handleSelectCancel">  
@@ -78,6 +78,9 @@ export default {
       default () {
         return '选择'
       }
+    },
+    hideSubmit: {
+       type: Boolean
     },
     fullscreen: {
       type: Boolean,

@@ -225,6 +225,9 @@ export default {
         form.price = '0'
         form.discountPrice = '0'
       }
+      if (this.mode === 'replicate') {
+        this.form.currentVersion = ''
+      }
       /* 任何情况提交审核，状态都改为3 */
       this.form.themeStatus = 3
       const editForm = this.editForm

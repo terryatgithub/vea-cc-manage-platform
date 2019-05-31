@@ -271,8 +271,14 @@ export default {
       panelGroupCategoryOptions: [],
       blockVideoTypeOptions: blockVideoTypeOptions,
       rules: {
-        pannelName: [{ required: true, message: '请填写版块名称' }],
-        pannelTitle: [{ required: true, message: '请填写标题' }],
+        pannelName: [
+          { required: true, message: '请填写版块名称' },
+           { max: 45, message: '版块名称不超过 45 个字符'}
+        ],
+        pannelTitle: [
+          { required: true, message: '请填写标题' },
+           { max: 45, message: '标题不超过 45 个字符'}
+        ],
         amount: [
           {
             validator(rule, value, callback) {
