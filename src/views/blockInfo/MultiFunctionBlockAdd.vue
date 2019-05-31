@@ -23,6 +23,8 @@
               ></el-time-select> -->
               <el-time-picker
               v-model="block.pluginInfo.refreshTime"
+               format='HH:mm'  
+               value-format="HH:mm" 
               :picker-options="{
               selectableRange: '00:01:01 - 23:59:59'
               }"
@@ -205,8 +207,10 @@
                   ></el-time-select> -->
                   <el-time-picker
                    v-model="item.extendInfo.aliveTime"
+                    format='HH:mm'  
+                    value-format="HH:mm" 
                   :picker-options="{
-                    selectableRange: '00:01:01 - 23:59:59'
+                    selectableRange: '00:01:00 - 23:59:00'
                   }"
                   placeholder="选择时间">
                 </el-time-picker>

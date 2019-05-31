@@ -47,7 +47,7 @@ export default {
       ],
       pannelStatus: {},
       filter: {
-         sort: undefined,
+        sort: undefined,
         order: undefined,
         idPrefix: 10
       },
@@ -187,7 +187,7 @@ export default {
     fetchData() {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
-        this.$service.commonPannelUserList(filter).then(data => {
+        this.$service.commonPannelUserList({data: filter, type: 'pannel'}).then(data => {
           this.pagination.total = data.total
           this.table.data = data.rows
         })
@@ -285,36 +285,32 @@ export default {
       return result
     }, {})
     let filterSchema = _.map({
-      pannelCategory: _.o.enum(this.businessType).other('form', {
+      'pannelInfo.pannelCategory': _.o.enum(this.businessType).other('form', {
         placeholder: '业务分类',
         component: 'Select'
       }),
-      pannelId: _.o.string.other('form', {
+      'pannelInfo.pannelId': _.o.string.other('form', {
         placeholder: 'ID',
         component: 'Input'
       }),
-      pannelName: _.o.string.other('form', {
+      'pannelInfo.pannelName': _.o.string.other('form', {
         placeholder: '版块名称',
         component: 'Input'
       }),
-      pannelTitle: _.o.string.other('form', {
+      'pannelInfo.pannelTitle': _.o.string.other('form', {
         placeholder: '版块标题',
         component: 'Input'
       }),
-      tabName: _.o.string.other('form', {
+      'pannelInfo.tabName': _.o.string.other('form', {
         placeholder: '引用状态',
         component: 'Input'
       }),
-      pannelResource: _.o.enum({'腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优酷': 'o_youku'}).other('form', {
+      'pannelInfo.pannelResource': _.o.enum({'腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优酷': 'o_youku'}).other('form', {
         placeholder: '内容源',
         component: 'Select'
       }),
-      pannelStatus: _.o.enum(this.pannelStatus).other('form', {
+      'pannelInfo.pannelStatus': _.o.enum(this.pannelStatus).other('form', {
         placeholder: '状态',
-        component: 'Select'
-      }),
-      pannelType: _.o.enum({'影视推荐版块': 6, '定向版块': 7, '常规版块': 1}).other('form', {
-        placeholder: '版块类别',
         component: 'Select'
       })
     })

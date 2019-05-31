@@ -47,7 +47,6 @@ export function collectCancel(data) {
   })
 }
 export function collect(data) {
-  debugger
   return this.fetch({
     method: 'post',
     url: 'api/v1/collect/' + data.type + '/collect.html',
