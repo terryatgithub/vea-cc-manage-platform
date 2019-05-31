@@ -266,7 +266,8 @@ export default {
       this.$emit('read', row.pannelGroupId, version)
     },
     //查询
-    handleFilterChange(type) {
+    handleFilterChange(type, filter) {
+      this.filter = filter
       if(this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {

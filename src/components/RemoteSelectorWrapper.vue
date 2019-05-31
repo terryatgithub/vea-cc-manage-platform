@@ -158,6 +158,8 @@ export default {
   flex-direction column
 .remote-selector-dialog >>> .el-dialog__header
   padding-top 10px
+.remote-selector-dialog >>> .el-dialog__headerbtn
+  top 10px
 .remote-selector-dialog >>> .el-dialog__body
   padding 0 20px
   overflow hidden

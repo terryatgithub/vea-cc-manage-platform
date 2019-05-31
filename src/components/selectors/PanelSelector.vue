@@ -1,6 +1,7 @@
 <template>
   <RemoteSelectorWrapper 
     ref="wrapper"
+    title="选择板块"
     custom-class="resource-selector"
     @select-start="handleSelectStart">
     <template slot="content" slot-scope="{isShow}">
@@ -16,34 +17,35 @@
         @select-cancel="handleSelectCancel"
         @select-end="handleSelectEnd">
         <el-form slot="filter" :inline="true" v-model="filter">
-          <el-form-item label="类型">
-            <el-select v-model="filter.pannelType">
+          <el-form-item>
+            <el-select v-model="filter.pannelType" placeholder="类型">
               <el-option :value="1" label="内容版块"></el-option>
               <el-option :value="3" label="专辑版块"></el-option>
               <el-option :value="5" label="专属影院版块"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="版块ID">
-            <el-input v-model="filter.pannelId"></el-input>
+          <el-form-item >
+            <el-input v-model="filter.pannelId" placeholder="版块ID"></el-input>
           </el-form-item>
-          <el-form-item label="版块名称">
-            <el-input v-model="filter.pannelName"></el-input>
+          <el-form-item >
+            <el-input v-model="filter.pannelName" placeholder="版块名称"></el-input>
           </el-form-item>
-          <el-form-item label="业务分类">
-            <el-select v-model="filter.pannelCategory">
+          <el-form-item >
+            <el-select v-model="filter.pannelCategory" placeholder="业务分类">
               <el-option
                 v-for="(item, index) in panelCategoryOptions"
                 :key="index"
-                :value="item.dictId"
-                :label="item.dictCnName"
+                :disabled="item.disabled"
+                :value="item.value"
+                :label="item.label"
               />
             </el-select>
           </el-form-item>
 
-          <el-form-item label="状态">
-            <el-select v-model="filter.pannelStatus">
+          <el-form-item>
+            <el-select v-model="filter.pannelStatus" placeholder="状态">
               <el-option
-                v-for="(item, index) in panelStatusOptions"
+                v-for="(item, index) in $consts.statusOptions"
                 :key="index"
                 :value="item.value"
                 :label="item.label"
@@ -51,8 +53,8 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="版块组类型">
-            <el-select v-model="filter.parentType">
+          <el-form-item>
+            <el-select v-model="filter.parentType" placeholder="版块组类型">
               <el-option
                 v-for="(item, index) in parentTypeOptions"
                 :key="index"
@@ -62,8 +64,8 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="数据来源">
-            <el-select v-model="filter.idPrefix">
+          <el-form-item>
+            <el-select v-model="filter.idPrefix" placeholder="数据来源">
               <el-option label="酷开" value="10"></el-option>
               <el-option label="江苏广电" value="11"></el-option>
             </el-select>
@@ -160,7 +162,7 @@ export default {
           {
             label: '状态',
             render: function(h, scope) {
-              return this.panelStatusOptionsIndexed[scope.row.pannelStatus]
+              return this.$consts.statusText[scope.row.pannelStatus]
             }.bind(this)
           },
           {
@@ -238,6 +240,21 @@ export default {
         this.pagination.total = data.total
       })
     },
+  },
+  created() {
+    this.$service.getDictType({type: 'businessType'}).then(data => {
+      this.panelCategoryOptions = data.map(item => {
+        return {
+          label: item.dictCnName,
+          value: item.dictId,
+          disabled: item.disabled
+        }
+      })
+      this.pannelCategoryOptionsIndexed = this.panelCategoryOptions.reduce((result, item) => {
+        result[item.value] = item.label
+        return result
+      }, {})
+    })
   }
 }
 </script>
