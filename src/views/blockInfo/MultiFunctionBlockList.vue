@@ -4,7 +4,7 @@
       :filter="filter"
       :filterSchema="filterSchema"
       :pagination="pagination"
-      @filter-change="handleFilterChange"
+      @filter-change="fetchData"
       @filter-reset="handleFilterReset"
     >
       <!-- 筛选部分 -->
@@ -312,11 +312,7 @@ export default {
     },
    handleFilterChange(type) {
       if(this.$validateId(this.filter.pluginId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
-        }
+        this.pagination.currentPage = 1
         this.fetchData() 
       }
     },

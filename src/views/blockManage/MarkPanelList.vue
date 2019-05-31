@@ -55,8 +55,6 @@ export default {
         审核不通过: 5
       },
       filter: {
-        sort: undefined,
-        order: undefined
       },
       filterSchema: null,
       pagination: {},

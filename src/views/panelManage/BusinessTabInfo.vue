@@ -638,7 +638,7 @@ export default {
     },
     fetchData(version) {
       this.$service
-        .businessTabEdit({ id: this.id, version: this.version })
+        .businessTabEdit({ id: this.id, version: version })
         .then(data => {
           this.tab.pannelList = data.panelInfoList.map(e => {
             e.pannelGroupRemark = e.pannelName
