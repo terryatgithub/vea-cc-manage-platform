@@ -326,7 +326,7 @@
                     v-if="fileList[0].status !== 'uploading' && !isReadonly"
                     class="upload-pic-list__remove el-icon el-icon-close"
                     title="移除"
-                    @click.stop="$refs.upload.handleRemove(fileList[0])"/>
+                    @click.stop="handleRemovePicture(fileList[0])"/>
                 </div>
               </div>
             </Upload>
@@ -335,7 +335,7 @@
         </template>
 
         <template v-if="contentForm.redundantParams.openMode === 'tab'">
-          <el-form-item key="tabId" label="版面" prop="reduantParams.tabId">
+          <el-form-item key="tabId" label="版面" prop="redundantParams.tabId" :rules="contentRule.tabId">
             <TabSelector 
               :disabled="isReadonly"
               title="选择版面" 
@@ -352,11 +352,13 @@
 
         <template v-if="contentForm.redundantParams.openMode === 'app'">
           <AppParamsForm
+            v-if="!isReadonly"
             key="app"
             v-model="contentForm.redundantParams"
             label-width="140px"
             prop-prefix="redundantParams."
           />
+          <AppParamsRead v-else :value="contentForm.redundantParams" />
         </template>
       </template>
     </el-form>
@@ -372,6 +374,7 @@
 import { Upload } from 'admin-toolkit'
 import Price from '@/components/Price'
 import AppParamsForm from './AppParamsForm'
+import AppParamsRead from './AppParamsRead'
 import CornerSelector from '@/components/selectors/CornerIconSelector'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
@@ -390,7 +393,8 @@ export default {
     CommonSelector,
     CrowdSelector,
     TabSelector,
-    ClickEventSelector
+    ClickEventSelector,
+    AppParamsRead
   },
   data() {
     const isReadonly = this.isReadonly
@@ -406,7 +410,7 @@ export default {
       }
     }
     const checkWebpageUrl = function(rule, value, callback) {
-      if (value === '') {
+      if (!value) {
         callback(new Error('请输入网页地址'))
       } else if (
         value.indexOf('https') === -1 &&
@@ -467,6 +471,9 @@ export default {
         ],
         videoUrl: [
             {required: true, message: "请输入视频地址", trigger: "blur"}
+        ],
+        tabId: [
+            {required: true, message: "请选择版面", trigger: "blur"}
         ],
         moviePercent: [
           {
@@ -641,6 +648,10 @@ export default {
           fileItem.message = '网络错误'
         })
     },
+    handleRemovePicture(fileItem) {
+      this.$refs.upload.handleRemove(fileItem)
+      this.contentForm.redundantParams.pictureUrl = ''
+    },
     handleSelectTabEnd(result) {
       const selected = result
       if (selected) {
@@ -675,13 +686,12 @@ export default {
       const contentForm = this.contentForm
       const redundantParams = contentForm.redundantParams
       if (val === 'webpage') {
-        const webpageType = redundantParams.webpageType
-        redundantParams.versioncode = webpageType == '1' ? '1' : '102007'
+        redundantParams.webpageType = '2'
+        redundantParams.versioncode = '102007'
       }
       if (val === 'app') {
         redundantParams.versioncode = ''
       }
-      this.$refs.contentForm.$forceUpdate()
     },
     handleWebPageTypeChange(val) {
       this.contentForm.redundantParams.versioncode =
