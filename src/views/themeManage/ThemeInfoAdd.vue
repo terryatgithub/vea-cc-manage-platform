@@ -5,7 +5,7 @@
         <div class="split-bar">
           <i class="el-icon-edit">基本信息</i>
         </div>
-        <el-form ref="form" :rules="rules" :model="form" class="el-form-add" label-width="90px">
+        <el-form ref="form" :rules="rules" :model="form" class="el-form-add" label-width="150px">
           <el-form-item label="主题名称" prop="themeName">
             <el-input v-model="form.themeName"/>
           </el-form-item>
@@ -73,7 +73,7 @@
               <span class="icon-list__item-text">{{index+1}}</span>
             </div>
           </div>
-          <el-form-item label="指定背景图片">
+          <el-form-item label="指定背景图片zip文件">
             <ThemeFileUpload
               ref="tabBgEntitys"
               accept="application/zip"
@@ -101,7 +101,7 @@
           :mode="mode"
           :resource-info="resourceInfo"
           @edit="mode = 'edit';title='编辑'"
-          @replicate="mode = 'replicate'; title='创建副本'"
+          @replicate="replicate"
           @submit-audit="btnSave"
           @select-version="fetchData"
           @unaudit="fetchData"
@@ -112,7 +112,7 @@
           <div class="split-bar">
             <i class="el-icon-edit">基本信息</i>
           </div>
-          <el-form :model="form" class="preview-form" label-width="90px">
+          <el-form :model="form" class="preview-form" label-width="150px">
             <el-form-item label="主题名称" class="label">
               <span title="themeName">{{form.themeName}}</span>
             </el-form-item>
@@ -178,7 +178,6 @@ export default {
     CommonContent,
     ThemeFileUpload
   },
-
   data() {
     return {
       form: {
@@ -227,6 +226,18 @@ export default {
   },
 
   methods: {
+    replicate() {
+      this.mode = 'replicate'; 
+      this.title='创建副本'
+      this.$nextTick(() => {
+        this.$refs.preview.$refs.upload.fileList = [{dataUrl: this.form.previewImgUrl}] 
+        this.$refs.apk.$refs.upload.fileList = [{dataUrl: this.form.themeDownUrl}] 
+        this.$refs.thumbImg.$refs.upload.fileList = [{dataUrl: this.form.thumbImgUrl}] 
+        this.$refs.pictureEntitys.$refs.upload.fileList = [{dataUrl: ''}]
+        this.$refs.tabBgEntitys.$refs.upload.fileList = [{dataUrl: ''}]
+      })
+
+    },
     btnSave() {
       let form = this.form
       if (form.chargeType === '0') {
@@ -282,6 +293,7 @@ export default {
       }, [])
     },
     setFormData(data) {
+
       const form = this.form
       form.themeId = data.themeId
       form.themeName = data.themeName

@@ -4,7 +4,7 @@
     :multiple="true"
     :accept="accept"
     @upload="handleUpload"
-  >
+  > 
     <div class="upload-pic-list" slot="preview" slot-scope="{fileList}">
       <el-button type="primary" plain @click="$refs.upload.handleSelectFile()">点击选择文件</el-button>
       <div class="upload-pic-list__item" v-for="file in fileList" :key="file.id">
@@ -16,8 +16,8 @@
           <el-progress :width="100" type="circle" :percentage="file.percentage"></el-progress>
         </div>
         <div v-else class="upload-pic-list__success">
-          <img v-if ='file.dataUrl===undefined' src="../../assets/images/file.png" class="upload-pic-list__success__img">
-          <img v-if ='file.dataUrl!==undefined' :src="file.dataUrl" class="upload-pic-list__success__img">
+          <img v-if ='file.dataUrl===undefined || file.dataUrl===""' src="../../assets/images/file.png" class="upload-pic-list__success__img">
+          <img v-if ='file.dataUrl!==undefined&&file.dataUrl!==""' :src="file.dataUrl" class="upload-pic-list__success__img">
           <i
             v-if="file.status !== 'uploading'"
             class="upload-pic-list__remove el-icon el-icon-error"
