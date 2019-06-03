@@ -9,7 +9,8 @@ export default function fetch({
   isJSON = false
 }) {
   const loading = Vue.prototype.$loading({
-    lock: true
+    lock: true,
+    body: true
   })
   let option = {
     method,

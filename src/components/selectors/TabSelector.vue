@@ -190,7 +190,7 @@ export default {
             width: 190
           },
           {
-            prop: 'userName',
+            prop: 'modifierName',
             label: '更新人',
             width: 120
           }
