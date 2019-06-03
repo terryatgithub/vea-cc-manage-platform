@@ -1,7 +1,7 @@
 <template>
   <RemoteSelectorWrapper 
     ref="wrapper"
-    title="选择板块"
+    title="选择版块"
     custom-class="resource-selector"
     @select-start="handleSelectStart">
     <template slot="content" slot-scope="{isShow}">
@@ -193,7 +193,7 @@ export default {
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
     },
-    getDefaultFilter() {
+    genDefaultFilter() {
       return {
         idPrefix: this.$consts.idPrefix,
         pannelType: 1,
@@ -211,8 +211,8 @@ export default {
       this.fetchData()
     },
     handleResetFilter() {
-      this.filter = this.getDefaultFilter()
-      this.efficientFilter = this.getDefaultFilter()
+      this.filter = this.genDefaultFilter()
+      this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
