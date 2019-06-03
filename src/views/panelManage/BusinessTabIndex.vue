@@ -7,6 +7,7 @@
       @read="handleRead"
       @edit="handleEdit"
       @copy="handleCopy"
+      @delete="handleDelete"
      >
      </BusinessTabList>
     <BusinessTabInfo 
@@ -47,19 +48,28 @@ export default {
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(id) {
-      this.id = id
+    handleEdit(item) {
+      this.id = item.tabId
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(id, version) {
-      this.id = id
+    handleRead(item, version) {
+      this.id = item.tabId
       this.mode = 'read'
       this.version = version
       this.isShowList = false
     },
-    handleCopy(id) {
-      this.id = id
+    handleDelete(selected) {
+      this.$service
+        .businessTabDelete({ 
+          id: selected.map(item => item.tabId).join(',') 
+        }, '删除成功')
+        .then(data => {
+          this.$refs.list.fetchData()
+        })
+    },
+    handleCopy(item) {
+      this.id = item.tabId
       this.mode = 'copy'
       this.isShowList = false
     },

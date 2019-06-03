@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="hompage-upsert">
+    <div>
       <ContentCard :title="title" @go-back="$emit('go-back')" v-show="isShow">
         <CommonContent
           ref="commonContent"

@@ -1,15 +1,18 @@
 <template>
   <div>
     <FilmDetailPageList
-      v-show="isShow"
+      v-show="isShowList"
       ref="list"
-      @open-add-page="openAddPage"
+      @create="handleCreate"
+      @read="handleRead"
+      @edit="handleEdit"
+      @delete="handleDelete"
     />
     <FilmDetailPageAdd
-      v-if="!isShow"
-      :id="editId"
+      v-if="!isShowList"
+      :id="id"
       :initMode="mode"
-      :version = "duplicateVersionVersion"
+      :version = "version"
       @upsert-end="openListPage"
       @go-back="goBack"
     />
@@ -27,25 +30,44 @@ export default {
 
   data () {
     return {
-      isShow: true,
-      editId: '',
+      isShowList: true,
+      id: undefined,
       mode: '',
-      duplicateVersionVersion: ''
+      version: ''
     }
   },
 
   methods: {
-    openAddPage(editId, mode, version) {
-      this.editId = editId
-      this.isShow = false
-      this.mode = mode
-      this.duplicateVersionVersion = version
+    handleCreate() {
+      this.id = undefined
+      this.mode = 'create'
+      this.isShowList = false
+    },
+    handleEdit(item) {
+      this.id = item.tabId
+      this.mode = 'edit'
+      this.isShowList = false
+    },
+    handleRead(item, version) {
+      this.id = item.tabId
+      this.mode = 'read'
+      this.version = version
+      this.isShowList = false
+    },
+    handleDelete(selected) {
+      this.$service
+        .businessTabDelete({ 
+          id: selected.map(item => item.tabId).join(',') 
+        }, '删除成功')
+        .then(data => {
+          this.$refs.list.fetchData()
+        })
     },
     goBack() {
-      this.isShow = true
+      this.isShowList = true
     },
     openListPage() {
-      this.isShow = true
+      this.isShowList = true
       this.$refs.list.fetchData()
     }
   }

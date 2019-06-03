@@ -10,5 +10,13 @@ export default {
   tabInfo: {
     id: 'tabId',
     status: 'tabStatus'
+  },
+  film: {
+    id: 'tabId',
+    status: 'tabStatus'
+  },
+  policy: {
+    id: 'policyId',
+    status: 'policyStatus'
   }
 }

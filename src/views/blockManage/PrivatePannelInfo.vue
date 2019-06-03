@@ -521,7 +521,6 @@ export default {
       return panel
     },
     parseApiToData(data) {
-      debugger
       const panel = data
       const firstPanel = data.pannelList[0]
       panel.pannelResource = firstPanel.pannelResource

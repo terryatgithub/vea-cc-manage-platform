@@ -9,9 +9,9 @@
     >
       <ButtonGroupForListPage
         pageName="policyConf"
-        @add="addData"
-        @edit="editData"
-        @delete="batchDel"
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"
       ></ButtonGroupForListPage>
       <Table
         :props="table.props"
@@ -19,6 +19,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -33,7 +34,9 @@ import { Button } from 'element-ui'
 import ButtonList from './../../components/ButtonLIst'
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     ActionList,
     Table,
@@ -41,15 +44,13 @@ export default {
     ButtonGroupForListPage
   },
   data() {
-    let _this = this
     return {
+      resourceType: 'policy',
       filter: {
-        sort: undefined,
-        order: undefined
       },
       filterSchema: null,
       pagination: {
-        pageSize: 5
+        pageSize: 15
       },
       selected: [],
       selectedItems: [],
@@ -154,119 +155,15 @@ export default {
     }
   },
   methods: {
-    handleRead(row, version) {
-      this.$emit('read', row.policyId, version)
-    },
-    /**
-     * 新增
-     */
-    addData() {
-      this.$emit('create')
-    },
-    /**
-     * 编辑
-     */
-    editData() {
-      if (this.$isAllowEdit(this.selected)) {
-        if(parseInt(this.selectedItems[0].policyStatus) === 2){
-          this.$emit('edit', this.selected[0])
-        } else {
-          this.$message({
-            type: 'error',
-            message: '只有草稿状态才能编辑'
-          })
-        }
-      }
-    },
-    /**
-     * 批量删除
-     */
-    batchDel() {
-      if (
-        this.$isAllowDelete(this.selected) &&
-        window.confirm('确定要删除吗')
-      ) {
-        this.$service
-          .policyConfRemove({ id: this.selected.join(',') }, '删除成功')
-          .then(data => {
-            this.fetchData()
-          })
-      }
-    },
-    //表格操作
-    handleRowSelectionAdd(targetItem) {
-      let obj = this.getIDs(targetItem)
-      this.selected = this.selected.concat(obj.ids)
-      this.selectedItems = this.selectedItems.concat(obj.items)
-      this.updateTableSelected()
-    },
-    getIDs (item) {
-      let ids = []
-      let items = []
-      ids.push(item.policyId)
-      items.push(item)
-      if (typeof item.children !== 'undefined') {
-        item.children.forEach(e => {
-          ids.push(e.policyId)
-          items.push(e)
-        })
-      } 
-      return {
-        ids: ids,
-        items: items
-      }
-    },
-    handleRowSelectionRemove(targetItem) {
-      let obj = this.getIDs(targetItem)
-      let selected = this.selected
-      this.selected = this.selected.filter((item, index) => {
-        return obj.ids.includes(item) === false
-      })
-       this.selectedItems = this.selectedItems.filter((item, index) => {
-        return obj.ids.includes(selected[index]) === false
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.selectedItems = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      let d = table.data.reduce((result, item, index) => {
-        result = result.concat(this.getIDs(item).ids)
-        return result
-      }, [])
-      table.selected = d.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
-    },
     //查询
      handleFilterChange(type, filter) {
-       if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.policyId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
-        }
+      if (filter) { this.filter = filter}
+      if (this.pagination) {
+        this.pagination.currentPage = 1
+      }
       let pagination = this.pagination
       if (pagination.currentPage * pagination.pageSize - pagination.total < pagination.pageSize) {
         this.fetchData()
-      }
       }
     },
     //重置
@@ -287,9 +184,6 @@ export default {
       return filter
       console.log(filter)
     },
-    /**
-     * 获取数据
-     */
     fetchData() {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
@@ -297,11 +191,57 @@ export default {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
-    }
+    },
+    expandItem(item) {
+      if (item.children) {
+        return [item, ...item.children]
+      }
+      return [item]
+    },
+    handleRowSelectionAdd (targetItem) {
+      this.selected = this.selected.concat(this.expandItem(targetItem))
+      this.updateTableSelected()
+    },
+    handleRowSelectionRemove (targetItem) {
+      const idField = 'policyId'
+      const index = this.expandItem(targetItem).reduce((result, item) => {
+        result[item[idField]] = true
+        return result
+      }, {})
+      this.selected = this.selected.filter(item => {
+        return !index[item[idField]]
+      })
+      this.updateTableSelected()
+    },
+    handleAllRowSelectionChange (value) {
+      if (value) {
+        this.table.data.forEach(this.handleRowSelectionAdd)
+      } else {
+        this.selected = []
+        this.table.selected = []
+      }
+    },
+    updateTableSelected () {
+      const idField = 'policyId'
+      const table = this.table
+      const newSelectedIndex = this.selected.reduce((result, item) => {
+        result[item[idField]] = true
+        return result
+      }, {})
+      const tableData = table.data.reduce((result, item) => {
+        return result.concat(this.expandItem(item))
+      }, [])
+      table.selected = tableData.reduce((result, item, index) => {
+        if (newSelectedIndex[item[idField]]) {
+          result.push(index)
+        }
+        return result
+      }, [])
+    },
   },
   created() {
     let filterSchema = _.map({
-      policyId: _.o.string.other('form', {
+      policyId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'Input',
         placeholder: 'ID'
       }),
@@ -311,7 +251,6 @@ export default {
       }),
       policyStatus: _.o
         .enum({
-          请选择: '',
           下架: '0',
           上架: '1',
           草稿: '2',
