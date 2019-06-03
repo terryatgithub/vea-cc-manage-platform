@@ -2,9 +2,7 @@
   <div class="remote-selector-wrapper">
     <div @click="handleSelectStart">
       <slot>
-        <Button :disabled="disabled">
-          {{ title }}
-        </Button>
+         <el-button type="primary" :disabled="disabled" plain @click="submitBtn"> {{ title }}</el-button>
       </slot>
     </div>
     <Dialog

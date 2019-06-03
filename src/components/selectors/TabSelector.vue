@@ -11,13 +11,13 @@
     <div slot="filter">
       <el-form :inline="true">
         <el-form-item label="ID">
-          <el-input v-model="filter.tabId"></el-input>
+          <el-input v-model="filter.tabId" placeholder="ID" title="ID"></el-input>
         </el-form-item>
         <el-form-item label="版面名称">
-          <el-input v-model="filter.tabName"></el-input>
+          <el-input v-model="filter.tabName" placeholder="版面名称" title="版面名称"></el-input>
         </el-form-item>
         <el-form-item label="版面分类">
-          <el-select v-model="filter.tabCategory" :clearable="true">
+          <el-select v-model="filter.tabCategory" :clearable="true" placeholder="版面分类" title="版面分类">
             <el-option
               v-for="(item, index) in tabCategoryOptions"
               :key="index"
@@ -27,8 +27,8 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="版面属性" :clearable="true">
-          <el-select v-model="filter.tabType">
+        <el-form-item label="版面属性" :clearable="true" >
+          <el-select v-model="filter.tabType" placeholder="版面属性" title="版面属性">
             <el-option
               v-for="(item, index) in tabTypeOptions"
               :key="index"
@@ -39,7 +39,7 @@
         </el-form-item>
 
         <el-form-item label="审核状态">
-          <el-select v-model="filter.tabStatusArray" :clearable="true">
+          <el-select v-model="filter.tabStatusArray" :clearable="true" placeholder="审核状态" title="审核状态">
             <el-option
               v-for="(item, index) in tabStatusOptions"
               :key="index"
@@ -49,12 +49,12 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="source === undefined" label="内容源">
-          <SourceSelector v-model="filter.tabResource"/>
+        <el-form-item v-if="source === undefined" label="内容源" >
+          <SourceSelector v-model="filter.tabResource" placeholder="内容源" title="内容源"/>
         </el-form-item>
 
-        <el-form-item v-show="$consts.idPrefix != '10'" label="数据来源">
-          <el-select v-model="filter.idPrefix">
+        <el-form-item v-show="$consts.idPrefix != '10'" label="数据来源" >
+          <el-select v-model="filter.idPrefix" placeholder="数据来源" title="数据来源">
             <el-option v-for="item in $consts.idPrefixOptions" :label="item.label" :value="item.value" :key="item.value"></el-option>
           </el-select>
         </el-form-item>

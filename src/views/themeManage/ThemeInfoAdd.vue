@@ -100,7 +100,7 @@
           ref="commonContent"
           :mode="mode"
           :resource-info="resourceInfo"
-          @edit="mode = 'edit';title='编辑'"
+          @edit="edit"
           @replicate="replicate"
           @submit-audit="btnSave"
           @select-version="fetchData"
@@ -227,16 +227,38 @@ export default {
 
   methods: {
     replicate() {
-      this.mode = 'replicate'; 
-      this.title='创建副本'
+      this.mode = 'replicate'
+      this.title = '创建副本'
       this.$nextTick(() => {
-        this.$refs.preview.$refs.upload.fileList = [{dataUrl: this.form.previewImgUrl}] 
-        this.$refs.apk.$refs.upload.fileList = [{dataUrl: this.form.themeDownUrl}] 
-        this.$refs.thumbImg.$refs.upload.fileList = [{dataUrl: this.form.thumbImgUrl}] 
-        this.$refs.pictureEntitys.$refs.upload.fileList = [{dataUrl: ''}]
-        this.$refs.tabBgEntitys.$refs.upload.fileList = [{dataUrl: ''}]
+        this.$refs.preview.$refs.upload.fileList = [
+          { dataUrl: this.form.previewImgUrl }
+        ]
+        this.$refs.apk.$refs.upload.fileList = [
+          { dataUrl: this.form.themeDownUrl }
+        ]
+        this.$refs.thumbImg.$refs.upload.fileList = [
+          { dataUrl: this.form.thumbImgUrl }
+        ]
+        this.$refs.pictureEntitys.$refs.upload.fileList = [{ dataUrl: '' }]
+        this.$refs.tabBgEntitys.$refs.upload.fileList = [{ dataUrl: '' }]
       })
-
+    },
+    edit() {
+      this.mode = 'edit'
+      this.title = '编辑'
+      this.$nextTick(() => {
+        this.$refs.preview.$refs.upload.fileList = [
+          { dataUrl: this.form.previewImgUrl }
+        ]
+        this.$refs.apk.$refs.upload.fileList = [
+          { dataUrl: this.form.themeDownUrl }
+        ]
+        this.$refs.thumbImg.$refs.upload.fileList = [
+          { dataUrl: this.form.thumbImgUrl }
+        ]
+        this.$refs.pictureEntitys.$refs.upload.fileList = [{ dataUrl: '' }]
+        this.$refs.tabBgEntitys.$refs.upload.fileList = [{ dataUrl: '' }]
+      })
     },
     btnSave() {
       let form = this.form
@@ -293,7 +315,6 @@ export default {
       }, [])
     },
     setFormData(data) {
-
       const form = this.form
       form.themeId = data.themeId
       form.themeName = data.themeName

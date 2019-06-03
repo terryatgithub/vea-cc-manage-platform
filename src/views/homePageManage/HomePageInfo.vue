@@ -41,7 +41,7 @@
               <el-form-item label="首页版面">
                 <TabSelector @select-end="handleSelectTabEnd"/>
                 <el-button type="primary" plain @click="handleCreateTab">新建版面</el-button>
-                <span class="cc-form-annotation">至少选择1个版面</span>
+                <span class="cc-form-annotation marginL remarks">至少选择1个版面</span>
                 <OrderableTable
                   v-model="tabGroupList"
                   :header="tabGroupTableHeader"
