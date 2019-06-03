@@ -1,25 +1,32 @@
 <template>
   <el-row style="margin:auto">
     <el-col :span="6" :offset="9" class="login-form">
-      <el-col class="login-logo">
-        <img src="@/assets/logo.png">
-      </el-col>
-      <div id="accout">
-        <el-row>
-          <el-col :span="10">
-            <el-button :class="{active:isNormalActive}" @click="changAccoutType('normal')">普通账号</el-button>
-          </el-col>
-          <el-col :span="10" :offset="4">
-            <el-button :class="{active:isDomainActive}" @click="changAccoutType('domain')">域账号</el-button>
-          </el-col>
-        </el-row>
+      <div class="log_center">
+        <div class="log_logo">
+          <img src="@/assets/logo.png">
+          <span>内容运营平台</span>
+        </div>
+        <div class="log_bj">
+          <div class="log-box">
+            <div id="accout">
+              <el-row>
+                <el-col :span="11">
+                  <el-button :class="{active:isNormalActive}" @click="changAccoutType('normal')">普通账号</el-button>
+                </el-col>
+                <el-col :span="11" :offset="2">
+                  <el-button :class="{active:isDomainActive}" @click="changAccoutType('domain')">域账号</el-button>
+                </el-col>
+              </el-row>
+            </div>
+            <GateSchemaForm ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin"></GateSchemaForm>
+            <div id="verifyCode">
+              <el-input v-model="user.valicode" placeholder="验证码" @keyup.native="keyupSubmit"></el-input>
+              <img :src="codeUrl" alt="验证码" @click="updateValicode">
+            </div>
+            <el-button class="login-form__btn" type="primary" @click="$refs.loginForm.handleSubmit()">登 录</el-button>
+          </div>
+        </div>
       </div>
-      <GateSchemaForm ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin"></GateSchemaForm>
-      <div id="verifyCode">
-        <el-input v-model="user.valicode" placeholder="验证码" @keyup.native="keyupSubmit"></el-input>
-        <img :src="codeUrl" alt="验证码" @click="updateValicode">
-      </div>
-      <el-button class="login-form__btn" type="primary" @click="$refs.loginForm.handleSubmit()">登 录</el-button>
     </el-col>
     <div id="container" style="width:100%;height:700px;">
       <div id="anitOut"></div>
@@ -136,11 +143,6 @@ export default {
   margin: auto
 .el-form .sf-item
   margin-bottom: 30px
-.login-logo
-  text-align: center
-  padding-bottom: 40px
-.login-logo img
-  width: 80%
 .login-form .el-input__inner
   height: 50px
   background-color: rgba(0, 0, 0, 0.2)
@@ -159,8 +161,8 @@ export default {
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1) inset
 .login-form .login-form__btn
   height: 50px
-  background: #ffaa23
-  border-color: #ffaa23
+  background: #ea5d0f
+  border-color: #ea5d0f
   font-size: 20px
 #verifyCode
   display: flex
@@ -174,5 +176,35 @@ export default {
     width: 100%
 #accout .active
   color: red
+.log_center
+  width 430px
+  height 430px
+  position fixed
+  left 50%
+  top 50%
+  display inline-block
+  margin-top -250px
+  margin-left -200px
+  z-index 2
+.log_logo
+  width 100%
+  text-align center
+  margin-bottom 15px
+.log_logo img
+  width 80%
+.log_logo span
+  display block
+  color #ffffff
+  font-size 18px
+  line-height 36px
+.log_bj
+  width 430px
+  height 320px
+  background #fff
+  border-radius 9px
+  opacity 0.9
+  padding-top 50px
+.log-box
+  padding 0 30px
 </style>
 

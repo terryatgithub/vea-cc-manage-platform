@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import './cav'
 function loginRedbg () {
-  $('body').css('overflow','hidden')
+//   $('body').css('overflow','hidden')
   $(function () {
     $("#container").css({width:$(window).width(),height:$(window).height()});
     $(window).bind("resize", function() {
@@ -11,8 +11,8 @@ function loginRedbg () {
     if (!window.ActiveXObject && !!document.createElement("canvas").getContext) {
         // $.getScript("http://localhost:63342/login/js/cav.js",
         //         function () {
-                    var t = {width: 1.5,height: 1.5,depth: 10,segments: 12,slices: 6,xRange: 0.8,yRange: 0.1,zRange: 1,ambient: "#481906",diffuse: "#FFFFFF",speed: 0.0002};
-                    var G = {count: 2,xyScalar: 1,zOffset: 100,ambient: "#722605",diffuse: "#923109",speed: 0.001,gravity: 1200,dampening: 0.95,minLimit: 10,maxLimit: null,minDistance: 20,maxDistance: 400,autopilot: false,draw: false,bounds: CAV.Vector3.create(),step: CAV.Vector3.create(Math.randomInRange(0.2, 1), Math.randomInRange(0.2, 1), Math.randomInRange(0.2, 1))};
+                    var t = {width: 1.5,height: 1.5,depth: 10,segments: 12,slices: 6,xRange: 0.8,yRange: 0.1,zRange: 1,ambient: "#ca652f",diffuse: "#FFFFFF",speed: 0.0002};
+                    var G = {count: 2,xyScalar: 1,zOffset: 100,ambient: "#ad5935",diffuse: "#ff4a00",speed: 0.001,gravity: 1200,dampening: 0.95,minLimit: 10,maxLimit: null,minDistance: 20,maxDistance: 400,autopilot: false,draw: false,bounds: CAV.Vector3.create(),step: CAV.Vector3.create(Math.randomInRange(0.2, 1), Math.randomInRange(0.2, 1), Math.randomInRange(0.2, 1))};
                     var m = "canvas";
                     var E = "svg";
                     var x = {
