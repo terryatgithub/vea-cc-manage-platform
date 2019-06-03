@@ -1,8 +1,10 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <!--新增编辑界面-->
-    <el-row :gutter="40">
-      <el-col :span="24">
+     <el-button type="primary" @click="submitBtn">保存</el-button>
+     <div class="form-legend-header">
+             <i class="el-icon-edit">基本信息</i>
+            </div>
         <el-form :model="form" :rules="formRules" ref="form" label-width="100px" class="el-form-add">
           <el-form-item label="角标名称" prop="typeName">
             <el-input v-model="form.typeName" placeholder="角标名称"></el-input>
@@ -21,12 +23,7 @@
             <el-input-number v-model="form.typePriority" :min="1" label="优先级"></el-input-number>
             <!-- <el-input v-model="form.typePriority" placeholder="优先级"></el-input> -->
           </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="submitBtn">保存</el-button>
-          </el-form-item>
         </el-form>
-      </el-col>
-    </el-row>
   </ContentCard>
 </template>
 <script>

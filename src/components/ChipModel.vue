@@ -2,10 +2,10 @@
   <ContentCard class="content">
     <ContentWrapper
       :pagination="pagination"
-      @filter-change="handleFilterChange"
+      @filter-change="fetchData"
       @filter-reset="handleFilterReset"
     >
-      <el-form :inline="true" :model="formSearch" class="search">
+      <el-form :inline="true" :model="formSearch" class="search searchForm">
             <el-form-item>
               <el-select v-model="formSearch.platform" @change="changePlatform" placeholder="内容源">
                 <el-option label="爱奇艺" value="yinhe"></el-option>
@@ -116,13 +116,8 @@ export default {
         model: [{ required: true, message: '请输入机型', trigger: 'blur' }],
         chip: [{ required: true, message: '请输入机芯', trigger: 'blur' }]
       },
-      formSearch: {
-        sort: undefined,
-        order: undefined,
-        platform: 'tencent',
-        chip: undefined,
-        model: undefined
-      },
+      formSearch: this.genDefaultFilter(),
+      filter: this.genDefaultFilter(),
       pagination: {
         pageSize: 5
       },
@@ -157,6 +152,13 @@ export default {
     }
   },
   methods: {
+    genDefaultFilter() {
+      return {
+        platform: 'tencent',
+        chip: undefined,
+        model: undefined
+      }
+    },
     rowClick(params){
        this.$emit("row-click",params)
     },
@@ -220,34 +222,25 @@ export default {
       }, [])
     },
     //查询
-    handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
-        }
-      }
+    handleFilterChange() {
+      this.filter = {...this.formSearch}
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     //重置
     handleFilterReset() {
-      this.formSearch = {
-        sort: undefined,
-        order: undefined,
-        platform: 'tencent',
-        chip: undefined,
-        model: undefined
-      }
+      this.filter = this.genDefaultFilter()
+      this.formSearch = this.genDefaultFilter() 
       this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter() {
-      const { formSearch, pagination } = this
+      const { filter, pagination } = this
       if (pagination) {
-        formSearch.page = pagination.currentPage
-        formSearch.rows = pagination.pageSize
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
       }
-      return formSearch
+      return filter
     },
     /**
      * 获取数据

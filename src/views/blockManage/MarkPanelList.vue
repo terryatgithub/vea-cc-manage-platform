@@ -273,8 +273,8 @@ export default {
     },
     //查询
    handleFilterChange(type, filter) {
-     this.filter
-      if(this.$validateId(this.filter.pannelGroupId)) {
+     if (filter) { this.filter = filter}
+      if(this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
@@ -295,15 +295,15 @@ export default {
   },
   created() {
     let filterSchema = _.map({
-      pannelGroupId: _.o.string.other('form', {
+      pannelId: _.o.string.other('form', {
         component: 'Input',
         placeholder: 'ID'
       }),
-      pannelGroupRemark: _.o.string.other('form', {
+      pannelName: _.o.string.other('form', {
         component: 'Input',
         placeholder: '名称'
       }),
-      categoryName: _.o.enum(this.businessTypes).other('form', {
+      pannelCategory: _.o.enum(this.businessTypes).other('form', {
         component: 'Select',
         placeholder: '业务分类'
       }),
@@ -311,7 +311,7 @@ export default {
         component: 'Select',
         placeholder: '内容源'
       }),
-      fullTabName: _.o.string.other('form', {
+      tabName: _.o.string.other('form', {
         component: 'Input',
         placeholder: '引用状态'
       }),

@@ -6,6 +6,7 @@
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
+      @delete="handleDelete"
     />
     <TestPolicyManageInfo 
       v-if='!isShowList' 
@@ -39,16 +40,25 @@ export default {
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(id) {
-      this.id = id
+    handleEdit(item) {
+      this.id = item.policyId
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(id, version) {
-      this.id = id
+    handleRead(item, version) {
+      this.id = item.policyId
       this.mode = 'read'
       this.version = version
       this.isShowList = false
+    },
+    handleDelete(selected) {
+      this.$service
+        .policyConfRemove({
+          id: selected.map(item => item.policyId).join(',')
+        },'删除成功')
+        .then(() => {
+          this.$refs.list.fetchData()
+        })
     },
     handleUpsertEnd () {
       this.isShowList = true

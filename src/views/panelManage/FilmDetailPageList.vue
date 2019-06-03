@@ -2,8 +2,8 @@
   <ContentCard class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <div class="el-row">
-      <el-form :model="filter" inline label-width="90px" >
-        <el-form-item class="el-col el-col-6">
+      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
+        <el-form-item class="el-col el-col-6" prop="tabId">
           <div class="el-col-20">
             <el-input v-model="filter.tabId" placeholder="版面ID"/>
           </div>
@@ -79,9 +79,9 @@
       </div>
         <ButtonGroupForListPage
         pageName='filmDetailPage'
-        @add="addFilmDetail"
-        @edit="editData"
-        @delete="batchDel"
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"
         >
         </ButtonGroupForListPage>
 
@@ -91,6 +91,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -102,7 +103,9 @@
 <script>
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table } from 'admin-toolkit'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     ContentWrapper,
     ButtonGroupForListPage,
@@ -111,6 +114,7 @@ export default {
 
   data() {
     return {
+      resourceType: 'film',
       pannelValue: [],
       filter: this.getDefaultFilter(),
       pagination: {
@@ -147,7 +151,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReview(row)
+                      this.handleRead(row)
                     }
                   }
                 },
@@ -218,7 +222,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.openReviewWithVersion(row)
+                      this.handleRead(row, row.duplicateVersion)
                     }
                   }
                 },
@@ -245,7 +249,19 @@ export default {
         selected: [],
         selectionType: 'multiple'
       },
-      selected: []
+      selected: [],
+      filterFormRules: {
+        tabId: [
+          {
+            validator(rule, value, cb) {
+              if (value && !/^\d+$/.test(value)) {
+                return cb('请输入数字')
+              }
+              cb()
+            }
+          }
+        ]
+      }
     }
   },
 
@@ -290,86 +306,18 @@ export default {
       return filter
     },
     handleFilterChange() {
-      this.pagination.currentPage = 1
-      this.fetchData()
+      this.$refs.filterForm.validate((valid) => {
+        if (valid) {
+          this.pagination.currentPage = 1
+          this.fetchData()
+        }
+      })
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
       this.pannelValue = []
       this.pagination.currentPage = 1
       this.fetchData()
-    },
-    // 按钮操作
-    addFilmDetail() {
-      this.$emit('open-add-page')
-    },
-    editData() {
-      const selected = this.selected
-      if (selected.length !== 1) {
-        this.$message('只能选择一条数据')
-        return false
-      }
-      this.$service
-        .tabInfoGet({ id: selected.join(), tabType: 3 })
-        .then(data => {
-          if (data.tabStatus !== 2) {
-            this.$alert('该状态不允许编辑！', '操作提示', {
-              confirmButtonText: '确定'
-            })
-            return false
-          } else {
-            this.$emit('open-add-page', selected[0], 'edit')
-          }
-        })
-    },
-    batchDel() {
-      if (this.selected.length === 0) {
-        this.$message('请选择再删除')
-        return
-      }
-      if (window.confirm('确定要删除吗')) {
-        const select = this.selected.join(',')
-        this.$service
-          .businessTabDelete({ id: select }, '删除成功')
-          .then(() => {
-            this.fetchData()
-          })
-      }
-    },
-    /**
-     * 行选择操作
-     */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.tabId)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.tabId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.tabId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
     },
     // 服务
     getMediaResourceInfo() {
@@ -432,16 +380,9 @@ export default {
         this.channelOptions.push(channelYouku)
       })
     },
-
     handleChannelChange(value) {
       this.filter['filmDetailPageInfo.source'] = ''
       this.filter['filmDetailPageInfo.source'] = value[0]
-    },
-    openReview(row) {
-      this.$emit('open-add-page', row.tabId, 'read')
-    },
-    openReviewWithVersion(row) {
-      this.$emit('open-add-page', row.tabId, 'read', row.duplicateVersion)
     }
   },
   created() {

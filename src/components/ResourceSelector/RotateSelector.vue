@@ -9,7 +9,7 @@
     :filter="filter"
     :filter-schema="filterSchema"
     @pagination-change="fetchData"
-    @filter-change="fetchData"
+    @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')">
@@ -75,6 +75,10 @@ export default {
       }
       return filter
     },
+    handleFilterChange(filter) {
+      this.filter = filter
+      this.fetchData()
+    },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
@@ -84,7 +88,7 @@ export default {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(result => {
         this.pagination.total = result.total
-        this.table.data = result.rows
+        this.table.data = result.rows || []
       })
     }
   },
@@ -93,24 +97,25 @@ export default {
       id: _.o.number.other('form', {
         component: 'Input',
         placeholder: '轮播入口ID',
-        label: '轮播入口ID'
+        label: ' '
       }),
       title: _.o.string.other('form', {
         component: 'Input',
         placeholder: '轮播入口名称',
-        label: '轮播入口名称'
+        label: ' '
       })
     }).other('form', {
        cols: {
-        item: 6,
-        label: 0,
-        wrapper: 20
+        item: 3,
+        label: 1,
+        wrapper: 23
       },
       layout: 'inline',
       footer: {
         cols: {
-          label: 0,
-          wrapper: 24
+          item: 3,
+          label: 1,
+          wrapper: 23
         },
         showSubmit: true,
         submitText: '查询',

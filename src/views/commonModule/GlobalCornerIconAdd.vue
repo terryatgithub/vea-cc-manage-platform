@@ -1,6 +1,10 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="global-picture">
+      <el-button type="primary" @click="handleSubmit">保存</el-button>
+      <div class="form-legend-header">
+         <i class="el-icon-edit">基本信息</i>
+      </div>
       <el-form ref="form" label-width="120px" :model="this" class="el-form-add">
         <div class="global-picture__label">角标图片</div>
         <Upload
@@ -76,11 +80,6 @@
             >点击选择图片</el-button>
           </template>
         </Upload>
-        <el-form-item>
-          <div class="global_icon_actions">
-            <el-button type="primary" @click="handleSubmit">保存</el-button>
-          </div>
-        </el-form-item>
       </el-form>
     </div>
   </ContentCard>
@@ -99,8 +98,9 @@ export default {
       attributes: [], //角标分类
       attributesIndexed: [],
       rules: {
-        title: [{ required: true, message: '请填写素材标题' },
-        { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
+        title: [
+          { required: true, message: '请填写素材标题' },
+          { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
         type: [{ required: true, message: '请选择角标类别' }],
         code: [{ required: true, message: '请选择角标分类' }]
@@ -157,7 +157,6 @@ export default {
       })
     },
     handleSubmit() {
-
       this.validateFormData(err => {
         if (!err) {
           const data = this.getFormData()

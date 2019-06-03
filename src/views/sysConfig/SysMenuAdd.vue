@@ -1,55 +1,49 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <!--新增编辑界面-->
-    <el-row :gutter="40">
-      <el-col :span="24">
-        <el-form :model="form" :rules="formRules" ref="form" label-width="160px" class="el-form-add">
-          <!-- <el-form-item label="菜单ID" prop="menuId">
-            <el-input v-model="form.menuId" placeholder="菜单ID"></el-input>
-          </el-form-item>-->
-          <el-form-item label="菜单名称" prop="menuName">
-            <el-input v-model="form.menuName" placeholder="菜单名称"></el-input>
-          </el-form-item>
-          <el-form-item label="元素ID" prop="elid">
-            <el-input v-model="form.elid" placeholder="元素ID"></el-input>
-          </el-form-item>
-          <el-form-item label="图标样式" prop="iconClass">
-            <el-input v-model="form.iconClass" placeholder="图标样式"></el-input>
-          </el-form-item>
-          <el-form-item label="标签ID" prop="tabId">
-            <el-input v-model="form.tabId" placeholder="标签ID"></el-input>
-          </el-form-item>
-          <el-form-item label="标签名称" prop="tabTitle">
-            <el-input v-model="form.tabTitle" placeholder="标签名称"></el-input>
-          </el-form-item>
-          <el-form-item label="标签图标" prop="tabIcon">
-            <el-input v-model="form.tabIcon" placeholder="标签图标"></el-input>
-          </el-form-item>
-          <el-form-item label="跳转地址URL" prop="iframeUrl">
-            <el-input v-model="form.iframeUrl" placeholder="跳转地址URL"></el-input>
-          </el-form-item>
-          <el-form-item label="排序" prop="seq">
-            <el-input v-model="form.seq" placeholder="排序"></el-input>
-          </el-form-item>
-          <el-form-item label="菜单目录" prop="modle">
-            <!-- <el-input v-model="form.modle"></el-input> -->
-            <el-radio v-model="form.modle" label="0">收起</el-radio>
-            <el-radio v-model="form.modle" label="1">展开</el-radio>
-            <el-radio v-model="form.modle" label="3">媒资菜单</el-radio>
-          </el-form-item>
-          <el-form-item label="是否禁用" prop="disabled">
-            <el-radio v-model="form.disabled" label="0">否</el-radio>
-            <el-radio v-model="form.disabled" label="1">是</el-radio>
-          </el-form-item>
-          <el-form-item label="菜单父ID" prop="pmid">
-            <el-input v-model="form.pmid" placeholder="菜单父ID"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="submitBtn">保存</el-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
+    <el-button type="primary" @click="submitBtn">保存</el-button>
+    <div class="form-legend-header">
+      <i class="el-icon-edit">基本信息</i>
+    </div>
+    <el-form :model="form" :rules="formRules" ref="form" label-width="160px" class="el-form-add">
+      <el-form-item label="菜单名称" prop="menuName">
+        <el-input v-model="form.menuName" placeholder="菜单名称"></el-input>
+      </el-form-item>
+      <el-form-item label="元素ID" prop="elid">
+        <el-input v-model="form.elid" placeholder="元素ID"></el-input>
+      </el-form-item>
+      <el-form-item label="图标样式" prop="iconClass">
+        <el-input v-model="form.iconClass" placeholder="图标样式"></el-input>
+      </el-form-item>
+      <el-form-item label="标签ID" prop="tabId">
+        <el-input v-model="form.tabId" placeholder="标签ID"></el-input>
+      </el-form-item>
+      <el-form-item label="标签名称" prop="tabTitle">
+        <el-input v-model="form.tabTitle" placeholder="标签名称"></el-input>
+      </el-form-item>
+      <el-form-item label="标签图标" prop="tabIcon">
+        <el-input v-model="form.tabIcon" placeholder="标签图标"></el-input>
+      </el-form-item>
+      <el-form-item label="跳转地址URL" prop="iframeUrl">
+        <el-input v-model="form.iframeUrl" placeholder="跳转地址URL"></el-input>
+      </el-form-item>
+      <el-form-item label="排序" prop="seq">
+        <el-input v-model="form.seq" placeholder="排序"></el-input>
+      </el-form-item>
+      <el-form-item label="菜单目录" prop="modle">
+        <!-- <el-input v-model="form.modle"></el-input> -->
+        <el-radio v-model="form.modle" label="0">收起</el-radio>
+        <el-radio v-model="form.modle" label="1">展开</el-radio>
+        <el-radio v-model="form.modle" label="3">媒资菜单</el-radio>
+      </el-form-item>
+      <el-form-item label="是否禁用" prop="disabled">
+        <el-radio v-model="form.disabled" label="0">否</el-radio>
+        <el-radio v-model="form.disabled" label="1">是</el-radio>
+      </el-form-item>
+      <el-form-item label="菜单父ID" prop="pmid">
+        <el-input v-model="form.pmid" placeholder="菜单父ID"></el-input>
+      </el-form-item>
+    </el-form>
   </ContentCard>
 </template>
 <script>
@@ -107,9 +101,11 @@ export default {
     submitBtn() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$service.saveSysMenu({ 'jsonStr': JSON.stringify(this.form) }, '保存成功').then(() => {
-            this.$emit('open-list-page')
-          })
+          this.$service
+            .saveSysMenu({ jsonStr: JSON.stringify(this.form) }, '保存成功')
+            .then(() => {
+              this.$emit('open-list-page')
+            })
         }
       })
     },

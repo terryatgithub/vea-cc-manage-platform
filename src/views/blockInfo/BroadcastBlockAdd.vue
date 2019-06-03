@@ -1,7 +1,7 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="split-bar">
-      基本信息
+      <i class="el-icon-edit">基本信息</i>
     </div>
     <el-form :model="basicForm" ref="basicForm" label-width="100px" class="el-form-add">
       <el-form-item label="审核状态" v-if="disabled">
@@ -409,7 +409,6 @@
 
 <script>
 import draggable from 'vuedraggable'
-import BroadcastSource from '@/components/BroadcastSource'
 // import ResourceSelector from '@/components/ResourceSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import DialogPicture from '@/components/DialogPicture'
@@ -421,7 +420,6 @@ import { AppParams, AppParamsRead} from 'admin-toolkit'
 export default {
   components: {
     draggable,
-    BroadcastSource,
     ResourceSelector,
     DialogPicture,
     DialogCorner,

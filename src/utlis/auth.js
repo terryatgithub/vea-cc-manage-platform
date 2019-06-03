@@ -85,56 +85,58 @@ const routerMap = {
   filmDetailAdBit: FilmDetailAdBit
 }
 function getInitData (app) {
-  return app.$service.getMenu().then(data => {
+  return Promise.all([app.$service.getMenu(), app.$service.getEnv()])
+    .then(([menuData, env]) => {
+      app.$consts.idPrefix = env.idPrefix
     // if (data.length === 0) {
     //   app.$logout().then(() => {
     //     app.$router.push({ name: 'login' })
     //   })
     // }
-    let children = []
-    data.forEach(element => {
-      let obj = {}
-      obj.name = obj.path = element.id
-      obj.component = Wrapper
-      obj.meta = {
-        title: element.title,
-        icon: element.icon
-      }
-      obj.children = []
-      if (typeof element.children !== 'undefined') {
-        element.children.forEach(elementC => {
-          obj.children.push({
-            name: elementC.id,
-            path: elementC.attributes.iframeUrl,
-            component: routerMap[elementC.id],
-            meta: {
-              title: elementC.text,
-              icon: elementC.iconCls,
-              tagId: elementC.id
-            }
+      let children = []
+      menuData.forEach(element => {
+        let obj = {}
+        obj.name = obj.path = element.id
+        obj.component = Wrapper
+        obj.meta = {
+          title: element.title,
+          icon: element.icon
+        }
+        obj.children = []
+        if (typeof element.children !== 'undefined') {
+          element.children.forEach(elementC => {
+            obj.children.push({
+              name: elementC.id,
+              path: elementC.attributes.iframeUrl,
+              component: routerMap[elementC.id],
+              meta: {
+                title: elementC.text,
+                icon: elementC.iconCls,
+                tagId: elementC.id
+              }
+            })
           })
-        })
-      }
-      children.push(obj)
+        }
+        children.push(obj)
+      })
+      children.push({
+        name: 'desktop',
+        path: '/desktop',
+        component: Desktop,
+        meta: {
+          title: '我的桌面',
+          tagId: 'desktop'
+        }
+      })
+      let filterRoutes = []
+      filterRoutes.push({
+        path: '/',
+        component: Main,
+        children
+      })
+      app.$router.options.routes = filterRoutes // 动态路由
+      app.$router.addRoutes(filterRoutes) // 动态路由
     })
-    children.push({
-      name: 'desktop',
-      path: '/desktop',
-      component: Desktop,
-      meta: {
-        title: '我的桌面',
-        tagId: 'desktop'
-      }
-    })
-    let filterRoutes = []
-    filterRoutes.push({
-      path: '/',
-      component: Main,
-      children
-    })
-    app.$router.options.routes = filterRoutes // 动态路由
-    app.$router.addRoutes(filterRoutes) // 动态路由
-  })
 }
 Vue.prototype.$isLoggedIn = async function () {
   const $appState = this.$appState

@@ -104,7 +104,8 @@ export default {
       return {
       }
     },
-    handleFilterChange() {
+    handleFilterChange(filter) {
+      this.filter = filter
       this.pagination.currentPage = 1
       this.fetchData()
     },

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="hompage-upsert">
+    <div>
       <ContentCard :title="title" @go-back="$emit('go-back')" v-show="isShow">
         <CommonContent
           ref="commonContent"
@@ -17,7 +17,7 @@
            @delete="$emit('upsert-end')"
         >
           <div class="form-legend-header">
-            <span>基本信息</span>
+            <i class="el-icon-edit">基本信息</i>
           </div>
           <template v-if="mode !== 'read'">
             <el-form
@@ -67,7 +67,7 @@
               </el-form-item>
               <el-form-item label="优先级">
                 <el-input-number v-model="form.priority" :min="1"/>
-                <span>注：数值越大优先级越高，数值越小优先级越低</span>
+                <span class="remarks marginL">注：数值越大优先级越高，数值越小优先级越低</span>
               </el-form-item>
               <el-form-item label="选择版块" prop="tags">
                 <el-button type="primary" plain @click="handleSlectPannelStart">选择版块</el-button>
@@ -394,6 +394,7 @@ export default {
       this.viewId = row.pannelGroupId
       switch (row.pannelType) {
         case 1:
+        case 7:
           this.mode = 'pannelInfo'
           break
         case 3:

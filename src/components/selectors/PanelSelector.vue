@@ -1,7 +1,7 @@
 <template>
   <RemoteSelectorWrapper 
     ref="wrapper"
-    title="选择板块"
+    title="选择版块"
     custom-class="resource-selector"
     @select-start="handleSelectStart">
     <template slot="content" slot-scope="{isShow}">
@@ -116,17 +116,8 @@ export default {
         pageSize: 15,
         total: 0
       },
-      filter: {
-        idPrefix: this.$consts.idPrefix,
-        pannelType: 1,
-        panelId: undefined,
-        pannelName: undefined,
-        pannelCategory: undefined,
-        pannelStatus: undefined,
-        parentType: undefined,
-        pannelResource: undefined,
-        resourceIsNull: true
-      },
+      filter: this.genDefaultFilter(),
+      efficientFilter: this.genDefaultFilter(),
       table: {
         data: [],
         selected: [],
@@ -202,7 +193,7 @@ export default {
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
     },
-    getDefaultFilter() {
+    genDefaultFilter() {
       return {
         idPrefix: this.$consts.idPrefix,
         pannelType: 1,
@@ -216,16 +207,18 @@ export default {
       }
     },
     handleFilterChange() {
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
     handleResetFilter() {
-      this.filter = this.getDefaultFilter()
+      this.filter = this.genDefaultFilter()
+      this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
     fetchData() {
-      const filter = JSON.parse(JSON.stringify(this.filter))
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       const pagination = this.pagination
       if (pagination) {
         filter.page = pagination.currentPage

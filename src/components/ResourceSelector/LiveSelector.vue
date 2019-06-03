@@ -7,7 +7,6 @@
     :table="table" 
     :pagination="pagination"
     @pagination-change="fetchData"
-    @filter-change="fetchData"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')">
@@ -62,6 +61,7 @@ export default {
         pageSize: 15
       },
       filter: this.getDefaultFilter(),
+      efficientFilter: this.getDefaultFilter(),
       options: {
         nodeType: [
           { label: '直播', value: 'live' },
@@ -166,7 +166,7 @@ export default {
     },
     getFilter() {
       const pagination = this.pagination
-      const filter = Object.assign({}, this.filter)
+      const filter = Object.assign({}, this.efficientFilter)
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
@@ -177,11 +177,13 @@ export default {
       return filter
     },
     handleFilterChange() {
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },

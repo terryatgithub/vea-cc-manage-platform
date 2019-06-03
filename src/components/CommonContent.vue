@@ -16,8 +16,10 @@
         </slot>
       </div>
       <div v-else>
+         <slot name="auditAndDraft">
           <el-button type="primary" @click="$emit('submit-audit')">提交审核</el-button>
           <el-button type="warning" @click="$emit('save-draft')">保存草稿</el-button>
+          </slot>
       </div>
       <ReleaseTimeSetter 
         v-if="showReleaseTimeSetter" 
@@ -274,6 +276,8 @@ export default {
 
 </script>
 <style lang="stylus" scoped>
+.common-content >>> .selectItem .el-select
+   width 450px 
 .release-info
   margin-bottom 5px
   color #ccc
@@ -285,4 +289,5 @@ export default {
     >>> .el-input + .el-checkbox
     >>> .el-select + .el-checkbox
       margin-left 10px
+
 </style>

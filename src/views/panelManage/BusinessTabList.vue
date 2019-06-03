@@ -9,9 +9,9 @@
     >
       <ButtonGroupForListPage 
         pageName='businessTab' 
-        @add="addData"
-        @edit="editData"
-        @delete="batchDel"
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"
         >
       </ButtonGroupForListPage>
       <Table
@@ -20,6 +20,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -31,7 +32,9 @@
 import _ from 'gateschema'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     ContentWrapper,
     Table,
@@ -40,6 +43,7 @@ export default {
 
   data() {
     return {
+      resourceType: 'tabInfo',
       tabTypeOption: [
         { label: '第三方版面', value: '4' },
         { label: '专题版面', value: '2' },
@@ -54,12 +58,7 @@ export default {
         { label: '审核不通过', value: '5' }
       ],
       tabStatus: {},
-      filter: {
-        tabParentType: 'biz',
-        idPrefix: 10,
-          sort: undefined,
-        order: undefined,
-      },
+      filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {
         currentPage: 1
@@ -240,9 +239,6 @@ export default {
         return [btn1, btn2]
       }
     },
-    handleCopy(row) {
-      this.$emit('copy', row.tabId)
-    },
     collect(row) {
       this.$service.collect({ type: 'tab', data: {resourceId: row.tabId} }, '收藏成功').then(()=>{
         this.fetchData()
@@ -252,45 +248,6 @@ export default {
       this.$service.collectCancel({ type: 'tab', data: {resourceId: row.tabId} },'取消成功').then(()=>{
         this.fetchData()
       })
-    },
-    handleRead(row, version) {
-      this.$emit('read', row.tabId, version)
-    },
-    /**
-     * 新增
-     */
-    addData() {
-      this.$emit('create')
-    },
-    /**
-     * 编辑
-     */
-    editData() {
-      if (this.$isAllowEdit(this.selected)) {
-        if (parseInt(this.selectedItems[0].tabStatus) === 2) {
-          this.$emit('edit', this.selected[0])
-        } else {
-          this.$message({
-            type: 'error',
-            message: '只有草稿状态才能编辑'
-          })
-        }
-      }
-    },
-    /**
-     * 批量删除
-     */
-    batchDel() {
-      if (
-        this.$isAllowDelete(this.selected) &&
-        window.confirm('确定要删除吗')
-      ) {
-        this.$service
-          .businessTabDelete({ id: this.selected.join(',') }, '删除成功')
-          .then(data => {
-            this.fetchData()
-          })
-      }
     },
     /**
      * 获取数据
@@ -303,6 +260,12 @@ export default {
         this.table.data = data.rows
       })
     },
+    genDefaultFilter() {
+      return {
+        tabParentType: 'biz',
+        idPrefix: 10,
+      }
+    },
     parseFilter() {
       const { filter, pagination } = this
       if (pagination) {
@@ -311,24 +274,15 @@ export default {
       }
       return filter
     },
-      handleFilterChange(type, filter) {
-        if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.tabId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
-        }
-        this.fetchData() 
+    handleFilterChange(type, filter) {
+      if (filter) { this.filter = filter}
+      if (this.pagination) {
+        this.pagination.currentPage = 1
       }
+      this.fetchData() 
     },
     handleFilterReset() {
-      this.filter = {
-        tabParentType: 'biz',
-        idPrefix: 10,
-          sort: undefined,
-        order: undefined,
-      }
+      this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -339,47 +293,6 @@ export default {
           this.tabTypeReverse[element.dictEnName] = element.dictCnName
         })
       })
-    },
-    /**
-     * 行选择操作
-     */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.tabId)
-      this.selectedItems.push(targetItem)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.tabId
-      })
-      this.targetItem = this.targetItem.filter(item => {
-        return item.tabId !== targetItem.tabId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.selectedItems = []
-      this.table.selected = []
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.selectedItems = []
-        this.table.selected = []
-      }
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.tabId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
     },
     getBusinessType() {
       this.$service.getDictType({type: 'businessType'}).then(data => {
@@ -393,7 +306,8 @@ export default {
       return result
     }, {})
     let filterSchema = _.map({
-      tabId: _.o.string.other('form', {
+      tabId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
+        component: 'Input',
         placeholder: 'ID'
       }),
       tabName: _.o.string.other('form', {

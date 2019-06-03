@@ -14,11 +14,11 @@
               <el-form
                 :inline="true"
                 :model="searchForm"
-                class="search-form-inline"
+                class="searchform"
                 label-width="72px"
               >
-                <el-form-item label="渠道">
-                  <el-select v-model="partner" size="small">
+                <el-form-item class="el-col el-col-6"> 
+                  <el-select v-model="partner" placeholder="渠道" title="渠道">
                     <el-option
                       v-for="(partner, pIndex) in partnerList"
                       :key="pIndex"
@@ -27,14 +27,8 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="内容源">
-                  <el-select v-model="searchForm.sources" @change="sourceSelectChange" size="small">
-                    <!-- <el-option
-                      v-for="(source, sIndex) in source"
-                      :key="source.source_code"
-                      :label="source.source_title"
-                      :value="source.source_code"
-                    ></el-option>-->
+                <el-form-item class="el-col el-col-6">
+                  <el-select v-model="searchForm.sources" @change="sourceSelectChange" placeholder="内容源" title="内容源">
                     <el-option
                       v-for="source in source"
                       :key="source.source_code"
@@ -42,16 +36,9 @@
                       :value="source.source_code"
                     ></el-option>
                   </el-select>
-                </el-form-item>
-                <el-form-item v-show="searchForm.sources === 'tencent'" label="牌照">
-                  <el-select v-model="searchForm.licensee" size="small" clearable>
-                    <!-- <el-option
-                    v-for="(item, index) in conditionList.licensee"
-                    :key="item.tagId"
-                    :label="item.tagCnName"
-                    :value="item.tagEnName"
-                    ></el-option>-->
-                    <el-option label="请选择/输入" value></el-option>
+                </el-form-item >
+                <el-form-item v-show="searchForm.sources === 'tencent'" class="el-col el-col-6">
+                  <el-select v-model="searchForm.licensee" clearable placeholder="牌照" title="牌照">
                     <el-option
                       v-for="item in conditionList.licensee"
                       :key="item.tagId"
@@ -60,20 +47,13 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="频道类型">
+                <el-form-item class="el-col el-col-6">
                   <el-select
                     filterable
                     v-model="searchForm.category"
                     @change="categorySelectChange"
-                    size="small"
+                   placeholder="频道类型" title="频道类型"
                   >
-                    <el-option label="请选择/输入" value></el-option>
-                    <!-- <el-option
-                    v-for="(category, cIndex) in categories"
-                    :key="category.categoryId"
-                    :label="category.categoryName"
-                    :value="category.categoryId"
-                    ></el-option>-->
                     <el-option
                       v-for="category in categories"
                       :key="category.categoryId"
@@ -82,15 +62,8 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="影片类型">
-                  <el-select filterable v-model="searchForm.videoTypes" size="small">
-                    <el-option label="请选择/输入" value></el-option>
-                    <!-- <el-option
-                    v-for="(videoType, vIndex) in videoTypes"
-                    :key="videoType.tagId"
-                    :label="videoType.tagName"
-                    :value="videoType.tagName"
-                    ></el-option>-->
+                <el-form-item class="el-col el-col-6">
+                  <el-select filterable v-model="searchForm.videoTypes" placeholder="影片类型" title="影片类型">
                     <el-option
                       v-for="videoType in videoTypes"
                       :key="videoType.tagId"
@@ -99,15 +72,8 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="付费类型">
-                  <el-select filterable v-model="searchForm.payTypes" size="small">
-                    <el-option label="请选择/输入" value></el-option>
-                    <!-- <el-option
-                      v-for="(payType, pIndex) in conditionList.payTypes"
-                      :key="payType.tagId"
-                      :label="payType.tagCnName"
-                      :value="payType.tagEnName"
-                    ></el-option>-->
+                <el-form-item class="el-col el-col-6">
+                  <el-select filterable v-model="searchForm.payTypes" placeholder="付费类型" title="付费类型">
                     <el-option
                       v-for="payType  in conditionList.payTypes"
                       :key="payType.tagId"
@@ -116,50 +82,37 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="标题">
-                  <el-input v-model="searchForm.title" size="small"></el-input>
+                <el-form-item class="el-col el-col-6">
+                  <el-input v-model="searchForm.title" placeholder="标题" title="标题"></el-input>
                 </el-form-item>
-                <el-form-item label="素材类型">
-                  <el-select v-model="searchForm.contentTypes" size="small">
-                    <el-option label="请选择" value></el-option>
+                <el-form-item class="el-col el-col-6">
+                  <el-select v-model="searchForm.contentTypes" placeholder="素材类型" title="素材类型">
                     <el-option
                       v-for="contentType in conditionList.contentTypes"
                       :key="contentType.contentTypeId"
                       :label="contentType.contentType"
                       :value="contentType.contentTypeId"
                     ></el-option>
-                    <!-- <el-option
-                      v-for="(contentType, cIndex) in conditionList.contentTypes"
-                      :key="contentType.contentTypeId"
-                      :label="contentType.contentType"
-                      :value="contentType.contentTypeId"
-                    ></el-option>-->
                   </el-select>
                 </el-form-item>
-                <el-form-item label="年代">
+                  <span v-show="isMore">
+                <el-form-item class="el-col el-col-6">
                   <el-input
-                    size="small"
                     v-model="searchForm.yearStart"
                     @blur="yearStartListen"
-                    style="width: 70px;"
-                  ></el-input>-
+                    placeholder="年代" title="年代"
+                    style="width: 46%;"
+                  ></el-input>
+                  <span style="width:8%; text-align:center; display:inline-block" >-</span>
                   <el-input
-                    size="small"
                     v-model="searchForm.yearEnd"
                     @blur="yearEndListen"
-                    style="width: 70px;"
+                     style="width: 46%;"
+                     placeholder="年代" title="年代"
                   ></el-input>
                 </el-form-item>
-                <span v-show="isMore">
-                  <el-form-item label="影片格式">
-                    <el-select v-model="searchForm.videoFormat" size="small">
-                      <el-option label="请选择" value></el-option>
-                      <!-- <el-option
-                        v-for="(videoFormat, vIndex) in conditionList.videoFormat"
-                        :key="videoFormat.tagEnName"
-                        :label="videoFormat.tagCnName"
-                        :value="videoFormat.tagEnName"
-                      ></el-option>-->
+                  <el-form-item class="el-col el-col-6">
+                    <el-select v-model="searchForm.videoFormat" placeholder="影片格式" title="影片格式">
                       <el-option
                         v-for="videoFormat in conditionList.videoFormat"
                         :key="videoFormat.tagEnName"
@@ -168,15 +121,8 @@
                       ></el-option>
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="内容标签">
-                    <el-select v-model="searchForm.contentTag" size="small">
-                      <el-option label="请选择" value></el-option>
-                      <!-- <el-option
-                        v-for="(label, lIndex) in conditionList.contentTag"
-                        :key="label.tagId"
-                        :label="label.tagCnName"
-                        :value="label.tagCnName"
-                      ></el-option>-->
+                  <el-form-item class="el-col el-col-6">
+                    <el-select v-model="searchForm.contentTag" placeholder="内容标签" title="内容标签"  >
                       <el-option
                         v-for="label in conditionList.contentTag"
                         :key="label.tagId"
@@ -185,15 +131,8 @@
                       ></el-option>
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="排序方式">
-                    <el-select v-model="searchForm.orderBy" size="small" >
-                      <el-option label="请选择" value></el-option>
-                      <!-- <el-option
-                        v-for="(order, oIndex) in conditionList.orderBy"
-                        :key="order.tagId"
-                        :label="order.tagCnName"
-                        :value="order.tagEnName"
-                      ></el-option>-->
+                  <el-form-item class="el-col el-col-6">
+                    <el-select v-model="searchForm.orderBy" placeholder="排序方式" title="排序方式"  style="width: 80%;">
                       <el-option
                         v-for="order in conditionList.orderBy"
                         :key="order.tagId"
@@ -201,22 +140,15 @@
                         :value="order.tagEnName"
                       ></el-option>
                     </el-select>
-                    <el-tooltip :content="orderTip">
+                    <el-tooltip :content="orderTip"  style="width: 20%;">
                       <el-button
                         :icon="searchForm.order === 'asc' ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"
                         @click="changeSort()"
                       ></el-button>
                     </el-tooltip>
                   </el-form-item>
-                  <el-form-item label="导演">
-                    <el-select v-model="searchForm.directors" filterable allow-create size="small">
-                      <el-option label="请选择/输入" value></el-option>
-                      <!-- <el-option
-                        v-for="(director, dIndex) in conditionList.directors"
-                        :key="director.tagId"
-                        :label="director.tagCnName"
-                        :value="director.tagCnName"
-                      ></el-option>-->
+                  <el-form-item class="el-col el-col-6">
+                    <el-select v-model="searchForm.directors" filterable allow-create placeholder="导演" title="导演">
                       <el-option
                         v-for="director in conditionList.directors"
                         :key="director.tagId"
@@ -225,15 +157,8 @@
                       ></el-option>
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="主演">
-                    <el-select v-model="searchForm.actors" filterable allow-create size="small">
-                      <el-option label="请选择/输入" value></el-option>
-                      <!-- <el-option
-                        v-for="(actor, aIndex) in conditionList.actors"
-                        :key="actor.tagId"
-                        :label="actor.tagCnName"
-                        :value="actor.tagCnName"
-                      ></el-option>-->
+                  <el-form-item class="el-col el-col-6">
+                    <el-select v-model="searchForm.actors" filterable allow-create placeholder="主演" title="主演">
                       <el-option
                         v-for="actor in conditionList.actors"
                         :key="actor.tagId"
@@ -242,15 +167,8 @@
                       ></el-option>
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="地区">
-                    <el-select v-model="searchForm.areas" filterable allow-create size="small">
-                      <el-option label="请选择/输入" value></el-option>
-                      <!-- <el-option
-                        v-for="(area, arIndex) in conditionList.areas"
-                        :key="area.tagId"
-                        :label="area.tagCnName"
-                        :value="area.tagCnName"
-                      ></el-option>-->
+                  <el-form-item class="el-col el-col-6">
+                    <el-select v-model="searchForm.areas" filterable allow-create placeholder="地区" title="地区">
                       <el-option
                         v-for="area in conditionList.areas"
                         :key="area.tagId"
@@ -260,7 +178,7 @@
                     </el-select>
                   </el-form-item>
                 </span>
-                <div style="text-align: center">
+                <div class="el-form-item-submit">
                   <el-button
                     :icon="isMore ? 'arrow-up' : 'arrow-down'"
                     size="small"

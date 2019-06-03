@@ -1,12 +1,29 @@
 <template>
   <div>
-    <div class="hompage-upsert" v-if="mode!== 'read'">
+    <div class="hompage-upsert">
       <ContentCard :title="title" @go-back="$emit('go-back')">
-        <div>
-            <div class="base-info">
-              <div>专属影院版块：</div>
-              <div>专属影院，影片数据 由大数据和媒资库提供，运营人员只需配置相应内容块的影片类型（0 会员影片，1 非会员影片，2 单点影片）。</div>
-            </div>
+        <div class="base-info">
+          <div>专属影院版块：</div>
+          <div>专属影院，影片数据 由大数据和媒资库提供，运营人员只需配置相应内容块的影片类型（0 会员影片，1 非会员影片，2 单点影片）。</div>
+        </div>
+       
+        <CommonContent
+          :mode="mode"
+          :resource-info="resourceInfo"
+          @replicate="mode = 'replicate'; title='创建副本'"
+          @edit="mode = 'edit'; title='编辑'"
+          @unaudit="$emit('upsert-end')"
+          @shelves="fetchData"
+          @audit="$emit('upsert-end')"
+          @select-version="fetchData"
+          @delete="$emit('upsert-end')"
+          @submit-audit="handleSubmitAudit"
+          @save-draft="handleSaveDraft"
+        >
+         <div class="form-legend-header">
+        <i class="el-icon-edit">基本信息</i>
+        </div>
+          <div v-if="mode!== 'read'">
             <el-form
               ref="upsertForm"
               :model="panel"
@@ -14,9 +31,6 @@
               :rules="rules"
               class="el-form-add"
             >
-              <div class="form-legend-header">
-                <span>基本信息</span>
-              </div>
               <el-form-item label="业务分类">
                 <el-select
                   :value="panel.panelGroupCategory"
@@ -36,7 +50,7 @@
                 v-if="panelGroupCategoryValue === 'common' || panelGroupCategoryValue === 'video'"
               >
                 <el-radio-group
-                  :value="panel.pannelList[0].pannelResource" 
+                  :value="panel.pannelList[0].pannelResource"
                   @input="handlePannelResourceChange"
                   :disabled="mode==='replicate'"
                 >
@@ -120,98 +134,83 @@
               >
                 <el-input-number v-model="panel.pannelList[0].vipContentAmount" :max="15" :min="0"/>
               </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-                <el-button type="primary" plain @click="handleSaveDraft">保存草稿</el-button>
-              </el-form-item>
+
               <!-- </el-form-item> -->
             </el-form>
           </div>
-      </ContentCard>
-    </div>
-    <div v-if="mode === 'read'">
-      <ContentCard :title="title" @go-back="$emit('go-back')">
-        <CommonContent
-          :mode="mode"
-          :resource-info="resourceInfo"
-          @replicate="mode = 'replicate'; title='创建副本'"
-          @edit="mode = 'edit'; title='编辑'"
-          @unaudit="$emit('upsert-end')"
-          @shelves="fetchData"
-          @audit="$emit('upsert-end')"
-          @select-version="fetchData"
-           @delete="$emit('upsert-end')"
-        >
-          <!-- <div class="base-info">
+          <div v-if="mode === 'read'">
+            <!-- <div class="base-info">
             <div>专属影院版块：</div>
             <div>专属影院，影片数据 由大数据和媒资库提供，运营人员只需配置相应内容块的影片类型（0 会员影片，1 非会员影片，2 单点影片）。</div>
-          </div> -->
-          <el-form label-width="120px" label-position="right">
-             <div class="form-legend-header">
-              <span>基本信息</span>
-             </div>
-            <el-form-item label="业务分类">
-              <span>{{ getCategoryLabel(panel.panelGroupCategory) }}</span>
-            </el-form-item>
-            <el-form-item
-              label="内容源"
-              v-if="panelGroupCategoryValue === 'common' || panelGroupCategoryValue === 'video'"
-            >
-              <span>{{ getResourceLabel(panel.pannelResource) }}</span>
-            </el-form-item>
-            <el-form-item
-              label="版块名称"
-              prop="pannelList.0.pannelName"
-            >{{ panel.pannelList[0].pannelName }}</el-form-item>
-            <template v-if="panel.panelGroupType === 9 || panel.panelGroupType === 10">
-              <el-form-item label="二级分类">{{ '电视剧' }}</el-form-item>
-              <el-form-item label="推荐维度">{{ getPanelGroupTypeLabel(panel.panelGroupType) }}</el-form-item>
-            </template>
-             <div class="form-legend-header">
-              <span>内容配置</span>
-            </div>
-            <el-form-item label="版块标题" prop="pannelList.0.pannelTitle">
-              {{ panel.pannelList[0].pannelTitle }}
-              ({{ panel.showTitle ? '显示' : '不显示' }})
-            </el-form-item>
-            <el-form-item v-if="panel.panelGroupType === 5" label="版块布局">
-              <span
-                class="spform J-selected J_select J_layout-selected"
-                v-if="panel.layoutId > 0"
-              >{{panel.layoutId}}</span>
-              ({{ panel.lucenyFlag ? '透明' : '非透明' }})
-              <div class="content-list">
-                <div
-                  class="content-list__item"
-                  v-for="(item, index) in panel.pannelList[0].contentList"
-                  :key="index"
-                >
-                  <el-select :disabled="mode === 'read'" size="mini" v-model="item.blockVideoType">
-                    <el-option
-                      v-for="(type, tIndex) in blockVideoTypeOptions"
-                      :key="tIndex"
-                      :value="type.value"
-                      :label="type.label"
-                    ></el-option>
-                  </el-select>
-                  <span class="content-list__item-id">{{ index + 1}}</span>
-                </div>
+            </div>-->
+            <el-form label-width="120px" label-position="right">
+              <el-form-item label="业务分类">
+                <span>{{ getCategoryLabel(panel.panelGroupCategory) }}</span>
+              </el-form-item>
+              <el-form-item
+                label="内容源"
+                v-if="panelGroupCategoryValue === 'common' || panelGroupCategoryValue === 'video'"
+              >
+                <span>{{ getResourceLabel(panel.pannelResource) }}</span>
+              </el-form-item>
+              <el-form-item
+                label="版块名称"
+                prop="pannelList.0.pannelName"
+              >{{ panel.pannelList[0].pannelName }}</el-form-item>
+              <template v-if="panel.panelGroupType === 9 || panel.panelGroupType === 10">
+                <el-form-item label="二级分类">{{ '电视剧' }}</el-form-item>
+                <el-form-item label="推荐维度">{{ getPanelGroupTypeLabel(panel.panelGroupType) }}</el-form-item>
+              </template>
+              <div class="form-legend-header">
+                <span>内容配置</span>
               </div>
-            </el-form-item>
-            <el-form-item
-              v-if="panel.panelGroupType === 9 || panel.panelGroupType === 10"
-              label="内容免/付费比例"
-            >
+              <el-form-item label="版块标题" prop="pannelList.0.pannelTitle">
+                {{ panel.pannelList[0].pannelTitle }}
+                ({{ panel.showTitle ? '显示' : '不显示' }})
+              </el-form-item>
+              <el-form-item v-if="panel.panelGroupType === 5" label="版块布局">
+                <span
+                  class="spform J-selected J_select J_layout-selected"
+                  v-if="panel.layoutId > 0"
+                >{{panel.layoutId}}</span>
+                ({{ panel.lucenyFlag ? '透明' : '非透明' }})
+                <div class="content-list">
+                  <div
+                    class="content-list__item"
+                    v-for="(item, index) in panel.pannelList[0].contentList"
+                    :key="index"
+                  >
+                    <el-select
+                      :disabled="mode === 'read'"
+                      size="mini"
+                      v-model="item.blockVideoType"
+                    >
+                      <el-option
+                        v-for="(type, tIndex) in blockVideoTypeOptions"
+                        :key="tIndex"
+                        :value="type.value"
+                        :label="type.label"
+                      ></el-option>
+                    </el-select>
+                    <span class="content-list__item-id">{{ index + 1}}</span>
+                  </div>
+                </div>
+              </el-form-item>
               <el-form-item
-                class="amount-input"
-                label="首屏付费内容数"
-              >{{ panel.pannelList[0].firstPageVipContentAmount}}</el-form-item>
-              <el-form-item
-                class="amount-input"
-                label="总付费内容数"
-              >{{ panel.pannelList[0].vipContentAmount}}</el-form-item>
-            </el-form-item>
-          </el-form>
+                v-if="panel.panelGroupType === 9 || panel.panelGroupType === 10"
+                label="内容免/付费比例"
+              >
+                <el-form-item
+                  class="amount-input"
+                  label="首屏付费内容数"
+                >{{ panel.pannelList[0].firstPageVipContentAmount}}</el-form-item>
+                <el-form-item
+                  class="amount-input"
+                  label="总付费内容数"
+                >{{ panel.pannelList[0].vipContentAmount}}</el-form-item>
+              </el-form-item>
+            </el-form>
+          </div>
         </CommonContent>
       </ContentCard>
     </div>
@@ -273,11 +272,11 @@ export default {
       rules: {
         pannelName: [
           { required: true, message: '请填写版块名称' },
-           { max: 45, message: '版块名称不超过 45 个字符'}
+          { max: 45, message: '版块名称不超过 45 个字符' }
         ],
         pannelTitle: [
           { required: true, message: '请填写标题' },
-           { max: 45, message: '标题不超过 45 个字符'}
+          { max: 45, message: '标题不超过 45 个字符' }
         ],
         amount: [
           {
@@ -299,17 +298,17 @@ export default {
         parentType: 'function',
         groupTitle: '',
         //pannelName: undefined,
-       // pannelTitle: undefined,
+        // pannelTitle: undefined,
         showTitle: true,
         lucenyFlag: false,
-       // layoutId: undefined,
-       // pannelResource: 'o_tencent',
+        // layoutId: undefined,
+        // pannelResource: 'o_tencent',
         panelGroupCategory: 67, //业务分类
         panelGroupType: 9,
-     //   focusConfig: undefined,
-     //   dictInfoList: '',
-     //   content: '',
-       // priority: '1',
+        //   focusConfig: undefined,
+        //   dictInfoList: '',
+        //   content: '',
+        // priority: '1',
         pannelList: [
           {
             pannelId: undefined,
@@ -321,12 +320,13 @@ export default {
             pannelStatus: undefined,
             showTitle: undefined,
             flagIs4k: 0,
-           // layoutId: undefined,
-          //  panelIsFocus: undefined,
-         //   focusShape: undefined,
-            vipContentAmount: 5,  //类型为9，10时候才有
+            // layoutId: undefined,
+            //  panelIsFocus: undefined,
+            //   focusShape: undefined,
+            vipContentAmount: 5, //类型为9，10时候才有
             firstPageVipContentAmount: 2, //类型为9，10时候才有
-            contentList: [  // pannelType为 5的时候才有
+            contentList: [
+              // pannelType为 5的时候才有
               // { blockVideoType: 0 },
               // { blockVideoType: 0 },
               // { blockVideoType: 0 },
@@ -367,7 +367,7 @@ export default {
           type: 'pannel',
           menuElId: 'privatePannelInfo',
           version: panel.currentVersion,
-          status: panel.pannelList[0].pannelStatus,
+          status: panel.pannelList[0].pannelStatus
         }
       }
     },
@@ -399,10 +399,10 @@ export default {
     }
   },
   methods: {
-    
-    setDefaultPanelTitle(pannelType){
+    setDefaultPanelTitle(pannelType) {
       this.panel.pannelList[0].pannelType = pannelType
-      this.panel.pannelList[0].pannelTitle = pannelType === 10 ? '猜你喜欢' : '专属剧场'
+      this.panel.pannelList[0].pannelTitle =
+        pannelType === 10 ? '猜你喜欢' : '专属剧场'
     },
     getCategoryLabel(value) {
       const selected = this.panelGroupCategoryOptions.find(function(item) {
@@ -437,30 +437,30 @@ export default {
       }
     },
     handlePannelResourceChange(val) {
-      this.panel.pannelList[0].pannelResource = val  
+      this.panel.pannelList[0].pannelResource = val
     },
     handleSaveDraft() {
-    //  const data = JSON.parse(JSON.stringify(this.panel))
+      //  const data = JSON.parse(JSON.stringify(this.panel))
       const data = this.panel
       data.pannelList[0].pannelCategory = data.panelGroupCategory
       data.pannelList[0].pannelStatus = 2
       this.submit(data)
     },
     handleSubmitAudit() {
-     // const data = JSON.parse(JSON.stringify(this.panel))
-    //  const data = JSON.parse(JSON.stringify(this.panel))
+      // const data = JSON.parse(JSON.stringify(this.panel))
+      //  const data = JSON.parse(JSON.stringify(this.panel))
       const data = this.panel
-      const pannelList =  data.pannelList[0]
+      const pannelList = data.pannelList[0]
       pannelList.pannelCategory = data.panelGroupCategory
       pannelList.pannelStatus = 3
-      if (pannelList.firstPageVipContentAmount > pannelList.vipContentAmount ) {
+      if (pannelList.firstPageVipContentAmount > pannelList.vipContentAmount) {
         this.$message({
           type: 'error',
           message: '首屏付费内容数不能大于总付费内容数'
         })
         return
       }
-       if (this.mode === 'replicate') {
+      if (this.mode === 'replicate') {
         data.currentVersion = ''
       }
       this.submit(data)
@@ -477,14 +477,9 @@ export default {
         data,
         function(err) {
           if (!err) {
-            this.$service
-              .panelUpsert(
-                data,
-                '保存成功'
-              )
-              .then(data => {
-                this.$emit('upsert-end')
-              })
+            this.$service.panelUpsert(data, '保存成功').then(data => {
+              this.$emit('upsert-end')
+            })
           } else {
             this.$message({
               type: 'error',
@@ -526,7 +521,6 @@ export default {
       return panel
     },
     parseApiToData(data) {
-      debugger
       const panel = data
       const firstPanel = data.pannelList[0]
       panel.pannelResource = firstPanel.pannelResource
@@ -560,17 +554,15 @@ export default {
     //     )
     // },
     getDictType() {
-      this.$service.getDictType({ type: 'businessType'}).then(data => {
+      this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.panelGroupCategoryOptions = data
       })
     },
     fetchData(version) {
-      this.$service
-        .panelGetDetail({ id: this.id, version })
-        .then(data => {
-          this.setPanel(data)
-          //  this.getHandlePerson(data)
-        })
+      this.$service.panelGetDetail({ id: this.id, version }).then(data => {
+        this.setPanel(data)
+        //  this.getHandlePerson(data)
+      })
     }
   },
   created() {
@@ -607,18 +599,18 @@ export default {
 .base-info div
   padding: 5px
 .content-list
-  display flex
-  flex-wrap wrap
+  display: flex
+  flex-wrap: wrap
   .content-list__item
-     padding 10px 10px 10px 30px
-     margin 5px
-     border 1px solid #ccc
-     position relative
-     .content-list__item-id
-        position absolute
-        top 0px
-        left 5px
-        color red
+    padding: 10px 10px 10px 30px
+    margin: 5px
+    border: 1px solid #ccc
+    position: relative
+    .content-list__item-id
+      position: absolute
+      top: 0px
+      left: 5px
+      color: red
 .content-list__item >>> .el-input, .content-list__item >>> .el-select
-   width 150px
+  width: 150px
 </style>

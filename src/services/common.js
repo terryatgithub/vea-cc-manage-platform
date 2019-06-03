@@ -108,3 +108,10 @@ export function getDictType({ type, isFilter }) {
     })
   }
 }
+
+export function getEnv() {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/getEnvironment.html'
+  })
+}

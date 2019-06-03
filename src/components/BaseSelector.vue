@@ -4,8 +4,8 @@
       <slot name="filter">
         <GateSchemaForm 
           v-if="filterSchema"
+          v-model="viewFilter"
           :schema="filterSchema"
-          v-model="filter"
           @submit="handleFilter"
           @reset="handleResetFilterForm"
         />
@@ -67,7 +67,9 @@ export default {
     return {
       tableHeight: undefined,
       selected: [],
-      tableSelected: []
+      tableSelected: [],
+      inputFilter: {},
+      viewFilter: {}
     }
   },
   props: ['idField', 'filter', 'filterSchema', 'table', 'pagination', 'selectionType'],
@@ -84,6 +86,13 @@ export default {
     'table.data': 'updateTableSelected'
   },
   methods: {
+    setViewFilter(filter) {
+      // 如果外面传进来的 filter 与 inputFilter 不一样
+      if (this.inputFilter !== filter) {
+        this.inputFilter = filter
+        this.viewFilter = filter ? JSON.parse(JSON.stringify(filter)) : {}
+      }
+    },
     clearSelected() {
       this.selected = []
       this.tableSelected = []
@@ -104,8 +113,10 @@ export default {
     },
     handleFilter (err) {
       if (!err || err.length === 0) {
+        this.inputFilter = JSON.parse(JSON.stringify(this.viewFilter))
         this.$set(this.pagination, 'currentPage', 1)
-        this.$emit('filter-change')
+        // 把生效的 filter emit 出去
+        this.$emit('filter-change', this.inputFilter)
       }
     },
     handlePageSizeChange (size) {
@@ -157,6 +168,11 @@ export default {
     }
   },
   created() {
+    // 保存一个引用
+    this.inputFilter = this.filter
+    this.$watch('filter', this.setViewFilter, {
+      immediate: true
+    })
   },
   mounted() {
     window.addEventListener('resize', this.setTableHeight)

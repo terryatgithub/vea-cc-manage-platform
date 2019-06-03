@@ -9,15 +9,15 @@
     :hide-submit="selectedClose"
   >
     <div slot="filter">
-      <el-form :inline="true">
-        <el-form-item label="ID">
-          <el-input v-model="filter.tabId"></el-input>
+      <el-form :inline="true" class="searchform">
+        <el-form-item class="el-col el-col-6">
+          <el-input v-model="filter.tabId" placeholder="ID" title="ID"></el-input>
         </el-form-item>
-        <el-form-item label="版面名称">
-          <el-input v-model="filter.tabName"></el-input>
+        <el-form-item class="el-col el-col-6">
+          <el-input v-model="filter.tabName" placeholder="版面名称" title="版面名称"></el-input>
         </el-form-item>
-        <el-form-item label="版面分类">
-          <el-select v-model="filter.tabCategory" :clearable="true">
+        <el-form-item class="el-col el-col-6">
+          <el-select v-model="filter.tabCategory" :clearable="true" placeholder="版面分类" title="版面分类">
             <el-option
               v-for="(item, index) in tabCategoryOptions"
               :key="index"
@@ -27,8 +27,8 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="版面属性" :clearable="true">
-          <el-select v-model="filter.tabType">
+        <el-form-item :clearable="true" class="el-col el-col-6">
+          <el-select v-model="filter.tabType" placeholder="版面属性" title="版面属性">
             <el-option
               v-for="(item, index) in tabTypeOptions"
               :key="index"
@@ -38,8 +38,13 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="审核状态">
-          <el-select v-model="filter.tabStatusArray" :clearable="true">
+        <el-form-item class="el-col el-col-6">
+          <el-select
+            v-model="filter.tabStatusArray"
+            :clearable="true"
+            placeholder="审核状态"
+            title="审核状态"
+          >
             <el-option
               v-for="(item, index) in tabStatusOptions"
               :key="index"
@@ -49,18 +54,25 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="source === undefined" label="内容源">
-          <SourceSelector v-model="filter.tabResource"/>
+        <el-form-item v-if="source === undefined" class="el-col el-col-6">
+          <SourceSelector v-model="filter.tabResource" placeholder="内容源" title="内容源"/>
         </el-form-item>
 
-        <el-form-item v-show="$consts.idPrefix != '10'" label="数据来源">
-          <el-select v-model="filter.idPrefix">
-            <el-option v-for="item in $consts.idPrefixOptions" :label="item.label" :value="item.value" :key="item.value"></el-option>
+        <el-form-item v-show="$consts.idPrefix != '10'" class="el-col el-col-6">
+          <el-select v-model="filter.idPrefix" placeholder="数据来源" title="数据来源">
+            <el-option
+              v-for="item in $consts.idPrefixOptions"
+              :label="item.label"
+              :value="item.value"
+              :key="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item class="el-form-item-submit">
+          <el-button type="primary" @click="handleFilterChange">查询</el-button>
+          <el-button @click="handleFilterReset">重置</el-button>
+        </el-form-item>
       </el-form>
-      <el-button type="primary" @click="handleFilterChange">查询</el-button>
-      <el-button @click="handleFilterReset">重置</el-button>
     </div>
 
     <Table
@@ -190,7 +202,7 @@ export default {
             width: 190
           },
           {
-            prop: 'userName',
+            prop: 'modifierName',
             label: '更新人',
             width: 120
           }
@@ -203,7 +215,16 @@ export default {
       selected: []
     }
   },
-  props: ['title', 'isLive', 'initSelected', 'source', 'hasSubTab', 'selectionType', 'disabled','selectedClose'],
+  props: [
+    'title',
+    'isLive',
+    'initSelected',
+    'source',
+    'hasSubTab',
+    'selectionType',
+    'disabled',
+    'selectedClose'
+  ],
   watch: {
     initSelected: 'setSelected',
     'pagination.currentPage': 'fetchData',
@@ -211,7 +232,8 @@ export default {
     'table.data': 'updateTableSelected'
   },
   methods: {
-    handleSingleRow(row, index){ //单行选择
+    handleSingleRow(row, index) {
+      //单行选择
       this.$refs.dialog.showDialog = false
       this.table.selected = index
       this.$emit('select-single', row)
@@ -233,7 +255,7 @@ export default {
       this.$emit('select-end', this.selected.slice())
     },
     getDefaultFilter() {
-      const {idPrefix} = this.$consts
+      const { idPrefix } = this.$consts
       return {
         idPrefix: idPrefix != '10' ? idPrefix : undefined,
         tabId: undefined,
@@ -245,9 +267,9 @@ export default {
       }
     },
     handleFilterChange() {
-      if(this.$validateId(this.filter.tabId)) {
-      this.pagination.currentPage = 1
-      this.fetchData() 
+      if (this.$validateId(this.filter.tabId)) {
+        this.pagination.currentPage = 1
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -311,7 +333,7 @@ export default {
     }
   },
   created() {
-    this.$service.getDictType({type: 'businessType'}).then(data => {
+    this.$service.getDictType({ type: 'businessType' }).then(data => {
       this.tabCategoryOptions = data
       this.tabCategoryOptionsIndexed = data.reduce((result, item) => {
         result[item.dictId] = item.dictCnName

@@ -9,7 +9,7 @@
     :filter="filter"
     :filter-schema="filterSchema"
     @pagination-change="fetchData"
-    @filter-change="fetchData"
+    @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')">
@@ -29,7 +29,7 @@ export default {
         currentPage: 1,
         pageSize: 15
       },
-      filter: this.getDefaultFilter(),
+      filter: this.genDefaultFilter(),
       filterSchema: null,
       table: {
         props: {},
@@ -74,7 +74,7 @@ export default {
   },
   props: ['isLive', 'selectionType'],
   methods: {
-    getDefaultFilter() {
+    genDefaultFilter() {
       return {
         appId: undefined,
         appName: undefined,
@@ -90,13 +90,16 @@ export default {
       }
       return filter
     },
+    handleFilterChange(filter) {
+      this.filter = filter
+      this.fetchData()
+    },
     handleFilterReset() {
-      this.filter = this.getDefaultFilter()
+      this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
     fetchData() {
-      
       const filter = this.getFilter()
       this.$service.getAppManagementList(filter).then(data => {
         this.pagination.total = data.total;
@@ -109,29 +112,30 @@ export default {
       appId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'Input',
         placeholder: '应用ID',
-        label: '应用ID'
+        label: ' '
       }),
       appName: _.o.string.other('form', {
         component: 'Input',
         placeholder: '应用名称',
-        label: '应用名称'
+        label: ' '
       }),
       appPackageName: _.o.string.other('form', {
         component: 'Input',
         placeholder: '应用包名',
-        label: '应用包名'
+        label: ' '
       })
     }).other('form', {
        cols: {
-        item: 6,
-        label: 0,
-        wrapper: 20
+        item: 4,
+        label: 1,
+        wrapper: 23
       },
       layout: 'inline',
       footer: {
         cols: {
-          label: 0,
-          wrapper: 24
+          item: 3,
+          label: 1,
+          wrapper: 23
         },
         showSubmit: true,
         submitText: '查询',

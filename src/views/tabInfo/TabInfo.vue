@@ -23,7 +23,7 @@
               <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
                 <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
-                <span>基本信息</span>
+                <i class="el-icon-edit">基本信息</i>
               </div>
               <div :style="{display: isCollapseBase ? 'none' : 'block'}">
                 <el-form-item label="版面名称" prop="tabName">
@@ -38,7 +38,7 @@
                   <el-input v-model.trim="tabInfo.tabEnTitle"></el-input>
                 </el-form-item>
 
-                <el-form-item label="业务分类" prop="tabCategory">
+                <el-form-item label="业务分类" prop="tabCategory" class="selectItem">
                   <cc-business-type-selector
                     :value="tabInfo.tabCategory"
                     @input="handleChangeTabCategory"
@@ -54,7 +54,7 @@
                   />
                 </el-form-item>
 
-                <el-form-item label="AppId" prop="tabAppid">
+                <el-form-item label="AppId" prop="tabAppid" class="selectItem">
                   <cc-appid-selector
                     :disabled="disableAppId"
                     v-model="tabInfo.tabAppid"
@@ -70,7 +70,7 @@
                 </el-form-item>
 
                 <el-form-item label="TAB对应的icon" prop="pictureName">
-                  <el-button @click="handleSelectIconStart">选择</el-button>
+                  <el-button type="primary" plain @click="handleSelectIconStart">选择</el-button>
                   <span v-if="tabInfo.iconTypeName" class="marginL">已选择： {{ tabInfo.iconTypeName }}</span>
                 </el-form-item>
 
@@ -121,7 +121,7 @@
 
                 <el-form-item label="固定刷新时间" prop="timeCycle">
                   <InputMinute v-model="tabInfo.timeCycle" :min="5" :max="360" />
-                  <span class="hint">设置范围:5分钟-6小时</span>
+                  <span class="hint remarks">设置范围:5分钟-6小时</span>
                 </el-form-item>
               </div>
               <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
@@ -180,7 +180,7 @@
                       @select-start="handleSelectTabStart"
                       @select-end="handleSelectTabEnd"
                     />
-                    <el-button type="warning" @click="handleCreateTab">新建版面</el-button>
+                    <el-button type="primary" plain @click="handleCreateTab">新建版面</el-button>
                     <div>
                       <OrderableTable
                         ref="subTabTable"
@@ -221,7 +221,7 @@
                         @select-end="handleSelectPanelEnd"
                       />
                       <el-dropdown>
-                        <el-button type="warning">
+                        <el-button type="primary" plain >
                           新建
                           <i class="el-icon-caret-bottom el-icon--right"></i>
                         </el-button>
@@ -231,8 +231,8 @@
                           <el-dropdown-item @click.native="activePage = 'private_panel'">专属影院</el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
-                      <el-button @click="handleToggleAllPanel(false)">展开所有</el-button>
-                      <el-button @click="handleToggleAllPanel(true)">收起所有</el-button>
+                      <el-button class="marginL" type="primary" plain @click="handleToggleAllPanel(false)">展开所有</el-button>
+                      <el-button type="primary" plain @click="handleToggleAllPanel(true)">收起所有</el-button>
                     </Affix>
                   </div>
                   <cc-virtual-tab
@@ -292,7 +292,8 @@
                       title="选择长图素材"
                       @select-end="handleSelectLongBgEnd"
                       :query-long-poster="1"
-                    />长图下最多支持6个版块
+                    />
+                    <span class="remarks marginL">备注：长图下最多支持6个版块</span>
                     <div
                       class="image-preview-wrapper image-preview-wrapper--long"
                       v-if="tabInfo.alumbTabLongBg"
@@ -305,24 +306,20 @@
                       ></i>
                     </div>
                   </el-form-item>
-
                   <el-form-item label="版面简介显示高">
                     <el-input-number
                       :min="0"
                       :max="880"
                       :step="1"
                       v-model.number="tabInfo.sinkSize"
-                    />&nbsp;注:数值范围0-880
+                    /><span class="remarks marginL"> 注:数值范围0-880</span>
                   </el-form-item>
-
                   <el-form-item label="版块标题颜色">
                     <el-color-picker v-model="tabInfo.pannelTitleColor"/>
                   </el-form-item>
-
                   <el-form-item label="推荐位字体颜色(落焦)">
                     <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
                   </el-form-item>
-
                   <el-form-item label="推荐位字体颜色(非落焦)">
                     <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
                   </el-form-item>

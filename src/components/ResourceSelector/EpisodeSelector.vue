@@ -11,9 +11,7 @@
       :selection-type="selectionType"
       :table="table" 
       :pagination="pagination"
-      :filter="filter"
       @pagination-change="fetchData"
-      @filter-change="fetchData"
       @filter-reset="handleFilterReset"
       @select-cancel="handleSelectCancel"
       @select-end="handleSelectEnd">
@@ -66,6 +64,7 @@ export default {
         pageSize: 15
       },
       filter: this.getDefaultFilter(),
+      efficientFilter: this.getDefaultFilter(),
       episodeTypeEnums,
       table: {
         props: {},
@@ -139,7 +138,7 @@ export default {
     },
     getFilter() {
       const pagination = this.pagination
-      const filter = {...this.filter}
+      const filter = {...this.efficientFilter}
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
@@ -147,11 +146,13 @@ export default {
       return filter
     },
     handleFilterChange() {
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.table.data = []
       this.fetchData()
@@ -160,7 +161,7 @@ export default {
       const filter = this.getFilter()
       this.$service.getSegmentList(filter).then(data => {
         this.pagination.total = data.total;
-        this.table.data = data.rows;
+        this.table.data = data.rows || []
       })
     },
     handleSelectEnd() {

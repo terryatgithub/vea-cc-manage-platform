@@ -9,7 +9,7 @@
     :filter="filter"
     :filter-schema="filterSchema"
     @pagination-change="fetchData"
-    @filter-change="fetchData"
+    @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')"
@@ -133,6 +133,10 @@ export default {
       }
       return filter
     },
+    handleFilterChange(filter) {
+      this.filter = filter
+      this.fetchData()
+    },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
@@ -160,27 +164,29 @@ export default {
       pluginId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'Input',
         placeholder: '功能ID',
-        label: '功能ID'
+        label: ' '
       }),
       pluginName: _.o.string.other('form', {
         placeholder: '功能名称',
-        label: '功能名称'
+        label: ' '
       }),
       source: _.o.enum(sourceEnums).other('form', {
         component: 'Select',
-        label: '内容源'
+        placeholder: '内容源',
+        label: ' '
       })
     }).other('form', {
       cols: {
-        item: 6,
-        label: 0,
-        wrapper: 20
+        item: 3,
+        label: 1,
+        wrapper: 23
       },
       layout: 'inline',
       footer: {
         cols: {
-          label: 0,
-          wrapper: 24
+          item: 3,
+          label: 1,
+          wrapper: 23
         },
         showSubmit: true,
         submitText: '查询',
