@@ -4,7 +4,7 @@
       <ContentCard :title="title" @go-back="$emit('go-back','list')">
         <el-button type="primary" @click="submitBtn">保存</el-button>
         <div class="form-legend-header">
-          <span>基本信息</span>
+          <i class="el-icon-edit">基本信息</i>
         </div>
         <!--新增编辑界面-->
         <el-form

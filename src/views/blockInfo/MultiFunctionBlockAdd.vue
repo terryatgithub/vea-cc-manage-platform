@@ -2,7 +2,7 @@
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="multi-func-block-upsert">
        <div class="form-legend-header">
-        <span>基本信息</span>
+        <i class="el-icon-edit">基本信息</i>
       </div>
       <el-form ref="blockForm" :rules="rules" :model="block" label-width="140px" class="el-form-add">
         <el-form-item

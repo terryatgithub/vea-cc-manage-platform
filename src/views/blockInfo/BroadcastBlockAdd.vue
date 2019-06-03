@@ -1,7 +1,7 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="split-bar">
-      基本信息
+      <i class="el-icon-edit">基本信息</i>
     </div>
     <el-form :model="basicForm" ref="basicForm" label-width="100px" class="el-form-add">
       <el-form-item label="审核状态" v-if="disabled">

@@ -23,7 +23,7 @@
               <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
                 <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
-                <span>基本信息</span>
+                <i class="el-icon-edit">基本信息</i>
               </div>
               <div :style="{display: isCollapseBase ? 'none' : 'block'}">
                 <el-form-item label="版面名称" prop="tabName">

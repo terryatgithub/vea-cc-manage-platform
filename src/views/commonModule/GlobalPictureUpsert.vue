@@ -1,10 +1,10 @@
 <template>
-  <ContentCard>
+  <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="global-picture" v-if="mode!=='read'">
       <el-button type="primary" @click="handleSubmit">保存</el-button>
-      <el-button @click="handleCancel">关闭</el-button>
+      <!-- <el-button @click="handleCancel">关闭</el-button> -->
       <div class="form-legend-header">
-        <span>基本信息</span>
+        <i class="el-icon-edit">基本信息</i>
       </div>
       <el-form ref="form" label-width="120px" :model="this">
         <div class="global-picture__label">素材图片</div>
@@ -67,8 +67,7 @@
               class="upload-pic-list__add"
               @click="$refs.upload.handleSelectFile()"
             >点击选择图片</el-button>
-
-            <el-button @click="showPicTypeSelector = true">批量设置类型</el-button>
+            <el-button @click="showPicTypeSelector = true"   type="primary" plain>批量设置类型</el-button>
           </template>
         </Upload>
       </el-form>
@@ -175,6 +174,7 @@ export default {
       showPicTypeSelector: false,
       pictureId: undefined,
       fileInfo: [],
+      title: '',
       auditDialogVisible: false,
       picTypeOptions: [],
       picTypeOptionsIndexed: [],
@@ -370,7 +370,10 @@ export default {
   },
   created() {
     if (this.editId) {
+      this.title = '编辑'
       this.$service.globalPictureGet({ id: this.editId }).then(this.setFormData)
+    } else {
+       this.title = '新增'
     }
     this.mode = this.initMode
     this.getMaterialTypes()

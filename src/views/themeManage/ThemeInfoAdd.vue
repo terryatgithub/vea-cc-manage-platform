@@ -1,117 +1,117 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div>
-      <template v-if=" mode!== 'read' ">
+      <CommonContent
+        ref="commonContent"
+        :mode="mode"
+        :resource-info="resourceInfo"
+        @edit="edit"
+        @replicate="replicate"
+        @submit-audit="btnSave"
+        @select-version="fetchData"
+        @unaudit="fetchData"
+        @shelves="fetchData"
+        @audit="$emit('upsert-end')"
+        @delete="$emit('upsert-end')"
+      >
+      <div slot="auditAndDraft">
+          <el-button type="primary" @click="$emit('submit-audit')">提交审核</el-button>
+      </div>
         <div class="split-bar">
           <i class="el-icon-edit">基本信息</i>
         </div>
-        <el-form ref="form" :rules="rules" :model="form" class="el-form-add" label-width="150px">
-          <el-form-item label="主题名称" prop="themeName">
-            <el-input v-model="form.themeName"/>
-          </el-form-item>
-          <el-form-item label="收费类型">
-            <el-radio-group v-model="form.chargeType">
-              <el-radio label="0">免费</el-radio>
-              <el-radio label="1">付费</el-radio>
-              <el-radio label="2">VIP免费</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <div v-if="form.chargeType!=='0'" class="priceInput">
-            <el-form-item label="价格">
-              <el-input v-model="form.price"/>元
+        <template v-if=" mode!== 'read' ">
+          <el-form ref="form" :rules="rules" :model="form" class="el-form-add" label-width="150px">
+            <el-form-item label="主题名称" prop="themeName">
+              <el-input v-model="form.themeName"/>
             </el-form-item>
-            <el-form-item label="折扣价">
-              <el-input v-model="form.discountPrice"/>元
+            <el-form-item label="收费类型">
+              <el-radio-group v-model="form.chargeType">
+                <el-radio label="0">免费</el-radio>
+                <el-radio label="1">付费</el-radio>
+                <el-radio label="2">VIP免费</el-radio>
+              </el-radio-group>
             </el-form-item>
-          </div>
-          <el-form-item label="主题品牌">
-            <el-radio-group v-model="form.themeBrand">
-              <el-radio label="Coocaa">创维酷开</el-radio>
-              <el-radio label="Other">全部</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="皮肤APK">
-            <ThemeFileUpload
-              ref="apk"
-              accept="application/vnd.android.package-archive"
-              fileCount="1"
-              @pic-data="handleApk"
-              @handleRemove="form.themeDownUrl='';form.themeMd5=''"
-            />
-          </el-form-item>
-          <el-form-item label="主题预览图">
-            <ThemeFileUpload
-              ref="preview"
-              accept="image/*"
-              fileCount="1"
-              @pic-data="handlePreviewImg"
-              @handleRemove="form.previewImgUrl=''"
-            />
-          </el-form-item>
-          <el-form-item label="主题缩略图">
-            <ThemeFileUpload
-              ref="thumbImg"
-              accept="image/*"
-              fileCount="1"
-              @pic-data="handleThumbImg"
-              @handleRemove="form.thumbImgUrl=''"
-            />
-          </el-form-item>
-          <el-form-item label="图标库zip文件">
-            <ThemeFileUpload
-              ref="pictureEntitys"
-              accept="application/zip"
-              fileCount="1"
-              zipType="icon"
-              @pic-data="handlePictureEntitys"
-              @handleRemove="form.pictureEntitys=[]"
-            />
-          </el-form-item>
-          <div class="icon-list">
-            <div v-for="(icon, index) in form.pictureEntitys" :key="index" class="icon-list__item">
-              <img class="icon-list__item-img--pictureEntitys" :src="icon.pictureUrl">
-              <span class="icon-list__item-text">{{index+1}}</span>
+            <div v-if="form.chargeType!=='0'" class="priceInput">
+              <el-form-item label="价格">
+                <el-input v-model="form.price"/>元
+              </el-form-item>
+              <el-form-item label="折扣价">
+                <el-input v-model="form.discountPrice"/>元
+              </el-form-item>
             </div>
-          </div>
-          <el-form-item label="指定背景图片zip文件">
-            <ThemeFileUpload
-              ref="tabBgEntitys"
-              accept="application/zip"
-              fileCount="1"
-              zipType="tabBg"
-              @pic-data="handleTabBgEntitys"
-              @handleRemove="form.tabBgEntitys=[]"
-            />
-          </el-form-item>
-          <div class="icon-list">
-            <div v-for="(icon, index) in form.tabBgEntitys" :key="index" class="icon-list__item">
-              <img class="icon-list__item-img--tabBgEntitys" :src="icon.pictureUrl">
-              <span class="icon-list__item-text">{{index+1}}</span>
+            <el-form-item label="主题品牌">
+              <el-radio-group v-model="form.themeBrand">
+                <el-radio label="Coocaa">创维酷开</el-radio>
+                <el-radio label="Other">全部</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="皮肤APK">
+              <ThemeFileUpload
+                ref="apk"
+                accept="application/vnd.android.package-archive"
+                fileCount="1"
+                @pic-data="handleApk"
+                @handleRemove="form.themeDownUrl='';form.themeMd5=''"
+              />
+            </el-form-item>
+            <el-form-item label="主题预览图">
+              <ThemeFileUpload
+                ref="preview"
+                accept="image/*"
+                fileCount="1"
+                @pic-data="handlePreviewImg"
+                @handleRemove="form.previewImgUrl=''"
+              />
+            </el-form-item>
+            <el-form-item label="主题缩略图">
+              <ThemeFileUpload
+                ref="thumbImg"
+                accept="image/*"
+                fileCount="1"
+                @pic-data="handleThumbImg"
+                @handleRemove="form.thumbImgUrl=''"
+              />
+            </el-form-item>
+            <el-form-item label="图标库zip文件">
+              <ThemeFileUpload
+                ref="pictureEntitys"
+                accept="application/zip"
+                fileCount="1"
+                zipType="icon"
+                @pic-data="handlePictureEntitys"
+                @handleRemove="form.pictureEntitys=[]"
+              />
+            </el-form-item>
+            <div class="icon-list">
+              <div
+                v-for="(icon, index) in form.pictureEntitys"
+                :key="index"
+                class="icon-list__item"
+              >
+                <img class="icon-list__item-img--pictureEntitys" :src="icon.pictureUrl">
+                <span class="icon-list__item-text">{{index+1}}</span>
+              </div>
             </div>
-          </div>
-          <el-form-item>
-            <el-button type="primary" @click="btnSave">提交审核</el-button>
-            <el-button @click="$emit('go-back')">关闭</el-button>
-          </el-form-item>
-        </el-form>
-      </template>
-      <template v-if="mode === 'read'">
-        <CommonContent
-          ref="commonContent"
-          :mode="mode"
-          :resource-info="resourceInfo"
-          @edit="edit"
-          @replicate="replicate"
-          @submit-audit="btnSave"
-          @select-version="fetchData"
-          @unaudit="fetchData"
-          @shelves="fetchData"
-          @audit="$emit('upsert-end')"
-          @delete="$emit('upsert-end')"
-        >
-          <div class="split-bar">
-            <i class="el-icon-edit">基本信息</i>
-          </div>
+            <el-form-item label="指定背景图片zip文件">
+              <ThemeFileUpload
+                ref="tabBgEntitys"
+                accept="application/zip"
+                fileCount="1"
+                zipType="tabBg"
+                @pic-data="handleTabBgEntitys"
+                @handleRemove="form.tabBgEntitys=[]"
+              />
+            </el-form-item>
+            <div class="icon-list">
+              <div v-for="(icon, index) in form.tabBgEntitys" :key="index" class="icon-list__item">
+                <img class="icon-list__item-img--tabBgEntitys" :src="icon.pictureUrl">
+                <span class="icon-list__item-text">{{index+1}}</span>
+              </div>
+            </div>
+          </el-form>
+        </template>
+        <template v-if="mode === 'read'">
           <el-form :model="form" class="preview-form" label-width="150px">
             <el-form-item label="主题名称" class="label">
               <span title="themeName">{{form.themeName}}</span>
@@ -158,8 +158,8 @@
               </div>
             </el-form-item>
           </el-form>
-        </CommonContent>
-      </template>
+        </template>
+      </CommonContent>
     </div>
   </ContentCard>
 </template>

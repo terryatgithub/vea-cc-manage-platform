@@ -2,7 +2,7 @@
  <ContentCard :title="title" @go-back="$emit('go-back')">
        <div class="multi-func-block-read" >    
           <div class="form-legend-header">
-            <span>基本信息</span>
+            <i class="el-icon-edit">基本信息</i>
         </div>
         <el-form ref="blockForm" label-width="140px">
             <el-form-item label="系统功能名称" prop="pluginInfo.pluginName">

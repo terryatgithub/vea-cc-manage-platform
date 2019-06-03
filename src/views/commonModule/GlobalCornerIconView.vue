@@ -2,9 +2,22 @@
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <div class="global-picture">
       <el-form :model="form" ref="form" label-width="120px">
+        <AuditDetailButton
+          v-if="status!==undefined"
+          :id="id"
+          :version="version"
+          :type="type"
+          :not-contain-btn="notContainBtn"
+          :status="status"
+          :hasHistory="hasHistory"
+          :menuElId="menuElId"
+          @go-edit-Page="goEditPage"
+          @delete-item="deleteItem"
+          @auditTask-end="$emit('open-list-page')"
+        ></AuditDetailButton>
         <div class="form-legend-header">
-                <span>基本信息</span>
-              </div>
+         <i class="el-icon-edit">基本信息</i>
+        </div>
         <el-form-item label="角标标题" prop="cornerIconName">
           <div>{{form.cornerIconName}}</div>
         </el-form-item>
@@ -23,22 +36,6 @@
         <el-form-item label="审核状态" prop="cornerStatus">
           <div>{{form.cornerStatus}}</div>
         </el-form-item>
-      
-      <el-form-item>
-        <AuditDetailButton
-          v-if="status!==undefined"
-          :id="id"
-          :version="version"
-          :type="type"
-          :not-contain-btn="notContainBtn"
-          :status="status"
-          :hasHistory="hasHistory"
-          :menuElId="menuElId"
-          @go-edit-Page="goEditPage"
-          @delete-item="deleteItem"
-          @auditTask-end="$emit('open-list-page')"
-        ></AuditDetailButton>
-      </el-form-item>
       </el-form>
     </div>
   </ContentCard>
@@ -152,7 +149,7 @@ export default {
     } else {
       this.id = reviewData.resourceId
     }
-   this.getDetailInfo()
+    this.getDetailInfo()
   }
 }
 </script>

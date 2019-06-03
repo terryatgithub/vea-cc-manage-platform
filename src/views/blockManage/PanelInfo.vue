@@ -48,7 +48,7 @@
           </div>
           <template v-if="mode !== 'read'">
             <div class="form-legend-header">
-              <span>基本信息</span>
+              <i class="el-icon-edit">基本信息</i>
             </div>
             <el-form ref="form" :model="pannel" label-width="120px">
               <el-form-item label="业务分类"  class="selectItem">
@@ -225,7 +225,7 @@
           <template v-if="mode === 'read'">
             
             <div class="form-legend-header">
-              <span>基本信息</span>
+              <i class="el-icon-edit">基本信息</i>
             </div>
             <el-form ref="form" :model="pannel" label-width="120px">
               <el-form-item label="业务分类" v-if="businessTypeEnums.length > 0">

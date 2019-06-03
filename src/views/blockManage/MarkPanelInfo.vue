@@ -16,7 +16,7 @@
           @save-draft="submitEnd(2)"
         >
           <div class="form-legend-header">
-            <span>基本信息</span>
+           <i class="el-icon-edit">基本信息</i>
           </div>
           <div v-if="mode!== 'read'">
             <el-form

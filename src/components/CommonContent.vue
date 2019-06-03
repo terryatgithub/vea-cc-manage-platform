@@ -16,8 +16,10 @@
         </slot>
       </div>
       <div v-else>
+         <slot name="auditAndDraft">
           <el-button type="primary" @click="$emit('submit-audit')">提交审核</el-button>
           <el-button type="warning" @click="$emit('save-draft')">保存草稿</el-button>
+          </slot>
       </div>
       <ReleaseTimeSetter 
         v-if="showReleaseTimeSetter" 

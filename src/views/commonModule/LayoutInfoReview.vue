@@ -15,7 +15,7 @@
       @auditTask-end="$emit('open-list-page')"
     ></AuditDetailButton>
     <div class="form-legend-header">
-      <span>基本信息</span>
+      <i class="el-icon-edit">基本信息</i>
     </div>
     <el-form :model="form" ref="form" label-width="120px">
       <el-form-item label="布局名称(中文)" prop="layoutName">

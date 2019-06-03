@@ -19,7 +19,7 @@
           <div class="hompage-upsert" v-if="mode !== 'read'">
             <el-form ref="homepageForm" :model="homepage" :rules="rules" label-width="140px" class="el-form-add">
               <div class="form-legend-header">
-                <span>基本信息</span>
+                <i class="el-icon-edit">基本信息</i>
               </div>
               <el-form-item label="首页名称" prop="homepageName">
                 <el-input v-model="homepage.homepageName" placeholder="首页名称"/>
@@ -56,7 +56,7 @@
           <div class="homepage-read" v-if="mode === 'read'">
             <el-form label-width="140px" class="el-form-add">
               <div class="form-legend-header">
-                <span>基本信息</span>
+                <i class="el-icon-edit">基本信息</i>
               </div>
               <el-form-item label="首页名称" prop="homepageName">{{ homepage.homepageName }}</el-form-item>
               <el-form-item
