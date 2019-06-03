@@ -274,6 +274,8 @@ export default {
 
 </script>
 <style lang="stylus" scoped>
+.common-content >>> .selectItem .el-select
+   width 450px 
 .release-info
   margin-bottom 5px
   color #ccc
@@ -285,4 +287,5 @@ export default {
     >>> .el-input + .el-checkbox
     >>> .el-select + .el-checkbox
       margin-left 10px
+
 </style>

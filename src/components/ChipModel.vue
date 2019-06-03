@@ -5,7 +5,7 @@
       @filter-change="fetchData"
       @filter-reset="handleFilterReset"
     >
-      <el-form :inline="true" :model="formSearch" class="search">
+      <el-form :inline="true" :model="formSearch" class="search searchForm">
             <el-form-item>
               <el-select v-model="formSearch.platform" @change="changePlatform" placeholder="内容源">
                 <el-option label="爱奇艺" value="yinhe"></el-option>

@@ -1,9 +1,10 @@
 <template>
   <ContentCard>
     <div class="global-picture" v-if="mode!=='read'">
-      <div class="global-picture__actions">
-        <el-button type="primary" @click="handleSubmit">保存</el-button>
-        <el-button @click="handleCancel">关闭</el-button>
+      <el-button type="primary" @click="handleSubmit">保存</el-button>
+      <el-button @click="handleCancel">关闭</el-button>
+      <div class="form-legend-header">
+        <span>基本信息</span>
       </div>
       <el-form ref="form" label-width="120px" :model="this">
         <div class="global-picture__label">素材图片</div>
@@ -35,7 +36,7 @@
                   :rules="rules.title"
                   label="素材标题"
                 >
-                  <el-input v-model="file.pictureName"  />
+                  <el-input v-model="file.pictureName"/>
                 </el-form-item>
                 <el-form-item label="素材分辨率">{{ file.pictureResolution }}</el-form-item>
                 <el-form-item
@@ -179,24 +180,24 @@ export default {
       picTypeOptionsIndexed: [],
       rules: {
         title: [
-         { required: true, message: '请填写素材标题' },
-         { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
+          { required: true, message: '请填写素材标题' },
+          { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
         type: [{ required: true, message: '请选择素材类型' }]
       },
-        auditForm: {
+      auditForm: {
         idStr: null,
-        auditFlag: "4",
+        auditFlag: '4',
         auditDesc: ''
       },
       auditFormRules: {
         auditDesc: [
-          { required: true, message: "请输入意见说明", trigger: "blur" }
+          { required: true, message: '请输入意见说明', trigger: 'blur' }
         ],
-         auditFlag: [
-          { required: true, message: "请输入审核意见", trigger: "blur" }
+        auditFlag: [
+          { required: true, message: '请输入审核意见', trigger: 'blur' }
         ]
-      },
+      }
     }
   },
   props: ['editId', 'initMode'],
@@ -211,7 +212,7 @@ export default {
           this.$service
             .materialBatchAudit(this.auditForm, '审批成功')
             .then(data => {
-             this.auditDialogVisible = false
+              this.auditDialogVisible = false
               this.$emit('show-list')
             })
         }
@@ -354,7 +355,7 @@ export default {
       this.$emit('go-back')
     },
     getMaterialTypes() {
-      this.$service.getDictType({type: 'materialType'}).then(data => {
+      this.$service.getDictType({ type: 'materialType' }).then(data => {
         this.picTypeOptions = data || []
         this.picTypeOptionsIndexed = this.picTypeOptions.reduce(function(
           result,

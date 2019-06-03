@@ -1,12 +1,25 @@
 <template>
   <div>
-    <div class="hompage-upsert" v-if="mode!== 'read'">
-      <ContentCard :title="title" @go-back="$emit('go-back')" v-show="isShow">
-        <el-row :gutter="40">
-          <el-col :span="24">
-            <div class="form-legend-header">
-              <span>基本信息</span>
-            </div>
+    <div class="hompage-upsert">
+      <ContentCard :title="title" @go-back="$emit('go-back')">
+        <CommonContent
+          :mode="mode"
+          :resource-info="resourceInfo"
+          @replicate="mode = 'replicate'; title='创建副本'"
+          @edit="mode = 'edit'; title='编辑'"
+          @unaudit="$emit('upsert-end')"
+          @shelves="fetchData"
+          @submit-audit="handleShowTimeShelf"
+          @save-draft="handleSaveDraft"
+          @audit="$emit('upsert-end')"
+          @copy="handleCopy"
+          @select-version="fetchData"
+          @delete="$emit('upsert-end')"
+        >
+          <div class="form-legend-header">
+            <span>基本信息</span>
+          </div>
+          <div v-show="isShow">
             <el-form
               ref="tabForm"
               :rules="rules"
@@ -41,7 +54,7 @@
                   max="360"
                   class="selectHourAndMinute"
                 >{{initSumTime}}</SelectHourAndMinute>
-                <span class="hint">设置范围:5分钟-6小时</span>
+                <span class="hint remarks">设置范围:5分钟-6小时</span>
               </el-form-item>
 
               <el-form-item label="类型" prop="tabType">
@@ -57,7 +70,6 @@
               </el-form-item>
               <el-form-item label="选择版块" prop="tags">
                 <el-button type="primary" plain @click="handleSlectPannelStart">选择版块</el-button>
-
                 <el-dropdown>
                   <el-button type="primary" plain class="marginL">
                     添加版块
@@ -76,13 +88,67 @@
                   class="orderableTable"
                 />
               </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleShowTimeShelf()">提交审核</el-button>
-                <el-button type="warning" @click="handleSaveDraft()">保存草稿</el-button>
-              </el-form-item>
+
             </el-form>
-          </el-col>
-        </el-row>
+          </div>
+          <div v-if="mode === 'read'">
+                <el-form
+                  ref="tabForm"
+                  :rules="rules"
+                  :model="tab"
+                  label-width="120px"
+                  class="el-form-add"
+                >
+                  <el-form-item label="版面名称" prop="tabName">{{tab.tabName}}</el-form-item>
+                  <el-form-item label="标题(中文)" prop="tabCnTitle">{{tab.tabCnTitle}}</el-form-item>
+                  <el-form-item label="标题(英文)" prop="tabEnTitle">{{tab.tabEnTitle}}</el-form-item>
+                  <el-form-item label="内容源" prop="tabResource">
+                    <el-radio-group :value="tab.tabResource" :disabed="true">
+                      <el-radio label>不限</el-radio>
+                      <el-radio label="o_tencent">腾讯</el-radio>
+                      <el-radio label="o_iqiyi">爱奇艺</el-radio>
+                      <el-radio label="o_youku">优酷</el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-form-item label="刷新时间间隔" prop="interval">
+                    <SelectHourAndMinute
+                      v-model="tab.timeCycle"
+                      :hour-option="hourOption"
+                      :minute-option="minuteOption"
+                      :initSumTime="initSumTime"
+                      :disabled="true"
+                      :min="5"
+                      :max="360"
+                      class="selectHourAndMinute"
+                    ></SelectHourAndMinute>
+                  </el-form-item>
+                  <el-form-item label="类型" prop="tabType">
+                    <el-select
+                      v-model="tab.tabType"
+                      placeholder="请选择类型"
+                      :disabled="!isDisableTabType"
+                    >
+                      <el-option
+                        v-for="(item, index) in tabTypes"
+                        :key="'tabTypes'+index"
+                        :value="item.value"
+                        :label="item.label"
+                        :disabled="item.disabled"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="选择的版块" prop="tags">
+                    <OrderableTable
+                      v-model="tab.pannelList"
+                      :header="tabGroupTableHeader"
+                      :hide-action="true"
+                      class="orderableTable"
+                      :readonly="true"
+                    />
+                  </el-form-item>
+                </el-form>
+          </div>
+        </CommonContent>
       </ContentCard>
       <AddBlockFilter
         :parentPannelResource="tab.tabResource"
@@ -90,85 +156,6 @@
         @go-back="goBack"
         @add-block="addBlock"
       />
-    </div>
-    <div v-if="mode === 'read'">
-      <ContentCard :title="title" @go-back="$emit('go-back')">
-        <CommonContent
-          :mode="mode"
-          :resource-info="resourceInfo"
-          @replicate="mode = 'replicate'; title='创建副本'"
-          @edit="mode = 'edit'; title='编辑'"
-          @unaudit="$emit('upsert-end')"
-          @shelves="fetchData"
-          @audit="$emit('upsert-end')"
-          @copy="handleCopy"
-          @select-version="fetchData"
-           @delete="$emit('upsert-end')"
-        >
-          <div class="form-legend-header">
-            <span>基本信息</span>
-          </div>
-          <el-row :gutter="40">
-            <el-col :span="24">
-              <el-form
-                ref="tabForm"
-                :rules="rules"
-                :model="tab"
-                label-width="120px"
-                class="el-form-add"
-              >
-                <el-form-item label="版面名称" prop="tabName">{{tab.tabName}}</el-form-item>
-                <el-form-item label="标题(中文)" prop="tabCnTitle">{{tab.tabCnTitle}}</el-form-item>
-                <el-form-item label="标题(英文)" prop="tabEnTitle">{{tab.tabEnTitle}}</el-form-item>
-                <el-form-item label="内容源" prop="tabResource">
-                  <el-radio-group :value="tab.tabResource" :disabed="true">
-                    <el-radio label>不限</el-radio>
-                    <el-radio label="o_tencent">腾讯</el-radio>
-                    <el-radio label="o_iqiyi">爱奇艺</el-radio>
-                    <el-radio label="o_youku">优酷</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-                <el-form-item label="刷新时间间隔" prop="interval">
-                  <SelectHourAndMinute
-                    v-model="tab.timeCycle"
-                    :hour-option="hourOption"
-                    :minute-option="minuteOption"
-                    :initSumTime="initSumTime"
-                    :disabled="true"
-                    :min="5"
-                    :max="360"
-                    class="selectHourAndMinute"
-                  ></SelectHourAndMinute>
-                </el-form-item>
-                <el-form-item label="类型" prop="tabType">
-                  <el-select
-                    v-model="tab.tabType"
-                    placeholder="请选择类型"
-                    :disabled="!isDisableTabType"
-                  >
-                    <el-option
-                      v-for="(item, index) in tabTypes"
-                      :key="'tabTypes'+index"
-                      :value="item.value"
-                      :label="item.label"
-                      :disabled="item.disabled"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="选择的版块" prop="tags">
-                  <OrderableTable
-                    v-model="tab.pannelList"
-                    :header="tabGroupTableHeader"
-                    :hide-action="true"
-                    class="orderableTable"
-                    :readonly="true"
-                  />
-                </el-form-item>
-              </el-form>
-            </el-col>
-          </el-row>
-        </CommonContent>
-      </ContentCard>
     </div>
     <PrivatePannelInfo
       @go-back="goBack"
@@ -529,7 +516,6 @@ export default {
       return data
     },
     goBack() {
-      debugger
       this.mode = this.preMode
     },
     addBlock(rows) {
@@ -541,6 +527,7 @@ export default {
       this.viewId = row.pannelGroupId
       switch (row.pannelType) {
         case 1:
+        case 7:
           this.mode = 'pannelInfo'
           break
         case 3:

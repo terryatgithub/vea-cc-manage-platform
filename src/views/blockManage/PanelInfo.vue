@@ -51,13 +51,13 @@
               <span>基本信息</span>
             </div>
             <el-form ref="form" :model="pannel" label-width="120px">
-              <el-form-item label="业务分类">
+              <el-form-item label="业务分类"  class="selectItem">
                 <CommonSelector
                   :value="pannel.panelGroupCategory"
                   @input="handlePanelGroupCategoryChange"
                   :disabled="isReplica"
                   :options="businessTypeEnums"/>
-                <span class="spform">注：只有一个权限的操作者不能选择业务分类</span>
+                <span class="spform remarks marginL">注：只有一个权限的操作者不能选择业务分类</span>
               </el-form-item>
 
               <el-form-item
@@ -109,7 +109,7 @@
             <el-form ref="form" :model="pannel" label-width="120px">
               <el-form-item v-if="pannel.parentType === 'normal'" label="版块标题" required>
                 <el-input
-                  style="width: 220px"
+                  style="width: 300px"
                   v-model="pannel.pannelList[0].pannelTitle"
                   placeholder="请输入版本标题"
                 ></el-input>
@@ -121,10 +121,10 @@
               <el-form-item label="版块布局" required>
                 <LayoutSelector @select-end="handleSelectLayoutEnd"></LayoutSelector>
                 <span
-                  class="spform J-selected J_select J_layout-selected"
+                  class="spform J-selected J_select J_layout-selected marginL"
                   v-if="selectedLayout"
                 >(已选择: {{ selectedLayout.layoutName }})</span>
-                <BinCheckBox label="设置前端推荐位底色透明" v-model="pannel.lucenyFlag" />
+                <BinCheckBox class="marginL" label="设置前端推荐位底色透明" v-model="pannel.lucenyFlag" />
               </el-form-item>
               <el-form-item label="落焦形式" required>
                 <CommonSelector
@@ -163,18 +163,18 @@
                   selection-type="multiple"
                   :source="pannel.pannelResource" 
                   @select-end="handleSelectResourceEnd">
-                  <el-button>选择资源</el-button>
+                  <el-button type="primary" plain>选择资源</el-button>
                 </ResourceSelector>
                 <template v-if="pannel.parentType === 'group'">
                   <el-button
                     style="float:right"
-                    type="primary"
+                    type="primary" plain
                     @click="handleAddTab"
                     :disabled="pannel.pannelList.length >= 10"
                   >添加标签</el-button>
                   <el-button
                     style="float:right"
-                    type="warning"
+                    type="primary" plain
                     @click="handleSetDefaultActiveTab"
                     :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''"
                   >设置默认落焦</el-button>

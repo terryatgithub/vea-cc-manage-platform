@@ -2,77 +2,69 @@
   <div>
     <div v-show="mode!=='generator'">
       <ContentCard :title="title" @go-back="$emit('go-back','list')">
+        <el-button type="primary" @click="submitBtn">保存</el-button>
+        <div class="form-legend-header">
+          <span>基本信息</span>
+        </div>
         <!--新增编辑界面-->
-
-        <el-row :gutter="40">
-          <el-col :span="24">
-            <el-form
-              :model="form"
-              :rules="formRules"
-              ref="form"
-              label-width="120px"
-              class="el-form-add"
+        <el-form
+          :model="form"
+          :rules="formRules"
+          ref="form"
+          label-width="120px"
+          class="el-form-add"
+        >
+          <el-form-item label="布局名称(中文)" prop="layoutName">
+            <el-input v-model="form.layoutName" placeholder="布局名称"></el-input>
+          </el-form-item>
+          <el-form-item label="布局类别" prop="layoutType">
+            <el-select v-model="form.layoutType" placeholder="布局类别">
+              <el-option
+                v-for="item in layoutType"
+                :key="item.name+''"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="上传文件">
+            <el-button type="primary" plain @click="$refs.upload.handleSelectFile()">上传布局文件</el-button>
+            <Upload
+              :multiple="true"
+              class="global-picture__uploader"
+              ref="upload"
+              @upload="handleUpload"
             >
-              <el-form-item label="布局名称(中文)" prop="layoutName">
-                <el-input v-model="form.layoutName" placeholder="布局名称"></el-input>
-              </el-form-item>
-              <el-form-item label="布局类别" prop="layoutType">
-                <el-select v-model="form.layoutType" placeholder="布局类别">
-                  <el-option
-                    v-for="item in layoutType"
-                    :key="item.name+''"
-                    :label="item.name"
-                    :value="item.id"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="上传文件">
-                <el-button type="primary" plain @click="$refs.upload.handleSelectFile()">上传布局文件</el-button>
-                <Upload
-                  :multiple="true"
-                  class="global-picture__uploader"
-                  ref="upload"
-                  @upload="handleUpload"
+              <template slot="preview">
+                <div
+                  class="upload-pic-list__item-wrapper"
+                  v-for="(file, index) in fileInfo"
+                  :key="index"
                 >
-                  <template slot="preview">
+                  <div class="upload-pic-list__item">
                     <div
-                      class="upload-pic-list__item-wrapper"
-                      v-for="(file, index) in fileInfo"
-                      :key="index"
+                      class="upload-pic-list__error"
+                      v-if="file.upload.status === 'error'"
+                    >上传失败: {{ file.upload.message }}</div>
+                    <div
+                      v-if="file.upload.status === 'uploading'"
+                      class="upload-pic-list__progress"
                     >
-                      <div class="upload-pic-list__item">
-                        <div
-                          class="upload-pic-list__error"
-                          v-if="file.upload.status === 'error'"
-                        >上传失败: {{ file.upload.message }}</div>
-                        <div
-                          v-if="file.upload.status === 'uploading'"
-                          class="upload-pic-list__progress"
-                        >
-                          <el-progress
-                            :width="180"
-                            type="circle"
-                            :percentage="file.upload.percentage"
-                          ></el-progress>
-                        </div>
-                        <img v-else :src="file.upload.dataUrl">
-                      </div>
+                      <el-progress :width="180" type="circle" :percentage="file.upload.percentage"></el-progress>
                     </div>
-                  </template>
-                </Upload>
-              </el-form-item>
-              <el-form-item label="布局">
-                <el-button type="primary" plain @click="productLayout">生成布局</el-button>
-              </el-form-item>
-              <el-form-item>
-                <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="submitBtn">保存</el-button>
-              </el-form-item>
-            </el-form>
-          </el-col>
-        </el-row>
+                    <img v-else :src="file.upload.dataUrl">
+                  </div>
+                </div>
+              </template>
+            </Upload>
+          </el-form-item>
+          <el-form-item label="布局">
+            <el-button type="primary" plain @click="productLayout">生成布局</el-button>
+          </el-form-item>
+          <el-form-item>
+            <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>
+          </el-form-item>
+        </el-form>
       </ContentCard>
     </div>
     <div v-if="mode==='generator'">
@@ -196,7 +188,7 @@ export default {
     getLayoutJson(data) {
       let d = JSON.parse(data.content) //布局内容
       this.form.layoutModel = d.type
-      this.form.layoutName = data.fileName.replace('.txt','')
+      this.form.layoutName = data.fileName.replace('.txt', '')
       let layoutjson = {}
       this.content = d.contents
       if (d.type === 'Expander') {

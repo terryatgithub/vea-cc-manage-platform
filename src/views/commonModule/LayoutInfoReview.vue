@@ -1,44 +1,40 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back','list')">
     <!--新增编辑界面-->
-    <el-row :gutter="40">
-      <el-col :span="24">
-        <el-form :model="form"  ref="form" label-width="120px">
-          <el-form-item label="布局名称(中文)" prop="layoutName">
-            <div>{{form.layoutName}}</div>
-          </el-form-item>
-          <el-form-item label="布局类别" prop="layoutType">
-            <div>{{form.layoutType}}</div>
-          </el-form-item>
-           <el-form-item label="状态">
-           <div class="status">{{form.layoutStatus}}</div>
-          </el-form-item>
-          <el-form-item label="布局">
-            <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>
-          </el-form-item>
-          <el-form-item>
-           <AuditDetailButton
-           v-if="id!==undefined"
-            :id="id"
-            :version="version"
-            :type="type"
-            :not-contain-btn="notContainBtn"
-            :hasHistory="hasHistory"
-            :status="status"
-            :menuElId="menuElId"
-            @go-edit-Page="goEditPage"
-            @delete-item="deleteItem"
-            @auditTask-end="$emit('open-list-page')"
-           >
-           </AuditDetailButton>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
+    <AuditDetailButton
+      v-if="id!==undefined"
+      :id="id"
+      :version="version"
+      :type="type"
+      :not-contain-btn="notContainBtn"
+      :hasHistory="hasHistory"
+      :status="status"
+      :menuElId="menuElId"
+      @go-edit-Page="goEditPage"
+      @delete-item="deleteItem"
+      @auditTask-end="$emit('open-list-page')"
+    ></AuditDetailButton>
+    <div class="form-legend-header">
+      <span>基本信息</span>
+    </div>
+    <el-form :model="form" ref="form" label-width="120px">
+      <el-form-item label="布局名称(中文)" prop="layoutName">
+        <div>{{form.layoutName}}</div>
+      </el-form-item>
+      <el-form-item label="布局类别" prop="layoutType">
+        <div>{{form.layoutType}}</div>
+      </el-form-item>
+      <el-form-item label="状态">
+        <div class="status">{{form.layoutStatus}}</div>
+      </el-form-item>
+      <el-form-item label="布局">
+        <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>
+      </el-form-item>
+    </el-form>
   </ContentCard>
 </template>
 <script>
-import { Upload} from 'admin-toolkit'
+import { Upload } from 'admin-toolkit'
 import LayoutBloack from './../../components/LayoutBlock'
 import AuditDetailButton from './../../components/AuditDetailButton'
 export default {
@@ -80,8 +76,7 @@ export default {
         layoutModel: null, //布局类型
         layoutStatus: 2 //默认为草稿
       },
-      actions: {
-      }
+      actions: {}
     }
   },
   methods: {
@@ -107,32 +102,34 @@ export default {
       })
     },
     getlLayoutTypeName(id) {
-     let layoutTypeName = this.layoutType.filter((e) => {
+      let layoutTypeName = this.layoutType.filter(e => {
         if (parseInt(e.id) === parseInt(id)) {
-           return e
+          return e
         }
       })
-      return layoutTypeName.length>0 ? layoutTypeName[0].name:''
+      return layoutTypeName.length > 0 ? layoutTypeName[0].name : ''
     },
     getEditData(reviewData) {
       Object.keys(this.form).forEach(v => {
-        if (v ==='layoutType') {
+        if (v === 'layoutType') {
           this.form[v] = this.getlLayoutTypeName(reviewData[v])
-        } else if(v === 'layoutStatus') {
+        } else if (v === 'layoutStatus') {
           this.form[v] = this.$numToAuditStatus(reviewData[v])
-        }
-        else {
-         this.form[v] = reviewData[v]
+        } else {
+          this.form[v] = reviewData[v]
         }
       })
-      this.getLayoutJson({fileName:this.form.layoutName, content: this.form.layoutJson})
+      this.getLayoutJson({
+        fileName: this.form.layoutName,
+        content: this.form.layoutJson
+      })
     },
     goEditPage() {
-       this.$emit("go-edit-Page")
+      this.$emit('go-edit-Page')
     },
     deleteItem() {
-      this.$service.getLayoutInforBatchDel({ id: this.id },'删除成功')
-      this.$emit("open-list-page")
+      this.$service.getLayoutInforBatchDel({ id: this.id }, '删除成功')
+      this.$emit('open-list-page')
     },
     getLayoutJson(data) {
       let d = JSON.parse(data.content) //布局内容
@@ -169,20 +166,19 @@ export default {
     if (JSON.stringify(this.reviewData) !== '{}') {
       this.title = '预览'
       let reviewData = this.reviewData
-      if (typeof(reviewData.layoutId)!=='undefined') {
+      if (typeof reviewData.layoutId !== 'undefined') {
         this.id = reviewData.layoutId
         this.status = this.reviewData.layoutStatus
         this.getEditData(reviewData)
       } else {
         this.id = reviewData.resourceId
-        this.$service.getLayoutInforById({id: this.id}).then((data) => {
-           //this.reviewData = data
-           this.status = data.layoutStatus
-           this.getEditData(data)
+        this.$service.getLayoutInforById({ id: this.id }).then(data => {
+          //this.reviewData = data
+          this.status = data.layoutStatus
+          this.getEditData(data)
         })
-
       }
-    } 
+    }
   }
 }
 </script>
@@ -191,6 +187,6 @@ export default {
   >>> .close-block
     display: none
 .status
-  color red
+  color: red
 </style>
 

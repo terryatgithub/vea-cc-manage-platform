@@ -1,39 +1,6 @@
 <template>
   <div>
-    <div class="hompage-upsert" v-if="mode!== 'read'">
-      <ContentCard :title="title" @go-back="$emit('go-back')">
-        <div class="form-legend-header">
-          <span>基本信息</span>
-        </div>
-        <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="el-form-add">
-          <el-form-item label="版块名称" prop="pannelList[0].pannelName">
-            <el-input v-model="form.pannelList[0].pannelName" placeholder="版块名称"></el-input>
-          </el-form-item>
-          <el-form-item label="版块标题" prop="pannelList[0].pannelTitle">
-            <el-input v-model="form.pannelList[0].pannelTitle" placeholder="版块标题"></el-input>
-            <el-checkbox
-              class="marginL"
-              :value="!form.pannelList[0].showTitle"
-              @input="form.pannelList[0].showTitle = !$event"
-            >前端不显示标题</el-checkbox>
-          </el-form-item>
-          <el-form-item label="功能类型" prop="clientType">
-            <el-input v-model="form.clientType" placeholder="功能类型"></el-input>
-          </el-form-item>
-          <el-form-item label="内容源" prop="pannelList[0].pannelResource">
-            <el-radio v-model="form.pannelList[0].pannelResource" label>不限</el-radio>
-            <el-radio v-model="form.pannelList[0].pannelResource" label="o_tencent">腾讯</el-radio>
-            <el-radio v-model="form.pannelList[0].pannelResource" label="o_iqiyi">爱奇艺</el-radio>
-            <el-radio v-model="form.pannelList[0].pannelResource" label="o_youku">优酷</el-radio>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="submitStart">提交审核</el-button>
-            <el-button type="primary" plain @click="submitEnd(2)">保存草稿</el-button>
-          </el-form-item>
-        </el-form>
-      </ContentCard>
-    </div>
-    <div v-if="mode === 'read'">
+    <div class="hompage-upsert">
       <ContentCard :title="title" @go-back="$emit('go-back')">
         <CommonContent
           :mode="mode"
@@ -45,42 +12,83 @@
           @audit="$emit('upsert-end')"
           @select-version="fetchData"
           @delete="$emit('upsert-end')"
+          @submit-audit="submitStart"
+          @save-draft="submitEnd(2)"
         >
           <div class="form-legend-header">
             <span>基本信息</span>
           </div>
-          <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="el-form-add">
-            <el-form-item
-              label="版块名称"
-              prop="pannelList[0].pannelName"
-            >{{form.pannelList[0].pannelName}}</el-form-item>
-            <el-form-item
-              label="版块标题"
-              prop="pannelList[0].pannelTitle"
-            >{{form.pannelList[0].pannelTitle}}{{ form.pannelList[0].showTitle === 0 ? '(前端不显示)' : '' }}</el-form-item>
-            <el-form-item label="功能类型" prop="clientType">{{form.clientType}}</el-form-item>
-            <el-form-item label="内容源" prop="pannelList[0].pannelResource">
-              <el-radio v-model="form.pannelList[0].pannelResource" :disabled="true" label>不限</el-radio>
-              <el-radio
-                v-model="form.pannelList[0].pannelResource"
-                :disabled="true"
-                label="o_tencent"
-              >腾讯</el-radio>
-              <el-radio
-                v-model="form.pannelList[0].pannelResource"
-                :disabled="true"
-                label="o_iqiyi"
-              >爱奇艺</el-radio>
-              <el-radio
-                v-model="form.pannelList[0].pannelResource"
-                :disabled="true"
-                label="o_youku"
-              >优酷</el-radio>
-            </el-form-item>
-          </el-form>
+          <div v-if="mode!== 'read'">
+            <el-form
+              ref="form"
+              :model="form"
+              :rules="rules"
+              label-width="120px"
+              class="el-form-add"
+            >
+              <el-form-item label="版块名称" prop="pannelList[0].pannelName">
+                <el-input v-model="form.pannelList[0].pannelName" placeholder="版块名称"></el-input>
+              </el-form-item>
+              <el-form-item label="版块标题" prop="pannelList[0].pannelTitle">
+                <el-input v-model="form.pannelList[0].pannelTitle" placeholder="版块标题"></el-input>
+                <el-checkbox
+                  class="marginL"
+                  :value="!form.pannelList[0].showTitle"
+                  @input="form.pannelList[0].showTitle = !$event"
+                >前端不显示标题</el-checkbox>
+              </el-form-item>
+              <el-form-item label="功能类型" prop="clientType">
+                <el-input v-model="form.clientType" placeholder="功能类型"></el-input>
+              </el-form-item>
+              <el-form-item label="内容源" prop="pannelList[0].pannelResource">
+                <el-radio v-model="form.pannelList[0].pannelResource" label>不限</el-radio>
+                <el-radio v-model="form.pannelList[0].pannelResource" label="o_tencent">腾讯</el-radio>
+                <el-radio v-model="form.pannelList[0].pannelResource" label="o_iqiyi">爱奇艺</el-radio>
+                <el-radio v-model="form.pannelList[0].pannelResource" label="o_youku">优酷</el-radio>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div v-if="mode === 'read'">
+            <el-form
+              ref="form"
+              :model="form"
+              :rules="rules"
+              label-width="120px"
+              class="el-form-add"
+            >
+              <el-form-item
+                label="版块名称"
+                prop="pannelList[0].pannelName"
+              >{{form.pannelList[0].pannelName}}</el-form-item>
+              <el-form-item
+                label="版块标题"
+                prop="pannelList[0].pannelTitle"
+              >{{form.pannelList[0].pannelTitle}}{{ form.pannelList[0].showTitle === 0 ? '(前端不显示)' : '' }}</el-form-item>
+              <el-form-item label="功能类型" prop="clientType">{{form.clientType}}</el-form-item>
+              <el-form-item label="内容源" prop="pannelList[0].pannelResource">
+                <el-radio v-model="form.pannelList[0].pannelResource" :disabled="true" label>不限</el-radio>
+                <el-radio
+                  v-model="form.pannelList[0].pannelResource"
+                  :disabled="true"
+                  label="o_tencent"
+                >腾讯</el-radio>
+                <el-radio
+                  v-model="form.pannelList[0].pannelResource"
+                  :disabled="true"
+                  label="o_iqiyi"
+                >爱奇艺</el-radio>
+                <el-radio
+                  v-model="form.pannelList[0].pannelResource"
+                  :disabled="true"
+                  label="o_youku"
+                >优酷</el-radio>
+              </el-form-item>
+            </el-form>
+          </div>
         </CommonContent>
       </ContentCard>
     </div>
+
     <ReleaseTimeSetter
       v-if="showTimeShelf"
       @cancel="showTimeShelf = false"
