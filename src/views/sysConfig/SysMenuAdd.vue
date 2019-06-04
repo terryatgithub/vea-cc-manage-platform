@@ -1,5 +1,6 @@
 <template>
-  <ContentCard :title="title" @go-back="$emit('go-back')">
+<div>
+  <ContentCard :title="title" @go-back="$emit('go-back')" v-if="!showIcon">
     <!--新增编辑界面-->
     <el-button type="primary" @click="submitBtn">保存</el-button>
     <div class="form-legend-header">
@@ -13,7 +14,8 @@
         <el-input v-model="form.elid" placeholder="元素ID"></el-input>
       </el-form-item>
       <el-form-item label="图标样式" prop="iconClass">
-        <el-input v-model="form.iconClass" placeholder="图标样式"></el-input>
+        <el-input v-model="form.iconClass" placeholder="图标样式" ></el-input>
+        <el-button type="primary" plain @click="selectIcon" class="marginL">选择图标</el-button>
       </el-form-item>
       <el-form-item label="标签ID" prop="tabId">
         <el-input v-model="form.tabId" placeholder="标签ID"></el-input>
@@ -45,17 +47,24 @@
       </el-form-item>
     </el-form>
   </ContentCard>
+   <IconSelect v-if="showIcon" @get-icon="getIcon" title="选择图标" :isUseInitialIcon="true" @go-back="goBack"></IconSelect>
+  </div>
 </template>
 <script>
+import { IconSelect } from 'admin-toolkit'
 export default {
   props: {
     editId: Number,
     default: null
   },
+  components: {
+    IconSelect
+  },
   //  prop: ['editId'],
   data() {
     return {
       title: null,
+      showIcon: false,
       form: {
         // menuId: null,
         menuName: null,
@@ -98,6 +107,16 @@ export default {
     }
   },
   methods: {
+    selectIcon() {
+      this.showIcon = true
+    },
+    goBack() {
+      this.showIcon = false
+    },
+    getIcon(iconName, name) {
+      this.form.iconClass = iconName
+      this.showIcon = false
+    },
     submitBtn() {
       this.$refs.form.validate(valid => {
         if (valid) {
