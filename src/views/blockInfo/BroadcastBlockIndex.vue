@@ -1,57 +1,88 @@
 <template>
   <div>
-    <BroadcastBlockList v-show="mode==='list'" ref="list" @open-add-page="openAddPage"></BroadcastBlockList>
-    <BroadcastBlockAdd v-if="mode==='add'" :isReview="isReview" :editData="editData" @go-edit-Page="openListPage(editData, false)"  @open-list-page="openListPage" @go-back="goBack"></BroadcastBlockAdd>
+    <BroadcastBlockList 
+     v-show="isShowList" 
+     ref="list" 
+      @create="handleCreate"
+      @read="handleRead"
+      @edit="handleEdit"
+      @delete="handleDelete"
+     >
+     </BroadcastBlockList>
+    <BroadcastBlockInfo 
+      v-if="!isShowList" 
+       :id="id" 
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd" 
+      @go-back="goBack">
+    </BroadcastBlockInfo>
   </div>
 </template>
 <script>
 import BroadcastBlockList from  './BroadcastBlockList'
-import BroadcastBlockAdd from './BroadcastBlockAdd'
-
+import BroadcastBlockInfo from './BroadcastBlockInfo'
 export default {
   components: {
+    BroadcastBlockInfo,
     BroadcastBlockList,
-    BroadcastBlockAdd
   },
   data() {
     return {
-      mode: 'list',
-      editData: {},
-      isReview: false,
-      currentVersion: null
+      isShowList: true,
+      id: undefined,
+      mode: 'create',
+      version: undefined
     };
   },
   methods: {
-    /**
-     * 打开新增编辑页面
-    */
-    openAddPage(row, isReview) {
-      this.editData = row
-      this.isReview = isReview
-      this.mode = 'add'
-    },
-    /**
-     * 打开列表页面
-    */
-    openListPage () {
+    handleUpsertEnd () {
+      this.isShowList = true
+      this.$refs.list.fetchData();//更新页面
       this.mode = 'list'
-      this.editData = {}
-      this.$refs.list.fetchData()// 更新页面
+      this.version = undefined
+    },
+    handleCreate() {
+      this.id = undefined
+      this.mode = 'create'
+      this.isShowList = false
+    },
+    handleEdit(item) {
+      this.id = item.id
+      this.mode = 'edit'
+      this.isShowList = false
+    },
+    handleRead(item, version) {
+      this.id = item.id
+      this.mode = 'read'
+      this.version = version
+      this.isShowList = false
+    },
+    handleDelete(selected) {
+      this.$service
+        .deleteBroadcastBlock({ 
+          id: selected.map(item => item.id).join(',') 
+        }, '删除成功')
+        .then(data => {
+          this.$refs.list.fetchData()
+        })
+    },
+    handleCopy(item) {
+      this.id = item.id
+      this.mode = 'copy'
+      this.isShowList = false
     },
     /**
      * 新增编辑里面的返回事件
     */
     goBack () {
-      this.mode = 'list'
-      this.editData = {}
+     this.isShowList = true
+     this.mode = 'list'
+     this.version = undefined
     }
   }
-};
+}
 </script>
 <!--声明语言，并且添加scoped-->
 <style lang="stylus" scoped>
 </style>
-
-
-
-

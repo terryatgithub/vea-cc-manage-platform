@@ -1,55 +1,88 @@
 <template>
   <div>
-    <SysPluginList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></SysPluginList>
-    <SysPluginAdd v-if="model === 'add'" :editId="editId"  @open-list-page="openListPage" @go-back="goBack"></SysPluginAdd>
-    <SysPluginView v-if="model === 'view'"  :viewId ="viewId" @open-list-page="openListPage" @go-back="goBack"></SysPluginView>
+    <SysPluginList 
+      v-show="isShowList" 
+      ref="list" 
+      @create="handleCreate"
+      @read="handleRead"
+      @edit="handleEdit"
+      @delete="handleDelete"
+     >
+     </SysPluginList>
+    <SysPluginInfo 
+      v-if="!isShowList" 
+       :id="id" 
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd" 
+      @go-back="goBack">
+    </SysPluginInfo>
   </div>
 </template>
 <script>
-import SysPluginList from './SysPluginList'
-import SysPluginAdd from './SysPluginAdd'
-import SysPluginView from './SysPluginView'
+import SysPluginList from  './SysPluginList'
+import SysPluginInfo from './SysPluginInfo'
 export default {
   components: {
+    SysPluginInfo,
     SysPluginList,
-    SysPluginAdd,
-    SysPluginView
   },
-  data () {
+  data() {
     return {
-      editId: null,
-      viewId: null,
-      model: 'list'
-    }
+      isShowList: true,
+      id: undefined,
+      mode: 'create',
+      version: undefined
+    };
   },
   methods: {
-    /** 
-     * 打开新增编辑页面
-    */
-    openAddPage (id) {
-       this.editId = id
-       this.model = 'add'
-      console.log(this.mode)
-    },
-     /** 
-     * 打开列表页面
-    */
-    openListPage () {
-      this.model = 'list'
+    handleUpsertEnd () {
+      this.isShowList = true
       this.$refs.list.fetchData();//更新页面
+      this.mode = 'list'
+      this.version = undefined
     },
-    //打开详情页
-    openViewPage (id) {
-      console.log(this.mode)
-      this.viewId = id
-      this.model = 'view'
+    handleCreate() {
+      this.id = undefined
+      this.mode = 'create'
+      this.isShowList = false
     },
-    /**  
+    handleEdit(item) {
+      this.id = item.pluginId
+      this.mode = 'edit'
+      this.isShowList = false
+    },
+    handleRead(item, version) {
+      this.id = item.pluginId
+      this.mode = 'read'
+      this.version = version
+      this.isShowList = false
+    },
+    handleDelete(selected) {
+      this.$service
+        .deleteBroadcastBlock({ 
+          id: selected.map(item => item.pluginId).join(',') 
+        }, '删除成功')
+        .then(data => {
+          this.$refs.list.fetchData()
+        })
+    },
+    handleCopy(item) {
+      this.id = item.pluginId
+      this.mode = 'copy'
+      this.isShowList = false
+    },
+    /**
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.model = 'list'
+     this.isShowList = true
+     this.mode = 'list'
+     this.version = undefined
     }
   }
 }
 </script>
+<!--声明语言，并且添加scoped-->
+<style lang="stylus" scoped>
+</style>

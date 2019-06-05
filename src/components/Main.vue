@@ -28,13 +28,14 @@
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="modifyPassword" @click.native="modifyPwd">修改密码</el-dropdown-item>
               <el-dropdown-item command="logout">退出</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
-        <div class="system-setting" @click="isShowSetting = !isShowSetting">
+        <!-- <div class="system-setting" @click="isShowSetting = !isShowSetting">
           <i class="el-icon-setting"></i>
-        </div>
+        </div> -->
       </el-header>
       <TagNav ref="tag" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
       <el-main>
@@ -44,7 +45,7 @@
         <router-view v-if="!isKeepAlive"/>
       </el-main>
     </el-container>
-    <transition name="el-zoom-in-right">
+    <!-- <transition name="el-zoom-in-right">
       <div class="setting_side transition-box" v-show="isShowSetting">
         <div class="tagnav_switch">
           标签导航
@@ -53,7 +54,7 @@
           <el-button type="primary" class="modifyPwd" @click="modifyPwd">修改密码</el-button>
         </div>
       </div>
-    </transition>
+    </transition> -->
     <!-- 修改密码-->
     <el-dialog title="修改密码" :visible.sync="modifyDialogVisible">
       <span>
@@ -246,6 +247,8 @@ export default {
   background: #e44907
 .user-info
   margin-left: auto
+  margin-right 15px
+  cursor: pointer
 .menu:not(.el-menu--collapse)
   min-width: 200px
   background: #333

@@ -65,9 +65,8 @@
       <!-- 筛选部分end -->
       <ButtonGroupForListPage
         pageName="multiFunctionBlock"
-        @add="addData"
-        @edit="editData"
-        @delete="batchDel"
+        @add="handleCreate"
+        @edit="handleEdit"
       ></ButtonGroupForListPage>
       <Table
         :props="table.props"
@@ -87,7 +86,9 @@
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     Table,
     ContentWrapper,
@@ -95,6 +96,7 @@ export default {
   },
   data() {
     return {
+      resourceType: 'blockInfo',
       pluginType: [],
       parentTypes: [],
       childTypes: {}, //功能分类
@@ -136,11 +138,32 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.previewData(row)
+                      this.handleRead(row)
                     }
                   }
                 },
                 row.pluginName
+              )
+            }
+          },
+         {
+            label: '待审核的版本',
+            prop: 'duplicateVersion',
+            sortable: true,
+            render: (h, { row }) => {
+              return h(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row, row.duplicateVersion)
+                    }
+                  }
+                },
+                row.duplicateVersion
               )
             }
           },
@@ -194,13 +217,6 @@ export default {
             label: '更新时间',
             prop: 'lastUpdateDate'
           }
-          // {
-          //   label: '操作',
-          //   fixed: 'right',
-          //   render: utils.component.createOperationRender(this, {
-          //     previewData: '预览'
-          //   })
-          // }
         ],
         data: [],
         selected: [],
@@ -209,6 +225,38 @@ export default {
     }
   },
   methods: {
+    handleEdit () {
+      const length = this.selected.length
+      if (length === 0) {
+        return this.$message({
+          type: 'error',
+          message: '未选中记录'
+        })
+      }
+      if (length > 1) {
+        return this.$message({
+          type: 'error',
+          message: '只能选择一条记录'
+        })
+      }
+      const item = this.selected[0]
+      const idPrefix = this.$consts.idPrefix
+      const id = item.pluginId
+      const status = item['pluginStatus']
+      if (status === 4) {
+        return this.$message({
+          type: 'error',
+          message: '该状态不允许编辑'
+        })
+      }
+      if (id.toString().slice(0, 2) !== idPrefix) {
+        return this.$message({
+          type: 'error',
+          message: '无权限编辑该记录'
+        })
+      }
+      this.$emit('edit', item)
+    },
     getPluginType() {
       this.$service
         .getPluginType({ pluginParentType: this.filter.pluginParentType })
@@ -230,85 +278,6 @@ export default {
       this.$service.getPluginParentTypes().then(data => {
         this.parentTypes = data
       })
-    },
-    // //数据字典查询
-    // getPluginTypes() {
-    //   this.$service.getPluginTypes().then(data => {
-    //     console.log(data)
-    //     if (data.code == 0) {
-    //       data.forEach(element => {
-    //         this.childTypes[element.label] = element.id
-    //       })
-    //     }
-    //   })
-    // },
-    //新增
-    addData() {
-      this.$emit('open-add-page', null)
-    },
-    /**
-     * 编辑
-     */
-    editData() {
-      if (this.$isAllowEdit(this.selected)) {
-          this.$emit('open-add-page', this.selected[0])
-        }
-    },
-    //预览
-    previewData(row) {
-      this.$emit('open-view-page', row.pluginId)
-    },
-    //删除
-    batchDel() {
-      if (this.selected.length === 0) {
-        this.$message('请选择再删除')
-        return
-      } else if (this.selected.length > 1) {
-        this.$message('只能选择一条数据')
-      } else {
-        if (window.confirm('确定要删除吗')) {
-          this.$service
-            .removeMulti({ id: this.selected[0] }, '删除成功')
-            .then(data => {
-              this.fetchData()
-            })
-        }
-      }
-    },
-    // handleCreate() {
-    //   this.$router.push({ name: 'prize-create' })
-    // },
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.pluginId)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.pluginId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.pluginId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
     },
    handleFilterChange() {
       if(this.$validateId(this.filter.pluginId)) {

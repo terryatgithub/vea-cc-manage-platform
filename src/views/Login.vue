@@ -19,10 +19,10 @@
               </el-row>
             </div>
             <GateSchemaForm ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin"></GateSchemaForm>
-            <div id="verifyCode">
+            <!-- <div id="verifyCode">
               <el-input v-model="user.valicode" placeholder="验证码" @keyup.native="keyupSubmit"></el-input>
               <img :src="codeUrl" alt="验证码" @click="updateValicode">
-            </div>
+            </div> -->
             <el-button class="login-form__btn" type="primary" @click="$refs.loginForm.handleSubmit()">登 录</el-button>
           </div>
         </div>
@@ -57,7 +57,7 @@ export default {
       user: {
         username: 'yuanjunnan',
         password: 'yuanjunnan@yjn@',
-        valicode: ''
+       // valicode: ''
       },
       codeUrl: 'captcha.jpg',
       isNormalActive: true,
@@ -109,6 +109,7 @@ export default {
         }
         this.$login(this.user).then(
           data => {
+            console.log('redirect='+this.$route.query.redirect)
             this.$router.push({
               path: this.$route.query.redirect || '/desktop'
             })
@@ -178,7 +179,7 @@ export default {
   color: red
 .log_center
   width 430px
-  height 430px
+  height 270px
   position fixed
   left 50%
   top 50%
@@ -199,7 +200,7 @@ export default {
   line-height 36px
 .log_bj
   width 430px
-  height 320px
+  height 270px
   background #fff
   border-radius 9px
   opacity 0.9

@@ -7,7 +7,10 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <ButtonGroupForListPage pageName="sysPlugin" @edit="editData"></ButtonGroupForListPage>
+      <ButtonGroupForListPage 
+      pageName="sysPlugin" 
+       @edit="handleEdit">
+      </ButtonGroupForListPage>
       <Table
         :props="table.props"
         :header="table.header"
@@ -23,9 +26,11 @@
 </template>
 <script>
 import _ from 'gateschema'
+import BaseList from '@/components/BaseList'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
+   extends: BaseList,
   components: {
     Table,
     ContentWrapper,
@@ -33,6 +38,7 @@ export default {
   },
   data() {
     return {
+      resourceType: 'blockInfo',
       pluginStatus: {
         下架: 0,
         上架: 1,
@@ -80,11 +86,32 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.priviewData(row)
+                      this.handleRead(row)
                     }
                   }
                 },
                 row.pluginName
+              )
+            }
+          },
+           {
+            label: '待审核的版本',
+            prop: 'duplicateVersion',
+            sortable: true,
+            render: (h, { row }) => {
+              return h(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row, row.duplicateVersion)
+                    }
+                  }
+                },
+                row.duplicateVersion
               )
             }
           },
@@ -186,55 +213,37 @@ export default {
         this.table.data = data.rows
       })
     },
-    /**
-     * 编辑
-     */
-    editData() {
-      if (this.selected.length == 0) {
-        this.$message('请选择一条数据')
-      } else if (this.selected.length > 1) {
-        this.$message('只能选择一条')
-      } else {
-        this.$emit('open-add-page', this.selected[0])
+    handleEdit () {
+      const length = this.selected.length
+      if (length === 0) {
+        return this.$message({
+          type: 'error',
+          message: '未选中记录'
+        })
       }
-      // this.$emit('openAddPage', row.pluginId)
-    },
-    //详情
-    priviewData(row) {
-      this.$emit('open-view-page', row.pluginId)
-    },
-    //表格操作
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.pluginId)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.pluginId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
+      if (length > 1) {
+        return this.$message({
+          type: 'error',
+          message: '只能选择一条记录'
+        })
       }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.pluginId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
+      const item = this.selected[0]
+      const idPrefix = this.$consts.idPrefix
+      const id = item.pluginId
+      const status = item['pluginStatus']
+      if (status === 4) {
+        return this.$message({
+          type: 'error',
+          message: '该状态不允许编辑'
+        })
+      }
+      if (id.toString().slice(0, 2) !== idPrefix) {
+        return this.$message({
+          type: 'error',
+          message: '无权限编辑该记录'
+        })
+      }
+      this.$emit('edit', item)
     },
     //查询
      handleFilterChange(type, filter) {

@@ -18,5 +18,13 @@ export default {
   policy: {
     id: 'policyId',
     status: 'policyStatus'
+  },
+  broadcastBlock: { // 轮播推荐位
+    id: 'id',
+    status: 'status'
+  },
+  blockInfo: { // 轮播推荐位
+    id: 'pluginId',
+    status: 'pluginStatus'
   }
 }

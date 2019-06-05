@@ -1,60 +1,88 @@
 <template>
- <div>
-    <MultiFunctionBlockList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></MultiFunctionBlockList>
-    <MultiFunctionBlockAdd v-if="model === 'add'" :editId="editId"  @open-list-page="openListPage" @go-back="goBack"></MultiFunctionBlockAdd>
-    <MultiFunctionBlockView v-if="model ==='view'" :viewId="viewId" @open-list-page="openListPage" @go-back="goBack"></MultiFunctionBlockView>
- </div>
+  <div>
+    <MultiFunctionBlockList 
+      v-show="isShowList" 
+      ref="list" 
+      @create="handleCreate"
+      @read="handleRead"
+      @edit="handleEdit"
+      @delete="handleDelete"
+     >
+     </MultiFunctionBlockList>
+    <MultiFunctionBlockInfo 
+      v-if="!isShowList" 
+       :id="id" 
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd" 
+      @go-back="goBack">
+    </MultiFunctionBlockInfo>
+  </div>
 </template>
 <script>
-import MultiFunctionBlockList from './MultiFunctionBlockList'
-import MultiFunctionBlockAdd from './MultiFunctionBlockAdd'
-import MultiFunctionBlockView from './MultiFunctionBlockView'
+import MultiFunctionBlockList from  './MultiFunctionBlockList'
+import MultiFunctionBlockInfo from './MultiFunctionBlockInfo'
 export default {
-    components: {
+  components: {
+    MultiFunctionBlockInfo,
     MultiFunctionBlockList,
-    MultiFunctionBlockAdd,
-    MultiFunctionBlockView
   },
-   data () {
+  data() {
     return {
-      model: 'list',
-      editId: null,
-      viewId: null
-    }
+      isShowList: true,
+      id: undefined,
+      mode: 'create',
+      version: undefined
+    };
   },
-methods: {
-    /** 
-     * 打开新增编辑页面
-    */
-    openAddPage (editId) {
-       this.editId = editId
-       this.model = 'add'
+  methods: {
+    handleUpsertEnd () {
+      this.isShowList = true
+      this.$refs.list.fetchData();//更新页面
+      this.mode = 'list'
+      this.version = undefined
+    },
+    handleCreate() {
+      this.id = undefined
+      this.mode = 'create'
+      this.isShowList = false
+    },
+    handleEdit(item) {
+      this.id = item.pluginId
+      this.mode = 'edit'
+      this.isShowList = false
+    },
+    handleRead(item, version) {
+      this.id = item.pluginId
+      this.mode = 'read'
+      this.version = version
+      this.isShowList = false
+    },
+    handleDelete(selected) {
+      this.$service
+        .deleteBroadcastBlock({ 
+          id: selected.map(item => item.pluginId).join(',') 
+        }, '删除成功')
+        .then(data => {
+          this.$refs.list.fetchData()
+        })
+    },
+    handleCopy(item) {
+      this.id = item.pluginId
+      this.mode = 'copy'
+      this.isShowList = false
     },
     /**
-     * 打开详情页面
-     */
-    openViewPage (id) {
-      this.viewId = id
-      this.model = 'view'
-    },
-     /** 
-     * 打开列表页面
-    */
-    openListPage () {
-      this.model = 'list'
-      this.$refs.list.fetchData();//更新页面
-    },
-    /**  
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.model = 'list'
+     this.isShowList = true
+     this.mode = 'list'
+     this.version = undefined
     }
   }
 }
 </script>
-<style scoped>
-
+<!--声明语言，并且添加scoped-->
+<style lang="stylus" scoped>
 </style>
-
-
