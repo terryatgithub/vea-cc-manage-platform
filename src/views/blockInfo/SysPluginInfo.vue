@@ -14,7 +14,7 @@
         @delete="$emit('upsert-end')"
       >
         <div slot="auditAndDraft">
-          <el-button type="primary" @click="$emit('submit-audit')">提交审核</el-button>
+          <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
         </div>
         <div class="form-legend-header">
           <i class="el-icon-edit">基本信息</i>

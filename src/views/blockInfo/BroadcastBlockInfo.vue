@@ -2,6 +2,7 @@
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <CommonContent
       :mode="mode"
+      ref="commonContent"
       :resource-info="resourceInfo"
       @replicate="mode = 'replicate'; title='创建副本'"
       @edit="mode = 'edit'; title='编辑'"
@@ -13,7 +14,7 @@
       @delete="$emit('upsert-end')"
     >
     <div slot="auditAndDraft">
-        <el-button type="primary" @click="$emit('submit-audit')">提交审核</el-button>
+        <el-button type="primary" @click="submitCheck">提交审核</el-button>
     </div>
     <div class="form-legend-header">
       <i class="el-icon-edit">基本信息</i>
