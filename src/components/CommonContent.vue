@@ -16,10 +16,10 @@
         </slot>
       </div>
       <div v-else>
-         <slot name="auditAndDraft">
+        <slot name="auditAndDraft">
           <el-button type="primary" @click="$emit('submit-audit')">提交审核</el-button>
           <el-button type="warning" @click="$emit('save-draft')">保存草稿</el-button>
-          </slot>
+        </slot>
       </div>
       <ReleaseTimeSetter 
         v-if="showReleaseTimeSetter" 
@@ -222,8 +222,9 @@ export default {
       })
     },
     getHistoryList: function() {
-      const { type, id } = this.resourceInfo
-      if (id) {
+      const { type, id, version } = this.resourceInfo
+      if (id && version) {
+        // 一些没版本的资源没有历史列表
         this.$service.getVersionList({ id, type }).then((result) => {
           this.versionList = result
         })
@@ -233,7 +234,8 @@ export default {
     },
     getAuditHistoryList() {
       const { type, id, version } = this.resourceInfo
-      if (id) {
+      if (id && version) {
+        // 一些没版本的资源没有历史列表
         this.$service.getAuditHistoryList({ id, type, version }).then((result) => {
           this.auditHistoryList = result
         })
@@ -245,10 +247,12 @@ export default {
       this.releaseTime = undefined
       const { type, id, version, status } = this.resourceInfo
       const { processing, waiting } = this.$consts.status
-      if (status === processing || status === waiting) {
-        this.$service.getTimedTaskInfo({ id, type, version }).then((result) => {
-          this.releaseTime = result.releaseTime
-        })
+      if (id && version) {
+        if (status === processing || status === waiting) {
+          this.$service.getTimedTaskInfo({ id, type, version }).then((result) => {
+            this.releaseTime = result.releaseTime
+          })
+        }
       }
     },
     handleCancelTiming() {

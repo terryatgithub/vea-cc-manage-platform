@@ -7,11 +7,12 @@
       @read="handleRead"
       @edit="handleEdit"
       @copy="handleCopy"
+      @delete="handleDelete"
      >
      </PrivatePannelInfoList>
     <PrivatePannelInfo 
       v-if="!isShowList" 
-       :id="id" 
+      :id="id" 
       :init-mode="mode"
       :version="version"
       @upsert-end="handleUpsertEnd" 
@@ -47,22 +48,30 @@ export default {
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(id) {
-      this.id = id
+    handleEdit(item) {
+      this.id = item.pannelGroupId
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(id, version) {
-      debugger
-      this.id = id
+    handleRead(item, version) {
+      this.id = item.pannelGroupId
       this.mode = 'read'
       this.version = version
       this.isShowList = false
     },
-    handleCopy(id) {
-      this.id = id
+    handleCopy(item) {
+      this.id = item.pannelGroupId
       this.mode = 'copy'
       this.isShowList = false
+    },
+    handleDelete(selected) {
+      this.$service
+        .privatePanelRemove({
+          id: selected.map(item => item.pannelGroupId).join(',')
+        }, '删除成功')
+        .then(data => {
+          this.$refs.list.fetchData()
+        })
     },
     /**
      * 新增编辑里面的返回事件

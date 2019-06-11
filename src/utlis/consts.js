@@ -129,6 +129,28 @@ const panelFocusOptions = [
 
 const panelFocusText = optionsToText(panelFocusOptions)
 
+const cornerIconPositionOptions = [
+  {
+    label: '左上',
+    value: 0
+  },
+  {
+    label: '右上',
+    value: 1
+  },
+  {
+    label: '右下',
+    value: 2
+  },
+  {
+    label: '左下',
+    value: 3
+  }
+]
+
+const cornerIconPositionEnums = optionsToEnums(cornerIconPositionOptions)
+const cornerIconPositionText = optionsToText(cornerIconPositionOptions)
+
 const idPrefix = '10'
 const idPrefixOptions = [
   {
@@ -157,6 +179,9 @@ export default {
   panelFocusText,
   panelTypeOptions,
   panelTypeText,
+  cornerIconPositionOptions,
+  cornerIconPositionEnums,
+  cornerIconPositionText,
   idPrefix,
   idPrefixOptions,
   idPrefixEnums

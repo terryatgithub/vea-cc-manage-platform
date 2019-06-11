@@ -1,62 +1,73 @@
 <template>
   <div>
-    <GlobalCornerIconList v-show="model === 'list'" ref="list" @open-add-page="openAddPage" @open-view-page="openViewPage"></GlobalCornerIconList>
-    <GlobalCornerIconAdd v-if="model === 'add'" :editId="editId"  @open-list-page="openListPage" @go-back="goBack"></GlobalCornerIconAdd>
-    <!-- <GlobalCornerIconView v-if="model ==='view'" :viewId="viewId" @open-list-page="openListPage" @open-add-page="openAddPage" @go-back="goBack"></GlobalCornerIconView> -->
-    <GlobalCornerIconView v-if="model ==='view'" :viewData="viewData" @open-list-page="openListPage" @open-add-page="openAddPage" @go-back="goBack"></GlobalCornerIconView>
+    <GlobalCornerIconList 
+      v-show="isShowList" 
+      ref="list" 
+      @create="handleCreate"
+      @edit="handleEdit"
+      @read="handleRead"
+      @delete="handleDelete">
+    </GlobalCornerIconList>
+    <GlobalCornerIcon
+      v-if="!isShowList"
+      :id="id"
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd"
+      @go-back="goBack"/>
   </div>
 </template>
 <script>
 import GlobalCornerIconList from './GlobalCornerIconList'
-import GlobalCornerIconAdd from './GlobalCornerIconAdd'
-import GlobalCornerIconView from './GlobalCornerIconView'
+import GlobalCornerIcon from './GlobalCornerIcon'
 export default {
   components: {
     GlobalCornerIconList,
-    GlobalCornerIconAdd,
-    GlobalCornerIconView
+    GlobalCornerIcon
   },
   data() {
     return {
-      model: 'list',
-      editId: null,
-      // viewId: null,
-      viewData: {}
+      isShowList: true,
+      mode: 'list',
+      id: undefined,
+      version: undefined
     }
   },
   methods: {
-    /**
-     * 打开新增编辑页面
-     */
-    openAddPage(id) {
-      this.editId = id
-      this.model = 'add'
+    handleCreate() {
+      this.mode = 'create'
+      this.id = undefined
+      this.isShowList = false
     },
-    /**
-     * 打开列表页面
-     */
-    openListPage() {
-      this.model = 'list'
-      this.$refs.list.fetchData() // 更新页面
+    handleEdit(row) {
+       this.id = row.cornerIconId
+       this.mode = 'edit'
+       this.isShowList = false
     },
-    /**
-     * 打开预览页面
-     */
-    // openViewPage(id) {
-    //   this.model = 'view'
-    //    this.viewId = id
-    //   //this.viewData = row
-    // },
-    openViewPage(data) {
-      this.model = 'view'
-       this.viewData = data
-      //this.viewData = row
+    handleRead(row){
+       this.id = row.cornerIconId
+       this.mode = 'read'
+       this.isShowList = false
     },
-    /**
-     * 新增编辑里面的返回事件
-     */
+    handleDelete(selected) {
+      this.$service
+        .globalCornerIconRemove({ 
+          id: selected.map(item => item.cornerIconId).join(',')
+        },'删除成功')
+        .then(_ => {
+          this.$refs.list.fetchData()
+        })
+    },
+    handleUpsertEnd() {
+      this.isShowList = true
+      this.$refs.list.fetchData() //更新页面
+      this.mode = 'list'
+      this.version = undefined
+    },
     goBack() {
-      this.model = 'list'
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

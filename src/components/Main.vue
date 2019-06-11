@@ -8,7 +8,12 @@
           :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
           @click="toggleMenu"
         ></el-button>
-        <Menu :default-active="$route.name" :items="defaultMenu" :isCollapse="isCollapseMenu"></Menu>
+        <Menu 
+          @select="handleOpenMenu"
+          :default-active="$route.name" 
+          :items="menu" 
+          :isCollapse="isCollapseMenu">
+        </Menu>
       </div>
     </div>
     <el-container direction="vertical">
@@ -37,7 +42,7 @@
           <i class="el-icon-setting"></i>
         </div> -->
       </el-header>
-      <TagNav ref="tag" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
+      <TagNav ref="tag" :titles="titles" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
       <el-main>
         <keep-alive>
           <router-view v-if="isKeepAlive"/>
@@ -79,8 +84,55 @@
   </el-container>
 </template>
 <script>
-import { Breadcrumb, Menu, TagNav } from 'admin-toolkit'
-import { setTimeout } from 'timers'
+import { Breadcrumb, TagNav } from 'admin-toolkit'
+import Menu from './Menu'
+
+// 菜单 name 到 路由 name 之间到映射
+const routerMap = {
+  rotateStationCategory: 'rotateStationCategory',
+  rotateStationCategory_viewStation: 'rotateStationCategory_viewStation',
+  rotateTopicInfo: 'rotateTopicInfo',
+  broadcastBlock: 'broadcastBlock' ,
+  multiFunctionBlock: 'multiFunctionBlock' ,
+  sysPlugin: 'sysPlugin',
+  albumPannelInfo: 'albumPannelInfo',
+  markPanel: 'markPanel',
+  pannelInfo: 'pannelInfo',
+  privatePannelInfo: 'privatePannelInfo',
+  commonOnclickInfo: 'commonOnclickInfo',
+  globalCornerIcon: 'globalCornerIcon',
+  globalCornerIconType: 'globalCornerIconType',
+  globalPicture: 'globalPicture',
+  layoutInfo: 'layoutInfo',
+  commonAlbumPanneleUser: 'commonAlbumPanneleUser',
+  commonPannelUser: 'commonPannelUser',
+  commonTabUser: 'commonTabUser',
+  dataSync: 'dataSync',
+  slaveBizErrLog: 'slaveBizErrLog',
+  slaveSecondAudit: 'slaveSecondAudit',
+  actDmpGroupInfo: 'actDmpGroupInfo',
+  homepageInfo: 'homepageInfo',
+  policyConf: 'policyConf',
+  testPolicyConf: 'testPolicyConf',
+  businessTab: 'businessTab',
+  filmDetailPage: 'filmDetailPage',
+  tabInfo: 'tabInfo',
+  videoContent: 'videoContent',
+  adminMasterControl: 'adminMasterControl',
+  dict: 'dataDictionary',
+  baDept: 'baDept',
+  roleConfig: 'roleConfig',
+  sysLogLogin: 'sysLogLogin',
+  sysLogOp: 'sysLogOp',
+  sysMenu: 'sysMenu',
+  userConfig: 'userConfig',
+  themeInfo: 'themeInfo',
+  msn: 'msn',
+  myDrafts: 'myDrafts',
+  myReviewTasks: 'myReviewTasks',
+  mySubmitTasks: 'mySubmitTasks',
+  filmDetailAdBit: 'filmDetailAdBit'
+}
 export default {
   components: {
     Menu,
@@ -90,6 +142,8 @@ export default {
   //props: ['menu'],
   data() {
     return {
+      menu: [],
+      titles: {},
       breadcrumb: [],
       isCollapseMenu: false,
       isShowSetting: false,
@@ -145,10 +199,18 @@ export default {
         }
       }
       const items = gen(mainRoute).children
+      console.log('defaultMenu:', items)
       return items
     }
   },
   methods: {
+    handleOpenMenu(name, menu) {
+      this.$router.push({
+        name: routerMap[name],
+        query: menu.query,
+        params: menu.params
+      })
+    },
     modifyPwd() {
       this.modifyDialogVisible = true
     },
@@ -210,8 +272,39 @@ export default {
         })
         }
       }
-   // this.initTags = tags
-    this.$appState.$set('tags'+ '_' + this.$appState.user.name , tags)
+      // this.initTags = tags
+      this.$appState.$set('tags'+ '_' + this.$appState.user.name , tags)
+    },
+    getMenu() {
+      this.$service.getMenu().then((menu) => {
+        const titles = {}
+        const parseMenu = (menu) => {
+          if (Array.isArray(menu)) {
+            return menu.map(parseMenu)
+          }
+          titles[menu.id] = menu.text
+          const item = {
+            icon: menu.icon,
+            route: menu.id,
+            title: menu.text,
+          }
+          const attr = menu.attributes
+          if (attr && attr.modle === '3') {
+            // 如果是外部的链接
+            item.openType = attr.iframeUrl
+            item.query = {
+              url: attr.iframeUrl
+            }
+          }
+          const children = menu.children
+          if (children && children.length > 0) {
+            item.children = parseMenu(children)
+          }
+          return item
+        }
+        this.menu = parseMenu(menu)
+        this.titles = titles
+      })
     }
   },
   created() {
@@ -219,6 +312,7 @@ export default {
     this.$bus.$on('breadcrumb-change', breadcrumb => {
       this.breadcrumb = breadcrumb
     })
+    this.getMenu()
   },
   mounted() {
   //  this.saveTags()

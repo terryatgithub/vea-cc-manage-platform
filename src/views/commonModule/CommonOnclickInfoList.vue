@@ -9,10 +9,9 @@
     >
         <ButtonGroupForListPage 
         pageName='onclickInfo' 
-        @add="addData"
-        @edit="editData"
-        @delete="deleteData"
-        >
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete">
         </ButtonGroupForListPage>
       <Table
         :props="table.props"
@@ -20,8 +19,10 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
-        @row-selection-change="rowClick"
-      />
+        :select-on-row-click="true"
+        @row-selection-add="handleRowSelectionAdd"
+        @row-selection-remove="handleRowSelectionRemove"
+        @all-row-selection-change="handleAllRowSelectionChange"/>
     </ContentWrapper>
   </ContentCard>
 </template>
@@ -31,7 +32,9 @@ import _ from "gateschema";
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import ButtonList from "./../../components/ButtonLIst";
 import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     ActionList,
     Table,
@@ -40,15 +43,14 @@ export default {
   },
   data() {
     return {
+      resourceType: 'clickEvent',
+      resourceName: '点击事件',
       filter: {
-        sort: undefined,
-        order: undefined
       },
       filterSchema: null,
       pagination: {},
       setDialogVisible: false, //弹框默认关闭
-      selected: undefined,
-      buttonList:[],
+      selected: [],
       table: {
         props: {},
         header: [
@@ -110,43 +112,16 @@ export default {
             }
         ],
         data: [],
-        selected: undefined,
-        selectionType: "single"
+        selected: [],
+        selectionType: 'multiple'
       }
     };
   },
   methods: {
-    rowClick(row ,index) {
-      this.table.selected = index
-      this.selected = row.commonOnclickId
-    },
-    /**
-     * 新增
-     */
-    addData(){
-        this.$emit("open-add-page", null)
-    },
-    /**
-     * 编辑
-     */
-    editData(){
-        this.$emit('open-add-page', this.selected)
-    },
-    /**
-     * 批量删除
-     */
-    deleteData() {
-      if (window.confirm("确定要删除吗")) {
-        this.$service.commonOnclickInfoDelete({ id: this.selected }, "删除成功")
-          .then(data => {
-            this.fetchData();
-          });
-      }
-    },
     //查询
-  handleFilterChange(type, filter) {
-    if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.commonOnclickId)) {
+    handleFilterChange(type, filter) {
+      if (filter) { this.filter = filter}
+        if(this.$validateId(this.filter.commonOnclickId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
@@ -157,10 +132,7 @@ export default {
     },
     //重置
     handleFilterReset() {
-      this.filter = {
-        sort: undefined,
-        order: undefined
-      };
+      this.filter = {};
       this.pagination.currentPage = 1
       this.fetchData();
     },
@@ -177,21 +149,11 @@ export default {
      * 获取数据
      */
     fetchData() {
-      this.selected = undefined
-      this.table.selected = undefined
       const filter = this.parseFilter();
       this.$service.getCommonOnclickInfoList(filter).then(data => {
         this.pagination.total = data.total;
         this.table.data = data.rows;
       });
-    },
-    /**
-     * 获取menuInfoTree
-     */
-    getSysMenuInfo () {
-      return this.$service.getCommonOnclickInfoMenu().then(data => {
-        this.buttonList = data
-      })
     }
   },
   created() {
@@ -226,7 +188,6 @@ export default {
     });
     this.filterSchema = filterSchema;
     this.fetchData();
-    this.getSysMenuInfo();
   }
 };
 </script>

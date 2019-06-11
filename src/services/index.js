@@ -1,5 +1,3 @@
-import Vue from 'vue'
-import { utils } from 'admin-toolkit'
 import fetch from './fetch'
 import login from './login'
 import * as getMenu from './getMenu'
@@ -64,4 +62,35 @@ const service = {
   ...businessTab,
   ...mediaResource
 }
-Vue.prototype.$service = utils.wrapService(service)
+
+export default function install(Vue) {
+  const $service = {}
+  Object.keys(service).forEach((key) => {
+    if (typeof service[key] === 'function') {
+      $service[key] = async (args, message) => {
+        return service[key](args)
+          .then((result) => {
+            if (message) {
+              Vue.prototype.$notify({
+                title: '操作成功',
+                type: 'success',
+                message
+              })
+            }
+            return result
+          })
+          .catch((error) => {
+            Vue.prototype.$notify({
+              title: '操作失败',
+              type: 'error',
+              message: error.message
+            })
+            return Promise.reject(error)
+          })
+      }
+    } else {
+      $service[key] = service[key]
+    }
+  })
+  Vue.prototype.$service = $service
+}

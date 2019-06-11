@@ -19,7 +19,7 @@ export function globalCornerIconTypeSave (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/cornerIconType/save.html',
-    data
+    data: { jsonStr: JSON.stringify(data) }
   })
 }
 export function globalCornerIconTypeDetail (params) {

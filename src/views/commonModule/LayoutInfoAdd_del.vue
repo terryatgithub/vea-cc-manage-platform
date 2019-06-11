@@ -12,8 +12,7 @@
           :rules="formRules"
           ref="form"
           label-width="120px"
-          class="el-form-add"
-        >
+          class="el-form-add">
           <el-form-item label="布局名称(中文)" prop="layoutName">
             <el-input v-model="form.layoutName" placeholder="布局名称"></el-input>
           </el-form-item>
@@ -220,7 +219,7 @@ export default {
     }
   },
   created() {
-    if (JSON.stringify(this.editData) !== '{}') {
+    if (this.editData) {
       this.title = '编辑'
       this.getEditData()
     } else {

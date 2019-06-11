@@ -9,9 +9,9 @@
     >
          <ButtonGroupForListPage 
         pageName='cornerIconType' 
-        @add="addItem"
-        @edit="editData"
-        @delete="batchDel"
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"
         @batch-audit="batchAudit"
         >
         </ButtonGroupForListPage>
@@ -21,47 +21,21 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
       />
     </ContentWrapper>
-    <!-- 预览图片 -->
-    <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
-      <span class="pics"></span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="picDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="picDialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>
-    <!-- 预览图片 --->
-    <!-- 审核 -->
-    <el-dialog title="预览图片" :visible.sync="auditDialogVisible" width="30%">
-      <span>
-        <el-form ref="auditForm" :model="auditForm" :rules="auditFormRules" label-width="80px">
-          <el-form-item label="审核意见" prop="auditFlag">
-            <el-radio v-model="auditForm.auditFlag" label="4">通过</el-radio>
-            <el-radio v-model="auditForm.auditFlag" label="5">打回</el-radio>
-          </el-form-item>
-          <el-form-item label="意见说明" prop="auditDesc">
-            <el-input type="textarea" v-model="auditForm.auditDesc"></el-input>
-          </el-form-item>
-        </el-form>
-      </span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="auditDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitAudit">确 定</el-button>
-      </span>
-    </el-dialog>
-    <!-- 审核 --->
   </ContentCard>
 </template>
 <script>
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     Table,
     ContentWrapper,
@@ -69,21 +43,8 @@ export default {
   },
   data() {
     return {
+      resourceType: 'cornerIconType',
       materialTypes: {}, //素材类型
-      typePosition: {
-        //状态
-        左上: 0,
-        右上: 1,
-        右下: 2,
-        左下: 3
-      },
-       typePosition: {
-        //状态
-        左上: 0,
-        右上: 1,
-        右下: 2,
-        左下: 3
-      },
       picDialogVisible: false, //预览图片弹出框
       auditDialogVisible: false, //审核弹出框
       auditForm: {
@@ -126,7 +87,7 @@ export default {
             width: '110',
             sortable: true,
             render: (createElement, { row }) => {
-              return this.$changeKeyToValue(this.typePosition)[row.typePosition]
+              return this.$consts.cornerIconPositionText[row.typePosition]
             }
           },
           {
@@ -181,12 +142,6 @@ export default {
         }
       })
     },
-    /**
-     * 新增用户
-     */
-    addItem() {
-      this.$emit('open-add-page', null)
-    },
     handleChange(value, direction, movedKeys) {
       var str = []
       for (var i = 0; i < value.length; i++) {
@@ -194,63 +149,7 @@ export default {
       }
       this.selectedRole = this.user.concat(str)
     },
-    editData() {
-      if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selected[0])
-      }
-    },
-    /**
-     * 批量删除
-     */
-    batchDel() {
-      if (this.selected.length === 0) {
-        this.$message('请选择再删除')
-        return
-      }
-      if (window.confirm('确定要删除吗')) {
-        this.$service
-          .globalCornerIconTypeBatchDel(
-            { id: this.selected.join(',') },
-            '删除成功'
-          )
-          .then(data => {
-            this.fetchData()
-          })
-      }
-    },
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.typeId)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.typeId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.typeId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
-    },
-   handleFilterChange(type, filter) {
+    handleFilterChange(type, filter) {
      if (filter) { this.filter = filter}
       if(this.$validateId(this.filter.typeId)) {
         if (type === 'query') {
@@ -299,7 +198,7 @@ export default {
         component: 'Input',
         placeholder: '角标名称'
       }),
-      typePosition: _.o.enum(this.typePosition).other('form', {
+      typePosition: _.o.enum(this.$consts.cornerIconPositionEnums).other('form', {
         component: 'Select',
         placeholder: '角标位置'
       })

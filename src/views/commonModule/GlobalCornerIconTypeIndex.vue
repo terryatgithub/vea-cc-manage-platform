@@ -1,48 +1,72 @@
 <template>
   <div>
-    <GlobalCornerIconTypeList v-show="isShowList" ref="list" @open-add-page="openAddPage"></GlobalCornerIconTypeList>
-    <GlobalCornerIconTypeAdd
+    <GlobalCornerIconTypeList 
+      v-show="isShowList" 
+      ref="list" 
+      @create="handleCreate"
+      @edit="handleEdit"
+      @read="handleRead"
+      @delete="handleDelete"/>
+    <GlobalCornerIconType
       v-if="!isShowList"
-      :editId="editId"
-      @open-list-page="openListPage"
-      @go-back="goBack"
-    ></GlobalCornerIconTypeAdd>
+      :id="id"
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd"
+      @go-back="goBack"/>
   </div>
 </template>
 <script>
 import GlobalCornerIconTypeList from './GlobalCornerIconTypeList'
-import GlobalCornerIconTypeAdd from './GlobalCornerIconTypeAdd'
+import GlobalCornerIconType from './GlobalCornerIconType'
 export default {
   components: {
-    GlobalCornerIconTypeAdd,
-    GlobalCornerIconTypeList
+    GlobalCornerIconTypeList,
+    GlobalCornerIconType
   },
   data() {
     return {
       isShowList: true,
-      editId: null
+      mode: 'list',
+      id: undefined,
+      version: undefined
     }
   },
   methods: {
-    /**
-     * 打开新增编辑页面
-     */
-    openAddPage(userId) {
-      this.editId = userId
+    handleCreate() {
+      this.mode = 'create'
+      this.id = undefined
       this.isShowList = false
     },
-    /**
-     * 打开列表页面
-     */
-    openListPage() {
-      this.isShowList = true
-      this.$refs.list.fetchData() // 更新页面
+    handleEdit(row) {
+       this.id = row.typeId
+       this.mode = 'edit'
+       this.isShowList = false
     },
-    /**
-     * 新增编辑里面的返回事件
-     */
+    handleRead(row){
+       this.id = row.typeId
+       this.mode = 'read'
+       this.isShowList = false
+    },
+    handleDelete(selected) {
+      this.$service
+        .globalCornerIconTypeBatchDel({ 
+          id: selected.map(item => item.typeId).join(',')
+        },'删除成功')
+        .then(_ => {
+          this.$refs.list.fetchData()
+        })
+    },
+    handleUpsertEnd() {
+      this.isShowList = true
+      this.$refs.list.fetchData() //更新页面
+      this.mode = 'list'
+      this.version = undefined
+    },
     goBack() {
       this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

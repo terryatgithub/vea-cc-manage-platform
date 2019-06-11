@@ -40,12 +40,14 @@
     </el-tab-pane>
     <el-tab-pane label="布局" name="layout">
       <MySubmitTasksList resourceType="layout" v-show="mode==='layoutList'" @read="handleRead"></MySubmitTasksList>
-      <LayoutInfoReview
+      <LayoutInfo
         v-if="mode==='layoutPreview'"
-        :reviewData="previewData"
-        @open-list-page="handleUpsertEnd"
+        class="el-tab-preview"
+        :id="previewData.resourceId"
+        init-mode='read'
+        @upsert-end="handleUpsertEnd"
         @go-back="goBack"
-      ></LayoutInfoReview>
+      ></LayoutInfo>
     </el-tab-pane>
     <el-tab-pane label="首页" name="homepage">
       <MySubmitTasksList resourceType="homepage" v-show="mode==='homepageList'" @read="handleRead"></MySubmitTasksList>
@@ -83,12 +85,13 @@
     </el-tab-pane>
     <el-tab-pane label="角标" name="icon">
       <MySubmitTasksList resourceType="icon" v-show="mode==='iconList'" @read="handleRead"></MySubmitTasksList>
-      <GlobalCornerIconView  
-      v-if="mode==='iconPreview'" 
-      :viewData="previewData" 
-      @open-list-page="handleUpsertEnd" 
-      @go-back="goBack">
-      </GlobalCornerIconView>
+      <GlobalCornerIcon  
+        v-if="mode==='iconPreview'" 
+        :id="previewData.resourceId" 
+        init-mode="read"
+        @upsert-end="handleUpsertEnd" 
+        @go-back="goBack">
+      </GlobalCornerIcon>
     </el-tab-pane>
     <el-tab-pane label="系统功能" name="sysPlugin">
       <MySubmitTasksList resourceType="sysPlugin" v-show="mode==='sysPluginList'" @read="handleRead"></MySubmitTasksList>
@@ -101,11 +104,11 @@ import MySubmitTasksList from './MySubmitTasksList'
 import TabPreview from './TabPreview'
 import PanelPreview from './PanelPreview'
 import GlobalPictureUpsert from './../commonModule/GlobalPictureUpsert'
-import LayoutInfoReview from './../commonModule/LayoutInfoReview'
+import LayoutInfo from './../commonModule/LayoutInfo'
 import HomePageInfo from './../homePageManage/HomePageInfo.vue'
 import PolicyManageInfo from './../homePageManage/PolicyManageInfo'
 import ThemeInfoAdd from './../themeManage/ThemeInfoAdd'
-import GlobalCornerIconView from './../commonModule/GlobalCornerIconView'
+import GlobalCornerIcon from './../commonModule/GlobalCornerIcon'
 import MultiFunctionBlockView from './../blockInfo/MultiFunctionBlockView'
 export default {
   components: {
@@ -113,11 +116,11 @@ export default {
     PanelPreview,
     TabPreview,
     GlobalPictureUpsert,
-    LayoutInfoReview,
+    LayoutInfo,
     HomePageInfo,
     PolicyManageInfo,
     ThemeInfoAdd,
-    GlobalCornerIconView,
+    GlobalCornerIcon,
     MultiFunctionBlockView
   },
   data() {

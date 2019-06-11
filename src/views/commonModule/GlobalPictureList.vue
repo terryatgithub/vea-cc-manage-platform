@@ -9,9 +9,9 @@
     >
       <ButtonGroupForListPage
         pageName="poster"
-        @add="addItem"
-        @edit="editData"
-        @delete="batchDel"
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"
         @batch-audit="batchAudit"
       ></ButtonGroupForListPage>
       <Table
@@ -20,6 +20,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -61,9 +62,10 @@
 <script>
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     Table,
     ContentWrapper,
@@ -71,6 +73,7 @@ export default {
   },
   data() {
     return {
+      resourceType: 'picture',
       materialTypes: {}, //素材类型
       // pictureStatus: {
       //   //状态
@@ -121,7 +124,8 @@ export default {
                   src: row.pictureUrl,
                   width: '50px',
                   height: '50px',
-                  class: 'imgs'
+                  class: 'imgs',
+                  'referrer-policy': 'no-referrer'
                 },
                 on: {
                   click: () => {
@@ -195,9 +199,6 @@ export default {
     }
   },
   methods: {
-    handleRead(row) {
-      this.$emit('read', row)
-    },
     submitAudit() {
       this.$refs.auditForm.validate(valid => {
         if (valid) {
@@ -210,12 +211,6 @@ export default {
             })
         }
       })
-    },
-    /**
-     * 新增用户
-     */
-    addItem() {
-      this.$emit('open-add-page')
     },
     handleChange(value, direction, movedKeys) {
       var str = []
@@ -260,75 +255,6 @@ export default {
     reviewPic(row) {
       this.reviewPicUrl = row.pictureUrl
       this.picDialogVisible = true
-    },
-    editData() {
-      if (this.$isAllowEdit(this.selected)) {
-        if(this.status[0]!==4) {
-           this.$emit('open-add-page', this.selected[0])
-        } else {
-             this.$message({
-                type: 'error',
-                message: '审核通过的的数据不能编辑'
-              })
-        }
-      }
-    },
-    /**
-     * 批量删除
-     */
-    batchDel() {
-      if (this.selected.length === 0) {
-        this.$message('请选择再删除')
-        return
-      }
-      if (window.confirm('确定要删除吗')) {
-        this.$service
-          .materialBatchDelete({ id: this.selected.join(',') }, '删除成功')
-          .then(data => {
-            this.fetchData()
-          })
-      }
-    },
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.pictureId)
-      this.status.push(targetItem.pictureStatus)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      let removeIndex = null
-      this.selected = this.selected.filter((item, index) => {
-        if (item !== targetItem.pictureId) {
-          return item
-        } else {
-          removeIndex = index
-        }
-      })
-      this.status.splice(removeIndex, 1);
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-        this.status = []
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-      this.status = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.pictureId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
     },
     handleFilterChange(type, filter) {
       if (filter) { this.filter = filter}

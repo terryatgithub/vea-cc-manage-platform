@@ -7,19 +7,18 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-         <ButtonGroupForListPage 
+      <ButtonGroupForListPage 
         pageName='markPanel' 
-        @add="addData"
-        @edit="editData"
-        @delete="deleteData"
-        >
-        </ButtonGroupForListPage>
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"/>
       <Table
         :props="table.props"
         :header="table.header"
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -32,7 +31,9 @@ import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import ButtonList from './../../components/ButtonLIst'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     Table,
     ContentWrapper,
@@ -40,22 +41,9 @@ export default {
   },
   data() {
     return {
+      resourceType: 'panelInfo',
       businessTypes: {}, //业务分类
-      pannelResources: {
-        腾讯: 'o_tencent',
-        爱奇艺: 'o_iqiyi',
-        优酷: 'o_youku'
-      },
-      pannelStatuses: {
-        下架: 0,
-        上架: 1,
-        草稿: 2,
-        待审核: 3,
-        审核通过: 4,
-        审核不通过: 5
-      },
-      filter: {
-      },
+      filter: {},
       filterSchema: null,
       pagination: {},
       selected: [],
@@ -189,46 +177,6 @@ export default {
       }
       return filter
     },
-    /**新增 */
-    addData() {
-      this.$emit('create')
-    },
-    /**编辑 */
-      editData() {
-      if (this.$isAllowEdit(this.selected)) {
-        this.table.data.forEach(e => {
-          if (e['pannelGroupId'] === this.selected[0]) {
-            if (e.pannelStatus === 2) {
-              this.$emit('edit', this.selected[0])
-            } else {
-              this.$message({
-                type: 'error',
-                message: '只有草稿才能编辑'
-              })
-            }
-            return
-          }
-        })
-      }
-    },
-    /**批量删除 */
-    deleteData() {
-      if (this.selected.length === 0) {
-        this.$message('请选择再删除')
-        return
-      }
-      if (window.confirm('确定要删除吗')) {
-        this.$service
-          .deleteMarkPanel({ id: this.selected.join(',') }, '删除成功')
-          .then(data => {
-            this.fetchData()
-          })
-      }
-    },
-    /**预览 */
-     handleRead(row, version) {
-      this.$emit('read', row.pannelGroupId, version)
-    },
     /**获取业务分类 */
     getBusinessType() {
       return this.$service.getDictType({type: 'businessType'}).then(data => {
@@ -238,41 +186,8 @@ export default {
         console.log(this.businessTypes)
       })
     },
-    /**表格操作 */
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.pannelGroupId)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.pannelGroupId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.pannelGroupId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
-    },
     //查询
-   handleFilterChange(type, filter) {
+    handleFilterChange(type, filter) {
      if (filter) { this.filter = filter}
       if(this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
@@ -286,8 +201,6 @@ export default {
     //重置
     handleFilterReset() {
       this.filter = {
-        sort: undefined,
-        order: undefined
       }
       this.pagination.currentPage = 1
       this.fetchData()
@@ -295,7 +208,7 @@ export default {
   },
   created() {
     let filterSchema = _.map({
-      pannelId: _.o.string.other('form', {
+      pannelId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'Input',
         placeholder: 'ID'
       }),
@@ -307,7 +220,7 @@ export default {
         component: 'Select',
         placeholder: '业务分类'
       }),
-      pannelResource: _.o.enum(this.pannelResources).other('form', {
+      pannelResource: _.o.enum(this.$consts.sourceEnums).other('form', {
         component: 'Select',
         placeholder: '内容源'
       }),
@@ -315,7 +228,7 @@ export default {
         component: 'Input',
         placeholder: '引用状态'
       }),
-      pannelStatus: _.o.enum(this.pannelStatuses).other('form', {
+      pannelStatus: _.o.enum(this.$consts.statusEnums).other('form', {
         component: 'Select',
         placeholder: '状态'
       })

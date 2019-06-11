@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import ElementUI from 'element-ui'
 import VCharts from 'v-charts'
+import service from '../services'
 
 import 'element-ui/lib/theme-chalk/index.css'
 // import './theme/coocaa-red/index.css'
@@ -25,6 +26,7 @@ Vue.use(ElementUI, { size: 'small', zIndex: 3000 })
 Vue.use(VCharts)
 Vue.use(ElementUI)
 Vue.use(AppState)
+Vue.use(service)
 Vue.component('GateSchemaForm', GateSchemaForm)
 Vue.component('ContentCard', ContentCard)
 Vue.directive('shadow-drag', shadowDrag)

@@ -36,7 +36,7 @@ export function getHistory(params) {
 //     })
 // }
 /**批量删除 */
-export function remove(params) {
+export function privatePanelRemove(params) {
     return this.fetch({
         method: 'get',
         url: 'api/v1/panel/remove.html',

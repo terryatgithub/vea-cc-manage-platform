@@ -249,7 +249,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .global_icon_actions {
   padding: 15px;
   margin-bottom: 20px;

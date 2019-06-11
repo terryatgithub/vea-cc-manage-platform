@@ -7,13 +7,12 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-         <ButtonGroupForListPage 
-         v-if="dataList === undefined "
-        pageName='privatePanel' 
-        @add="addTabInfo"
-        @edit="editData"
-        @delete="batchDel"
-        >
+        <ButtonGroupForListPage 
+          v-if="dataList === undefined"
+          pageName='privatePanel' 
+          @add="handleCreate"
+          @edit="handleEdit"
+          @delete="handleDelete">
         </ButtonGroupForListPage>
       <Table
         :props="table.props"
@@ -21,6 +20,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -33,7 +33,9 @@
 import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import _ from 'gateschema'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     ContentWrapper,
     Table,
@@ -46,21 +48,9 @@ export default {
   },
   data() {
     return {
-      pannelStatusOption: [
-        { label: '下架', value: '0' },
-        { label: '上架', value: '1' },
-        { label: '草稿', value: '2' },
-        { label: '待审核', value: '3' },
-        { label: '审核通过', value: '4' },
-        { label: '审核不通过', value: '5' }
-      ],
+      resourceType: 'panelInfo',
       pannelCategories: {},
       pannelStatus: {},
-      pannelResources: {
-        腾讯: 'o_tencent',
-        爱奇艺: 'o_iqiyi',
-        优酷: 'o_youku'
-      },
       filter: {
         sort: undefined,
         order: undefined,
@@ -114,17 +104,7 @@ export default {
             formatter: row => {
               const status = row.pannelStatus
               const currentVersion = row.currentVersion
-              return (
-                currentVersion +
-                '/' +
-                this.pannelStatusOption
-                  .map(function(item) {
-                    if (status.toString() === item.value) {
-                      return item.label
-                    }
-                  })
-                  .join('')
-              )
+              return `${currentVersion}/${this.$consts.statusText[status]}`
             }
           },
           {
@@ -214,58 +194,6 @@ export default {
       }
       return filter
     },
-    //新增
-    addTabInfo() {
-      this.$emit('create')
-    },
-    //编辑
-    editData() {
-      var that = this
-      if (that.selected.length == 0) {
-        that.$message('请选择一条数据')
-      } else if (that.selected.length > 1) {
-        that.$message('只能选择一条数据')
-      } else {
-        for (var j = 0; j < that.table.data.length; j++) {
-          if (that.selected[0] == that.table.data[j].pannelGroupId) {
-            if (that.table.data[j].pannelStatus == 2) {
-              that.$emit('edit', that.selected[0])
-            } else {
-              that.$message('该状态不允许编辑')
-            }
-          }
-        }
-      }
-    },
-    //删除
-    batchDel() {
-      var that = this
-      if (that.selected.length == 0) {
-        that.$message('未选中记录')
-      } else {
-        const ids = that.selected
-        for (var i = 0; i < ids.length; i++) {
-          for (var j = 0; j < that.table.data.length; j++) {
-            if (ids[i] == that.table.data[j].pannelGroupId) {
-              //待审核不能删除
-              if (that.table.data[j].pannelStatus == 3) {
-                that.$message('待审核状态下不允许删除')
-              } else {
-                that.$service
-                  .remove({ id: ids.join(',') }, '删除成功')
-                  .then(data => {
-                    that.fetchData()
-                  })
-              }
-            }
-          }
-        }
-      }
-    },
-    handleRead(row, version) {
-      this.$emit('read', row.pannelGroupId, version)
-    },
-    //查询
     handleFilterChange(type, filter) {
       if (filter) { this.filter = filter}
       if(this.$validateId(this.filter.pannelId)) {
@@ -297,46 +225,9 @@ export default {
           this.pannelCategories[element.dictCnName] = element.dictId
         })
       })
-    },
-    //表格操作
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.pannelGroupId)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.pannelGroupId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.pannelGroupId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
     }
   },
   created() {
-    this.pannelStatus = this.pannelStatusOption.reduce((result, item) => {
-      result[item.label] = item.value
-      return result
-    }, {})
     let filterSchema = _.map({
       pannelId: _.o.string.other('form', {
         component: 'Input',
@@ -350,7 +241,7 @@ export default {
         component: 'Input',
         placeholder: '标题'
       }),
-      pannelResource: _.o.enum(this.pannelResources).other('form', {
+      pannelResource: _.o.enum(this.$consts.sourceEnums).other('form', {
         component: 'Select',
         placeholder: '内容源'
       }),
@@ -362,7 +253,7 @@ export default {
         component: 'Input',
         placeholder: '引用状态'
       }),
-      pannelStatus: _.o.enum(this.pannelStatus).other('form', {
+      pannelStatus: _.o.enum(this.$consts.statusEnums).other('form', {
         component: 'Select',
         placeholder: '状态'
       })

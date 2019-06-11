@@ -5,15 +5,14 @@
       :filterSchema="filterSchema"
       :pagination="pagination"
       @filter-change="handleFilterChange"
-      @filter-reset="handleFilterReset"
-    >
+      @filter-reset="handleFilterReset">
       <div class="btns">
         <ButtonGroupForListPage 
         pageName='layout' 
         :not-contain-btns="notContainBtns"
-        @add="addItem"
-        @edit="editData"
-        @delete="batchDel"
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"
         >
         </ButtonGroupForListPage>
       </div>
@@ -23,6 +22,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -35,7 +35,9 @@
 import _ from 'gateschema'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     Table,
     ContentWrapper,
@@ -43,27 +45,17 @@ export default {
   },
   data() {
     return {
+      resourceType: 'layout',
       notContainBtns: [ 'audit', 'batchAudit'],
       layoutType: {
         '主页6.0': 1,
         '影视V2': 2
       },
       layoutIsTitle: {
-        带标题: 1,
-        不带标题: 0
+        '带标题': 1,
+        '不带标题': 0
       },
-      layoutStatus: {
-        上架: 1,
-        下架: 0,
-        草稿: 2,
-        待审核: 3,
-        审核通过: 4,
-        审核不通过: 5
-      },
-      filter: {
-        sort: undefined,
-        order: undefined
-      },
+      filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {},
       selected: [],
@@ -87,8 +79,9 @@ export default {
                   type: 'text'
                 },
                 on: {
-                  click: () => {
-                    this.openReview(row) 
+                  click: (event) => {
+                    event.stopPropagation()
+                    this.handleRead(row)
                   }
                 }
               },row.layoutName)
@@ -160,28 +153,7 @@ export default {
             prop: 'layoutStatus',
             width: 70,
             render: (createElement, {row}) => {
-               let content='';
-						switch(row.layoutStatus){
-							case 0:
-								content='下架';
-								break;
-							case 1:
-								content='上架';
-								break;
-							case 2:
-								content='草稿';
-								break;
-							case 3:
-								content='待审核';
-								break;
-							case 4:
-								content='已审核';
-								break;
-							case 5:
-								content='审核不通过';
-								break;
-						}
-						return content
+              return this.$consts.statusText[row.layoutStatus]
             }
           },
            {
@@ -204,81 +176,13 @@ export default {
     }
   },
   methods: {
-    /**
-     * 新增用户
-     */
-    addItem() {
-      this.$emit('open-add-page', {})
-    },
-    openReview(row) {
-       this.$emit('open-review-page',row)
-    },
-    editData() {
-      if( this.$isAllowEdit(this.selected)) {
-         let row = this.selectedRows[this.selected[0]]
-         if (row.layoutStatus !== 4)
-         this.$emit('open-add-page',this.selectedRows[this.selected[0]])
-         else {
-           this.$message("该状态不能审核")
-         }
-      }
-    },
-    /**
-     * 批量删除
-     */
-    batchDel() {
-      if (this.selected.length === 0) {
-        this.$message('请选择再删除')
-        return
-      }
-      if (window.confirm('确定要删除吗')) {
-        this.$service
-          .getLayoutInforBatchDel(
-            { id: this.selected.join(',') },
-            '删除成功'
-          )
-          .then(data => {
-            this.fetchData()
-          })
-      }
-    },
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.layoutId)
-      let id = targetItem.layoutId
-      this.selectedRows[id] = targetItem
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.layoutId
-      })
-      delete this.selectedRows[targetItem.layoutId]
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.layoutId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
+    genDefaultFilter() {
+      return {}
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
+      if (filter) { 
+        this.filter = filter
+      }
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
@@ -287,10 +191,7 @@ export default {
       this.fetchData()
     },
     handleFilterReset() {
-      this.filter = {
-        sort: undefined,
-        order: undefined,
-      }
+      this.filter = this.genDefaultFilter() 
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -306,7 +207,6 @@ export default {
      * 获取数据
      */
     fetchData() {
-      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getLayoutInforPageList(filter).then(data => {
         this.pagination.total = data.total
@@ -328,7 +228,7 @@ export default {
         component: 'Select',
         placeholder: '布局标题'
       }),
-      layoutStatus: _.o.enum(this.layoutStatus).other('form', {
+      layoutStatus: _.o.enum(this.$consts.statusEnums).other('form', {
         component: 'Select',
         placeholder: '状态'
       })

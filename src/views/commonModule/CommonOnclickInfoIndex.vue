@@ -1,43 +1,69 @@
 <template>
   <div>
-    <CommonOnclickInfoList v-show='isShowList' ref="list" @open-add-page="openAddPage"></CommonOnclickInfoList>
-    <CommonOnclickInfoAdd v-if='!isShowList' :editId="editId" @openListPage="openListPage" @go-back="goBack"></CommonOnclickInfoAdd>
+    <CommonOnclickInfoList 
+      v-show='isShowList' 
+      ref="list" 
+      @create="handleCreate"
+      @edit="handleEdit"
+      @delete="handleDelete"/>
+
+    <CommonOnclickInfo
+      v-if='!isShowList' 
+      :editId="id" 
+      @openListPage="handleUpsertEnd" 
+      @go-back="goBack"/>
   </div>
 </template>
 <script>
-import CommonOnclickInfoAdd from './CommonOnclickInfoAdd'
+import CommonOnclickInfo from './CommonOnclickInfo'
 import CommonOnclickInfoList from './CommonOnclickInfoList'
 export default {
   components: {
-    CommonOnclickInfoAdd,
+    CommonOnclickInfo,
     CommonOnclickInfoList
   },
   data () {
     return {
       isShowList: true,
-      editId: null
+      mode: 'list',
+      id: null
     }
   },
   methods: {
-    /** 
-     * 打开新增编辑页面
-    */
-    openAddPage (commonOnclickId) {
-       this.editId = commonOnclickId
+    handleCreate() {
+      this.mode = 'create'
+      this.id = undefined
+      this.isShowList = false
+    },
+    handleEdit(row) {
+       this.id = row.commonOnclickId
+       this.mode = 'edit'
        this.isShowList = false
     },
-    /** 
-     * 打开列表页面
-    */
-    openListPage () {
-      this.isShowList = true
-      this.$refs.list.fetchData();//更新页面
+    handleRead(row){
+       this.id = row.commonOnclickId
+       this.mode = 'read'
+       this.isShowList = false
     },
-    /**  
-     * 新增编辑里面的返回事件
-    */
-    goBack () {
-     this.isShowList = true
+    handleDelete(selected) {
+      this.$service
+        .commonOnclickInfoDelete({ 
+          id: selected.map(item => item.commonOnclickId).join(',')
+        },'删除成功')
+        .then(_ => {
+          this.$refs.list.fetchData()
+        })
+    },
+    handleUpsertEnd() {
+      this.isShowList = true
+      this.$refs.list.fetchData() //更新页面
+      this.mode = 'list'
+      this.version = undefined
+    },
+    goBack() {
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

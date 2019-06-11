@@ -48,19 +48,28 @@ export default {
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(id) {
-      this.id = id
+    handleEdit(item) {
+      this.id = item.pannelGroupId
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(id, version) {
-      this.id = id
+    handleRead(item, version) {
+      this.id = item.pannelGroupId
       this.mode = 'read'
       this.version = version
       this.isShowList = false
     },
-    handleCopy(id) {
-      this.id = id
+    handleDelete(selected) {
+      this.$service
+        .deleteMarkPanel({ 
+          id: this.selected.map(item => item.pannelGroupId).join(',')
+        }, '删除成功')
+        .then(data => {
+          this.fetchData()
+        })
+    },
+    handleCopy(item) {
+      this.id = item.pannelGroupId
       this.mode = 'copy'
       this.isShowList = false
     },

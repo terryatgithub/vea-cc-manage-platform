@@ -3,8 +3,10 @@
     <GlobalPictureList 
       v-show="isShowList" 
       ref="list" 
-      @open-add-page="openAddPage"
+      @create="handleCreate"
+      @edit="handleEdit"
       @read="handleRead"
+      @delete="handleDelete"
     />
     <GlobalPictureUpsert
       v-if="!isShowList"
@@ -31,38 +33,32 @@ export default {
     };
   },
   methods: {
-    // /**
-    //  * 打开新增编辑页面
-    //  */
-    // handleEdit(id) {
-    //   this.editId = id;
-    //   this.isShowList = false;
-    // },
-    // /**
-    //  * 打开列表页面
-    //  */
-    // handleShowList() {
-    //   this.isShowList = true;
-    //   this.$refs.list.fetchData(); // 更新页面
-    // },
-    /**
-     * 新增编辑里面的返回事件
-     */
     goBack() {
       this.isShowList = true;
     },
-      /**
-     * 打开新增编辑页面
-     */
-    openAddPage(id) {
-      this.editId = id
+    handleCreate(item) {
+      this.editId = undefined
       this.isShowList = false
       this.mode = 'create'
     },
-    handleRead(row){
-      this.editId = row.pictureId
+    handleEdit(item) {
+      this.editId = item.pictureId
+      this.isShowList = false
+      this.mode = 'edit'
+    },
+    handleRead(item){
+      this.editId = item.pictureId
       this.mode = 'read'
       this.isShowList = false
+    },
+    handleDelete(selected) {
+      this.$service
+        .materialBatchDelete({ 
+          id: selected.map(item => item.pictureId).join(',')
+        }, '删除成功')
+        .then(data => {
+          this.$refs.list.fetchData()
+        })
     },
     /**
      * 打开列表页面

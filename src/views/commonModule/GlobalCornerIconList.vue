@@ -9,9 +9,9 @@
     >
       <ButtonGroupForListPage
         pageName="cornerIcon"
-        @add="addData"
-        @edit="editData"
-        @delete="deleteData"
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete"
       ></ButtonGroupForListPage>
       <!-- <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
@@ -26,6 +26,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -60,17 +61,20 @@ import GlobelIconLevel from './GlobelIconLevel'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import BaseList from '@/components/BaseList'
 export default {
+  extends: BaseList,
   components: {
     ActionList,
     Table,
     ContentWrapper,
     GlobalIconAudit,
     GlobelIconLevel,
-    ButtonGroupForListPage
+    ButtonGroupForListPage,
   },
   data() {
     return {
+      resourceType: 'cornerIcon',
       checkAll: false,
       globalTypes: {
         test1: '1010',
@@ -125,8 +129,9 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => {
-                      this.openReview(row)
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleRead(row)
                     }
                   }
                 },
@@ -206,40 +211,6 @@ export default {
       }
       return filter
     },
-    addData() {
-      this.$emit('open-add-page', null)
-    },
-    editData() {
-      if (this.$isAllowEdit(this.selected)) {
-        this.table.data.forEach((e) => {
-           if (e['cornerIconId'] ===this.selected[0]) {
-             if (e.cornerStatus !== 4) {
-               this.$emit('open-add-page', this.selected[0])
-             } else {
-               this.$message({
-                 type: 'error',
-                 message: '审核通过的数据不能编辑'
-               })
-             }
-             return
-           }
-        })
-      }
-    },
-    
-    deleteData() {
-      if (this.selected.length == 0) {
-        this.$message('请至少选择一条数据')
-      } else {
-        if (window.confirm('确定要删除吗')) {
-          const ids = this.$service
-            .globalCornerIconRemove({ id: this.selected.join(',') }, '删除成功')
-            .then(data => {
-              this.fetchData()
-            })
-        }
-      }
-    },
     //批量审核
     batchHandle() {
       var that = this
@@ -288,12 +259,6 @@ export default {
     changePriority() {
       this.dialogLevelVisible = true
     },
-    //预览
-    openReview(row) {
-      console.log(row)
-      // this.$emit('open-view-page', row.cornerIconId)
-      this.$emit('open-view-page', row)
-    },
     //查询
     handleFilterChange(type, filter) {
       if (filter) { this.filter = filter}
@@ -314,39 +279,6 @@ export default {
       }
       this.pagination.currentPage = 1
       this.fetchData()
-    },
-    //表格操作
-    handleRowSelectionAdd(targetItem) {
-      this.selected.push(targetItem.cornerIconId)
-      this.updateTableSelected()
-    },
-    handleRowSelectionRemove(targetItem) {
-      this.selected = this.selected.filter(item => {
-        return item !== targetItem.cornerIconId
-      })
-      this.updateTableSelected()
-    },
-    handleAllRowSelectionChange(value) {
-      if (value) {
-        this.table.data.forEach(this.handleRowSelectionAdd)
-      } else {
-        this.selected = []
-        this.table.selected = []
-      }
-    },
-    handleAllRowSelectionRemove() {
-      this.selected = []
-      this.table.selected = []
-    },
-    updateTableSelected() {
-      const table = this.table
-      const newSelectedIndex = this.selected
-      table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.cornerIconId) > -1) {
-          result.push(index)
-        }
-        return result
-      }, [])
     },
     //角标分类
     getCornerTypes() {

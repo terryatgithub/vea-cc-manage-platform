@@ -30,22 +30,36 @@ export default {
         })
       }
       const item = this.selected[0]
+      const resourceType = this.resourceType
       const idPrefix = this.$consts.idPrefix
-      const field = resourceFields[this.resourceType]
+      const field = resourceFields[resourceType]
       const id = item[field.id]
       const status = item[field.status]
       const STATUS = this.$consts.status
-      if (status !== STATUS.draft && status !== STATUS.rejected) {
-        return this.$message({
-          type: 'error',
-          message: '该状态不允许编辑'
-        })
+      if (['picture', 'layout', 'cornerIcon', 'cornerIconType', 'clickEvent'].indexOf(resourceType) > -1) {
+        // 有些资源在待审核状态也能编辑
+        if (status === STATUS.accepted) {
+          return this.$message({
+            type: 'error',
+            message: '该状态不允许编辑'
+          })
+        }
+      } else {
+        if (status !== STATUS.draft && status !== STATUS.rejected) {
+          return this.$message({
+            type: 'error',
+            message: '该状态不允许编辑'
+          })
+        }
       }
-      if (id.toString().slice(0, 2) !== idPrefix) {
-        return this.$message({
-          type: 'error',
-          message: '无权限编辑该记录'
-        })
+      if (['clickEvent'].indexOf(resourceType) === -1) {
+        // 一些资源需要验证 idPrefix
+        if (id.toString().slice(0, 2) !== idPrefix) {
+          return this.$message({
+            type: 'error',
+            message: '无权限编辑该记录'
+          })
+        }
       }
       this.$emit('edit', item)
     },
