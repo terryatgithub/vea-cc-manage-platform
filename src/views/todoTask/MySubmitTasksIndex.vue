@@ -95,7 +95,13 @@
     </el-tab-pane>
     <el-tab-pane label="系统功能" name="sysPlugin">
       <MySubmitTasksList resourceType="sysPlugin" v-show="mode==='sysPluginList'" @read="handleRead"></MySubmitTasksList>
-      <MultiFunctionBlockView v-if="mode ==='sysPluginPreview'" :viewId="previewData.resourceId" @open-list-page="handleUpsertEnd" @go-back="goBack"></MultiFunctionBlockView>
+      <MultiFunctionBlockInfo 
+        v-if="mode ==='sysPluginPreview'" 
+        init-mode="read"
+        :id="previewData.resourceId" 
+        @upsert-end="handleUpsertEnd" 
+        @go-back="goBack">
+      </MultiFunctionBlockInfo>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -109,7 +115,7 @@ import HomePageInfo from './../homePageManage/HomePageInfo.vue'
 import PolicyManageInfo from './../homePageManage/PolicyManageInfo'
 import ThemeInfoAdd from './../themeManage/ThemeInfoAdd'
 import GlobalCornerIcon from './../commonModule/GlobalCornerIcon'
-import MultiFunctionBlockView from './../blockInfo/MultiFunctionBlockView'
+import MultiFunctionBlockInfo from './../blockInfo/MultiFunctionBlockInfo'
 export default {
   components: {
     MySubmitTasksList,
@@ -121,7 +127,7 @@ export default {
     PolicyManageInfo,
     ThemeInfoAdd,
     GlobalCornerIcon,
-    MultiFunctionBlockView
+    MultiFunctionBlockInfo
   },
   data() {
     return {

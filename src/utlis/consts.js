@@ -89,6 +89,28 @@ const sourceText = {
   o_youku: '优酷'
 }
 
+const sourceNumberOptions = [
+  {
+    label: '无',
+    value: 0
+  },
+  {
+    label: '腾讯',
+    value: 1
+  },
+  {
+    label: '爱奇艺',
+    value: 2
+  },
+  {
+    label: '优酷',
+    value: 3
+  }
+]
+
+const sourceNumberText = optionsToText(sourceNumberOptions)
+const sourceNumberEnums = optionsToEnums(sourceNumberOptions)
+
 const partnerOptions = [
   {
     label: '腾讯',
@@ -169,19 +191,27 @@ export default {
   statusText,
   statusOptions,
   statusEnums,
+
   sourceOptions,
   sourceEnums,
   sourceOptionsWithEmpty,
   sourceToPartner,
   sourceText,
+
+  sourceNumberOptions,
+  sourceNumberText,
+  sourceNumberEnums,
+
   partnerOptions,
   panelFocusOptions,
   panelFocusText,
   panelTypeOptions,
   panelTypeText,
+
   cornerIconPositionOptions,
   cornerIconPositionEnums,
   cornerIconPositionText,
+
   idPrefix,
   idPrefixOptions,
   idPrefixEnums

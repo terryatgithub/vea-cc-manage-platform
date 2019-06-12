@@ -17,6 +17,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -38,21 +39,7 @@ export default {
   },
   data() {
     return {
-      resourceType: 'blockInfo',
-      pluginStatus: {
-        下架: 0,
-        上架: 1,
-        草稿: 2,
-        待审核: 3,
-        审核通过: 4,
-        审核不通过: 5
-      },
-      source: {
-        无: 0,
-        腾讯: 1,
-        爱奇艺: 2,
-        优酷: 3
-      },
+      resourceType: 'sysPlugin',
       channel: {
         影视: 'movie',
         体育: 'sport',
@@ -85,7 +72,8 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleRead(row)
                     }
                   }
@@ -106,7 +94,8 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleRead(row, row.duplicateVersion)
                     }
                   }
@@ -119,46 +108,14 @@ export default {
             label: '内容源',
             prop: 'source',
             render: (createElement, { row }) => {
-              switch (row.source) {
-                case 0:
-                  return '无'
-                  break
-                case 1:
-                  return '腾讯'
-                  break
-                case 2:
-                  return '爱奇艺'
-                  break
-                 case 3:
-                  return '优酷'
-                  break
-              }
+              return this.$consts.sourceNumberText[row.source]
             }
           },
           {
             label: '状态',
             prop: 'pluginStatus',
             render: (createElement, { row }) => {
-              switch (row.pluginStatus) {
-                case 0:
-                  return '下架'
-                  break
-                case 1:
-                  return '上架'
-                  break
-                case 2:
-                  return '草稿'
-                  break
-                case 3:
-                  return '待审核'
-                  break
-                case 4:
-                  return '审核通过'
-                  break
-                case 5:
-                  return '审核不通过'
-                  break
-              }
+              return this.$consts.statusText[row.pluginStatus]
             }
           },
           {
@@ -205,45 +162,12 @@ export default {
      * 获取数据
      */
     fetchData() {
-      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getSysPlugin(filter).then(data => {
         console.log(data)
         this.pagination.total = data.total
         this.table.data = data.rows
       })
-    },
-    handleEdit () {
-      const length = this.selected.length
-      if (length === 0) {
-        return this.$message({
-          type: 'error',
-          message: '未选中记录'
-        })
-      }
-      if (length > 1) {
-        return this.$message({
-          type: 'error',
-          message: '只能选择一条记录'
-        })
-      }
-      const item = this.selected[0]
-      const idPrefix = this.$consts.idPrefix
-      const id = item.pluginId
-      const status = item['pluginStatus']
-      if (status === 4) {
-        return this.$message({
-          type: 'error',
-          message: '该状态不允许编辑'
-        })
-      }
-      if (id.toString().slice(0, 2) !== idPrefix) {
-        return this.$message({
-          type: 'error',
-          message: '无权限编辑该记录'
-        })
-      }
-      this.$emit('edit', item)
     },
     //查询
      handleFilterChange(type, filter) {
@@ -286,7 +210,7 @@ export default {
         component: 'Input',
         placeholder: '功能名称'
       }),
-      source: _.o.enum(this.source).other('form', {
+      source: _.o.enum(this.$consts.sourceNumberEnums).other('form', {
         component: 'Select',
         placeholder: '内容源'
       }),
@@ -294,7 +218,7 @@ export default {
         component: 'Select',
         placeholder: '频道'
       }),
-      pluginStatus: _.o.enum(this.pluginStatus).other('form', {
+      pluginStatus: _.o.enum(this.$consts.statusEnums).other('form', {
         component: 'Select',
         placeholder: '状态'
       })

@@ -38,7 +38,7 @@
         <el-form-item class="el-col-6">
           <el-select v-model="filter.pluginStatus" placeholder="状态">
             <el-option
-              v-for="(item, index) in pictureStatus"
+              v-for="(item, index) in $consts.statusOptions"
               :key="index"
               :label="item.label"
               :value="item.value"
@@ -47,9 +47,8 @@
         </el-form-item>
         <el-form-item class="el-col-6">
           <el-select v-model="filter.source" placeholder="内容源">
-            <el-option value>请选择</el-option>
             <el-option
-              v-for="(item, index) in source"
+              v-for="(item, index) in $consts.sourceNumberOptions"
               :key="index"
               :label="item.label"
               :value="item.value"
@@ -74,6 +73,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -100,20 +100,6 @@ export default {
       pluginType: [],
       parentTypes: [],
       childTypes: {}, //功能分类
-      pictureStatus: [
-        { label: '下架', value: '0' },
-        { label: '上架', value: '1' },
-        { label: '草稿', value: '2' },
-        { label: '待审核', value: '3' },
-        { label: '审核通过', value: '4' },
-        { label: '审核不通过', value: '5' }
-      ],
-      source: [
-        { label: '无', value: 0 },
-        { label: '腾讯', value: 1 },
-        { label: '爱奇艺', value: 2 },
-        { label: '优酷', value: 3 }
-      ],
       filter: {},
       filterSchema: null,
       pagination: {},
@@ -137,7 +123,8 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleRead(row)
                     }
                   }
@@ -158,7 +145,8 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleRead(row, row.duplicateVersion)
                     }
                   }
@@ -171,46 +159,14 @@ export default {
             label: '内容源',
             prop: 'source',
             render: (createElement, { row }) => {
-              switch (row.source) {
-                case 0:
-                  return '无'
-                  break
-                case 1:
-                  return '腾讯'
-                  break
-                case 2:
-                  return '爱奇艺'
-                  break
-                 case 3:
-                  return '优酷'
-                  break
-              }
+              return this.$consts.sourceNumberText[row.source]
             }
           },
           {
             label: '状态',
             prop: 'pluginStatus',
             render: (createElement, { row }) => {
-              switch (row.pluginStatus) {
-                case 0:
-                  return '下架'
-                  break
-                case 1:
-                  return '上架'
-                  break
-                case 2:
-                  return '草稿'
-                  break
-                case 3:
-                  return '待审核'
-                  break
-                case 4:
-                  return '审核通过'
-                  break
-                case 5:
-                  return '审核不通过'
-                  break
-              }
+              return this.$consts.statusText[row.pluginStatus]
             }
           },
           {
@@ -225,38 +181,6 @@ export default {
     }
   },
   methods: {
-    handleEdit () {
-      const length = this.selected.length
-      if (length === 0) {
-        return this.$message({
-          type: 'error',
-          message: '未选中记录'
-        })
-      }
-      if (length > 1) {
-        return this.$message({
-          type: 'error',
-          message: '只能选择一条记录'
-        })
-      }
-      const item = this.selected[0]
-      const idPrefix = this.$consts.idPrefix
-      const id = item.pluginId
-      const status = item['pluginStatus']
-      if (status === 4) {
-        return this.$message({
-          type: 'error',
-          message: '该状态不允许编辑'
-        })
-      }
-      if (id.toString().slice(0, 2) !== idPrefix) {
-        return this.$message({
-          type: 'error',
-          message: '无权限编辑该记录'
-        })
-      }
-      this.$emit('edit', item)
-    },
     getPluginType() {
       this.$service
         .getPluginType({ pluginParentType: this.filter.pluginParentType })
@@ -266,7 +190,6 @@ export default {
     },
     //获取table数据
     fetchData() {
-      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getMultiBlockList(filter).then(data => {
         this.pagination.total = data.total
@@ -287,8 +210,6 @@ export default {
     },
     handleFilterReset() {
       this.filter = {
-        sort: undefined,
-        order: undefined
       }
       this.pagination.currentPage = 1
       this.fetchData()
@@ -304,7 +225,6 @@ export default {
   },
   created() {
     this.getPluginParentTypes()
-    // this.getPluginTypes()
     this.fetchData()
   }
 }

@@ -33,7 +33,7 @@
             <CommonSelector v-model="filter.payTypes" :options="payTypeEnums"  />
           </el-form-item>
           <el-form-item label="标题">
-            <el-input v-model="filter.title" size="small"></el-input>
+            <el-input v-model="filter.title"></el-input>
           </el-form-item>
           <el-form-item label="素材类型">
             <CommonSelector v-model="filter.contentTypes" :options="contentTypeEnums"  />
@@ -43,14 +43,14 @@
               size="small"
               v-model="filter.yearStart"
               @blur="yearStartListen"
-              style="width: 100px;"
+              style="width: 80px;"
             ></el-input>
             -
             <el-input
               size="small"
               v-model="filter.yearEnd"
               @blur="yearEndListen"
-              style="width: 100px;"
+              style="width: 80px;"
             ></el-input>
           </el-form-item>
           <span v-show="isMore">
@@ -501,5 +501,8 @@ export default {
 }
 </script>
  
- <style lang='stylus' scoped>
+<style lang='stylus' scoped>
+.search-form-inline
+  >>> .el-form-item__content
+    width 174px
 </style>

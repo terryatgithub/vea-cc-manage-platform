@@ -27,6 +27,10 @@ export default {
     id: 'pluginId',
     status: 'pluginStatus'
   },
+  sysPlugin: {
+    id: 'pluginId',
+    status: 'pluginStatus'
+  },
   picture: {
     id: 'pictureId',
     status: 'pictureStatus'

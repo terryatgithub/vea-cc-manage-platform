@@ -73,7 +73,7 @@ const deleteUrlMap = {
   icon: '',
   material: '', // 素材图片
   layout: '', // 布局
-  block: ''  // 轮播推荐位
+  block: '' // 轮播推荐位
 }
 export function deleteVersion (data) {
   return this.fetch({
@@ -84,6 +84,23 @@ export function deleteVersion (data) {
     }
   })
 }
+
+const RESOURCE_DELETE_URL_MAP = {
+  homepage: 'api/v1/homepage/remove.html',
+  markPanel: 'api/v1/panel/remove.html',
+  multiFunctionBlock: 'api/v1/sysPlugin/remove.html',
+  sysPlugin: 'api/v1/sysPlugin/remove.html'
+}
+
+export function deleteResource(data) {
+  return this.fetch({
+    url: RESOURCE_DELETE_URL_MAP[data.type],
+    params: {
+      id: data.id
+    }
+  })
+}
+
 export function getAuditHistoryList (params) {
   return this.fetch({
     url: 'api/v1/audit/historyList.html',

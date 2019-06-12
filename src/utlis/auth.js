@@ -13,35 +13,23 @@ Vue.prototype.$isLoggedIn = async function () {
   // storage
   const user = $appState.$get('user')
   if (user) {
-    //
     this.$service.state = user
-    return getInitData(this).then(res => {
+    return getInitData(this).then(() => {
       this.$appState.user = user
-      // this.$appState.permissions={};
-      // res.permissions.forEach((item)=>{
-      //     this.$appState.permissions[item]=item;
-      // })
-      // this.$appState.menus=res.menus;
     })
   }
-  throw {}
+  throw new Error('ERR_NOT_LOGIN')
 }
 Vue.prototype.$login = async function (data) {
-  this.$service.login(data).then(res => {
+  return this.$service.login(data).then(res => {
     const user = {
       name: data.username,
-      //   token: res.jwtToken,
       password: data.password
     }
     this.$service.state = user
     this.$appState.user = user
     this.$appState.$set('user', user)
-    return getInitData(this).then(res => {})
-    // this.$appState.menus=res.menus;
-    // this.$appState.permissions={};
-    // res.permissions.forEach((item)=>{
-    //     this.$appState.permissions[item]=item;
-    // })
+    return getInitData(this)
   })
 }
 

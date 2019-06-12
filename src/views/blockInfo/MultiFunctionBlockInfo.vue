@@ -88,7 +88,7 @@
                 :disabled="isDisabledSource"
               >
                 <el-radio
-                  v-for="(item, key) in SOURCE"
+                  v-for="(item, key) in $consts.sourceNumberOptions"
                   :key="key"
                   :label="item.value"
                 >{{ item.label }}</el-radio>
@@ -395,7 +395,7 @@
             <el-form-item
               v-if="pluginParentType !== 'secKill'"
               label="内容源"
-            >{{ SOURCE_TEXT[block.pluginInfo.source] }}</el-form-item>
+            >{{ $consts.sourceNumberText[block.pluginInfo.source] }}</el-form-item>
             <template v-if="pluginParentType === 'sign'">
               <el-form-item
                 label="标记推荐位类型"
@@ -518,36 +518,7 @@ const PARENT_TYPES = {
   builtIn: 'builtIn',
   secKill: 'secKill'
 }
-const SOURCE_TEXT = {
-  '0': '无',
-  '1': '腾讯',
-  '2': '爱奇艺'
-}
-const SOURCE = {
-  none: {
-    label: '无',
-    value: 0
-  },
-  tencent: {
-    label: '腾讯',
-    value: 1
-  },
-  iqiyi: {
-    label: '爱奇艺',
-    value: 2
-  },
-  youku: {
-    label: '优酷',
-    value: 3
-  }
-}
-const STATUS = {
-  draft: 2,
-  waiting: 3,
-  accepted: 4,
-  rejected: 5,
-  processing: 7
-}
+
 const OPEN_MODE_TEXT = {
   webpage: '网页',
   app: '第三方应用',
@@ -579,7 +550,6 @@ export default {
   props: ['id', 'initMode', 'version'],
   data() {
     return {
-      SOURCE_TEXT: SOURCE_TEXT,
       OPEN_MODE_TEXT: OPEN_MODE_TEXT,
       title: null,
       mode: 'create',
@@ -592,9 +562,7 @@ export default {
       urls: {
         uploadImg: '/api' + '/uploadHomeImg.html' // 上传图片接口
       },
-      STATUS: STATUS,
       PARENT_TYPES: PARENT_TYPES,
-      SOURCE: SOURCE,
       mode: 'create',
       pluginParentTypes: [],
       pluginTypes: [],
@@ -922,12 +890,11 @@ export default {
     },
     setPluginParentType(val) {
       const PARENT_TYPES = this.PARENT_TYPES
-      const SOURCE = this.SOURCE
       const block = this.block
       const pluginInfo = block.pluginInfo
       const helper = block.helper
       block.rlsInfo = []
-      pluginInfo.source = SOURCE.none.value
+      pluginInfo.source = 0
       pluginInfo.pluginType = undefined
       pluginInfo.pluginParentType = val
       helper.title = ''
@@ -1069,9 +1036,8 @@ export default {
       }
     },
     getData() {
-      const STATUS = this.STATUS
       const data = JSON.parse(JSON.stringify(this.block))
-      data.pluginInfo.pluginStatus = STATUS.waiting
+      data.pluginInfo.pluginStatus = this.$consts.status.waiting
       return data
     },
     validateData(data, cb) {
@@ -1431,7 +1397,7 @@ export default {
           }
           formData = this.parseData(formData)
           this.$service.SavePlugin(formData, '保存成功').then(data => {
-            this.$emit('open-list-page')
+            this.$emit('upsert-end')
           })
         }.bind(this)
       )

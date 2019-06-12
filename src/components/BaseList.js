@@ -36,6 +36,22 @@ export default {
       const id = item[field.id]
       const status = item[field.status]
       const STATUS = this.$consts.status
+
+      if (['clickEvent'].indexOf(resourceType) === -1) {
+        // 一些资源需要验证 idPrefix
+        if (id.toString().slice(0, 2) !== idPrefix) {
+          return this.$message({
+            type: 'error',
+            message: '无权限编辑该记录'
+          })
+        }
+      }
+
+      if (['sysPlugin'].indexOf(resourceType) > -1) {
+        // 有些资源审核通过也可以编辑。。
+        return this.$emit('edit', item)
+      }
+
       if (['picture', 'layout', 'cornerIcon', 'cornerIconType', 'clickEvent'].indexOf(resourceType) > -1) {
         // 有些资源在待审核状态也能编辑
         if (status === STATUS.accepted) {
@@ -49,15 +65,6 @@ export default {
           return this.$message({
             type: 'error',
             message: '该状态不允许编辑'
-          })
-        }
-      }
-      if (['clickEvent'].indexOf(resourceType) === -1) {
-        // 一些资源需要验证 idPrefix
-        if (id.toString().slice(0, 2) !== idPrefix) {
-          return this.$message({
-            type: 'error',
-            message: '无权限编辑该记录'
           })
         }
       }

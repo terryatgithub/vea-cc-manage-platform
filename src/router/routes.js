@@ -488,7 +488,7 @@ const children = [
   },
   {
     name: 'desktop',
-    path: '/desktop',
+    path: 'desktop',
     component: Desktop,
     meta: { title: '我的桌面', tagId: 'desktop' }
   }

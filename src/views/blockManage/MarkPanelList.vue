@@ -159,10 +159,8 @@ export default {
   methods: {
     /**获取列表数据 */
     fetchData() {
-      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getMarkPanelList(filter).then(data => {
-        console.log(data)
         this.pagination.total = data.total
         this.table.data = data.rows
       })
