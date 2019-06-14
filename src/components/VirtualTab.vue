@@ -22,7 +22,6 @@
         }"
     :style="{width: width + 'px'}"
   >
-
     <!-- placeholder top -->
     <div
       v-if="!readOnly"
@@ -33,21 +32,18 @@
       @drop="handleDrop($event, {type: 'NORMAL', index: -1})"
     ></div>
 
-
     <template v-for="(panelItem, index) in panels">
       <div
         :class="{
-                    'tab-placeholder': true,
-                    'tab-placeholder--normal': panelItem.type === 'NORMAL',
-                    'collapse': panelItem.isCollapse,
-                    'is-dragable': !readOnly,
-                    'tab-placeholder--dragging': draggingCrowdIndex === undefined && draggingIndex === index
-                }"
+          'tab-placeholder': true,
+          'tab-placeholder--normal': panelItem.type === 'NORMAL',
+          'collapse': panelItem.isCollapse,
+          'is-dragable': !readOnly,
+          'tab-placeholder--dragging': draggingCrowdIndex === undefined && draggingIndex === index
+        }"
         v-shadow-drag="{type: panelItem.type, index: index}"
         @shadow-drag-start="handleDragStart($event, index)"
-        @shadow-drag-end="handleDragEnd"
-      >
-
+        @shadow-drag-end="handleDragEnd">
         <div class="panel-group-title">
           <i
             v-if="!panelItem.isCollapse"
@@ -56,10 +52,11 @@
           ></i>
           <i v-else class="el-icon-arrow-down" @click="handleCollapse(false, index)"></i>
           <template
-            v-if="panelItem.type === 'SPEC'"
-          >{{ getPanelInfo(panelItem.crowdPanels[0]).panelTitle }} ({{ panelItem.crowdPanels.length }})</template>
+            v-if="panelItem.type === 'SPEC'">
+            {{ getPanelInfo(panelItem.crowdPanels[0]).panelTitle }} ({{ panelItem.crowdPanels.length }})
+          </template>
           <template v-else>{{ getPanelInfo(panelItem.panel).panelTitle }}</template>
-          <el-input
+          <InputOrder
             size="small"
             :key="Math.random().toString()"
             class="tab-placeholder__index"
@@ -67,8 +64,7 @@
             :disabled="readOnly"
             draggable="true"
             @dragstart.native="disableDrag"
-            @input="$emit('change-panel-order-start', index, $event)"
-            @blur="$emit('change-panel-order-end', index)"
+            @input="$emit('change-panel-order', index, $event)"
           />
           <i
             v-if="!readOnly"
@@ -87,7 +83,8 @@
               @dragenter="handleDragEnter"
               @dragleave="handleDragLeave"
               @dragover="handleDragOver"
-              @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: -1})"></div>
+              @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: -1})"
+            ></div>
 
             <template v-for="(item, crowdIndex) in panelItem.crowdPanels">
               <cc-var
@@ -115,12 +112,7 @@
                       @click="$emit('toggle-type', index)"
                       class="btn-crowd btn-crowd--unset"
                     >取消定向</a>
-                    <a 
-                      v-else 
-                      class="btn-crowd btn-crowd--disabled" 
-                      title="请将版块移出版块组，再取消定向">
-                      取消定向
-                    </a>
+                    <a v-else class="btn-crowd btn-crowd--disabled" title="请将版块移出版块组，再取消定向">取消定向</a>
                   </template>
 
                   <div class="tab-plcacholder-info">
@@ -171,7 +163,8 @@
                 @dragenter="handleDragEnter"
                 @dragleave="handleDragLeave"
                 @dragover="handleDragOver"
-                @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: crowdIndex})"></div>
+                @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: crowdIndex})"
+              ></div>
             </template>
             <div
               class="btn-show-all"
@@ -197,7 +190,8 @@
                   <i
                     title="删除"
                     @click="handleRemovePanel(index)"
-                    class="tab-placeholder__panel-remove el-icon-close"></i>
+                    class="tab-placeholder__panel-remove el-icon-close">
+                  </i>
                   <a class="btn-crowd btn-crowd--set" @click="$emit('toggle-type', index)">设置定向</a>
                 </template>
                 <div class="tab-plcacholder-info">
@@ -254,12 +248,14 @@
 import Var from './Var'
 import VirtualPanel from './VirtualPanel'
 import VirtualPanelGroup from './VirtualPanelGroup'
+import InputOrder from '@/components/InputOrder'
 let key = 0
 export default {
   components: {
     'cc-var': Var,
     'cc-virtual-panel': VirtualPanel,
-    'cc-virtual-panel-group': VirtualPanelGroup
+    'cc-virtual-panel-group': VirtualPanelGroup,
+    InputOrder
   },
   data() {
     return {

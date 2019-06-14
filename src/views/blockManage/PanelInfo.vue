@@ -1,13 +1,3 @@
-/*
-<#include "./components/cc-select-layout.ftl">
-<#include "./components/cc-movie-selector.ftl">
-<#include "./components/cc-resource-selector.ftl">
-<#include "./components/cc-virtual-pannel.ftl">
-<#include "./components/cc-block-content.ftl">
-<#include "../components/cc-price.ftl">
-<#include "../components/cc-crowd-selector.ftl"/>
-*/
-
 <template>
   <PageWrapper>
     <PageContentWrapper v-show="activePage == 'panel_info'">

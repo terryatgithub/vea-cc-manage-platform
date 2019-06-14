@@ -89,7 +89,8 @@ const RESOURCE_DELETE_URL_MAP = {
   homepage: 'api/v1/homepage/remove.html',
   markPanel: 'api/v1/panel/remove.html',
   multiFunctionBlock: 'api/v1/sysPlugin/remove.html',
-  sysPlugin: 'api/v1/sysPlugin/remove.html'
+  sysPlugin: 'api/v1/sysPlugin/remove.html',
+  crowdRel: 'api/v1/dmpMgr/remove.html'
 }
 
 export function deleteResource(data) {

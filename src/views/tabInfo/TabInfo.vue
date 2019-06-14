@@ -246,8 +246,7 @@
                     @collapse="handleChangeCollapseState"
                     @uncollapse="handleChangeCollapseState"
                     @open-panel="handlePreviewPanel"
-                    @change-panel-order-start="handleChangePanelOrderStart"
-                    @change-panel-order-end="handleChangePanelOrderEnd"
+                    @change-panel-order="handleChangePanelOrder"
                     @click-block="handleClickBlock"
                     @drag-start="handleDragStart"
                     @drag-end="handleDragEnd"
@@ -1782,26 +1781,8 @@ export default {
     handleSelectTabEnd(data) {
       this.$refs.subTabTable.handleAppendData(data, 'tabId')
     },
-    handleChangePanelOrderStart(index, order) {
-      if (order !== '') {
-        order = parseInt(order)
-        const panelList = this.tabInfo.pannelList
-        if (isNaN(order) || order > panelList.length || order <= 0) {
-          this.currentPanelIndex = undefined
-          this.tabInfo.pannelList = panelList.slice()
-          this.$message({
-            type: 'error',
-            message: '序号必须大于 0 且不能大于总数量'
-          })
-        } else {
-          this.currentPanelIndex = index
-          this.currentPanelOrder = order
-        }
-      }
-    },
-    handleChangePanelOrderEnd(index) {
-      if (this.currentPanelIndex === index) {
-        const newIndex = this.currentPanelOrder - 1
+    handleChangePanelOrder(index, order) {
+        const newIndex = order - 1
         const oldIndex = index
         const panelList = this.tabInfo.pannelList
         const item = panelList[oldIndex]
@@ -1811,9 +1792,6 @@ export default {
           item,
           panelList.slice(newIndex)
         )
-        this.currentTabIndex = undefined
-        this.currentTabOrder = undefined
-      }
     },
     openTabWin: function(pannelType) {
       var url = this.basicFn.numToPannelTypeUrl(pannelType) + '/add.html'

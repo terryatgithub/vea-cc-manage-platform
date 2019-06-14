@@ -60,10 +60,11 @@ export default {
     },
     handleDelete(selected) {
       const resourceInfo = this.resourceInfo
+      const idField = resourceInfo.idField
       this.$service
         .deleteResource({
           type: resourceInfo.type,
-          id: selected.map(item => item[resourceInfo.idField]).join(',')
+          id: selected.map(item => item[idField]).join(',')
         },'删除成功')
         .then(() => {
           this.$refs.list.fetchData()

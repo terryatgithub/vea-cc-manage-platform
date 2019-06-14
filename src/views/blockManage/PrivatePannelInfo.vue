@@ -10,8 +10,8 @@
         <CommonContent
           :mode="mode"
           :resource-info="resourceInfo"
-          @replicate="mode = 'replicate'; title='创建副本'"
-          @edit="mode = 'edit'; title='编辑'"
+          @replicate="mode = 'replicate'"
+          @edit="mode = 'edit'"
           @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
@@ -50,12 +50,16 @@
                 v-if="panelGroupCategoryValue === 'common' || panelGroupCategoryValue === 'video'"
               >
                 <el-radio-group
-                  :value="panel.pannelList[0].pannelResource"
+                  :value="panel.pannelResource"
                   @input="handlePannelResourceChange"
                   :disabled="mode==='replicate'"
                 >
-                  <el-radio label="o_tencent">腾讯</el-radio>
-                  <el-radio label="o_iqiyi">爱奇艺</el-radio>
+                  <el-radio 
+                    v-for="(item, index) in $consts.sourceOptions" 
+                    :label="item.value"
+                    :key="index">
+                    {{ item.label }}
+                  </el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="版块名称" prop="pannelList.0.pannelName" :rules="rules.pannelName">
@@ -151,7 +155,7 @@
                 label="内容源"
                 v-if="panelGroupCategoryValue === 'common' || panelGroupCategoryValue === 'video'"
               >
-                <span>{{ getResourceLabel(panel.pannelResource) }}</span>
+                <span>{{ $consts.sourceText[panel.pannelResource] }}</span>
               </el-form-item>
               <el-form-item
                 label="版块名称"
@@ -218,7 +222,9 @@
 </template>
 <script>
 import CommonContent from '@/components/CommonContent.vue'
+import titleMixin from '@/mixins/title'
 export default {
+  mixins: [titleMixin],
   components: {
     CommonContent
   },
@@ -247,26 +253,10 @@ export default {
         label: '单点影片'
       }
     ]
-    const STATUS = {
-      draft: 2,
-      waiting: 3,
-      accepted: 4,
-      rejected: 5,
-      processing: 7
-    }
-    const STATUS_TEXT = {
-      '0': '下架',
-      '2': '草稿',
-      '3': '待审核',
-      '4': '审核通过',
-      '5': '审核不通过',
-      '7': '审核通过未上线'
-    }
+    
     return {
-      title: '',
-      STATUS: STATUS,
-      STATUS_TEXT: STATUS_TEXT,
-      auditHistories: [],
+      mode: 'create',
+      resourceName: '专属影院',
       panelGroupCategoryOptions: [],
       blockVideoTypeOptions: blockVideoTypeOptions,
       rules: {
@@ -302,7 +292,7 @@ export default {
         showTitle: true,
         lucenyFlag: false,
         // layoutId: undefined,
-        // pannelResource: 'o_tencent',
+        pannelResource: 'o_tencent',
         panelGroupCategory: 67, //业务分类
         panelGroupType: 9,
         //   focusConfig: undefined,
@@ -315,7 +305,7 @@ export default {
             pannelCategory: 67,
             pannelName: undefined,
             pannelTitle: '专属剧场',
-            pannelResource: 'o_tencent',
+            pannelResource: undefined,
             pannelType: 9,
             pannelStatus: undefined,
             showTitle: undefined,
@@ -375,28 +365,6 @@ export default {
       const mode = this.mode
       return mode === 'edit' || mode === 'replicate' || mode === 'copy'
     },
-    buttonGroupParams() {
-      const panel = this.panel || {}
-      return {
-        type: 'pannel',
-        menuElId: 'privatePannelInfo',
-        status: panel.pannelList[0].pannelStatus,
-        resourceId: panel.pannelGroupId,
-        version: panel.currentVersion
-      }
-    },
-    isAllowCopy() {
-      const STATUS = this.STATUS
-      const found = this.versionList.some(function(item) {
-        const status = item.row.status
-        return (
-          status === STATUS.draft ||
-          status === STATUS.waiting ||
-          status === STATUS.rejected
-        )
-      })
-      return !found
-    }
   },
   methods: {
     setDefaultPanelTitle(pannelType) {
@@ -417,13 +385,6 @@ export default {
       }
       return labelMap[value]
     },
-    getResourceLabel(value) {
-      const labelMap = {
-        o_iqiyi: '爱奇艺',
-        o_tencent: '腾讯'
-      }
-      return labelMap[value]
-    },
     handlePanelGroupCategoryChange(val) {
       this.panel.panelGroupCategory = val
       const panelGroupCategoryValue = this.panelGroupCategoryValue
@@ -431,53 +392,48 @@ export default {
         panelGroupCategoryValue === 'common' ||
         panelGroupCategoryValue === 'video'
       ) {
-        this.panel.pannelList[0].pannelResource = 'o_tencent'
+        this.panel.pannelResource = 'o_tencent'
       } else {
-        this.panel.pannelList[0].pannelResource = ''
+        this.panel.pannelResource = ''
       }
     },
     handlePannelResourceChange(val) {
-      this.panel.pannelList[0].pannelResource = val
+      this.panel.pannelResource = val;
     },
     handleSaveDraft() {
-      //  const data = JSON.parse(JSON.stringify(this.panel))
-      const data = this.panel
-      data.pannelList[0].pannelCategory = data.panelGroupCategory
-      data.pannelList[0].pannelStatus = 2
+      const data = JSON.parse(JSON.stringify(this.panel))
+      data.pannelStatus = 2
       this.submit(data)
     },
     handleSubmitAudit() {
-      // const data = JSON.parse(JSON.stringify(this.panel))
-      //  const data = JSON.parse(JSON.stringify(this.panel))
-      const data = this.panel
-      const pannelList = data.pannelList[0]
-      pannelList.pannelCategory = data.panelGroupCategory
-      pannelList.pannelStatus = 3
-      if (pannelList.firstPageVipContentAmount > pannelList.vipContentAmount) {
-        this.$message({
-          type: 'error',
-          message: '首屏付费内容数不能大于总付费内容数'
-        })
-        return
-      }
-      if (this.mode === 'replicate') {
-        data.currentVersion = ''
-      }
+      const data = JSON.parse(JSON.stringify(this.panel))
+      data.pannelStatus = 3
       this.submit(data)
     },
     validate(data, cb) {
-      this.$refs.upsertForm.validate(function(valid) {
-        if (valid) {
-          cb()
-        }
+      this.$refs.upsertForm.validate(function (valid) {
+          if (valid) {
+              // 首屏不能比付费多
+              const firstPanel = data.pannelList[0]
+              const panelGroupType = data.panelGroupType
+              if (panelGroupType === 9 || panelGroupType === 10) {
+                if (firstPanel.vipContentAmount < firstPanel.firstPageVipContentAmount) {
+                  return cb('首屏付费内容数量不能大于总付费内容数量')
+                }
+                if (firstPanel.vipContentAmount > firstPanel.firstPageVipContentAmount + 9) {
+                  return cb('总付费内容数应小于等于(首屏付费内容数 + 9)')
+                }
+              }
+              cb()
+          }
       })
     },
     submit(data) {
       this.validate(
         data,
-        function(err) {
+        (err) => {
           if (!err) {
-            this.$service.panelUpsert(data, '保存成功').then(data => {
+            this.$service.panelUpsert(this.parseDataToApi(data), '保存成功').then(data => {
               this.$emit('upsert-end')
             })
           } else {
@@ -486,7 +442,7 @@ export default {
               message: err
             })
           }
-        }.bind(this)
+        }
       )
     },
     parseDataToApi(data) {
@@ -538,21 +494,6 @@ export default {
       const panel = this.parseApiToData(data)
       Object.assign(this.panel, panel)
     },
-    handleSelectVersion(version) {
-      const panel = this.panel
-      const href =
-        location.pathname + '?id=' + panel.pannelGroupId + '&version=' + version
-      location.href = href
-    },
-    // getHistoryList: function() {
-    //   this.$service
-    //     .getHistoryList({ id: this.panel.pannelGroupId, type: 'pannel' })
-    //     .then(
-    //       function(data) {
-    //         this.versionList = data
-    //       }.bind(this)
-    //     )
-    // },
     getDictType() {
       this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.panelGroupCategoryOptions = data
@@ -561,28 +502,11 @@ export default {
     fetchData(version) {
       this.$service.panelGetDetail({ id: this.id, version }).then(data => {
         this.setPanel(data)
-        //  this.getHandlePerson(data)
       })
     }
   },
   created() {
     this.mode = this.initMode || 'create'
-    switch (this.mode) {
-      case 'create':
-        this.title = '新增'
-        break
-      case 'copy':
-        this.title = '复制'
-        break
-      case 'edit':
-        this.title = '编辑'
-        break
-      case 'replicate':
-        this.title = '创建副本'
-      case 'read':
-        this.title = '预览'
-        break
-    }
     if (this.id) {
       this.fetchData(this.version)
     }

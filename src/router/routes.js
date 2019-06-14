@@ -44,6 +44,7 @@ import FilmDetailAdBit from '../views/adBitMgr/FilmDetailAdBit.vue'
 import Main from '@/components/Main'
 import Desktop from '@/views/Desktop'
 import FramePage from '../views/FramePage'
+import CrowdRel from '../views/crowdRel/Index.vue'
 
 /** */
 const children = [
@@ -377,6 +378,14 @@ const children = [
         meta: {
           title: 'RPC人群列表',
           tagId: 'actDmpGroupInfo'
+        }
+      },
+      {
+        name: 'dmpMgr',
+        path: '/dmpMgr',
+        component: CrowdRel,
+        meta: {
+          tagId: 'dmpMgr'
         }
       }
     ]

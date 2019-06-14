@@ -218,6 +218,29 @@
                     </div>
                     
                 </el-tab-pane>
+
+                <el-tab-pane label="主页广告" name="homepage">
+                    <div class="video-ad-wrapper">
+                        <p class="ad-title">主页霸屏广告</p>
+                        <el-form :inline="true" label-width="150px" label-position="left">
+                            <cc-var v-if="adSwitches.screen" :ad="adSwitches.screen">
+                                <template scope="{ad: ad}">
+                                    <el-form-item 
+                                        :label="ad.label" 
+                                    >
+                                        <el-switch 
+                                            on-text="开" 
+                                            off-text="关" 
+                                            :value="ad.value"
+                                            @input="handleToggleSwitch(ad)"
+                                        >
+                                        </el-switch>
+                                    </el-form-item>
+                                </template>
+                            </cc-var>
+                        </el-form>
+                    </div>
+                </el-tab-pane>
             </el-tabs>
         </div>
     </ContentCard>

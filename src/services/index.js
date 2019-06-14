@@ -28,6 +28,9 @@ import * as common from './common'
 import * as commonResource from './commonResource'
 import * as businessTab from './panelManage/businessTab'
 import * as mediaResource from './mediaResource'
+import * as crowdRel from './crowdRel'
+import * as dmp from './dmp'
+import * as contentAuth from './contentAuth'
 
 const service = {
   state: {},
@@ -60,7 +63,10 @@ const service = {
   ...common,
   ...commonResource,
   ...businessTab,
-  ...mediaResource
+  ...mediaResource,
+  ...crowdRel,
+  ...dmp,
+  ...contentAuth
 }
 
 export default function install(Vue) {

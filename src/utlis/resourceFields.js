@@ -50,5 +50,8 @@ export default {
   clickEvent: {
     id: 'commonOnclickId',
     status: 'commonOnclickStatus'
+  },
+  crowdRel: {
+    id: 'id'
   }
 }

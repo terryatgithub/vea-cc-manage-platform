@@ -79,7 +79,8 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleRead(row)
                     }
                   }
@@ -119,7 +120,8 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleRead(row, row.duplicateVersion)
                     }
                   }

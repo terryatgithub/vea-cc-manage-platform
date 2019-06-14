@@ -38,7 +38,7 @@ export default {
       const STATUS = this.$consts.status
 
       if (['clickEvent'].indexOf(resourceType) === -1) {
-        // 一些资源需要验证 idPrefix
+        // 除了个别, 其他资源都需要验证 idPrefix
         if (id.toString().slice(0, 2) !== idPrefix) {
           return this.$message({
             type: 'error',
@@ -47,7 +47,7 @@ export default {
         }
       }
 
-      if (['sysPlugin'].indexOf(resourceType) > -1) {
+      if (['sysPlugin', 'crowdRel'].indexOf(resourceType) > -1) {
         // 有些资源审核通过也可以编辑。。
         return this.$emit('edit', item)
       }

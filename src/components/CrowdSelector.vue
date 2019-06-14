@@ -41,7 +41,7 @@
                     v-model="selectedCascaderCrowd"
                     change-on-select
                 ></el-cascader>
-                <el-button :disabled="!selectedCascaderCrowd" class="marginL" type="primary" @click="handleSelectCascadeCrowd">
+                <el-button :disabled="!selectedCascaderCrowd" type="primary" @click="handleSelectCascadeCrowd">
                     确定
                 </el-button>
             </div>
@@ -83,7 +83,7 @@ export default {
       this.selectedPolicy = item
       this.$service.crowdRelGet({id: item.value}).then(function(result) {
           if (!result.hasCascadeTag) {
-              this.$service.getCrowdOfPolicyWithCache(item.value).then(function(result) {
+              this.$service.getCrowdOfPolicyWithCache({id: item.value}).then(function(result) {
                   this.hasCascadeTag = false
                   this.crowd.items = result
                   this.showCrowdSelector = true
@@ -184,8 +184,11 @@ export default {
 .crowd-selector .el-cascader .el-input {
     max-width: 600px;
 }
-.marginL {
- margin-left: 10px;
+.el-cascader {
+  margin-right: 10px
+}
+.el-cascader >>> .el-input__inner {
+  width: 300px;
 }
  
 </style>

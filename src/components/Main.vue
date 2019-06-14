@@ -131,7 +131,8 @@ const routerMap = {
   myDrafts: 'myDrafts',
   myReviewTasks: 'myReviewTasks',
   mySubmitTasks: 'mySubmitTasks',
-  filmDetailAdBit: 'filmDetailAdBit'
+  filmDetailAdBit: 'filmDetailAdBit',
+  dmpMgr: 'dmpMgr'
 }
 export default {
   components: {

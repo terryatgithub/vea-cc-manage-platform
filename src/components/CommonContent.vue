@@ -29,12 +29,11 @@
       <slot />
     </template>
     <template v-else>
-        <!-- <content-auth-manager 
-          v-if="resourceInfo.id" 
+        <content-auth-manager 
+          v-if="resourceInfo.id && resourceInfo.menuElId" 
           :resource-id="resourceInfo.id" 
-          :menu-elid="resourceInfo.elid"
-          :resource-type="resourceInfo.type"
-        /> -->
+          :menu-elid="resourceInfo.menuElId"
+          :resource-type="resourceInfo.type"/>
         <div>
           <div class="release-info" v-if="releaseTime">
             该版块为定时任务，审核通过后将于 {{ releaseTime }} 上线
@@ -106,8 +105,10 @@ import VersionList from '@/components/VersionList'
 import AuditHistory from '@/components/AuditHistory'
 import ContentButtonGroup from '@/components/ContentButtonGroup'
 import ReleaseTimeSetter from '@/components/ReleaseTimeSetter'
+import ContentAuthManager from '@/components/ContentAuthManager'
 export default {
   components: {
+    ContentAuthManager,
     VersionList,
     ContentButtonGroup,
     AuditHistory,
