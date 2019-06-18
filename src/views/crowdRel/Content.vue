@@ -395,9 +395,9 @@ export default {
   border-bottom: 1px solid #ccc;
   padding-bottom: 20px;
 }
-.dmp-relationship .cc-level-wrapper:nth-child(1) .cc-level-level-remove,
-.dmp-relationship .cc-level-wrapper:nth-child(3) .cc-level-level-remove,
-.dmp-relationship .cc-level-wrapper:nth-child(5) .cc-level-level-remove {
+.dmp-relationship >>> .cc-level-wrapper:nth-child(1) .cc-level-level-remove,
+.dmp-relationship >>> .cc-level-wrapper:nth-child(3) .cc-level-level-remove,
+.dmp-relationship >>> .cc-level-wrapper:nth-child(5) .cc-level-level-remove {
   display: none;
 }
 </style>
