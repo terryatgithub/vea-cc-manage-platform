@@ -53,3 +53,11 @@ export function collect(data) {
     data: data.data
   })
 }
+
+export function getSharedTags(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tvos/getMediaCommonTags.html',
+    params
+  })
+}

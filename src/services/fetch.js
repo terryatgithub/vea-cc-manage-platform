@@ -54,7 +54,7 @@ export default function fetch({
             total: data.total
           }
         } else {
-          if (typeof (data.code) !== 'undefined' && data.code !== '0') {
+          if (typeof (data.code) !== 'undefined' && data.code != '0') {
             throw new Error(data.msg)
           } else {
             return data

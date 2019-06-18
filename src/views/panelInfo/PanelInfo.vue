@@ -135,6 +135,14 @@
                   >
                 </div>
               </el-form-item>
+              <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+                <el-tag type="primary" v-for="(item, index) in sharedTags">{{ item }}</el-tag>
+              </el-form-item>
+              <el-form-item v-show="isShowTagsField"  class="tag-list" label="资源批量打标签">
+                <el-button type="primary" @click="handleBatchAddTag">
+                  批量打标签
+                </el-button>
+              </el-form-item>
               <el-form-item label="批量填充">
                 <span v-show="!selectedLayout">
                   请先选择布局
@@ -311,6 +319,7 @@
             @set-end="handleSetPanelGroupInfoEnd"
             @set-cancel="handleSetPanelGroupInfoCancel">
           </PanelGroupInfoSetter>
+          <TagFrame :ids="panelResourceIds" v-if="showAddTagDialog" @close="handleBatchAddTagEnd"></TagFrame>
       </ContentCard>
     </PageContentWrapper>
 
@@ -338,12 +347,14 @@ import VirtualPanel from '@/components/VirtualPanel'
 import SourceRadioSelector from '@/components/SourceRadioSelector'
 import LayoutSelector from '@/components/selectors/LayoutSelector'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
-import BlockContent from '@/components/BlockContent/BlockContent'
+import BlockContent from './BlockContent/BlockContent'
 import CommonSelector from '@/components/CommonSelector'
 import BinCheckBox from '@/components/BinCheckBox'
 
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import PanelGroupInfoSetter from './PanelGroupInfoSetter'
+
+import TagFrame from './TagFrame'
 
 export default {
   mixins: [titleMixin],
@@ -360,7 +371,8 @@ export default {
     BlockContent,
     BinCheckBox,
     ResourceSelector,
-    PanelGroupInfoSetter
+    PanelGroupInfoSetter,
+    TagFrame
   },
   data() {
     var checkNum = function(rule, value, callback) {
@@ -440,7 +452,10 @@ export default {
       currentBlockIndex: undefined,
       // 当前激活的分组 pannel 的索引值
       activePannelIndex: "0",
-      activePanelGroup: undefined
+      activePanelGroup: undefined,
+
+      showAddTagDialog: false,
+      sharedTags: []
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -500,6 +515,50 @@ export default {
         const pictureSize = width + '*' + height
         return pictureSize
       }
+    },
+    panelResourceIds() {
+      const ids = []
+      const contentTypeMap = {
+        movie: true,
+        edu: true,
+        shopping: true,
+        app: true
+      }
+      this.pannel.pannelList.forEach(function(item) {
+        item.contentList.forEach(function(blockItem) {
+          blockItem.videoContentList.forEach(function(videoItem) {
+            const videoContentType = videoItem.videoContentType
+            const id = videoItem.extraValue1 || ''
+            if (id && contentTypeMap[videoContentType]) {
+              ids.push(id)  
+            }
+          })
+        })
+      })
+      return ids
+    },
+    isShowTagsField() {
+      const pannelList = this.pannel.pannelList
+      let isShow = this.selectedLayout ? true : false
+      for (
+        let i = 0, length = pannelList.length;
+        i < length;
+        i++
+      ) {
+        const pannel = pannelList[i];
+        const contentList = pannel.contentList;
+        for (let j = 0, lengthJ = contentList.length; j < lengthJ; j++) {
+          const content = contentList[j] || {};
+          if (
+            !content.videoContentList ||
+            content.videoContentList.length === 0
+          ) {
+            isShow = false
+            break
+          }
+        }
+      }
+      return isShow
     }
   },
   watch: {
@@ -520,6 +579,23 @@ export default {
     }
   },
   methods: {
+    handleBatchAddTag() {
+      this.showAddTagDialog = true
+    },
+    handleBatchAddTagEnd() {
+      this.getSharedTags()
+      this.showAddTagDialog = false
+    },
+    getSharedTags() {
+      if (!this.isShowTagsField) {
+        return this.sharedTags = []
+      }
+      const resourceIds = this.panelResourceIds
+      this.$service.getSharedTags({ coocaaVIds: resourceIds.join(',') }).then((data) => {
+          const tags = data.data.tags
+          this.sharedTags = tags ? tags.split(',') : []
+      })
+    },
     handleFocusConfigChange(val) {
       if (val === "week") {
         const pannel = this.pannel;
@@ -614,6 +690,7 @@ export default {
       while (--i >= 0) {
         this.updatePosition(i)
       }
+      this.getSharedTags()
       // 清除异形焦点
       this.pannel.focusImgUrl = ''
     },
@@ -641,6 +718,7 @@ export default {
     },
     handleSetBlockContentCancle() {
       this.activePage = 'panel_info'
+      this.getSharedTags()
     },
     handleSetBlockContentEnd(param) {
       const activePannelIndex = +this.activePannelIndex
@@ -655,6 +733,7 @@ export default {
         activePannel.pannelType = 7
       }
       this.updatePosition()
+      this.getSharedTags()
       this.activePage = 'panel_info'
     },
     handleSelectResourceEnd(selectedResources) {
@@ -900,6 +979,7 @@ export default {
             resourceSelector.clearSelected()
             // 计算每个 block 的位置
             this.updatePosition()
+            this.getSharedTags()
           }.bind(this)
         )
         .catch((e) => {
@@ -1333,6 +1413,7 @@ export default {
       selectedResources.splice(index, 1)
       // 更新位置
       this.updatePosition()
+      this.getSharedTags()
     },
     getFormData() {
       const data = JSON.parse(JSON.stringify(this.pannel))
@@ -1345,7 +1426,7 @@ export default {
         data.currentVersion = ''
       }
       return data
-    },
+  },
     parseDataToApi(data) {
       const mode = this.mode
       const panelDataType = this.currentPanelDataType
@@ -1794,6 +1875,7 @@ export default {
       }
       this.pannel = {...pannel}
       this.updateAllPosition()
+      this.getSharedTags()
       this.$watch("pannel.focusConfig", this.handleFocusConfigChange)
     },
     clickBlock() {
@@ -1842,5 +1924,8 @@ export default {
   border: 1px solid #e7e4c2;
   background: #fef8b8;
   padding: 10px; 
+}
+.tag-list >>> .el-tag {
+  margin-right: 10px;
 }
 </style>

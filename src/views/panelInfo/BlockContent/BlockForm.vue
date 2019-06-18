@@ -48,6 +48,7 @@
           <el-button>选择资源</el-button>
         </ResourceSelector>
         <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
+        <el-button v-show="contentForm.extraValue1 && !isReadonly" type="primary" @click="handleAddTagStart">打标签</el-button>
       </el-form-item>
       <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
         <ResourceSelector
@@ -379,6 +380,11 @@
       @select-cancel="handleSelectCrowdCancel"
       @select-end="handleSelectCrowdEnd"
     />
+    <TagFrame 
+      v-if="showBlockTagDialog" 
+      :ids="[currentResourceId]" 
+      @close="showBlockTagDialog = false">
+    </TagFrame>
   </div>
 </template>
 
@@ -394,6 +400,7 @@ import CommonSelector from '@/components/CommonSelector'
 import CrowdSelector from '@/components/CrowdSelector.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 import ClickEventSelector from '@/components/selectors/ClickEventSelector'
+import TagFrame from '../TagFrame'
 export default {
   components: {
     Upload,
@@ -406,7 +413,8 @@ export default {
     CrowdSelector,
     TabSelector,
     ClickEventSelector,
-    AppParamsRead
+    AppParamsRead,
+    TagFrame
   },
   data() {
     const isReadonly = this.isReadonly
@@ -473,6 +481,7 @@ export default {
     }
     return {
       showCrowdSelector: false,
+      showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
       contentRule: {
         webpageUrl: [
@@ -555,6 +564,9 @@ export default {
     'checkCrowd',
   ],
   computed: {
+    currentResourceId() {
+        return this.contentForm.extraValue1
+    },
     isReadonly() {
       return this.mode === 'read'
     },
@@ -630,6 +642,9 @@ export default {
     }
   },
   methods: {
+    handleAddTagStart() {
+        this.showBlockTagDialog = true
+    },
     genParams(openMode) {
       return {
           openMode: openMode || 'app',
