@@ -88,14 +88,6 @@ export default {
       attributeTypes: {}, //角标类别
       dialogPLVisible: false,
       dialogLevelVisible: false,
-      cornerStatuses: {
-        // 下架: 0,
-        // 上架: 1,
-        // 草稿: 2,
-        待审核: 3,
-        审核通过: 4,
-        审核不通过: 5
-      },
       typePositions: {
         左上: 0,
         右上: 1,
@@ -104,10 +96,7 @@ export default {
       },
       picDialogVisible: false, //预览图片弹出框
       reviewPicUrl: null,
-      filter: {
-        sort: undefined,
-        order: undefined
-      },
+      filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {},
       selected: [],
@@ -151,7 +140,8 @@ export default {
                   class: 'imgs'
                 },
                 on: {
-                  click: () => {
+                  click: (event) => {
+                    event.stopPropagation()
                     this.reviewPic(row)
                   }
                 }
@@ -162,26 +152,7 @@ export default {
             label: '审核状态',
             prop: 'cornerStatus',
             render: (createElement, { row }) => {
-              switch (row.cornerStatus) {
-                case 0:
-                  return '下架'
-                  break
-                case 1:
-                  return '上架'
-                  break
-                case 2:
-                  return '草稿'
-                  break
-                case 3:
-                  return '待审核'
-                  break
-                case 4:
-                  return '审核通过'
-                  break
-                case 5:
-                  return '审核不通过'
-                  break
-              }
+              return this.$consts.statusText[row.cornerStatus]
             }
           }
         ],
@@ -192,7 +163,11 @@ export default {
     }
   },
   methods: {
-    //初始化表格
+    genDefaultFilter() {
+      return {
+        idPrefix: this.$consts.idPrefix
+      }
+    },
     fetchData() {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
@@ -205,7 +180,6 @@ export default {
     parseFilter() {
       const { filter, pagination } = this
       if (pagination) {
-        filter.idPrefix = '10' //10:酷开数据;11:其他地方。默认酷开
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
@@ -273,10 +247,7 @@ export default {
     },
     //重置
     handleFilterReset() {
-      this.filter = {
-        sort: undefined,
-        order: undefined
-      }
+      this.filter = this.genDefaultFilter() 
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -325,7 +296,7 @@ export default {
         component: 'Select',
         placeholder: '角标类别'
       }),
-      cornerStatus: _.o.enum(this.cornerStatuses).other('form', {
+      cornerStatus: _.o.enum(this.$consts.statusEnums).other('form', {
         component: 'Select',
         placeholder: '审核状态'
       })
@@ -347,6 +318,18 @@ export default {
         resetText: '重置'
       }
     })
+
+    if (this.$consts.idPrefix != '10') {
+      filterSchema.map({
+        idPrefix: _.o.enum({
+          '酷开': '10',
+          '江苏广电': '11'
+        }).other('form', {
+          component: 'Select',
+          placeholder: '数据来源'
+        })
+      })
+    }
     this.fetchData()
     this.getCornerTypes().then(() => {
       this.getIconAttributes().then(() => {

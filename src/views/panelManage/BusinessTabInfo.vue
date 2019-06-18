@@ -1,15 +1,16 @@
 <template>
-  <div>
-    <div class="hompage-upsert">
+  <PageWrapper class="tab-info-wrapper">
+    <PageContentWrapper v-show="activePage === 'tab_info'">
       <ContentCard :title="title" @go-back="$emit('go-back')">
         <CommonContent
+          ref="commonContent"
           :mode="mode"
           :resource-info="resourceInfo"
-          @replicate="mode = 'replicate'; title='创建副本'"
-          @edit="mode = 'edit'; title='编辑'"
+          @replicate="mode = 'replicate'"
+          @edit="mode = 'edit'"
           @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
-          @submit-audit="handleShowTimeShelf"
+          @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
           @audit="$emit('upsert-end')"
           @copy="handleCopy"
@@ -19,14 +20,13 @@
           <div class="form-legend-header">
             <i class="el-icon-edit">基本信息</i>
           </div>
-          <div v-show="isShow">
+          <div v-if="mode !== 'read'">
             <el-form
               ref="tabForm"
               :rules="rules"
               :model="tab"
               label-width="120px"
-              class="el-form-add"
-            >
+              class="el-form-add">
               <el-form-item label="版面名称" prop="tabName">
                 <el-input v-model.trim="tab.tabName"></el-input>
               </el-form-item>
@@ -69,18 +69,22 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="选择版块" prop="tags">
-                <el-button type="primary" plain @click="handleSlectPannelStart">选择版块</el-button>
+                <cc-panel-selector-el
+                  ref="panelSelector"
+                  :source="tab.tabResource"
+                  @select-end="handleSelectPanelEnd"/>
                 <el-dropdown>
-                  <el-button type="primary" plain class="marginL">
-                    添加版块
+                  <el-button type="primary" plain >
+                    新建
                     <i class="el-icon-caret-bottom el-icon--right"></i>
                   </el-button>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="openCreatePage('pannelInfo', 1)">常规版块</el-dropdown-item>
-                    <el-dropdown-item @click.native="openCreatePage('AlbumPannelInfo' ,3)">业务专辑</el-dropdown-item>
-                    <el-dropdown-item @click.native="openCreatePage('PrivatePannelInfo')">专属影院</el-dropdown-item>
+                    <el-dropdown-item @click.native="activePage = 'panel'">常规版块</el-dropdown-item>
+                    <el-dropdown-item @click.native="activePage = 'album_panel'">业务专辑</el-dropdown-item>
+                    <el-dropdown-item @click.native="activePage = 'private_panel'">专属影院</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
+
                 <OrderableTable
                   v-model="tab.pannelList"
                   :header="tabGroupTableHeader"
@@ -150,49 +154,81 @@
           </div>
         </CommonContent>
       </ContentCard>
-      <AddBlockFilter
-        :parentPannelResource="tab.tabResource"
-        v-show="mode==='selectBlockResource'"
-        @go-back="goBack"
-        @add-block="addBlock"
+    </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'panel_preview'">
+      <PrivatePanelInfo
+        v-if="panelPreview.dataType == 5 "
+        :title-prefix="title"
+        :init-mode="panelPreview.initMode"
+        @upsert-end="handlePreviewPanelEnd"
+        @go-back="handlePreviewPanelEnd"
       />
-    </div>
-    <PrivatePannelInfo
-      @go-back="goBack"
-      @upsert-end="goBack"
-      :id="viewId"
-      :version="duplicateVersion"
-      :initMode="viewId!==undefined? 'read':'create'"
-      v-if="mode==='PrivatePannelInfo'"
-    ></PrivatePannelInfo>
-    <PanelInfo
-      @go-back="goBack"
-      @upsert-end="goBack"
-      :id="viewId"
-      :version="duplicateVersion"
-      :initMode="viewId!==undefined? 'read':'create'"
-      :panel-data-type="panelDataType"
-      v-if="mode==='pannelInfo' || mode==='AlbumPannelInfo'"
-    ></PanelInfo>
-    <ReleaseTimeSetter
-      v-if="showTimeShelf"
-      @cancel="showTimeShelf = false"
-      @submit="handleSubmitAudit"
-    />
-  </div>
+      <PanelInfo
+        v-else
+        :title-prefix="title"
+        :init-mode="panelPreview.initMode"
+        :id="panelPreview.id"
+        :version="panelPreview.version"
+        :panel-data-type="panelPreview.dataType"
+        :init-group-index="panelPreview.initGroupIndex"
+        :init-block-index="panelPreview.initBlockIndex"
+        @upsert-end="handlePreviewPanelEnd"
+        @go-back="handlePreviewPanelEnd"
+      />
+    </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'panel'">
+      <PanelInfo
+        :title-prefix="title"
+        init-mode="create"
+        :panel-data-type="1"
+        @upsert-end="activePage = 'tab_info'"
+        @go-back="activePage = 'tab_info'"
+      />
+    </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'album_panel'">
+      <PanelInfo
+        :title-prefix="title"
+        init-mode="create"
+        :panel-data-type="3"
+        @upsert-end="activePage = 'tab_info'"
+        @go-back="activePage = 'tab_info'"
+      />
+    </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'private_panel'">
+      <PrivatePanelInfo
+        :title-prefix="title"
+        init-mode="create"
+        @upsert-end="activePage = 'tab_info'"
+        @go-back="activePage = 'tab_info'"
+      />
+    </PageContentWrapper>
+  </PageWrapper>
 </template>
 <script>
 import SelectHourAndMinute from './../../components/SelectHourAndMinute'
-import AddBlockFilter from './AddBlockFilter'
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
 import { Table } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
 import OrderableTable from '@/components/OrderableTable'
 import ReleaseTimeSetter from './../../components/ReleaseTimeSetter'
 import PrivatePannelInfo from './../blockManage/PrivatePannelInfo'
-import PanelInfo from './../blockManage/PanelInfo'
+import PanelSelector from '@/components/selectors/PanelSelector'
+import PanelInfo from '../blockManage/PanelInfo'
+import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
+import titleMixin from '@/mixins/title'
 export default {
+  mixins: [titleMixin],
   components: {
-    AddBlockFilter,
+    PageWrapper,
+    PageContentWrapper,
+    PanelInfo,
+    PrivatePanelInfo,
+    'cc-panel-selector-el': PanelSelector,
     Table,
     PrivatePannelInfo,
     PanelInfo,
@@ -212,22 +248,8 @@ export default {
     }
   },
   data() {
-    const STATUS = {
-      draft: 2,
-      waiting: 3,
-      accepted: 4,
-      rejected: 5,
-      processing: 7
-    }
-    const STATUS_TEXT = {
-      '0': '下架',
-      '2': '草稿',
-      '3': '待审核',
-      '4': '审核通过',
-      '5': '审核不通过',
-      '7': '审核通过未上线'
-    }
     return {
+      resourceName: '业务版面',
       hourOption: {
         start: '00:00',
         step: '1:00',
@@ -238,21 +260,21 @@ export default {
         step: '00:01',
         end: '00:59'
       },
-      panelDataType: 1, //1 为常规运营，3为业务专辑
+      activePage: 'tab_info',
+      panelPreview: {
+        panel: null,
+        id: undefined,
+        version: undefined,
+        initMode: undefined,
+        initGroupIndex: undefined,
+        initBlockIndex: undefined
+      },
       initSumTime: 120,
-      STATUS: STATUS,
-      STATUS_TEXT: STATUS_TEXT,
       showTimeShelf: false,
-      title: '',
       tabTypes: [],
       status: undefined,
       mode: 'create',
-      preMode: 'create', //改变mode之前的状态
-      //  editID: undefined,
       isReplica: false, //是否创建副本
-      // viewData: undefined,
-      // version: undefined,
-      // isShowPannelInfoList: false, // 添加版块弹窗
       tab: {
         tabId: undefined,
         currentVersion: undefined,
@@ -313,15 +335,6 @@ export default {
       const mode = this.mode
       return mode === 'edit' || mode === 'replicate' || mode === 'copy'
     },
-    isShow() {
-      const mode = this.mode
-      return (
-        mode === 'edit' ||
-        mode === 'replicate' ||
-        mode === 'copy' ||
-        mode === 'create'
-      )
-    },
     tabGroupTableHeader() {
       const header = [
         {
@@ -340,7 +353,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.handlePreviewPannel(row)
+                    this.handlePreviewPanel(row)
                   }
                 }
               },
@@ -361,7 +374,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.handlePreviewPannel(row, row.duplicateVersion)
+                    this.handlePreviewPanel(row, row.duplicateVersion)
                   }
                 }
               },
@@ -398,7 +411,7 @@ export default {
   methods: {
     handleCopy() {
       const data = this.getFormData()
-      data.tabStatus = this.STATUS.waiting
+      data.tabStatus = this.$consts.status.waiting
       data.tabId = undefined
       data.currentVersion = ''
       this.validateFormData(
@@ -409,7 +422,6 @@ export default {
       )
     },
     validateFormData(data, cb) {
-      const STATUS = this.STATUS
       const tabStatus = data.tabStatus
       const showError = function(message) {
         this.$message({
@@ -418,7 +430,7 @@ export default {
         })
       }.bind(this)
       let error
-      if (tabStatus === STATUS.draft) {
+      if (tabStatus === this.$consts.draft) {
         if (!data.tabName) {
           error = '请填写版面名称'
         }
@@ -428,9 +440,9 @@ export default {
           cb()
         }
       } else {
-        this.$refs.tabForm.validate(function(valid) {
+        this.$refs.tabForm.validate((valid) => {
           if (!valid) {
-            // showError('请把表单填写完整')
+            showError('请把表单填写完整')
           } else {
             if (data.pannelList.length === 0) {
               error = '请选择版块'
@@ -444,29 +456,28 @@ export default {
         })
       }
     },
-    handleShowTimeShelf() {
-      const data = this.getFormData()
-      data.tabStatus = this.STATUS.waiting
-      this.validateFormData(
-        data,
-        function() {
-          this.showTimeShelf = true
-        }.bind(this)
-      )
-    },
     handleSubmitAudit(timing) {
       const data = this.getFormData()
-      data.isTiming = timing.isTiming
-      data.releaseTime = timing.releaseTime
-      data.tabStatus = this.STATUS.waiting
-      this.showTimeShelf = true
-      this.submit(data)
+      data.tabStatus = this.$consts.status.waiting
+      this.validateFormData(data, () => {
+        if (this.$consts.idPrefix == '10') {
+          if (timing) {
+            data.isTiming = timing.isTiming
+            data.releaseTime = timing.releaseTime
+            this.submit(data)
+          } else {
+            this.$refs.commonContent.showReleaseTimeSetter = true
+          }
+        } else {
+          this.submit(data)
+        }
+      })
     },
     handleSaveDraft() {
       const data = this.getFormData()
       data.isTiming = undefined
       data.releaseTime = undefined
-      data.tabStatus = this.STATUS.draft
+      data.tabStatus = this.$consts.status.draft
       this.validateFormData(
         data,
         function() {
@@ -515,45 +526,42 @@ export default {
       }
       return data
     },
-    goBack() {
-      this.mode = this.preMode
-    },
-    addBlock(rows) {
-      this.mode = this.preMode
-      this.tab.pannelList = rows
-    },
-    handlePreviewPannel(row, version) {
-      this.preMode = this.mode
-      this.viewId = row.pannelGroupId
-      switch (row.pannelType) {
-        case 1:
-        case 7:
-          this.mode = 'pannelInfo'
-          break
-        case 3:
-          this.mode = 'AlbumPannelInfo'
-          break
-        case 5:
-        case 9:
-        case 10:
-          this.mode = 'PrivatePannelInfo'
-          break
+    handlePreviewPanel(panel, targetVersion) {
+      const row = panel
+      const version = targetVersion || row.currentVersion
+      this.activePage = 'panel_preview'
+      this.panelPreview = {
+        panel: row,
+        initMode: 'read',
+        id: row.pannelGroupId,
+        dataType: row.pannelType,
+        version
       }
-      //  else {
-      //   this.mode = row.type
-      // }
-      this.duplicateVersion = version
     },
-    openCreatePage(mode, panelDataType) {
-      this.preMode = this.mode
-      this.viewId = undefined
-      this.mode = mode
-      this.panelDataType = panelDataType
-      this.duplicateVersion = undefined
+    handlePreviewPanelEnd() {
+      const panel = this.panelPreview.panel
+      this.updatePanelVersion(panel)
+      this.panelPreview = null
+      this.activePage = 'tab_info'
     },
-    handleSlectPannelStart() {
-      this.preMode = this.mode
-      this.mode = 'selectBlockResource'
+    handleSelectPanelEnd(selected) {
+      const selectedPanelList = selected || []
+      const originSelectPanelList = this.tab.pannelList || []
+      const originSelectedPanelListIndexed = originSelectPanelList.reduce(function(result, item, index) {
+        result[item.pannelGroupId] = index
+        return result
+      }, {})
+
+      let panelList = []
+      selectedPanelList.forEach(function(item) {
+        const index = originSelectedPanelListIndexed[item.pannelGroupId]
+        // 把之前没选中都添加到列表里
+        if (index === undefined) {
+          panelList.push(item)
+        }
+      })
+      // 把新添加都加到后面
+      this.tab.pannelList = originSelectPanelList.concat(panelList)
     },
     handleRemovePannel(index) {
       this.tab.pannelList.splice(index, 1)
@@ -576,6 +584,19 @@ export default {
         )
         .catch(function() {})
     },
+    updatePanelVersion(panel, cb) {
+      let methodName = 'panelPageList'
+      if ([5, 9, 10].indexOf(panel.pannelType) > -1) {
+        methodName = 'privatePanelPageList'
+      }
+      this.$service[methodName]({
+        pannelId: panel.pannelGroupId
+      }).then(data => {
+        const result = data.rows[0]
+        Object.assign(panel, result)
+        cb && cb()
+      })
+    },
     getTabType() {
       return this.$service.getTabType({ tabParentType: 'biz' }).then(data => {
         this.tabTypes = data.reduce((result, current) => {
@@ -587,41 +608,6 @@ export default {
           return result
         }, [])
       })
-    },
-    handleChangePannelOrderStart(currentPannelIndex, order) {
-      console.log('order=' + order)
-      // return
-      if (order !== '') {
-        order = parseInt(order)
-        const pannelList = this.tab.pannelList
-        if (isNaN(order) || order > pannelList.length || order <= 0) {
-          this.currentPannelIndex = undefined
-          this.$message({
-            type: 'error',
-            message: '序号必须大于0且不能大于总数量'
-          })
-          this.tab.pannelList = pannelList.slice()
-        } else {
-          this.currentPannelIndex = currentPannelIndex
-          this.currentPannelOrder = order
-        }
-      }
-    },
-    handleChangePannelOrderEnd(pannelIndex) {
-      if (this.currentPannelIndex === pannelIndex) {
-        const newIndex = this.currentPannelOrder - 1
-        const oldIndex = pannelIndex
-        const pannelList = this.tab.pannelList
-        const item = pannelList[oldIndex]
-        pannelList.splice(oldIndex, 1)
-        this.tab.pannelList = [].concat(
-          pannelList.slice(0, newIndex),
-          item,
-          pannelList.slice(newIndex)
-        )
-        this.currentPannelIndex = undefined
-        this.currentPannelOrder = undefined
-      }
     },
     fetchData(version) {
       this.$service
@@ -641,22 +627,6 @@ export default {
   created() {
     this.getTabType()
     this.mode = this.initMode || 'create'
-    switch (this.mode) {
-      case 'create':
-        this.title = '新增'
-        break
-      case 'copy':
-        this.title = '复制'
-        break
-      case 'edit':
-        this.title = '编辑'
-        break
-      case 'replica':
-        this.title = '创建副本'
-      case 'read':
-        this.title = '预览'
-        break
-    }
     if (this.id) {
       this.fetchData(this.version)
     }

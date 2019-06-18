@@ -35,7 +35,7 @@ const statusText = {
   9: '待二次审核'
 }
 
-const statusOptions = Object.keys(statusText).reduce((result, key) => {
+const statusOptions = Object.keys(statusText).reduceRight((result, key) => {
   if (key < 6) {
     result.push({
       label: statusText[key],
@@ -45,7 +45,7 @@ const statusOptions = Object.keys(statusText).reduce((result, key) => {
   return result
 }, [])
 
-const statusEnums = Object.keys(statusText).reduce((result, key) => {
+const statusEnums = Object.keys(statusText).reduceRight((result, key) => {
   if (key < 6) {
     result[statusText[key]] = key
   }

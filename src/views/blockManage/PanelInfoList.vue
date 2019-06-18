@@ -54,11 +54,7 @@ export default {
   data () {
     return {
       resourceType: 'panelInfo',
-      filter: {
-        idPrefix: 10,
-        sort: undefined,
-        order: undefined,
-      },
+      filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {
         currentPage: 1
@@ -205,9 +201,11 @@ export default {
   },
 
   methods: {
-    /**
-     * 获取数据
-     */
+    genDefaultFilter() {
+      return {
+        idPrefix: this.$consts.idPrefix,
+      }
+    },
     fetchData() {
       const filter = this.parseFilter()
       if(this.dataList) {
@@ -247,11 +245,7 @@ export default {
         this.filter = Object.assign({}, this.dataList.filter)
         console.log(this.filter);
       }else {
-        this.filter = {
-          idPrefix: 10,
-          sort: undefined,
-          order: undefined,
-        }
+        this.filter = this.genDefaultFilter() 
       }
       this.pagination.currentPage = 1
       this.fetchData()
@@ -311,14 +305,6 @@ export default {
         placeholder: '版块类别',
         component: 'Select'
       }),
-      contentTitle: _.o.string.other('form', {
-        placeholder: '推荐位标题',
-        component: 'Input'
-      }),
-      contentPackageName: _.o.string.other('form', {
-        placeholder: '推荐位包名',
-        component: 'Input'
-      })
     })
     .other('form', {
       cols: {
@@ -338,6 +324,17 @@ export default {
         resetText: '重置'
       }
     })
+    if (this.$consts.idPrefix != '10') {
+      filterSchema.map({
+        idPrefix: _.o.enum({
+          '酷开': '10',
+          '江苏广电': '11'
+        }).other('form', {
+          component: 'Select',
+          placeholder: '数据来源'
+        })
+      })
+    }
     this.getBusinessType().then(() => {
       this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
     })

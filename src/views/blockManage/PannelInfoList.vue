@@ -62,8 +62,6 @@ export default {
       pannelStatus: {},
       filter: {
         idPrefix: 10,
-        sort: undefined,
-        order: undefined,
         pannelType: 1
       },
       filterSchema: null,

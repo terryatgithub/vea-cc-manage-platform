@@ -4,9 +4,8 @@
         v-for="(level, levelIndex) in levels">
         <div v-if="levelIndex > 0" class="cc-level-buttons">
           <i class="el-icon-arrow-right" />
-        </div><div 
-          class="cc-level-wrapper" 
-        >
+        </div>
+        <div class="cc-level-wrapper">
           <div class="cc-level-title">
               <el-input :value="level.label" @change="$emit('level-label-change', $event, levelIndex)" />
           </div>
@@ -17,22 +16,23 @@
             </div>
           </slot>
           </el-form>
-          <template v-for="(item, index) in items">
-            <div
-              v-if="item.parentValue === level.parentValue && item.level === levelIndex"
-              :class="['cc-level-item', item.value === level.activeValue ? 'active' : '']"
-              :key="item.value" 
-              @click="$emit('item-activate', item, levelIndex)"
-            >
-              <span :title="item.label">{{ item.label }}</span>
-              <i 
-                class="cc-level-item-remove el-icon-circle-close" 
-                title="删除"
-                @click="$emit('item-remove', item)" 
-              />
-            </div>
-          </template>
-
+          <div class="cc-level-item-list">
+            <template v-for="(item, index) in items">
+              <div
+                v-if="item.parentValue === level.parentValue && item.level === levelIndex"
+                :class="['cc-level-item', item.value === level.activeValue ? 'active' : '']"
+                :key="item.value" 
+                @click="$emit('item-activate', item, levelIndex)"
+              >
+                <span :title="item.label">{{ item.label }}</span>
+                <i 
+                  class="cc-level-item-remove el-icon-circle-close" 
+                  title="删除"
+                  @click="$emit('item-remove', item)" 
+                />
+              </div>
+            </template>
+          </div>
           <i 
             class="cc-level-level-remove el-icon-circle-close" 
             title="删除"
@@ -40,7 +40,7 @@
           />
         </div>
       </template>
-      <el-button type="primary" @click="$emit('level-add')">添加下一级</el-button>
+      <el-button class="cc-level__add-level" type="primary" @click="$emit('level-add')">添加下一级</el-button>
   </div>
 </template>
 
@@ -133,6 +133,13 @@ export default {
 .cc-level-add .el-input,
 .cc-level-add .el-input__inner {
   width: 170px;
+}
+.cc-level-item-list {
+  overflow: auto;
+  height: 320px;
+}
+.cc-level__add-level {
+  margin-left: 10px;
 }
 
 </style>

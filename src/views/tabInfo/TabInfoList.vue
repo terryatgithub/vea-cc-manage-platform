@@ -48,13 +48,18 @@
         </el-form-item>
         <el-form-item class="el-col-6">
           <el-select v-model="filter.tabStatus" placeholder="状态">
-            <el-option value>请选择</el-option>
             <el-option
               v-for="item in tabStatusOption"
               :key="item.label"
               :label="item.label"
               :value="item.value"
             />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="$consts.idPrefix != '10'" class="el-col-6">
+          <el-select v-model="filter.idPrefix" placeholder="数据来源">
+            <el-option value="10" label="酷开"></el-option>
+            <el-option value="11" label="江苏广电"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item class="el-form-item-submit">
@@ -116,9 +121,7 @@ export default {
         { label: '审核不通过', value: '5' }
       ],
       businessType: [],
-      filter: {
-        idPrefix: this.$consts.idPrefix
-      },
+      filter: this.genDefaultFilter(),
       appIdType: [],
       filterSchema: null,
       pagination: {
@@ -282,9 +285,11 @@ export default {
   },
 
   methods: {
-    /**
-     * 获取数据
-     */
+    genDefaultFilter() {
+      return {
+        idPrefix: this.$consts.idPrefix
+      }
+    },
     fetchData() {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
@@ -314,9 +319,7 @@ export default {
       }
     },
     handleFilterReset() {
-      this.filter = {
-        idPrefix: this.$consts.idPrefix
-      }
+      this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },

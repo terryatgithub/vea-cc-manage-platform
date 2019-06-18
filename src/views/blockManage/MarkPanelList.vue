@@ -43,7 +43,7 @@ export default {
     return {
       resourceType: 'panelInfo',
       businessTypes: {}, //业务分类
-      filter: {},
+      filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {},
       selected: [],
@@ -67,7 +67,8 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleRead(row)
                     }
                   }
@@ -86,23 +87,9 @@ export default {
             prop: 'pannelList',
             width: '90',
             render: (createElement, { row }) => {
-              if (row.pannelList.length <0) {
-                return ''
-              } else {
-                switch (row.pannelList[0].pannelResource) {
-                  case 'o_tencent':
-                    return '腾讯'
-                    break
-                  case 'o_iqiyi':
-                    return '爱奇艺'
-                    break
-                  case 'o_voole':
-                    return '优朋'
-                    break
-                  case 'o_youku':
-                    return '优酷'
-                    break
-                }
+              const pannelList = row.pannelList
+              if (pannelList.length > 0) {
+                return this.$consts.sourceText[pannelList[0].pannelResource]
               }
             }
           },
@@ -116,7 +103,7 @@ export default {
             prop: 'pannelStatus',
             width: '90',
             render: (createElement, { row }) => {
-              return this.$numToAuditStatus(row.pannelStatus)
+              return this.$consts.statusText[row.pannelStatus]
             }
           },
           {
@@ -136,7 +123,8 @@ export default {
                     type: 'text'
                   },
                   on: {
-                    click: () => {
+                    click: (event) => {
+                      event.stopPropagation()
                       this.handleRead(row, row.duplicateVersion)
                     }
                   }
@@ -157,7 +145,12 @@ export default {
     }
   },
   methods: {
-    /**获取列表数据 */
+    genDefaultFilter() {
+      return {
+        idPrefix: this.$consts.idPrefix,
+        pannelType: 8
+      }
+    },
     fetchData() {
       const filter = this.parseFilter()
       this.$service.getMarkPanelList(filter).then(data => {
@@ -170,8 +163,6 @@ export default {
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
-        filter.idPrefix = '10'
-        filter.pannelType = '8'
       }
       return filter
     },
@@ -198,15 +189,14 @@ export default {
     },
     //重置
     handleFilterReset() {
-      this.filter = {
-      }
+      this.filter = this.genDefaultFilter() 
       this.pagination.currentPage = 1
       this.fetchData()
     }
   },
   created() {
     let filterSchema = _.map({
-      pannelId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
+      pannelId: _.o.string.other('form', {
         component: 'Input',
         placeholder: 'ID'
       }),
@@ -248,6 +238,17 @@ export default {
         resetText: '重置'
       }
     })
+    if (this.$consts.idPrefix != '10') {
+      filterSchema.map({
+        idPrefix: _.o.enum({
+          '酷开': '10',
+          '江苏广电': '11'
+        }).other('form', {
+          component: 'Select',
+          placeholder: '数据来源'
+        })
+      })
+    }
     this.fetchData()
     this.getBusinessType().then(() => {
       this.filterSchema = filterSchema

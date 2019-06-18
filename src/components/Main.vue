@@ -20,7 +20,7 @@
       <el-header class="header">
         <div class="logo" direction="vertical">
           <div class="logo__img">
-            <i class="el-icon-location"></i> 内容运营平台
+            <i class="el-icon-location"></i> {{ companyMap[$consts.idPrefix] }}内容运营平台
           </div>
         </div>
         <span role="presentation" class="el-breadcrumb__separator">/</span>
@@ -150,6 +150,10 @@ export default {
       isShowSetting: false,
       isShowTagNav: true,
       modifyDialogVisible: false,
+      companyMap: {
+        '10': '酷开',
+        '11': '江苏有线',
+      },
      // initTags: [],
       form: {
         oldpwd: null,

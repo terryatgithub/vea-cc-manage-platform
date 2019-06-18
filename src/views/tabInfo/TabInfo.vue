@@ -571,7 +571,7 @@
         :title-prefix="title"
         :init-mode="panelPreview.initMode"
         :id="panelPreview.id"
-        :version="panelPreview.vesion"
+        :version="panelPreview.version"
         :panel-data-type="panelPreview.dataType"
         :init-group-index="panelPreview.initGroupIndex"
         :init-block-index="panelPreview.initBlockIndex"

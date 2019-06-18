@@ -6,7 +6,7 @@
       </div>
       <el-form label-width="120px">
         <el-form-item label="人群策略">
-          <el-select :disabled="!!id" v-model="rel.policyId" placeholder="请选择">
+          <el-select class="dmp-relationship__policy" :disabled="!!id" v-model="rel.policyId" placeholder="请选择">
             <el-option
               v-for="item in policyOptions"
               :key="item.value"
@@ -60,6 +60,7 @@
 <script>
 import CCLevel from './Level'
 import CrowdSelector from './CrowdSelector'
+import Fuse from 'fuse.js'
 export default {
   components: {
     'cc-level': CCLevel,
@@ -378,6 +379,10 @@ export default {
 }
 </script>
 <style scoped>
+.dmp-relationship__policy {
+  width: 400px;
+  margin-right: 10px;
+}
 .crowd-add-wrapper {
   padding: 5px;
 }

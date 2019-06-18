@@ -56,10 +56,7 @@ export default {
       resourceType: 'panelInfo',
       businessType: {},
       pannelStatus: {},
-      filter: {
-        idPrefix: 10,
-        pannelType: 3
-      },
+      filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {
         currentPage: 1
@@ -196,11 +193,13 @@ export default {
   },
 
   methods: {
-    /**
-     * 获取数据
-     */
+    genDefaultFilter() {
+      return {
+        idPrefix: this.$consts.idPrefix,
+        pannelType: 3
+      }
+    },
     fetchData() {
-      this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       if(this.dataList) {
         this.$service.panelDataList(filter).then(data => {
@@ -239,10 +238,7 @@ export default {
         this.filter = Object.assign({}, this.dataList.filter)
         console.log(this.filter);
       }else {
-        this.filter = {
-          idPrefix: 10,
-          pannelType: 3
-        }
+        this.filter = this.genDefaultFilter() 
       }
       this.pagination.currentPage = 1
       this.fetchData()
@@ -269,7 +265,7 @@ export default {
     }
   },
   created() {
-     let filterSchema = _.map({
+    const filterSchema = _.map({
       pannelCategory: _.o.enum(this.businessType).other('form', {
         placeholder: '业务分类',
         component: 'Select'
@@ -303,7 +299,7 @@ export default {
         component: 'Select'
       }),
       type: _.o.enum({'默认': -1, '置顶': 1, '下沉': 0}).other('form', {
-        placeholder: '版块类别',
+        placeholder: '智能化推荐',
         component: 'Select'
       })
     }).other('form', {
@@ -324,6 +320,17 @@ export default {
         resetText: '重置'
       }
     })
+    if (this.$consts.idPrefix != '10') {
+      filterSchema.map({
+        idPrefix: _.o.enum({
+          '酷开': '10',
+          '江苏广电': '11'
+        }).other('form', {
+          component: 'Select',
+          placeholder: '数据来源'
+        })
+      })
+    }
     this.getBusinessType().then(() => {
       this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
     })

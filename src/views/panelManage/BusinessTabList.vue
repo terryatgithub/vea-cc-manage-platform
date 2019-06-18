@@ -263,7 +263,7 @@ export default {
     genDefaultFilter() {
       return {
         tabParentType: 'biz',
-        idPrefix: 10,
+        idPrefix: this.$consts.idPrefix,
       }
     },
     parseFilter() {
@@ -339,6 +339,17 @@ export default {
         resetText: '重置'
       }
     })
+    if (this.$consts.idPrefix != '10') {
+      filterSchema.map({
+        idPrefix: _.o.enum({
+          '酷开': '10',
+          '江苏广电': '11'
+        }).other('form', {
+          component: 'Select',
+          placeholder: '数据来源'
+        })
+      })
+    }
     this.getTabType().then(() => {
       this.filterSchema = filterSchema
     })

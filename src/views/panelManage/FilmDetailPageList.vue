@@ -269,7 +269,6 @@ export default {
     getDefaultFilter() {
       return {
         tabType: 3,
-        idPrefix: '10',
         tabId: undefined,
         tabName: undefined,
         tabStatus: undefined,
