@@ -21,7 +21,7 @@
   </div>
 </template>
 <script>
-import PanelInfo from './PanelInfo'
+import PanelInfo from '../panelInfo/PanelInfo'
 import AlbumPannelInfoList from'./AlbumPannelInfoList'
 const idField = 'pannelGroupId'
 export default {

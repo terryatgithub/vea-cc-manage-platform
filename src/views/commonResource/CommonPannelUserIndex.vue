@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-import PanelInfo from './../blockManage/PanelInfo'
+import PanelInfo from './../panelInfo/PanelInfo'
 import CommonPannelUserList from './CommonPannelUserList'
 const idField = 'pannelGroupId'
 export default {

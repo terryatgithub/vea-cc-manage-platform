@@ -176,7 +176,7 @@ import { Table } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
 import OrderableTable from '@/components/OrderableTable'
 import PrivatePannelInfo from './../blockManage/PrivatePannelInfo'
-import PanelInfo from './../blockManage/PanelInfo'
+import PanelInfo from './../panelInfo/PanelInfo'
 export default {
   components: {
     AddBlockFilter,

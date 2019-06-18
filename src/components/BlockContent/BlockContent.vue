@@ -149,6 +149,8 @@ export default {
         showSubTitle: 0,
         singleSubTitle: '',
         pictureUrl: '',
+        showSeries: 1,
+        showScore: 1,
         alternativePictureUrl: '',
         extraValue1: '',
         extraValue5: '',

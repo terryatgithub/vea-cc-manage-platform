@@ -33,7 +33,7 @@
   </div>
 </template>
 <script>
- import PanelInfo from  './../blockManage/PanelInfo.vue' //常规运营
+ import PanelInfo from  './../panelInfo/PanelInfo.vue' //常规运营
  import MarkPanelInfo from './../blockManage/MarkPanelInfo' //为功能版块
  import PrivatePannelInfo from './../blockManage/PrivatePannelInfo.vue' // 专属影院
 export default {

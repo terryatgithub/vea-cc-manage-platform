@@ -74,16 +74,11 @@
                   :options="$consts.panelTypeOptions"/>
               </el-form-item>
 
-              <el-form-item v-if="pannel.parentType === 'group'" label="默认落焦">
+              <el-form-item v-if="pannel.parentType === 'group'" label="落焦规则">
                 <el-radio-group v-model="pannel.focusConfig">
-                  <el-radio label>手动指定</el-radio>
-                  <el-radio label="week">自动指定</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item v-if="pannel.focusConfig !== ''" label="落焦规则">
-                <el-radio-group v-model="pannel.focusConfig">
+                  <el-radio label="">手动指定</el-radio>
                   <el-radio label="week">根据一周时间</el-radio>
+                  <el-radio label="timeSlot">根据时间段</el-radio>
                 </el-radio-group>
               </el-form-item>
 
@@ -183,7 +178,7 @@
                         :key="index"
                         :name="index.toString()"
                       >
-                        <span slot="label" @dblclick="handleSetPannelTitleStart(index)">
+                        <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
                           {{ item.pannelTitle || "双击修改" }}
                           {{
                           item.panelIsFocus && pannel.focusConfig === ""
@@ -237,12 +232,8 @@
                 <div>{{ $consts.panelTypeText[pannel.parentType] }} </div>
               </el-form-item>
 
-              <el-form-item v-if="pannel.parentType === 'group'" label="默认落焦">
-                <div>{{pannel.focusConfig === '' ? '手动指定' : '自动指定'}}</div>
-              </el-form-item>
-
               <el-form-item v-if="pannel.focusConfig !== ''" label="落焦规则">
-                <div>{{pannel.focusConfig === 'week' ? '根据一周时间' : ''}} </div>
+                <div>{{ pannel.focusConfig === '' ? '手动指定' : ({week:'根据一周时间', timeSlot: '根据时间段'})[pannel.focusConfig] }} </div>
               </el-form-item>
 
               <el-form-item label="版块属性">
@@ -289,7 +280,9 @@
                         :name="index.toString()"
                       >
                         
-                        <span slot="label">{{ item.pannelTitle }} {{ item.panelIsFocus && pannel.focusConfig === '' ? '(默认落焦)' : '' }}</span>
+                        <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
+                          {{ item.pannelTitle }} {{ item.panelIsFocus && pannel.focusConfig === '' ? '(默认落焦)' : '' }}
+                        </span>
                         <VirtualPanel
                           :blocks="item.contentList"
                           @click-block="handleClickBlock"
@@ -307,7 +300,17 @@
               </el-form-item>
             </el-form>
           </template>
+
         </CommonContent>
+          <PanelGroupInfoSetter
+            v-if="activePanelGroup"
+            :info="activePanelGroup"
+            :mode="mode"
+            :panel-list="pannel.pannelList"
+            :focus-config="pannel.focusConfig"
+            @set-end="handleSetPanelGroupInfoEnd"
+            @set-cancel="handleSetPanelGroupInfoCancel">
+          </PanelGroupInfoSetter>
       </ContentCard>
     </PageContentWrapper>
 
@@ -322,6 +325,7 @@
         @save="handleSetBlockContentEnd"
       />
     </PageContentWrapper>
+
   </PageWrapper>
 </template>
 <script>
@@ -339,6 +343,7 @@ import CommonSelector from '@/components/CommonSelector'
 import BinCheckBox from '@/components/BinCheckBox'
 
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
+import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 
 export default {
   mixins: [titleMixin],
@@ -354,7 +359,8 @@ export default {
     GlobalPictureSelector,
     BlockContent,
     BinCheckBox,
-    ResourceSelector
+    ResourceSelector,
+    PanelGroupInfoSetter
   },
   data() {
     var checkNum = function(rule, value, callback) {
@@ -433,7 +439,8 @@ export default {
 
       currentBlockIndex: undefined,
       // 当前激活的分组 pannel 的索引值
-      activePannelIndex: '0',
+      activePannelIndex: "0",
+      activePanelGroup: undefined
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -506,22 +513,6 @@ export default {
         this.isShowfocusImgUrl = false
       }
     },
-    'pannel.focusConfig': function(val) {
-      if (val === 'week') {
-        const pannel = this.pannel
-        const pannelList = pannel.pannelList
-        let count = 7 - pannelList.length
-        while (count-- > 0) {
-          this.addPannel()
-        }
-        const titles = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-        pannel.pannelList = pannelList.map(function(item, index) {
-          item.pannelTitle = titles[index]
-          return item
-        })
-        this.updateAllPosition()
-      }
-    },
     'pannel.parentType': function(val) {
       if (val === 'group') {
         this.pannel.showTitle = 1
@@ -529,6 +520,45 @@ export default {
     }
   },
   methods: {
+    handleFocusConfigChange(val) {
+      if (val === "week") {
+        const pannel = this.pannel;
+        const pannelList = pannel.pannelList;
+        let count = 7 - pannelList.length;
+        while (count-- > 0) {
+          this.addPannel();
+        }
+        const titles = [
+          "周一",
+          "周二",
+          "周三",
+          "周四",
+          "周五",
+          "周六",
+          "周日"
+        ];
+        pannel.pannelList = pannelList.map(function(item, index) {
+          item.pannelTitle = titles[index];
+          item.panelIsFocus = 0
+          return item;
+        });
+        this.updateAllPosition();
+      }
+      if (val === "timeSlot") {
+        const pannel = this.pannel;
+        const pannelList = pannel.pannelList;
+        let count = 4 - pannelList.length;
+        while (count-- > 0) {
+          this.addPannel();
+        }
+        pannel.pannelList = pannelList.map(function(item, index) {
+          item.pannelTitle = '时间段分组';
+          return item;
+        });
+        this.updateAllPosition();
+      }
+
+    },
     fetchData(version) {
       return this.$service.panelGetDetail({ id: this.id, version }).then(data => {
         this.setPanelInfoData(data)
@@ -915,23 +945,13 @@ export default {
         })
       }
 
-      this.$prompt('设置标题', '', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputValue: '',
-        inputValidator: function(value) {
-          if (!value || value.trim() === '') {
-            return '标题不能为空'
-          }
-        }
-      })
-        .then(
-          function(result) {
-            this.addPannel(result.value)
-            this.updatePosition()
-          }.bind(this)
-        )
-        .catch(function() {})
+      this.activePanelGroup = {
+        index: this.pannel.pannelList.length,
+        title: '',
+        startTime: undefined,
+        endTime: undefined,
+        panelIsFocus: 0
+      }
     },
     addPannel(title) {
       const pannelList = this.pannel.pannelList
@@ -1011,22 +1031,55 @@ export default {
         .catch(function() {})
     },
 
-    handleSetPannelTitleStart(index) {
-      const component = this
-      this.$prompt('设置标题', '', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputValue: component.pannel.pannelList[index].pannelTitle,
-        inputValidator: function(value) {
-          if (!value || value.trim() === '') {
-            return '标题不能为空'
-          }
-        }
-      })
-        .then(function(result) {
-          component.pannel.pannelList[index].pannelTitle = result.value
-        })
-        .catch(function() {})
+    handleSetPanelGroupInfoStart(index) {
+      const panel = this.pannel.pannelList[index]
+      this.activePanelGroup = {
+        index: index,
+        title: panel.pannelTitle,
+        startTime: panel.startTime,
+        endTime: panel.endTime,
+        panelIsFocus: panel.panelIsFocus
+      }
+    },
+    handleSetPanelGroupInfoCancel() {
+      this.activePanelGroup = undefined
+    },
+    handleSetPanelGroupInfoEnd() {
+      const groupInfo = this.activePanelGroup
+      const index = groupInfo.index
+      const panelList = this.pannel.pannelList
+      let panel = panelList[index]
+      if (!panel) {
+        // 是新添加的
+        this.addPannel(groupInfo)
+        this.updateAllPosition()
+        panel = panelList[index]
+      }
+      panel.pannelTitle = groupInfo.title
+      if (groupInfo.panelIsFocus) {
+        this.setPanelDefaultFocus(index)
+      } else {
+        panel.panelIsFocus = groupInfo.panelIsFocus
+      }
+      panel.startTime = groupInfo.startTime
+      panel.endTime = groupInfo.endTime
+      this.activePanelGroup = undefined
+    },
+    handleSetBlockContentEnd(param) {
+      const activePannelIndex = +this.activePannelIndex;
+      const activePannel = this.pannel.pannelList[activePannelIndex];
+      const selectedResources = activePannel.selectedResources || [];
+      const currentBlockIndex = this.currentBlockIndex;
+      this.showBlockContentDialog = false;
+      const resource = selectedResources[currentBlockIndex] || {};
+      selectedResources[currentBlockIndex] = resource;
+      const content = param.videoContentList[0];
+      Object.assign(resource, param);
+      if (param.specificContentList.length > 0) {
+        activePannel.pannelType = 7;
+      }
+      this.updatePosition();
+      this.getSharedTags()
     },
     clearBlocks() {
       const pannel = this.pannel
@@ -1363,6 +1416,16 @@ export default {
           return contentItem
         })
 
+
+        let timeSlot
+        if (pannel.focusConfig === 'timeSlot') {
+          const startTime = item.startTime
+          const endTime = item.endTime
+          if (startTime && endTime) {
+            timeSlot = startTime + ',' + endTime
+          }
+        }
+
         return {
           pannelStatus: pannel.pannelStatus,
           pannelId: item.pannelId,
@@ -1376,6 +1439,7 @@ export default {
           flagIs4k: pannel.flagIs4k,
           layoutId: layout.layoutId,
           panelIsFocus: item.panelIsFocus,
+          timeSlot: timeSlot,
           focusShape: pannel.focusShape,
           contentList: itemContentList
         }
@@ -1388,7 +1452,16 @@ export default {
       delete pannel.focusShape
       delete pannel.focusImgUrl
 
-      console.log('panel', pannel)
+      // 时间段默认落焦
+      if (pannel.focusConfig === 'timeSlot') {
+        const defaultFocusIndex = pannel.pannelList.findIndex(function(item) {
+          return item.panelIsFocus === 1
+        })
+        if (defaultFocusIndex === -1) {
+          pannel.pannelList[0].panelIsFocus = 1
+        }
+      }
+
       return pannel
     },
     validate(pannel, callback) {
@@ -1430,6 +1503,8 @@ export default {
         const validateBlocksRes = this.validateBlocks()
 
         const emptyPannelTitleIndex = validateBlocksRes.emptyPannelTitleIndex
+        const duplicatedPannelTitleIndex = validateBlocksRes.duplicatedPannelTitleIndex;
+        const emptyTimeSlotIndex = validateBlocksRes.emptyTimeSlotIndex
         const emptyPostIndex = validateBlocksRes.emptyPostIndex
         const emptyPostBlockIndex = validateBlocksRes.emptyPostBlockIndex
         const emptyPriceIndex = validateBlocksRes.emptyPriceIndex
@@ -1448,6 +1523,14 @@ export default {
 
         if (emptyPannelTitleIndex !== undefined) {
           return cb('请填写第' + (emptyPannelTitleIndex + 1) + '分组的标题')
+        }
+
+        if (duplicatedPannelTitleIndex !== undefined) {
+          return "第" + (duplicatedPannelTitleIndex + 1) + "分组的标题与别的分组重复"
+        }
+
+        if (emptyTimeSlotIndex !== undefined) {
+          return "请设置第" + (emptyTimeSlotIndex + 1) + "分组的落焦时间"
         }
 
         if (
@@ -1520,6 +1603,9 @@ export default {
       const pannelList = this.pannel.pannelList
       const selectedLayout = this.selectedLayout
       let emptyPannelTitleIndex
+      let duplicatedPannelTitleIndex;
+
+      let emptyTimeSlotIndex;
 
       let emptyPriceIndex
       let emptyPriceBlockIndex
@@ -1540,6 +1626,21 @@ export default {
         if (!pannel.pannelTitle) {
           emptyPannelTitleIndex = i
           break checkBlock
+        }
+        // 标题重复检查
+        const pannelTitle = pannel.pannelTitle.trim()
+        if (pannelTitleIndex[pannelTitle]) {
+          duplicatedPannelTitleIndex = i
+          break checkBlock;
+        } else {
+          pannelTitleIndex[pannelTitle] = true
+        }
+        // 落焦时间段重叠检查
+        if (focusConfig === 'timeSlot') {
+          if ( !(pannel.startTime && pannel.endTime) && !pannel.panelIsFocus ) {
+            emptyTimeSlotIndex = i
+            break checkBlock
+          }
         }
         if (pannel.panelIsFocus) {
           focusIndex = i
@@ -1587,6 +1688,8 @@ export default {
       }
       return {
         emptyPannelTitleIndex,
+        duplicatedPannelTitleIndex,
+        emptyTimeSlotIndex,
         emptyPostIndex,
         emptyPostBlockIndex,
         emptyPriceIndex,
@@ -1664,6 +1767,11 @@ export default {
               })
             return contentItem
           })
+          if (item.timeSlot) {
+            const timeSlot = item.timeSlot.split(',')
+            item.startTime = new Date(timeSlot[0])
+            item.endTime = new Date(timeSlot[1])
+          }
           item.selectedResources = item.contentList
           return item
         })
@@ -1686,6 +1794,7 @@ export default {
       }
       this.pannel = {...pannel}
       this.updateAllPosition()
+      this.$watch("pannel.focusConfig", this.handleFocusConfigChange)
     },
     clickBlock() {
       const { initGroupIndex, initBlockIndex } = this

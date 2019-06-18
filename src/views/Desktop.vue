@@ -72,7 +72,7 @@ import ContentCard from '@/components/ContentCard'
 import MySubmitTasksIndex from './todoTask/MySubmitTasksIndex'
 import MyReviewTasksIndex from './todoTask/MyReviewTasksIndex'
 import DownMovie from './DownMovie'
-import PanelInfo from './blockManage/PanelInfo'
+import PanelInfo from './panelInfo/PanelInfo'
 export default {
   components: {
     MyDraftsIndex,

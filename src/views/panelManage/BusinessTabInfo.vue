@@ -218,7 +218,7 @@ import OrderableTable from '@/components/OrderableTable'
 import ReleaseTimeSetter from './../../components/ReleaseTimeSetter'
 import PrivatePannelInfo from './../blockManage/PrivatePannelInfo'
 import PanelSelector from '@/components/selectors/PanelSelector'
-import PanelInfo from '../blockManage/PanelInfo'
+import PanelInfo from '../panelInfo/PanelInfo'
 import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
 import titleMixin from '@/mixins/title'
 export default {

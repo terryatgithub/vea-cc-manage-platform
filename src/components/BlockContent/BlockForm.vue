@@ -113,7 +113,7 @@
             <img :src="contentForm.pictureUrl" referrerpolicy="no-referrer">
             <div class="post-info">
               <div class="post-episode" v-if="[1, 4, 5].indexOf(contentForm.categoryId) > -1">
-                <span class="episode">
+                <span v-if="contentForm.showSeries"  class="episode">
                   <template v-if="contentForm.categoryId === 1">
                     {{
                     contentForm.publishStatus === 'ended'
@@ -135,7 +135,7 @@
                     }}
                   </template>
                 </span>
-                <span class="score">{{ contentForm.score ? contentForm.score + '分' : ''}}</span>
+                <span v-if="contentForm.showScore"  class="score">{{ contentForm.score ? contentForm.score + '分' : ''}}</span>
               </div>
               <div
                 v-show="contentForm.showTitle"
@@ -177,6 +177,18 @@
             </template>
           </div>
         </GlobalPictureSelector>
+        <el-checkbox 
+          :value="!contentForm.showSeries"
+          :disabled="isReadonly"
+          @input="contentForm.showSeries = $event ? 0 : 1">
+          不展示期数
+        </el-checkbox>
+        <el-checkbox 
+          :value="!contentForm.showScore"
+          :disabled="isReadonly"
+          @input="contentForm.showScore = $event ? 0 : 1">
+          不展示评分
+        </el-checkbox>
       </el-form-item>
 
       <el-form-item label="替补海报" v-if="shouldHaveBackupPicture" prop="alternativePictureUrl">
