@@ -14,6 +14,7 @@
         v-for="item in availableTags" 
         class="name-list__item" 
         v-model="selectMap[item.value]"
+        :title="item.label"
         :key="item.value"
         :disabled="!!(item.disabled || disablesIndexed[item.value])"
       >
