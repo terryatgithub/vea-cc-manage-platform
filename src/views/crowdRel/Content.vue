@@ -39,7 +39,11 @@
                   :trigger-on-focus="false"
                   :fetch-suggestions="handleSearchCrowd" 
                   @select="handleAddCrowdFromInput($event, scope.levelIndex)"
-                />
+                >
+                  <span slot-scope="{item}" :title="item.label">
+                    {{ item.label }}
+                  </span>
+                </el-autocomplete>
                 <el-button :disabled="scope.levelIndex > 0 && rel.levels[scope.levelIndex-1].activeValue === undefined" @click="handleAddItem(scope.levelIndex)">添加</el-button>
               </div>
             </template>
