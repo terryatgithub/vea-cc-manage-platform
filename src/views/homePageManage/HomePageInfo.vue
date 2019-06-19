@@ -631,6 +631,7 @@ export default {
     handleCopy() {
       const data = JSON.parse(JSON.stringify(this.homepage))
       data.homepageId = undefined
+      data.homepageStatus = 2
       data.currentVersion = ''
       this.submit(data)
     },

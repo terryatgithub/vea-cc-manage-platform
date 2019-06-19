@@ -2,7 +2,7 @@
   <div>
     <div class="tree-level" v-for="(level, index) in levels" :key="level.parentId">
       <template v-if="tags[level.parentId] && tags[level.parentId].length > 0 ">
-      <div>{{ index }}</div>
+      <div>第 {{ toChineseNumber(index + 1) }} 层</div>
       <div>
         <span
           v-for="tag in tags[level.parentId]" 
@@ -79,6 +79,18 @@ export default {
     },
     genLevel(parentId, activeId) {
       return {parentId, activeId}
+    },
+    toChineseNumber(number) {
+      const chnNumChar = ["零","一","二","三","四","五","六","七","八","九"];
+      const chnUnitChar = ["","十","百","千", "万"];
+      let unit = 0
+      const result = number.toString().split('').reduceRight((result, item, index) => {
+        item = +item
+        const currentUnit = chnUnitChar[unit++]
+        const currentAmount = chnNumChar[item]
+        return  currentAmount + (item > 0 ? currentUnit : '') + result
+      }, '')
+      return result.replace(/零+/, '零').replace(/.+零$/, '')
     }
   },
   created() {

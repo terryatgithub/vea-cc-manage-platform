@@ -650,7 +650,7 @@ export default {
         pannel.currentVersion
     },
     handleCopy() {
-      this.pannel.pannelList[0].pannelType = this.copyToPanelDataType
+      this.pannel.panelGroupType = this.copyToPanelDataType
       this.handleSaveDraft()
     },
     // 布局

@@ -13,7 +13,7 @@
     <el-button type="warning" @click="handleSelectCancel">
       关闭
     </el-button>
-    <div>
+    <div style="margin-top: 10px;">
         已选择: 
         <el-tag 
           v-for="(item) in selectedTags" 
@@ -83,7 +83,10 @@ export default {
 }
 </script>
 <style scoped>
-.cc-media-tags-selector .el-tag {
+.cc-media-tags-selector >>> .el-tag {
   margin-right: 10px
+}
+.cc-media-tags-selector >>> .el-dialog__body {
+  overflow: auto;
 }
 </style>
