@@ -122,3 +122,11 @@ export function reviewFilmDetailPage(params) {
     return JSON.parse(result.match(/param = (\{.+\})/)[1])
   })
 }
+
+export function getVipButtonSource(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/tvos/getVipButtonSource.html',
+    params
+  })
+}

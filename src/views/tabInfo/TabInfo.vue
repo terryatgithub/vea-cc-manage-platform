@@ -266,14 +266,17 @@
                   <i v-else class="el-icon-arrow-up"></i>
                   <span>专题配置</span>
                 </div>
+
                 <div :style="{display: isCollapseSpec || isPanelDragging ? 'none' : 'block'}">
-                  <el-form-item label="是否显示会员" prop="isShowvip">
-                    <el-switch
-                      :value="!!tabInfo.isShowvip"
-                      @input="tabInfo.isShowvip = !!$event"
-                      on-text="是"
-                      off-text="否"
-                    />
+                  <el-form-item label="会员展示">
+                      <el-select placeholder="前端不显示" v-model="tabInfo.vipButtonSourceId" :clearable="true">
+                          <el-option 
+                              v-for="(item, index) in vipEnums" 
+                              :value="item.value" 
+                              :label="item.label"
+                              :key="index">
+                          </el-option>
+                      </el-select>
                   </el-form-item>
 
                   <el-form-item label="专题版面大背景" prop="alumbTabBg">
@@ -512,7 +515,9 @@
                     <span>专题配置</span>
                   </div>
 
-                  <el-form-item label="是否显示会员" prop="isShowvip">{{ tabInfo.isShowvip ? '是' : '否' }}</el-form-item>
+                  <el-form-item label="会员展示">
+                      {{ getVipButtonSourceItem(tabInfo.vipButtonSourceId).sourceName }}
+                  </el-form-item>
 
                   <el-form-item label="专题版面大背景" prop="alumbTabBg">
                     <div class="image-preview-wrapper" v-if="tabInfo.alumbTabBg">
@@ -747,6 +752,8 @@ export default {
         }
       ],
       panelListIndexed: {},
+      vipEnums: [],
+      vipEnumsData: [],
       tabInfo: {
         tabId: undefined,
         currentVersion: undefined,
@@ -793,7 +800,9 @@ export default {
 
         imgOnBlur: undefined,
         imgOnFocus: undefined,
-        imgOnSelected: undefined
+        imgOnSelected: undefined,
+
+        vipButtonSourceId: undefined,
       },
       versionList: [],
 
@@ -1150,6 +1159,7 @@ export default {
     },
     clearContents() {
       const tabSelector = this.$refs.tabSelector
+      this.tabInfo.vipButtonSourceId = undefined
       this.tabInfo.tabList = []
       if (tabSelector) {
         tabSelector.handleRemoteSelectClear()
@@ -2010,6 +2020,14 @@ export default {
         blockTitleUnfocusColor: tabInfo.blockTitleUnfocusColor
       }
 
+      const vipButtonSourceId = tabInfo.vipButtonSourceId
+      if (vipButtonSourceId) {
+          const vipButton = this.getVipButtonSourceItem(vipButtonSourceId)
+          tabExtArr.vipButtonSourceId = vipButtonSourceId
+          tabExtArr.vipButtonSourceName = vipButton.sourceName
+          tabExtArr.vipButtonSourceSign = vipButton.sourceSign
+      }
+
       let tabParams = {}
       {
         if (tabInfo.autoPromotion !== 'none') {
@@ -2178,7 +2196,8 @@ export default {
 
         imgOnBlur: tabTitleIcons.unfocus_img_url,
         imgOnFocus: tabTitleIcons.focus_img_url,
-        imgOnSelected: tabTitleIcons.selected_img_url
+        imgOnSelected: tabTitleIcons.selected_img_url,
+        vipButtonSourceId: tabExtArr.vipButtonSourceId
       })
 
       this.updateDuplicates()
@@ -2193,6 +2212,30 @@ export default {
       this.$service.tabInfoGet({ id: this.id, version }).then(data => {
         this.setTabInfo(data)
       })
+    },
+    getVipButtonSourceItem(id) {
+        const result =  this.vipEnumsData.find(function(item) {
+            return item.sourceId === id
+        })
+        return result || {}
+    },
+    getVipButtonSource() {
+        let params = null
+        const source = this.tabInfo.tabResource
+        if (source) {
+            params = {
+                source: source
+            }
+        }
+        this.$service.getVipButtonSource().then((data) => {
+            this.vipEnumsData = data
+            this.vipEnums = data.map(function(item) {
+                return {
+                    value: item.sourceId,
+                    label: item.sourceName
+                }
+            })
+        })
     }
   },
   created() {
@@ -2204,6 +2247,7 @@ export default {
     if (this.id) {
       this.fetchData(this.version)
     }
+    this.getVipButtonSource()
   }
 }
 </script>

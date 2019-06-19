@@ -88,6 +88,9 @@
             <el-form-item label="地区">
               <CommonSelector v-model="filter.areas" placeholder="请选择/输入" filterable allow-create :options="areaEnums"  />
             </el-form-item>
+            <el-form-item label="影片标签" style="display: block">
+              <TagLogicFilter ref="tagLogicFilter" v-model="filter.tagCodes" />
+            </el-form-item>
           </span>
           <div style="text-align: center">
             <el-button
@@ -114,11 +117,13 @@
 import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
 import EpisodeSelector from './EpisodeSelector'
+import TagLogicFilter from './TagLogicFilter'
 export default {
   components: {
     BaseSelector,
     CommonSelector,
-    EpisodeSelector
+    EpisodeSelector,
+    TagLogicFilter
   },
   data() {
     return {
@@ -425,7 +430,8 @@ export default {
         order: 'desc', // 排序方式 asc:升序，desc：降序，默认降序
         directors: '', // 导演
         actors: '', // 主演
-        areas: '' // 地区
+        areas: '', // 地区
+        tagCodes: [[]]
       }
       
     },
