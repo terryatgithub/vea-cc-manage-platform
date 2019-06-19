@@ -87,6 +87,7 @@ export default {
           },
           {
             label: '布局',
+            width: '150',
             prop: 'fullLayoutName'
           },
           {
@@ -108,6 +109,7 @@ export default {
           {
             label: '版本/状态',
             prop: 'pannelStatus',
+            width: '130',
             formatter: (row) => {
               const status = row.pannelStatus
               const currentVersion = row.currentVersion
@@ -116,6 +118,7 @@ export default {
           },
           {
             label: '待审核副本',
+            width: '100',
             render: (h, { row }) => {
               return h('el-button', {
                 attrs:{
@@ -133,18 +136,22 @@ export default {
           {
             label: '更新时间',
             prop: 'lastUpdateDate',
+            width: '130',
             'show-overflow-tooltip': true
           },
           {
             label: '审核人',
-            prop: 'auditor'
+            prop: 'auditor',
+            width: '100',
           },
           {
             label: '更新人',
+            width: '100',
             prop: 'userName'
           },
           {
             label: '操作',
+            fixed: 'right',
             width: 140,
             render: (h, {row}) => {
               return h('div', [

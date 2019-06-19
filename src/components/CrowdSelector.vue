@@ -38,7 +38,11 @@
             <div v-else>
                 <el-cascader
                     :options="crowd.cascadeItems"
+                    filterable
                     v-model="selectedCascaderCrowd"
+                    :disabled="crowd.cascadeItems.length === 0"
+                    :placeholder="crowd.cascadeItems.length > 0 ? '请选择' : '无人群数据'"
+                    change-on-select
                 ></el-cascader>
                 <el-button :disabled="!selectedCascaderCrowd" type="primary" @click="handleSelectCascadeCrowd">
                     确定
@@ -89,7 +93,7 @@ export default {
               }.bind(this))
           } else {
               this.hasCascadeTag = true
-              this.crowd.items = result.crowdRelationship.items
+              this.crowd.items = result.crowdRelationship.items || []
               this.crowd.cascadeItems = this.listToTree(result.crowdRelationship.items)
               this.showCrowdSelector = true
           }

@@ -75,7 +75,7 @@
               </el-form-item>
 
               <el-form-item v-if="pannel.parentType === 'group'" label="落焦规则">
-                <el-radio-group v-model="pannel.focusConfig">
+                <el-radio-group v-model="pannel.focusConfig" @change="handleFocusConfigChange">
                   <el-radio label="">手动指定</el-radio>
                   <el-radio label="week">根据一周时间</el-radio>
                   <el-radio label="timeSlot">根据时间段</el-radio>
@@ -161,13 +161,13 @@
                 <template v-if="pannel.parentType === 'group'">
                   <el-button
                     style="float:right"
-                    type="primary" plain
+                    type="primary"
                     @click="handleAddTab"
                     :disabled="pannel.pannelList.length >= 10"
-                  >添加标签</el-button>
+                  >添加分组</el-button>
                   <el-button
                     style="float:right"
-                    type="primary" plain
+                    type="primary"
                     @click="handleSetDefaultActiveTab"
                     :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''"
                   >设置默认落焦</el-button>
@@ -1145,22 +1145,6 @@ export default {
       panel.endTime = groupInfo.endTime
       this.activePanelGroup = undefined
     },
-    handleSetBlockContentEnd(param) {
-      const activePannelIndex = +this.activePannelIndex;
-      const activePannel = this.pannel.pannelList[activePannelIndex];
-      const selectedResources = activePannel.selectedResources || [];
-      const currentBlockIndex = this.currentBlockIndex;
-      this.showBlockContentDialog = false;
-      const resource = selectedResources[currentBlockIndex] || {};
-      selectedResources[currentBlockIndex] = resource;
-      const content = param.videoContentList[0];
-      Object.assign(resource, param);
-      if (param.specificContentList.length > 0) {
-        activePannel.pannelType = 7;
-      }
-      this.updatePosition();
-      this.getSharedTags()
-    },
     clearBlocks() {
       const pannel = this.pannel
       pannel.pannelList.forEach(function(item) {
@@ -1682,7 +1666,9 @@ export default {
     },
     validateBlocks() {
       const pannelList = this.pannel.pannelList
+      const focusConfig = this.pannel.focusConfig
       const selectedLayout = this.selectedLayout
+      const pannelTitleIndex = {}
       let emptyPannelTitleIndex
       let duplicatedPannelTitleIndex;
 

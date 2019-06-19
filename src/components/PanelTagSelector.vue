@@ -1,7 +1,7 @@
 <template>
   <el-dialog 
     title="选择标签" 
-    size="full" 
+    :fullscreen="true"
     :show-close="false" 
     :modal="false" 
     :modal-append-to-body="true"

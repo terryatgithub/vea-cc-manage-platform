@@ -459,6 +459,7 @@ export default {
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
+      this.$refs.tagLogicFilter.reset()
       this.onPartnerChange()
       this.pagination.currentPage = 1
       this.fetchData()

@@ -1,8 +1,14 @@
 // 资源管理——影片资源
 export function getMediaVideoInfos(params) {
+  const tagCodes = params.tagCodes
+  let tagCodeParam
+  if (tagCodes.length > 0) {
+    delete params.tagCodes
+    tagCodeParam = tagCodes.map(item => `tagCodes=${item}`).join('&')
+  }
   return this.fetch({
     methods: 'get',
-    url: 'api/tvos/getMediaVideoInfos.html',
+    url: `api/tvos/getMediaVideoInfos.html${tagCodeParam ? ('?' + tagCodeParam) : ''}`,
     params
   }).then(data => {
     if (typeof (data) === 'string') {
