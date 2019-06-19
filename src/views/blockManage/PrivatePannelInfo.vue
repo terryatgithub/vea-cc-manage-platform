@@ -271,7 +271,7 @@ export default {
         amount: [
           {
             validator(rule, value, callback) {
-              if (Number.isInteger(Number(value)) && Number(value) > 0) {
+              if (Number.isInteger(Number(value)) && Number(value) >= 0) {
                 callback()
               } else {
                 callback(new Error('请输入整数'))
@@ -429,6 +429,15 @@ export default {
       })
     },
     submit(data) {
+      let firstPageVipContentAmount = data.pannelList[0].firstPageVipContentAmount
+      let vipContentAmount = data.pannelList[0].vipContentAmount
+      if (vipContentAmount > firstPageVipContentAmount + 9 ) {
+        this.$message({
+          type: 'error',
+          message: '总付费内容数应小于等于（首屏付费内容数 + 9）'
+        })
+        return 
+      }
       this.validate(
         data,
         (err) => {
