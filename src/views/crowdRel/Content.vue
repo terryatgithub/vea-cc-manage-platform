@@ -22,6 +22,7 @@
             v-show="rel.policyId"
             :levels="rel.levels" 
             :items="rel.items" 
+            :max-depth="8"
             @level-label-change="handleChangeLevelLabel"
             @level-add="handleAddLevel"
             @level-remove="handleRemoveLevel"
@@ -62,8 +63,8 @@
 </template>
 
 <script>
-import CCLevel from './Level'
-import CrowdSelector from './CrowdSelector'
+import CCLevel from './components/Level'
+import CrowdSelector from './components/CrowdSelector'
 import Fuse from 'fuse.js'
 export default {
   components: {
@@ -146,7 +147,7 @@ export default {
       const levels = this.rel.levels
       levels.push({
         id: undefined,
-        label: levels.length + 1 + '级',
+        label: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'][levels.length] + '级',
         selected: {}
       })
     },
@@ -155,7 +156,7 @@ export default {
     },
     handleRemoveLevel(levelIndex) {
       const level = this.rel.levels[levelIndex]
-      this.$confirm('删除后所有后面的层级也会被删除', '是否确认删除整个 ' + level.label + '  层级')
+      this.$confirm('是否确认删除整个 ' + level.label + '  层级, 删除后所有后面的层级也会被删除', '提示')
         .then(function() {
           const items = this.rel.items.filter(function(item) {
             return item.level === levelIndex
@@ -228,7 +229,7 @@ export default {
       })
       const doRemoveItem = this.doRemoveItem.bind(this) 
       if (hasChild) {
-          this.$confirm('删除后将同时删除 ' + targetItem.label + ' 下的标签', '是否确认删除 ' + targetItem.label + ' 分组')
+          this.$confirm('是否确认删除 ' + targetItem.label + ' 分组, 删除后将同时删除它下面的标签', '提示')
             .then(function() {
               doRemoveItem(targetItem)
             }.bind(this))

@@ -1,5 +1,5 @@
 <template>
-  <el-input v-model="order" @change="handleOrderChange" />
+  <el-input :disabled="disabled" v-model="order" @change="handleOrderChange" />
 </template>
 
 <script>
@@ -12,7 +12,7 @@ export default {
   watch: {
     value: 'handleInputValue'
   },
-  props: ['value'],
+  props: ['value', 'disabled'],
   methods: {
     handleInputValue(val) {
       this.order = val

@@ -7,7 +7,7 @@
         </div>
         <div class="cc-level-wrapper">
           <div class="cc-level-title">
-              <el-input :value="level.label" @change="$emit('level-label-change', $event, levelIndex)" />
+              <el-input :value="level.label" @input="$emit('level-label-change', $event, levelIndex)" />
           </div>
           <slot name="item-add" :level-index="levelIndex">
             <div class="cc-level-add">
@@ -40,7 +40,7 @@
           />
         </div>
       </template>
-      <el-button class="cc-level__add-level" type="primary" @click="$emit('level-add')">添加下一级</el-button>
+      <el-button v-show="maxDepth ? levels.length < maxDepth : true" class="cc-level__add-level" type="primary" @click="$emit('level-add')">添加下一级</el-button>
   </div>
 </template>
 
@@ -52,7 +52,7 @@ export default {
       }
     }
   },
-  props: ['levels', 'items'],
+  props: ['levels', 'items', 'maxDepth'],
   methods: {
     handleAddItem(levelIndex) {
       this.$emit('item-add', this.itemToAdd[levelIndex])

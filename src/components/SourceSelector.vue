@@ -3,6 +3,7 @@
       :value="value" 
       @input="$emit('input', $event)"
       :disabled="disabled"
+      :placeholder="placeholder"
   >
       <el-option 
         v-for="(item, key) in sourceOptions" 
@@ -17,7 +18,7 @@
 
 <script>
 export default {
-  props: ['value', 'disabled', 'freeze', 'allowEmpty'],
+  props: ['value', 'disabled', 'freeze', 'allowEmpty', 'placeholder'],
   computed: {
     sourceOptions() {
       const $consts = this.$consts

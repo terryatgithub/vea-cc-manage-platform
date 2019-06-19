@@ -137,6 +137,9 @@ export default {
             }
             if (row.dmpInfo) {
               return h('el-button', {
+                attrs: {
+                  title: row.dmpInfo.dmpCrowdName
+                },
                 props: {
                   type: 'text'
                 },

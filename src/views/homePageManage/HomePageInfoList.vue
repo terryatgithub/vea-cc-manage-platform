@@ -111,7 +111,6 @@ export default {
             {
                 label: '首页名称',
                 prop: 'homepageName',
-                align: 'center',
                 render: (h, { row }) => {
                   return h(Button, 
                     { 
@@ -130,7 +129,7 @@ export default {
              {
                 label: '关联策略',
                 prop: 'relationPolicyName',
-                width: 300,
+                align: 'center',
                 render: (h, { row }) => {
                   const content = row.relationPolicyName
                   if (content !== '--') {
@@ -183,6 +182,7 @@ export default {
             {
                   label: '机型机芯',
                   prop: 'chipModel',
+                  align: 'center',
                   render: (h, { row }) => {
                     const content = row.chipModel
                     if (content !== '--') {

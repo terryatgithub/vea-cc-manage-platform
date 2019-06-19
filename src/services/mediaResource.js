@@ -27,5 +27,5 @@ export function mediaGetTagList(params) {
     method: 'get',
     url: 'api/tvos/getMediaTagList.html?tagCode=',
     params
-  })
+  }).then(({ data }) => data)
 }

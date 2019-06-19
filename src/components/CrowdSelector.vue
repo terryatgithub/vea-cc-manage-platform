@@ -39,7 +39,6 @@
                 <el-cascader
                     :options="crowd.cascadeItems"
                     v-model="selectedCascaderCrowd"
-                    change-on-select
                 ></el-cascader>
                 <el-button :disabled="!selectedCascaderCrowd" type="primary" @click="handleSelectCascadeCrowd">
                     确定
