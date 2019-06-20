@@ -70,7 +70,8 @@ export default {
           },
           {
             label: '名称',
-            prop: 'pannelGroupRemark',
+            minWidth: '180',
+            'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
               return createElement('el-button', {
                 attrs:{
@@ -136,7 +137,7 @@ export default {
           {
             label: '更新时间',
             prop: 'lastUpdateDate',
-            width: '130',
+            width: '140',
             'show-overflow-tooltip': true
           },
           {
@@ -358,11 +359,4 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.content >>> .el-table .cell
-  display flex
-  justify-content center
-  align-items center
-  height 40px
-.btns
-  margin 20px auto
 </style>

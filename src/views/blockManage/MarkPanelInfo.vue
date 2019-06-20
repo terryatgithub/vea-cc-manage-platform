@@ -1,108 +1,99 @@
 <template>
   <div>
-    <div class="hompage-upsert">
-      <ContentCard :title="title" @go-back="$emit('go-back')">
-        <CommonContent
-          :mode="mode"
-          :resource-info="resourceInfo"
-          @replicate="mode = 'replicate'; title='创建副本'"
-          @edit="mode = 'edit'; title='编辑'"
-          @unaudit="$emit('upsert-end')"
-          @shelves="fetchData"
-          @audit="$emit('upsert-end')"
-          @select-version="fetchData"
-          @delete="$emit('upsert-end', $event)"
-          @submit-audit="submitStart"
-          @save-draft="submitEnd(2)"
-        >
-          <div class="form-legend-header">
-           <i class="el-icon-edit">基本信息</i>
-          </div>
-          <div v-if="mode!== 'read'">
-            <el-form
-              ref="form"
-              :model="form"
-              :rules="rules"
-              label-width="120px"
-              class="el-form-add"
-            >
-              <el-form-item label="版块名称" prop="pannelList[0].pannelName">
-                <el-input v-model="form.pannelList[0].pannelName" placeholder="版块名称"></el-input>
-              </el-form-item>
-              <el-form-item label="版块标题" prop="pannelList[0].pannelTitle">
-                <el-input v-model="form.pannelList[0].pannelTitle" placeholder="版块标题"></el-input>
-                <el-checkbox
-                  class="marginL"
-                  :value="!form.pannelList[0].showTitle"
-                  @input="form.pannelList[0].showTitle = !$event"
-                >前端不显示标题</el-checkbox>
-              </el-form-item>
-              <el-form-item label="功能类型" prop="clientType">
-                <el-input v-model="form.clientType" placeholder="功能类型"></el-input>
-              </el-form-item>
-              <el-form-item label="内容源" prop="pannelList[0].pannelResource">
-                <el-radio v-model="form.pannelList[0].pannelResource" label>不限</el-radio>
-                <el-radio v-model="form.pannelList[0].pannelResource" label="o_tencent">腾讯</el-radio>
-                <el-radio v-model="form.pannelList[0].pannelResource" label="o_iqiyi">爱奇艺</el-radio>
-                <el-radio v-model="form.pannelList[0].pannelResource" label="o_youku">优酷</el-radio>
-              </el-form-item>
-            </el-form>
-          </div>
-          <div v-if="mode === 'read'">
-            <el-form
-              ref="form"
-              :model="form"
-              :rules="rules"
-              label-width="120px"
-              class="el-form-add"
-            >
-              <el-form-item
-                label="版块名称"
-                prop="pannelList[0].pannelName"
-              >{{form.pannelList[0].pannelName}}</el-form-item>
-              <el-form-item
-                label="版块标题"
-                prop="pannelList[0].pannelTitle"
-              >{{form.pannelList[0].pannelTitle}}{{ form.pannelList[0].showTitle === 0 ? '(前端不显示)' : '' }}</el-form-item>
-              <el-form-item label="功能类型" prop="clientType">{{form.clientType}}</el-form-item>
-              <el-form-item label="内容源" prop="pannelList[0].pannelResource">
-                <el-radio v-model="form.pannelList[0].pannelResource" :disabled="true" label>不限</el-radio>
-                <el-radio
-                  v-model="form.pannelList[0].pannelResource"
-                  :disabled="true"
-                  label="o_tencent"
-                >腾讯</el-radio>
-                <el-radio
-                  v-model="form.pannelList[0].pannelResource"
-                  :disabled="true"
-                  label="o_iqiyi"
-                >爱奇艺</el-radio>
-                <el-radio
-                  v-model="form.pannelList[0].pannelResource"
-                  :disabled="true"
-                  label="o_youku"
-                >优酷</el-radio>
-              </el-form-item>
-            </el-form>
-          </div>
-        </CommonContent>
-      </ContentCard>
-    </div>
-
-    <ReleaseTimeSetter
-      v-if="showTimeShelf"
-      @cancel="showTimeShelf = false"
-      @submit="handleSubmitAudit"
-    />
+    <ContentCard :title="title" @go-back="$emit('go-back')">
+      <CommonContent
+        ref="commonContent"
+        :mode="mode"
+        :resource-info="resourceInfo"
+        @replicate="mode = 'replicate'; title='创建副本'"
+        @edit="mode = 'edit'; title='编辑'"
+        @unaudit="$emit('upsert-end')"
+        @shelves="fetchData"
+        @audit="$emit('upsert-end')"
+        @select-version="fetchData"
+        @delete="$emit('upsert-end', $event)"
+        @submit-audit="handleSubmitAudit"
+        @save-draft="handleSaveDraft"
+      >
+        <div class="form-legend-header">
+          <i class="el-icon-edit">基本信息</i>
+        </div>
+        <div v-if="mode!== 'read'">
+          <el-form
+            ref="form"
+            :model="form"
+            :rules="rules"
+            label-width="120px"
+            class="el-form-add"
+          >
+            <el-form-item label="版块名称" prop="pannelList[0].pannelName">
+              <el-input v-model="form.pannelList[0].pannelName" placeholder="版块名称"></el-input>
+            </el-form-item>
+            <el-form-item label="版块标题" prop="pannelList[0].pannelTitle">
+              <el-input v-model="form.pannelList[0].pannelTitle" placeholder="版块标题"></el-input>
+              <el-checkbox
+                class="marginL"
+                :value="!form.pannelList[0].showTitle"
+                @input="form.pannelList[0].showTitle = $event ? 0 : 1"
+              >前端不显示标题</el-checkbox>
+            </el-form-item>
+            <el-form-item label="功能类型" prop="clientType">
+              <el-input v-model="form.clientType" placeholder="功能类型"></el-input>
+            </el-form-item>
+            <el-form-item label="内容源" prop="pannelList[0].pannelResource">
+              <el-radio v-model="form.pannelList[0].pannelResource" label>不限</el-radio>
+              <el-radio v-model="form.pannelList[0].pannelResource" label="o_tencent">腾讯</el-radio>
+              <el-radio v-model="form.pannelList[0].pannelResource" label="o_iqiyi">爱奇艺</el-radio>
+              <el-radio v-model="form.pannelList[0].pannelResource" label="o_youku">优酷</el-radio>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div v-if="mode === 'read'">
+          <el-form
+            ref="form"
+            :model="form"
+            :rules="rules"
+            label-width="120px"
+            class="el-form-add"
+          >
+            <el-form-item
+              label="版块名称"
+              prop="pannelList[0].pannelName"
+            >{{form.pannelList[0].pannelName}}</el-form-item>
+            <el-form-item
+              label="版块标题"
+              prop="pannelList[0].pannelTitle"
+            >{{form.pannelList[0].pannelTitle}}{{ form.pannelList[0].showTitle === 0 ? '(前端不显示)' : '' }}</el-form-item>
+            <el-form-item label="功能类型" prop="clientType">{{form.clientType}}</el-form-item>
+            <el-form-item label="内容源" prop="pannelList[0].pannelResource">
+              <el-radio v-model="form.pannelList[0].pannelResource" :disabled="true" label>不限</el-radio>
+              <el-radio
+                v-model="form.pannelList[0].pannelResource"
+                :disabled="true"
+                label="o_tencent"
+              >腾讯</el-radio>
+              <el-radio
+                v-model="form.pannelList[0].pannelResource"
+                :disabled="true"
+                label="o_iqiyi"
+              >爱奇艺</el-radio>
+              <el-radio
+                v-model="form.pannelList[0].pannelResource"
+                :disabled="true"
+                label="o_youku"
+              >优酷</el-radio>
+            </el-form-item>
+          </el-form>
+        </div>
+      </CommonContent>
+    </ContentCard>
   </div>
 </template>
 <script>
 import CommonContent from '@/components/CommonContent.vue'
-import ReleaseTimeSetter from './../../components/ReleaseTimeSetter'
 export default {
   components: {
     CommonContent,
-    ReleaseTimeSetter
   },
   props: {
     id: Number,
@@ -140,11 +131,12 @@ export default {
             pannelType: 8,
             pannelResource: '',
             pannelTitle: '',
-            showTitle: false,
+            showTitle: 0,
             pannelStatus: undefined,
             pannelCategory: 67
           }
-        ]
+        ],
+        currentVersion: undefined
       },
       rules: {
         //表单规则
@@ -172,43 +164,75 @@ export default {
           status: form.pannelList[0].pannelStatus
         }
       }
+    },
+    couldSetReleaseTime() {
+      const mode = this.mode
+      const currentVersion = this.form.currentVersion
+      const isCreatingOrCopying = mode === 'create' || mode === 'copy'
+      const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
+      const isCoocaa = this.$consts.idPrefix == '10'
+      return isCoocaa && !(isCreatingOrCopying || isEditingV1)
     }
   },
   methods: {
-    submitEnd(status, data) {
-      if (data === undefined) {
-        data = this.form
-      }
-      data.pannelList[0].pannelStatus = status
-      data.pannelList[0]['showTitle']
-        ? (data.pannelList[0]['showTitle'] = 1)
-        : (data.pannelList[0]['showTitle'] = 0)
-      if (this.mode === 'replicate') {
-        data.currentVersion = ''
-      }
-      const jsonStr = JSON.stringify(data)
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          this.$service
-            .MarkPanelSave({ jsonStr: jsonStr }, '保存成功')
-            .then(data => {
-              this.$emit('upsert-end')
-            })
+    handleSubmitAudit(timing) {
+      const data = this.getFormData()
+      data.pannelList[0].pannelStatus = this.$consts.status.waiting
+      this.validateFormData(data, () => {
+        if (this.couldSetReleaseTime) {
+          if (timing) {
+            data.isTiming = timing.isTiming
+            data.releaseTime = timing.releaseTime
+            this.submit(data)
+          } else {
+            this.$refs.commonContent.showReleaseTimeSetter = true
+          }
+        } else {
+          this.submit(data)
         }
       })
     },
-    handleSubmitAudit(timing) {
-      const data = this.form
-      data.isTiming = timing.isTiming
-      data.releaseTime = timing.releaseTime
-      this.showTimeShelf = false
-      this.submitEnd(3, data)
+    handleSaveDraft() {
+      const data = this.getFormData()
+      data.isTiming = undefined
+      data.releaseTime = undefined
+      data.pannelList[0].pannelStatus = this.$consts.status.draft
+      this.validateFormData(
+        data,
+        function() {
+          this.submit(data)
+        }.bind(this)
+      )
     },
-    /**提交审核 */
-    submitStart() {
+    getFormData() {
+      const data = JSON.parse(JSON.stringify(this.form))
+      const mode = this.mode
+      if (mode === 'replicate') {
+        data.currentVersion = ''
+      }
+      if (mode === 'copy') {
+        data.tabId = undefined
+        data.currentVersion = ''
+      }
+      return data
+    },
+    submit(data) {
+      const jsonStr = JSON.stringify(data)
+      this.$service
+        .MarkPanelSave({ jsonStr: jsonStr }, '保存成功')
+        .then(data => {
+          this.$emit('upsert-end')
+        })
+    },
+    validateFormData(data, cb) {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.showTimeShelf = true
+          cb()
+        } else {
+          this.$message({
+            type: 'error',
+            message: '请把表单填写完整'
+          })
         }
       })
     },

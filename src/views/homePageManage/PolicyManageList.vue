@@ -67,7 +67,8 @@ export default {
           {
             label: '策略名称',
             prop: 'policyName',
-            width: 150,
+            minWidth: 150,
+            'show-overflow-tooltip': true,
             render: (h, { row }) => {
               return h(
                 'el-button',
@@ -141,7 +142,8 @@ export default {
           },
           {
             label: '更新时间',
-            prop: 'lastUpdateDate'
+            prop: 'lastUpdateDate',
+            width: 140,
           },
           {
             label: '更新人',

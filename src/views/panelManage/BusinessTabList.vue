@@ -80,6 +80,8 @@ export default {
           {
             label: '名称',
             prop: 'tabName',
+            'show-overflow-tooltip': true,
+            minWidth: 180,
             render: (createElement, { row }) => {
               return createElement(
                 'el-button',
@@ -100,6 +102,7 @@ export default {
           {
             label: '版面属性',
             prop: 'tabType',
+            width: 120,
             render: (h, { row }) => {
               return this.tabTypeReverse[row.tabType]
             }
@@ -129,6 +132,7 @@ export default {
           {
             label: '版本/状态',
             prop: 'tabStatus',
+            width: 110,
             formatter: row => {
               const status = row.tabStatus
               const currentVersion = row.currentVersion
@@ -148,6 +152,7 @@ export default {
           {
             label: '待审核副本',
             prop: 'duplicateVersion',
+            width: 90,
             render: (createElement, { row }) => {
               return createElement(
                 'el-button',
@@ -167,20 +172,23 @@ export default {
           },
           {
             label: '更新时间',
-            prop: 'lastUpdateDate'
+            prop: 'lastUpdateDate',
+            width: 140
           },
           {
             label: '审核人',
-            prop: 'auditor'
+            prop: 'auditor',
+            width: 100
           },
           {
             label: '更新人',
-            prop: 'modifierName'
+            prop: 'modifierName',
+            width: 100
           },
           {
             label: '操作',
-            prop: 'oper',
             width: 100,
+            fixed: 'right',
             render: this.createOperationRender(this)
           }
         ],
@@ -363,6 +371,4 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.btns
-  margin-bottom: 30px
 </style>

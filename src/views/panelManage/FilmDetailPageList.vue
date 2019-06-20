@@ -142,6 +142,8 @@ export default {
           {
             prop: 'tabName',
             label: '版面名称',
+            minWidth: 180,
+            'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
               return createElement(
                 'el-button',
@@ -233,7 +235,8 @@ export default {
           {
             prop: 'lastUpdateDate',
             label: '更新时间',
-            sortable: true
+            sortable: true,
+            width: 140
           },
           {
             prop: 'modifierName',
@@ -392,13 +395,6 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.content >>> .el-table .cell
-                display: flex
-                justify-content: center
-                align-items: center
-                height: 40px
-.btns
-  margin: 20px auto
 .content >>> .el-form-item__content
                 width: 100%
                 .el-select,.el-cascader

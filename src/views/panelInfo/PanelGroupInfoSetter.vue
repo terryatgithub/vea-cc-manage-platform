@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-        title="设置板块组信息"
+        title="设置版块组信息"
         :visible.sync="showDialog"
         :close-on-click-modal="true"
         @close="handleSetCancel">

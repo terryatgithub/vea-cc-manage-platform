@@ -416,7 +416,7 @@ export default {
       } else {
         this.$message({
           type: 'error',
-          message: '板块来自第三方数据，无法预览'
+          message: '版块来自第三方数据，无法预览'
         })
       }
     },

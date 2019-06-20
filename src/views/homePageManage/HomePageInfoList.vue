@@ -111,6 +111,8 @@ export default {
             {
                 label: '首页名称',
                 prop: 'homepageName',
+                minWidth: 150,
+                'show-overflow-tooltip': true,
                 render: (h, { row }) => {
                   return h(Button, 
                     { 
@@ -202,7 +204,8 @@ export default {
             },
             {
                   label: '更新时间',
-                  prop: 'lastUpdateDate'
+                  prop: 'lastUpdateDate',
+                  width: 140,
             },
             {
                   label: '更新人',
@@ -351,10 +354,6 @@ export default {
 };
 </script>
 <style lang = 'stylus' scoped>
-.btns
-  margin-bottom 10px
-  display flex
-  flex-direction row
 .tag-list 
   .tag-item
     padding 5px

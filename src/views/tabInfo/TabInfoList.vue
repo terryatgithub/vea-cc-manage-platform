@@ -138,6 +138,7 @@ export default {
           {
             label: '名称',
             prop: 'tabName',
+            'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
               return createElement(
                 'el-button',
@@ -238,19 +239,23 @@ export default {
           },
           {
             label: '更新时间',
-            prop: 'lastUpdateDate'
+            prop: 'lastUpdateDate',
+            width: 140
           },
           {
             label: '审核人',
-            prop: 'auditor'
+            prop: 'auditor',
+            width: 100
           },
           {
             label: '更新人',
-            prop: 'modifierName'
+            prop: 'modifierName',
+            width: 100
           },
           {
             label: '操作',
             width: 140,
+            fixed: 'right',
             render: (h, {row}) => {
               return h('div', [
                 h('el-button', {

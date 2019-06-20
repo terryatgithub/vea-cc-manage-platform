@@ -58,7 +58,8 @@ export default {
           {
             label: '名称',
             prop: 'pannelGroupRemark',
-            width: '100',
+            minWidth: '100',
+            'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
               return createElement(
                 'el-button',
@@ -101,15 +102,10 @@ export default {
           {
             label: '版本/状态',
             prop: 'pannelStatus',
-            width: '90',
+            width: '120',
             render: (createElement, { row }) => {
-              return this.$consts.statusText[row.pannelStatus]
+              return row.currentVersion + '/' + this.$consts.statusText[row.pannelStatus]
             }
-          },
-          {
-            label: '当前版本',
-            prop: 'currentVersion',
-            width: '70'
           },
           {
             label: '待审核副本',
@@ -135,7 +131,8 @@ export default {
           },
           {
             label: '更新时间',
-            prop: 'lastUpdateDate'
+            prop: 'lastUpdateDate',
+            width: '140'
           }
         ],
         data: [],

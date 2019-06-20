@@ -1,6 +1,6 @@
 // 资源管理——影片资源
 export function getMediaVideoInfos(params) {
-  const tagCodes = params.tagCodes
+  const tagCodes = params.tagCodes || []
   let tagCodeParam
   if (tagCodes.length > 0) {
     delete params.tagCodes

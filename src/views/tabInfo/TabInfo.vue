@@ -918,6 +918,14 @@ export default {
     },
     disableAppId() {
       return  +getAppIDByTabCategory(this.tabInfo.tabCategory) != -1
+    },
+    couldSetReleaseTime() {
+      const mode = this.mode
+      const currentVersion = this.tabInfo.currentVersion
+      const isCreatingOrCopying = mode === 'create' || mode === 'copy'
+      const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
+      const isCoocaa = this.$consts.idPrefix == '10'
+      return isCoocaa && !(isCreatingOrCopying || isEditingV1)
     }
   },
   watch: {},
@@ -1864,7 +1872,7 @@ export default {
       const data = this.getFormData()
       data.tabStatus = this.$consts.status.waiting
       this.validateFormData(data, () => {
-        if (this.$consts.idPrefix == '10') {
+        if (this.couldSetReleaseTime) {
           if (timing) {
             data.isTiming = timing.isTiming
             data.releaseTime = timing.releaseTime

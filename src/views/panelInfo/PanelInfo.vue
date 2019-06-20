@@ -562,6 +562,14 @@ export default {
         }
       }
       return isShow
+    },
+    couldSetReleaseTime() {
+      const mode = this.mode
+      const currentVersion = this.pannel.currentVersion
+      const isCreatingOrCopying = mode === 'create' || mode === 'copy'
+      const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
+      const isCoocaa = this.$consts.idPrefix == '10'
+      return isCoocaa && !(isCreatingOrCopying || isEditingV1)
     }
   },
   watch: {
@@ -1426,7 +1434,7 @@ export default {
         data.currentVersion = ''
       }
       return data
-  },
+    },
     parseDataToApi(data) {
       const mode = this.mode
       const panelDataType = this.currentPanelDataType
@@ -1797,7 +1805,7 @@ export default {
       const data = this.getFormData()
       data.pannelStatus = this.$consts.status.waiting
       this.validate(data, () => {
-        if (this.$consts.idPrefix == '10'){
+        if (this.couldSetReleaseTime){
           if (timing) {
             data.isTiming = timing.isTiming
             data.releaseTime = timing.releaseTime

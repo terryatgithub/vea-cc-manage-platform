@@ -73,6 +73,8 @@ export default {
           {
             label: '名称',
             prop: 'pannelGroupRemark',
+            minWidth: 180,
+            'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
               return createElement('el-button', {
                 attrs:{
@@ -88,6 +90,7 @@ export default {
           },
           {
             label: '布局',
+            width: '150',
             prop: 'fullLayoutName'
           },
           {
@@ -109,6 +112,7 @@ export default {
           {
             label: '版本/状态',
             prop: 'pannelStatus',
+            width: '130',
             formatter: (row) => {
               const status = row.pannelStatus
               const currentVersion = row.currentVersion
@@ -117,23 +121,41 @@ export default {
           },
           {
             label: '待审核副本',
-            prop: 'duplicateVersion'
+            width: '100',
+            prop: 'duplicateVersion',
+            render: (h, { row }) => {
+              return h('el-button', {
+                attrs:{
+                  type: 'text'
+                },
+                on: {
+                  click: (event) => {
+                    event.stopPropagation()
+                    this.handleRead(row, row.duplicateVersion) 
+                  }
+                }
+              }, row.duplicateVersion)
+            }
           },
           {
             label: '更新时间',
             prop: 'lastUpdateDate',
+            width: '140',
             'show-overflow-tooltip': true
           },
           {
             label: '审核人',
-            prop: 'auditor'
+            prop: 'auditor',
+            width: '100',
           },
           {
             label: '更新人',
-            prop: 'userName'
+            prop: 'userName',
+            width: '100'
           },
           {
             label: '操作',
+            fixed: 'right',
             width: 140,
             render: (h, {row}) => {
               return h('div', [
@@ -347,11 +369,4 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.content >>> .el-table .cell
-  display flex
-  justify-content center
-  align-items center
-  height 40px
-.btns
-  margin 20px auto
 </style>
