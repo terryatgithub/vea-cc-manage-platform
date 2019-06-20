@@ -275,6 +275,9 @@
                   >
                 </div>
               </el-form-item>
+              <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+                <el-tag type="primary" v-for="(item, index) in sharedTags">{{ item }}</el-tag>
+              </el-form-item>
               <el-form-item label="推荐位">
                 <div class="pannel-blocks">
                   <template v-if="pannel.parentType === 'group'">
@@ -1144,6 +1147,14 @@ export default {
       panel.startTime = groupInfo.startTime
       panel.endTime = groupInfo.endTime
       this.activePanelGroup = undefined
+    },
+    setPanelDefaultFocus(index) {
+      const panelList = this.pannel.pannelList
+      const panel = panelList[index]
+      panelList.forEach(function(item) {
+        item.panelIsFocus = 0
+      })
+      panel.panelIsFocus = 1
     },
     clearBlocks() {
       const pannel = this.pannel

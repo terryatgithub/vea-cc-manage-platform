@@ -565,7 +565,7 @@
 
     <PageContentWrapper v-if="activePage === 'panel_preview'">
       <PrivatePanelInfo
-        v-if="panelPreview.dataType == 5 "
+        v-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1"
         :title-prefix="title"
         :init-mode="panelPreview.initMode"
         @upsert-end="handlePreviewPanelEnd"
@@ -1356,11 +1356,8 @@ export default {
       })
     },
     updatePanelVersion(panel, cb) {
-      let methodName = 'panelPageList'
-      if ([5, 9, 10].indexOf(panel.pannelType) > -1) {
-        methodName = 'privatePanelPageList'
-      }
-      this.$service[methodName]({
+      this.$service.panelPageList({
+        pannelType: panel.pannelType,
         pannelId: panel.pannelGroupId
       }).then(data => {
         const result = data.rows[0]

@@ -1,13 +1,13 @@
 <template>
-  <div>
-    <div>
-      <ContentCard :title="title" @go-back="$emit('go-back')" v-show="isShow">
+  <PageWrapper>
+    <PageContentWrapper v-show="activePage === 'tab_info'">
+      <ContentCard :title="title" @go-back="$emit('go-back')">
         <CommonContent
           ref="commonContent"
           :mode="mode"
           :resource-info="resourceInfo"
-          @edit="mode = 'edit';title='编辑'"
-          @replicate="mode = 'replicate'; title='创建副本'"
+          @edit="mode = 'edit'"
+          @replicate="mode = 'replicate'"
           @submit-audit="btnAudit"
           @save-draft="btnSave"
           @select-version="fetchData"
@@ -70,7 +70,10 @@
                 <span class="remarks marginL">注：数值越大优先级越高，数值越小优先级越低</span>
               </el-form-item>
               <el-form-item label="选择版块" prop="tags">
-                <el-button type="primary" plain @click="handleSlectPannelStart">选择版块</el-button>
+                <cc-panel-selector-el
+                  ref="panelSelector"
+                  :source="form.tabResource"
+                  @select-end="handleSelectPanelEnd"/>
 
                 <el-dropdown>
                   <el-button type="primary" plain class="marginL">
@@ -78,9 +81,9 @@
                     <i class="el-icon-caret-bottom el-icon--right"></i>
                   </el-button>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="openCreatePage('pannelInfo', 1)">常规版块</el-dropdown-item>
-                    <el-dropdown-item @click.native="openCreatePage('AlbumPannelInfo' ,3)">业务专辑</el-dropdown-item>
-                    <el-dropdown-item @click.native="openCreatePage('PrivatePannelInfo')">专属影院</el-dropdown-item>
+                    <el-dropdown-item @click.native="activePage = 'panel'">常规版块</el-dropdown-item>
+                    <el-dropdown-item @click.native="activePage = 'album_panel'">业务专辑</el-dropdown-item>
+                    <el-dropdown-item @click.native="activePage = 'private_panel'">专属影院</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
                 <OrderableTable
@@ -143,45 +146,79 @@
           </template>
         </CommonContent>
       </ContentCard>
-    </div>
-    <AddBlockFilter
-      :parentPannelResource="form.tabResource"
-      v-show="mode==='selectBlockResource'"
-      @go-back="goBack"
-      @add-block="addBlock"
-    />
-    <PrivatePannelInfo
-      @go-back="goBack"
-      @upsert-end="goBack"
-      :id="viewId"
-      :version="duplicateVersion"
-      :initMode="viewId!==undefined? 'read':'create'"
-      v-if="mode==='PrivatePannelInfo'"
-    ></PrivatePannelInfo>
-    <PanelInfo
-      @go-back="goBack"
-      @upsert-end="goBack"
-      :id="viewId"
-      :version="duplicateVersion"
-      :initMode="viewId!==undefined? 'read':'create'"
-      :panel-data-type="panelDataType"
-      v-if="mode==='pannelInfo' || mode==='AlbumPannelInfo'"
-    ></PanelInfo>
-  </div>
+    </PageContentWrapper>
+    
+    <PageContentWrapper v-if="activePage === 'panel_preview'">
+      <PrivatePanelInfo
+        v-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1"
+        :title-prefix="title"
+        :init-mode="panelPreview.initMode"
+        @upsert-end="handlePreviewPanelEnd"
+        @go-back="handlePreviewPanelEnd"
+      />
+      <PanelInfo
+        v-else
+        :title-prefix="title"
+        :init-mode="panelPreview.initMode"
+        :id="panelPreview.id"
+        :version="panelPreview.version"
+        :panel-data-type="panelPreview.dataType"
+        :init-group-index="panelPreview.initGroupIndex"
+        :init-block-index="panelPreview.initBlockIndex"
+        @upsert-end="handlePreviewPanelEnd"
+        @go-back="handlePreviewPanelEnd"
+      />
+    </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'panel'">
+      <PanelInfo
+        :title-prefix="title"
+        init-mode="create"
+        :panel-data-type="1"
+        @upsert-end="activePage = 'tab_info'"
+        @go-back="activePage = 'tab_info'"
+      />
+    </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'album_panel'">
+      <PanelInfo
+        :title-prefix="title"
+        init-mode="create"
+        :panel-data-type="3"
+        @upsert-end="activePage = 'tab_info'"
+        @go-back="activePage = 'tab_info'"
+      />
+    </PageContentWrapper>
+
+    <PageContentWrapper v-if="activePage === 'private_panel'">
+      <PrivatePanelInfo
+        :title-prefix="title"
+        init-mode="create"
+        @upsert-end="activePage = 'tab_info'"
+        @go-back="activePage = 'tab_info'"
+      />
+    </PageContentWrapper>
+</PageWrapper>
 </template>
 <script>
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
 import SelectHourAndMinute from './../../components/SelectHourAndMinute'
-import AddBlockFilter from './AddBlockFilter'
 import { Table } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
 import OrderableTable from '@/components/OrderableTable'
-import PrivatePannelInfo from './../blockManage/PrivatePannelInfo'
+import PanelSelector from '@/components/selectors/PanelSelector'
+import PrivatePanelInfo from './../blockManage/PrivatePannelInfo'
 import PanelInfo from './../panelInfo/PanelInfo'
+import titleMixin from '@/mixins/title'
 export default {
+  mixins: [titleMixin],
   components: {
-    AddBlockFilter,
+    PageWrapper,
+    PageContentWrapper,
+    'cc-panel-selector-el': PanelSelector,
     Table,
-    PrivatePannelInfo,
+    PrivatePanelInfo,
     PanelInfo,
     OrderableTable,
     SelectHourAndMinute,
@@ -224,23 +261,22 @@ export default {
   },
   data() {
     return {
-      title: '',
-      panelDataType: 1, //1 为常规运营，3为业务专辑
+      activePage: 'tab_info',
+      panelPreview: {
+        panel: null,
+        id: undefined,
+        version: undefined,
+        initMode: undefined,
+        initGroupIndex: undefined,
+        initBlockIndex: undefined
+      },
+      resourceName: '影片详情页',
       mode: 'create',
-      preMode: 'create', //改变mode之前的状态
       rules: {
         tabName: [
           { required: true, message: '请输入主题名称', trigger: 'blur' }
         ]
       },
-      tabStatusOption: [
-        { label: '下架', value: '0' },
-        { label: '上架', value: '1' },
-        { label: '草稿', value: '2' },
-        { label: '待审核', value: '3' },
-        { label: '审核通过', value: '4' },
-        { label: '审核不通过', value: '5' }
-      ],
       sourceText: {
         qq: '腾讯',
         iqiyi: '爱奇艺',
@@ -269,13 +305,7 @@ export default {
       productItems: [],
       eduProductItems: [],
       blockTable: [], // 版块列表
-      mode: '',
       categoryEdit: false,
-      isShowPanelList: false,
-      panelId: undefined,
-      panelMode: 'read',
-      panelVersion: undefined,
-      filmPageShow: true
     }
   },
   computed: {
@@ -295,16 +325,6 @@ export default {
       const mode = this.mode
       return mode === 'edit' || mode === 'replicate' || mode === 'copy'
     },
-    isShow() {
-      const mode = this.mode
-      return (
-        mode === 'edit' ||
-        mode === 'replicate' ||
-        mode === 'copy' ||
-        mode === 'create' ||
-        mode === 'read'
-      )
-    },
     tabGroupTableHeader() {
       const header = [
         {
@@ -323,7 +343,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.handlePreviewPannel(row)
+                    this.handlePreviewPanel(row)
                   }
                 }
               },
@@ -344,7 +364,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.handlePreviewPannel(row, row.duplicateVersion)
+                    this.handlePreviewPanel(row, row.duplicateVersion)
                   }
                 }
               },
@@ -366,7 +386,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.handleRemovePannel($index)
+                    this.handleRemovePanel($index)
                   }
                 }
               },
@@ -379,66 +399,75 @@ export default {
     }
   },
   methods: {
-    goBack() {
-      this.mode = this.preMode
-    },
-    handlePreviewPannel(row, version) {
-      this.preMode = this.mode
-      if (row.pannelGroupId < 0 ) {
+    handlePreviewPanel(panel, targetVersion) {
+      const row = panel
+      const version = targetVersion || row.currentVersion
+      if (row.pannelGroupId > 0) {
+        this.activePage = 'panel_preview'
+        this.panelPreview = {
+          panel: row,
+          initMode: 'read',
+          id: row.pannelGroupId,
+          dataType: row.pannelType,
+          version
+        }
+      } else {
         this.$message({
           type: 'error',
-          message: '来自第三方数据'
+          message: '板块来自第三方数据，无法预览'
         })
-        return
       }
-      this.viewId = row.pannelGroupId
-      switch (row.pannelType) {
-        case 1:
-        case 7:
-          this.mode = 'pannelInfo'
-          break
-        case 3:
-          this.mode = 'AlbumPannelInfo'
-          break
-        case 5:
-        case 9:
-        case 10:
-          this.mode = 'PrivatePannelInfo'
-          break
+    },
+    handlePreviewPanelEnd() {
+      const panel = this.panelPreview.panel
+      this.updatePanelVersion(panel)
+      this.panelPreview = null
+      this.activePage = 'tab_info'
+    },
+    handleSelectPanelEnd(selected) {
+      let originSelectPanelList = this.form.panelInfoList || []
+      if (originSelectPanelList.length === 0) {
+        originSelectPanelList = [
+          {
+            pannelGroupId: '-1002',
+            pannelGroupRemark: '花絮'
+          },
+          {
+            pannelGroupId: '-1001',
+            pannelGroupRemark: '相关推荐'
+          },
+          {
+            pannelGroupId: '-1003',
+            pannelGroupRemark: '相关明星'
+          }
+        ]
       }
-      this.duplicateVersion = version
-    },
-    openCreatePage(mode, panelDataType) {
-      this.preMode = this.mode
-      this.viewId = undefined
-      this.mode = mode
-      this.panelDataType = panelDataType
-      this.duplicateVersion = undefined
-    },
-    addBlock(rows) {
-      this.mode = this.preMode
-      let panelInfoList = []
-         const initial = [
-        {
-          pannelGroupId: '-1002',
-          pannelGroupRemark: '花絮'
-        },
-        {
-          pannelGroupId: '-1001',
-          pannelGroupRemark: '相关推荐'
-        },
-        {
-          pannelGroupId: '-1003',
-          pannelGroupRemark: '相关明星'
+      const selectedPanelList = selected || []
+      const originSelectedPanelListIndexed = originSelectPanelList.reduce(function(result, item, index) {
+        result[item.pannelGroupId] = index
+        return result
+      }, {})
+
+      let panelList = []
+      selectedPanelList.forEach(function(item) {
+        const index = originSelectedPanelListIndexed[item.pannelGroupId]
+        // 把之前没选中都添加到列表里
+        if (index === undefined) {
+          panelList.push(item)
         }
-      ]
-     panelInfoList = panelInfoList.concat(initial)
-     panelInfoList = panelInfoList.concat(rows)
-     this.form.panelInfoList = panelInfoList
+      })
+      // 把新添加都加到后面
+      this.form.panelInfoList = originSelectPanelList.concat(panelList)
     },
-    handleSlectPannelStart() {
-      this.preMode = this.mode
-      this.mode = 'selectBlockResource'
+    updatePanelVersion(panel, cb) {
+      this.$service.panelPageList({
+        pannelType: panel.pannelType,
+        pannelId: panel.pannelGroupId
+      }).then(data => {
+        const result = data.rows[0]
+        Object.assign(panel, result)
+        cb && cb()
+      })
     },
     btnAudit() {
       this.save(3)
@@ -519,11 +548,14 @@ export default {
           })
         })
     },
-    handleRemovePannel(index) {
+    handleRemovePanel(index) {
       this.form.panelInfoList.splice(index, 1)
     },
     // 服务
     getMediaResourceInfos() {
+      const toOptions = (arr, labelKey, valueKey) => {
+        return arr.map((item) => ({label: item[labelKey], value: item[valueKey]}))
+      }
       return this.$service.getMediaResourceInfo().then(data => {
         var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
         var videoItemModels = movieData.videoItemModels
@@ -532,12 +564,12 @@ export default {
           categoryList: [],
           productList: []
         }
-        iqiyiSource.categoryList = this._arrayingOption(
+        iqiyiSource.categoryList = toOptions(
           videoItemModels[0].categoryList,
           'category_name',
           'cc_category_id'
         )
-        iqiyiSource.productList = this._arrayingOption(
+        iqiyiSource.productList = toOptions(
           videoItemModels[0].productList,
           'source_name',
           'source_sign'
@@ -549,12 +581,12 @@ export default {
           categoryList: [],
           productList: []
         }
-        qqSource.categoryList = this._arrayingOption(
+        qqSource.categoryList = toOptions(
           videoItemModels[1].categoryList,
           'category_name',
           'cc_category_id'
         )
-        qqSource.productList = this._arrayingOption(
+        qqSource.productList = toOptions(
           videoItemModels[1].productList,
           'source_name',
           'source_sign'
@@ -566,12 +598,12 @@ export default {
           categoryList: [],
           productList: []
         }
-        youkuSource.categoryList = this._arrayingOption(
+        youkuSource.categoryList = toOptions(
           videoItemModels[2].categoryList,
           'category_name',
           'cc_category_id'
         )
-        youkuSource.productList = this._arrayingOption(
+        youkuSource.productList = toOptions(
           videoItemModels[2].productList,
           'source_name',
           'source_sign'
@@ -583,24 +615,18 @@ export default {
           categoryList: [],
           productList: []
         }
-        coocaaSource.categoryList = this._arrayingOption(
+        coocaaSource.categoryList = toOptions(
           videoItemModels[3].categoryList,
           'category_name',
           'cc_category_id'
         )
-        coocaaSource.productList = this._arrayingOption(
+        coocaaSource.productList = toOptions(
           videoItemModels[3].productList,
           'source_name',
           'source_sign'
         )
         this.eduProductItems = coocaaSource
       })
-    },
-    // 数组化[{label, value}]
-    _arrayingOption(arr, label, value) {
-      return arr.reduce((result, item) => {
-        return result.concat({ label: item[label], value: item[value] })
-      }, [])
     },
     handleTabResourceChange(value) {
       const { qqSource, iqiyiSource, youkuSource } = this
@@ -658,16 +684,6 @@ export default {
       // })
       this.tabResourceFlag = 0
     },
-    showPanelList(row) {
-      console.log(row)
-      this.filmPageShow = false
-      this.isShowPanelList = true
-      this.panelId = row.pannelGroupId
-    },
-    handleUpsertEnd() {
-      this.isShowPanelList = false
-      this.filmPageShow = true
-    },
     fetchData(version) {
       // if (version !== undefined) { this.form.currentVersion = version }
       this.$service
@@ -679,23 +695,6 @@ export default {
   },
   created() {
     this.mode = this.initMode || 'create'
-    switch (this.mode) {
-      case 'create':
-        this.title = '新增'
-        break
-      case 'copy':
-        this.title = '复制'
-        break
-      case 'edit':
-        this.title = '编辑'
-        break
-      case 'replica':
-        this.title = '创建副本'
-      case 'read':
-        this.title = '预览'
-        break
-    }
-   
     this.getMediaResourceInfos().then(() => {
       this.handleTabResourceChange(this.form.tabResource) //给频道，产品包赋值
       if (this.id) {
