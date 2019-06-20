@@ -494,7 +494,7 @@ export default {
         text-overflow ellipsis
         vertical-align middle
     .auth-set-window__header
-        width 1300px
+        width 1500px
         margin-top 30px
     .auth-set-window__header-item
         display inline-block
@@ -504,7 +504,7 @@ export default {
         text-align center
         line-height 26px
         &:first-child
-            width 120px
+            width 180px
     .button--position
         margin-left 15px
     .tree-data
@@ -515,7 +515,7 @@ export default {
         text-align center
         line-height 26px
     .tree-data--big-size
-        width 120px
+        width 180px
     .auth-set-window__buttons
         margin -20px 0 20px 0
         position absolute
