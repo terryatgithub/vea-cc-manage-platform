@@ -47,6 +47,7 @@
     <el-dialog
       title="权限设置"
       :visible.sync="setAuthDialogVisible"
+      :fullscreen="true"
       class="auth-set-window"
     >
       <div class="auth-set-window__buttons">
@@ -57,8 +58,7 @@
       <div class="auth-set-window__header">
           <span class="auth-set-window__header-item"
                 v-for="(item,index) in headerItems"
-                :key="index"
-          >
+                :key="index">
              {{item}}
           </span>
       </div>
@@ -505,10 +505,6 @@ export default {
         line-height 26px
         &:first-child
             width 120px
-    .auth-set-window__content
-        width 1300px
-        height 500px
-        overflow inherit
     .button--position
         margin-left 15px
     .tree-data

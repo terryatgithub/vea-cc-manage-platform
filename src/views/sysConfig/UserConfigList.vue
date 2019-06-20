@@ -11,8 +11,7 @@
         pageName='sysUser'
         @add="addUser"
         @edit="editData"
-        @delete="batchDel"
-        >
+        @delete="batchDel">
         </ButtonGroupForListPage>
       <Table
         :props="table.props"
@@ -262,9 +261,6 @@ export default {
           })
       })
     },
-    handleCreate () {
-      this.$router.push({ name: 'prize-create' })
-    },
     handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.userId)
       this.updateTableSelected()
@@ -297,7 +293,10 @@ export default {
         return result
       }, [])
     },
-    handleFilterChange (type) {
+    handleFilterChange (type, filter) {
+      if (filter) {
+        this.filter = filter
+      }
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
