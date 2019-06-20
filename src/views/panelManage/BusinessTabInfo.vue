@@ -13,9 +13,9 @@
           @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
           @audit="$emit('upsert-end')"
-          @copy="handleCopy"
+          @copy="handleCopy($event)"
           @select-version="fetchData"
-          @delete="$emit('upsert-end')"
+          @delete="$emit('upsert-end', $event)"
         >
           <div class="form-legend-header">
             <i class="el-icon-edit">基本信息</i>
@@ -411,9 +411,9 @@ export default {
     }
   },
   methods: {
-    handleCopy() {
+    handleCopy(status) {
       const data = this.getFormData()
-      data.tabStatus = this.$consts.status.waiting
+      data.tabStatus = status
       data.tabId = undefined
       data.currentVersion = ''
       this.validateFormData(

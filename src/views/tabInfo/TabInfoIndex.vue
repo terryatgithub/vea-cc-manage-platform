@@ -65,10 +65,13 @@ export default {
         this.$refs.list.fetchData()
       })
     },
-    handleUpsertEnd() {
-      this.isShowList = true
-      this.$refs.list.fetchData() //更新页面
-      this.mode = 'list'
+    handleUpsertEnd (onlyRefreshList) {
+      this.$refs.list.fetchData();//更新页面
+      if (!onlyRefreshList) {
+        this.isShowList = true
+        this.mode = 'list'
+        this.version = undefined
+      }
     },
     goBack() {
       this.isShowList = true

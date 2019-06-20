@@ -12,7 +12,7 @@
         @unaudit="fetchData"
         @shelves="fetchData"
         @audit="$emit('upsert-end')"
-        @delete="$emit('upsert-end')"
+        @delete="$emit('upsert-end', $event)"
       >
       <div slot="auditAndDraft">
           <el-button type="primary" @click="btnSave">提交审核</el-button>

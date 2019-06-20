@@ -59,11 +59,13 @@ export default {
       this.mode = 'copy'
       this.isShowList = false
     },
-    handleUpsertEnd () {
-      this.isShowList = true
+    handleUpsertEnd (onlyRefreshList) {
       this.$refs.list.fetchData();//更新页面
-      this.mode = 'list'
-      this.version = undefined
+      if (!onlyRefreshList) {
+        this.isShowList = true
+        this.mode = 'list'
+        this.version = undefined
+      }
     },
     handleDelete(selected) {
       this.$service.panelRemove({ 

@@ -16,7 +16,7 @@
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
           @cancel-timing="fetchData(tabInfo.currentVersion)"
-          @delete="$emit('upsert-end')"
+          @delete="$emit('upsert-end', $event)"
         >
           <template v-if="mode !== 'read'">
             <el-form ref="tabForm" :rules="rules" :model="tabInfo" label-width="170px">
@@ -1843,8 +1843,13 @@ export default {
         }.bind(this)
       )
     },
-    handleCopy() {
-      this.handleSaveDraft()
+    handleCopy(status) {
+      const STATUS = this.$consts.status
+      if (status === STATUS.waiting) {
+        this.handleSubmitAudit()
+      } else {
+        this.handleSaveDraft()
+      }
     },
     handleSaveDraft() {
       const data = this.getFormData()

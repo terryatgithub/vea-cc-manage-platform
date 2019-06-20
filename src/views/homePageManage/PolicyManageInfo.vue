@@ -12,7 +12,7 @@
       @save-draft="submitBtn(2)"
       @audit="$emit('upsert-end')"
       @select-version="fetchData"
-      @delete="$emit('upsert-end')"
+      @delete="$emit('upsert-end', $event)"
     >
       <div class="form-legend-header">
         <i class="el-icon-edit">基本信息</i>

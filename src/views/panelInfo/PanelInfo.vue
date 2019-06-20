@@ -11,11 +11,10 @@
           @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
-          @copy="handleCopy"
           @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
-          @delete="$emit('upsert-end')"
+          @delete="$emit('upsert-end', $event)"
           @cancel-timing="fetchData(pannel.currentVersion)"
         >
           <div slot="copy-confirm">
@@ -25,7 +24,8 @@
               <el-option :value="3" label="业务专辑"></el-option>
             </el-select>
             &nbsp;
-            <el-button type="primary" @click="handleCopy">确认复制</el-button>
+            <el-button type="primary" @click="handleCopy($consts.status.draft)">复制为草稿</el-button>
+            <el-button type="primary" @click="handleCopy($consts.status.waiting)">复制并提交审核</el-button>
           </div>
 
           <div v-if="currentPanelDataType == 1" class="base-info">
@@ -652,9 +652,14 @@ export default {
         '&version=' +
         pannel.currentVersion
     },
-    handleCopy() {
+    handleCopy(status) {
       this.pannel.panelGroupType = this.copyToPanelDataType
-      this.handleSaveDraft()
+      const STATUS = this.$consts.status
+      if (status == STATUS.waiting) {
+        this.handleSubmitAudit()
+      } else {
+        this.handleSaveDraft()
+      }
     },
     // 布局
     handleSelectLayoutEnd(layout, blockCount) {
@@ -1602,11 +1607,11 @@ export default {
         }
 
         if (duplicatedPannelTitleIndex !== undefined) {
-          return "第" + (duplicatedPannelTitleIndex + 1) + "分组的标题与别的分组重复"
+          return cb('第' + (duplicatedPannelTitleIndex + 1) + '分组的标题与别的分组重复')
         }
 
         if (emptyTimeSlotIndex !== undefined) {
-          return "请设置第" + (emptyTimeSlotIndex + 1) + "分组的落焦时间"
+          return cb('请设置第' + (emptyTimeSlotIndex + 1) + '分组的落焦时间')
         }
 
         if (

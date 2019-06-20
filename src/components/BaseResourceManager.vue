@@ -75,11 +75,13 @@ export default {
       this.mode = 'copy'
       this.isShowList = false
     },
-    handleUpsertEnd() {
-      this.isShowList = true
+    handleUpsertEnd(onlyRefreshList) {
       this.$refs.list.fetchData() 
-      this.mode = 'list'
-      this.version = undefined
+      if (!onlyRefreshList) {
+        this.isShowList = true
+        this.mode = 'list'
+        this.version = undefined
+      }
     },
     goBack() {
       this.isShowList = true

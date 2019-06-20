@@ -16,7 +16,7 @@
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
           @select-version="fetchData"
-          @delete="$emit('upsert-end')"
+          @delete="$emit('upsert-end', $event)"
           @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
         >
@@ -65,18 +65,20 @@
               <el-form-item label="版块名称" prop="pannelList.0.pannelName" :rules="rules.pannelName">
                 <el-input v-model="panel.pannelList[0].pannelName"></el-input>
               </el-form-item>
-              <template v-if="panel.panelGroupType === 9 || panel.panelGroupType === 10">
-                <el-form-item label="二级分类">
-                  <el-select value="1">
-                    <el-option value="1" label="电视剧"></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="推荐维度">
-                  <el-radio-group v-model="panel.panelGroupType" @change="setDefaultPanelTitle">
-                    <el-radio :label="9">根据用户近期观影偏好推荐</el-radio>
-                    <el-radio :label="10">根据用户近期观看的影片推荐</el-radio>
-                  </el-radio-group>
-                </el-form-item>
+              <template v-if="panel.panelGroupType === 9">
+                  <el-form-item label="推荐策略">
+                      <el-select
+                        :value="panel.pannelList[0].recommendStrategy"
+                        @input="handleRecommedStrategyInput"
+                        :disabled="isReplica">
+                        <el-option
+                          :label="item.label"
+                          v-for="(item,index) in recommendStrategyOptions"
+                          :key="index"
+                          :value="item.value">
+                        </el-option>
+                      </el-select>
+                  </el-form-item>
               </template>
               <div class="form-legend-header">
                 <span>内容配置</span>
@@ -143,10 +145,6 @@
             </el-form>
           </div>
           <div v-if="mode === 'read'">
-            <!-- <div class="base-info">
-            <div>专属影院版块：</div>
-            <div>专属影院，影片数据 由大数据和媒资库提供，运营人员只需配置相应内容块的影片类型（0 会员影片，1 非会员影片，2 单点影片）。</div>
-            </div>-->
             <el-form label-width="120px" label-position="right">
               <el-form-item label="业务分类">
                 <span>{{ getCategoryLabel(panel.panelGroupCategory) }}</span>
@@ -159,11 +157,15 @@
               </el-form-item>
               <el-form-item
                 label="版块名称"
-                prop="pannelList.0.pannelName"
-              >{{ panel.pannelList[0].pannelName }}</el-form-item>
-              <template v-if="panel.panelGroupType === 9 || panel.panelGroupType === 10">
-                <el-form-item label="二级分类">{{ '电视剧' }}</el-form-item>
-                <el-form-item label="推荐维度">{{ getPanelGroupTypeLabel(panel.panelGroupType) }}</el-form-item>
+                prop="pannelList.0.pannelName">
+                {{ panel.pannelList[0].pannelName }}
+              </el-form-item>
+              <template v-if="panel.panelGroupType === 9">
+                <el-form-item label="推荐策略">
+                  <span>
+                    {{ getRecommendStrategyLabel(panel.pannelList[0].recommendStrategy) }}
+                  </span>
+                </el-form-item>
               </template>
               <div class="form-legend-header">
                 <span>内容配置</span>
@@ -258,6 +260,8 @@ export default {
       mode: 'create',
       resourceName: '专属影院',
       panelGroupCategoryOptions: [],
+      //推荐策略
+      recommendStrategyOptions: [],
       blockVideoTypeOptions: blockVideoTypeOptions,
       rules: {
         pannelName: [
@@ -313,6 +317,7 @@ export default {
             // layoutId: undefined,
             //  panelIsFocus: undefined,
             //   focusShape: undefined,
+            recommendStrategy: 'serial_watch_too',
             vipContentAmount: 5, //类型为9，10时候才有
             firstPageVipContentAmount: 2, //类型为9，10时候才有
             contentList: [
@@ -361,12 +366,31 @@ export default {
         }
       }
     },
+    isReplica() {
+        return this.mode === 'replica'
+    },
     isDisableTabType() {
       const mode = this.mode
       return mode === 'edit' || mode === 'replicate' || mode === 'copy'
     },
   },
   methods: {
+    handleRecommedStrategyInput(recommendStrategy){
+      this.panel.pannelList[0].recommendStrategy = recommendStrategy;
+      this.initPanelTitleByRecommendStrategy(recommendStrategy);
+    },
+    initPanelTitleByRecommendStrategy(recommendStrategy){
+      const selected = this.recommendStrategyOptions.find(function (item) {
+          return item.value === recommendStrategy
+      })
+      this.panel.pannelList[0].pannelTitle = selected && selected.label
+    },
+    getRecommendStrategyLabel(value) {
+        const selected = this.recommendStrategyOptions.find(function (item) {
+            return item.value === value
+        })
+        return selected && selected.label
+    },
     setDefaultPanelTitle(pannelType) {
       this.panel.pannelList[0].pannelType = pannelType
       this.panel.pannelList[0].pannelTitle =
@@ -508,6 +532,12 @@ export default {
         this.panelGroupCategoryOptions = data
       })
     },
+    getRecommendStrategy() {
+      this.$service.getRecommendStrategy().then((data) => {
+        console.log('rs', data)
+        this.recommendStrategyOptions = data
+      })
+    },
     fetchData(version) {
       this.$service.panelGetDetail({ id: this.id, version }).then(data => {
         this.setPanel(data)
@@ -520,6 +550,7 @@ export default {
       this.fetchData(this.version)
     }
     this.getDictType()
+    this.getRecommendStrategy()
   }
 }
 </script>

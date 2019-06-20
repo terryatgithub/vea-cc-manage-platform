@@ -10,11 +10,11 @@
           @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
-          @copy="handleCopy"
+          @copy="handleCopy($event)"
           @submit-audit="handleSubmitAudit"
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
-          @delete="$emit('upsert-end')"
+          @delete="$emit('upsert-end', $event)"
         >
           <div class="hompage-upsert" v-if="mode !== 'read'">
             <el-form ref="homepageForm" :model="homepage" :rules="rules" label-width="140px" class="el-form-add">
@@ -628,10 +628,10 @@ export default {
           ? undefined
           : defaultFocusIndex
     },
-    handleCopy() {
+    handleCopy(status) {
       const data = JSON.parse(JSON.stringify(this.homepage))
       data.homepageId = undefined
-      data.homepageStatus = 2
+      data.homepageStatus = status 
       data.currentVersion = ''
       this.submit(data)
     },

@@ -11,7 +11,8 @@
         />
         <slot name="copy-confirm">
           <div>
-            <el-button type="primary" @click="$emit('copy')">确认复制</el-button>
+            <el-button type="primary" @click="$emit('copy', $consts.status.draft)">复制为草稿</el-button>
+            <el-button type="primary" @click="$emit('copy', $consts.status.waiting)">复制并提交审核</el-button>
           </div>
         </slot>
       </div>
@@ -174,11 +175,14 @@ export default {
       this.$confirm('确认删除该版本吗?', '提示').then(() => {
         this.$service.deleteVersion({type,id,version}, '删除成功').then(() => {
           if (this.versionList.length === 0) {
-             this.$emit('delete') // 当只有草稿一个版本时
+            // 通知删除，并且离开预览页面
+            this.$emit('delete', false) // 当只有草稿一个版本时
           } else {
             const nextVersion = this.versionList.find((item) => {
               return item.value !== version
             }).value
+            // 通知删除，但是停留在预览页面
+            this.$emit('delete', true) 
             this.$emit('select-version', nextVersion)
           }
         })

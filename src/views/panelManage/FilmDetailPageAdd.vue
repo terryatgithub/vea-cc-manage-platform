@@ -14,7 +14,7 @@
           @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
-           @delete="$emit('upsert-end')"
+           @delete="$emit('upsert-end', $event)"
         >
           <div class="form-legend-header">
             <i class="el-icon-edit">基本信息</i>

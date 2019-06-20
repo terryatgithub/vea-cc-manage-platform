@@ -8,7 +8,7 @@
         @shelves="fetchData"
         @audit="$emit('upsert-end')"
         @select-version="fetchData"
-        @delete="$emit('upsert-end')"
+        @delete="$emit('upsert-end', $event)"
       >
         <div slot="auditAndDraft">
           <el-button type="primary" @click="handleSave">保存</el-button>

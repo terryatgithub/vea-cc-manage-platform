@@ -133,3 +133,9 @@ export function getEnv() {
     url: 'api/v1/getEnvironment.html'
   })
 }
+
+export function getRecommendStrategy() {
+  return this.fetch({
+    url: 'api/dict/recommendStrategy.html'
+  })
+}
