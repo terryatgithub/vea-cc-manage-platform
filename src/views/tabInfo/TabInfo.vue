@@ -568,6 +568,8 @@
         v-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1"
         :title-prefix="title"
         :init-mode="panelPreview.initMode"
+        :id="panelPreview.id"
+        :version="panelPreview.version"
         @upsert-end="handlePreviewPanelEnd"
         @go-back="handlePreviewPanelEnd"
       />
