@@ -89,7 +89,7 @@ export default {
     setViewFilter(filter) {
       // 如果外面传进来的 filter 与 inputFilter 不一样
       if (this.inputFilter !== filter) {
-        this.inputFilter = filter
+        this.inputFilter = filter || {}
         this.viewFilter = filter ? JSON.parse(JSON.stringify(filter)) : {}
       }
     },
@@ -169,7 +169,6 @@ export default {
   },
   created() {
     // 保存一个引用
-    this.inputFilter = this.filter
     this.$watch('filter', this.setViewFilter, {
       immediate: true
     })
