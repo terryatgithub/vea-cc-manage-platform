@@ -48,7 +48,7 @@
           <el-button>选择资源</el-button>
         </ResourceSelector>
         <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
-        <el-button v-show="contentForm.extraValue1" type="primary" @click="handleAddTagStart">打标签</el-button>
+        <el-button v-show="contentForm.extraValue1" plain type="primary" @click="handleAddTagStart">打标签</el-button>
       </el-form-item>
       <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
         <ResourceSelector

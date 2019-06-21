@@ -47,7 +47,7 @@
                   @input="handlePanelGroupCategoryChange"
                   :disabled="isReplica"
                   :options="businessTypeEnums"/>
-                <span class="spform remarks marginL">注：只有一个权限的操作者不能选择业务分类</span>
+                <span class="remarks marginL">注：只有一个权限的操作者不能选择业务分类</span>
               </el-form-item>
 
               <el-form-item
@@ -106,7 +106,7 @@
               <el-form-item label="版块布局" required>
                 <LayoutSelector @select-end="handleSelectLayoutEnd"></LayoutSelector>
                 <span
-                  class="spform J-selected J_select J_layout-selected marginL"
+                  class="marginL"
                   v-if="selectedLayout"
                 >(已选择: {{ selectedLayout.layoutName }})</span>
                 <BinCheckBox class="marginL" label="设置前端推荐位底色透明" v-model="pannel.lucenyFlag" />
@@ -139,7 +139,7 @@
                 <el-tag type="primary" v-for="(item, index) in sharedTags">{{ item }}</el-tag>
               </el-form-item>
               <el-form-item v-show="isShowTagsField"  class="tag-list" label="资源批量打标签">
-                <el-button type="primary" @click="handleBatchAddTag">
+                <el-button type="primary" plain @click="handleBatchAddTag">
                   批量打标签
                 </el-button>
               </el-form-item>

@@ -184,7 +184,7 @@ export default {
                   src: row.thumb,
                   width: '50px',
                   height: '50px',
-                  'referrer-policy': 'noreferrer'
+                  'referrerpolicy': 'no-referrer'
                 }
               })
             }

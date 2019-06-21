@@ -291,12 +291,5 @@ export default {
   margin-bottom 5px
   color #ccc
   font-size 14px
-.common-content 
-    >>> .el-input__inner,
-    >>> .el-select
-        max-width 450px
-    >>> .el-input + .el-checkbox
-    >>> .el-select + .el-checkbox
-      margin-left 10px
 
 </style>

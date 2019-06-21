@@ -90,7 +90,7 @@ export default {
                   },
                   attrs: {
                     src: imgSrc,
-                    'referrer-policy': 'noreferrer'
+                    'referrerpolicy': 'no-referrer'
                   }
                 })
               }
