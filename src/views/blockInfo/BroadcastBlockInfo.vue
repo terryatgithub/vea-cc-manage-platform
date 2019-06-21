@@ -14,7 +14,7 @@
       @delete="$emit('upsert-end', $event)"
     >
       <div slot="auditAndDraft">
-        <el-button type="primary" @click="submitCheck">提交审核</el-button>
+        <el-button type="primary" @click="submitCheck_1">提交审核</el-button>
       </div>
       <div class="form-legend-header">
         <i class="el-icon-edit">基本信息</i>
@@ -41,6 +41,14 @@
             <el-radio label="group" :disabled="disabled">组合模式</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="内容源">
+          <el-radio-group :value="basicForm.source" @input="handleSourceChange">
+            <el-radio label="none" :disabled="disabled">无</el-radio>
+            <el-radio label="o_tencent" :disabled="disabled">腾讯</el-radio>
+            <el-radio label="o_iqiyi" :disabled="disabled">爱奇艺</el-radio>
+            <el-radio label="o_youku" :disabled="disabled">优酷</el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
       <div class="split-bar">内容配置</div>
       <div class="version-title">
@@ -53,6 +61,8 @@
         <ResourceSelector
           v-if="basicForm.configModel === 'group'&&!disabled "
           ref="resourceSelector"
+          :disable-partner="!!basicForm.source"
+          :source="basicForm.source"
           :selectors="resourceOptions"
           :is-live="false"
           style="float: right;"
@@ -139,6 +149,8 @@
           <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName">
             <ResourceSelector
               ref="resourceSelector"
+              :disable-partner="!!basicForm.source"
+              :source="basicForm.source"
               v-if="autoWrite&&normalResourceBtn==='轮播资源'&&!disabled "
               :selectors="['rotate']"
               :is-live="false"
@@ -149,6 +161,8 @@
             </ResourceSelector>
             <ResourceSelector
               ref="resourceSelector"
+              :source="basicForm.source"
+              :disable-partner="!!basicForm.source"
               v-if="autoWrite&&normalResourceBtn==='播放资源'&&!disabled "
               :selectors="resourceOptions"
               :is-live="false"
@@ -239,40 +253,49 @@
               </span>
             </el-card>
           </el-form-item>
-          <el-form-item label="点击跳转" v-if="basicForm.configModel === 'group'"> 
-              <el-radio-group v-model="normalForm.clickType">
-                  <el-radio label="detail" :disabled="disabled">点击进详情页</el-radio>
-                  <el-radio v-show="couldFullscreen" label="play-fullscreen" :disabled="disabled">点击直接全屏播放</el-radio>
-              </el-radio-group>
+          <el-form-item label="点击跳转" v-if="basicForm.configModel === 'group'">
+            <el-radio-group v-model="normalForm.clickType">
+              <el-radio label="detail" :disabled="disabled">点击进详情页</el-radio>
+              <el-radio
+                v-show="couldFullscreen"
+                label="play-fullscreen"
+                :disabled="disabled"
+              >点击直接全屏播放</el-radio>
+            </el-radio-group>
           </el-form-item>
           <!-- <el-form-item label="点击事件" prop="sign" v-if="basicForm.configModel === 'group'">
             <el-radio-group v-model="normalForm.sign" :disabled="signDisabled" @change="signChange">
               <el-radio label="autoSet" :disabled="disabled">自动生成</el-radio>
               <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
             </el-radio-group>
-          </el-form-item> -->
+          </el-form-item>-->
           <el-form-item label="点击事件" prop="sign" v-if="basicForm.configModel === 'group'">
-              <el-radio-group :value="normalForm.sign" @input="handleChangeSign" :disabled="signDisabled" size="mini">
-                  <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
-                  <el-radio label="manualResource" :disabled="disabled">跳转其他播放资源</el-radio>
-                  <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
-              </el-radio-group>
-          </el-form-item>
-          <el-form-item label="" prop="clickParams">
-            <div v-if="normalForm.sign === 'manualResource'" >
-              <ResourceSelector
-              ref="resourceSelector"
-              v-if="!disabled "
-              :selectors="resourceOptions"
-              :is-live="false"
-              selection-type="single"
-              @select-end="handleSelectNormalSingleOtherResourceEnd($event)"
+            <el-radio-group
+              :value="normalForm.sign"
+              @input="handleChangeSign"
+              :disabled="signDisabled"
+              size="mini"
             >
-              <el-button type="primary" plain>选择资源</el-button>
-            </ResourceSelector>
-              <span v-show="thirdIdOrPackageNameForClick">
-              已选择: {{ thirdIdOrPackageNameForClick }}
-              </span>
+              <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
+              <el-radio label="manualResource" :disabled="disabled">跳转其他播放资源</el-radio>
+              <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label prop="clickParams">
+            <div v-if="normalForm.sign === 'manualResource'">
+              <ResourceSelector
+                ref="resourceSelector"
+                v-if="!disabled "
+                :disable-partner="!!basicForm.source"
+                :source="basicForm.source"
+                :selectors="resourceOptions"
+                :is-live="false"
+                selection-type="single"
+                @select-end="handleSelectNormalSingleOtherResourceEnd($event)"
+              >
+                <el-button type="primary" plain>选择资源</el-button>
+              </ResourceSelector>
+              <span v-show="thirdIdOrPackageNameForClick">已选择: {{ thirdIdOrPackageNameForClick }}</span>
             </div>
           </el-form-item>
           <div v-if="normalForm.sign === 'manualSet'">
@@ -334,6 +357,8 @@
             <ResourceSelector
               ref="resourceSelector"
               v-if="!disabled "
+               :disable-partner="!!basicForm.source"
+              :source="basicForm.source"
               :selectors="resourceOptions"
               :is-live="false"
               selection-type="single"
@@ -441,6 +466,7 @@
       <el-dialog :visible.sync="customDialogPicture.visible" width="1200px">
         <DialogPicture
           :title="customDialogPicture.title"
+          :pictureResolution="pictureResolution"
           :form="customDialogPicture.form"
           v-model="selectPicture"
           v-if="customDialogPicture.visible"
@@ -508,6 +534,7 @@ export default {
   props: ['id', 'initMode', 'version'],
   data() {
     return {
+      pictureResolution: '797*449', //海报尺寸
       selectingManualResource: false,
       type: 'block',
       menuElId: 'broadcastBlock',
@@ -525,7 +552,8 @@ export default {
         containerType: 'REFERENCE_BROADCASTING',
         configModel: 'broadcast',
         currentVersion: undefined,
-        status: undefined
+        status: undefined,
+        source: undefined
       },
       normalForm: {},
       lowerForm: {
@@ -540,18 +568,18 @@ export default {
         thirdIdOrPackageName: [
           { required: true, message: '请填选择资源', trigger: 'blur' }
         ],
-         clickParams: [
-                    {
-                        validator: function(rule, value, cb) {
-                            const normalForm = this.normalForm
-                            if (normalForm.sign === 'manualResource') {
-                                if (!value || value === '{}') {
-                                    return cb('请选择资源')
-                                }
-                            }
-                            cb()
-                        }.bind(this)
-                    }
+        clickParams: [
+          {
+            validator: function(rule, value, cb) {
+              const normalForm = this.normalForm
+              if (normalForm.sign === 'manualResource') {
+                if (!value || value === '{}') {
+                  return cb('请选择资源')
+                }
+              }
+              cb()
+            }.bind(this)
+          }
         ]
       },
       lowerRules: {
@@ -685,13 +713,13 @@ export default {
   },
 
   computed: {
-     thirdIdOrPackageNameForClick() {
-            return this.getThirdId(this.normalForm.clickParams)
-        },
-     couldFullscreen() {
-            const contentType = this.normalForm.contentType
-            return ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
-        },
+    thirdIdOrPackageNameForClick() {
+      return this.getThirdId(this.normalForm.clickParams)
+    },
+    couldFullscreen() {
+      const contentType = this.normalForm.contentType
+      return ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
+    },
     classObject: function() {
       if (this.normalForm.sign === 'autoSet') {
         return {
@@ -732,7 +760,7 @@ export default {
       deep: true,
       handler: function(newVal, oldVal) {
         if (newVal === 'manualResource') {
-            this.selectingManualResource = true
+          this.selectingManualResource = true
         } else {
           this.selectingManualResource = false
         }
@@ -742,15 +770,34 @@ export default {
     // }
   },
   methods: {
+    handleSourceChange(val) {
+      this.$confirm('切换内容源将清空内容, 确定切换?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(
+          function() {
+            this.normalForm = Object.assign({}, this.versionForm)
+            this.normalVersionContent = [this.normalForm]
+            this.currentIndex = 0
+            this.cleanLowerForm()
+            this.basicForm.source = val
+          }.bind(this)
+        )
+        .catch(function(e) {})
+    },
     getThirdId(clickParams) {
-            if (clickParams) {
-                const clickParamsObj = JSON.parse(clickParams)
-                return clickParamsObj.id 
-                    || clickParamsObj.rotateId 
-                    || clickParamsObj.pTopicCode
-                    || clickParamsObj.url
-            }
-        },
+      if (clickParams) {
+        const clickParamsObj = JSON.parse(clickParams)
+        return (
+          clickParamsObj.id ||
+          clickParamsObj.rotateId ||
+          clickParamsObj.pTopicCode ||
+          clickParamsObj.url
+        )
+      }
+    },
     replicate() {
       this.mode = 'replicate'
       this.disabled = false
@@ -1302,17 +1349,16 @@ export default {
         this[form] = data[0]
       } else {
         console.log(' no array')
-         if (this.selectingManualResource) { 
-           this[form].clickParams = JSON.stringify(this.paramIdFun(callbackData))
-           this[form].clickTemplateType = callbackData.contentType
-           this.selectingManualResource = false
-         } else {
-            this[form] = this.packageFormParam(callbackData, this.currentForm)
-            if (form === 'normalForm') {
-              this.normalVersionContent.splice(this.currentIndex, 0, this[form])
-            }
-         }
-
+        if (this.selectingManualResource) {
+          this[form].clickParams = JSON.stringify(this.paramIdFun(callbackData))
+          this[form].clickTemplateType = callbackData.contentType
+          this.selectingManualResource = false
+        } else {
+          this[form] = this.packageFormParam(callbackData, this.currentForm)
+          if (form === 'normalForm') {
+            this.normalVersionContent.splice(this.currentIndex, 0, this[form])
+          }
+        }
       }
     },
     // 校验normalForm
@@ -1453,6 +1499,9 @@ export default {
     // 打开海报和角标弹窗
     openPicture: function(type, form, index) {
       if (this.disabled) return
+      form === 'normalForm'
+        ? (this.pictureResolution = '797*449')
+        : (this.pictureResolution = '1210*449')
       this.pictureType = type
       this.currentForm = form
       if (type === 'poster') {
@@ -1547,6 +1596,16 @@ export default {
         }
       })
     },
+    submitCheck_1() {
+      if (this.basicForm.currentVersion === 'V1') {
+        return this.doSave()
+      }
+      if (this.$consts.idPrefix == '10') {
+        this.$refs.commonContent.showReleaseTimeSetter = true
+      } else {
+        this.doSave()
+      }
+    },
     submitCheck: function(timing) {
       if (this.basicForm.currentVersion === 'V1') {
         return this.doSave()
@@ -1589,6 +1648,9 @@ export default {
               delete _this.lowerForm.smallTopicsId
               obj.lowerVersionContent = _this.lowerForm
               var resultObj = Object.assign(obj, _this.basicForm)
+              if (_this.mode === 'replicate') {
+                resultObj.currentVersion = ''
+              }
               resultObj.status = 3
               resultObj.parentType = 'Block'
               console.log('resultObj', resultObj)
@@ -1792,8 +1854,7 @@ export default {
 .version-title__tag
   margin-top: 6px
   margin-left: 10px
-.demo-ruleForm
-.key-span
+.demo-ruleForm, .key-span
   width: 100px
   display: inline-block
   text-align: center

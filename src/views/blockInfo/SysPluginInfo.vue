@@ -248,16 +248,20 @@
                   :rules="rules.openMode"
                 >
                   <el-select :value="item.openMode" @input="handleChangeOpenMode(item, $event)">
-                    <el-option
+                    <!-- <el-option
                       v-if="pluginParentType === 'builtIn' ||  pluginType === 'REFERENCE_MOVIE_VIP' || pluginType === 'REFERENCE_ACTIVITY'"
                       label="网页"
                       value="webpage"
+                    ></el-option> -->
+                      <el-option
+                      label="网页"
+                      value="webpage"
                     ></el-option>
-                    <template v-if=" pluginType === 'REFERENCE_ACTIVITY'">
+                    <!-- <template v-if=" pluginType === 'REFERENCE_ACTIVITY'"> -->
                       <el-option label="视频" value="video"></el-option>
                       <el-option label="图片" value="picture"></el-option>
                       <el-option label="版面" value="tab"></el-option>
-                    </template>
+                    <!-- </template> -->
                     <el-option label="第三方应用" value="app"></el-option>
                   </el-select>
                   <el-button

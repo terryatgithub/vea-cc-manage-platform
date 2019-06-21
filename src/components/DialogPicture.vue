@@ -40,7 +40,11 @@ export default {
     CardList
   },
   props: {
-    title: String
+    title: String,
+    pictureResolution:{
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {
@@ -110,6 +114,7 @@ export default {
     fetchData() {
       this.table.selected = undefined
       const filter = this.parseFilter()
+      filter.pictureResolution = this.pictureResolution
       this.$service.getResourceList(filter).then(data => {
       this.pagination.total = data.total
       this.table.data = data.rows
