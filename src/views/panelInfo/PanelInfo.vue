@@ -322,7 +322,7 @@
             @set-end="handleSetPanelGroupInfoEnd"
             @set-cancel="handleSetPanelGroupInfoCancel">
           </PanelGroupInfoSetter>
-          <TagFrame :ids="panelResourceIds" v-if="showAddTagDialog" @close="handleBatchAddTagEnd"></TagFrame>
+          <TagFrame :is-batch="true" :ids="panelResourceIds" v-if="showAddTagDialog" @close="handleBatchAddTagEnd"></TagFrame>
       </ContentCard>
     </PageContentWrapper>
 

@@ -1881,7 +1881,7 @@ export default {
             this.$refs.commonContent.showReleaseTimeSetter = true
           }
         } else {
-          this.updateTabInfo(data)
+          this.upsertTabInfo(data)
         }
       })
     },

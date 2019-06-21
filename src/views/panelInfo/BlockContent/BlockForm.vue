@@ -48,7 +48,7 @@
           <el-button>选择资源</el-button>
         </ResourceSelector>
         <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
-        <el-button v-show="contentForm.extraValue1 && !isReadonly" type="primary" @click="handleAddTagStart">打标签</el-button>
+        <el-button v-show="contentForm.extraValue1" type="primary" @click="handleAddTagStart">打标签</el-button>
       </el-form-item>
       <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
         <ResourceSelector
@@ -178,18 +178,20 @@
             </template>
           </div>
         </GlobalPictureSelector>
-        <el-checkbox 
-          :value="!contentForm.showSeries"
-          :disabled="isReadonly"
-          @input="contentForm.showSeries = $event ? 0 : 1">
-          不展示期数
-        </el-checkbox>
-        <el-checkbox 
-          :value="!contentForm.showScore"
-          :disabled="isReadonly"
-          @input="contentForm.showScore = $event ? 0 : 1">
-          不展示评分
-        </el-checkbox>
+        <div>
+          <el-checkbox 
+            :value="!contentForm.showSeries"
+            :disabled="isReadonly"
+            @input="contentForm.showSeries = $event ? 0 : 1">
+            不展示期数
+          </el-checkbox>
+          <el-checkbox 
+            :value="!contentForm.showScore"
+            :disabled="isReadonly"
+            @input="contentForm.showScore = $event ? 0 : 1">
+            不展示评分
+          </el-checkbox>
+        </div>
       </el-form-item>
 
       <el-form-item label="替补海报" v-if="shouldHaveBackupPicture" prop="alternativePictureUrl">
