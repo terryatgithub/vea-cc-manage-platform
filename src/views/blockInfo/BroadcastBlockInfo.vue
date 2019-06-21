@@ -62,7 +62,7 @@
           v-if="basicForm.configModel === 'group'&&!disabled "
           ref="resourceSelector"
           :disable-partner="!!basicForm.source"
-          :source="basicForm.source"
+          :source="source"
           :selectors="resourceOptions"
           :is-live="false"
           style="float: right;"
@@ -150,7 +150,7 @@
             <ResourceSelector
               ref="resourceSelector"
               :disable-partner="!!basicForm.source"
-              :source="basicForm.source"
+              :source="source"
               v-if="autoWrite&&normalResourceBtn==='轮播资源'&&!disabled "
               :selectors="['rotate']"
               :is-live="false"
@@ -161,7 +161,7 @@
             </ResourceSelector>
             <ResourceSelector
               ref="resourceSelector"
-              :source="basicForm.source"
+              :source="source"
               :disable-partner="!!basicForm.source"
               v-if="autoWrite&&normalResourceBtn==='播放资源'&&!disabled "
               :selectors="resourceOptions"
@@ -287,7 +287,7 @@
                 ref="resourceSelector"
                 v-if="!disabled "
                 :disable-partner="!!basicForm.source"
-                :source="basicForm.source"
+                :source="source"
                 :selectors="resourceOptions"
                 :is-live="false"
                 selection-type="single"
@@ -358,7 +358,7 @@
               ref="resourceSelector"
               v-if="!disabled "
                :disable-partner="!!basicForm.source"
-              :source="basicForm.source"
+              :source="source"
               :selectors="resourceOptions"
               :is-live="false"
               selection-type="single"
@@ -553,7 +553,7 @@ export default {
         configModel: 'broadcast',
         currentVersion: undefined,
         status: undefined,
-        source: undefined
+        source: 'none'
       },
       normalForm: {},
       lowerForm: {
@@ -713,6 +713,9 @@ export default {
   },
 
   computed: {
+    source(){
+      return this.basicForm.source ==='none' ? '' : this.basicForm.source
+    },
     thirdIdOrPackageNameForClick() {
       return this.getThirdId(this.normalForm.clickParams)
     },
@@ -1268,7 +1271,6 @@ export default {
         form.smallTopicsIs = false
       }
       form.title = item.title
-      form.coverType = item.coverType
       form.contentType = item.contentType
       form.subTitle = item.subTitle
       form.thirdIdOrPackageName = item.thirdIdOrPackageName
@@ -1354,6 +1356,7 @@ export default {
           this[form].clickTemplateType = callbackData.contentType
           this.selectingManualResource = false
         } else {
+          debugger
           this[form] = this.packageFormParam(callbackData, this.currentForm)
           if (form === 'normalForm') {
             this.normalVersionContent.splice(this.currentIndex, 0, this[form])
@@ -1597,8 +1600,11 @@ export default {
       })
     },
     submitCheck_1() {
-      if (this.basicForm.currentVersion === 'V1') {
+      if (this.basicForm.currentVersion === 'V1' || this.basicForm.currentVersion === undefined) {
         return this.doSave()
+      }
+      if (this.mode === 'replicate') {
+        this.basicForm.currentVersion = ''
       }
       if (this.$consts.idPrefix == '10') {
         this.$refs.commonContent.showReleaseTimeSetter = true
@@ -1607,8 +1613,11 @@ export default {
       }
     },
     submitCheck: function(timing) {
-      if (this.basicForm.currentVersion === 'V1') {
+      if (this.basicForm.currentVersion === 'V1' || this.basicForm.currentVersion === undefined) {
         return this.doSave()
+      }
+      if (this.mode === 'replicate') {
+        this.basicForm.currentVersion = ''
       }
       if (this.$consts.idPrefix == '10') {
         if (timing) {
@@ -1648,13 +1657,10 @@ export default {
               delete _this.lowerForm.smallTopicsId
               obj.lowerVersionContent = _this.lowerForm
               var resultObj = Object.assign(obj, _this.basicForm)
-              if (_this.mode === 'replicate') {
-                resultObj.currentVersion = ''
-              }
+             
               resultObj.status = 3
               resultObj.parentType = 'Block'
               console.log('resultObj', resultObj)
-
               _this.$service
                 .saveBlockInfo(
                   { jsonStr: JSON.stringify(resultObj) },

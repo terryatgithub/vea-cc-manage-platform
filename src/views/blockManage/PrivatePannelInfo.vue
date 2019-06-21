@@ -52,7 +52,7 @@
                 <el-radio-group
                   :value="panel.pannelResource"
                   @input="handlePannelResourceChange"
-                  :disabled="mode==='replicate'"
+                  :disabled="mode!=='read'"
                 >
                   <el-radio 
                     v-for="(item, index) in $consts.sourceOptions" 

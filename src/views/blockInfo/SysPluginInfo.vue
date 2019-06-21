@@ -316,7 +316,8 @@
                     :prop="'rlsInfo.' + index + '.onclick.tab'"
                     :rules="rules.tab"
                   >
-                    <el-button type="primary" @click="handleSelectTabStart(index)">选择版面</el-button>
+                  <TabSelector @select-single="handleSelectTabEnd($event, item)" selectionType="single"/>
+                    <!-- <el-button type="primary" @click="handleSelectTabStart(index)">选择版面</el-button> -->
                     <el-tag type="primary" v-if="item.onclick.tab">已选择: {{ item.onclick.tab.tabId }}</el-tag>
                   </el-form-item>
                 </template>
@@ -516,7 +517,7 @@ import selectClick from './selectClick'
 import selectImg from './selectImg'
 import { AppParams, AppParamsRead } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
-
+import TabSelector from '@/components/selectors/TabSelector'
 export default {
   components: {
     // ccAppParamsForm,
@@ -526,7 +527,8 @@ export default {
     selectImg,
     AppParams,
     CommonContent,
-    AppParamsRead
+    AppParamsRead,
+    TabSelector
   },
   props: ['id', 'initMode', 'version'],
   data() {
@@ -741,6 +743,9 @@ export default {
   },
   watch: {},
   methods: {
+    handleSelectTabEnd(tab, item) {
+      this.$set(item.onclick, 'tab', tab)
+    },
     //时间处理-:转换为数值
     parseMinToStr(str) {
       const timeArr = str.split(':')
