@@ -427,7 +427,12 @@ export default {
       this.validateFormData(
         data,
         function() {
-          this.showTimeShelf = true
+          if (status ===3) {
+            this.$refs.commonContent.showReleaseTimeSetter = true
+          } else {
+            this.submit(data)
+          }
+         // this.showTimeShelf = true
         }.bind(this)
       )
     },

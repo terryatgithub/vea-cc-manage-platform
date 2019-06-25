@@ -8,14 +8,15 @@
         @edit="mode = 'edit'; title='编辑'"
         @unaudit="$emit('upsert-end')"
         @shelves="fetchData"
-        @submit-audit="handleSubmitAudit"
+        @submit-audit="handleSubmitAudit($event, $consts.status.waiting)"
+        @save-draft="handleSubmitAudit($event, $consts.status.draft)"
         @audit="$emit('upsert-end')"
         @select-version="fetchData"
         @delete="$emit('upsert-end', $event)"
       >
-    <div slot="auditAndDraft">
+    <!-- <div slot="auditAndDraft">
         <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-    </div>
+    </div> -->
         <div class="form-legend-header">
           <i class="el-icon-edit">基本信息</i>
         </div>
@@ -870,7 +871,6 @@ export default {
         })
     },
     handleChangePluginParentType(val) {
-      debugger
     //  document.querySelectorAll(".el-form-item__error").style.display='none'
       const originType = this.block.pluginInfo.pluginParentType
       const confirmOK = function() {
@@ -1042,9 +1042,9 @@ export default {
         item.onclick = {}
       }
     },
-    getData() {
+    getData(status) {
       const data = JSON.parse(JSON.stringify(this.block))
-      data.pluginInfo.pluginStatus = this.$consts.status.waiting
+      data.pluginInfo.pluginStatus = status
       return data
     },
     validateData(data, cb) {
@@ -1302,8 +1302,8 @@ export default {
       return data
     },
     //提交审核
-    handleSubmitAudit() {
-      const data = this.getData()
+    handleSubmitAudit(d, status) {
+      const data = this.getData(status)
       this.validateData(
         data,
         function() {

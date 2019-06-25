@@ -8,14 +8,16 @@
       @edit="edit"
       @unaudit="$emit('upsert-end')"
       @shelves="fetchData"
-      @submit-audit="submitCheck"
+      @submit-audit="submitCheck($event,3)"
+      @save-draft="submitCheck($event,2)"
       @audit="$emit('upsert-end')"
       @select-version="fetchData"
+      @cancel-timing="fetchData(basicForm.currentVersion)"
       @delete="$emit('upsert-end', $event)"
     >
-      <div slot="auditAndDraft">
+      <!-- <div slot="auditAndDraft">
         <el-button type="primary" @click="submitCheck_1">提交审核</el-button>
-      </div>
+      </div> -->
       <div class="form-legend-header">
         <i class="el-icon-edit">基本信息</i>
       </div>
@@ -273,8 +275,6 @@
             <el-radio-group
               :value="normalForm.sign"
               @input="handleChangeSign"
-              :disabled="signDisabled"
-              size="mini"
             >
               <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
               <el-radio label="manualResource" :disabled="disabled">跳转其他播放资源</el-radio>
@@ -330,7 +330,8 @@
             plain
             style="margin-right: 10px"
             :disabled="disabled"
-          >快速填充</el-button>
+          >快速填充
+          </el-button>
           <span>使用正常版本的第一个资源，快速配置</span>
         </div>
       </div>
@@ -510,16 +511,13 @@
 
 <script>
 import draggable from 'vuedraggable'
-// import ResourceSelector from '@/components/ResourceSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
-// import AuditDetailButton from '@/components/AuditDetailButton'
 import CommonContent from '@/components/CommonContent.vue'
 import { AppParams, AppParamsRead } from 'admin-toolkit'
 import _ from 'gateschema'
-// import HistoryTool from './../../components/HistoryTool'
 export default {
   components: {
     draggable,
@@ -545,7 +543,7 @@ export default {
       cornerIconTypeOptions: {},
       cornerTypes: [],
       materialTypes: null,
-      resourceOptions: ['video', 'edu', 'live', 'topic', 'rotate'],
+      resourceOptions: ['video', 'edu', 'live', 'rotate'],
       basicForm: {
         id: undefined,
         containerName: '',
@@ -896,11 +894,13 @@ export default {
       // }
       const normalForm = this.normalForm
       if (newVal === 'autoSet') {
+        normalForm.onclick = ''
         normalForm.clickParams = normalForm.params
         normalForm.clickTemplateType = normalForm.contentType
         this.referenceDataNormal = {}
       }
       if (newVal === 'manualResource') {
+        normalForm.onclick = ''
         normalForm.clickParams = ''
         normalForm.clickTemplateType = ''
         this.referenceDataNormal = {}
@@ -1599,20 +1599,22 @@ export default {
         }
       })
     },
-    submitCheck_1() {
-      if (this.basicForm.currentVersion === 'V1' || this.basicForm.currentVersion === undefined) {
-        return this.doSave()
-      }
-      if (this.mode === 'replicate') {
-        this.basicForm.currentVersion = ''
-      }
-      if (this.$consts.idPrefix == '10') {
-        this.$refs.commonContent.showReleaseTimeSetter = true
-      } else {
-        this.doSave()
-      }
-    },
-    submitCheck: function(timing) {
+    // submitCheck_1() {
+    //   if (this.basicForm.currentVersion === 'V1' || this.basicForm.currentVersion === undefined) {
+    //     return this.doSave()
+    //   }
+    //   if (this.mode === 'replicate') {
+    //     this.basicForm.currentVersion = ''
+    //   }
+    //   if (this.$consts.idPrefix == '10') {
+    //     this.$refs.commonContent.showReleaseTimeSetter = true
+    //   } else {
+    //     this.doSave()
+    //   }
+    // },
+    
+    submitCheck: function(timing, status) {
+      this.basicForm.status = status
       if (this.basicForm.currentVersion === 'V1' || this.basicForm.currentVersion === undefined) {
         return this.doSave()
       }
@@ -1625,7 +1627,11 @@ export default {
           this.basicForm.releaseTime = timing.releaseTime
           this.doSave()
         } else {
-          this.$refs.commonContent.showReleaseTimeSetter = true
+          if (status ===3) {
+            this.$refs.commonContent.showReleaseTimeSetter = true
+          } else {
+            this.doSave()
+          }
         }
       } else {
         this.doSave()
