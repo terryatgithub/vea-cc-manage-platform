@@ -213,8 +213,8 @@ export default {
       return filter
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.themeId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.themeId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
@@ -282,7 +282,7 @@ export default {
         this.table.selected = []
       }
     },
-      handleAllRowSelectionRemove () {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },

@@ -34,20 +34,20 @@ export default {
     ActionList
   },
   props: {
-    id: Number, //自增ID
+    id: Number, // 自增ID
     version: {
       type: String,
       default: ''
-    }, //版本
+    }, // 版本
     hasHistory: {
       type: Boolean,
       default() {
         return true
       }
     },
-    type: String, //资源类型，block推荐位
+    type: String, // 资源类型，block推荐位
     status: Number, // 获取权限按钮组的审核状态
-    menuElId: String, //菜单elId
+    menuElId: String, // 菜单elId
     notContainBtn: {
       type: Array,
       default() {
@@ -65,8 +65,8 @@ export default {
       actions: {},
       auditDialog: false,
       auditForm: {
-        auditFlag: '4', //审核状态
-        auditDesc: '' //审核描述
+        auditFlag: '4', // 审核状态
+        auditDesc: '' // 审核描述
       },
       auditFormRule: {
         auditDesc: [
@@ -88,7 +88,7 @@ export default {
                 auditFlag: this.auditForm.auditFlag,
                 auditDesc: this.auditForm.auditDesc
               },
-              this.auditForm.auditFlag==='4'? '审核成功' : '打回成功'
+              this.auditForm.auditFlag === '4' ? '审核成功' : '打回成功'
             )
             .then(data => {
               this.auditDialog = false
@@ -105,7 +105,7 @@ export default {
         status: this.status,
         menuElId: this.menuElId
       }
-      let p1 = this.$service.getHistoryList({ id: this.id, type: this.type }) //要实时查看是否显示创建副本按钮
+      let p1 = this.$service.getHistoryList({ id: this.id, type: this.type }) // 要实时查看是否显示创建副本按钮
       let p2 = this.$service.getAuditDetailButton(params)
       Promise.all([p1, p2]).then(result => {
         let data1 = result[0].rows
@@ -118,7 +118,7 @@ export default {
           }
         })
         if (!hasCopy) {
-          this.notContainBtn.push('copy') //不能创建副本
+          this.notContainBtn.push('copy') // 不能创建副本
         }
         let data2 = result[1]
         let action = {}
@@ -159,7 +159,7 @@ export default {
       this.$emit('delete-item')
     },
     audit() {
-      //审核
+      // 审核
       this.auditDialog = true
     },
     unaudit() {
@@ -175,7 +175,7 @@ export default {
           )
           .then(data => {
             this.auditDialog = false
-            this.$emit("revokedAudit")
+            this.$emit('revokedAudit')
           })
       }
     },
@@ -196,9 +196,9 @@ export default {
     }
   },
   created() {
-    if(this.status === 5) {//审核不通过
-      this.notContainBtn.push('edit','delete')
-    } 
+    if (this.status === 5) { // 审核不通过
+      this.notContainBtn.push('edit', 'delete')
+    }
     this.getAuditDetailButton()
   }
 }
@@ -207,5 +207,3 @@ export default {
 .actions
   justify-content start
 </style>
-
-

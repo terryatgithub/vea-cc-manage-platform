@@ -35,14 +35,14 @@
 </template>
 
 <script>
-import _ from "gateschema";
+import _ from 'gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
-import { Table, CardList, utils } from "admin-toolkit";
+import { Table, CardList, utils } from 'admin-toolkit'
 export default {
   components: {
     Table,
     CardList,
-    RemoteSelectorWrapper, 
+    RemoteSelectorWrapper
   },
   props: ['title', 'position', 'disabled'],
   data() {
@@ -59,9 +59,9 @@ export default {
         props: {},
         data: [],
         selected: undefined,
-        selectionType: "single"
+        selectionType: 'single'
       }
-    };
+    }
   },
   methods: {
     getDefaultFilter() {
@@ -73,47 +73,47 @@ export default {
         idPrefix: idPrefix != '10' ? idPrefix : undefined
       }
     },
-    handleRowSelectionChange(row,index){
+    handleRowSelectionChange(row, index) {
       this.table.selected = index
     },
     handleFilterChange() {
       this.pagination.currentPage = 1
-      this.fetchData() 
+      this.fetchData()
     },
     handleFilterReset() {
-      this.filter = this.getDefaultFilter();
+      this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
-      this.fetchData();
+      this.fetchData()
     },
     parseFilter() {
-      const { filter, pagination, position } = this;
+      const { filter, pagination, position } = this
       if (pagination) {
-        filter.page = pagination.currentPage;
-        filter.rows = pagination.pageSize;
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
       }
       if (position !== undefined) {
         filter.typePosition = position
       }
-      return filter;
+      return filter
     },
-    //获取数据
+    // 获取数据
     fetchData() {
       this.table.selected = undefined
-      const filter = this.parseFilter();
+      const filter = this.parseFilter()
       if (this.pictureResolution) {
         filter.pictureResolution = this.pictureResolution
       }
       this.$service.getCornerList(filter).then(data => {
-        this.pagination.total = data.total;
-        this.table.data = data.rows;
-      });
+        this.pagination.total = data.total
+        this.table.data = data.rows
+      })
     },
     getMaterialTypes() {
       return this.$service.getMaterialTypes().then(data => {
         data.forEach(element => {
-          this.materialTypes[element.label] = element.id;
-        });
-      });
+          this.materialTypes[element.label] = element.id
+        })
+      })
     },
     handleSelectEnd() {
       const { data, selected } = this.table
@@ -128,43 +128,43 @@ export default {
         return (result[item.typeName] = item.typeId) && result
       }, {})
       const filterSchema = _.map({
-        cornerIconId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other("form", {
+        cornerIconId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
           component: 'Input',
           label: ' ',
-          placeholder: "ID",
+          placeholder: 'ID',
           cols: {
             item: 3,
             wrapper: 23
           }
         }),
-        cornerIconName: _.o.string.other("form", {
+        cornerIconName: _.o.string.other('form', {
           label: ' ',
-          placeholder: " 角标名称",
+          placeholder: ' 角标名称',
           cols: {
             item: 3,
             wrapper: 23
           }
         }),
-        typeId: _.o.enum(cornerTypeEnums).other("form", {
-          component: "Select",
+        typeId: _.o.enum(cornerTypeEnums).other('form', {
+          component: 'Select',
           label: ' ',
-          placeholder: "角标类型",
+          placeholder: '角标类型',
           cols: {
             item: 3,
             wrapper: 23
           }
         })
-      }).other("form", {
-        layout: "inline",
+      }).other('form', {
+        layout: 'inline',
         footer: {
           cols: {
             item: 3,
             wrapper: 24
           },
           showSubmit: true,
-          submitText: "查询",
+          submitText: '查询',
           showReset: true,
-          resetText: "重置"
+          resetText: '重置'
         }
       })
 
@@ -184,10 +184,10 @@ export default {
         })
       }
 
-      this.filterSchema = filterSchema;
+      this.filterSchema = filterSchema
     })
   }
-};
+}
 </script>
 
 <style lang="stylus" scoped>

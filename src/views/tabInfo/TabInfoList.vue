@@ -4,7 +4,7 @@
       <!-- 筛选部分 -->
       <el-form inline ref="form" v-model="filter" label-width="90px" class="form">
         <el-form-item class="el-col-6">
-          <el-input v-model="filter.tabId" placeholder="版面ID"/>
+          <InputPositiveInt v-model="filter.tabId" placeholder="版面ID" />
         </el-form-item>
         <el-form-item class="el-col-6">
           <el-input v-model="filter.tabName" placeholder="版面标题"/>
@@ -67,8 +67,8 @@
           <el-button  @click="handleFilterReset">重置</el-button>
         </el-form-item>
       </el-form>
-         <ButtonGroupForListPage 
-          pageName='tab' 
+         <ButtonGroupForListPage
+          pageName='tab'
           @add="handleCreate"
           @edit="handleEdit"
           @delete="handleDelete"
@@ -93,12 +93,14 @@
 import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
     Table,
-    ButtonGroupForListPage
+    ButtonGroupForListPage,
+    InputPositiveInt
   },
 
   data() {
@@ -111,7 +113,7 @@ export default {
         { label: '专题版面', value: '2' },
         { label: '普通版面', value: '1' }
       ],
-      tabStatusOption: 
+      tabStatusOption:
       [
         { label: '下架', value: '0' },
         { label: '上架', value: '1' },
@@ -122,6 +124,7 @@ export default {
       ],
       businessType: [],
       filter: this.genDefaultFilter(),
+      efficientFilter: this.genDefaultFilter(),
       appIdType: [],
       filterSchema: null,
       pagination: {
@@ -220,7 +223,7 @@ export default {
           {
             label: '待审核副本',
             prop: 'duplicateVersion',
-             render: (createElement, { row }) => {
+            render: (createElement, { row }) => {
               return createElement(
                 'el-button',
                 {
@@ -256,10 +259,10 @@ export default {
             label: '操作',
             width: 140,
             fixed: 'right',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return h('div', [
                 h('el-button', {
-                  props: {type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()
@@ -268,7 +271,7 @@ export default {
                   }
                 }, '复制'),
                 h('el-button', {
-                  props: {type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()
@@ -276,9 +279,9 @@ export default {
                     }
                   }
                 }, [
-                  h('el-icon', {class: row.collected ? 'el-icon-star-on' : 'el-icon-star-off'}),
+                  h('el-icon', { class: row.collected ? 'el-icon-star-on' : 'el-icon-star-off' }),
                   row.collected ? '取消' : '收藏'
-                ]),
+                ])
               ])
             }
           }
@@ -310,21 +313,22 @@ export default {
       })
     },
     parseFilter() {
-      const { filter, pagination } = this
+      const pagination = this.pagination
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
       return filter
     },
-   handleFilterChange() {
-      if(this.$validateId(this.filter.tabId)) {
-        this.pagination.currentPage = 1
-        this.fetchData() 
-      }
+    handleFilterChange() {
+      this.pagination.currentPage = 1
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
+      this.fetchData()
     },
     handleFilterReset() {
       this.filter = this.genDefaultFilter()
+      this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -338,26 +342,26 @@ export default {
       this.$emit('edit', target)
     },
     getBusinessType() {
-      this.$service.getDictType({type: 'businessType'}).then(data => {
+      this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.businessType = data
       })
     },
     handleToggleCollect(row) {
       if (row.collected) {
-        this.$service.collectCancel({ type: 'tab', data: {resourceId: row.tabId}}, '取消收藏成功')
+        this.$service.collectCancel({ type: 'tab', data: { resourceId: row.tabId } }, '取消收藏成功')
           .then(() => {
             this.$set(row, 'collected', false)
           })
       } else {
-        this.$service.collect({ type: 'tab', data: {resourceId: row.tabId}}, '收藏成功')
+        this.$service.collect({ type: 'tab', data: { resourceId: row.tabId } }, '收藏成功')
           .then(() => {
             this.$set(row, 'collected', true)
           })
       }
-    },
+    }
   },
   created() {
-    this.$service.getDictType({type: 'appIdType'}).then(data => {
+    this.$service.getDictType({ type: 'appIdType' }).then(data => {
       this.appIdType = data
       this.fetchData()
     })

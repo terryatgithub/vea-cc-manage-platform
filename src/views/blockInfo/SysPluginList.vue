@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <ButtonGroupForListPage 
-      pageName="sysPlugin" 
+      <ButtonGroupForListPage
+      pageName="sysPlugin"
        @edit="handleEdit">
       </ButtonGroupForListPage>
       <Table
@@ -31,7 +31,7 @@ import BaseList from '@/components/BaseList'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 export default {
-   extends: BaseList,
+  extends: BaseList,
   components: {
     Table,
     ContentWrapper,
@@ -82,7 +82,7 @@ export default {
               )
             }
           },
-           {
+          {
             label: '待审核的版本',
             prop: 'duplicateVersion',
             sortable: true,
@@ -169,19 +169,19 @@ export default {
         this.table.data = data.rows
       })
     },
-    //查询
-     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.pluginId)) {
+    // 查询
+    handleFilterChange(type, filter) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.pluginId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
-    //重置
+    // 重置
     handleFilterReset() {
       this.filter = {
         sort: undefined,
@@ -249,5 +249,3 @@ export default {
 .btns
   margin-bottom: 10px
 </style>
-
-

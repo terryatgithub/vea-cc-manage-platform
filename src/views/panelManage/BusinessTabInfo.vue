@@ -276,7 +276,7 @@ export default {
       tabTypes: [],
       status: undefined,
       mode: 'create',
-      isReplica: false, //是否创建副本
+      isReplica: false, // 是否创建副本
       tab: {
         tabId: undefined,
         currentVersion: undefined,

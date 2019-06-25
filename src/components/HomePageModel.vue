@@ -8,14 +8,14 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <Table 
+      <Table
         :props="table.props"
         :header="table.header"
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
         @row-click="rowClick"
-        
+
         @row-selection-change="rowClick"
       />
     </ContentWrapper>
@@ -23,7 +23,7 @@
 </template>
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table, utils ,ContentEllipsis} from 'admin-toolkit'
+import { ContentWrapper, Table, utils, ContentEllipsis } from 'admin-toolkit'
 export default {
   components: {
     Table,
@@ -31,9 +31,9 @@ export default {
     ContentEllipsis
   },
   props: {
-   homepageModel: String,
-   homepageResource: String,
-   homepageStatusArray: String
+    homepageModel: String,
+    homepageResource: String,
+    homepageStatusArray: String
   },
   data() {
     return {
@@ -63,25 +63,24 @@ export default {
           {
             label: '关联版面名称',
             prop: 'relationTabName',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               let content = row.relationTabName
-              if(content.length>40)
-              content = content.substring(0,40)+'...'
-              return h('div',{
-                attrs:{
+              if (content.length > 40) { content = content.substring(0, 40) + '...' }
+              return h('div', {
+                attrs: {
                   title: row.relationTabName
                 }
-              },content)
+              }, content)
             }
           },
           {
             label: '首页模式',
             prop: 'homepageModel',
-            render: (h, {row}) => {
-              if(row.homepageModel === 'child') {
+            render: (h, { row }) => {
+              if (row.homepageModel === 'child') {
                 return '儿童模式'
               } else {
-               return '标准模式'
+                return '标准模式'
               }
             }
           },
@@ -99,23 +98,23 @@ export default {
     }
   },
   watch: {
-    homepageModel: function(){
+    homepageModel: function() {
       this.fetchData()
     }
   },
   methods: {
     rowClick(params) {
-        this.$emit("row-click",params)
+      this.$emit('row-click', params)
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.homepageId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.homepageId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -138,13 +137,12 @@ export default {
      * 获取数据
      */
     fetchData() {
-      
       const filter = this.parseFilter()
       filter.homepageModel = this.homepageModel
       filter.homepageResource = this.homepageResource
       filter.homepageStatusArray = this.homepageStatusArray
       this.$service.getHomePageModelPageList(filter).then(data => {
-       // data.rows.splice(5)
+        // data.rows.splice(5)
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -183,4 +181,3 @@ export default {
   }
 }
 </script>
-

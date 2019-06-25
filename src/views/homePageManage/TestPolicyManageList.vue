@@ -157,9 +157,9 @@ export default {
     }
   },
   methods: {
-    //查询
-     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
+    // 查询
+    handleFilterChange(type, filter) {
+      if (filter) { this.filter = filter }
       if (this.pagination) {
         this.pagination.currentPage = 1
       }
@@ -168,7 +168,7 @@ export default {
         this.fetchData()
       }
     },
-    //重置
+    // 重置
     handleFilterReset() {
       this.filter = {
         sort: undefined,
@@ -239,12 +239,12 @@ export default {
         }
         return result
       }, [])
-    },
+    }
   },
   created() {
     let filterSchema = _.map({
       policyId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
-        component: 'Input',
+        component: 'InputPositiveInt',
         placeholder: 'ID'
       }),
       policyName: _.o.string.other('form', {
@@ -269,7 +269,7 @@ export default {
         placeholder: '机型/机芯'
       })
     }).other('form', {
-             cols: {
+      cols: {
         item: 5,
         label: 0,
         wrapper: 20

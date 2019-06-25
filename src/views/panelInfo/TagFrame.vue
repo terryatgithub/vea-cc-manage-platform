@@ -19,10 +19,10 @@ export default {
       const idParamName = isBatch ? 'coocaaVIds' : 'coocaaVId'
       const ids = this.ids || []
       const server = /^(127|172)/.test(location.host)
-        ? "http://dev-mgr-media.tc.cc0808.com" 
-        : "http://mgr.media.tc.skysrt.com"
+        ? 'http://dev-mgr-media.tc.cc0808.com'
+        : 'http://mgr.media.tc.skysrt.com'
       return server + `/ccGlobalMediaTag/${isBatch ? 'batch' : 'com'}.html?referrer=homepage&enableDelete=0&${idParamName}=` + ids.join(',')
     }
-  },
+  }
 }
 </script>

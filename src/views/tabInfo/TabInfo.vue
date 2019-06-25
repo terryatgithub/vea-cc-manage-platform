@@ -270,9 +270,9 @@
                 <div :style="{display: isCollapseSpec || isPanelDragging ? 'none' : 'block'}">
                   <el-form-item label="会员展示">
                       <el-select placeholder="前端不显示" v-model="tabInfo.vipButtonSourceId" :clearable="true">
-                          <el-option 
-                              v-for="(item, index) in vipEnums" 
-                              :value="item.value" 
+                          <el-option
+                              v-for="(item, index) in vipEnums"
+                              :value="item.value"
                               :label="item.label"
                               :key="index">
                           </el-option>
@@ -307,6 +307,15 @@
                         class="el-icon el-icon-close"
                       ></i>
                     </div>
+                  </el-form-item>
+                  <el-form-item label="启用高清背景切换模式" prop="enableHdBackground">
+                    <el-switch
+                      :disabled="isReplicate"
+                      :value="!!tabInfo.enableHdBackground"
+                      @input="tabInfo.enableHdBackground = $event&&1||0"
+                      on-text="是"
+                      off-text="否"
+                    />
                   </el-form-item>
                   <el-form-item label="版面简介显示高">
                     <el-input-number
@@ -644,7 +653,7 @@ import OrderableTable from '@/components/OrderableTable'
 import PanelInfo from '../panelInfo/PanelInfo'
 import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
 import InputMinute from '@/components/InputMinute'
-import { unlink } from 'fs'
+
 export default {
   name: 'TabInfo',
   mixins: [titleMixin],
@@ -762,6 +771,7 @@ export default {
         tabParentType: 'home',
         tabType: 1,
         hasSubTab: 0,
+        enableHdBackground: 0,
         tabName: undefined,
         tabCnTitle: undefined,
         tabEnTitle: undefined,
@@ -804,7 +814,7 @@ export default {
         imgOnFocus: undefined,
         imgOnSelected: undefined,
 
-        vipButtonSourceId: undefined,
+        vipButtonSourceId: undefined
       },
       versionList: [],
 
@@ -890,15 +900,15 @@ export default {
       return {
         tabName: [
           { required: true, message: '请输入版面名称', trigger: 'blur' },
-          { max: 45, message: '不超过 45 个字符'}
+          { max: 45, message: '不超过 45 个字符' }
         ],
         tabCnTitle: [
           { required: true, message: '请输入中文标题', trigger: 'blur' },
-          { max: 45, message: '不超过 45 个字符'}
+          { max: 45, message: '不超过 45 个字符' }
         ],
         tabEnTitle: [
           { required: true, message: '请输入英文标题', trigger: 'blur' },
-          { max: 45, message: '不超过 45 个字符'}
+          { max: 45, message: '不超过 45 个字符' }
         ],
         pictureName: [
           { required: true, message: '请选择Tab对应的icon', trigger: 'blur' }
@@ -917,7 +927,7 @@ export default {
       return tabCategory == 67 || tabCategory == 31
     },
     disableAppId() {
-      return  +getAppIDByTabCategory(this.tabInfo.tabCategory) != -1
+      return +getAppIDByTabCategory(this.tabInfo.tabCategory) != -1
     },
     couldSetReleaseTime() {
       const mode = this.mode
@@ -1115,7 +1125,7 @@ export default {
       const STATUS = this.STATUS
 
       const version = panelData.duplicateVersion || panelData.currentVersion
-      const isJiangSu = idPrefix === '11' ? true : false
+      const isJiangSu = idPrefix === '11'
       const panelPreview = {
         panel: panelData,
         dataType: panelData.pannelType,
@@ -1799,16 +1809,16 @@ export default {
       this.$refs.subTabTable.handleAppendData(data, 'tabId')
     },
     handleChangePanelOrder(index, order) {
-        const newIndex = order - 1
-        const oldIndex = index
-        const panelList = this.tabInfo.pannelList
-        const item = panelList[oldIndex]
-        panelList.splice(oldIndex, 1)
-        this.tabInfo.pannelList = [].concat(
-          panelList.slice(0, newIndex),
-          item,
-          panelList.slice(newIndex)
-        )
+      const newIndex = order - 1
+      const oldIndex = index
+      const panelList = this.tabInfo.pannelList
+      const item = panelList[oldIndex]
+      panelList.splice(oldIndex, 1)
+      this.tabInfo.pannelList = [].concat(
+        panelList.slice(0, newIndex),
+        item,
+        panelList.slice(newIndex)
+      )
     },
     openTabWin: function(pannelType) {
       var url = this.basicFn.numToPannelTypeUrl(pannelType) + '/add.html'
@@ -2034,10 +2044,10 @@ export default {
 
       const vipButtonSourceId = tabInfo.vipButtonSourceId
       if (vipButtonSourceId) {
-          const vipButton = this.getVipButtonSourceItem(vipButtonSourceId)
-          tabExtArr.vipButtonSourceId = vipButtonSourceId
-          tabExtArr.vipButtonSourceName = vipButton.sourceName
-          tabExtArr.vipButtonSourceSign = vipButton.sourceSign
+        const vipButton = this.getVipButtonSourceItem(vipButtonSourceId)
+        tabExtArr.vipButtonSourceId = vipButtonSourceId
+        tabExtArr.vipButtonSourceName = vipButton.sourceName
+        tabExtArr.vipButtonSourceSign = vipButton.sourceSign
       }
 
       let tabParams = {}
@@ -2075,6 +2085,7 @@ export default {
         currentVersion: tabInfo.currentVersion,
         flagIsRecord: tabInfo.flagIsRecord,
         hasSubTab: tabInfo.hasSubTab,
+        enableHdBackground: tabInfo.enableHdBackground,
         isTiming: tabInfo.isTiming,
         panelInfoList: panelInfoList,
         pictureName: tabInfo.pictureName,
@@ -2174,6 +2185,7 @@ export default {
         tabParentType: data.tabParentType,
         tabType: data.tabType,
         hasSubTab: data.hasSubTab,
+        enableHdBackground: data.enableHdBackground,
         tabName: data.tabName,
         tabCnTitle: data.tabCnTitle,
         tabEnTitle: data.tabEnTitle,
@@ -2226,28 +2238,28 @@ export default {
       })
     },
     getVipButtonSourceItem(id) {
-        const result =  this.vipEnumsData.find(function(item) {
-            return item.sourceId === id
-        })
-        return result || {}
+      const result = this.vipEnumsData.find(function(item) {
+        return item.sourceId === id
+      })
+      return result || {}
     },
     getVipButtonSource() {
-        let params = null
-        const source = this.tabInfo.tabResource
-        if (source) {
-            params = {
-                source: source
-            }
+      let params = null
+      const source = this.tabInfo.tabResource
+      if (source) {
+        params = {
+          source: source
         }
-        this.$service.getVipButtonSource().then((data) => {
-            this.vipEnumsData = data
-            this.vipEnums = data.map(function(item) {
-                return {
-                    value: item.sourceId,
-                    label: item.sourceName
-                }
-            })
+      }
+      this.$service.getVipButtonSource().then((data) => {
+        this.vipEnumsData = data
+        this.vipEnums = data.map(function(item) {
+          return {
+            value: item.sourceId,
+            label: item.sourceName
+          }
         })
+      })
     }
   },
   created() {

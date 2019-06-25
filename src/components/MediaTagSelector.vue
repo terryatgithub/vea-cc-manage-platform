@@ -5,10 +5,10 @@
       <div>第 {{ toChineseNumber(index + 1) }} 层</div>
       <div>
         <span
-          v-for="tag in tags[level.parentId]" 
+          v-for="tag in tags[level.parentId]"
           :class="{
-            'tree-node': true, 
-            'tree-leaf': tag.nodeType != 0, 
+            'tree-node': true,
+            'tree-leaf': tag.nodeType != 0,
             'active': level.activeId === tag.tagCode,
             'checked': selectedIndex[tag.tagCode]
           }"
@@ -26,9 +26,9 @@
 export default {
   data() {
     return {
-      selected:[] ,
+      selected: [],
       selectedIndex: {},
-      levels: [{parentId: '-1', activeId: undefined}],
+      levels: [{ parentId: '-1', activeId: undefined }],
       tags: {},
       cache: {}
     }
@@ -38,7 +38,7 @@ export default {
       if (this.cache[parentCode]) {
         return this.cache[parentCode]
       }
-      this.$service.mediaGetTagList({parentCode, page: 1, rows: 1000000}).then((data) => {
+      this.$service.mediaGetTagList({ parentCode, page: 1, rows: 1000000 }).then((data) => {
         this.cache[parentCode] = data.rows
         this.$set(this.tags, parentCode, data.rows)
       })
@@ -58,7 +58,7 @@ export default {
           levels[index].activeId = tagCode
           levels.push(this.genLevel(tagCode))
           this.getTagsByParentCode(tagCode)
-        } 
+        }
       }
       this.levels = levels
       if (tag.nodeType != 0) {
@@ -78,17 +78,17 @@ export default {
       this.$emit('get-tag-nodes', this.selected)
     },
     genLevel(parentId, activeId) {
-      return {parentId, activeId}
+      return { parentId, activeId }
     },
     toChineseNumber(number) {
-      const chnNumChar = ["零","一","二","三","四","五","六","七","八","九"];
-      const chnUnitChar = ["","十","百","千", "万"];
+      const chnNumChar = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九']
+      const chnUnitChar = ['', '十', '百', '千', '万']
       let unit = 0
       const result = number.toString().split('').reduceRight((result, item, index) => {
         item = +item
         const currentUnit = chnUnitChar[unit++]
         const currentAmount = chnNumChar[item]
-        return  currentAmount + (item > 0 ? currentUnit : '') + result
+        return currentAmount + (item > 0 ? currentUnit : '') + result
       }, '')
       return result.replace(/零+/, '零').replace(/.+零$/, '')
     }
@@ -122,4 +122,3 @@ export default {
   position relative
   right -20px
 </style>
-

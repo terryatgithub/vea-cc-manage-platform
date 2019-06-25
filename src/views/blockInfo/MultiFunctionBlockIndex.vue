@@ -1,6 +1,6 @@
 <script>
 import BaseResourceManager from '@/components/BaseResourceManager'
-import MultiFunctionBlockList from  './MultiFunctionBlockList'
+import MultiFunctionBlockList from './MultiFunctionBlockList'
 import MultiFunctionBlockInfo from './MultiFunctionBlockInfo'
 
 export default {

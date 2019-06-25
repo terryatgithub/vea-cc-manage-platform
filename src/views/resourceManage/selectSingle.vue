@@ -30,14 +30,14 @@ export default {
     ContentWrapper
   },
   props: {
-    singleId: null,
+    singleId: null
   },
   data() {
     return {
-        urlIsTrailers: {
-            腾讯: 1,
-            正片: 0
-        },
+      urlIsTrailers: {
+        腾讯: 1,
+        正片: 0
+      },
       filter: {
         sort: undefined,
         order: undefined,
@@ -52,7 +52,7 @@ export default {
         header: [
           {
             label: '集数名',
-            prop: 'urlCollection',
+            prop: 'urlCollection'
           },
           {
             label: '单集ID',
@@ -81,8 +81,8 @@ export default {
             label: '素材类型',
             prop: 'urlType',
             formatter: function (column, row) {
-                    return column === 1 ? '预告' : '正片'
-                }
+              return column === 1 ? '预告' : '正片'
+            }
           }
         ],
         data: [],
@@ -92,18 +92,18 @@ export default {
     }
   },
   watch: {
-      'singleId': function(newValue,oldValue) {
-          this.singleId = newValue
-          this.fetchData()
-      },
+    'singleId': function(newValue, oldValue) {
+      this.singleId = newValue
+      this.fetchData()
+    }
   },
   methods: {
-    /**获取数据 */
+    /** 获取数据 */
     fetchData() {
-       const filter = this.parseFilter();
-       filter.id = this.singleId
+      const filter = this.parseFilter()
+      filter.id = this.singleId
       this.$service.getSegmentList(filter).then(data => {
-          console.log(data)
+        console.log(data)
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -120,7 +120,7 @@ export default {
     },
     handleRowSelectionChange(value, index) {
       this.table.selected = index
-        this.$emit('single',value)
+      this.$emit('single', value)
     },
     handleAllRowSelectionRemove() {
       this.selected = []
@@ -137,7 +137,7 @@ export default {
       }, [])
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
+      if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
@@ -167,9 +167,9 @@ export default {
   },
   created() {
     let filterSchema = _.map({
-       urlIsTrailer: _.o.enum(this.urlIsTrailers).other("form", {
-        component: "Select",
-        placeholder: "素材类型"
+      urlIsTrailer: _.o.enum(this.urlIsTrailers).other('form', {
+        component: 'Select',
+        placeholder: '素材类型'
       }),
       urlTitle: _.o.string.other('form', {
         component: 'Input',
@@ -177,7 +177,7 @@ export default {
       })
     }).other('form', {
       layout: 'inline',
-       cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20
@@ -203,6 +203,3 @@ export default {
   margin-bottom: 10px;
 }
 </style>
-
-
-

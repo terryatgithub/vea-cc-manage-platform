@@ -10,9 +10,9 @@
       <div>
         <el-input v-model="keyword" placeholder="搜素人群ID， 人群名称" />
       </div>
-      <el-checkbox 
-        v-for="item in availableTags" 
-        class="name-list__item" 
+      <el-checkbox
+        v-for="item in availableTags"
+        class="name-list__item"
         v-model="selectMap[item.value]"
         :title="item.label"
         :key="item.value"
@@ -45,15 +45,15 @@ export default {
       keyword: undefined,
       selectedIndexed: {},
       disablesIndexed: {},
-      selectMap: {},
+      selectMap: {}
     }
   },
   computed: {
     availableTags() {
       const keyword = this.keyword
       if (keyword) {
-        const fuse = new Fuse(this.tags, {keys: ['label', 'value']}); 
-        return fuse.search(keyword);
+        const fuse = new Fuse(this.tags, { keys: ['label', 'value'] })
+        return fuse.search(keyword)
       } else {
         return this.tags
       }
@@ -96,7 +96,7 @@ export default {
     const selectMap = {}
     const selectedIndexed = this.selectedIndexed
     this.tags.forEach(function(item) {
-      selectMap[item.value] = selectedIndexed[item.value] ? true : false
+      selectMap[item.value] = !!selectedIndexed[item.value]
     })
     this.selectMap = selectMap
   }

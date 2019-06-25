@@ -48,14 +48,14 @@ export default {
   },
   data() {
     return {
-      materialTypes: {}, //素材类型
+      materialTypes: {}, // 素材类型
       pictureStatus: {
-        //状态
+        // 状态
         审核通过: 1,
         待审核: 2
       },
-      picDialogVisible: false, //预览图片弹出框
-      auditDialogVisible: false, //审核弹出框
+      picDialogVisible: false, // 预览图片弹出框
+      auditDialogVisible: false, // 审核弹出框
       reviewPicUrl: null,
       filter: {
         sort: undefined,
@@ -75,23 +75,23 @@ export default {
     }
   },
   methods: {
-    //选中事件
+    // 选中事件
     handleRowSelectionChange(row, index) {
       this.table.selected = index
       this.$emit('input', row)
-      if(this.table.selectionType === 'single') {
-         this.$emit("close-dialog",'savePicture')
+      if (this.table.selectionType === 'single') {
+        this.$emit('close-dialog', 'savePicture')
       }
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.pictureId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.pictureId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -110,16 +110,16 @@ export default {
       }
       return filter
     },
-    //获取数据
+    // 获取数据
     fetchData() {
       this.table.selected = undefined
       const filter = this.parseFilter()
       filter.pictureResolution = this.pictureResolution
       this.$service.getResourceList(filter).then(data => {
-      this.pagination.total = data.total
-      this.table.data = data.rows
-      //  this.data = data.rows;
-      console.log(data)
+        this.pagination.total = data.total
+        this.table.data = data.rows
+        //  this.data = data.rows;
+        console.log(data)
       })
     },
     getMaterialTypes() {
@@ -149,7 +149,7 @@ export default {
         placeholder: '审核状态'
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 5,
         label: 0,
         wrapper: 20

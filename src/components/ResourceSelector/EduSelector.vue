@@ -1,10 +1,10 @@
  <template>
-  <BaseSelector 
+  <BaseSelector
     ref="baseSelector"
     id-field="coocaaVId"
     :is-live="isLive"
     :selection-type="selectionType"
-    :table="table" 
+    :table="table"
     :pagination="pagination"
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
@@ -116,10 +116,10 @@
         </el-form>
       </el-collapse-item>
     </el-collapse>
-    
+
   </BaseSelector>
 </template>
- 
+
 <script>
 import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
@@ -201,13 +201,13 @@ export default {
     },
     contentProviderEnums() {
       return (this.conditionList.contentProviders || [])
-        .map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+        .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
     teachTypeEnums() {
       const sources = this.conditionList.sources
       if (sources) {
         return sources[0].child
-          .map(({categoryName}) => ({label: categoryName, value: categoryName}))
+          .map(({ categoryName }) => ({ label: categoryName, value: categoryName }))
       }
       return []
     },
@@ -218,11 +218,11 @@ export default {
         '幼儿': [0, 2],
         '小学': [2, 8],
         '初中': [8, 11],
-        '高中': [11, 14],
+        '高中': [11, 14]
       }
       const range = teachTypeRange[teachType]
       if (range && gradeList) {
-        const allGrade = gradeList.map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+        const allGrade = gradeList.map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
         return allGrade.slice(range[0], range[1])
       }
       return []
@@ -231,27 +231,27 @@ export default {
       const teachTypes = this.filter.teachTypes
       if (teachTypes) {
         return (this.conditionList.sources[0].child
-          .find(({categoryName}) => categoryName === teachTypes)
+          .find(({ categoryName }) => categoryName === teachTypes)
           .child[0].tagEntities || [])
-          .map(({tagName}) => ({label: tagName, value: tagName}))
+          .map(({ tagName }) => ({ label: tagName, value: tagName }))
       }
       return []
     },
     payTypeEnums() {
       return (this.conditionList.payTypes || [])
-        .map(({tagCnName, tagEnName}) => ({label: tagCnName, value: tagEnName}))
+        .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
     contentTagEnums() {
-      return (this.conditionList.contentTag || []).map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+      return (this.conditionList.contentTag || []).map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
     courseVersionEnums() {
       return (this.conditionList.courseVersion || [])
-        .map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+        .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
     segmentTagEnums() {
       return (this.conditionList.segmentTag || [])
-        .map(({tagCnName, tagEnName}) => ({label: tagCnName, value: tagEnName}))
-    },
+        .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
+    }
   },
   props: ['isLive', 'selectionType'],
   methods: {
@@ -328,14 +328,12 @@ export default {
       if (this.filter.yearStart && !+this.filter.yearStart) {
         this.$message('年代必须为数字')
         this.filter.yearStart = null
-        return
       }
     },
     yearEndListen: function() {
       if (this.filter.yearEnd && !+this.filter.yearEnd) {
         this.$message('年代必须为数字')
         this.filter.yearEnd = null
-        return
       }
     },
     changeSort: function() {
@@ -345,7 +343,7 @@ export default {
       } else {
         this.filter.order = 'asc'
       }
-    },
+    }
   },
   created() {
     const params = {
@@ -358,6 +356,6 @@ export default {
   }
 }
 </script>
- 
+
  <style lang='stylus' scoped>
 </style>

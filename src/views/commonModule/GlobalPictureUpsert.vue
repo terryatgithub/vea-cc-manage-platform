@@ -373,7 +373,7 @@ export default {
       this.title = '编辑'
       this.$service.globalPictureGet({ id: this.editId }).then(this.setFormData)
     } else {
-       this.title = '新增'
+      this.title = '新增'
     }
     this.mode = this.initMode
     this.getMaterialTypes()

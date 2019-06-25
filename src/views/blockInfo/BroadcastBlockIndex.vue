@@ -1,31 +1,31 @@
 <template>
   <div>
-    <BroadcastBlockList 
-     v-show="isShowList" 
-     ref="list" 
+    <BroadcastBlockList
+     v-show="isShowList"
+     ref="list"
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
       @delete="handleDelete"
      >
      </BroadcastBlockList>
-    <BroadcastBlockInfo 
-      v-if="!isShowList" 
-       :id="id" 
+    <BroadcastBlockInfo
+      v-if="!isShowList"
+       :id="id"
       :init-mode="mode"
       :version="version"
-      @upsert-end="handleUpsertEnd" 
+      @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </BroadcastBlockInfo>
   </div>
 </template>
 <script>
-import BroadcastBlockList from  './BroadcastBlockList'
+import BroadcastBlockList from './BroadcastBlockList'
 import BroadcastBlockInfo from './BroadcastBlockInfo'
 export default {
   components: {
     BroadcastBlockInfo,
-    BroadcastBlockList,
+    BroadcastBlockList
   },
   data() {
     return {
@@ -33,11 +33,11 @@ export default {
       id: undefined,
       mode: 'create',
       version: undefined
-    };
+    }
   },
   methods: {
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'
@@ -62,8 +62,8 @@ export default {
     },
     handleDelete(selected) {
       this.$service
-        .deleteBroadcastBlock({ 
-          id: selected.map(item => item.id).join(',') 
+        .deleteBroadcastBlock({
+          id: selected.map(item => item.id).join(',')
         }, '删除成功')
         .then(data => {
           this.$refs.list.fetchData()
@@ -78,9 +78,9 @@ export default {
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.isShowList = true
-     this.mode = 'list'
-     this.version = undefined
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

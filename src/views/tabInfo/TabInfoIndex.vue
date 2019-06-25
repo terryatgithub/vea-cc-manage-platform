@@ -58,15 +58,15 @@ export default {
       this.isShowList = false
     },
     handleDelete(selected) {
-      this.$service.tabInfoRemove({ 
-        id: selected.map(item => item.tabId).join(',') 
-      }, "删除成功")
-      .then(() => {
-        this.$refs.list.fetchData()
-      })
+      this.$service.tabInfoRemove({
+        id: selected.map(item => item.tabId).join(',')
+      }, '删除成功')
+        .then(() => {
+          this.$refs.list.fetchData()
+        })
     },
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'

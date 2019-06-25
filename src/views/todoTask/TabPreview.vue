@@ -5,13 +5,13 @@
       :id="id"
       :initMode="mode"
       :version = "version"
-      @open-list-page="handleUpsertEnd" 
+      @open-list-page="handleUpsertEnd"
       @go-back="goBack"
     />
-      <BusinessTabInfo 
+      <BusinessTabInfo
       v-if="tabParentType==='biz'&&id!==undefined"
         @upsert-end="handleUpsertEnd"
-       :id="id" 
+       :id="id"
       :init-mode="mode"
       :version="version"
       @go-back="goBack">
@@ -26,9 +26,9 @@
   </div>
 </template>
 <script>
- import FilmDetailPageAdd from  './../panelManage/FilmDetailPageAdd'
- import BusinessTabInfo from './../panelManage/BusinessTabInfo'
- import TabInfo from './../tabInfo/TabInfo.vue'
+import FilmDetailPageAdd from './../panelManage/FilmDetailPageAdd'
+import BusinessTabInfo from './../panelManage/BusinessTabInfo'
+import TabInfo from './../tabInfo/TabInfo.vue'
 export default {
   components: {
     FilmDetailPageAdd,
@@ -45,11 +45,11 @@ export default {
     }
   },
   methods: {
-     goBack () {
-      this.$emit("go-back")
+    goBack () {
+      this.$emit('go-back')
     },
-    handleUpsertEnd(){
-      this.$emit("upsert-end")
+    handleUpsertEnd() {
+      this.$emit('upsert-end')
     }
   },
   created () {
@@ -67,4 +67,3 @@ export default {
     top: 0;
 }
 </style>
-

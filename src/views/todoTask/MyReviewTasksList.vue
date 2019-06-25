@@ -65,7 +65,7 @@ export default {
           {
             label: '待处理的版本',
             prop: 'resourceVersion',
-             render: (createElement, { row }) => {
+            render: (createElement, { row }) => {
               return createElement(
                 'el-button',
                 {
@@ -130,24 +130,24 @@ export default {
   },
   methods: {
     handleRead(row) {
-      this.$emit('read', row, this.resourceType+"Preview")
+      this.$emit('read', row, this.resourceType + 'Preview')
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.taskId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.taskId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
       this.filter = {
         sort: undefined,
         order: undefined,
-         type: 'myAuditTasks'
+        type: 'myAuditTasks'
       }
       this.pagination.currentPage = 1
       this.fetchData()
@@ -216,4 +216,3 @@ export default {
   }
 }
 </script>
-

@@ -134,7 +134,7 @@ export default {
       this.fetchData()
     },
     handleFilterReset() {
-      this.filter = this.genDefaultFilter() 
+      this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },

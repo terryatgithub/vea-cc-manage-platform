@@ -15,7 +15,7 @@
     @select-end="$emit('select-end')"
   ></BaseSelector>
 </template>
- 
+
 <script>
 import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
@@ -42,28 +42,28 @@ export default {
         header: [
           {
             prop: 'id',
-            label: "轮播ID",
+            label: '轮播ID',
             fixed: true,
             searched: true
           },
           {
             prop: 'containerName',
-              label: "轮播名称",
-              fixed: true,
-              searched: true
+            label: '轮播名称',
+            fixed: true,
+            searched: true
           },
           {
             prop: 'source',
             label: '内容源',
             width: '120',
             options: [],
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return this.$consts.sourceText[row.source] || '未知'
             }
           },
           {
             prop: 'lastUpdateDate',
-            label: "创建时间"
+            label: '创建时间'
           }
         ],
         data: []
@@ -104,7 +104,6 @@ export default {
       this.fetchData()
     },
     fetchData() {
-      
       const filter = this.getFilter()
       this.$service.broadcastBlockDataList(filter).then(result => {
         this.pagination.total = result.total
@@ -122,7 +121,7 @@ export default {
       containerName: _.o.string.other('form', {
         placeholder: '轮播名称',
         label: ' '
-      }),
+      })
     }).other('form', {
       cols: {
         item: 3,
@@ -146,5 +145,5 @@ export default {
   }
 }
 </script>
- 
+
  <style lang='stylus' scoped></style>

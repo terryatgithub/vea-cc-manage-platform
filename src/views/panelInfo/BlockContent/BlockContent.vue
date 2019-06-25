@@ -1,9 +1,9 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('cancel')">
-    <el-button 
-      v-if="mode !== 'read'" 
+    <el-button
+      v-if="mode !== 'read'"
       style="margin-bottom: 10px"
-      @click="handleSave" 
+      @click="handleSave"
       type="primary">
       保存
     </el-button>
@@ -99,7 +99,7 @@ export default {
       activeType: 'normal',
       activeIndex: 0,
       normalContentList: [this.getDefaultContentForm()],
-      specificContentList: [],
+      specificContentList: []
     }
   },
   props: ['mode', 'data', 'source', 'pannel', 'hideTitleOptions'],
@@ -121,7 +121,7 @@ export default {
     handleDragConentStart(event) {
     },
     handleDragConentEnd(event, type) {
-      const {newIndex, oldIndex} = event
+      const { newIndex, oldIndex } = event
       if (this.activeType === type) {
         if (this.activeIndex === oldIndex) {
           this.activeIndex = newIndex
@@ -132,10 +132,10 @@ export default {
     },
     handleSave() {
       this.validateCurrentContent(() => {
-        this.$emit("save", {
-            videoContentList: this.parseContentList(this.normalContentList),
-            specificContentList: this.parseContentList(this.specificContentList)
-        });
+        this.$emit('save', {
+          videoContentList: this.parseContentList(this.normalContentList),
+          specificContentList: this.parseContentList(this.specificContentList)
+        })
       })
     },
     getDefaultContentForm() {
@@ -164,26 +164,32 @@ export default {
         price: '',
         secKillPrice: '',
         flagIsSetad: 0,
-        redundantParams: this.getDefaultParams()
+        redundantParams: this.getDefaultParams(),
+        // Sprint2.8.2 背景图片和视频
+        bgImgUrl: '',
+        bgParams: {
+          id: ''
+        },
+        bgType: ''
       }
     },
     getDefaultParams() {
       return {
-          openMode: 'app',
-          webpageUrl: '',
-          webpageType: '2',
-          videoName: '',
-          videoUrl: '',
-          pictureUrl: '',
-          tabId: '',
-          packagename: '',
-          versioncode: '-1',
-          dowhat: 'startActivity',
-          bywhat: 'action',
-          byvalue: '',
-          data: undefined,
-          params: [{ key: '', value: '' }]
-        }
+        openMode: 'app',
+        webpageUrl: '',
+        webpageType: '2',
+        videoName: '',
+        videoUrl: '',
+        pictureUrl: '',
+        tabId: '',
+        packagename: '',
+        versioncode: '-1',
+        dowhat: 'startActivity',
+        bywhat: 'action',
+        byvalue: '',
+        data: undefined,
+        params: [{ key: '', value: '' }]
+      }
     },
     handleCoverTypeChange(coverType) {
       if (this.mode === 'read') {
@@ -195,14 +201,14 @@ export default {
       const contentForm = this.getDefaultContentForm()
       contentForm.coverType = coverType
       if (activeType === 'specific') {
-          // 定向运营时保留内容类别和关联人群
-          contentForm.resourceType = originContentForm.resourceType; // 内容类别
-          contentForm.dmpRegistryInfo = originContentForm.dmpRegistryInfo; // 关联人群
+        // 定向运营时保留内容类别和关联人群
+        contentForm.resourceType = originContentForm.resourceType // 内容类别
+        contentForm.dmpRegistryInfo = originContentForm.dmpRegistryInfo // 关联人群
       }
       this.$set(contentList, activeIndex, contentForm)
     },
     handleRemoveContent(index, contentType) {
-      this.$confirm('确认删除该内容', '提示',  {
+      this.$confirm('确认删除该内容', '提示', {
         callback: (result) => {
           if (result === 'confirm') {
             const activeType = this.activeType
@@ -273,65 +279,69 @@ export default {
           return result
         }, defaultContentForm.cornerList)
 
-        if (data.coverType == "custom") {
-            const onclick = JSON.parse(data.onclick);
-            // 处理格式奇怪的params属性
-            const params = data.params.split(',').reduce((result, item) => {
-              const [key, val] = item.split('==')
-              result[key] = val
-              return result
-            }, {})
-            const openMode = params.openMode || 'app' // 为兼容业务专辑中没有openMode的params参数 采用app作为默认值
-            switch (openMode) {
-                case "webpage": {
-                    onclick.webpageUrl = onclick.params.url;
-                    if (onclick.byvalue === 'coocaa.intent.action.browser') {
-                      onclick.webpageType= '1'
-                    }
-                    if (onclick.byvalue === 'coocaa.intent.action.browser.no_trans') {
-                      onclick.webpageType= '2'
-                    }
-                    break;
-                }
-                case "video": {
-                    onclick.videoName = onclick.params.name;
-                    onclick.videoUrl = onclick.params.url;
-                    break;
-                }
-                case "picture": {
-                    onclick.pictureUrl = onclick.params.url;
-                    break;
-                }
-                case "tab": {
-                    onclick.tabId = onclick.params.id;
-                    onclick.tabType = params.tabType;
-                    break;
-                }
-                case "app": {
-                    const onclickParams = onclick.params
-                    onclick.params = Object.keys(onclick.params).map(key => {
-                      return {
-                        key,
-                        value: onclickParams[key]
-                      }
-                    })
-                    break;
-                }
-                default:
-                    break;
+        if (data.coverType == 'custom') {
+          const onclick = JSON.parse(data.onclick)
+          // 处理格式奇怪的params属性
+          const params = data.params.split(',').reduce((result, item) => {
+            const [key, val] = item.split('==')
+            result[key] = val
+            return result
+          }, {})
+          const openMode = params.openMode || 'app' // 为兼容业务专辑中没有openMode的params参数 采用app作为默认值
+          switch (openMode) {
+            case 'webpage': {
+              onclick.webpageUrl = onclick.params.url
+              if (onclick.byvalue === 'coocaa.intent.action.browser') {
+                onclick.webpageType = '1'
+              }
+              if (onclick.byvalue === 'coocaa.intent.action.browser.no_trans') {
+                onclick.webpageType = '2'
+              }
+              break
             }
+            case 'video': {
+              onclick.videoName = onclick.params.name
+              onclick.videoUrl = onclick.params.url
+              break
+            }
+            case 'picture': {
+              onclick.pictureUrl = onclick.params.url
+              break
+            }
+            case 'tab': {
+              onclick.tabId = onclick.params.id
+              onclick.tabType = params.tabType
+              break
+            }
+            case 'app': {
+              const onclickParams = onclick.params
+              onclick.params = Object.keys(onclick.params).map(key => {
+                return {
+                  key,
+                  value: onclickParams[key]
+                }
+              })
+              break
+            }
+            default:
+              break
+          }
 
-            redundantParams = onclick
-            redundantParams.openMode = openMode
-            delete data.onclick
+          redundantParams = onclick
+          redundantParams.openMode = openMode
+          delete data.onclick
         }
 
         if (redundantParams) {
           data.redundantParams = redundantParams
         }
+
+        if (data.bgParams) {
+          data.bgParams = JSON.parse(data.bgParams)
+        }
         return Object.assign({}, defaultContentForm, data)
       }
-      this.normalContentList = normalContentList.length > 0 
+      this.normalContentList = normalContentList.length > 0
         ? normalContentList.map(parse)
         : [this.getDefaultContentForm()]
       this.specificContentList = specificContentList.map(parse)
@@ -350,135 +360,138 @@ export default {
           content.contentType = 1
         }
         if (coverType === 'custom') {
-          const currentOnclick = content.redundantParams;
-          const openMode = currentOnclick.openMode;
-          params = "openMode==" + openMode;
+          const currentOnclick = content.redundantParams
+          const openMode = currentOnclick.openMode
+          params = 'openMode==' + openMode
           const webpageType = currentOnclick.webpageType
           switch (openMode) {
-              case "webpage": {
-                  if (webpageType === "1") {
-                      //浮窗网页
-                      onclick = JSON.stringify({
-                          packagename: "com.coocaa.app_browser",
-                          versioncode: currentOnclick.versioncode,
-                          dowhat: "startActivity",
-                          bywhat: "action",
-                          byvalue: "coocaa.intent.action.browser",
-                          params: {
-                              url: currentOnclick.webpageUrl
-                          },
-                          exception: {}
-                      });
-                  } else if (webpageType === "2") {
-                      //全屏网页
-                      onclick = JSON.stringify({
-                          packagename: "com.coocaa.app_browser",
-                          versioncode: currentOnclick.versioncode,
-                          dowhat: "startActivity",
-                          bywhat: "action",
-                          byvalue: "coocaa.intent.action.browser.no_trans",
-                          params: {
-                              url: currentOnclick.webpageUrl
-                          },
-                          exception: {}
-                      });
-                  }
-                  break;
+            case 'webpage': {
+              if (webpageType === '1') {
+                // 浮窗网页
+                onclick = JSON.stringify({
+                  packagename: 'com.coocaa.app_browser',
+                  versioncode: currentOnclick.versioncode,
+                  dowhat: 'startActivity',
+                  bywhat: 'action',
+                  byvalue: 'coocaa.intent.action.browser',
+                  params: {
+                    url: currentOnclick.webpageUrl
+                  },
+                  exception: {}
+                })
+              } else if (webpageType === '2') {
+                // 全屏网页
+                onclick = JSON.stringify({
+                  packagename: 'com.coocaa.app_browser',
+                  versioncode: currentOnclick.versioncode,
+                  dowhat: 'startActivity',
+                  bywhat: 'action',
+                  byvalue: 'coocaa.intent.action.browser.no_trans',
+                  params: {
+                    url: currentOnclick.webpageUrl
+                  },
+                  exception: {}
+                })
               }
-              case "video": {
-                  onclick = JSON.stringify({
-                      packagename: "com.tianci.movieplatform",
-                      versioncode: "-1",
-                      dowhat: "startService",
-                      bywhat: "action",
-                      byvalue: "coocaa.intent.player.video",
-                      params: {
-                          name: currentOnclick.videoName,
-                          url: currentOnclick.videoUrl,
-                          needParse: "false",
-                          url_type: "web"
-                      },
-                      exception: {}
-                  });
-                  break;
-              }
-              case "picture": {
-                  onclick = JSON.stringify({
-                      packagename: "com.tianci.movieplatform",
-                      versioncode: "",
-                      dowhat: "startService",
-                      bywhat: "action",
-                      byvalue: "coocaa.intent.player.image",
-                      params: {
-                          name: "",
-                          url: currentOnclick.pictureUrl
-                      },
-                      exception: {}
-                  });
-                  break;
-              }
-              case "tab": {
-                  var tabType = currentOnclick.tabType;
-                  params += ",tabType==" + tabType;
-                  onclick = JSON.stringify({
-                      packagename: "com.tianci.movieplatform",
-                      versioncode: "",
-                      dowhat: "startActivity",
-                      bywhat: "action",
-                      byvalue:
+              break
+            }
+            case 'video': {
+              onclick = JSON.stringify({
+                packagename: 'com.tianci.movieplatform',
+                versioncode: '-1',
+                dowhat: 'startService',
+                bywhat: 'action',
+                byvalue: 'coocaa.intent.player.video',
+                params: {
+                  name: currentOnclick.videoName,
+                  url: currentOnclick.videoUrl,
+                  needParse: 'false',
+                  url_type: 'web'
+                },
+                exception: {}
+              })
+              break
+            }
+            case 'picture': {
+              onclick = JSON.stringify({
+                packagename: 'com.tianci.movieplatform',
+                versioncode: '',
+                dowhat: 'startService',
+                bywhat: 'action',
+                byvalue: 'coocaa.intent.player.image',
+                params: {
+                  name: '',
+                  url: currentOnclick.pictureUrl
+                },
+                exception: {}
+              })
+              break
+            }
+            case 'tab': {
+              var tabType = currentOnclick.tabType
+              params += ',tabType==' + tabType
+              onclick = JSON.stringify({
+                packagename: 'com.tianci.movieplatform',
+                versioncode: '',
+                dowhat: 'startActivity',
+                bywhat: 'action',
+                byvalue:
                               tabType == 1
-                                      ? "coocaa.intent.action.HOME_COMMON_LIST"
-                                      : "coocaa.intent.action.HOME_SPECIAL_TOPIC",
-                      params: {
-                          id: currentOnclick.tabId
-                      },
-                      exception: {}
-                  });
-                  break;
+                                ? 'coocaa.intent.action.HOME_COMMON_LIST'
+                                : 'coocaa.intent.action.HOME_SPECIAL_TOPIC',
+                params: {
+                  id: currentOnclick.tabId
+                },
+                exception: {}
+              })
+              break
+            }
+            case 'app': {
+              let convertedParams = {}
+              let params = currentOnclick.params
+              for (var i = 0; i < params.length; i++) {
+                var p = params[i]
+                if (p.key !== '' && p.value !== '') {
+                  convertedParams[p.key] = p.value
+                }
               }
-              case "app": {
-                  let convertedParams = {};
-                  let params = currentOnclick.params;
-                  for (var i = 0; i < params.length; i++) {
-                      var p = params[i];
-                      if (p.key !== "" && p.value !== "") {
-                          convertedParams[p.key] = p.value;
-                      }
+              onclick = JSON.stringify({
+                byvalue: currentOnclick.byvalue,
+                packagename: currentOnclick.packagename,
+                dowhat: currentOnclick.dowhat,
+                versioncode: currentOnclick.versioncode,
+                params: convertedParams,
+                bywhat: currentOnclick.bywhat,
+                data: currentOnclick.data,
+                exception: {
+                  name: 'onclick_exception',
+                  value: {
+                    packagename: 'com.tianci.appstore',
+                    dowhat: 'startActivity',
+                    versioncode: '-1',
+                    params: {
+                      id: currentOnclick.packagename
+                    },
+                    byvalue: 'coocaa.intent.action.APP_STORE_DETAIL',
+                    bywhat: 'action'
                   }
-                  onclick = JSON.stringify({
-                      byvalue: currentOnclick.byvalue,
-                      packagename: currentOnclick.packagename,
-                      dowhat: currentOnclick.dowhat,
-                      versioncode: currentOnclick.versioncode,
-                      params: convertedParams,
-                      bywhat: currentOnclick.bywhat,
-                      data: currentOnclick.data,
-                      exception: {
-                          name: "onclick_exception",
-                          value: {
-                              packagename: "com.tianci.appstore",
-                              dowhat: "startActivity",
-                              versioncode: "-1",
-                              params: {
-                                  id: currentOnclick.packagename
-                              },
-                              byvalue: "coocaa.intent.action.APP_STORE_DETAIL",
-                              bywhat: "action"
-                          }
-                      }
-                  });
-                  break;
-              }
-              default:
-                break;
+                }
+              })
+              break
+            }
+            default:
+              break
           }
         }
         content.onclick = onclick
         content.params = params
+        if (content.bgParams) {
+          content.bgParams = JSON.stringify(content.bgParams)
+        }
         delete content.redundantParams
         return content
       }
-      return contentList.map(parse) 
+      return contentList.map(parse)
     },
     checkCrowd(crowd) {
       const specificContentList = this.specificContentList
@@ -646,4 +659,3 @@ export default {
   border: 2px dashed #F7BA2A;
 }
 </style>
-

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <PrivatePannelInfoList 
-     v-show="isShowList" 
-     ref="list" 
+    <PrivatePannelInfoList
+     v-show="isShowList"
+     ref="list"
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
@@ -10,23 +10,23 @@
       @delete="handleDelete"
      >
      </PrivatePannelInfoList>
-    <PrivatePannelInfo 
-      v-if="!isShowList" 
-      :id="id" 
+    <PrivatePannelInfo
+      v-if="!isShowList"
+      :id="id"
       :init-mode="mode"
       :version="version"
-      @upsert-end="handleUpsertEnd" 
+      @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </PrivatePannelInfo>
   </div>
 </template>
 <script>
-import PrivatePannelInfoList from  './PrivatePannelInfoList'
+import PrivatePannelInfoList from './PrivatePannelInfoList'
 import PrivatePannelInfo from './PrivatePannelInfo'
 export default {
   components: {
     PrivatePannelInfoList,
-    PrivatePannelInfo,
+    PrivatePannelInfo
   },
   data() {
     return {
@@ -34,11 +34,11 @@ export default {
       id: undefined,
       mode: 'create',
       version: undefined
-    };
+    }
   },
   methods: {
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'
@@ -79,9 +79,9 @@ export default {
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.isShowList = true
-     this.mode = 'list'
-     this.version = undefined
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

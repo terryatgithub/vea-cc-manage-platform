@@ -2,11 +2,11 @@
   <el-row style="margin:auto">
     <el-col :span="6" :offset="9" class="login-form">
       <div class="log_center">
-        <div class="log_logo">
-          <img src="@/assets/logo.png">
-          <span>内容运营平台</span>
-        </div>
         <div class="log_bj">
+          <div class="log_logo">
+            <img src="@/assets/logo-coocaa.png">
+            <span>内容运营平台</span>
+          </div>
           <div class="log-box">
             <div id="accout">
               <el-row>
@@ -56,8 +56,8 @@ export default {
     return {
       user: {
         username: 'yuanjunnan',
-        password: 'yuanjunnan@yjn@',
-       // valicode: ''
+        password: 'yuanjunnan@yjn@'
+        // valicode: ''
       },
       codeUrl: 'captcha.jpg',
       isNormalActive: true,
@@ -73,7 +73,7 @@ export default {
   props: ['schema'],
   methods: {
     keyupSubmit(event) {
-      if(event.keyCode === 13) {
+      if (event.keyCode === 13) {
         this.$refs.loginForm.handleSubmit()
       }
     },
@@ -109,7 +109,7 @@ export default {
         }
         this.$login(this.user).then(
           data => {
-            console.log('redirect='+this.$route.query.redirect)
+            console.log('redirect=' + this.$route.query.redirect)
             this.$router.push({
               path: this.$route.query.redirect || '/desktop'
             })
@@ -190,22 +190,21 @@ export default {
 .log_logo
   width 100%
   text-align center
-  margin-bottom 15px
+  margin-bottom 30px
 .log_logo img
   width 80%
 .log_logo span
   display block
-  color #ffffff
+  color #000
   font-size 18px
-  line-height 36px
+  line-height 40px
 .log_bj
   width 430px
-  height 270px
   background #fff
   border-radius 9px
   opacity 0.9
-  padding-top 50px
+  padding-top 30px
+  padding-bottom 30px
 .log-box
   padding 0 30px
 </style>
-

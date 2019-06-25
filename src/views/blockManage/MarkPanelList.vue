@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <ButtonGroupForListPage 
-        pageName='markPanel' 
+      <ButtonGroupForListPage
+        pageName='markPanel'
         @add="handleCreate"
         @edit="handleEdit"
         @delete="handleDelete"/>
@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       resourceType: 'panelInfo',
-      businessTypes: {}, //业务分类
+      businessTypes: {}, // 业务分类
       filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {},
@@ -163,30 +163,30 @@ export default {
       }
       return filter
     },
-    /**获取业务分类 */
+    /** 获取业务分类 */
     getBusinessType() {
-      return this.$service.getDictType({type: 'businessType'}).then(data => {
+      return this.$service.getDictType({ type: 'businessType' }).then(data => {
         data.forEach(element => {
           this.businessTypes[element.dictCnName] = element.dictId
         })
         console.log(this.businessTypes)
       })
     },
-    //查询
+    // 查询
     handleFilterChange(type, filter) {
-     if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.pannelId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
-    //重置
+    // 重置
     handleFilterReset() {
-      this.filter = this.genDefaultFilter() 
+      this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     }
@@ -218,7 +218,7 @@ export default {
         placeholder: '状态'
       })
     }).other('form', {
-        cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20

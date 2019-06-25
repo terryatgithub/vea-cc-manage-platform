@@ -233,7 +233,7 @@ export default {
   },
   methods: {
     handleSingleRow(row, index) {
-      //单行选择
+      // 单行选择
       this.$refs.dialog.showDialog = false
       this.table.selected = index
       this.$emit('select-single', row)

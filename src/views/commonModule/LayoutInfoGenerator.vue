@@ -110,27 +110,27 @@ export default {
           {
             value: '',
             key: Date.now(),
-            blockNum: null, //一行有几块
+            blockNum: null, // 一行有几块
             height: null,
             hasTitle: false,
             blockWidth: [],
-            surplusWidth: 0 //剩余的宽度
+            surplusWidth: 0 // 剩余的宽度
           }
         ],
         spacing: 0,
         hasPrice: false,
-        lengthwiseIs: false //是否纵向扩展布局
+        lengthwiseIs: false // 是否纵向扩展布局
       },
-      blockCount: 6, //块数
+      blockCount: 6, // 块数
       totalWidth: 1622,
-      titleHeight: 58, //标题占用的高度
-      priceHeight: 52, //价格占用的高度
-      titleSize: 32, //标题字体大小
-      x: 0, //x坐标初始值
-      y: 0, //y坐标初始值
+      titleHeight: 58, // 标题占用的高度
+      priceHeight: 52, // 价格占用的高度
+      titleSize: 32, // 标题字体大小
+      x: 0, // x坐标初始值
+      y: 0, // y坐标初始值
       heightInit: [130, 150, 200, 247, 300, 346, 360, 365, 398, 423, 448],
       data: {
-        contents: [], //布局的contents字段
+        contents: [], // 布局的contents字段
         parents: '',
         type: 'Panel'
       },
@@ -148,7 +148,7 @@ export default {
         }
       })
     },
-    /**生成布局
+    /** 生成布局
      * type undefined 时生产布局，type= download 为导出
      */
     genLayout(type) {
@@ -166,13 +166,12 @@ export default {
       if (this.data.contents.length === 0) {
         this.getLayoutData()
       }
-      if(type === undefined) {
+      if (type === undefined) {
         this.$emit('generator-layout', {
           fileName: fileName,
           content: JSON.stringify(this.data)
         })
       }
-
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
@@ -182,9 +181,7 @@ export default {
       row.surplusWidth =
         this.totalWidth -
         row.blockWidth.reduce((result, current, index) => {
-          if (index > 0)
-            return result + parseInt(current) + this.dynamicValidateForm.spacing
-          else return result + parseInt(current)
+          if (index > 0) { return result + parseInt(current) + this.dynamicValidateForm.spacing } else return result + parseInt(current)
         }, 0)
     },
     /**
@@ -203,7 +200,7 @@ export default {
         this.setBlockWidth(r)
       })
     },
-    /* 
+    /*
     点击纵向布局触发的事件
     */
     changeLayout() {
@@ -211,7 +208,7 @@ export default {
         let arr = []
         arr.push(this.dynamicValidateForm.rows.shift())
         this.dynamicValidateForm.rows = arr
-       // this.getLayoutData()
+        // this.getLayoutData()
       }
     },
     /*
@@ -224,7 +221,7 @@ export default {
           let x = 0
           for (var i = 0; i < current.blockNum; i++) {
             let width = parseInt(current.blockWidth[i])
-            let row = {} //一条数据
+            let row = {} // 一条数据
             row['height'] = current.height
             row['title_align'] = 0
             if (this.dynamicValidateForm.hasPrice) {
@@ -271,7 +268,7 @@ export default {
         { height: 0 }
       )
       if (!this.lengthwiseIs) {
-        //非纵向扩展布局
+        // 非纵向扩展布局
         this.data.type = 'Panel'
       } else {
         this.data.type = 'Lengthwise'
@@ -315,7 +312,7 @@ export default {
       this.dynamicValidateForm.rows.push({
         value: '',
         key: Date.now(),
-        blockNum: null, //一行有几块
+        blockNum: null, // 一行有几块
         height: null,
         hasTitle: false,
         blockWidth: [],
@@ -323,7 +320,7 @@ export default {
       })
     },
     fake_click(
-      obj //*************模拟一个UI事件，做到自动下载
+      obj //* ************模拟一个UI事件，做到自动下载
     ) {
       var ev = document.createEvent('MouseEvents')
       ev.initMouseEvent(
@@ -345,10 +342,10 @@ export default {
       )
       obj.dispatchEvent(ev)
     },
-    export_raw() { //*******************导出文件函数
-      if(this.fileName === '') {
+    export_raw() { //* ******************导出文件函数
+      if (this.fileName === '') {
         this.submitForm('download')
-        return 
+        return
       }
       var urlObject = window.URL || window.webkitURL || window
       var export_blob = new Blob([JSON.stringify(this.data)])
@@ -404,4 +401,3 @@ section
   width: 811px
   margin: auto
 </style>
-

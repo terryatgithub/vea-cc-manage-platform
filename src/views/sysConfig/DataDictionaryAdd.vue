@@ -57,7 +57,7 @@ export default {
       },
       dictCategoryStr: [],
       formRules: {
-        //表单规则
+        // 表单规则
         dictCnName: [
           { required: true, message: '请输入字典名称', trigger: 'blur' }
         ],
@@ -76,7 +76,7 @@ export default {
      */
     getDictCategoryList() {
       this.$service.getDictCategoryList().then(data => {
-        //去重
+        // 去重
         var obj = {}
         this.dictCategoryStr = data
       })
@@ -109,4 +109,3 @@ export default {
   }
 }
 </script>
-

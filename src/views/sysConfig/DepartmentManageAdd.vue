@@ -85,7 +85,7 @@ export default {
   },
 
   methods: {
-    //保存表单信息
+    // 保存表单信息
     submitBtn() {
       this.$refs.form.validate(valid => {
         if (valid) {

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <BusinessTabList 
-     v-show="isShowList" 
-     ref="list" 
+    <BusinessTabList
+     v-show="isShowList"
+     ref="list"
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
@@ -10,23 +10,23 @@
       @delete="handleDelete"
      >
      </BusinessTabList>
-    <BusinessTabInfo 
-      v-if="!isShowList" 
-       :id="id" 
+    <BusinessTabInfo
+      v-if="!isShowList"
+       :id="id"
       :init-mode="mode"
       :version="version"
-      @upsert-end="handleUpsertEnd" 
+      @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </BusinessTabInfo>
   </div>
 </template>
 <script>
-import BusinessTabList from  './BusinessTabList'
+import BusinessTabList from './BusinessTabList'
 import BusinessTabInfo from './BusinessTabInfo'
 export default {
   components: {
     BusinessTabList,
-    BusinessTabInfo,
+    BusinessTabInfo
   },
   data() {
     return {
@@ -34,11 +34,11 @@ export default {
       id: undefined,
       mode: 'create',
       version: undefined
-    };
+    }
   },
   methods: {
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'
@@ -63,8 +63,8 @@ export default {
     },
     handleDelete(selected) {
       this.$service
-        .businessTabDelete({ 
-          id: selected.map(item => item.tabId).join(',') 
+        .businessTabDelete({
+          id: selected.map(item => item.tabId).join(',')
         }, '删除成功')
         .then(data => {
           this.$refs.list.fetchData()
@@ -79,9 +79,9 @@ export default {
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.isShowList = true
-     this.mode = 'list'
-     this.version = undefined
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

@@ -14,6 +14,7 @@
         @delete="handleDelete"
       ></ButtonGroupForListPage>
       <Table
+        class="policy-list"
         :props="table.props"
         :header="table.header"
         :data="table.data"
@@ -56,7 +57,8 @@ export default {
       selectedItems: [],
       table: {
         props: {
-          rowKey: 'policyId'
+          rowKey: 'policyId',
+          treeProps: { children: 'children' }
         },
         header: [
           {
@@ -143,7 +145,7 @@ export default {
           {
             label: '更新时间',
             prop: 'lastUpdateDate',
-            width: 140,
+            width: 140
           },
           {
             label: '更新人',
@@ -157,9 +159,9 @@ export default {
     }
   },
   methods: {
-    //查询
+    // 查询
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
+      if (filter) { this.filter = filter }
       if (this.pagination) {
         this.pagination.currentPage = 1
       }
@@ -168,7 +170,7 @@ export default {
         this.fetchData()
       }
     },
-    //重置
+    // 重置
     handleFilterReset() {
       this.filter = {
       }
@@ -239,12 +241,12 @@ export default {
         }
         return result
       }, [])
-    },
+    }
   },
   created() {
     let filterSchema = _.map({
       policyId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
-        component: 'Input',
+        component: 'InputPositiveInt',
         placeholder: 'ID'
       }),
       policyName: _.o.string.other('form', {
@@ -269,7 +271,7 @@ export default {
         placeholder: '机型/机芯'
       })
     }).other('form', {
-             cols: {
+      cols: {
         item: 5,
         label: 0,
         wrapper: 20
@@ -291,9 +293,9 @@ export default {
   }
 }
 </script>
-<style lang = 'stylus' scoped>
-.btns
-  margin-bottom: 10px
-  display: flex
-  flex-direction: row
+<style lang='stylus' scoped>
+.policy-list >>> .el-table__row .el-table__expand-icon
+  position absolute
+  left 3px
+  line-height 25px
 </style>

@@ -1,18 +1,18 @@
 <template>
   <div>
-    <el-input-number 
-      @change="handleInputHour" 
-      controls-position="right" 
-      :precision="0"  
-      :min="0" 
-      :max="hourMax" 
-      v-model="hour" /> 小时 
-    <el-input-number 
-      @change="handleInputMinute" 
-      controls-position="right" 
-      :precision="0"  
-      :min="0" 
-      :max="minMax"  
+    <el-input-number
+      @change="handleInputHour"
+      controls-position="right"
+      :precision="0"
+      :min="0"
+      :max="hourMax"
+      v-model="hour" /> 小时
+    <el-input-number
+      @change="handleInputMinute"
+      controls-position="right"
+      :precision="0"
+      :min="0"
+      :max="minMax"
       v-model="minute" /> 分钟
   </div>
 </template>
@@ -28,7 +28,7 @@ export default {
   computed: {
     hourMax() {
       if (this.max) {
-        return Math.floor(this.max/60)
+        return Math.floor(this.max / 60)
       }
       return 24
     },
@@ -36,7 +36,7 @@ export default {
       if (this.max < 60) {
         return this.max
       }
-      return  59
+      return 59
     }
   },
   props: ['value', 'max', 'min'],
@@ -66,8 +66,8 @@ export default {
     setHourAndMinute(val) {
       if (val) {
         this.$nextTick(() => {
-          this.hour = Math.floor(val/60)
-          this.minute = val%60
+          this.hour = Math.floor(val / 60)
+          this.minute = val % 60
         })
       }
     }

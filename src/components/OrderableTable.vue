@@ -50,7 +50,7 @@ export default {
       const actionHeader = {
         label: '操作',
         width: 80,
-        render: (h, {$index, row}) => {
+        render: (h, { $index, row }) => {
           return h('el-button', {
             props: {
               type: 'text'
@@ -75,7 +75,7 @@ export default {
     handleChangeOrder(index, order) {
       const dataList = this.value
       if (order > dataList.length) {
-          order = dataList.length
+        order = dataList.length
       }
       const newIndex = order - 1
       const oldIndex = index
@@ -92,16 +92,16 @@ export default {
       const originSelectedList = this.value
       const selectedList = data
       const selectedListIndexed = data.reduce(function(result, item, index) {
-          result[item[idField]] = index
-          return result
+        result[item[idField]] = index
+        return result
       }, {})
       let newList = []
       originSelectedList.forEach(function(item) {
-          const index = selectedListIndexed[item[idField]]
-          if (index !== undefined) {
-              newList.push(item)
-              selectedList[index] = undefined 
-          }
+        const index = selectedListIndexed[item[idField]]
+        if (index !== undefined) {
+          newList.push(item)
+          selectedList[index] = undefined
+        }
       })
       this.$emit('input', newList.concat(selectedList.filter(function(item) { return item })))
     }

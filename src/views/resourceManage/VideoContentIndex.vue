@@ -21,4 +21,3 @@ export default {
   >>> .remote-selector-main__actions
     display none;
 </style>
-

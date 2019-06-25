@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { ContentWrapper, Table ,utils} from 'admin-toolkit'
+import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import _ from 'gateschema'
 export default {
   components: {
@@ -69,15 +69,15 @@ export default {
             prop: 'pannelGroupRemark',
             render: (createElement, { row }) => {
               return createElement('el-button', {
-                attrs:{
+                attrs: {
                   type: 'text'
                 },
                 on: {
                   click: () => {
-                    this.handleRead(row) 
+                    this.handleRead(row)
                   }
                 }
-              },row.pannelGroupRemark)
+              }, row.pannelGroupRemark)
             }
           },
           {
@@ -99,8 +99,8 @@ export default {
             formatter: (row) => {
               const status = row.pannelStatus
               const currentVersion = row.currentVersion
-              return currentVersion + '/' + this.pannelStatusOption.map(function(item){
-                if(status.toString() === item.value){
+              return currentVersion + '/' + this.pannelStatusOption.map(function(item) {
+                if (status.toString() === item.value) {
                   return item.label
                 }
               }).join('')
@@ -111,15 +111,15 @@ export default {
             prop: 'duplicateVersion',
             render: (createElement, { row }) => {
               return createElement('el-button', {
-                attrs:{
+                attrs: {
                   type: 'text'
                 },
                 on: {
                   click: () => {
-                    this.handleRead(row, row.duplicateVersion) 
+                    this.handleRead(row, row.duplicateVersion)
                   }
                 }
-              },row.duplicateVersion)
+              }, row.duplicateVersion)
             }
           },
           {
@@ -135,21 +135,21 @@ export default {
             label: '更新人',
             prop: 'userName'
           },
-           {
-              label: '操作',
-              width: '100',
-              fixed: 'right',
-               render: utils.component.createOperationRender(this, {
-                handleCopy: '复制',
-                cancalCollect: '取消收藏'
-              })
-            }
+          {
+            label: '操作',
+            width: '100',
+            fixed: 'right',
+            render: utils.component.createOperationRender(this, {
+              handleCopy: '复制',
+              cancalCollect: '取消收藏'
+            })
+          }
         ],
         selected: [],
         selectionType: 'multiple'
       },
       selected: []
-    };
+    }
   },
 
   watch: {
@@ -158,7 +158,7 @@ export default {
         const table = this.table
         let rows = []
         table.data.map(tableRow => {
-          if(newVal.indexOf(tableRow.pannelGroupId) > -1) {
+          if (newVal.indexOf(tableRow.pannelGroupId) > -1) {
             let row = {
               pannelGroupId: tableRow.pannelGroupId,
               pannelGroupRemark: tableRow.pannelGroupRemark,
@@ -173,11 +173,11 @@ export default {
   },
 
   methods: {
-    handleCopy({row}) {
+    handleCopy({ row }) {
       this.$emit('copy', row.pannelGroupId)
     },
-    cancalCollect({row}) {
-      this.$service.collectCancel({ type: 'pannel', data: {resourceId: row.pannelGroupId }}, '取消成功').then(()=>{
+    cancalCollect({ row }) {
+      this.$service.collectCancel({ type: 'pannel', data: { resourceId: row.pannelGroupId } }, '取消成功').then(() => {
         this.fetchData()
       })
     },
@@ -187,11 +187,11 @@ export default {
     fetchData() {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
-        this.$service.commonPannelUserList({data: filter, type: 'pannel'}).then(data => {
-          this.pagination.total = data.total
-          this.table.data = data.rows
-        })
-      },
+      this.$service.commonPannelUserList({ data: filter, type: 'pannel' }).then(data => {
+        this.pagination.total = data.total
+        this.table.data = data.rows
+      })
+    },
     parseFilter() {
       const { filter, pagination } = this
       if (pagination) {
@@ -201,33 +201,33 @@ export default {
       return filter
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.pannelId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
-      console.log(this.dataList);
-      if(this.dataList) {
+      console.log(this.dataList)
+      if (this.dataList) {
         this.filter = Object.assign({}, this.dataList.filter)
-        console.log(this.filter);
-      }else {
+        console.log(this.filter)
+      } else {
         this.filter = {
-           sort: undefined,
-        order: undefined,
-        idPrefix: 10
+          sort: undefined,
+          order: undefined,
+          idPrefix: 10
         }
       }
       this.pagination.currentPage = 1
       this.fetchData()
     },
     getBusinessType() {
-      return this.$service.getDictType({type: 'businessType'}).then(data => {
+      return this.$service.getDictType({ type: 'businessType' }).then(data => {
         data.forEach((item) => {
           this.businessType[item.dictCnName] = item.dictId
         })
@@ -254,7 +254,7 @@ export default {
         this.table.selected = []
       }
     },
-     handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove() {
       this.selected = []
       this.table.selected = []
     },
@@ -277,7 +277,7 @@ export default {
     },
     batchDel() {
 
-    },
+    }
   },
 
   created() {
@@ -306,7 +306,7 @@ export default {
         placeholder: '引用状态',
         component: 'Input'
       }),
-      'pannelInfo.pannelResource': _.o.enum({'腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优酷': 'o_youku'}).other('form', {
+      'pannelInfo.pannelResource': _.o.enum({ '腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优酷': 'o_youku' }).other('form', {
         placeholder: '内容源',
         component: 'Select'
       }),
@@ -315,30 +315,30 @@ export default {
         component: 'Select'
       })
     })
-    .other('form', {
-      cols: {
-        item: 6,
-        label: 0,
-        wrapper: 20
-      },
-      layout: 'inline',
-      footer: {
+      .other('form', {
         cols: {
+          item: 6,
           label: 0,
-          wrapper: 24
+          wrapper: 20
         },
-        showSubmit: true,
-        submitText: '查询',
-        showReset: true,
-        resetText: '重置'
-      }
-    })
+        layout: 'inline',
+        footer: {
+          cols: {
+            label: 0,
+            wrapper: 24
+          },
+          showSubmit: true,
+          submitText: '查询',
+          showReset: true,
+          resetText: '重置'
+        }
+      })
     this.getBusinessType().then(() => {
       this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
     })
     // 影片详情页中的版块
     const dataList = this.dataList
-    if(dataList) {
+    if (dataList) {
       this.filter = Object.assign({}, dataList.filter)
       this.table = dataList.table
     }

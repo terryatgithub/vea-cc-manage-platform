@@ -8,10 +8,10 @@
           :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
           @click="toggleMenu"
         ></el-button>
-        <Menu 
+        <Menu
           @select="handleOpenMenu"
-          :default-active="$route.name" 
-          :items="menu" 
+          :default-active="$route.name"
+          :items="menu"
           :isCollapse="isCollapseMenu">
         </Menu>
       </div>
@@ -42,7 +42,7 @@
           <i class="el-icon-setting"></i>
         </div> -->
       </el-header>
-      <TagNav ref="tag" :titles="titles" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
+      <TagNav ref="tag" default-path="/desktop" :titles="titles" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
       <el-main>
         <keep-alive>
           <router-view v-if="isKeepAlive"/>
@@ -92,8 +92,8 @@ const routerMap = {
   rotateStationCategory: 'rotateStationCategory',
   rotateStationCategory_viewStation: 'rotateStationCategory_viewStation',
   rotateTopicInfo: 'rotateTopicInfo',
-  broadcastBlock: 'broadcastBlock' ,
-  multiFunctionBlock: 'multiFunctionBlock' ,
+  broadcastBlock: 'broadcastBlock',
+  multiFunctionBlock: 'multiFunctionBlock',
   sysPlugin: 'sysPlugin',
   albumPannelInfo: 'albumPannelInfo',
   markPanel: 'markPanel',
@@ -140,7 +140,7 @@ export default {
     Breadcrumb,
     TagNav
   },
-  //props: ['menu'],
+  // props: ['menu'],
   data() {
     return {
       menu: [],
@@ -152,9 +152,9 @@ export default {
       modifyDialogVisible: false,
       companyMap: {
         '10': '酷开',
-        '11': '江苏有线',
+        '11': '江苏有线'
       },
-     // initTags: [],
+      // initTags: [],
       form: {
         oldpwd: null,
         newpwd: null,
@@ -177,7 +177,7 @@ export default {
       return meta && meta.isCache !== false
     },
     initTags() {
-      return this.$appState.$get('tags'+ '_' + this.$appState.user.name ) || []
+      return this.$appState.$get('tags' + '_' + this.$appState.user.name) || []
     },
     defaultMenu() {
       const mainRoute = this.$router.options.routes.find(item => {
@@ -254,7 +254,7 @@ export default {
     },
     saveTags() {
       const tags = this.$refs.tag.tags
-      if( tags.length === 0) {
+      if (tags.length === 0) {
         tags.unshift({
           fullPath: '/desktop',
           meta: {
@@ -265,20 +265,20 @@ export default {
           isCloseable: false
         })
       } else {
-        if(tags[0].name !=='desktop') {
+        if (tags[0].name !== 'desktop') {
           tags.unshift({
-          fullPath: '/desktop',
-          meta: {
-            title: '我的桌面',
-            tagId: 'desktop'
-          },
-          name: 'desktop',
-          isCloseable: false
-        })
+            fullPath: '/desktop',
+            meta: {
+              title: '我的桌面',
+              tagId: 'desktop'
+            },
+            name: 'desktop',
+            isCloseable: false
+          })
         }
       }
       // this.initTags = tags
-      this.$appState.$set('tags'+ '_' + this.$appState.user.name , tags)
+      this.$appState.$set('tags' + '_' + this.$appState.user.name, tags)
     },
     getMenu() {
       this.$service.getMenu().then((menu) => {
@@ -291,7 +291,7 @@ export default {
           const item = {
             icon: menu.icon,
             route: menu.id,
-            title: menu.text,
+            title: menu.text
           }
           const attr = menu.attributes
           if (attr && attr.modle === '3') {
@@ -397,7 +397,4 @@ body, html, #app, section.el-container, .aside__menu
   background #555
 </style>
 <style lang="stylus" scoped>
-.tagNav >>> li:first-child .tag-nav__close-item
-  display none
 </style>
-

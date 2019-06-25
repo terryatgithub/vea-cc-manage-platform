@@ -1,13 +1,13 @@
 <template>
   <el-radio-group
     v-if="type === 'radio'"
-    :value="value" 
+    :value="value"
     @input="$emit('input', $event)"
     :disabled="disabled">
-      <el-radio 
+      <el-radio
         v-for="(item, key) in options"
         :disabled="item.disabled"
-        :key="key" 
+        :key="key"
         :label="item.value">
         {{ item.label }}
       </el-radio>
@@ -15,18 +15,18 @@
 
   <el-select
     v-else
-    :value="value" 
+    :value="value"
     @input="$emit('input', $event)"
     :disabled="disabled"
     :placeholder="placeholder || '请选择'"
     :filterable="filterable"
     :allow-create="allowCreate"
   >
-    <el-option 
-      v-for="(item, key) in options" 
+    <el-option
+      v-for="(item, key) in options"
       :disabled="item.disabled"
-      :key="key" 
-      :label="item.label" 
+      :key="key"
+      :label="item.label"
       :value="item.value"
     >
     </el-option>

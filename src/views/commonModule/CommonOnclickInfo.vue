@@ -51,7 +51,7 @@ export default {
         exception: null
       },
       formRules: {
-        //表单规则
+        // 表单规则
         onlickName: [
           { required: true, message: '请输入点击事件名称', trigger: 'blur' }
         ],

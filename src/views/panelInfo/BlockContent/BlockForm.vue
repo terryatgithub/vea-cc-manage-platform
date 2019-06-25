@@ -48,7 +48,7 @@
           <el-button>选择资源</el-button>
         </ResourceSelector>
         <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
-        <el-button v-show="contentForm.extraValue1" plain type="primary" @click="handleAddTagStart">打标签</el-button>
+        <el-button v-show="!isReadonly && contentForm.extraValue1" plain type="primary" @click="handleAddTagStart">打标签</el-button>
       </el-form-item>
       <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
         <ResourceSelector
@@ -105,9 +105,9 @@
         >
           <div
             class="post-box corner-box"
-            :style="{ 
+            :style="{
               height: postSize.height + 'px',
-              width: postSize.width + 'px', 
+              width: postSize.width + 'px',
               cursor: 'pointer'
             }"
           >
@@ -179,13 +179,13 @@
           </div>
         </GlobalPictureSelector>
         <div>
-          <el-checkbox 
+          <el-checkbox
             :value="!contentForm.showSeries"
             :disabled="isReadonly"
             @input="contentForm.showSeries = $event ? 0 : 1">
             不展示期数
           </el-checkbox>
-          <el-checkbox 
+          <el-checkbox
             :value="!contentForm.showScore"
             :disabled="isReadonly"
             @input="contentForm.showScore = $event ? 0 : 1">
@@ -206,6 +206,38 @@
             <img :src="contentForm.alternativePictureUrl" referrerpolicy="no-referrer">
           </div>
         </GlobalPictureSelector>
+      </el-form-item>
+
+      <el-form-item label="背景图" prop="bgImgUrl">
+        <GlobalPictureSelector
+          :disabled="isReadonly"
+          @select-end="handleSelectBgEnd">
+          <div class="bg-preview">
+            <img :src="contentForm.bgImgUrl" referrerpolicy="no-referrer">
+            <i
+              v-show="!isReadonly && contentForm.bgImgUrl"
+              title="删除背景"
+              class="el-icon-circle-close"
+              @click.stop="contentForm.bgImgUrl = ''"></i>
+          </div>
+        </GlobalPictureSelector>
+      </el-form-item>
+
+
+      <el-form-item label="背景视频" prop="bgParams.id">
+        <ResourceSelector
+          ref="resourceSelector"
+          v-if="!isReadonly"
+          :is-live="true"
+          :disable-partner="!!source"
+          :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
+          selection-type="single"
+          :source="source"
+          @select-end="handleSelectBgMediaEnd"
+        >
+          <el-button>选择资源</el-button>
+        </ResourceSelector>
+        <el-tag type="primary" :closable="!isReadonly" @close="handleRemoveBgMedia" v-if="contentForm.bgParams && contentForm.bgParams.id">已选择: {{ contentForm.bgParams.id }} </el-tag>
       </el-form-item>
 
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
@@ -313,20 +345,20 @@
 
         <template v-if="contentForm.redundantParams.openMode === 'picture'">
           <el-form-item key="pictureUrl" label="选择图片" prop="redundantParams.pictureUrl" :rules="contentRule.pictureUrl">
-            <Upload 
-              :multiple="false" 
-              accept="image/jpg,image/jpeg,image/png,image/bmp,image/gif"  
-              ref="upload" 
+            <Upload
+              :multiple="false"
+              accept="image/jpg,image/jpeg,image/png,image/bmp,image/gif"
+              ref="upload"
               @upload="handleUpload">
               <div class="upload-pic-list" slot="preview" slot-scope="{fileList}">
-                <div 
+                <div
                   v-show="!isReadonly && fileList.length === 0"
-                  class="upload-pic-list__add" 
+                  class="upload-pic-list__add"
                   @click="!isReadonly && $refs.upload.handleSelectFile()">
                 </div>
-                <div 
+                <div
                   v-if="fileList.length > 0"
-                  class="upload-pic-list__item" 
+                  class="upload-pic-list__item"
                   @click="!isReadonly && $refs.upload.handleSelectFile()">
                   <div
                     class="upload-pic-list__error"
@@ -351,11 +383,11 @@
 
         <template v-if="contentForm.redundantParams.openMode === 'tab'">
           <el-form-item key="tabId" label="版面" prop="redundantParams.tabId" :rules="contentRule.tabId">
-            <TabSelector 
+            <TabSelector
               :disabled="isReadonly"
-              title="选择版面" 
-              selection-type="single" 
-              :source="source" 
+              title="选择版面"
+              selection-type="single"
+              :source="source"
               :selected-close="true"
               @select-single="handleSelectTabEnd"/>
             <el-tag type="primary" v-if="contentForm.redundantParams.tabId">
@@ -382,9 +414,9 @@
       @select-cancel="handleSelectCrowdCancel"
       @select-end="handleSelectCrowdEnd"
     />
-    <TagFrame 
-      v-if="showBlockTagDialog" 
-      :ids="[currentResourceId]" 
+    <TagFrame
+      v-if="showBlockTagDialog"
+      :ids="[currentResourceId]"
       @close="showBlockTagDialog = false">
     </TagFrame>
   </div>
@@ -487,16 +519,16 @@ export default {
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
       contentRule: {
         webpageUrl: [
-            {required: true, validator: checkWebpageUrl, trigger: "blur"}
+          { required: true, validator: checkWebpageUrl, trigger: 'blur' }
         ],
         videoName: [
-            {required: true, message: "请输入视频名称", trigger: "blur"}
+          { required: true, message: '请输入视频名称', trigger: 'blur' }
         ],
         videoUrl: [
-            {required: true, message: "请输入视频地址", trigger: "blur"}
+          { required: true, message: '请输入视频地址', trigger: 'blur' }
         ],
         tabId: [
-            {required: true, message: "请选择版面", trigger: "blur"}
+          { required: true, message: '请选择版面', trigger: 'blur' }
         ],
         moviePercent: [
           {
@@ -563,11 +595,11 @@ export default {
     'source',
     'pannel',
     'hideTitleOptions',
-    'checkCrowd',
+    'checkCrowd'
   ],
   computed: {
     currentResourceId() {
-        return this.contentForm.extraValue1
+      return this.contentForm.extraValue1
     },
     isReadonly() {
       return this.mode === 'read'
@@ -645,25 +677,25 @@ export default {
   },
   methods: {
     handleAddTagStart() {
-        this.showBlockTagDialog = true
+      this.showBlockTagDialog = true
     },
     genParams(openMode) {
       return {
-          openMode: openMode || 'app',
-          webpageUrl: '',
-          webpageType: '2',
-          videoName: '',
-          videoUrl: '',
-          pictureUrl: '',
-          tabId: '',
-          packagename: '',
-          versioncode: openMode === 'webpage' ? '102007' : '-1',
-          dowhat: 'startActivity',
-          bywhat: 'action',
-          byvalue: '',
-          data: undefined,
-          params: [{ key: '', value: '' }]
-        }
+        openMode: openMode || 'app',
+        webpageUrl: '',
+        webpageType: '2',
+        videoName: '',
+        videoUrl: '',
+        pictureUrl: '',
+        tabId: '',
+        packagename: '',
+        versioncode: openMode === 'webpage' ? '102007' : '-1',
+        dowhat: 'startActivity',
+        bywhat: 'action',
+        byvalue: '',
+        data: undefined,
+        params: [{ key: '', value: '' }]
+      }
     },
     handleUpload(file, fileItem) {
       this.$refs.upload.fileList = [fileItem]
@@ -739,11 +771,10 @@ export default {
     chopSubTitle(title) {
       return (title || '').slice(0, 50)
     },
-    handleSelectMediaEnd(resources) {
+    getSelectedResource(resources) {
       let selectedType
       let selected
       let selectedEpisode
-      const partner = resources.videoSource
       Object.keys(resources).forEach(key => {
         const resource = resources[key][0]
         if (resource) {
@@ -755,6 +786,11 @@ export default {
           }
         }
       })
+      return {selectedType, selected, selectedEpisode}
+    },
+    handleSelectMediaEnd(resources) {
+      const { selectedType, selected, selectedEpisode } = this.getSelectedResource(resources)
+      const partner = resources.videoSource
       const chopSubTitle = this.chopSubTitle
       const contentForm = this.contentForm
       // 清空由app可能引起的遗留数据
@@ -815,8 +851,8 @@ export default {
         const publishStatus = isUnknown
           ? 'unknown'
           : updatedSegment == publishSegment
-          ? 'ended'
-          : 'updating'
+            ? 'ended'
+            : 'updating'
         contentForm.publishStatus = publishStatus
         contentForm.score = score
         contentForm.series = isUnknown ? null : updatedSegment
@@ -906,7 +942,7 @@ export default {
     },
     handleSelectClickEventEnd(data) {
       const clickEvent = data[0]
-      const {packagename, versioncode, dowhat, bywhat, byvalue, params: paramsStr, exception} = clickEvent
+      const { packagename, versioncode, dowhat, bywhat, byvalue, params: paramsStr, exception } = clickEvent
       const contentForm = this.contentForm
       let params = []
       if (paramsStr) {
@@ -919,7 +955,7 @@ export default {
         })
       }
       if (params.length === 0) {
-        params.push({key: undefined, value: undefined})
+        params.push({ key: undefined, value: undefined })
       }
       contentForm.redundantParams = Object.assign({}, contentForm.redundantParams, {
         packagename,
@@ -951,6 +987,69 @@ export default {
     handleSelectBackupPostEnd(post) {
       this.contentForm.alternativePictureUrl = post.pictureUrl
     },
+    handleSelectBgEnd(post) {
+      this.contentForm.bgImgUrl = post.pictureUrl
+    },
+    handleSelectBgMediaEnd(resources) {
+      const { selectedType, selected, selectedEpisode } = this.getSelectedResource(resources)
+      const contentForm = this.contentForm
+      const partner = resources.videoSource
+      let mediaId
+      let episodeId
+      if (selectedType === 'video') {
+        // 影视中心
+        if (selectedEpisode) {
+          if (partner === 'tencent') {
+            mediaId = '_otx_' + selected.coocaaVId
+            episodeId = selectedEpisode.coocaaMId
+          } else if (partner === 'yinhe') {
+            mediaId = '_oqy_' + selected.coocaaVId
+            episodeId = selectedEpisode.coocaaMId
+          } else if (partner === 'youku') {
+            mediaId = '_oyk_' + selected.coocaaVId
+            episodeId = selectedEpisode.coocaaMId
+          }
+        } else {
+          if (partner === 'tencent') {
+            mediaId = '_otx_' + selected.coocaaVId
+          } else if (partner === 'yinhe') {
+            mediaId = '_oqy_' + selected.coocaaVId
+          } else if (partner === 'youku') {
+            mediaId = '_oyk_' + selected.coocaaVId
+          }
+        }
+      } else if (selectedType === 'edu') {
+        // 教育中心
+        mediaId = '_otx_' + selected.coocaaVId
+      } else if (selectedType === 'pptv') {
+        // pptv
+        mediaId =
+          'pptv_tvsports://tvsports_detail?section_id=' +
+          selected.pid +
+          '&from_internal=1'
+      } else if (selectedType === 'live') {
+        // 直播资源
+        mediaId = '_otx_' + selected.vId + ''
+      } else if (selectedType === 'topic') {
+        // 专题资源
+        mediaId = selected.id + ''
+      } else if (selectedType === 'rotate') {
+        // 轮播资源
+        mediaId = selected.id + ''
+      }
+
+      contentForm.bgParams = {
+        id: mediaId,
+      }
+      contentForm.bgType = 'res'
+    },
+    handleRemoveBgMedia() {
+      const contentForm = this.contentForm
+      contentForm.bgParams = {
+        id: ''
+      }
+      contentForm.bgType = ''
+    },
     handleSelectBlockEnd(resources) {
       const selectedFunc = resources.func[0]
       const selectedBroadcast = resources.broadcast[0]
@@ -981,10 +1080,10 @@ export default {
       const contentForm = this.contentForm
       this.$refs.contentForm.validate((valid) => {
         if (valid) {
-          if (contentForm.coverType === "custom") {
+          if (contentForm.coverType === 'custom') {
             if (contentForm.price < contentForm.secKillPrice) {
-              return cb("价格小于秒杀价，建议重新填写！");
-            } 
+              return cb('价格小于秒杀价，建议重新填写！')
+            }
           }
           cb()
         } else {
@@ -1165,4 +1264,21 @@ $width = 100px;
   top: 0;
   right: 0;
 }
+</style>
+<style lang="stylus">
+.bg-preview
+  position relative
+  border 1px solid #ccc
+  width 250px
+  height 250px
+  cursor pointer
+  overflow hidden
+  img
+    max-height 100%
+    max-width 100%
+  .el-icon-circle-close
+    position absolute
+    top 5px
+    right 5px
+    color red
 </style>

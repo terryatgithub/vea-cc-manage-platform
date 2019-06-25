@@ -13,7 +13,7 @@
         @upsert-end="handleUpsertEnd"
         v-if="mode==='tabPreview'"
       ></TabPreview>
-    </el-tab-pane>                    
+    </el-tab-pane>
     <el-tab-pane label="版块" name="pannel">
       <MySubmitTasksList
         resourceType="pannel"
@@ -63,12 +63,12 @@
     </el-tab-pane>
     <el-tab-pane label="策略" name="policy">
       <MySubmitTasksList resourceType="policy" v-show="mode==='policyList'" @read="handleRead"></MySubmitTasksList>
-         <PolicyManageInfo 
+         <PolicyManageInfo
        v-if="mode==='policyPreview'"
-      :id="previewData.resourceId" 
+      :id="previewData.resourceId"
       :init-mode="'read'"
       :version="undefined"
-      @upsert-end="handleUpsertEnd" 
+      @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </PolicyManageInfo>
     </el-tab-pane>
@@ -85,21 +85,21 @@
     </el-tab-pane>
     <el-tab-pane label="角标" name="icon">
       <MySubmitTasksList resourceType="icon" v-show="mode==='iconList'" @read="handleRead"></MySubmitTasksList>
-      <GlobalCornerIcon  
-        v-if="mode==='iconPreview'" 
-        :id="previewData.resourceId" 
+      <GlobalCornerIcon
+        v-if="mode==='iconPreview'"
+        :id="previewData.resourceId"
         init-mode="read"
-        @upsert-end="handleUpsertEnd" 
+        @upsert-end="handleUpsertEnd"
         @go-back="goBack">
       </GlobalCornerIcon>
     </el-tab-pane>
     <el-tab-pane label="系统功能" name="sysPlugin">
       <MySubmitTasksList resourceType="sysPlugin" v-show="mode==='sysPluginList'" @read="handleRead"></MySubmitTasksList>
-      <MultiFunctionBlockInfo 
-        v-if="mode ==='sysPluginPreview'" 
+      <MultiFunctionBlockInfo
+        v-if="mode ==='sysPluginPreview'"
         init-mode="read"
-        :id="previewData.resourceId" 
-        @upsert-end="handleUpsertEnd" 
+        :id="previewData.resourceId"
+        @upsert-end="handleUpsertEnd"
         @go-back="goBack">
       </MultiFunctionBlockInfo>
     </el-tab-pane>
@@ -162,5 +162,3 @@ export default {
     top: 0;
 }
 </style>
-
-

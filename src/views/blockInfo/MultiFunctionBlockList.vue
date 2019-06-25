@@ -99,7 +99,7 @@ export default {
       resourceType: 'blockInfo',
       pluginType: [],
       parentTypes: [],
-      childTypes: {}, //功能分类
+      childTypes: {}, // 功能分类
       filter: {},
       filterSchema: null,
       pagination: {},
@@ -133,7 +133,7 @@ export default {
               )
             }
           },
-         {
+          {
             label: '待审核的版本',
             prop: 'duplicateVersion',
             sortable: true,
@@ -188,7 +188,7 @@ export default {
           this.pluginType = data
         })
     },
-    //获取table数据
+    // 获取table数据
     fetchData() {
       const filter = this.parseFilter()
       this.$service.getMultiBlockList(filter).then(data => {
@@ -196,16 +196,16 @@ export default {
         this.table.data = data.rows
       })
     },
-    //获取功能父分类
+    // 获取功能父分类
     getPluginParentTypes() {
       this.$service.getPluginParentTypes().then(data => {
         this.parentTypes = data
       })
     },
-   handleFilterChange() {
-      if(this.$validateId(this.filter.pluginId)) {
+    handleFilterChange() {
+      if (this.$validateId(this.filter.pluginId)) {
         this.pagination.currentPage = 1
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {

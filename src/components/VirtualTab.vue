@@ -1,7 +1,7 @@
 /*
 [
     {
-        type: "SPEC", // SPEC | NORMAL 
+        type: "SPEC", // SPEC | NORMAL
         crowdPanels: [
             panel1,
             panel2,
@@ -91,7 +91,7 @@
                 :key="crowdIndex"
                 v-show="isDragging || panelItem.isShowAll || crowdIndex === 0"
                 :class="{
-                                    'tab-placeholder__panel-wrapper': true, 
+                                    'tab-placeholder__panel-wrapper': true,
                                     'panel-duplicate': item.isDuplicate,
                                     'tab-placeholder__panel-wrapper--dragging': draggingCrowdIndex === crowdIndex && draggingIndex === index
                                 }"
@@ -146,9 +146,9 @@
                       :show-title="showTitle"
                       @activate="handleActivate(item, $event)"
                       @click-block="handleClickBlock({
-                                                        index: index, 
-                                                        crowdIndex: crowdIndex, 
-                                                        activeIndex: arguments[0], 
+                                                        index: index,
+                                                        crowdIndex: crowdIndex,
+                                                        activeIndex: arguments[0],
                                                         blockIndex:arguments[1]
                                                     })"
                     />
@@ -180,7 +180,7 @@
           <div v-else class="tab-placeholder__normal-panel">
             <cc-var
               :class="{
-                'tab-placeholder__panel-wrapper': true, 
+                'tab-placeholder__panel-wrapper': true,
                 'panel-duplicate': panelItem.panel.isDuplicate
               }"
               :panel="getPanelInfo(panelItem.panel)"
@@ -219,8 +219,8 @@
                     :show-title="showTitle"
                     @activate="handleActivate(panelItem, $event)"
                     @click-block="handleClickBlock({
-                                                    index: index, 
-                                                    activeIndex: arguments[0], 
+                                                    index: index,
+                                                    activeIndex: arguments[0],
                                                     blockIndex:arguments[1]
                                                 })"
                   />
@@ -334,7 +334,7 @@ export default {
       })
     },
     handleDrop(dragEvent, dropInfo) {
-      //this.isDragging = false
+      // this.isDragging = false
       this.handleDragLeave(dragEvent)
       const dragInfo = JSON.parse(dragEvent.dataTransfer.getData('text/plain'))
       // dragEnd 事件还没触发，dom变太早的话，造成 dragEnd 事件被解绑导致触发不了

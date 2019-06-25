@@ -1,33 +1,33 @@
 <template>
   <div>
     <AlbumPannelInfoList
-      v-show='isShowList' 
-      ref="list" 
+      v-show='isShowList'
+      ref="list"
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
       @copy="handleCopy"
       @delete="handleDelete"
     />
-    <PanelInfo 
-      v-if='!isShowList' 
-      :id="id" 
+    <PanelInfo
+      v-if='!isShowList'
+      :id="id"
       :panel-data-type="3"
       :init-mode="mode"
       :version="version"
-      @upsert-end="handleUpsertEnd" 
+      @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </PanelInfo>
   </div>
 </template>
 <script>
 import PanelInfo from '../panelInfo/PanelInfo'
-import AlbumPannelInfoList from'./AlbumPannelInfoList'
+import AlbumPannelInfoList from './AlbumPannelInfoList'
 const idField = 'pannelGroupId'
 export default {
   components: {
     PanelInfo,
-    AlbumPannelInfoList 
+    AlbumPannelInfoList
   },
   data () {
     return {
@@ -60,7 +60,7 @@ export default {
       this.isShowList = false
     },
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'
@@ -68,17 +68,17 @@ export default {
       }
     },
     handleDelete(selected) {
-      this.$service.panelRemove({ 
-        id: selected.map(item => item.pannelGroupId).join(',') 
-      }, "删除成功")
-      .then(() => {
-        this.$refs.list.fetchData()
-      })
+      this.$service.panelRemove({
+        id: selected.map(item => item.pannelGroupId).join(',')
+      }, '删除成功')
+        .then(() => {
+          this.$refs.list.fetchData()
+        })
     },
     goBack () {
-     this.isShowList = true
-     this.mode = 'list'
-     this.version = undefined
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

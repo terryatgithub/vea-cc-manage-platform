@@ -19,7 +19,7 @@
         <div class="remote-selector-main">
           <div class="remote-selector-main__filter">
             <slot name="filter">
-              <GateSchemaForm 
+              <GateSchemaForm
                 v-if="filterSchema"
                 :schema="filterSchema"
                 v-model="filter"
@@ -48,10 +48,10 @@
             </div>
             <div class="remote-selector-main__actions">
               <slot name="actions">
-                  <Button type="primary" @click="handleSelectEnd" v-if="!hideSubmit">  
+                  <Button type="primary" @click="handleSelectEnd" v-if="!hideSubmit">
                     确定
                   </Button>
-                  <Button @click="handleSelectCancel">  
+                  <Button @click="handleSelectCancel">
                     取消
                   </Button>
               </slot>
@@ -78,7 +78,7 @@ export default {
       }
     },
     hideSubmit: {
-       type: Boolean
+      type: Boolean
     },
     fullscreen: {
       type: Boolean,
@@ -162,15 +162,15 @@ export default {
   padding 0 20px
   overflow hidden
   flex 1
-.remote-selector-main 
+.remote-selector-main
   height 100%
   display flex
   flex-direction column
 .remote-selector-main__content
   overflow auto
   margin 10px 0
-  border-top 1px solid #EBEEF5 
-  border-bottom 1px solid #EBEEF5 
+  border-top 1px solid #EBEEF5
+  border-bottom 1px solid #EBEEF5
   flex 1
 .remote-selector-main__footer
   height 35px

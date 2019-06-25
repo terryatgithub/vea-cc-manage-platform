@@ -1,17 +1,17 @@
 <template>
-  <RemoteSelectorWrapper 
+  <RemoteSelectorWrapper
     ref="wrapper"
     title="选择版块"
     custom-class="resource-selector"
     @select-start="handleSelectStart">
     <template slot="content" slot-scope="{isShow}">
-      <BaseSelector 
+      <BaseSelector
         v-if="isLive ? true : isShow"
         ref="baseSelector"
         id-field="pannelGroupId"
         :is-live="isLive"
         :selection-type="selectionType"
-        :table="table" 
+        :table="table"
         :pagination="pagination"
         @pagination-change="fetchData"
         @select-cancel="handleSelectCancel"
@@ -232,10 +232,10 @@ export default {
         this.table.data = data.rows
         this.pagination.total = data.total
       })
-    },
+    }
   },
   created() {
-    this.$service.getDictType({type: 'businessType'}).then(data => {
+    this.$service.getDictType({ type: 'businessType' }).then(data => {
       this.panelCategoryOptions = data.map(item => {
         return {
           label: item.dictCnName,

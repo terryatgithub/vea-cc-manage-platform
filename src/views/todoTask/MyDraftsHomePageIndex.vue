@@ -1,25 +1,25 @@
 <template>
   <div>
-    <MyDraftsHomePage 
-      v-show="isShowList" 
-      ref="list" 
+    <MyDraftsHomePage
+      v-show="isShowList"
+      ref="list"
       @read="handleRead"
      >
      </MyDraftsHomePage>
-      <HomePageInfo 
-      v-if='!isShowList' 
-      :id="id" 
+      <HomePageInfo
+      v-if='!isShowList'
+      :id="id"
       :init-mode="mode"
       :version="version"
-      @upsert-end="handleUpsertEnd" 
+      @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </HomePageInfo>
   </div>
 </template>
 <script>
- import HomePageInfo from  './../homePageManage/HomePageInfo.vue' //常规运营
- import MyDraftsHomePage from './MyDraftsHomePage.vue'
- // pannelType 1 为 常规运营 8 为功能版块 3 为业务专辑 9 专属影院
+import HomePageInfo from './../homePageManage/HomePageInfo.vue' // 常规运营
+import MyDraftsHomePage from './MyDraftsHomePage.vue'
+// pannelType 1 为 常规运营 8 为功能版块 3 为业务专辑 9 专属影院
 export default {
   components: {
     MyDraftsHomePage,
@@ -32,11 +32,11 @@ export default {
       mode: 'create',
       version: undefined,
       pannelType: undefined
-    };
+    }
   },
   methods: {
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'
@@ -53,9 +53,9 @@ export default {
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.isShowList = true
-     this.mode = 'list'
-     this.version = undefined
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

@@ -74,7 +74,7 @@ export default {
   data() {
     return {
       resourceType: 'picture',
-      materialTypes: {}, //素材类型
+      materialTypes: {}, // 素材类型
       // pictureStatus: {
       //   //状态
       //   可用: 1,
@@ -82,8 +82,8 @@ export default {
       //   审核不通过: 3,
       //   不可用: 0
       // },
-      picDialogVisible: false, //预览图片弹出框
-      auditDialogVisible: false, //审核弹出框
+      picDialogVisible: false, // 预览图片弹出框
+      auditDialogVisible: false, // 审核弹出框
       reviewPicUrl: null,
       auditForm: {
         idStr: null,
@@ -105,7 +105,7 @@ export default {
       filterSchema: null,
       pagination: {},
       selected: [],
-      status:[],//选中数据的状态
+      status: [], // 选中数据的状态
       table: {
         props: {},
         header: [
@@ -204,7 +204,7 @@ export default {
         if (valid) {
           this.auditForm.idStr = this.selected.join(',')
           this.$service
-            .materialBatchAudit(this.auditForm, this.auditForm.auditFlag ==='4' ?'审批成功': '打回成功')
+            .materialBatchAudit(this.auditForm, this.auditForm.auditFlag === '4' ? '审批成功' : '打回成功')
             .then(data => {
               this.fetchData()
               this.auditDialogVisible = false
@@ -229,23 +229,23 @@ export default {
       }
       let error = ''
       this.status.forEach((item, index) => {
-        if(item === 4) {
-          if(error === '') {
+        if (item === 4) {
+          if (error === '') {
             error += 'ID=' + this.selected[index]
           } else {
-            error+=","
+            error += ','
             error += 'ID=' + this.selected[index]
           }
         }
       })
-      if (error !=='') {
-          this.$message({
-                type: 'error',
-                message: error + " 已经审核通过了，不需要再审核"
-              })
-          return false
+      if (error !== '') {
+        this.$message({
+          type: 'error',
+          message: error + ' 已经审核通过了，不需要再审核'
+        })
+        return false
       }
-       this.auditForm = {
+      this.auditForm = {
         idStr: null,
         auditFlag: '4',
         auditDesc: ''
@@ -257,14 +257,14 @@ export default {
       this.picDialogVisible = true
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.pictureId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.pictureId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -298,7 +298,7 @@ export default {
      * 得到部门列表
      */
     getMaterialTypes() {
-      return this.$service.getDictType({type: 'materialType'}).then(data => {
+      return this.$service.getDictType({ type: 'materialType' }).then(data => {
         data.forEach(element => {
           this.materialTypes[element.dictCnName] = element.dictId
         })

@@ -2,7 +2,7 @@
   <div class="remote-selector-main">
     <div class="remote-selector-main__filter">
       <slot name="filter">
-        <GateSchemaForm 
+        <GateSchemaForm
           v-if="filterSchema"
           v-model="viewFilter"
           :schema="filterSchema"
@@ -44,10 +44,10 @@
       </div>
       <div class="remote-selector-main__actions">
         <slot name="actions">
-            <el-button type="primary" @click="handleSelectEnd">  
+            <el-button type="primary" @click="handleSelectEnd">
               确定
             </el-button>
-            <el-button @click="handleSelectCancel">  
+            <el-button @click="handleSelectCancel">
               取消
             </el-button>
         </slot>
@@ -77,7 +77,7 @@ export default {
     tableProps() {
       const originProps = this.table.Props || {}
       if (!originProps.height) {
-        return {...originProps, height: this.tableHeight}
+        return { ...originProps, height: this.tableHeight }
       }
       return originProps
     }
@@ -184,15 +184,15 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.remote-selector-main 
+.remote-selector-main
   height 100%
   display flex
   flex-direction column
 .remote-selector-main__content
   overflow auto
   margin 10px 0
-  border-top 1px solid #EBEEF5 
-  border-bottom 1px solid #EBEEF5 
+  border-top 1px solid #EBEEF5
+  border-bottom 1px solid #EBEEF5
   flex 1
 .remote-selector-main__footer
   height 35px

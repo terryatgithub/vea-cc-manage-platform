@@ -6,11 +6,11 @@
 <script>
 export default {
   props: {
-    maxHeight:String
+    maxHeight: String
   },
-  data(){
+  data() {
     return {
-      
+
     }
   }
 }
@@ -21,7 +21,7 @@ ul,li
   margin 0px
   padding 0px
 .selectedItem li
-  float left 
+  float left
   margin 5px
   list-style-type none
 .selectedItem li >>> .el-tag
@@ -32,4 +32,3 @@ ul,li
   border 1px solid #DCDFE6
   border-radius 4px
 </style>
-

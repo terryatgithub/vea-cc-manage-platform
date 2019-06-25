@@ -1,16 +1,16 @@
 <template>
-  <RemoteSelectorWrapper 
+  <RemoteSelectorWrapper
     ref="wrapper"
     custom-class="resource-selector"
     @select-start="handleSelectStart">
     <template slot="content" slot-scope="{isShow}">
-      <BaseSelector 
+      <BaseSelector
         v-if="isLive ? true : isShow"
         ref="baseSelector"
         id-field="pannelGroupId"
         :is-live="isLive"
         :selection-type="selectionType || 'single'"
-        :table="table" 
+        :table="table"
         :filter="filter"
         :filter-schema="filterSchema"
         :pagination="pagination"
@@ -123,12 +123,12 @@ export default {
       return filter
     },
     fetchData() {
-      const filter = this.parseFilter();
+      const filter = this.parseFilter()
       this.$service.getClickData(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
-    },
+    }
   },
   created() {
     let filterSchema = _.map({
@@ -141,7 +141,7 @@ export default {
         placeholder: '点击事件名称'
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20

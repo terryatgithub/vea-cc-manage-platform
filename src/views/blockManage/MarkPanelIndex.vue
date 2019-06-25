@@ -1,6 +1,6 @@
 <script>
 import BaseResourceManager from '@/components/BaseResourceManager'
-import MarkPanelList from  './MarkPanelList'
+import MarkPanelList from './MarkPanelList'
 import MarkPanelInfo from './MarkPanelInfo'
 export default {
   extends: BaseResourceManager,

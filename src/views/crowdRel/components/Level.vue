@@ -21,22 +21,22 @@
               <div
                 v-if="item.parentValue === level.parentValue && item.level === levelIndex"
                 :class="['cc-level-item', item.value === level.activeValue ? 'active' : '']"
-                :key="item.value" 
+                :key="item.value"
                 @click="$emit('item-activate', item, levelIndex)"
               >
                 <span :title="item.label">{{ item.label }}</span>
-                <i 
-                  class="cc-level-item-remove el-icon-circle-close" 
+                <i
+                  class="cc-level-item-remove el-icon-circle-close"
                   title="删除"
-                  @click="$emit('item-remove', item)" 
+                  @click="$emit('item-remove', item)"
                 />
               </div>
             </template>
           </div>
-          <i 
-            class="cc-level-level-remove el-icon-circle-close" 
+          <i
+            class="cc-level-level-remove el-icon-circle-close"
             title="删除"
-            @click="$emit('level-remove', levelIndex)" 
+            @click="$emit('level-remove', levelIndex)"
           />
         </div>
       </template>
@@ -110,7 +110,7 @@ export default {
   background: #eee;
 }
 .cc-level-item.active {
-  background: #4db3ff; 
+  background: #4db3ff;
   color: #fff;
 }
 .cc-level-item-remove {

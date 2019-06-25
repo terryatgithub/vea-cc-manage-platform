@@ -25,8 +25,8 @@ function afterEach (to) {
     return {
       name: meta.title,
       to: undefined
-        // ? { name }
-        // : undefined
+      // ? { name }
+      // : undefined
     }
   })
   app.$nextTick(() => {

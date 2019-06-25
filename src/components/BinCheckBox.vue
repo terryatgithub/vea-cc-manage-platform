@@ -1,7 +1,7 @@
 <template>
-  <el-checkbox 
-    :disabled="disabled" 
-    :value="boolValue" 
+  <el-checkbox
+    :disabled="disabled"
+    :value="boolValue"
     @input="handleInputValue"
   >
     {{ label }}
@@ -26,7 +26,7 @@ export default {
       value = this.isNegative !== undefined
         ? value
           ? 0 : 1
-        : value 
+        : value
           ? 1 : 0
       this.$emit('input', value)
     }

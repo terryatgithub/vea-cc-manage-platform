@@ -8,13 +8,13 @@
                         <el-form class="detail-form" ref="form"  label-width="150px">
                             <cc-var v-if="adSwitches.middle" :ad="adSwitches.middle">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
+                                    <el-form-item
                                         class="detail-ad__1"
-                                        :label="ad.label" 
+                                        :label="ad.label"
                                         >
-                                            <el-switch 
-                                                active-text="开" 
-                                                inactive-text="关" 
+                                            <el-switch
+                                                active-text="开"
+                                                inactive-text="关"
                                                 :value="ad.value"
                                                 @input="handleToggleSwitch(ad)"
                                             >
@@ -25,13 +25,13 @@
 
                             <cc-var v-if="adSwitches.bottom_serial" :ad="adSwitches.bottom_serial">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
+                                    <el-form-item
                                         class="detail-ad__2"
                                         :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -40,16 +40,15 @@
                                 </template>
                             </cc-var>
 
-
                             <cc-var v-if="adSwitches.bottom_movie" :ad="adSwitches.bottom_movie">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
+                                    <el-form-item
                                         class="detail-ad__3"
-                                        :label="ad.label" 
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -66,12 +65,12 @@
                         <el-form :inline="true" label-width="150px" label-position="left">
                             <cc-var v-if="adSwitches.front_detail_a" :ad="adSwitches.front_detail_a">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -82,12 +81,12 @@
 
                             <cc-var v-if="adSwitches.front_loop_a" :ad="adSwitches.front_loop_a">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -97,12 +96,12 @@
                             </cc-var>
                             <cc-var v-if="adSwitches.front_topic_a" :ad="adSwitches.front_topic_a">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -118,12 +117,12 @@
                         <el-form :inline="true" label-width="150px" label-position="left">
                             <cc-var v-if="adSwitches.front_detail_b" :ad="adSwitches.front_detail_b">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -134,12 +133,12 @@
 
                             <cc-var v-if="adSwitches.front_loop_b" :ad="adSwitches.front_loop_b">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -149,12 +148,12 @@
                             </cc-var>
                             <cc-var v-if="adSwitches.front_topic_b" :ad="adSwitches.front_topic_b">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -170,12 +169,12 @@
                         <el-form :inline="true" label-width="150px" label-position="left">
                             <cc-var v-if="adSwitches.middle_detail" :ad="adSwitches.middle_detail">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -186,12 +185,12 @@
 
                             <cc-var v-if="adSwitches.middle_loop" :ad="adSwitches.middle_loop">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -201,12 +200,12 @@
                             </cc-var>
                             <cc-var v-if="adSwitches.middle_topic" :ad="adSwitches.middle_topic">
                                 <template v-slot="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            active-text="开" 
-                                            inactive-text="关" 
+                                        <el-switch
+                                            active-text="开"
+                                            inactive-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -216,7 +215,7 @@
                             </cc-var>
                         </el-form>
                     </div>
-                    
+
                 </el-tab-pane>
 
                 <el-tab-pane label="主页广告" name="homepage">
@@ -224,13 +223,13 @@
                         <p class="ad-title">主页霸屏广告</p>
                         <el-form :inline="true" label-width="150px" label-position="left">
                             <cc-var v-if="adSwitches.screen" :ad="adSwitches.screen">
-                                <template scope="{ad: ad}">
-                                    <el-form-item 
-                                        :label="ad.label" 
+                                <template slot-scope="{ad: ad}">
+                                    <el-form-item
+                                        :label="ad.label"
                                     >
-                                        <el-switch 
-                                            on-text="开" 
-                                            off-text="关" 
+                                        <el-switch
+                                            on-text="开"
+                                            off-text="关"
                                             :value="ad.value"
                                             @input="handleToggleSwitch(ad)"
                                         >
@@ -249,51 +248,51 @@
 <script>
 import Var from '@/components/Var.vue'
 export default {
-    components: {
-        'cc-var': Var
-    },
-    data() {
-        return {
-            adSwitches: {},
-            activeTab: 'detail' 
-        }
-    },
-    methods: {
-        handleToggleSwitch(item) {
-            this.$confirm('确定' + (item.value ? '关闭' : '开启') + '【' + item.label +  '】的广告投放权限吗？')
-                .then(() =>  {
-                    this.$service.advertisementUpsert({
-                        id: item.id,
-                        status: item.value ? 0 : 1
-                    }, '操作成功')
-                    .then((result) => {
-                        item.value = !item.value
-                    })
-                }).catch(() => {
-
-                })
-        },
-        getLabel(type, remark) {
-            return this.adSwitches[type + remark].label
-        },
-        getSwitches() {
-            this.$service.advertisementList().then(result => {
-                const adSwitches = {}
-                result.rows.forEach(function(item) {
-                    adSwitches[item.remark] = {
-                        id: item.id,
-                        label: item.name,
-                        key: item.remark,
-                        value: !!item.status
-                    }
-                }.bind(this))
-                this.$set(this, 'adSwitches', adSwitches)
-            })
-        }
-    },
-    created() {
-        this.getSwitches()
+  components: {
+    'cc-var': Var
+  },
+  data() {
+    return {
+      adSwitches: {},
+      activeTab: 'detail'
     }
+  },
+  methods: {
+    handleToggleSwitch(item) {
+      this.$confirm('确定' + (item.value ? '关闭' : '开启') + '【' + item.label + '】的广告投放权限吗？')
+        .then(() => {
+          this.$service.advertisementUpsert({
+            id: item.id,
+            status: item.value ? 0 : 1
+          }, '操作成功')
+            .then((result) => {
+              item.value = !item.value
+            })
+        }).catch(() => {
+
+        })
+    },
+    getLabel(type, remark) {
+      return this.adSwitches[type + remark].label
+    },
+    getSwitches() {
+      this.$service.advertisementList().then(result => {
+        const adSwitches = {}
+        result.rows.forEach(function(item) {
+          adSwitches[item.remark] = {
+            id: item.id,
+            label: item.name,
+            key: item.remark,
+            value: !!item.status
+          }
+        })
+        this.$set(this, 'adSwitches', adSwitches)
+      })
+    }
+  },
+  created() {
+    this.getSwitches()
+  }
 }
 </script>
 <style>

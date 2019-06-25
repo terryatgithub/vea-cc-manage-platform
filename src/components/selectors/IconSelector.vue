@@ -8,8 +8,8 @@
                 v-for="(item, i) in options"
                 :class="selected && selected.pictureId === item.pictureId ? 'active' : ''"
                 @click="selected = item"
-                :src="item.pictureUrl" 
-                alt="图标" 
+                :src="item.pictureUrl"
+                alt="图标"
                 :title="item.iconTypeName"
             />
         </div>
@@ -23,29 +23,29 @@
 
 <script>
 export default {
-    data() {
-        return {
-            selected: undefined,
-            options: []
-        }
-    },
-    props: ['value'],
-    methods: {
-        handleClose() {
-            this.selected = undefined
-            this.$nextTick(function() {
-                this.$emit('select-cancel')
-            }.bind(this))
-        },
-        handleSelectEnd() {
-            this.$emit('select-end', this.selected)
-        }
-    },
-    created() {
-      this.$service.tabIconList().then((data) => {
-        this.options = data.rows
-      })
+  data() {
+    return {
+      selected: undefined,
+      options: []
     }
+  },
+  props: ['value'],
+  methods: {
+    handleClose() {
+      this.selected = undefined
+      this.$nextTick(function() {
+        this.$emit('select-cancel')
+      }.bind(this))
+    },
+    handleSelectEnd() {
+      this.$emit('select-end', this.selected)
+    }
+  },
+  created() {
+    this.$service.tabIconList().then((data) => {
+      this.options = data.rows
+    })
+  }
 }
 </script>
 <style scoped>

@@ -1,20 +1,20 @@
 <template>
   <div>
-    <CommonPannelUserList 
-      v-show='isShowList' 
-      ref="list" 
+    <CommonPannelUserList
+      v-show='isShowList'
+      ref="list"
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
       @copy="handleCopy"
     />
-    <PanelInfo 
-      v-if='!isShowList' 
-      :id="id" 
+    <PanelInfo
+      v-if='!isShowList'
+      :id="id"
       :panel-data-type="1"
       :init-mode="mode"
       :version="version"
-      @upsert-end="handleUpsertEnd" 
+      @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </PanelInfo>
   </div>
@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'
@@ -70,9 +70,9 @@ export default {
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.isShowList = true
-     this.mode = 'list'
-     this.version = undefined
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

@@ -87,8 +87,8 @@ export default {
                   },
                   element
                 )
-               result.push(e)
-               return result
+                result.push(e)
+                return result
               }, [])
             }
           }
@@ -100,19 +100,19 @@ export default {
     }
   },
   methods: {
-    goBack(){
+    goBack() {
       this.isShowList = true
     },
     handleRead(itemTitle) {
-      let start = itemTitle.indexOf('[') + 1;
-      let end = itemTitle.indexOf(']');
-      let paramPannel = itemTitle.slice(start, end).split(',');
-      let id = paramPannel[0];
-      let version = paramPannel[1];
+      let start = itemTitle.indexOf('[') + 1
+      let end = itemTitle.indexOf(']')
+      let paramPannel = itemTitle.slice(start, end).split(',')
+      let id = paramPannel[0]
+      let version = paramPannel[1]
       this.$emit('read', id, version)
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
+      if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1

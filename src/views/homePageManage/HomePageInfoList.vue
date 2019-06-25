@@ -49,21 +49,21 @@
       </ContentCard>
     </PageContentWrapper>
     <PageContentWrapper v-if="activePage == 'policy'">
-      <Policy 
+      <Policy
         init-mode="read"
-        :id="policyId" 
-        @upsert-end="handleShowPolicyEnd" 
-        @go-back="handleShowPolicyEnd"> 
+        :id="policyId"
+        @upsert-end="handleShowPolicyEnd"
+        @go-back="handleShowPolicyEnd">
       </Policy>
     </PageContentWrapper>
   </PageWrapper>
 </template>
 
 <script>
-import _ from "gateschema";
+import _ from 'gateschema'
 import { Button } from 'element-ui'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
-import { ContentWrapper, Table, ActionList, utils } from "admin-toolkit";
+import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import Policy from './PolicyManageInfo'
@@ -78,7 +78,7 @@ export default {
     ButtonGroupForListPage,
     Policy,
     PageWrapper,
-    PageContentWrapper,
+    PageContentWrapper
   },
   data() {
     let _this = this
@@ -96,126 +96,45 @@ export default {
       },
       filterSchema: null,
       pagination: {},
-      setDialogVisible: false, //弹框默认关闭
+      setDialogVisible: false, // 弹框默认关闭
       selected: [],
-      buttonList:[],
+      buttonList: [],
       table: {
         props: {
           'row-key': 'homepageId'
         },
         header: [
-            {
-                label: 'ID',
-                prop: 'homepageId'
-            },
-            {
-                label: '首页名称',
-                prop: 'homepageName',
-                minWidth: 150,
-                'show-overflow-tooltip': true,
-                render: (h, { row }) => {
-                  return h(Button, 
-                    { 
-                      props: {
-                        type: 'text'
-                      },
-                      on: {
-                        click: (event) => {
-                          event.stopPropagation()
-                          this.handleRead(row)
-                        }
-                      }
-                    }, row.homepageName)
-                }
-            },
-             {
-                label: '关联策略',
-                prop: 'relationPolicyName',
-                align: 'center',
-                render: (h, { row }) => {
-                  const content = row.relationPolicyName
-                  if (content !== '--') {
-                    return h('el-button', {
-                      props: {
-                        type: 'text'
-                      },
-                      on: {
-                        click: (event) => {
-                          event.stopPropagation()
-                          this.handleShowPolicyNames(content)
-                        }
-                      }
-                    }, '查看')
-                  } 
-                }
-            },
-            {
-                label: '版本/状态',
-                prop: 'homepageStatus',
-                align: 'center',
-                render: (h, { row }) => {
-                  const statusText = this.$consts.statusText
-                  return h('span', `${row.currentVersion}/${statusText[row.homepageStatus]}`)
-                }
-            },
-            {
-                  label: '待审核副本',
-                  prop: 'duplicateVersion',
-                  align: 'center',
-                  render: (h, { row }) => {
-                    if (row.duplicateVersion === '') {
-                      return ''
-                    } else {
-                      return h(Button, 
-                        { 
-                          props: {
-                            type: 'text'
-                          },
-                          on: {
-                            click: (event) => {
-                              event.stopPropagation()
-                              this.handleRead(row, row.duplicateVersion)
-                            }
-                          }
-                        }, row.duplicateVersion)
+          {
+            label: 'ID',
+            prop: 'homepageId'
+          },
+          {
+            label: '首页名称',
+            prop: 'homepageName',
+            minWidth: 150,
+            'show-overflow-tooltip': true,
+            render: (h, { row }) => {
+              return h(Button,
+                {
+                  props: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleRead(row)
                     }
                   }
-            },
-            {
-                  label: '机型机芯',
-                  prop: 'chipModel',
-                  align: 'center',
-                  render: (h, { row }) => {
-                    const content = row.chipModel
-                    if (content !== '--') {
-                      return h('el-button', {
-                        props: {
-                          type: 'text'
-                        },
-                        on: {
-                          click: (event) => {
-                            event.stopPropagation()
-                            this.handleShowChips(content)
-                          }
-                        }
-                      }, '查看')
-                    } 
-                }
-            },
-            {
-                  label: '更新时间',
-                  prop: 'lastUpdateDate',
-                  width: 140,
-            },
-            {
-                  label: '更新人',
-                  prop: 'modiferName' 
-            },
-            {
-              label: '操作',
-              width: '100',
-              fixed: 'right',
-              render: (h, { row }) => {
+                }, row.homepageName)
+            }
+          },
+          {
+            label: '关联策略',
+            prop: 'relationPolicyName',
+            align: 'center',
+            render: (h, { row }) => {
+              const content = row.relationPolicyName
+              if (content !== '--') {
                 return h('el-button', {
                   props: {
                     type: 'text'
@@ -223,18 +142,99 @@ export default {
                   on: {
                     click: (event) => {
                       event.stopPropagation()
-                      this.handleCopy(row)
+                      this.handleShowPolicyNames(content)
                     }
                   }
-                }, '复制')
+                }, '查看')
               }
             }
+          },
+          {
+            label: '版本/状态',
+            prop: 'homepageStatus',
+            align: 'center',
+            render: (h, { row }) => {
+              const statusText = this.$consts.statusText
+              return h('span', `${row.currentVersion}/${statusText[row.homepageStatus]}`)
+            }
+          },
+          {
+            label: '待审核副本',
+            prop: 'duplicateVersion',
+            align: 'center',
+            render: (h, { row }) => {
+              if (row.duplicateVersion === '') {
+                return ''
+              } else {
+                return h(Button,
+                  {
+                    props: {
+                      type: 'text'
+                    },
+                    on: {
+                      click: (event) => {
+                        event.stopPropagation()
+                        this.handleRead(row, row.duplicateVersion)
+                      }
+                    }
+                  }, row.duplicateVersion)
+              }
+            }
+          },
+          {
+            label: '机型机芯',
+            prop: 'chipModel',
+            align: 'center',
+            render: (h, { row }) => {
+              const content = row.chipModel
+              if (content !== '--') {
+                return h('el-button', {
+                  props: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleShowChips(content)
+                    }
+                  }
+                }, '查看')
+              }
+            }
+          },
+          {
+            label: '更新时间',
+            prop: 'lastUpdateDate',
+            width: 140
+          },
+          {
+            label: '更新人',
+            prop: 'modiferName'
+          },
+          {
+            label: '操作',
+            width: '100',
+            fixed: 'right',
+            render: (h, { row }) => {
+              return h('el-button', {
+                props: {
+                  type: 'text'
+                },
+                on: {
+                  click: (event) => {
+                    event.stopPropagation()
+                    this.handleCopy(row)
+                  }
+                }
+              }, '复制')
+            }
+          }
         ],
         data: [],
         selected: [],
-        selectionType: "multiple"
+        selectionType: 'multiple'
       }
-    };
+    }
   },
   computed: {
   },
@@ -257,43 +257,43 @@ export default {
       this.showPolicyNameDialog = true
       this.activePage = 'homepage_list'
     },
-    //查询
+    // 查询
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
+      if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
         }
       }
-      this.fetchData() 
+      this.fetchData()
     },
-    //重置
+    // 重置
     handleFilterReset() {
       this.filter = {
         sort: undefined,
         order: undefined
-      };
+      }
       this.pagination.currentPage = 1
-      this.fetchData();
+      this.fetchData()
     },
     parseFilter() {
-      const { filter, pagination } = this;
+      const { filter, pagination } = this
       if (pagination) {
-        filter.page = pagination.currentPage;
-        filter.rows = pagination.pageSize;
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
       }
-      return filter;
+      return filter
     },
     /**
      * 获取数据
      */
     fetchData() {
-      const filter = this.parseFilter();
+      const filter = this.parseFilter()
       this.$service.getHomePageInfoList(filter).then(data => {
-        this.pagination.total = data.total;
-        this.table.data = data.rows;
-      });
-    },
+        this.pagination.total = data.total
+        this.table.data = data.rows
+      })
+    }
     /**
      * 获取menuInfoTree
      */
@@ -305,62 +305,62 @@ export default {
   },
   created() {
     const filterSchema = _.map({
-      homepageId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other("form", {
-        component: "Input",
-        placeholder: "ID"
+      homepageId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
+        component: 'InputPositiveInt',
+        placeholder: 'ID'
       }),
-      homepageName: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "名称"
+      homepageName: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '名称'
       }),
       homepageStatus: _.o.enum({
-        下架:'0',
-        上架:'1',
-        草稿:'2',
-        待审核:'3',
-        审核通过:'4',
-        审核不通过:'5'
-      }).other("form", {
-        component: "Select",
-        placeholder: "状态"
+        下架: '0',
+        上架: '1',
+        草稿: '2',
+        待审核: '3',
+        审核通过: '4',
+        审核不通过: '5'
+      }).other('form', {
+        component: 'Select',
+        placeholder: '状态'
       }),
-      chipModel: _.o.string.other("form", {
-        component: "Input",
-        placeholder: "机型/机芯"
+      chipModel: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '机型/机芯'
       })
     })
-      .other("form", {
-         cols: {
-        item: 5,
-        label: 0,
-        wrapper: 20
-      },
-      layout: "inline",
-      footer: {
+      .other('form', {
         cols: {
+          item: 5,
           label: 0,
-          wrapper: 24
+          wrapper: 20
         },
-        showSubmit: true,
-        submitText: "查询",
-        showReset: true,
-        resetText: "重置"
-      }
-    });
-    this.filterSchema = filterSchema;
-    this.fetchData();
-    //this.getSysMenuInfo();
+        layout: 'inline',
+        footer: {
+          cols: {
+            label: 0,
+            wrapper: 24
+          },
+          showSubmit: true,
+          submitText: '查询',
+          showReset: true,
+          resetText: '重置'
+        }
+      })
+    this.filterSchema = filterSchema
+    this.fetchData()
+    // this.getSysMenuInfo();
   }
-};
+}
 </script>
 <style lang = 'stylus' scoped>
-.tag-list 
+.tag-list
   .tag-item
     padding 5px
     margin 5px
     border 1px solid #ccc
     display inline-block
-.tag-list__policy-name 
+.tag-list__policy-name
   .tag-item
     cursor pointer
 </style>

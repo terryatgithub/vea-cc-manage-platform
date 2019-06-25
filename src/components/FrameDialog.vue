@@ -5,7 +5,7 @@
     :visible="true"
     :fullscreen="true"
     :before-close="handleClose">
-    <div> 
+    <div>
     <iframe class="cc-frame-dialog__frame" :src="url">
     </iframe>
     </div>

@@ -1,5 +1,5 @@
-//专属影院
-/**列表 */
+// 专属影院
+/** 列表 */
 // export function privatePannelInfo(data) {
 //     return this.fetch({
 //         method: 'post',
@@ -7,17 +7,17 @@
 //         data
 //     })
 // }
-/**获取数据字典 */
+/** 获取数据字典 */
 
-/**历史版本 */
+/** 历史版本 */
 export function getHistory(params) {
-    return this.fetch({
-        method: 'get',
-        url: 'api/v1/hvi/historyList.html',
-        params
-    })
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/hvi/historyList.html',
+    params
+  })
 }
-/**编辑 */
+/** 编辑 */
 // export function getEditData(params) {
 //     return this.fetch({
 //         method: 'get',
@@ -27,7 +27,7 @@ export function getHistory(params) {
 //         return JSON.parse(data.match(/initData = (\{.+\})/)[1])
 //     })
 // }
-/**保存 */
+/** 保存 */
 // export function privatePanelUpsert(data) {
 //     return this.fetch({
 //         method: 'post',
@@ -35,13 +35,13 @@ export function getHistory(params) {
 //         data
 //     })
 // }
-/**批量删除 */
+/** 批量删除 */
 export function privatePanelRemove(params) {
-    return this.fetch({
-        method: 'get',
-        url: 'api/v1/panel/remove.html',
-        params
-    })
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/panel/remove.html',
+    params
+  })
 }
 // /**预览 */
 // export function privatePannelInfoView(params) {

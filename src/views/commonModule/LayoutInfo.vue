@@ -94,8 +94,8 @@
     </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'layout-generate'">
-      <LayoutInfoGenerator 
-        @go-back="activePage = 'layout'" 
+      <LayoutInfoGenerator
+        @go-back="activePage = 'layout'"
         @generator-layout="generatorLayout">
       </LayoutInfoGenerator>
     </PageContentWrapper>
@@ -144,8 +144,8 @@ export default {
         layoutName: null,
         layoutType: null,
         layoutJson: {},
-        layoutModel: null, //布局类型
-        layoutStatus: 2 //默认为草稿
+        layoutModel: null, // 布局类型
+        layoutStatus: 2 // 默认为草稿
       },
       formRules: {
         // 表单规则
@@ -176,7 +176,7 @@ export default {
   },
   methods: {
     fetchData(version) {
-      this.$service.getLayoutInforById({id: this.id}).then(this.setLayoutInfo)
+      this.$service.getLayoutInforById({ id: this.id }).then(this.setLayoutInfo)
     },
     setLayoutInfo(data) {
       this.form = Object.assign({}, data)
@@ -217,7 +217,7 @@ export default {
           }
         })
         .then(data => {
-          let d = JSON.parse(data.data.content) //布局内容
+          let d = JSON.parse(data.data.content) // 布局内容
           if (
             typeof d.type !== 'undefined' &&
             (d.type === 'Panel' ||
@@ -238,7 +238,7 @@ export default {
       this.getLayoutJson(obj)
     },
     getLayoutJson(data) {
-      let d = JSON.parse(data.content) //布局内容
+      let d = JSON.parse(data.content) // 布局内容
       this.form.layoutModel = d.type
       this.form.layoutName = data.fileName.replace('.txt', '')
       let layoutjson = {}

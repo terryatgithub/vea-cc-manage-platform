@@ -39,8 +39,8 @@ export default {
   components: {
     ActionList,
     Table,
-     OrderInput,
-    ContentWrapper,
+    OrderInput,
+    ContentWrapper
   },
   data() {
     return {
@@ -58,8 +58,8 @@ export default {
         教育角标: '105',
         策划类: '104',
         素材播出属性: '102'
-      }, //角标分类
-      attributeTypes: {}, //角标类别
+      }, // 角标分类
+      attributeTypes: {}, // 角标类别
       dialogPLVisible: false,
       dialogLevelVisible: false,
       typePositions: {
@@ -75,29 +75,29 @@ export default {
       },
       filterSchema: null,
       pagination: {},
-      selected: [],
+      selected: []
     }
   },
   methods: {
-    //初始化表格
+    // 初始化表格
     fetchData() {
       const filter = this.parseFilter()
       this.$service.getGlobalMgrList(filter).then(data => {
         console.log(data)
         this.pagination.total = data.total
-          this.tab.pannelList = data.rows
+        this.tab.pannelList = data.rows
       })
     },
     parseFilter() {
       const { filter, pagination } = this
       if (pagination) {
-         filter.idPrefix = '10' //10:酷开数据;11:其他地方。默认酷开
+        filter.idPrefix = '10' // 10:酷开数据;11:其他地方。默认酷开
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
       return filter
     },
-     handleChangePannelOrderStart(currentPannelIndex, order) {
+    handleChangePannelOrderStart(currentPannelIndex, order) {
       if (order !== '') {
         order = parseInt(order)
         const pannelList = this.tab.pannelList
@@ -130,9 +130,9 @@ export default {
         this.currentPannelOrder = undefined
       }
     },
-    //查询
+    // 查询
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
+      if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
@@ -140,7 +140,7 @@ export default {
       }
       this.fetchData()
     },
-    //重置
+    // 重置
     handleFilterReset() {
       this.filter = {
         sort: undefined,
@@ -149,7 +149,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    //表格操作
+    // 表格操作
     handleRowSelectionAdd(targetItem) {
       this.selected.push(targetItem.cornerIconId)
       this.updateTableSelected()
@@ -182,7 +182,7 @@ export default {
         return result
       }, [])
     },
-    //角标分类
+    // 角标分类
     getCornerTypes() {
       return this.$service.getCornerTypes().then(data => {
         data.forEach(element => {
@@ -191,7 +191,7 @@ export default {
         console.log(this.globalTypes)
       })
     },
-    //角标类别
+    // 角标类别
     getIconAttributes() {
       return this.$service.getIconAttributes().then(data => {
         data.attributes.forEach(element => {
@@ -199,7 +199,7 @@ export default {
         })
         console.log(this.attributeTypes)
       })
-    },
+    }
   },
   created() {
     let filterSchema = _.map({
@@ -210,7 +210,7 @@ export default {
           item: 3,
           label: 0
         }
-      }),
+      })
     }).other('form', {
       layout: 'inline',
       footer: {
@@ -229,9 +229,9 @@ export default {
       this.getIconAttributes().then(() => {
         this.filterSchema = filterSchema
       })
-    }) //获取角标分类
-    
-    //角标类别
+    }) // 获取角标分类
+
+    // 角标类别
   }
 }
 </script>

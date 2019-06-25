@@ -1,19 +1,19 @@
 <template>
   <div>
-    <TestPolicyManageList 
-      v-show='isShowList' 
-      ref="list" 
+    <TestPolicyManageList
+      v-show='isShowList'
+      ref="list"
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
       @delete="handleDelete"
     />
-    <TestPolicyManageInfo 
-      v-if='!isShowList' 
-      :id="id" 
+    <TestPolicyManageInfo
+      v-if='!isShowList'
+      :id="id"
       :init-mode="mode"
       :version="version"
-      @upsert-end="handleUpsertEnd" 
+      @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </TestPolicyManageInfo>
   </div>
@@ -55,13 +55,13 @@ export default {
       this.$service
         .policyConfRemove({
           id: selected.map(item => item.policyId).join(',')
-        },'删除成功')
+        }, '删除成功')
         .then(() => {
           this.$refs.list.fetchData()
         })
     },
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'
@@ -69,9 +69,9 @@ export default {
       }
     },
     goBack () {
-     this.isShowList = true
-     this.mode = 'list'
-     this.version = undefined
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

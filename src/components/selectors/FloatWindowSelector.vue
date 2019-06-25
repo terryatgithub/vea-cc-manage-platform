@@ -101,7 +101,7 @@ export default {
     },
     handleFilterChange() {
       this.pagination.currentPage = 1
-      this.fetchData() 
+      this.fetchData()
     },
     handleFilterReset() {
       this.filter = {
@@ -123,7 +123,7 @@ export default {
       }
       return filter
     },
-    //获取数据
+    // 获取数据
     fetchData() {
       this.table.selected = undefined
       const filter = this.parseFilter()

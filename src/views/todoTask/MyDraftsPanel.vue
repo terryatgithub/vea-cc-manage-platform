@@ -28,7 +28,7 @@ export default {
       filter: {
         sort: undefined,
         order: undefined,
-         type: 'myDrafts'
+        type: 'myDrafts'
       },
       filterSchema: null,
       pagination: {},
@@ -48,26 +48,26 @@ export default {
             sortable: true,
             render: (createElement, { row }) => {
               return createElement('el-button', {
-                attrs:{
+                attrs: {
                   type: 'text'
                 },
                 on: {
                   click: () => {
-                    this.handleRead(row) 
+                    this.handleRead(row)
                   }
                 }
-              },row.pannelGroupRemark)
+              }, row.pannelGroupRemark)
             }
           },
           {
             label: '标题',
-            prop: 'pannelTitle',
+            prop: 'pannelTitle'
           },
-           {
+          {
             label: '业务类型',
-            prop: 'categoryName',
+            prop: 'categoryName'
           },
-           {
+          {
             label: '更新时间',
             prop: 'lastUpdateDate',
             sortable: true
@@ -80,25 +80,25 @@ export default {
     }
   },
   methods: {
-     handleRead(row) {
+    handleRead(row) {
       this.$emit('read', row)
     },
-      handleFilterChange(type, filter) {
-        if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.taskId)) {
+    handleFilterChange(type, filter) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.taskId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
       this.filter = {
         sort: undefined,
         order: undefined,
-         type: 'myDrafts'
+        type: 'myDrafts'
       }
       this.pagination.currentPage = 1
       this.fetchData()
@@ -116,7 +116,7 @@ export default {
      */
     fetchData() {
       const filter = this.parseFilter()
-        filter.resourceType = 'panel'
+      filter.resourceType = 'panel'
       this.$service.todoTaskPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
@@ -129,12 +129,12 @@ export default {
         component: 'Input',
         placeholder: 'ID'
       }),
-          taskName: _.o.string.other('form', {
+      taskName: _.o.string.other('form', {
         component: 'Input',
         placeholder: '名称'
       })
     }).other('form', {
-        cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20
@@ -156,4 +156,3 @@ export default {
   }
 }
 </script>
-

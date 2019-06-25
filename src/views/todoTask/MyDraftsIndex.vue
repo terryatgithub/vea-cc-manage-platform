@@ -18,16 +18,16 @@ export default {
     MyDraftsPolicyIndex,
     MyDraftsPanelIndex
   },
-   data(){
-     return {
-       activeName: 'first'
-     }
-   },
-   methods: {
-     handleClick(){
+  data() {
+    return {
+      activeName: 'first'
+    }
+  },
+  methods: {
+    handleClick() {
 
-     }
-   }
+    }
+  }
 }
 </script>
 <style lang="stylus" scoped>
@@ -37,5 +37,3 @@ export default {
     top: 0;
 }
 </style>
-
-

@@ -1,10 +1,10 @@
  <template>
-  <BaseSelector 
+  <BaseSelector
     ref="baseSelector"
     id-field="id"
     :is-live="isLive"
     :selection-type="selectionType"
-    :table="table" 
+    :table="table"
     :pagination="pagination"
     :filter="filter"
     :filter-schema="filterSchema"
@@ -15,9 +15,9 @@
     @select-end="$emit('select-end')">
   </BaseSelector>
 </template>
- 
+
 <script>
-import _ from "gateschema";
+import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
 export default {
   components: {
@@ -62,7 +62,7 @@ export default {
         resType: 'operation',
         dataType: 'rotate',
         levelType: 'rotateSta',
-        callback: 'result',
+        callback: 'result'
       }
     },
     getFilter() {
@@ -105,7 +105,7 @@ export default {
         label: ' '
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 3,
         label: 1,
         wrapper: 23
@@ -127,6 +127,6 @@ export default {
   }
 }
 </script>
- 
+
  <style lang='stylus' scoped>
 </style>

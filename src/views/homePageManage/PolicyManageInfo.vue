@@ -272,13 +272,13 @@ export default {
       mode: 'normal',
       dialogVisible: false,
       selectHomePageDialogVisible: false,
-      addHomePageDialogVisible: false, //是否显示addHomePage组件
-      //model: 'normal',
-      platform: 'tencent', //内容源
+      addHomePageDialogVisible: false, // 是否显示addHomePage组件
+      // model: 'normal',
+      platform: 'tencent', // 内容源
       selectedCrowds: [],
-      editHomePageData: {}, //编辑定向首页方案
+      editHomePageData: {}, // 编辑定向首页方案
       //  editHomePageMode: undefined, //编辑定向首页方案的模式 normal,child
-      editHomePageIndex: undefined, //编辑定向首页方案数据索引
+      editHomePageIndex: undefined, // 编辑定向首页方案数据索引
       form: {
         policyId: null,
         policyName: null,
@@ -288,7 +288,7 @@ export default {
         homePageVerStart: '',
         priority: null,
         policyStatus: 3,
-        deviceInfos: [], //机型机芯{chip:'',model:''}
+        deviceInfos: [], // 机型机芯{chip:'',model:''}
         homepageInfoList: [],
         homepageInfoListObj: {},
         schemeFilterEntity: {
@@ -365,7 +365,7 @@ export default {
       this.form.specialNormalHp = []
       this.form.specialChildHp = []
     },
-    /** 关联首页选择*/
+    /** 关联首页选择 */
     rowClick(row) {
       this.dialogVisible = false
       this.form.homepageInfoListObj[this.mode] = {
@@ -378,7 +378,7 @@ export default {
     addHomePageClose() {
       this.addHomePageDialogVisible = false
     },
-    /*定向首页方案编辑*/
+    /* 定向首页方案编辑 */
     editHomePage(mode, index) {
       this.addHomePageDialogVisible = true
       //  this.editHomePageMode = mode
@@ -392,7 +392,7 @@ export default {
         this.editHomePageData = this.form.specialChildHp[index]
       }
     },
-    /*定向首页方案编辑*/
+    /* 定向首页方案编辑 */
     removeHomePage(mode, index) {
       if (mode === 'normal') {
         this.editHomePageData = this.form.specialNormalHp.splice(index, 1)
@@ -496,7 +496,7 @@ export default {
         case 'modelChip':
           let platform = this.$refs.chipModelSelected.platform
           if (platform !== this.platform) {
-            //更新首页
+            // 更新首页
             this.platform = platform
           }
           this.form.deviceInfos = this.$refs.chipModelSelected.selected.map(
@@ -581,7 +581,7 @@ export default {
           homePageVerStart: data.homepageVerStart,
           priority: data.priority,
           policyStatus: data.policyStatus,
-          deviceInfos: [{ chip: data.chip, model: data.model }], //机型机芯{chip:'',model:''}
+          deviceInfos: [{ chip: data.chip, model: data.model }], // 机型机芯{chip:'',model:''}
           homepageInfoList: data.homepageInfoList,
           homepageInfoListObj: {
             normal:
@@ -637,7 +637,3 @@ export default {
   font-size: 12px
   margin-left: 10px
 </style>
-
-
-
-

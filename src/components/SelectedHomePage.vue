@@ -44,8 +44,8 @@ export default {
     edit(homepageModel, index) {
       this.$emit('edit-item', homepageModel, index)
     },
-     remove(homepageModel, index) {
-      this.$emit('remove-item',homepageModel ,index)
+    remove(homepageModel, index) {
+      this.$emit('remove-item', homepageModel, index)
     }
   }
 }
@@ -68,5 +68,3 @@ h4
   top: 10px
   right: 10px
 </style>
-
-

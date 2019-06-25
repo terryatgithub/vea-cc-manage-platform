@@ -39,6 +39,6 @@ export default {
 .audit-history-table
   color #999
   font-size 14px
-.audit-history-table tr:last-child 
+.audit-history-table tr:last-child
   color #000
 </style>

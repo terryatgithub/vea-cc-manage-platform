@@ -4,7 +4,7 @@
     :multiple="true"
     :accept="accept"
     @upload="handleUpload"
-  > 
+  >
     <div class="upload-pic-list" slot="preview" slot-scope="{fileList}">
       <el-button type="primary" plain @click="$refs.upload.handleSelectFile()">点击选择文件</el-button>
       <div class="upload-pic-list__item" v-for="file in fileList" :key="file.id">

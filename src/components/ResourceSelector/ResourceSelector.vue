@@ -1,14 +1,14 @@
 <template>
-  <RemoteSelectorWrapper 
+  <RemoteSelectorWrapper
     ref="wrapper"
     custom-class="resource-selector"
     @select-start="handleSelectStart">
     <div class="resource-selector__header" slot="title">
       <template v-for="item in SELECTORS" >
-        <a 
-          v-if="selectors.indexOf(item.value) > -1" 
-          :class="item.value === activeSelector ? 'active' : ''" 
-          :key="item.value" 
+        <a
+          v-if="selectors.indexOf(item.value) > -1"
+          :class="item.value === activeSelector ? 'active' : ''"
+          :key="item.value"
           @click="handleActivateSelector(item.value)">
           {{ item.label }}
         </a>
@@ -16,66 +16,66 @@
     </div>
     <template slot="content" slot-scope="{isShow}">
       <template v-if="isLive ? true : isShow">
-          <video-selector 
+          <video-selector
             v-show="activeSelector === 'video'"
-            ref="video-selector" 
+            ref="video-selector"
             :disable-partner="disablePartner"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
-          <app-selector 
+          <app-selector
             v-show="activeSelector === 'app'"
-            ref="app-selector" 
+            ref="app-selector"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
-          <edu-selector 
+          <edu-selector
             v-show="activeSelector === 'edu'"
-            ref="edu-selector" 
+            ref="edu-selector"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
-          <pptv-selector 
+          <pptv-selector
             v-show="activeSelector === 'pptv'"
-            ref="pptv-selector" 
+            ref="pptv-selector"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
-          <live-selector 
+          <live-selector
             v-show="activeSelector === 'live'"
-            ref="live-selector" 
+            ref="live-selector"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
-          <topic-selector 
+          <topic-selector
             v-show="activeSelector === 'topic'"
-            ref="topic-selector" 
+            ref="topic-selector"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
-          <rotate-selector 
+          <rotate-selector
             v-show="activeSelector === 'rotate'"
-            ref="rotate-selector" 
+            ref="rotate-selector"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
-          <func-selector 
+          <func-selector
             v-show="activeSelector === 'func'"
-            ref="func-selector" 
+            ref="func-selector"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
-          <broadcast-selector 
+          <broadcast-selector
             v-show="activeSelector === 'broadcast'"
-            ref="broadcast-selector" 
+            ref="broadcast-selector"
             :source="source"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
@@ -193,8 +193,8 @@ export default {
         if (selectionType === 'multiple' || selectionType === 'single' && item === activeSelector) {
           result[item] = ref.selected
           if (item === 'video') {
-            result.episode = {...ref.selectedEpisodes}
-          } 
+            result.episode = { ...ref.selectedEpisodes }
+          }
         } else {
           result[item] = {}
           if (item === 'video') {

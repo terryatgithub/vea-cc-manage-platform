@@ -27,11 +27,11 @@ export default {
         .deleteResource({
           type: resourceInfo.type,
           id: selected.map(item => item[idField]).join(',')
-        },'删除成功')
+        }, '删除成功')
         .then(() => {
           this.$refs.list.fetchData()
         })
-    },
+    }
   }
 }
 </script>

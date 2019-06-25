@@ -1,10 +1,10 @@
  <template>
-  <BaseSelector 
+  <BaseSelector
     ref="baseSelector"
     id-field="id"
     :is-live="isLive"
     :selection-type="selectionType"
-    :table="table" 
+    :table="table"
     :pagination="pagination"
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
@@ -31,7 +31,7 @@
     </el-form>
   </BaseSelector>
 </template>
- 
+
 <script>
 import BaseSelector from '../BaseSelector'
 export default {
@@ -70,7 +70,7 @@ export default {
             prop: 'picture',
             label: '专题背景',
             render: (h, { row }) => {
-              if (row.picture)
+              if (row.picture) {
                 return h('img', {
                   attrs: {
                     src: row.picture,
@@ -79,6 +79,7 @@ export default {
                     class: 'imgs'
                   }
                 })
+              }
             },
             width: '120'
           },
@@ -151,6 +152,6 @@ export default {
   }
 }
 </script>
- 
+
  <style lang='stylus' scoped>
 </style>

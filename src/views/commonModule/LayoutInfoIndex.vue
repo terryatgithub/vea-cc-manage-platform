@@ -1,8 +1,8 @@
 <template>
   <div>
-    <LayoutInfoList 
-      v-show="isShowList" 
-      ref="list" 
+    <LayoutInfoList
+      v-show="isShowList"
+      ref="list"
       @create="handleCreate"
       @edit="handleEdit"
       @read="handleRead"
@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      mode: "list",
+      mode: 'list',
       isShowList: true,
       id: undefined,
       version: undefined,
@@ -45,26 +45,26 @@ export default {
       this.isShowList = false
     },
     handleEdit(row) {
-       this.id = row.layoutId
-       this.mode = 'edit'
-       this.isShowList = false
+      this.id = row.layoutId
+      this.mode = 'edit'
+      this.isShowList = false
     },
-    handleRead(row){
-       this.id = row.layoutId
-       this.mode = 'read'
-       this.isShowList = false
+    handleRead(row) {
+      this.id = row.layoutId
+      this.mode = 'read'
+      this.isShowList = false
     },
     handleDelete(selected) {
       this.$service
-        .getLayoutInforBatchDel({ 
+        .getLayoutInforBatchDel({
           id: selected.map(item => item.layoutId).join(',')
-        },'删除成功')
+        }, '删除成功')
         .then(_ => {
           this.$refs.list.fetchData()
         })
     },
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'

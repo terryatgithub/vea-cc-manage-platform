@@ -503,14 +503,6 @@
   </ContentCard>
 </template>
 <script>
-const PARENT_TYPES = {
-  sign: 'sign', //标记推荐位
-  multi: 'multi',
-  builtIn: 'builtIn',
-  secKill: 'secKill'
-}
-
-window.basicFn = {}
 // import ccAppParamsForm from './ccAppParamsForm'
 import ccTimeSpinner from './ccTimeSpinner'
 import selectResource from './selectResource'
@@ -537,8 +529,8 @@ export default {
       title: null,
       dialogTableVisible: false,
       dialogClickTableVisible: false,
-      showFocusImgSelectorVisible: false, //异形弹框
-      clickData: {}, //点击事件
+      showFocusImgSelectorVisible: false, // 异形弹框
+      clickData: {}, // 点击事件
       selectResource: {},
       selectImgData: {},
       urls: {
@@ -643,7 +635,7 @@ export default {
           {
             trigger: 'change',
             validator: function(_, value, cb) {
-              cb(!!value ? undefined : new Error('请选择版面'))
+              cb(value ? undefined : new Error('请选择版面'))
             }
           },
           {
@@ -754,7 +746,7 @@ export default {
       const mins = parseInt(timeArr[1])
       return hours * 60 + mins
     },
-    //转换位时间格式 ：hh:mm
+    // 转换位时间格式 ：hh:mm
     parseStrToMin(min) {
       const hours = Math.floor(min / 60)
       const mins = min % 60
@@ -762,7 +754,7 @@ export default {
       const minsStr = mins > 9 ? '' + mins : '0' + mins
       return hoursStr + ':' + minsStr
     },
-    //数据回显
+    // 数据回显
     fetchData(version) {
       this.$service.editSysPlugin({ id: this.id, version }).then(data => {
         if (data) {
@@ -795,7 +787,7 @@ export default {
         }
       })
     },
-    //父数据字典查询接口
+    // 父数据字典查询接口
     getPluginParentTypes() {
       this.$service.getPluginParentTypes().then(data => {
         console.log(data)
@@ -806,7 +798,7 @@ export default {
         }
       })
     },
-    //数据字典查询
+    // 数据字典查询
     getPluginTypes(pluginParentType) {
       this.$service
         .getPluginTypes({ pluginParentType: pluginParentType })
@@ -817,7 +809,7 @@ export default {
           }
         })
     },
-    /**时间选择时间 */
+    /** 时间选择时间 */
     handleTime() {},
     getPluginVersions(type) {
       var that = this
@@ -836,7 +828,7 @@ export default {
         }
       })
     },
-    /**类容源切换事件 */
+    /** 类容源切换事件 */
     handleChangeSource(val) {
       this.$confirm('确定切换内容源？', '提示', {
         confirmButtonText: '确定',
@@ -852,7 +844,7 @@ export default {
           throw e
         })
     },
-    /**类型选择——父类 */
+    /** 类型选择——父类 */
     handleChangePluginParentType(val) {
       const originType = this.block.pluginInfo.pluginParentType
       const confirmOK = function() {
@@ -890,7 +882,7 @@ export default {
       helper.title = ''
       helper.subTitle = ''
     },
-    /**多功能推荐位类型 */
+    /** 多功能推荐位类型 */
     handleChangePluginType(val) {
       const originType = this.block.pluginInfo.pluginType
       const confirmOK = function() {
@@ -961,12 +953,12 @@ export default {
         preset
       )
     },
-    /**弹框选择素材 */
+    /** 弹框选择素材 */
     handleSelectPosterStart(index) {
       this.selectingPostForIndex = index
       this.dialogTableVisible = true
     },
-    /**弹框选择素材 */
+    /** 弹框选择素材 */
     getSelectResource(data) {
       this.selectResource = data
       this.dialogTableVisible = false
@@ -978,12 +970,12 @@ export default {
       this.block.rlsInfo[this.selectingPostForIndex].poster = selectObj
     },
     selectSubmit() {},
-    /**快速填充 */
+    /** 快速填充 */
     handleSelectClickStart(index) {
       this.selectingClickForIndex = index
       this.dialogClickTableVisible = true
     },
-    /**点击事件弹框 */
+    /** 点击事件弹框 */
     getClickData1(data) {
       this.clickData = data
       this.dialogClickTableVisible = false
@@ -1020,7 +1012,7 @@ export default {
       item.onclick = o
     },
     clickSubmit() {},
-    /**异形焦点选择 */
+    /** 异形焦点选择 */
     handleSelectFocusImgStart(index) {
       this.showFocusImgSelectorVisible = true
       this.selectingFocusImgForIndex = index
@@ -1074,7 +1066,7 @@ export default {
       }
       return onclick
     },
-    /**打开方式 */
+    /** 打开方式 */
     handleChangeOpenMode(item, openMode) {
       item.openMode = openMode
       if (openMode === 'webpage') {
@@ -1212,9 +1204,9 @@ export default {
         switch (item.openMode) {
           case 'webpage':
             if (originOnclick.webpageType === '1') {
-              //浮窗网页
+              // 浮窗网页
               item.onclick = {
-                packagename: 'com.coocaa.app_browser', //setPackage
+                packagename: 'com.coocaa.app_browser', // setPackage
                 versioncode: originOnclick.webpageAppVersion,
                 dowhat: 'startActivity',
                 bywhat: 'action',
@@ -1228,7 +1220,7 @@ export default {
                 exception: {}
               }
             } else if (originOnclick.webpageType === '2') {
-              //全屏网页
+              // 全屏网页
               item.onclick = {
                 packagename: 'com.coocaa.app_browser',
                 versioncode: originOnclick.webpageAppVersion,
@@ -1355,11 +1347,11 @@ export default {
       this.validateData(
         data,
         function() {
-          this.submit(data) //审核保存方法
+          this.submit(data) // 审核保存方法
         }.bind(this)
       )
     },
-    /**审核保存的方法 */
+    /** 审核保存的方法 */
     submit(formData) {
       this.validateData(
         formData,
@@ -1386,7 +1378,7 @@ export default {
         }.bind(this)
       )
     },
-    /**活动形式单选事件 */
+    /** 活动形式单选事件 */
     handleChangeActivityFlag(val) {
       // 非常丑陋， 改变活动形式，要控制某个版本的显示和隐藏
       if (val) {
@@ -1460,5 +1452,3 @@ export default {
   color: red;
 }
 </style>
-
-

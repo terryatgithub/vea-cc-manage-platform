@@ -15,7 +15,7 @@
 </template>
 <script>
 export default {
-  props: ['hourOption', 'minuteOption', 'initSumTime', 'min', 'max','disabled'],
+  props: ['hourOption', 'minuteOption', 'initSumTime', 'min', 'max', 'disabled'],
   data() {
     return {
       hour: null,
@@ -48,12 +48,12 @@ export default {
       }
       return true
     },
-    setHourAndMinute(){
+    setHourAndMinute() {
       let hour = Math.floor(this.initSumTime / 60)
       let minute = this.initSumTime - hour * 60
       this.hour = '0' + hour + ':00'
-      hour > 9 ? this.hour =  hour + ':00'  :  this.hour = '0' + hour + ':00'
-      minute > 9 ? this.minute = '00:' + minute  : this.minute = '00:0' + minute 
+      hour > 9 ? this.hour = hour + ':00' : this.hour = '0' + hour + ':00'
+      minute > 9 ? this.minute = '00:' + minute : this.minute = '00:0' + minute
     }
   },
   watch: {
@@ -72,7 +72,7 @@ export default {
       }
     },
     initSumTime: function (newV) {
-       this.setHourAndMinute()
+      this.setHourAndMinute()
     }
   },
   created () {
@@ -81,5 +81,3 @@ export default {
 }
 </script>
 <style lang="stylus" scoped></style>
-
-

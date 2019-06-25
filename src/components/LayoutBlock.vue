@@ -148,16 +148,16 @@ export default {
   },
 
   mounted() {
-    //this.ratio = document.querySelector('#layout').clientWidth / this.maxX
-   // debugger
-    this.ratio=this.contentWidth/this.maxX
-    //this.ratio=document.querySelector('#layout').clientWidth/this.maxX
+    // this.ratio = document.querySelector('#layout').clientWidth / this.maxX
+    // debugger
+    this.ratio = this.contentWidth / this.maxX
+    // this.ratio=document.querySelector('#layout').clientWidth/this.maxX
   },
   watch: {
     content: function(newV, oldV) {
       this.init()
-      this.ratio=this.contentWidth/this.maxX
-      //this.ratio = document.querySelector('#layout').clientWidth / this.maxX
+      this.ratio = this.contentWidth / this.maxX
+      // this.ratio = document.querySelector('#layout').clientWidth / this.maxX
     }
   },
   created() {
@@ -190,7 +190,6 @@ export default {
   color red
 .changeWidth
   width 70px
-  input 
+  input
     width 60px
 </style>
-

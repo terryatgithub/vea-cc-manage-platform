@@ -136,7 +136,7 @@
                 </div>
               </el-form-item>
               <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                <el-tag type="primary" v-for="(item, index) in sharedTags">{{ item }}</el-tag>
+                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item }}</el-tag>
               </el-form-item>
               <el-form-item v-show="isShowTagsField"  class="tag-list" label="资源批量打标签">
                 <el-button type="primary" plain @click="handleBatchAddTag">
@@ -147,14 +147,14 @@
                 <span v-show="!selectedLayout">
                   请先选择布局
                 </span>
-                <ResourceSelector 
+                <ResourceSelector
                   ref="resourceSelector"
                   v-show="selectedLayout"
                   :selectors="['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate']"
                   :is-live="false"
                   :disable-partner="!!pannel.pannelResource"
                   selection-type="multiple"
-                  :source="pannel.pannelResource" 
+                  :source="pannel.pannelResource"
                   @select-end="handleSelectResourceEnd">
                   <el-button type="primary" plain>选择资源</el-button>
                 </ResourceSelector>
@@ -216,7 +216,7 @@
             </el-form>
           </template>
           <template v-if="mode === 'read'">
-            
+
             <div class="form-legend-header">
               <i class="el-icon-edit">基本信息</i>
             </div>
@@ -276,7 +276,7 @@
                 </div>
               </el-form-item>
               <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                <el-tag type="primary" v-for="(item, index) in sharedTags">{{ item }}</el-tag>
+                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item }}</el-tag>
               </el-form-item>
               <el-form-item label="推荐位">
                 <div class="pannel-blocks">
@@ -290,7 +290,7 @@
                         :key="index"
                         :name="index.toString()"
                       >
-                        
+
                         <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
                           {{ item.pannelTitle }} {{ item.panelIsFocus && pannel.focusConfig === '' ? '(默认落焦)' : '' }}
                         </span>
@@ -454,7 +454,7 @@ export default {
 
       currentBlockIndex: undefined,
       // 当前激活的分组 pannel 的索引值
-      activePannelIndex: "0",
+      activePannelIndex: '0',
       activePanelGroup: undefined,
 
       showAddTagDialog: false,
@@ -533,7 +533,7 @@ export default {
             const videoContentType = videoItem.videoContentType
             const id = videoItem.extraValue1 || ''
             if (id && contentTypeMap[videoContentType]) {
-              ids.push(id)  
+              ids.push(id)
             }
           })
         })
@@ -542,16 +542,16 @@ export default {
     },
     isShowTagsField() {
       const pannelList = this.pannel.pannelList
-      let isShow = this.selectedLayout ? true : false
+      let isShow = !!this.selectedLayout
       for (
         let i = 0, length = pannelList.length;
         i < length;
         i++
       ) {
-        const pannel = pannelList[i];
-        const contentList = pannel.contentList;
+        const pannel = pannelList[i]
+        const contentList = pannel.contentList
         for (let j = 0, lengthJ = contentList.length; j < lengthJ; j++) {
-          const content = contentList[j] || {};
+          const content = contentList[j] || {}
           if (
             !content.videoContentList ||
             content.videoContentList.length === 0
@@ -603,48 +603,47 @@ export default {
       }
       const resourceIds = this.panelResourceIds
       this.$service.getSharedTags({ coocaaVIds: resourceIds.join(',') }).then((data) => {
-          const tags = data.data.tags
-          this.sharedTags = tags ? tags.split(',') : []
+        const tags = data.data.tags
+        this.sharedTags = tags ? tags.split(',') : []
       })
     },
     handleFocusConfigChange(val) {
-      if (val === "week") {
-        const pannel = this.pannel;
-        const pannelList = pannel.pannelList;
-        let count = 7 - pannelList.length;
+      if (val === 'week') {
+        const pannel = this.pannel
+        const pannelList = pannel.pannelList
+        let count = 7 - pannelList.length
         while (count-- > 0) {
-          this.addPannel();
+          this.addPannel()
         }
         const titles = [
-          "周一",
-          "周二",
-          "周三",
-          "周四",
-          "周五",
-          "周六",
-          "周日"
-        ];
+          '周一',
+          '周二',
+          '周三',
+          '周四',
+          '周五',
+          '周六',
+          '周日'
+        ]
         pannel.pannelList = pannelList.map(function(item, index) {
-          item.pannelTitle = titles[index];
+          item.pannelTitle = titles[index]
           item.panelIsFocus = 0
-          return item;
-        });
-        this.updateAllPosition();
+          return item
+        })
+        this.updateAllPosition()
       }
-      if (val === "timeSlot") {
-        const pannel = this.pannel;
-        const pannelList = pannel.pannelList;
-        let count = 4 - pannelList.length;
+      if (val === 'timeSlot') {
+        const pannel = this.pannel
+        const pannelList = pannel.pannelList
+        let count = 4 - pannelList.length
         while (count-- > 0) {
-          this.addPannel();
+          this.addPannel()
         }
         pannel.pannelList = pannelList.map(function(item, index) {
-          item.pannelTitle = '时间段分组';
-          return item;
-        });
-        this.updateAllPosition();
+          item.pannelTitle = '时间段分组'
+          return item
+        })
+        this.updateAllPosition()
       }
-
     },
     fetchData(version) {
       return this.$service.panelGetDetail({ id: this.id, version }).then(data => {
@@ -768,10 +767,10 @@ export default {
         return pannelResource === 'o_tencent'
           ? '_otx_' + vId
           : pannelResource === 'o_iqiyi'
-          ? '_oqy_' + vId
-          : pannelResource === 'o_youku'
-          ? '_oyk_' + vId
-          : ''
+            ? '_oqy_' + vId
+            : pannelResource === 'o_youku'
+              ? '_oyk_' + vId
+              : ''
       }
       // 获取当前已有内容的推荐位数量
       let blockNotEmptyCount = 0
@@ -835,8 +834,8 @@ export default {
               const publishStatus = isUnknown
                 ? 'unknown'
                 : updatedSegment == publishSegment
-                ? 'ended'
-                : 'updating'
+                  ? 'ended'
+                  : 'updating'
               finalItem.publishStatus = publishStatus
               finalItem.score = score
               finalItem.categoryId = item.categoryId
@@ -1088,7 +1087,7 @@ export default {
             panel.pannelResource = ''
           }
           this.clearBlocks()
-          }
+        }
         )
         .catch(function() {})
     },
@@ -1505,7 +1504,6 @@ export default {
           return contentItem
         })
 
-
         let timeSlot
         if (pannel.focusConfig === 'timeSlot') {
           const startTime = item.startTime
@@ -1592,7 +1590,7 @@ export default {
         const validateBlocksRes = this.validateBlocks()
 
         const emptyPannelTitleIndex = validateBlocksRes.emptyPannelTitleIndex
-        const duplicatedPannelTitleIndex = validateBlocksRes.duplicatedPannelTitleIndex;
+        const duplicatedPannelTitleIndex = validateBlocksRes.duplicatedPannelTitleIndex
         const emptyTimeSlotIndex = validateBlocksRes.emptyTimeSlotIndex
         const emptyPostIndex = validateBlocksRes.emptyPostIndex
         const emptyPostBlockIndex = validateBlocksRes.emptyPostBlockIndex
@@ -1694,9 +1692,9 @@ export default {
       const selectedLayout = this.selectedLayout
       const pannelTitleIndex = {}
       let emptyPannelTitleIndex
-      let duplicatedPannelTitleIndex;
+      let duplicatedPannelTitleIndex
 
-      let emptyTimeSlotIndex;
+      let emptyTimeSlotIndex
 
       let emptyPriceIndex
       let emptyPriceBlockIndex
@@ -1711,7 +1709,7 @@ export default {
       let hasDuplicated
       let focusIndex
 
-      checkBlock: 
+      checkBlock:
       for (let i = 0, length = pannelList.length; i < length; i++) {
         const pannel = pannelList[i]
         if (!pannel.pannelTitle) {
@@ -1722,13 +1720,13 @@ export default {
         const pannelTitle = pannel.pannelTitle.trim()
         if (pannelTitleIndex[pannelTitle]) {
           duplicatedPannelTitleIndex = i
-          break checkBlock;
+          break checkBlock
         } else {
           pannelTitleIndex[pannelTitle] = true
         }
         // 落焦时间段重叠检查
         if (focusConfig === 'timeSlot') {
-          if ( !(pannel.startTime && pannel.endTime) && !pannel.panelIsFocus ) {
+          if (!(pannel.startTime && pannel.endTime) && !pannel.panelIsFocus) {
             emptyTimeSlotIndex = i
             break checkBlock
           }
@@ -1805,7 +1803,7 @@ export default {
       const data = this.getFormData()
       data.pannelStatus = this.$consts.status.waiting
       this.validate(data, () => {
-        if (this.couldSetReleaseTime){
+        if (this.couldSetReleaseTime) {
           if (timing) {
             data.isTiming = timing.isTiming
             data.releaseTime = timing.releaseTime
@@ -1867,8 +1865,8 @@ export default {
           return item
         })
         pannel.pannelResource = firstPannel.pannelResource
-        pannel.flagIs4k = firstPannel.flagIs4k 
-        pannel.showTitle = firstPannel.showTitle 
+        pannel.flagIs4k = firstPannel.flagIs4k
+        pannel.showTitle = firstPannel.showTitle
         pannel.focusShape = firstPannel.focusShape
         pannel.pannelStatus = firstPannel.pannelStatus
 
@@ -1883,10 +1881,10 @@ export default {
           this.isShowfocusImgUrl = firstBlock.focusImgUrl
         }
       }
-      this.pannel = {...pannel}
+      this.pannel = { ...pannel }
       this.updateAllPosition()
       this.getSharedTags()
-      this.$watch("pannel.focusConfig", this.handleFocusConfigChange)
+      this.$watch('pannel.focusConfig', this.handleFocusConfigChange)
     },
     clickBlock() {
       const { initGroupIndex, initBlockIndex } = this
@@ -1900,7 +1898,7 @@ export default {
   },
   created() {
     this.mode = this.initMode || 'create'
-    this.$service.getDictType({type: 'businessType', isFilter: 1}).then(data => {
+    this.$service.getDictType({ type: 'businessType', isFilter: 1 }).then(data => {
       this.businessTypeEnums = data.map(item => {
         return {
           label: item.dictCnName,
@@ -1933,7 +1931,7 @@ export default {
   margin: 10px 0;
   border: 1px solid #e7e4c2;
   background: #fef8b8;
-  padding: 10px; 
+  padding: 10px;
 }
 .tag-list >>> .el-tag {
   margin-right: 10px;

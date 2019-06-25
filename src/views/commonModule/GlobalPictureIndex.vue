@@ -1,8 +1,8 @@
 <template>
   <div>
-    <GlobalPictureList 
-      v-show="isShowList" 
-      ref="list" 
+    <GlobalPictureList
+      v-show="isShowList"
+      ref="list"
       @create="handleCreate"
       @edit="handleEdit"
       @read="handleRead"
@@ -18,8 +18,8 @@
   </div>
 </template>
 <script>
-import GlobalPictureUpsert from "./GlobalPictureUpsert";
-import GlobalPictureList from "./GlobalPictureList";
+import GlobalPictureUpsert from './GlobalPictureUpsert'
+import GlobalPictureList from './GlobalPictureList'
 export default {
   components: {
     GlobalPictureUpsert,
@@ -30,11 +30,11 @@ export default {
       isShowList: true,
       editId: null,
       mode: undefined
-    };
+    }
   },
   methods: {
     goBack() {
-      this.isShowList = true;
+      this.isShowList = true
     },
     handleCreate(item) {
       this.editId = undefined
@@ -46,14 +46,14 @@ export default {
       this.isShowList = false
       this.mode = 'edit'
     },
-    handleRead(item){
+    handleRead(item) {
       this.editId = item.pictureId
       this.mode = 'read'
       this.isShowList = false
     },
     handleDelete(selected) {
       this.$service
-        .materialBatchDelete({ 
+        .materialBatchDelete({
           id: selected.map(item => item.pictureId).join(',')
         }, '删除成功')
         .then(data => {
@@ -68,5 +68,5 @@ export default {
       this.$refs.list.fetchData() // 更新页面
     }
   }
-};
+}
 </script>

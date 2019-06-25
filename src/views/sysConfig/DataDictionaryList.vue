@@ -70,7 +70,7 @@ export default {
   },
   data() {
     return {
-      dialogFormVisible: false, //字典分类弹框默认false
+      dialogFormVisible: false, // 字典分类弹框默认false
       labelPosition: 'right',
       ruleForm: {
         dictCategoryEnName: '',
@@ -83,7 +83,7 @@ export default {
         dictCategoryEnName: [
           { required: true, message: '请输入字典分类值', trigger: 'blur' }
         ]
-      }, //弹框表单验证
+      }, // 弹框表单验证
       formLabelWidth: '120px',
       filter: {
         sort: undefined,
@@ -245,14 +245,14 @@ export default {
       }, [])
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.dictId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.dictId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -301,10 +301,10 @@ export default {
       }),
       dictCategory: _.o.enum(this.dictCategories).other('form', {
         component: 'Select',
-        placeholder: '字典分类',
+        placeholder: '字典分类'
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 5,
         label: 0,
         wrapper: 20
@@ -333,6 +333,3 @@ export default {
   margin-bottom: 10px;
 }
 </style>
-
-
-

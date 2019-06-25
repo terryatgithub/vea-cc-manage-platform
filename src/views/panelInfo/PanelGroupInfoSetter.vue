@@ -85,29 +85,28 @@ export default {
       const info = this.info
       const currentIndex = info.index
       let length = panelList.length
-      let duplicatedIndex = undefined
-      let duplicatedSlot = undefined
+      let duplicatedIndex
+      let duplicatedSlot
       const currentStart = info.startTime
       const currentEnd = info.endTime
       if (currentStart && currentEnd) {
         if (currentStart >= currentEnd) {
           return cb('开始时间必须小于结束时间')
         }
-        while(--length >= 0) {
+        while (--length >= 0) {
           if (length !== currentIndex) {
             const panel = panelList[length]
             const start = panel.startTime
             const end = panel.endTime
             if (start && (
-              (currentStart <= start && currentEnd >= start)
-              ||
+              (currentStart <= start && currentEnd >= start) ||
               (start <= currentStart && end >= currentStart)
-              )) {
-                duplicatedIndex = length
-                duplicatedSlot = start.toISOString() + '-' + end.toISOString()
-                break
+            )) {
+              duplicatedIndex = length
+              duplicatedSlot = start.toISOString() + '-' + end.toISOString()
+              break
             }
-          } 
+          }
         }
       } else {
         if (currentStart && !currentEnd) {

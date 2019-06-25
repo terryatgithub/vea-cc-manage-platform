@@ -33,7 +33,7 @@ export default {
     delete() {
       this.$emit('delete')
     },
-    batchAudit(){
+    batchAudit() {
       this.$emit('batch-audit')
     }
   },
@@ -68,5 +68,3 @@ export default {
   justify-content: flex-start
   margin: 10px 0px
 </style>
-
-

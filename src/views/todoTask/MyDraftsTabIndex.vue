@@ -1,8 +1,8 @@
 <template>
   <div>
-    <MyDraftsTab 
-     v-show="isShowList" 
-     ref="list" 
+    <MyDraftsTab
+     v-show="isShowList"
+     ref="list"
       @read="handleRead"
      >
      </MyDraftsTab>
@@ -14,9 +14,9 @@
       @go-back="goBack"
       @open-list-page="handleUpsertEnd"
     />
-      <BusinessTabInfo 
+      <BusinessTabInfo
       v-if="!isShowList&&tabParentType==='biz'"
-       :id="id" 
+       :id="id"
       :init-mode="mode"
       :version="version"
        @upsert-end="handleUpsertEnd"
@@ -32,16 +32,16 @@
   </div>
 </template>
 <script>
- import FilmDetailPageAdd from  './../panelManage/FilmDetailPageAdd'
- import BusinessTabInfo from './../panelManage/BusinessTabInfo'
- import TabInfo from './../tabInfo/TabInfo.vue'
- import MyDraftsTab from './MyDraftsTab'
+import FilmDetailPageAdd from './../panelManage/FilmDetailPageAdd'
+import BusinessTabInfo from './../panelManage/BusinessTabInfo'
+import TabInfo from './../tabInfo/TabInfo.vue'
+import MyDraftsTab from './MyDraftsTab'
 export default {
   components: {
-    FilmDetailPageAdd, //tabParentType = special
+    FilmDetailPageAdd, // tabParentType = special
     MyDraftsTab,
-    TabInfo, //tabParentType = home
-    BusinessTabInfo // tabParentType = biz 
+    TabInfo, // tabParentType = home
+    BusinessTabInfo // tabParentType = biz
   },
   data() {
     return {
@@ -50,11 +50,11 @@ export default {
       mode: 'create',
       version: undefined,
       tabParentType: undefined
-    };
+    }
   },
   methods: {
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'
@@ -73,9 +73,9 @@ export default {
      * 新增编辑里面的返回事件
     */
     goBack () {
-     this.isShowList = true
-     this.mode = 'list'
-     this.version = undefined
+      this.isShowList = true
+      this.mode = 'list'
+      this.version = undefined
     }
   }
 }

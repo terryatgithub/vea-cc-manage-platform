@@ -93,7 +93,7 @@
 import CommonContent from '@/components/CommonContent.vue'
 export default {
   components: {
-    CommonContent,
+    CommonContent
   },
   props: {
     id: Number,
@@ -139,7 +139,7 @@ export default {
         currentVersion: undefined
       },
       rules: {
-        //表单规则
+        // 表单规则
         'pannelList[0].pannelName': [
           { required: true, message: '请输入版块名称', trigger: 'blur' }
         ],
@@ -236,7 +236,7 @@ export default {
         }
       })
     },
-    /**编辑数据回显 */
+    /** 编辑数据回显 */
     fetchData(version) {
       this.$service.getViewData({ id: this.id, version }).then(data => {
         this.form = data

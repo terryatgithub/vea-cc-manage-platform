@@ -83,21 +83,21 @@ export default {
       }
       return filter
     },
-    //查询
+    // 查询
     handleFilterChange(type, filter) {
-      if (filter) { 
+      if (filter) {
         this.filter = filter
       }
-      if(this.$validateId(this.filter.pannelId)) {
+      if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
-    //重置
+    // 重置
     handleFilterReset() {
       this.filter = {}
       this.pagination.currentPage = 1

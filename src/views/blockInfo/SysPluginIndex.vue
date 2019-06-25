@@ -1,6 +1,6 @@
 <script>
 import BaseResourceManager from '@/components/BaseResourceManager'
-import SysPluginList from  './SysPluginList'
+import SysPluginList from './SysPluginList'
 import SysPluginInfo from './SysPluginInfo'
 export default {
   extends: BaseResourceManager,

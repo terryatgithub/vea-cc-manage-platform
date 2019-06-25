@@ -1,10 +1,10 @@
  <template>
-  <BaseSelector 
+  <BaseSelector
     ref="baseSelector"
     id-field="appId"
     :is-live="isLive"
     :selection-type="selectionType"
-    :table="table" 
+    :table="table"
     :pagination="pagination"
     :filter="filter"
     :filter-schema="filterSchema"
@@ -15,9 +15,9 @@
     @select-end="$emit('select-end')">
   </BaseSelector>
 </template>
- 
+
 <script>
-import _ from "gateschema";
+import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
 export default {
   components: {
@@ -35,31 +35,31 @@ export default {
         props: {},
         header: [
           {
-            label: "ID",
-            prop: "appId",
-            width: "70"
-          },
-           {
-            label: "应用名称",
-            prop: "appName",
-            width: "100"
-          },
-           {
-            label: "应用包名",
-            prop: "appPackageName",
+            label: 'ID',
+            prop: 'appId',
+            width: '70'
           },
           {
-            label: "图片",
-            prop: "appImageUrl",
+            label: '应用名称',
+            prop: 'appName',
+            width: '100'
+          },
+          {
+            label: '应用包名',
+            prop: 'appPackageName'
+          },
+          {
+            label: '图片',
+            prop: 'appImageUrl',
             render: (createElement, { row }) => {
-              return createElement("img", {
+              return createElement('img', {
                 attrs: {
                   src: row.appImageUrl,
-                  width: "50px",
-                  height: "50px",
-                  class: "imgs"
+                  width: '50px',
+                  height: '50px',
+                  class: 'imgs'
                 }
-              });
+              })
             }
           }
         ],
@@ -102,9 +102,9 @@ export default {
     fetchData() {
       const filter = this.getFilter()
       this.$service.getAppManagementList(filter).then(data => {
-        this.pagination.total = data.total;
-        this.table.data = data.rows;
-      });
+        this.pagination.total = data.total
+        this.table.data = data.rows
+      })
     }
   },
   created() {
@@ -125,7 +125,7 @@ export default {
         label: ' '
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 4,
         label: 1,
         wrapper: 23
@@ -147,6 +147,6 @@ export default {
   }
 }
 </script>
- 
+
  <style lang='stylus' scoped>
 </style>

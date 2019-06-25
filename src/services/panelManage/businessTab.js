@@ -13,7 +13,6 @@ export function businessTabDelete(data) {
   })
 }
 
-
 export function businessTabEdit(params) {
   return this.fetch({
     method: 'get',
@@ -21,7 +20,7 @@ export function businessTabEdit(params) {
     params
   })
 }
-/** 收藏*/
+/** 收藏 */
 export function businessTabCollect(data) {
   return this.fetch({
     method: 'post',
@@ -30,7 +29,7 @@ export function businessTabCollect(data) {
   })
 }
 
-/** 取消收藏*/
+/** 取消收藏 */
 export function businessTabCancelCollect(data) {
   return this.fetch({
     method: 'post',

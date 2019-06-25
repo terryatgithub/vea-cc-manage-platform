@@ -1,8 +1,8 @@
 <template>
   <div>
-    <GlobalCornerIconTypeList 
-      v-show="isShowList" 
-      ref="list" 
+    <GlobalCornerIconTypeList
+      v-show="isShowList"
+      ref="list"
       @create="handleCreate"
       @edit="handleEdit"
       @read="handleRead"
@@ -39,26 +39,26 @@ export default {
       this.isShowList = false
     },
     handleEdit(row) {
-       this.id = row.typeId
-       this.mode = 'edit'
-       this.isShowList = false
+      this.id = row.typeId
+      this.mode = 'edit'
+      this.isShowList = false
     },
-    handleRead(row){
-       this.id = row.typeId
-       this.mode = 'read'
-       this.isShowList = false
+    handleRead(row) {
+      this.id = row.typeId
+      this.mode = 'read'
+      this.isShowList = false
     },
     handleDelete(selected) {
       this.$service
-        .globalCornerIconTypeBatchDel({ 
+        .globalCornerIconTypeBatchDel({
           id: selected.map(item => item.typeId).join(',')
-        },'删除成功')
+        }, '删除成功')
         .then(_ => {
           this.$refs.list.fetchData()
         })
     },
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'

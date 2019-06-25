@@ -47,20 +47,20 @@ export default {
   props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled'],
   data() {
     return {
-      materialTypes: {}, //素材类型
+      materialTypes: {}, // 素材类型
       pictureStatus: {
-        //状态
+        // 状态
         审核通过: 1,
         待审核: 2
       },
-      picDialogVisible: false, //预览图片弹出框
-      auditDialogVisible: false, //审核弹出框
+      picDialogVisible: false, // 预览图片弹出框
+      auditDialogVisible: false, // 审核弹出框
       reviewPicUrl: null,
       filter: this.getDefaultFilter(),
       filterSchema: null,
       pagination: {
         currentPage: 1,
-        pageSize: 15,
+        pageSize: 15
       },
       selected: [],
       table: {
@@ -85,7 +85,7 @@ export default {
     },
     handleFilterChange() {
       this.pagination.currentPage = 1
-      this.fetchData() 
+      this.fetchData()
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
@@ -98,9 +98,9 @@ export default {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
-      return {...filter}
+      return { ...filter }
     },
-    //获取数据
+    // 获取数据
     fetchData() {
       this.table.selected = undefined
       const filter = this.parseFilter()

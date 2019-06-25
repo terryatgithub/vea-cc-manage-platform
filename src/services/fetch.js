@@ -21,7 +21,7 @@ export default function fetch({
   return axios(option)
     .then(function ({ data }) {
       loading.close()
-      if (typeof data.success !== 'undefined' && typeof data.msg !== 'undefined') {//返回success
+      if (typeof data.success !== 'undefined' && typeof data.msg !== 'undefined') { // 返回success
         if (!data.success) {
           throw new Error(data.msg)
         } else {
@@ -59,9 +59,7 @@ export default function fetch({
           } else {
             return data
           }
-
         }
-
       }
     })
     .catch(e => {
@@ -69,4 +67,3 @@ export default function fetch({
       throw e
     })
 }
-

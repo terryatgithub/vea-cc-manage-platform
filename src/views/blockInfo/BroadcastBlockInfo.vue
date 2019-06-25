@@ -536,10 +536,10 @@ export default {
       selectingManualResource: false,
       type: 'block',
       menuElId: 'broadcastBlock',
-      disabled: false, //是否禁用
-      onclickEventVisibleFlag: '', //标识是哪个版本的快速填充弹窗normal/lower
-      clickData: undefined, //自定义快速填充单击选中的数据
-      onclickEventVisible: false, //自定义快速填充弹窗
+      disabled: false, // 是否禁用
+      onclickEventVisibleFlag: '', // 标识是哪个版本的快速填充弹窗normal/lower
+      clickData: undefined, // 自定义快速填充单击选中的数据
+      onclickEventVisible: false, // 自定义快速填充弹窗
       cornerIconTypeOptions: {},
       cornerTypes: [],
       materialTypes: null,
@@ -997,9 +997,9 @@ export default {
       arr.push(this.normalForm)
       this.normalVersionContent = arr
     },
-    /**轮播模式，正常版本选择资源回掉函数 */
+    /** 轮播模式，正常版本选择资源回掉函数 */
     handleSelectNormalSingleResourceEnd(selectedResources, mode) {
-      let data = undefined
+      let data
       if (mode === 'single') {
         data = this.callbackParam('rotate', selectedResources.rotate[0])
       } else {
@@ -1033,7 +1033,7 @@ export default {
       this.resourceConfirm(dataArr, 'normalForm')
     },
     handleSelectLowerSingleResourceEnd(selectedResources) {
-      let data = undefined
+      let data
       let resourceOptions = this.resourceOptions
       for (var i = 0; i < resourceOptions.length; i++) {
         if (selectedResources[resourceOptions[i]].length === 1) {
@@ -1047,7 +1047,7 @@ export default {
       this.resourceConfirm(data, 'lowerForm')
     },
     handleSelectNormalSingleOtherResourceEnd(selectedResources) {
-      let data = undefined
+      let data
       let resourceOptions = this.resourceOptions
       for (var i = 0; i < resourceOptions.length; i++) {
         if (selectedResources[resourceOptions[i]].length === 1) {
@@ -1476,7 +1476,7 @@ export default {
       console.log(this.normalVersionContent)
       var _this = this
       this.checkNormalForm(function() {
-        //_this.$message('请填充或修改当前表单的内容！')
+        // _this.$message('请填充或修改当前表单的内容！')
         _this.currentIndex = index
         _this.normalForm = _this.normalVersionContent[index]
         if (_this.normalForm.type === 'url') {
@@ -1582,7 +1582,7 @@ export default {
       this.lowerForm = newForm
     },
     saveNormal: function(cb) {
-      //debugger
+      // debugger
       var _this = this
       this.checkNormalForm(function() {
         if (_this.basicForm.configModel === 'group') {
@@ -1655,8 +1655,8 @@ export default {
               } else {
                 _this.normalForm.onclick
                   ? (_this.normalForm.onclick = JSON.stringify(
-                      _this.normalForm.onclick
-                    ))
+                    _this.normalForm.onclick
+                  ))
                   : ''
                 obj.normalVersionContent.push(_this.normalForm)
               }

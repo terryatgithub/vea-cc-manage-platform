@@ -1,11 +1,11 @@
 <template>
-  <el-dialog 
-    title="选择标签" 
+  <el-dialog
+    title="选择标签"
     :fullscreen="true"
-    :show-close="false" 
-    :modal="false" 
+    :show-close="false"
+    :modal="false"
     :modal-append-to-body="true"
-    class="cc-media-tags-selector" 
+    class="cc-media-tags-selector"
     :visible="true">
     <el-button type="primary" @click="handleSelectEnd">
       确定
@@ -14,10 +14,10 @@
       关闭
     </el-button>
     <div style="margin-top: 10px;">
-        已选择: 
-        <el-tag 
-          v-for="(item) in selectedTags" 
-          :key="item.tagCode" 
+        已选择:
+        <el-tag
+          v-for="(item) in selectedTags"
+          :key="item.tagCode"
           :closable="true"
           @close="handleRemoveTag(item)"
         >
@@ -37,7 +37,7 @@ export default {
   data() {
     return {
       selectedTags: [],
-      removingTags: [],
+      removingTags: []
     }
   },
   methods: {
@@ -65,20 +65,6 @@ export default {
     handleInputTags(tags) {
       this.selectedTags = tags
     }
-  },
-  mounted() {
-    return
-    // elementui 有bug， 无法锁定body的滚动条，导致dialog弹窗时还可以滚动
-    const $dialog = $(this.$el).closest('.el-dialog--full')
-    this.dataTableEl = $dialog.find('.cc-table')
-    this.tagsEl = $dialog.find('.cc-tag-logic-filter > .tag-list')
-    this.dataTableEl.hide()
-    this.tagsEl.hide()
-  },
-  beforeDestroy() {
-    return
-    this.dataTableEl.show()
-    this.tagsEl.show()
   }
 }
 </script>

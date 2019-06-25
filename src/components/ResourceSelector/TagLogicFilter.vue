@@ -2,17 +2,17 @@
   <div class="cc-tag-logic-filter">
     <div class="tag-list">
       <div v-for="(tagList, listIndex) in tags" :key="listIndex">
-        <el-button 
+        <el-button
           @click="handleAddTagStart(listIndex)"
-          size="mini" 
+          size="mini"
           type="primary">
           +选择标签
         </el-button>
-        <el-tag 
-          v-for="(tag, index) in tagList" 
-          :key="tag.tagCode" 
-          type="primary" 
-          :closable="true" 
+        <el-tag
+          v-for="(tag, index) in tagList"
+          :key="tag.tagCode"
+          type="primary"
+          :closable="true"
           @close="handleRemoveTag(listIndex, index)">
           {{ tag.tagCnName }}
         </el-tag>
@@ -49,10 +49,10 @@ export default {
     emitInput() {
       const tagCodes = this.tags.reduce(function(result, item) {
         if (item.length > 0) {
-          result.push(item.map(function(tag) { return tag.tagCode}).join(','))
+          result.push(item.map(function(tag) { return tag.tagCode }).join(','))
         }
         return result
-      }.bind(this), [])
+      }, [])
       this.$emit('input', tagCodes)
     },
     handleRemoveTag(listIndex, index) {

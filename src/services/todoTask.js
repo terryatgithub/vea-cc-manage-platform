@@ -4,7 +4,7 @@
 //     url: 'api/myDrafts/pageList.html',
 //     data
 //   })
-// }   
+// }
 
 // export function mySubmitTasksPageList (data) {
 //   return this.fetch({
@@ -12,7 +12,7 @@
 //     url: 'api/mySubmitTasks/pageList.html',
 //     data
 //   })
-// } 
+// }
 
 // export function myReviewTasksPageList (data) {
 //   return this.fetch({
@@ -20,7 +20,7 @@
 //     url: 'api/myReviewTasks/pageList.html',
 //     data
 //   })
-// } 
+// }
 
 export function getTotal (type) {
   return this.fetch({

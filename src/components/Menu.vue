@@ -83,7 +83,7 @@ export default {
     }
   },
   created() {
-    this.$watch('items', this.buildIndex, {immediate: true})
+    this.$watch('items', this.buildIndex, { immediate: true })
   }
 }
 </script>

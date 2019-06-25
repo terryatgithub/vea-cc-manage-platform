@@ -4,12 +4,12 @@
     title="选择单集"
     @select-start="handleSelectStart"
   >
-    <BaseSelector 
+    <BaseSelector
       slot="content"
       ref="baseSelector"
       id-field="coocaaVId"
       :selection-type="selectionType"
-      :table="table" 
+      :table="table"
       :pagination="pagination"
       @pagination-change="fetchData"
       @filter-reset="handleFilterReset"
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import _ from "gateschema";
+import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 
@@ -70,45 +70,45 @@ export default {
         props: {},
         header: [
           {
-            label: "集数名",
-            prop: "urlCollection",
-            width: "70"
-          },
-           {
-            label: "单集ID",
-            prop: "coocaaMId",
-            width: "150"
-          },
-           {
-            label: "单集名称",
-            prop: "urlTitle",
+            label: '集数名',
+            prop: 'urlCollection',
+            width: '70'
           },
           {
-            label: "图片",
-            prop: "thumb",
+            label: '单集ID',
+            prop: 'coocaaMId',
+            width: '150'
+          },
+          {
+            label: '单集名称',
+            prop: 'urlTitle'
+          },
+          {
+            label: '图片',
+            prop: 'thumb',
             render: (createElement, { row }) => {
-              return createElement("img", {
+              return createElement('img', {
                 attrs: {
                   src: row.thumb,
-                  width: "50px",
-                  height: "50px",
-                  class: "imgs"
+                  width: '50px',
+                  height: '50px',
+                  class: 'imgs'
                 }
-              });
+              })
             }
           },
           {
-            label: "素材类型",
-            width: "120",
-            prop: "urlIsTrailer",
-            render: (createElement, {row}) => {
-              return row.urlIsTrailer === '1'?'非正片': '正片'
+            label: '素材类型',
+            width: '120',
+            prop: 'urlIsTrailer',
+            render: (createElement, { row }) => {
+              return row.urlIsTrailer === '1' ? '非正片' : '正片'
             }
           }
         ],
         data: [],
         selected: [],
-        selectionType: "single"
+        selectionType: 'single'
       },
       selected: []
     }
@@ -138,7 +138,7 @@ export default {
     },
     getFilter() {
       const pagination = this.pagination
-      const filter = {...this.efficientFilter}
+      const filter = { ...this.efficientFilter }
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
@@ -160,7 +160,7 @@ export default {
     fetchData() {
       const filter = this.getFilter()
       this.$service.getSegmentList(filter).then(data => {
-        this.pagination.total = data.total;
+        this.pagination.total = data.total
         this.table.data = data.rows || []
       })
     },
@@ -173,6 +173,6 @@ export default {
   }
 }
 </script>
- 
+
 <style lang='stylus' scoped>
 </style>

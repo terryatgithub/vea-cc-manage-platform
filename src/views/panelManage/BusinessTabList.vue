@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <ButtonGroupForListPage 
-        pageName='businessTab' 
+      <ButtonGroupForListPage
+        pageName='businessTab'
         @add="handleCreate"
         @edit="handleEdit"
         @delete="handleDelete"
@@ -200,23 +200,23 @@ export default {
 
   methods: {
     createOperationRender(obj) {
-      return function render(h, {row}) {
+      return function render(h, { row }) {
         let btn1 = h('el-button',
-            {
-              props: {
-                type: 'text'
-              },
-              on: {
-                click: () => {
-                  obj.handleCopy(row)
-                }
-              }
+          {
+            props: {
+              type: 'text'
             },
-            '复制'
-          )
+            on: {
+              click: () => {
+                obj.handleCopy(row)
+              }
+            }
+          },
+          '复制'
+        )
         let btn2 = null
-        if(row.collected) {
-           btn2 =  h('el-button',
+        if (row.collected) {
+          btn2 = h('el-button',
             {
               props: {
                 type: 'text'
@@ -230,7 +230,7 @@ export default {
             '取消'
           )
         } else {
-            btn2 = h('el-button',
+          btn2 = h('el-button',
             {
               props: {
                 type: 'text'
@@ -248,12 +248,12 @@ export default {
       }
     },
     collect(row) {
-      this.$service.collect({ type: 'tab', data: {resourceId: row.tabId} }, '收藏成功').then(()=>{
+      this.$service.collect({ type: 'tab', data: { resourceId: row.tabId } }, '收藏成功').then(() => {
         this.fetchData()
       })
     },
     cancalCollect(row) {
-      this.$service.collectCancel({ type: 'tab', data: {resourceId: row.tabId} },'取消成功').then(()=>{
+      this.$service.collectCancel({ type: 'tab', data: { resourceId: row.tabId } }, '取消成功').then(() => {
         this.fetchData()
       })
     },
@@ -271,7 +271,7 @@ export default {
     genDefaultFilter() {
       return {
         tabParentType: 'biz',
-        idPrefix: this.$consts.idPrefix,
+        idPrefix: this.$consts.idPrefix
       }
     },
     parseFilter() {
@@ -283,11 +283,11 @@ export default {
       return filter
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
+      if (filter) { this.filter = filter }
       if (this.pagination) {
         this.pagination.currentPage = 1
       }
-      this.fetchData() 
+      this.fetchData()
     },
     handleFilterReset() {
       this.filter = this.genDefaultFilter()
@@ -295,7 +295,7 @@ export default {
       this.fetchData()
     },
     getTabType() {
-      return this.$service.getTabType({tabParentType: 'biz'}).then(data => {
+      return this.$service.getTabType({ tabParentType: 'biz' }).then(data => {
         data.forEach(element => {
           this.tabType[element.dictCnName] = element.dictEnName
           this.tabTypeReverse[element.dictEnName] = element.dictCnName
@@ -303,7 +303,7 @@ export default {
       })
     },
     getBusinessType() {
-      this.$service.getDictType({type: 'businessType'}).then(data => {
+      this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.businessType = data
       })
     }
@@ -315,7 +315,7 @@ export default {
     }, {})
     let filterSchema = _.map({
       tabId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
-        component: 'Input',
+        component: 'InputPositiveInt',
         placeholder: 'ID'
       }),
       tabName: _.o.string.other('form', {
@@ -361,7 +361,7 @@ export default {
     this.getTabType().then(() => {
       this.filterSchema = filterSchema
     })
-    this.$service.getDictType({type: 'appIdType'}).then(data => {
+    this.$service.getDictType({ type: 'appIdType' }).then(data => {
       this.appIdType = data
       this.fetchData()
     })

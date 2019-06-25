@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-         <ButtonGroupForListPage 
-        pageName='cornerIconType' 
+         <ButtonGroupForListPage
+        pageName='cornerIconType'
         @add="handleCreate"
         @edit="handleEdit"
         @delete="handleDelete"
@@ -44,9 +44,9 @@ export default {
   data() {
     return {
       resourceType: 'cornerIconType',
-      materialTypes: {}, //素材类型
-      picDialogVisible: false, //预览图片弹出框
-      auditDialogVisible: false, //审核弹出框
+      materialTypes: {}, // 素材类型
+      picDialogVisible: false, // 预览图片弹出框
+      auditDialogVisible: false, // 审核弹出框
       auditForm: {
         idStr: null,
         auditFlag: '4',
@@ -120,7 +120,7 @@ export default {
   },
   methods: {
     batchAudit() {
-      if (this.selected.length>0) {
+      if (this.selected.length > 0) {
         this.auditDialogVisible = true
       } else {
         this.$message({
@@ -150,14 +150,14 @@ export default {
       this.selectedRole = this.user.concat(str)
     },
     handleFilterChange(type, filter) {
-     if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.typeId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.typeId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -203,7 +203,7 @@ export default {
         placeholder: '角标位置'
       })
     }).other('form', {
-        cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20

@@ -16,7 +16,7 @@
 
 <script>
 export default {
-    props: ['title']
+  props: ['title']
 }
 </script>
 
@@ -41,6 +41,3 @@ export default {
         padding 0 20px
         float right
 </style>
-
-
-

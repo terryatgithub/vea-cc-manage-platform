@@ -288,7 +288,7 @@ export default {
       const minsStr = mins > 9 ? '' + mins : '0' + mins
       return hoursStr + ':' + minsStr
     },
-    //获取数据
+    // 获取数据
     getData() {
       this.$service.getData({ id: this.viewId }).then(data => {
         this.setData(data)
@@ -318,7 +318,7 @@ export default {
         }
       })
     },
-    //父数据字典查询接口
+    // 父数据字典查询接口
     getPluginParentTypes() {
       this.$service.getPluginParentTypes().then(data => {
         console.log(data)
@@ -329,7 +329,7 @@ export default {
         }
       })
     },
-    //数据字典查询
+    // 数据字典查询
     getPluginTypes(pluginParentType) {
       this.$service
         .getPluginTypes({ pluginParentType: pluginParentType })

@@ -164,7 +164,7 @@ export default {
         }
         if (content.pictureUrl) {
           block.img = content.pictureUrl
-          //block.style['background-image'] = 'url(' + content.pictureUrl + ')'
+          // block.style['background-image'] = 'url(' + content.pictureUrl + ')'
         }
 
         if (titleInfo) {

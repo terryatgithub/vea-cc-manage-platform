@@ -228,7 +228,7 @@ export default {
         const originTabInfos = homepage.tabInfos
         const defaultFocusTabInfo = originTabInfos[homepage.defaultFocusIndex]
         const tabInfos = val.map(item => item.tabList)
-        if(defaultFocusTabInfo) {
+        if (defaultFocusTabInfo) {
           const defaultFocusIndex = tabInfos.findIndex(item => item === defaultFocusTabInfo)
           homepage.defaultFocusIndex = defaultFocusIndex > -1 ? defaultFocusIndex : undefined
         }
@@ -262,11 +262,11 @@ export default {
         },
         {
           prop: 'tabCnTitle',
-          label: 'TAB标题(中文)',
+          label: 'TAB标题(中文)'
         },
-         {
+        {
           prop: 'tabEnTitle',
-          label: 'TAB标题(英文)',
+          label: 'TAB标题(英文)'
         },
         {
           label: '默认落焦',
@@ -625,13 +625,13 @@ export default {
         index < defaultFocusIndex
           ? defaultFocusIndex - 1
           : index === defaultFocusIndex
-          ? undefined
-          : defaultFocusIndex
+            ? undefined
+            : defaultFocusIndex
     },
     handleCopy(status) {
       const data = JSON.parse(JSON.stringify(this.homepage))
       data.homepageId = undefined
-      data.homepageStatus = status 
+      data.homepageStatus = status
       data.currentVersion = ''
       this.submit(data)
     },

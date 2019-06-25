@@ -18,10 +18,10 @@
           <el-button type="primary" :disabled="!rel.policyId" :loading="isRefreshing" @click="handleRefreshCrowd">{{ isRefreshing ? '刷新中' : '刷新人群列表' }}</el-button>
         </el-form-item>
         <el-form-item label="人群关系图">
-          <cc-level 
+          <cc-level
             v-show="rel.policyId"
-            :levels="rel.levels" 
-            :items="rel.items" 
+            :levels="rel.levels"
+            :items="rel.items"
             :max-depth="8"
             @level-label-change="handleChangeLevelLabel"
             @level-add="handleAddLevel"
@@ -29,16 +29,16 @@
             @item-remove="handleRemoveItem"
             @item-activate="handleActivateItem"
           >
-            <template slot="item-add" scope="scope">
+            <template slot="item-add" slot-scope="scope">
               <div class="crowd-add-wrapper">
                 <el-autocomplete
                   :disabled="scope.levelIndex > 0 && rel.levels[scope.levelIndex-1].activeValue === undefined"
-                  :value="itemToAdd[scope.levelIndex]" 
+                  :value="itemToAdd[scope.levelIndex]"
                   @input="$set(itemToAdd, scope.levelIndex, $event)"
                   placeholder="人群ID，人群名称"
                   custom-item="crowd-search-item"
                   :trigger-on-focus="false"
-                  :fetch-suggestions="handleSearchCrowd" 
+                  :fetch-suggestions="handleSearchCrowd"
                   @select="handleAddCrowdFromInput($event, scope.levelIndex)"
                 >
                   <span slot-scope="{item}" :title="item.label">
@@ -51,9 +51,9 @@
           </cc-level>
         </el-form-item>
       </el-form>
-      <cc-tag-selector 
-        v-if="showCrowdSelector" 
-        :tags="availableCrowdOptions" 
+      <cc-tag-selector
+        v-if="showCrowdSelector"
+        :tags="availableCrowdOptions"
         :disables="disabledCrowdIds"
         @select-end="handleSelectCrowdEnd"
         @select-cancel="showCrowdSelector = false"
@@ -87,7 +87,7 @@ export default {
       crowdOptions: [],
       disabledCrowdIds: [],
       selectedLevelIndex: undefined,
-      itemToAdd: {},
+      itemToAdd: {}
     }
   },
   props: ['id', 'mode'],
@@ -114,7 +114,7 @@ export default {
           label: '三级',
           parentValue: undefined,
           activeValue: undefined
-        },
+        }
       ]
     },
     handleAddCrowdFromInput(crowd, levelIndex) {
@@ -133,8 +133,8 @@ export default {
         const list = this.crowdOptions.filter(function(item) {
           return relItemsIndexed[item.value] === undefined
         })
-        const fuse = new Fuse(list, {keys: ['label', 'value']}); // "list" is the item array
-        result = fuse.search(keyword);
+        const fuse = new Fuse(list, { keys: ['label', 'value'] }) // "list" is the item array
+        result = fuse.search(keyword)
       }
       if (result.length === 0) {
         result.push({
@@ -174,7 +174,7 @@ export default {
         hiddenItemsIndexed[item.value] = true
       })
       this.availableCrowdOptions = this.crowdOptions.filter(function(item) {
-        return !hiddenItemsIndexed[item.value] 
+        return !hiddenItemsIndexed[item.value]
       })
     },
     handleActivateItem(item, levelIndex) {
@@ -227,20 +227,20 @@ export default {
       const hasChild = this.rel.items.some(function(item) {
         return item.parentValue === targetItem.value
       })
-      const doRemoveItem = this.doRemoveItem.bind(this) 
+      const doRemoveItem = this.doRemoveItem.bind(this)
       if (hasChild) {
-          this.$confirm('是否确认删除 ' + targetItem.label + ' 分组, 删除后将同时删除它下面的标签', '提示')
-            .then(function() {
-              doRemoveItem(targetItem)
-            }.bind(this))
-            .catch(function() {})
-        } else {
-          doRemoveItem(targetItem)
-        }
+        this.$confirm('是否确认删除 ' + targetItem.label + ' 分组, 删除后将同时删除它下面的标签', '提示')
+          .then(function() {
+            doRemoveItem(targetItem)
+          })
+          .catch(function() {})
+      } else {
+        doRemoveItem(targetItem)
+      }
     },
     handlePolicyIdChange(id) {
       this.clearDmpRel()
-      this.$service.crowdRelGet({id: id}).then(function(result) {
+      this.$service.crowdRelGet({ id: id }).then(function(result) {
         if (result.hasCascadeTag) {
           this.setDmpRel(result)
           if (!this.id) {
@@ -248,7 +248,7 @@ export default {
           }
         }
       }.bind(this))
-      this.$service.getCrowdOfPolicy({id: id}).then(function(data) {
+      this.$service.getCrowdOfPolicy({ id: id }).then(function(data) {
         this.crowdOptions = data
       }.bind(this))
     },
@@ -262,14 +262,14 @@ export default {
       this.showCrowdSelector = false
     },
     addCrowdToLevel(crowd, levelIndex) {
-        const currentLevel = this.rel.levels[levelIndex]
-        const newItem = {
-          parentValue: currentLevel.parentValue,
-          label: crowd.label,
-          value: crowd.value,
-          level: levelIndex
-        }
-        this.rel.items.push(newItem)
+      const currentLevel = this.rel.levels[levelIndex]
+      const newItem = {
+        parentValue: currentLevel.parentValue,
+        label: crowd.label,
+        value: crowd.value,
+        level: levelIndex
+      }
+      this.rel.items.push(newItem)
     },
     handleSubmit() {
       // 校验层级标题
@@ -288,7 +288,7 @@ export default {
     },
     validate(data, cb) {
       const levels = data.levels
-      for(let i = 0 ,length = levels.length; i < length; i++) {
+      for (let i = 0, length = levels.length; i < length; i++) {
         if (levels[i].label == '') {
           return cb('请填写第' + (i + 1) + '个层级的标题')
         }
@@ -352,7 +352,7 @@ export default {
     handleRefreshCrowd() {
       this.isRefreshing = true
       this.$service.crowdRefresh().then(function() {
-        this.$service.getCrowdOfPolicy({id: this.rel.policyId}).then(function(data) {
+        this.$service.getCrowdOfPolicy({ id: this.rel.policyId }).then(function(data) {
           this.crowdOptions = data
           const crowdOptionsIndexed = data.reduce(function(result, item) {
             result[item.value] = item
@@ -368,18 +368,18 @@ export default {
           this.$message('刷新成功')
         }.bind(this))
       }.bind(this)).catch(function() {
-          this.isRefreshing = false
-          this.$message('刷新失败')
+        this.isRefreshing = false
+        this.$message('刷新失败')
       })
     }
   },
   created() {
     this.getPolicyOptions()
     if (this.id) {
-      this.$service.crowdRelGet({id: this.id}).then(function(result) {
+      this.$service.crowdRelGet({ id: this.id }).then(function(result) {
         this.setDmpRel(result)
       }.bind(this))
-    } 
+    }
   }
 }
 </script>

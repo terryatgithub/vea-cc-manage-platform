@@ -47,7 +47,7 @@ export default {
   },
   watch: {
     visible(value) {
-      if(value) {
+      if (value) {
         this.fetchData()
       }
     }
@@ -55,7 +55,7 @@ export default {
   data() {
     return {
       pictureStatus: {
-        //状态
+        // 状态
         审核通过: 1,
         待审核: 2
       },
@@ -63,8 +63,8 @@ export default {
         typePosition: this.typePosition,
         typeId: ''
       },
-      picDialogVisible: false, //预览图片弹出框
-      auditDialogVisible: false, //审核弹出框
+      picDialogVisible: false, // 预览图片弹出框
+      auditDialogVisible: false, // 审核弹出框
       reviewPicUrl: null,
       filter: {
         sort: undefined,
@@ -85,23 +85,23 @@ export default {
     }
   },
   methods: {
-    //选中时间
+    // 选中时间
     handleRowSelectionChange(row, index) {
       this.table.selected = index
       this.$emit('input', row)
-      if(this.table.selectionType === 'single') {
-         this.$emit("close-dialog",'savePicture')
+      if (this.table.selectionType === 'single') {
+        this.$emit('close-dialog', 'savePicture')
       }
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.cornerIconId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.cornerIconId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -121,13 +121,13 @@ export default {
       this.cornerIconType.typeId = filter.cornerIconType
       this.cornerIconType.typePosition = this.typePosition
       filter.cornerIconType = undefined
-     // filter['cornerIconType.typeId'] = this.cornerIconType.typeId
-    //  filter['cornerIconType.typePosition'] = this.cornerIconType.typePosition
+      // filter['cornerIconType.typeId'] = this.cornerIconType.typeId
+      //  filter['cornerIconType.typePosition'] = this.cornerIconType.typePosition
       filter['typeId'] = this.cornerIconType.typeId
       filter['typePosition'] = this.cornerIconType.typePosition
       return filter
     },
-    //获取数据
+    // 获取数据
     fetchData() {
       this.table.selected = undefined
       const filter = this.parseFilter()

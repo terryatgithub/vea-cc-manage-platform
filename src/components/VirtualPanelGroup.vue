@@ -25,7 +25,6 @@
   </div>
 </template>
 
-
 <script>
 import VirtualPanel from './VirtualPanel'
 export default {

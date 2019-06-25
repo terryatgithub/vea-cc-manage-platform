@@ -74,12 +74,12 @@ export default {
   },
   methods: {
     rowClick(params) {
-       this.$emit("row-click",params)
+      this.$emit('row-click', params)
     },
-    /**获取数据 */
+    /** 获取数据 */
     fetchData() {
       this.handleAllRowSelectionRemove()
-       const filter = this.parseFilter();
+      const filter = this.parseFilter()
       this.$service.getClickData(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
@@ -114,14 +114,14 @@ export default {
       }, [])
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.commonOnclickId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.commonOnclickId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -153,7 +153,7 @@ export default {
         placeholder: '点击事件名称'
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20
@@ -180,6 +180,3 @@ export default {
   margin-bottom: 10px;
 }
 </style>
-
-
-

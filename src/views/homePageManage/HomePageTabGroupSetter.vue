@@ -1,9 +1,9 @@
 <template>
   <PageWrapper>
     <PageContentWrapper v-show="activePage === 'tab_group_setter'">
-      <ContentCard 
+      <ContentCard
         class="cc-homepage-tab-group-setter"
-        :title="title" 
+        :title="title"
         @go-back="$emit('go-back')">
           <div v-show="!readonly" class="actions" >
             <TabSelector
@@ -16,14 +16,14 @@
               保存
             </el-button>
           </div>
-          <OrderableTable 
+          <OrderableTable
             ref="tabTable"
-            v-model="tabList" 
+            v-model="tabList"
             :header="tabTableHeader"
             :hide-action="true"
             :readonly="readonly"
           />
-          
+
         <CrowdSelector
             v-if="showCrowdSelector"
             @select-cancel="handleSelectCrowdCancel"
@@ -31,14 +31,14 @@
         />
 
       </ContentCard>
-    </PageContentWrapper> 
+    </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'tab'">
       <TabInfo
         :title-prefix="title"
-        :id="embedTab.id" 
+        :id="embedTab.id"
         :version="embedTab.version"
-        :init-mode="embedTab.mode" 
+        :init-mode="embedTab.mode"
         @upsert-end="handleTabEmbedBack"
         @go-back="handleTabEmbedBack" />
     </PageContentWrapper>
@@ -70,12 +70,12 @@ export default {
       showCrowdSelector: false,
       tabList: [],
       embedTab: undefined,
-      activeTabIndex: undefined,
+      activeTabIndex: undefined
     }
   },
   computed: {
     tabTableHeader() {
-      const header =  [
+      const header = [
         {
           label: '版面ID',
           prop: 'tabId',
@@ -83,7 +83,7 @@ export default {
         },
         {
           label: '版面名称',
-          render: (h, {$index, row}) => {
+          render: (h, { $index, row }) => {
             return h('el-button', {
               props: {
                 type: 'text'
@@ -98,11 +98,11 @@ export default {
         },
         {
           label: 'TAB标题(中文)',
-          prop: 'tabCnTitle',
+          prop: 'tabCnTitle'
         },
         {
           label: 'TAB标题(英文)',
-          prop: 'tabEnTitle',
+          prop: 'tabEnTitle'
         },
         {
           label: '默认版面',
@@ -156,41 +156,41 @@ export default {
 
       if (!this.readonly) {
         header.push({
-            label: '操作',
-            width: 180,
-            render: (h, {$index, row}) => {
-              const btns = [
-                h('el-button', {
-                  on: {
-                    click: () => {
-                      this.handleRemoveTab($index)
-                    }
+          label: '操作',
+          width: 180,
+          render: (h, { $index, row }) => {
+            const btns = [
+              h('el-button', {
+                on: {
+                  click: () => {
+                    this.handleRemoveTab($index)
                   }
-                }, '删除')
-              ]
-              if (row.dmpInfo) {
-                btns.unshift(h('el-button', {
-                  on: {
-                    click: () => {
-                      this.handleRemoveCrowd($index)
-                    }
+                }
+              }, '删除')
+            ]
+            if (row.dmpInfo) {
+              btns.unshift(h('el-button', {
+                on: {
+                  click: () => {
+                    this.handleRemoveCrowd($index)
                   }
-                }, '取消定向'))
-              } else {
-                btns.unshift(h('el-button', {
-                  props: {
-                    disabled: row.isDefaultTab
-                  },
-                  on: {
-                    click: () => {
-                      this.handleSelectCrowdStart($index)
-                    }
+                }
+              }, '取消定向'))
+            } else {
+              btns.unshift(h('el-button', {
+                props: {
+                  disabled: row.isDefaultTab
+                },
+                on: {
+                  click: () => {
+                    this.handleSelectCrowdStart($index)
                   }
-                }, '选择人群'))
-              }
-              return btns
+                }
+              }, '选择人群'))
             }
-          })
+            return btns
+          }
+        })
       }
       return header
     }
@@ -233,7 +233,7 @@ export default {
       const { index, id } = this.embedTab
       const tab = this.tabList[index]
       this.activePage = 'tab_group_setter'
-      this.$service.tabInfoGet({id}).then(function(result) {
+      this.$service.tabInfoGet({ id }).then(function(result) {
         Object.assign(tab, result)
       })
     },
@@ -285,14 +285,14 @@ export default {
       } else {
         this.$message({
           type: 'error',
-          message: '第' + (index + 1) +  '个版面已选择该人群'
+          message: '第' + (index + 1) + '个版面已选择该人群'
         })
       }
     },
     handleRemoveCrowd(index) {
       const tabList = this.tabList
       tabList[index].dmpInfo = undefined
-      //this.tabList = tabList.slice()
+      // this.tabList = tabList.slice()
     }
   },
   created() {

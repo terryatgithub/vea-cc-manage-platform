@@ -129,15 +129,15 @@ export default {
         return result
       }, [])
     },
-   handleFilterChange(type, filter) {
-     if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.id)) {
+    handleFilterChange(type, filter) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.id)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -214,6 +214,3 @@ export default {
   margin-bottom: 10px;
 }
 </style>
-
-
-

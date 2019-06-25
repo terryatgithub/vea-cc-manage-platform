@@ -55,9 +55,9 @@
       <MyReviewTasksIndex v-if="mode==='reviewTask'"></MyReviewTasksIndex>
       <DownMovie v-show="mode==='movie'" @read="read"></DownMovie>
     </ContentCard>
-    <PanelInfo 
+    <PanelInfo
         v-if="mode==='panelInfo'"
-      :id="id" 
+      :id="id"
       :panel-data-type="1"
       :init-mode="'read'"
       :version="version"
@@ -95,7 +95,7 @@ export default {
     }
   },
   methods: {
-    read(id, version){
+    read(id, version) {
       this.mode = 'panelInfo'
       this.id = id
       this.version = version
@@ -137,5 +137,3 @@ img
 .text-wrap
   margin-top: 15px
 </style>
-
-

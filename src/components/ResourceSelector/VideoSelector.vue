@@ -1,10 +1,10 @@
  <template>
-  <BaseSelector 
+  <BaseSelector
     ref="baseSelector"
     id-field="coocaaVId"
     :is-live="isLive"
     :selection-type="selectionType"
-    :table="table" 
+    :table="table"
     :pagination="pagination"
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
@@ -112,7 +112,7 @@
 
   </BaseSelector>
 </template>
- 
+
 <script>
 import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
@@ -214,7 +214,7 @@ export default {
           },
           {
             prop: 'publishArea',
-            label: '地区',
+            label: '地区'
           },
           {
             prop: 'year',
@@ -226,19 +226,19 @@ export default {
             type: 'specialBut',
             width: '100',
             mouseStyle: 'hover',
-             fixed: 'right',
-            render: (h, {row}) => {
+            fixed: 'right',
+            render: (h, { row }) => {
               const coocaaVId = row.coocaaVId
               const selectedEpisodes = this.selectedEpisodes
-              if(selectedEpisodes[coocaaVId]) {
-               return h('el-button',{
-                attrs: {
-                  type: 'primary',
-                  text: '已选集数' ,
-                  value: '已选集数',
-                  title: selectedEpisodes[coocaaVId].urlTitle
-                }},'已选集数')
-              } 
+              if (selectedEpisodes[coocaaVId]) {
+                return h('el-button', {
+                  attrs: {
+                    type: 'primary',
+                    text: '已选集数',
+                    value: '已选集数',
+                    title: selectedEpisodes[coocaaVId].urlTitle
+                  } }, '已选集数')
+              }
             }
           },
           {
@@ -246,16 +246,16 @@ export default {
             label: '操作',
             width: '100',
             fixed: 'right',
-            render: (h, {row}) => {
-             return h('el-button', {
+            render: (h, { row }) => {
+              return h('el-button', {
                 on: {
-                  'click': (event)=> {
-                     event.stopPropagation()
-                     this.handleSelectEpisode(row)
+                  'click': (event) => {
+                    event.stopPropagation()
+                    this.handleSelectEpisode(row)
                   }
-                
+
                 }
-              },'选择单集')
+              }, '选择单集')
             }
           }
         ],
@@ -272,50 +272,50 @@ export default {
     },
     licenseEnums() {
       return (this.conditionList.licensee || [])
-        .map(({tagCnName, tagEnName}) => ({label: tagCnName, value: tagEnName}))
+        .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
     categoryEnums() {
       const categories = (this.conditionList.sources || [{}])[0].child
       return (categories || [])
-        .map(({categoryName, categoryId}) => ({label: categoryName, value: categoryId}))
+        .map(({ categoryName, categoryId }) => ({ label: categoryName, value: categoryId }))
     },
     videoTypeEnums() {
       const selectedCategory = this.filter.category
       if (selectedCategory) {
         return (this.conditionList.sources[0].child
-          .find(({categoryId}) => categoryId === selectedCategory)
+          .find(({ categoryId }) => categoryId === selectedCategory)
           .child[0].tagEntities || [])
-          .map(({tagName}) => ({label: tagName, value: tagName}))
+          .map(({ tagName }) => ({ label: tagName, value: tagName }))
       }
       return []
     },
     payTypeEnums() {
       return (this.conditionList.payTypes || [])
-        .map(({tagCnName, tagEnName}) => ({label: tagCnName, value: tagEnName}))
+        .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
     contentTypeEnums() {
       return (this.conditionList.contentTypes || [])
-        .map(({contentType, contentTypeId}) => ({label: contentType, value: contentTypeId}))
+        .map(({ contentType, contentTypeId }) => ({ label: contentType, value: contentTypeId }))
     },
     videoFormatEnums() {
       return (this.conditionList.videoFormat || [])
-        .map(({tagCnName, tagEnName}) => ({label: tagCnName, value: tagEnName}))
+        .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
     contentTagEnums() {
       return (this.conditionList.contentTag || [])
-        .map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+        .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
     directorEnums() {
       return (this.conditionList.directors || [])
-        .map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+        .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
     actiorEnums() {
       return (this.conditionList.actors || [])
-        .map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+        .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
     areaEnums() {
       return (this.conditionList.areas || [])
-        .map(({tagCnName}) => ({label: tagCnName, value: tagCnName}))
+        .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     }
   },
   props: ['isLive', 'disablePartner', 'selection-type', 'source'],
@@ -356,16 +356,16 @@ export default {
       const partner = this.filter.partner
       this.sourceEnums = []
       if (partner) {
-        this.$service.getPartnerSource({partnerName: partner}).then(data => {
+        this.$service.getPartnerSource({ partnerName: partner }).then(data => {
           const sourceEnums = data.rows.reduce(function(result, item) {
             if (item.source_List) {
               result = result.concat(item.source_List
-                .map(({source_code, source_title}) => ({label: source_title, value: source_code})))
+                .map(({ source_code, source_title }) => ({ label: source_title, value: source_code })))
             }
             return result
           }, [])
           const defaultSelected = sourceEnums.find(function(item) {
-              return item.value === partner
+            return item.value === partner
           }) || sourceEnums[0]
           if (defaultSelected) {
             this.filter.sources = defaultSelected.value
@@ -417,7 +417,7 @@ export default {
         sources: '', // 内容源
         category: '', // 频道类型
         videoTypes: '', // 影片类型
-        licensee: '', //牌照
+        licensee: '', // 牌照
         payTypes: '', // 付费类型
         provider: '', // 聚合内容
         title: '', // 标题
@@ -433,7 +433,6 @@ export default {
         areas: '', // 地区
         tagCodes: [[]]
       }
-      
     },
     getFilter() {
       const pagination = this.pagination
@@ -480,14 +479,12 @@ export default {
       if (this.filter.yearStart && !+this.filter.yearStart) {
         this.$message('年代必须为数字')
         this.filter.yearStart = null
-        return
       }
     },
     yearEndListen: function() {
       if (this.filter.yearEnd && !+this.filter.yearEnd) {
         this.$message('年代必须为数字')
         this.filter.yearEnd = null
-        return
       }
     },
     changeSort: function() {
@@ -497,7 +494,7 @@ export default {
       } else {
         this.filter.order = 'asc'
       }
-    },
+    }
   },
   created() {
     this.$service.mediaGetCondition().then(data => {
@@ -507,7 +504,7 @@ export default {
   }
 }
 </script>
- 
+
 <style lang='stylus' scoped>
 .search-form-inline
   >>> .el-form-item__content

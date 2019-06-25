@@ -1,10 +1,10 @@
  <template>
-  <BaseSelector 
+  <BaseSelector
     ref="baseSelector"
     id-field="vId"
     :is-live="isLive"
     :selection-type="selectionType"
-    :table="table" 
+    :table="table"
     :pagination="pagination"
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
@@ -45,7 +45,7 @@
     </el-form>
   </BaseSelector>
 </template>
- 
+
 <script>
 import BaseSelector from '../BaseSelector'
 import SourceSelector from '@/components/SourceSelector'
@@ -145,7 +145,7 @@ export default {
         ],
         selected: [],
         selectionType: 'single'
-      },
+      }
     }
   },
   props: ['isLive', 'selectionType', 'source'],
@@ -198,6 +198,6 @@ export default {
   }
 }
 </script>
- 
+
  <style lang='stylus' scoped>
 </style>

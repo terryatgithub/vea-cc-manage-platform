@@ -53,7 +53,7 @@ export default {
   mixins: [titleMixin],
   components: {
     CommonContent,
-    Upload,
+    Upload
   },
   data() {
     return {
@@ -69,7 +69,7 @@ export default {
         // 表单规则
         typeName: [
           { required: true, message: '请输入角标名称', trigger: 'blur' },
-           { max: 45, message: '不能超过45个字符', trigger: 'blur' }
+          { max: 45, message: '不能超过45个字符', trigger: 'blur' }
         ],
         typePosition: [
           { required: true, message: '请输入角标位置', trigger: 'blur' }
@@ -113,7 +113,7 @@ export default {
             })
         }
       })
-    },
+    }
   },
   created() {
     this.mode = this.initMode || 'create'

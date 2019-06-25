@@ -1,10 +1,10 @@
  <template>
-  <BaseSelector 
+  <BaseSelector
     ref="baseSelector"
     id-field="pid"
     :is-live="isLive"
     :selection-type="selectionType"
-    :table="table" 
+    :table="table"
     :pagination="pagination"
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
@@ -24,7 +24,7 @@
     </el-form>
   </BaseSelector>
 </template>
- 
+
 <script>
 import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
@@ -144,7 +144,7 @@ export default {
     getDefaultFilter() {
       return {
         pType: 'live',
-        pTitle: undefined 
+        pTitle: undefined
       }
     },
     getFilter() {
@@ -177,6 +177,6 @@ export default {
   }
 }
 </script>
- 
+
  <style lang='stylus' scoped>
 </style>

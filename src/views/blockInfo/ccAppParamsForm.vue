@@ -25,20 +25,20 @@
             <el-input type="textarea" v-model.trim="inputValue.byvalue"></el-input>
         </el-form-item>
         <el-form-item label="扩展参数">
-            <div 
+            <div
                 class="app-extend-params"
                 v-for="(param, index) in inputValue.params"
                 :key="index">
-                <el-form-item 
-                    label="key:" 
-                    label-width="60px" 
+                <el-form-item
+                    label="key:"
+                    label-width="60px"
                     :prop="formProp('params.' + index + '.key')"
                     :rules="rules.params.key"
                 >
                     <el-input v-model.trim="param.key"></el-input>
                 </el-form-item>
-                <el-form-item 
-                    label="value:" 
+                <el-form-item
+                    label="value:"
                     label-width="60px"
                     :prop="formProp('params.' + index + '.value')"
                     :rules="rules.params.value"
@@ -55,98 +55,98 @@
 </template>
 <script>
 export default {
-    data() {
-        function validateKV(rule, value, cb) {
-            if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
-                cb(new Error('请勿输入特殊或空白字符'))
-            } else {
-                cb()
-            }
+  data() {
+    function validateKV(rule, value, cb) {
+      if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
+        cb(new Error('请勿输入特殊或空白字符'))
+      } else {
+        cb()
+      }
+    }
+    return {
+      inputValue: {
+        packagename: undefined,
+        versioncode: undefined,
+        dowhat: undefined,
+        bywhat: undefined,
+        byvalue: undefined,
+        params: [
+        ],
+        exception: {}
+      },
+      rules: {
+        packagename: [
+          { required: true, message: '请输入应用包名', trigger: 'blur' }
+        ],
+        versioncode: [
+          { required: true, message: '请输入应用版本号', trigger: 'blur' }
+        ],
+        dowhat: [
+          { required: true, message: '请选择启动动作', trigger: 'blur' }
+        ],
+        bywhat: [
+          { required: true, message: '请选择启动方式', trigger: 'blur' }
+        ],
+        byvalue: [
+          { required: true, message: '请输入启动参数', trigger: 'blur' }
+        ],
+        params: {
+          key: [
+            { required: true, message: '不能为空', trigger: 'blur' },
+            { validator: validateKV, trigger: 'blur' }
+          ],
+          value: [
+            { required: true, message: '不能为空', trigger: 'blur' },
+            { validator: validateKV, trigger: 'blur' }
+          ]
         }
-        return {
-            inputValue: {
-                packagename: undefined,
-                versioncode: undefined,
-                dowhat: undefined,
-                bywhat: undefined,
-                byvalue: undefined,
-                params: [
-                ],
-                exception: {}
-            },
-            rules: {
-                packagename: [
-                    {required: true, message: '请输入应用包名', trigger: 'blur'}
-                ],
-                versioncode: [
-                    {required: true, message: '请输入应用版本号', trigger: 'blur'}
-                ],
-                dowhat: [
-                    {required: true, message: '请选择启动动作', trigger: 'blur'}
-                ],
-                bywhat: [
-                    {required: true, message: '请选择启动方式', trigger: 'blur'}
-                ],
-                byvalue: [
-                    {required: true, message: '请输入启动参数', trigger: 'blur'}
-                ],
-                params: {
-                    key: [
-                        {required: true, message: '不能为空', trigger: 'blur'},
-                        {validator: validateKV, trigger: 'blur'}
-                    ],
-                    value: [
-                        {required: true, message: '不能为空', trigger: 'blur'},
-                        {validator: validateKV, trigger: 'blur'}
-                    ]
-                }
-            },
-        }
+      }
+    }
+  },
+  props: ['value', 'label-width', 'propPrefix'],
+  watch: {
+    value: 'setInputValue'
+  },
+  methods: {
+    formProp(key) {
+      return (this.propPrefix || '') + key
     },
-    props: ['value', 'label-width', 'propPrefix'],
-    watch: {
-        value: 'setInputValue'
+    genDefaultValue() {
+      return {
+        packagename: undefined,
+        versioncode: undefined,
+        dowhat: undefined,
+        bywhat: undefined,
+        byvalue: undefined,
+        params: []
+      }
     },
-    methods: {
-        formProp(key) {
-            return (this.propPrefix|| '') + key
-        },
-        genDefaultValue() {
-            return {
-                packagename: undefined,
-                versioncode: undefined,
-                dowhat: undefined,
-                bywhat: undefined,
-                byvalue: undefined,
-                params: []
-            }
-        },
-        setInputValue(val) {
-            if (val !== this.inputValue) {
-                this.inputValue = Object.assign(this.genDefaultValue(), val)
-            }
-        },
-        emitInputValue(val) {
-            this.$emit('input', this.inputValue)
-        },
-        handleAddParam() {
-            this.inputValue.params.push({
-                key: undefined,
-                value: undefined
-            })
-        },
-        handleRemoveParam(index) {
-            this.inputValue.params.splice(index, 1)
-        },
+    setInputValue(val) {
+      if (val !== this.inputValue) {
+        this.inputValue = Object.assign(this.genDefaultValue(), val)
+      }
     },
-    created() {
-        if (this.value) {
-            this.setInputValue(this.value)
-        }
-        this.$watch('inputValue', this.emitInputValue,  {
-            deep: true
-        })
-    }  
+    emitInputValue(val) {
+      this.$emit('input', this.inputValue)
+    },
+    handleAddParam() {
+      this.inputValue.params.push({
+        key: undefined,
+        value: undefined
+      })
+    },
+    handleRemoveParam(index) {
+      this.inputValue.params.splice(index, 1)
+    }
+  },
+  created() {
+    if (this.value) {
+      this.setInputValue(this.value)
+    }
+    this.$watch('inputValue', this.emitInputValue, {
+      deep: true
+    })
+  }
 }
 </script>
 <style <style lang="stylus" scoped>
@@ -169,5 +169,3 @@ export default {
     max-width: 280px;
 }
 </style>
-
-

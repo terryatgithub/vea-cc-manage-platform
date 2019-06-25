@@ -5,7 +5,7 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6" prop="tabId">
           <div class="el-col-20">
-            <el-input v-model="filter.tabId" placeholder="版面ID"/>
+            <InputPositiveInt v-model="filter.tabId" placeholder="版面ID"/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
@@ -104,19 +104,23 @@
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
+import InputPositiveInt from '@/components/InputPositiveInt'
+import { cloneDeep } from 'lodash'
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
     ButtonGroupForListPage,
-    Table
+    Table,
+    InputPositiveInt
   },
 
   data() {
     return {
       resourceType: 'film',
       pannelValue: [],
-      filter: this.getDefaultFilter(),
+      filter: this.genDefaultFilter(),
+      efficientFilter: this.genDefaultFilter(),
       pagination: {
         currentPage: 1
       },
@@ -269,7 +273,7 @@ export default {
   },
 
   methods: {
-    getDefaultFilter() {
+    genDefaultFilter() {
       return {
         tabType: 3,
         tabId: undefined,
@@ -296,7 +300,7 @@ export default {
     },
     parseFilter() {
       const { pagination } = this
-      const filter = JSON.parse(JSON.stringify(this.filter))
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
@@ -311,12 +315,14 @@ export default {
       this.$refs.filterForm.validate((valid) => {
         if (valid) {
           this.pagination.currentPage = 1
+          this.efficientFilter = cloneDeep(this.filter)
           this.fetchData()
         }
       })
     },
     handleFilterReset() {
-      this.filter = this.getDefaultFilter()
+      this.filter = this.genDefaultFilter()
+      this.efficientFilter = this.genDefaultFilter()
       this.pannelValue = []
       this.pagination.currentPage = 1
       this.fetchData()

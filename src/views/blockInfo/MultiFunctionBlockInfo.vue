@@ -518,8 +518,16 @@
   </ContentCard>
 </template>
 <script>
+import CommonContent from '@/components/CommonContent.vue'
+import ccAppParamsForm from './ccAppParamsForm'
+import ccTimeSpinner from './ccTimeSpinner'
+import selectResource from './selectResource'
+import TabSelector from '@/components/selectors/TabSelector'
+import selectClick from './selectClick'
+import selectImg from './selectImg'
+import { AppParams, AppParamsRead } from 'admin-toolkit'
 const PARENT_TYPES = {
-  sign: 'sign', //标记推荐位
+  sign: 'sign', // 标记推荐位
   multi: 'multi',
   builtIn: 'builtIn',
   secKill: 'secKill'
@@ -533,14 +541,6 @@ const OPEN_MODE_TEXT = {
   picture: '图片'
 }
 window.basicFn = {}
-import CommonContent from '@/components/CommonContent.vue'
-import ccAppParamsForm from './ccAppParamsForm'
-import ccTimeSpinner from './ccTimeSpinner'
-import selectResource from './selectResource'
-import TabSelector from '@/components/selectors/TabSelector'
-import selectClick from './selectClick'
-import selectImg from './selectImg'
-import { AppParams, AppParamsRead } from 'admin-toolkit'
 export default {
   components: {
     ccAppParamsForm,
@@ -562,8 +562,8 @@ export default {
       dialogTableVisible: false,
       dialogClickTableVisible: false,
       showFocusImgSelectorVisible: false,
-      clickData: {}, //点击事件
-      selectResource: {}, //素材选择事件
+      clickData: {}, // 点击事件
+      selectResource: {}, // 素材选择事件
       selectImgData: {},
       urls: {
         uploadImg: '/api' + '/uploadHomeImg.html' // 上传图片接口
@@ -661,7 +661,7 @@ export default {
           {
             trigger: 'change',
             validator: function(_, value, cb) {
-              cb(!!value ? undefined : new Error('请选择版面'))
+              cb(value ? undefined : new Error('请选择版面'))
             }
           },
           {
@@ -762,11 +762,11 @@ export default {
   },
   watch: {},
   methods: {
-    /** 选择版面*/
+    /** 选择版面 */
     handleSelectTabEnd(data, item) {
       this.$set(item.onclick, 'tab', data)
     },
-    //时间处理-:转换为数值
+    // 时间处理-:转换为数值
     parseMinToStr(str) {
       if (str !== undefined) {
         const timeArr = str.split(':')
@@ -775,7 +775,7 @@ export default {
         return hours * 60 + mins
       }
     },
-    //转换位时间格式 ：hh:mm
+    // 转换位时间格式 ：hh:mm
     parseStrToMin(min) {
       const hours = Math.floor(min / 60)
       const mins = min % 60
@@ -783,7 +783,7 @@ export default {
       const minsStr = mins > 9 ? '' + mins : '0' + mins
       return hoursStr + ':' + minsStr
     },
-    //数据回显
+    // 数据回显
     fetchData(version) {
       this.$service.editSysPlugin({ id: this.id, version }).then(data => {
         if (data) {
@@ -815,7 +815,7 @@ export default {
         }
       })
     },
-    //父数据字典查询接口
+    // 父数据字典查询接口
     getPluginParentTypes() {
       this.$service.getPluginParentTypes().then(data => {
         if (data) {
@@ -825,7 +825,7 @@ export default {
         }
       })
     },
-    //数据字典查询
+    // 数据字典查询
     getPluginTypes(pluginParentType) {
       this.$service
         .getPluginTypes({ pluginParentType: pluginParentType })
@@ -835,7 +835,7 @@ export default {
           }
         })
     },
-    /**时间选择时间 */
+    /** 时间选择时间 */
     handleTime() {},
     handleTime1() {},
     getPluginVersions(type) {
@@ -1164,9 +1164,9 @@ export default {
         switch (item.openMode) {
           case 'webpage':
             if (originOnclick.webpageType === '1') {
-              //浮窗网页
+              // 浮窗网页
               item.onclick = {
-                packagename: 'com.coocaa.app_browser', //setPackage
+                packagename: 'com.coocaa.app_browser', // setPackage
                 versioncode: originOnclick.webpageAppVersion,
                 dowhat: 'startActivity',
                 bywhat: 'action',
@@ -1180,7 +1180,7 @@ export default {
                 exception: {}
               }
             } else if (originOnclick.webpageType === '2') {
-              //全屏网页
+              // 全屏网页
               item.onclick = {
                 packagename: 'com.coocaa.app_browser',
                 versioncode: originOnclick.webpageAppVersion,
@@ -1311,7 +1311,7 @@ export default {
         }.bind(this)
       )
     },
-    /**弹框选择素材 */
+    /** 弹框选择素材 */
     getSelectResource(data) {
       this.selectResource = data
       this.dialogTableVisible = false
@@ -1330,7 +1330,7 @@ export default {
     //   }
     //   this.block.rlsInfo[this.selectingPostForIndex].poster = selectObj
     // },
-    /**点击事件弹框 */
+    /** 点击事件弹框 */
     getClickData1(data) {
       this.clickData = data
       this.dialogClickTableVisible = false
@@ -1375,7 +1375,7 @@ export default {
       // this.showselectClickor = false
       // this.selectingClickForIndex = undefined
     },
-    /**异形焦点选择 */
+    /** 异形焦点选择 */
     getSelectImg(data) {
       this.selectImgData = data
       this.showFocusImgSelectorVisible = false
@@ -1474,5 +1474,3 @@ export default {
   color: red;
 }
 </style>
-
-

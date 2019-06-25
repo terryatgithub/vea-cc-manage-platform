@@ -1,16 +1,16 @@
 <template>
   <div>
-    <CommonOnclickInfoList 
-      v-show='isShowList' 
-      ref="list" 
+    <CommonOnclickInfoList
+      v-show='isShowList'
+      ref="list"
       @create="handleCreate"
       @edit="handleEdit"
       @delete="handleDelete"/>
 
     <CommonOnclickInfo
-      v-if='!isShowList' 
-      :editId="id" 
-      @openListPage="handleUpsertEnd" 
+      v-if='!isShowList'
+      :editId="id"
+      @openListPage="handleUpsertEnd"
       @go-back="goBack"/>
   </div>
 </template>
@@ -36,26 +36,26 @@ export default {
       this.isShowList = false
     },
     handleEdit(row) {
-       this.id = row.commonOnclickId
-       this.mode = 'edit'
-       this.isShowList = false
+      this.id = row.commonOnclickId
+      this.mode = 'edit'
+      this.isShowList = false
     },
-    handleRead(row){
-       this.id = row.commonOnclickId
-       this.mode = 'read'
-       this.isShowList = false
+    handleRead(row) {
+      this.id = row.commonOnclickId
+      this.mode = 'read'
+      this.isShowList = false
     },
     handleDelete(selected) {
       this.$service
-        .commonOnclickInfoDelete({ 
+        .commonOnclickInfoDelete({
           id: selected.map(item => item.commonOnclickId).join(',')
-        },'删除成功')
+        }, '删除成功')
         .then(_ => {
           this.$refs.list.fetchData()
         })
     },
     handleUpsertEnd (onlyRefreshList) {
-      this.$refs.list.fetchData();//更新页面
+      this.$refs.list.fetchData()// 更新页面
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'

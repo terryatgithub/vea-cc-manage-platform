@@ -6,7 +6,7 @@
           <div>专属影院版块：</div>
           <div>专属影院，影片数据 由大数据和媒资库提供，运营人员只需配置相应内容块的影片类型（0 会员影片，1 非会员影片，2 单点影片）。</div>
         </div>
-       
+
         <CommonContent
           :mode="mode"
           :resource-info="resourceInfo"
@@ -54,8 +54,8 @@
                   @input="handlePannelResourceChange"
                   :disabled="mode!=='read'"
                 >
-                  <el-radio 
-                    v-for="(item, index) in $consts.sourceOptions" 
+                  <el-radio
+                    v-for="(item, index) in $consts.sourceOptions"
                     :label="item.value"
                     :key="index">
                     {{ item.label }}
@@ -255,12 +255,12 @@ export default {
         label: '单点影片'
       }
     ]
-    
+
     return {
       mode: 'create',
       resourceName: '专属影院',
       panelGroupCategoryOptions: [],
-      //推荐策略
+      // 推荐策略
       recommendStrategyOptions: [],
       blockVideoTypeOptions: blockVideoTypeOptions,
       rules: {
@@ -291,13 +291,13 @@ export default {
         currentVersion: undefined,
         parentType: 'function',
         groupTitle: '',
-        //pannelName: undefined,
+        // pannelName: undefined,
         // pannelTitle: undefined,
         showTitle: true,
         lucenyFlag: false,
         // layoutId: undefined,
         pannelResource: 'o_tencent',
-        panelGroupCategory: 67, //业务分类
+        panelGroupCategory: 67, // 业务分类
         panelGroupType: 9,
         //   focusConfig: undefined,
         //   dictInfoList: '',
@@ -318,8 +318,8 @@ export default {
             //  panelIsFocus: undefined,
             //   focusShape: undefined,
             recommendStrategy: 'serial_watch_too',
-            vipContentAmount: 5, //类型为9，10时候才有
-            firstPageVipContentAmount: 2, //类型为9，10时候才有
+            vipContentAmount: 5, // 类型为9，10时候才有
+            firstPageVipContentAmount: 2, // 类型为9，10时候才有
             contentList: [
               // pannelType为 5的时候才有
               // { blockVideoType: 0 },
@@ -367,29 +367,29 @@ export default {
       }
     },
     isReplica() {
-        return this.mode === 'replica'
+      return this.mode === 'replica'
     },
     isDisableTabType() {
       const mode = this.mode
       return mode === 'edit' || mode === 'replicate' || mode === 'copy'
-    },
+    }
   },
   methods: {
-    handleRecommedStrategyInput(recommendStrategy){
-      this.panel.pannelList[0].recommendStrategy = recommendStrategy;
-      this.initPanelTitleByRecommendStrategy(recommendStrategy);
+    handleRecommedStrategyInput(recommendStrategy) {
+      this.panel.pannelList[0].recommendStrategy = recommendStrategy
+      this.initPanelTitleByRecommendStrategy(recommendStrategy)
     },
-    initPanelTitleByRecommendStrategy(recommendStrategy){
+    initPanelTitleByRecommendStrategy(recommendStrategy) {
       const selected = this.recommendStrategyOptions.find(function (item) {
-          return item.value === recommendStrategy
+        return item.value === recommendStrategy
       })
       this.panel.pannelList[0].pannelTitle = selected && selected.label
     },
     getRecommendStrategyLabel(value) {
-        const selected = this.recommendStrategyOptions.find(function (item) {
-            return item.value === value
-        })
-        return selected && selected.label
+      const selected = this.recommendStrategyOptions.find(function (item) {
+        return item.value === value
+      })
+      return selected && selected.label
     },
     setDefaultPanelTitle(pannelType) {
       this.panel.pannelList[0].pannelType = pannelType
@@ -422,7 +422,7 @@ export default {
       }
     },
     handlePannelResourceChange(val) {
-      this.panel.pannelResource = val;
+      this.panel.pannelResource = val
     },
     handleSaveDraft() {
       const data = JSON.parse(JSON.stringify(this.panel))
@@ -436,31 +436,31 @@ export default {
     },
     validate(data, cb) {
       this.$refs.upsertForm.validate(function (valid) {
-          if (valid) {
-              // 首屏不能比付费多
-              const firstPanel = data.pannelList[0]
-              const panelGroupType = data.panelGroupType
-              if (panelGroupType === 9 || panelGroupType === 10) {
-                if (firstPanel.vipContentAmount < firstPanel.firstPageVipContentAmount) {
-                  return cb('首屏付费内容数量不能大于总付费内容数量')
-                }
-                if (firstPanel.vipContentAmount > firstPanel.firstPageVipContentAmount + 9) {
-                  return cb('总付费内容数应小于等于(首屏付费内容数 + 9)')
-                }
-              }
-              cb()
+        if (valid) {
+          // 首屏不能比付费多
+          const firstPanel = data.pannelList[0]
+          const panelGroupType = data.panelGroupType
+          if (panelGroupType === 9 || panelGroupType === 10) {
+            if (firstPanel.vipContentAmount < firstPanel.firstPageVipContentAmount) {
+              return cb('首屏付费内容数量不能大于总付费内容数量')
+            }
+            if (firstPanel.vipContentAmount > firstPanel.firstPageVipContentAmount + 9) {
+              return cb('总付费内容数应小于等于(首屏付费内容数 + 9)')
+            }
           }
+          cb()
+        }
       })
     },
     submit(data) {
       let firstPageVipContentAmount = data.pannelList[0].firstPageVipContentAmount
       let vipContentAmount = data.pannelList[0].vipContentAmount
-      if (vipContentAmount > firstPageVipContentAmount + 9 ) {
+      if (vipContentAmount > firstPageVipContentAmount + 9) {
         this.$message({
           type: 'error',
           message: '总付费内容数应小于等于（首屏付费内容数 + 9）'
         })
-        return 
+        return
       }
       this.validate(
         data,
@@ -513,13 +513,13 @@ export default {
       const panel = data
       const firstPanel = data.pannelList[0]
       panel.pannelResource = firstPanel.pannelResource
-      panel.showTitle = firstPanel.showTitle == 1 ? true : false
+      panel.showTitle = firstPanel.showTitle == 1
       panel.pannelStatus = firstPanel.pannelStatus
       panel.layoutId = firstPanel.layoutId
 
       if (firstPanel.contentList && firstPanel.contentList.length > 0) {
         const firstContent = firstPanel.contentList[0]
-        panel.lucenyFlag = firstContent.lucenyFlag == 1 ? true : false
+        panel.lucenyFlag = firstContent.lucenyFlag == 1
       }
       return panel
     },

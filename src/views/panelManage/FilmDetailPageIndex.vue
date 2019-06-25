@@ -56,8 +56,8 @@ export default {
     },
     handleDelete(selected) {
       this.$service
-        .businessTabDelete({ 
-          id: selected.map(item => item.tabId).join(',') 
+        .businessTabDelete({
+          id: selected.map(item => item.tabId).join(',')
         }, '删除成功')
         .then(data => {
           this.$refs.list.fetchData()

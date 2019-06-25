@@ -91,7 +91,7 @@ export default {
   props: {
     selectionType: {
       type: String,
-      default(){
+      default() {
         return 'multiple'
       }
     }
@@ -105,7 +105,7 @@ export default {
   data() {
     let _this = this
     return {
-      platform: 'tencent', //默认平台
+      platform: 'tencent', // 默认平台
       form: {
         platform: null,
         model: null,
@@ -159,16 +159,16 @@ export default {
         model: undefined
       }
     },
-    rowClick(params){
-       this.$emit("row-click",params)
+    rowClick(params) {
+      this.$emit('row-click', params)
     },
-    changePlatform($event){ 
-      if(window.confirm("是否要切换内容源，切换内容源之后，首页方案数据将会清除掉")){
-          this.platform = $event
-          this.fetchData()
-       } else {
-          this.formSearch.platform = this.platform
-       }
+    changePlatform($event) {
+      if (window.confirm('是否要切换内容源，切换内容源之后，首页方案数据将会清除掉')) {
+        this.platform = $event
+        this.fetchData()
+      } else {
+        this.formSearch.platform = this.platform
+      }
     },
     addModelChip() {
       this.$refs.form.validate(valid => {
@@ -179,7 +179,7 @@ export default {
         }
       })
     },
-    //表格操作
+    // 表格操作
     handleRowSelectionAdd(targetItem) {
       this.selected.push(targetItem)
       this.updateTableSelected()
@@ -221,16 +221,16 @@ export default {
         return result
       }, [])
     },
-    //查询
+    // 查询
     handleFilterChange() {
-      this.filter = {...this.formSearch}
+      this.filter = { ...this.formSearch }
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    //重置
+    // 重置
     handleFilterReset() {
       this.filter = this.genDefaultFilter()
-      this.formSearch = this.genDefaultFilter() 
+      this.formSearch = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -264,5 +264,3 @@ export default {
   display flex
   justify-content flex-end
 </style>
-
-

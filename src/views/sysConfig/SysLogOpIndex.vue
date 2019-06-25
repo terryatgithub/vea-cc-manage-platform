@@ -38,7 +38,7 @@ export default {
       selected: [],
       table: {
         props: {},
-      header: [
+        header: [
           {
             label: '自增ID',
             prop: 'id',
@@ -125,47 +125,47 @@ export default {
     // 老项目的方法
     handleCopy: function (row) {
       var opData = row.opData
-      var textArea = document.createElement("textarea");
-      textArea.style.position = 'fixed';
-      textArea.style.top = '0';
-      textArea.style.left = '0';
-      textArea.style.width = '2em';
-      textArea.style.height = '2em';
-      textArea.style.padding = '0';
-      textArea.style.border = 'none';
-      textArea.style.outline = 'none';
-      textArea.style.boxShadow = 'none';
-      textArea.style.background = 'transparent';
-      textArea.value = opData;
-      document.body.appendChild(textArea);
-      textArea.select();
+      var textArea = document.createElement('textarea')
+      textArea.style.position = 'fixed'
+      textArea.style.top = '0'
+      textArea.style.left = '0'
+      textArea.style.width = '2em'
+      textArea.style.height = '2em'
+      textArea.style.padding = '0'
+      textArea.style.border = 'none'
+      textArea.style.outline = 'none'
+      textArea.style.boxShadow = 'none'
+      textArea.style.background = 'transparent'
+      textArea.value = opData
+      document.body.appendChild(textArea)
+      textArea.select()
       try {
-          var successful = document.execCommand('copy');
-          if (successful){
-              this.$message({
-                  showClose: true,
-                  message: '复制成功',
-                  type: 'success'
-              })
-          }
-      } catch (err) {
+        var successful = document.execCommand('copy')
+        if (successful) {
           this.$message({
-              showClose: true,
-              message: '复制失败',
-              type: 'warning'
+            showClose: true,
+            message: '复制成功',
+            type: 'success'
           })
+        }
+      } catch (err) {
+        this.$message({
+          showClose: true,
+          message: '复制失败',
+          type: 'warning'
+        })
       }
-      document.body.removeChild(textArea);
+      document.body.removeChild(textArea)
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.id)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.id)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -214,7 +214,7 @@ export default {
         component: 'Input',
         placeholder: '菜单名称'
       }),
-       menuElid: _.o.string.other('form', {
+      menuElid: _.o.string.other('form', {
         component: 'Input',
         placeholder: '菜单Elid  '
       }),
@@ -230,7 +230,7 @@ export default {
         component: 'Input',
         placeholder: '操作耗时'
       }),
-       opData: _.o.string.other('form', {
+      opData: _.o.string.other('form', {
         component: 'Input',
         type: 'textarea',
         placeholder: '操作的数据'
@@ -262,6 +262,3 @@ export default {
 .content >>> .operatiton-data
   height: 50px;
 </style>
-
-
-

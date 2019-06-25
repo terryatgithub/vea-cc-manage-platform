@@ -7,9 +7,9 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <ButtonGroupForListPage 
+      <ButtonGroupForListPage
         v-if="dataList === undefined "
-        pageName='albumPanel' 
+        pageName='albumPanel'
         @add="handleCreate"
         @edit="handleEdit"
         @delete="handleDelete">
@@ -77,15 +77,15 @@ export default {
             'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
               return createElement('el-button', {
-                attrs:{
+                attrs: {
                   type: 'text'
                 },
                 on: {
                   click: () => {
-                    this.handleRead(row) 
+                    this.handleRead(row)
                   }
                 }
-              },row.pannelGroupRemark)
+              }, row.pannelGroupRemark)
             }
           },
           {
@@ -101,7 +101,7 @@ export default {
             label: '内容源',
             prop: 'pannelResource',
             formatter: (row) => {
-                return this.$consts.sourceText[row.pannelList[0].pannelResource]
+              return this.$consts.sourceText[row.pannelList[0].pannelResource]
             }
           },
           {
@@ -116,7 +116,7 @@ export default {
             formatter: (row) => {
               const status = row.pannelStatus
               const currentVersion = row.currentVersion
-              return currentVersion + '/' + this.$consts.statusText[status] 
+              return currentVersion + '/' + this.$consts.statusText[status]
             }
           },
           {
@@ -125,13 +125,13 @@ export default {
             prop: 'duplicateVersion',
             render: (h, { row }) => {
               return h('el-button', {
-                attrs:{
+                attrs: {
                   type: 'text'
                 },
                 on: {
                   click: (event) => {
                     event.stopPropagation()
-                    this.handleRead(row, row.duplicateVersion) 
+                    this.handleRead(row, row.duplicateVersion)
                   }
                 }
               }, row.duplicateVersion)
@@ -146,7 +146,7 @@ export default {
           {
             label: '审核人',
             prop: 'auditor',
-            width: '100',
+            width: '100'
           },
           {
             label: '更新人',
@@ -157,10 +157,10 @@ export default {
             label: '操作',
             fixed: 'right',
             width: 140,
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return h('div', [
                 h('el-button', {
-                  props: {type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()
@@ -169,7 +169,7 @@ export default {
                   }
                 }, '复制'),
                 h('el-button', {
-                  props: {type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()
@@ -177,9 +177,9 @@ export default {
                     }
                   }
                 }, [
-                  h('el-icon', {class: row.collected ? 'el-icon-star-on' : 'el-icon-star-off'}),
+                  h('el-icon', { class: row.collected ? 'el-icon-star-on' : 'el-icon-star-off' }),
                   row.collected ? '取消' : '收藏'
-                ]),
+                ])
               ])
             }
           }
@@ -188,7 +188,7 @@ export default {
         selectionType: 'multiple'
       },
       selected: []
-    };
+    }
   },
 
   watch: {
@@ -197,7 +197,7 @@ export default {
         const table = this.table
         let rows = []
         table.data.map(tableRow => {
-          if(newVal.indexOf(tableRow.pannelGroupId) > -1) {
+          if (newVal.indexOf(tableRow.pannelGroupId) > -1) {
             let row = {
               pannelGroupId: tableRow.pannelGroupId,
               pannelGroupRemark: tableRow.pannelGroupRemark,
@@ -205,7 +205,7 @@ export default {
               pannelType: tableRow.pannelType
             //  type: 'AlbumPannelInfo'
             }
-            console.log("AlbumPannelInfo")
+            console.log('AlbumPannelInfo')
             rows.push(row)
           }
         })
@@ -223,12 +223,12 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter()
-      if(this.dataList) {
+      if (this.dataList) {
         this.$service.panelDataList(filter).then(data => {
           this.pagination.total = data.total
           this.table.data = data.rows
         })
-      }else {
+      } else {
         this.$service.panelPageList(filter).then(data => {
           this.pagination.total = data.total
           this.table.data = data.rows
@@ -244,29 +244,29 @@ export default {
       return filter
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.pannelId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
-      console.log(this.dataList);
-      if(this.dataList) {
+      console.log(this.dataList)
+      if (this.dataList) {
         this.filter = Object.assign({}, this.dataList.filter)
-        console.log(this.filter);
-      }else {
-        this.filter = this.genDefaultFilter() 
+        console.log(this.filter)
+      } else {
+        this.filter = this.genDefaultFilter()
       }
       this.pagination.currentPage = 1
       this.fetchData()
     },
     getBusinessType() {
-      return this.$service.getDictType({type: 'businessType'}).then(data => {
+      return this.$service.getDictType({ type: 'businessType' }).then(data => {
         data.forEach((item) => {
           this.businessType[item.dictCnName] = item.dictId
         })
@@ -274,12 +274,12 @@ export default {
     },
     handleToggleCollect(row) {
       if (row.collected) {
-        this.$service.collectCancel({ type: 'pannel', data: {resourceId: row.pannelGroupId}}, '取消收藏成功')
+        this.$service.collectCancel({ type: 'pannel', data: { resourceId: row.pannelGroupId } }, '取消收藏成功')
           .then(() => {
             this.$set(row, 'collected', false)
           })
       } else {
-        this.$service.collect({ type: 'pannel', data: {resourceId: row.pannelGroupId}}, '收藏成功')
+        this.$service.collect({ type: 'pannel', data: { resourceId: row.pannelGroupId } }, '收藏成功')
           .then(() => {
             this.$set(row, 'collected', true)
           })
@@ -320,7 +320,7 @@ export default {
         placeholder: '状态',
         component: 'Select'
       }),
-      type: _.o.enum({'默认': -1, '置顶': 1, '下沉': 0}).other('form', {
+      type: _.o.enum({ '默认': -1, '置顶': 1, '下沉': 0 }).other('form', {
         placeholder: '智能化推荐',
         component: 'Select'
       })
@@ -358,7 +358,7 @@ export default {
     })
     // 影片详情页中的版块
     const dataList = this.dataList
-    if(dataList) {
+    if (dataList) {
       this.filter = Object.assign({}, dataList.filter)
       this.table = dataList.table
     }

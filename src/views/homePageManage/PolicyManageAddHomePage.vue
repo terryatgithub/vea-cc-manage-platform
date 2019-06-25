@@ -69,11 +69,11 @@ export default {
   components: {
     CrowdSelector,
     HomePageModel
-  }, 
+  },
   props: {
     itemType: String,
     editHomePageData: Object,
-    selectedCrowds:Array
+    selectedCrowds: Array
   },
   watch: {
     'form.useABTest': 'handleToggleABTest'
@@ -95,12 +95,12 @@ export default {
     }
   },
   methods: {
-    addHomePageClose(){
+    addHomePageClose() {
       this.$emit('add-home-page-close')
     },
-     /** 添加定向首页方案*/
-     addHomePageSubmit () {
-      // validate 
+    /** 添加定向首页方案 */
+    addHomePageSubmit () {
+      // validate
       const form = this.form
       const crowdIds = form.attribute.crowdIds
       if (!crowdIds || crowdIds.length === 0) {
@@ -175,12 +175,11 @@ export default {
       // }
       // this.activeItem = undefined
       // this.itemType = undefined
-      if(JSON.stringify(this.editHomePageData) !== '{}') {
-        this.$emit("create-home-page", this.form, true)
+      if (JSON.stringify(this.editHomePageData) !== '{}') {
+        this.$emit('create-home-page', this.form, true)
       } else {
-         this.$emit("create-home-page", this.form, false)
+        this.$emit('create-home-page', this.form, false)
       }
-      
     },
     // handleRemoveItem (itemType, item) {
     //   const specialHp = itemType === 'child'
@@ -207,19 +206,19 @@ export default {
     //   //   : $basePath + '/homepageInfo/dataList.html?homepageModel=normal&&homepageStatusArray=4&&homepageResource=tencent'
     // },
     rowClick(row) {
-        if(this.useABTestHomePage !== undefined) {
-          this.useABTestHomePage.homepageId = row.homepageId,
-          this.useABTestHomePage.homepageStatus = row.homepageStatus,
-          this.useABTestHomePage.homepageName = row.homepageName
-        } else {
-          this.form.homepageId = row.homepageId,
-          this.form.homepageVersion = row.homepageVersion,
-          this.form.homepageStatus = row.homepageStatus,
-          this.form.homepageName = row.homepageName
-        }
-        this.showHomePageDialogVisible = false
+      if (this.useABTestHomePage !== undefined) {
+        this.useABTestHomePage.homepageId = row.homepageId,
+        this.useABTestHomePage.homepageStatus = row.homepageStatus,
+        this.useABTestHomePage.homepageName = row.homepageName
+      } else {
+        this.form.homepageId = row.homepageId,
+        this.form.homepageVersion = row.homepageVersion,
+        this.form.homepageStatus = row.homepageStatus,
+        this.form.homepageName = row.homepageName
+      }
+      this.showHomePageDialogVisible = false
     },
-    /**选择首页 */
+    /** 选择首页 */
     handleSelectCrowdStart() {
       const attribute = JSON.parse(JSON.stringify(this.form.attribute || {}))
       this.selectedPolicyIds = attribute.crowdPolicyIds || []
@@ -231,7 +230,7 @@ export default {
       this.showHomePageDialogVisible = true
     },
     handleSelectCrowdCancel() {},
-    /**选择人群 */
+    /** 选择人群 */
     handleSelectCrowdEnd(policy, crowd) {
       // const specialNormalHp = this.specialNormalHp
       // const specialChildHp = this.specialChildHp
@@ -261,12 +260,12 @@ export default {
       //       duplicate + ' 第' + (duplicateIndex + 1) + '个方案已选择该人群'
       //   })
       // }
-     if(this.isContainCrowdName(crowd.value)) {
-          this.$message({
-                type: 'error',
-                message: '已经存在相同的人群'
-           })
-           return
+      if (this.isContainCrowdName(crowd.value)) {
+        this.$message({
+          type: 'error',
+          message: '已经存在相同的人群'
+        })
+        return
       }
       this.$set(this.crowdsIndexed, crowd.value, crowd)
       this.form.attribute = {
@@ -275,12 +274,12 @@ export default {
         crowdPolicyName: policy.label,
         crowdPolicyIds: [policy.value]
       }
-     
+
       this.showSelectCrowdDialog = false
     },
     isContainCrowdName(crowdId) {
-     return this.selectedCrowds.some((item) => {
-         return item.attribute.crowdIds[0] === crowdId
+      return this.selectedCrowds.some((item) => {
+        return item.attribute.crowdIds[0] === crowdId
       })
     },
     getSelectedCrowdNames(specialItem) {
@@ -298,7 +297,7 @@ export default {
         })
       }
     },
-    /**删除测试组 */
+    /** 删除测试组 */
     handleRemoveTestItem(item) {
       const testHomeList = this.form.testHomeList
       testHomeList.splice(testHomeList.indexOf(item), 1)
@@ -349,7 +348,7 @@ export default {
       this.itemType === 'child'
         ? this.getInitSpecialChild()
         : this.getInitSpecialNormal()
-    if (JSON.stringify(this.editHomePageData) !=='{}') {
+    if (JSON.stringify(this.editHomePageData) !== '{}') {
       this.form = this.editHomePageData
     }
   }
@@ -359,5 +358,3 @@ export default {
   .marginL
      margin-left 10px
 </style>
-
-

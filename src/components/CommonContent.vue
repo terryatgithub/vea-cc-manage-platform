@@ -2,10 +2,10 @@
   <div class="common-content">
     <template v-if="mode !== 'read'">
       <div v-if="mode === 'copy'">
-        <VersionList 
-          type="resourceInfo.type" 
+        <VersionList
+          type="resourceInfo.type"
           :status="resourceInfo.status"
-          :version="resourceInfo.version" 
+          :version="resourceInfo.version"
           :version-list="versionList"
           @select-version="$emit('select-version', $event)"
         />
@@ -22,34 +22,34 @@
           <el-button type="warning" @click="$emit('save-draft')">保存草稿</el-button>
         </slot>
       </div>
-      <ReleaseTimeSetter 
-        v-if="showReleaseTimeSetter" 
+      <ReleaseTimeSetter
+        v-if="showReleaseTimeSetter"
         @cancel="showReleaseTimeSetter = false"
         @submit="handleSubmitWithReleaseTime"
       />
       <slot />
     </template>
     <template v-else>
-        <content-auth-manager 
-          v-if="resourceInfo.id && resourceInfo.menuElId" 
-          :resource-id="resourceInfo.id" 
+        <content-auth-manager
+          v-if="resourceInfo.id && resourceInfo.menuElId"
+          :resource-id="resourceInfo.id"
           :menu-elid="resourceInfo.menuElId"
           :resource-type="resourceInfo.type"/>
         <div>
           <div class="release-info" v-if="releaseTime">
             该版块为定时任务，审核通过后将于 {{ releaseTime }} 上线
           </div>
-          <VersionList 
-            type="resourceInfo.type" 
+          <VersionList
+            type="resourceInfo.type"
             :status="resourceInfo.status"
-            :version="resourceInfo.version" 
+            :version="resourceInfo.version"
             :version-list="versionList"
             @select-version="$emit('select-version', $event)"
           />
 
-          <ContentButtonGroup 
+          <ContentButtonGroup
             v-if="resourceInfo.id"
-            :resource-info="resourceInfo" 
+            :resource-info="resourceInfo"
             :options="buttonGroupOptions"
             @copy="$emit('replicate')"
             @edit="$emit('edit')"
@@ -123,8 +123,8 @@ export default {
       versionList: [],
       auditHistoryList: [],
       auditForm: {
-        auditFlag: '4', //审核状态
-        auditDesc: '' //审核描述
+        auditFlag: '4', // 审核状态
+        auditDesc: '' // 审核描述
       },
       auditFormRule: {
         auditDesc: [
@@ -143,7 +143,7 @@ export default {
     },
     validateMethod: {
       type: Function
-    },
+    }
   },
   watch: {
     resourceInfo: 'handleResourceChange'
@@ -161,7 +161,7 @@ export default {
       return {
         isAllowCopy,
         isNeedSecondAudit,
-        isAllowCancelTiming,
+        isAllowCancelTiming
       }
     }
   },
@@ -173,7 +173,7 @@ export default {
     handleDelete() {
       const { type, id, version } = this.resourceInfo
       this.$confirm('确认删除该版本吗?', '提示').then(() => {
-        this.$service.deleteVersion({type,id,version}, '删除成功').then(() => {
+        this.$service.deleteVersion({ type, id, version }, '删除成功').then(() => {
           if (this.versionList.length === 0) {
             // 通知删除，并且离开预览页面
             this.$emit('delete', false) // 当只有草稿一个版本时
@@ -182,7 +182,7 @@ export default {
               return item.value !== version
             }).value
             // 通知删除，但是停留在预览页面
-            this.$emit('delete', true) 
+            this.$emit('delete', true)
             this.$emit('select-version', nextVersion)
           }
         })
@@ -197,24 +197,24 @@ export default {
           const { id, version, type } = this.resourceInfo
           const { auditFlag, auditDesc } = this.auditForm
           this.$service.auditTask({
-              id,
-              version,
-              type,
-              auditFlag,
-              auditDesc
+            id,
+            version,
+            type,
+            auditFlag,
+            auditDesc
           }, parseInt(auditFlag) === 4 ? '审核成功' : '打回成功')
             .then(data => {
-               this.auditDialog = false
-               this.$emit('audit')
+              this.auditDialog = false
+              this.$emit('audit')
             })
         }
       })
     },
     handleUnAudit() {
-      const {id, version, type} = this.resourceInfo
+      const { id, version, type } = this.resourceInfo
       this.$confirm('您确定要撤销审核吗?', '提示')
         .then(() => {
-          this.$service.revokeAudit({id, version, type}, '撤销审核成功').then(() => {
+          this.$service.revokeAudit({ id, version, type }, '撤销审核成功').then(() => {
             this.$emit('unaudit')
           })
         })
@@ -286,7 +286,7 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .common-content >>> .selectItem .el-select
-   width 450px 
+   width 450px
 .release-info
   margin-bottom 5px
   color #ccc

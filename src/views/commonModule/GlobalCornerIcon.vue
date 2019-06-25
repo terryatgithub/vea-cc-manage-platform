@@ -128,14 +128,14 @@ export default {
   mixins: [titleMixin],
   components: {
     CommonContent,
-    Upload,
+    Upload
   },
   data() {
     return {
       mode: 'create',
       resourceName: '角标',
       fileInfo: [],
-      attributes: [], //角标分类
+      attributes: [], // 角标分类
       attributesIndexed: [],
       form: {},
       rules: {
@@ -165,7 +165,7 @@ export default {
   },
   methods: {
     fetchData(version) {
-      this.$service.globalCornerIconEdit({id: this.id}).then(this.setFormData)
+      this.$service.globalCornerIconEdit({ id: this.id }).then(this.setFormData)
     },
     handleSave() {
       this.validateFormData(err => {
@@ -182,9 +182,9 @@ export default {
       const data = this.getUploadedFiles().map(item => {
         return {
           cornerIconId: this.id,
-          cornerIconName: item.cornerIconName, //标题
-          imgUrl: item.imgUrl, //url
-          attributeCode: item.attributeCode, //分类
+          cornerIconName: item.cornerIconName, // 标题
+          imgUrl: item.imgUrl, // url
+          attributeCode: item.attributeCode, // 分类
           typeRls: item.typeRls
         }
       })
@@ -249,9 +249,9 @@ export default {
               typeId: undefined
             },
             cornerIconName: undefined,
-            attributeCode: undefined, //角标分类
+            attributeCode: undefined, // 角标分类
             imgUrl: undefined,
-            pictureType: undefined //上传图片格式
+            pictureType: undefined // 上传图片格式
           }
           this.fileInfo.push(fileInfo)
           fileItem.status = 'uploading'
@@ -295,7 +295,7 @@ export default {
     if (this.id) {
       this.fetchData(this.version)
     }
-    this.getCornerTypes() //角标分类
+    this.getCornerTypes() // 角标分类
   }
 }
 </script>

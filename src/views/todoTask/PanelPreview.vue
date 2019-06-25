@@ -1,31 +1,31 @@
 <template>
  <div class="el-tab-pane-preview">
-        <MarkPanelInfo 
+        <MarkPanelInfo
       v-if="pannelType===8"
-       :id="id" 
+       :id="id"
       :init-mode="mode"
       :version="version"
       @go-back="goBack">
     </MarkPanelInfo>
-    <PanelInfo 
+    <PanelInfo
        v-if="pannelType===1"
-      :id="id" 
+      :id="id"
       :panel-data-type="1"
       :init-mode="mode"
       :version="version"
       @go-back="goBack">
     </PanelInfo>
-    <PanelInfo 
+    <PanelInfo
        v-if="pannelType===3"
-      :id="id" 
+      :id="id"
       :panel-data-type="3"
       :init-mode="mode"
       :version="version"
       @go-back="goBack">
     </PanelInfo>
-    <PrivatePannelInfo 
+    <PrivatePannelInfo
     v-if="pannelType===9||pannelType===10||pannelType===5"
-       :id="id" 
+       :id="id"
       :init-mode="mode"
       :version="version"
       @go-back="goBack">
@@ -33,9 +33,9 @@
   </div>
 </template>
 <script>
- import PanelInfo from  './../panelInfo/PanelInfo.vue' //常规运营
- import MarkPanelInfo from './../blockManage/MarkPanelInfo' //为功能版块
- import PrivatePannelInfo from './../blockManage/PrivatePannelInfo.vue' // 专属影院
+import PanelInfo from './../panelInfo/PanelInfo.vue' // 常规运营
+import MarkPanelInfo from './../blockManage/MarkPanelInfo' // 为功能版块
+import PrivatePannelInfo from './../blockManage/PrivatePannelInfo.vue' // 专属影院
 export default {
   components: {
     PanelInfo,
@@ -44,7 +44,7 @@ export default {
   },
   props: ['row'],
   data() {
-     return {
+    return {
       id: undefined,
       mode: 'read',
       version: undefined,
@@ -52,8 +52,8 @@ export default {
     }
   },
   methods: {
-     goBack () {
-      this.$emit("go-back")
+    goBack () {
+      this.$emit('go-back')
     }
   },
   created () {
@@ -71,4 +71,3 @@ export default {
     top: 0;
 }
 </style>
-

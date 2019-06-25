@@ -4,28 +4,27 @@
 </el-time-select>
 </template>
 
-
 <script>
-  export default {
-    data() {
-      return {
-        value1: '',
-        time:''
-      };
+export default {
+  data() {
+    return {
+      value1: '',
+      time: ''
+    }
+  },
+  methods: {
+    parseStrToMin(str) {
+      const timeArr = str.split(':')
+      const hours = parseInt(timeArr[0])
+      const mins = parseInt(timeArr[1])
+      return hours * 60 + mins
     },
-    methods:{
-      parseStrToMin(str) {
-            const timeArr = str.split(':')
-            const hours = parseInt(timeArr[0])
-            const mins = parseInt(timeArr[1])
-            return hours * 60 + mins
-        },
-      handle(){
-        if(this.value1 != undefined){
-         this.time = this.parseStrToMin(this.value1)
-         this.$emit('input', this.time)
-        }
+    handle() {
+      if (this.value1 != undefined) {
+        this.time = this.parseStrToMin(this.value1)
+        this.$emit('input', this.time)
       }
     }
   }
+}
 </script>

@@ -7,8 +7,8 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset">
       <div class="btns">
-        <ButtonGroupForListPage 
-        pageName='layout' 
+        <ButtonGroupForListPage
+        pageName='layout'
         :not-contain-btns="notContainBtns"
         @add="handleCreate"
         @edit="handleEdit"
@@ -75,7 +75,7 @@ export default {
             sortable: true,
             render: (createElement, { row }) => {
               return createElement('el-button', {
-                attrs:{
+                attrs: {
                   type: 'text'
                 },
                 on: {
@@ -84,7 +84,7 @@ export default {
                     this.handleRead(row)
                   }
                 }
-              },row.layoutName)
+              }, row.layoutName)
             }
           },
           {
@@ -119,7 +119,7 @@ export default {
               if (typeof row.layoutFlag === 'undefined') {
                 return '无'
               } else {
-                switch(row.layoutFlag) {
+                switch (row.layoutFlag) {
                   case 0:
                     return '横向扩展'
                     break
@@ -148,24 +148,24 @@ export default {
           //   width: 70,
           //   sortable: true
           // },
-            {
+          {
             label: '状态',
             prop: 'layoutStatus',
             width: 70,
-            render: (createElement, {row}) => {
+            render: (createElement, { row }) => {
               return this.$consts.statusText[row.layoutStatus]
             }
           },
-           {
+          {
             label: '更新时间',
             prop: 'lastUpdateDate',
             sortable: true
           },
-           {
+          {
             label: '更新人',
             prop: 'modifierName',
-            render :(createElement, {row}) => {
-               return row.modifierName
+            render: (createElement, { row }) => {
+              return row.modifierName
             }
           }
         ],
@@ -180,7 +180,7 @@ export default {
       return {}
     },
     handleFilterChange(type, filter) {
-      if (filter) { 
+      if (filter) {
         this.filter = filter
       }
       if (type === 'query') {
@@ -191,7 +191,7 @@ export default {
       this.fetchData()
     },
     handleFilterReset() {
-      this.filter = this.genDefaultFilter() 
+      this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -220,11 +220,11 @@ export default {
         component: 'Input',
         placeholder: '布局名称'
       }),
-         layoutType: _.o.enum(this.layoutType).other('form', {
+      layoutType: _.o.enum(this.layoutType).other('form', {
         component: 'Select',
         placeholder: '布局分类'
       }),
-          layoutIsTitle: _.o.enum(this.layoutIsTitle).other('form', {
+      layoutIsTitle: _.o.enum(this.layoutIsTitle).other('form', {
         component: 'Select',
         placeholder: '布局标题'
       }),
@@ -233,7 +233,7 @@ export default {
         placeholder: '状态'
       })
     }).other('form', {
-       cols: {
+      cols: {
         item: 5,
         label: 0,
         wrapper: 20

@@ -30,8 +30,8 @@ export default {
   data() {
     return {
       auditForm: {
-        auditFlag: '4', //审核状态
-        auditDesc: '' //审核描述
+        auditFlag: '4', // 审核状态
+        auditDesc: '' // 审核描述
       },
       auditFormRule: {
         auditDesc: [
@@ -41,27 +41,21 @@ export default {
     }
   },
   methods: {
-      onSubmit(auditForm) {
-          this.$refs.auditForm.validate((valid) => {
-              if(valid) {
-                const auditFormObj = this.auditForm
-                this.$emit('auditForm',auditFormObj)
-              }
-          })
-      },
-      cancle(auditForm) {
-          this.$refs.auditForm.resetFields();
-          const close = false
-          this.$emit('cancle', close)
-      }
+    onSubmit(auditForm) {
+      this.$refs.auditForm.validate((valid) => {
+        if (valid) {
+          const auditFormObj = this.auditForm
+          this.$emit('auditForm', auditFormObj)
+        }
+      })
+    },
+    cancle(auditForm) {
+      this.$refs.auditForm.resetFields()
+      const close = false
+      this.$emit('cancle', close)
+    }
   },
   created() {
   }
 }
 </script>
-
-
-
-
-
-

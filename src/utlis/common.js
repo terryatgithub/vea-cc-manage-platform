@@ -101,43 +101,43 @@ Vue.prototype.$regParenthesesContent = function (str) {
  *@author : shelly
  ***********************************************************************************************/
 Vue.prototype.deepClone = function (obj) {
-  var _this = this;
-  var o;
+  var _this = this
+  var o
   switch (typeof obj) {
     case 'undefined':
-      break;
+      break
     case 'string':
-      o = obj + '';
-      break;
+      o = obj + ''
+      break
     case 'number':
-      o = obj - 0;
-      break;
+      o = obj - 0
+      break
     case 'boolean':
-      o = obj;
-      break;
+      o = obj
+      break
     case 'object':
       if (obj === null) {
-        o = null;
+        o = null
       } else {
         if (obj instanceof Array) {
-          o = [];
+          o = []
           for (var i = 0, len = obj.length; i < len; i++) {
-            o.push(_this.deepClone(obj[i]));
+            o.push(_this.deepClone(obj[i]))
           }
         } else {
-          o = {};
+          o = {}
           for (var k in obj) {
-            o[k] = _this.deepClone(obj[k]);
+            o[k] = _this.deepClone(obj[k])
           }
         }
       }
-      break;
+      break
     default:
-      o = obj;
-      break;
+      o = obj
+      break
   }
-  return o;
-};
+  return o
+}
 
 /**
  *将数字转为对应的审核优先级标示
@@ -148,21 +148,20 @@ Vue.prototype.$numToReviewPriority = function (num) {
   if (typeof (num) === 'number') {
     switch (num) {
       case 1:
-        auditStatus = "一般"
+        auditStatus = '一般'
         break
       case 2:
-        auditStatus = "重要"
+        auditStatus = '重要'
         break
       case 3:
-        auditStatus = "紧急"
+        auditStatus = '紧急'
         break
       default:
-        auditStatus = "未知"
+        auditStatus = '未知'
     }
   }
   return auditStatus
 }
-
 
 /**
  *将数字转为对应的任务状态标示
@@ -173,19 +172,19 @@ Vue.prototype.$numToTaskStatus = function (num) {
   if (typeof (num) === 'number') {
     switch (num) {
       case 1:
-        auditStatus = "进行中"
+        auditStatus = '进行中'
         break
       case 2:
-        auditStatus = "终止"
+        auditStatus = '终止'
         break
       case 3:
-        auditStatus = "结束"
+        auditStatus = '结束'
         break
       case 4:
-        auditStatus = "失效"
+        auditStatus = '失效'
         break
       default:
-        auditStatus = "未知"
+        auditStatus = '未知'
     }
   }
   return auditStatus
@@ -224,15 +223,15 @@ Vue.prototype.$getFilterSelectField = function (data, key, value) {
 }
 Vue.prototype.$sourceName = function (tabResource) {
   const data = {
-    "yinhe": '爱奇艺',
-    "o_iqiyi": '爱奇艺',
-    "qq": '腾讯',
-    "o_tencent": '腾讯',
-    "o_youku": '优酷',
-    "tencent": '腾讯',
-    "o_voole": '优朋',
-    "voole": '优朋',
-    "voolesohu": '优朋搜狐'
+    'yinhe': '爱奇艺',
+    'o_iqiyi': '爱奇艺',
+    'qq': '腾讯',
+    'o_tencent': '腾讯',
+    'o_youku': '优酷',
+    'tencent': '腾讯',
+    'o_voole': '优朋',
+    'voole': '优朋',
+    'voolesohu': '优朋搜狐'
   }
   return data[tabResource]
 }
@@ -247,7 +246,7 @@ Vue.prototype.$changeKeyToValue = function (obj) {
 [
 {label: 'tagID',value:this.filter.pictureId}
 ,{label: 'pannelID',value:this.filter.pictureId}
-] 
+]
 传数组的格式如上，label为提示语，value 为字段的值
 */
 Vue.prototype.$validateId = function (id) {

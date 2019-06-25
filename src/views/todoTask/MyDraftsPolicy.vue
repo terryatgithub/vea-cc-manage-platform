@@ -24,7 +24,7 @@ export default {
       filter: {
         sort: undefined,
         order: undefined,
-           type: 'myDrafts'
+        type: 'myDrafts'
       },
       filterSchema: null,
       pagination: {},
@@ -76,22 +76,22 @@ export default {
     handleRead(row) {
       this.$emit('read', row)
     },
-      handleFilterChange(type, filter) {
-        if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.taskId)) {
+    handleFilterChange(type, filter) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.taskId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
       this.filter = {
         sort: undefined,
         order: undefined,
-         type: 'myDrafts'
+        type: 'myDrafts'
       }
       this.pagination.currentPage = 1
       this.fetchData()
@@ -149,4 +149,3 @@ export default {
   }
 }
 </script>
-

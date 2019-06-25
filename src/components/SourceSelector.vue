@@ -1,15 +1,15 @@
 <template>
   <el-select
-      :value="value" 
+      :value="value"
       @input="$emit('input', $event)"
       :disabled="disabled"
       :placeholder="placeholder"
   >
-      <el-option 
-        v-for="(item, key) in sourceOptions" 
+      <el-option
+        v-for="(item, key) in sourceOptions"
         :disabled="freeze && item.value !== value"
-        :key="key" 
-        :label="item.label" 
+        :key="key"
+        :label="item.label"
         :value="item.value"
       >
       </el-option>

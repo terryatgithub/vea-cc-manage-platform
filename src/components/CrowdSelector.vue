@@ -84,19 +84,19 @@ export default {
     },
     handleSelectPolicy (item) {
       this.selectedPolicy = item
-      this.$service.crowdRelGet({id: item.value}).then(function(result) {
-          if (!result.hasCascadeTag) {
-              this.$service.getCrowdOfPolicyWithCache({id: item.value}).then(function(result) {
-                  this.hasCascadeTag = false
-                  this.crowd.items = result
-                  this.showCrowdSelector = true
-              }.bind(this))
-          } else {
-              this.hasCascadeTag = true
-              this.crowd.items = result.crowdRelationship.items || []
-              this.crowd.cascadeItems = this.listToTree(result.crowdRelationship.items)
-              this.showCrowdSelector = true
-          }
+      this.$service.crowdRelGet({ id: item.value }).then(function(result) {
+        if (!result.hasCascadeTag) {
+          this.$service.getCrowdOfPolicyWithCache({ id: item.value }).then(function(result) {
+            this.hasCascadeTag = false
+            this.crowd.items = result
+            this.showCrowdSelector = true
+          }.bind(this))
+        } else {
+          this.hasCascadeTag = true
+          this.crowd.items = result.crowdRelationship.items || []
+          this.crowd.cascadeItems = this.listToTree(result.crowdRelationship.items)
+          this.showCrowdSelector = true
+        }
       }.bind(this))
     },
     handleSelectCrowd (item) {
@@ -106,7 +106,7 @@ export default {
     handleSelectCascadeCrowd() {
       const selectedCrowdValue = this.selectedCascaderCrowd.slice(-1)[0]
       this.selectedCrowd = this.crowd.items.find(function(item) {
-          return item.value === selectedCrowdValue
+        return item.value === selectedCrowdValue
       })
       this.selectEnd()
     },
@@ -117,40 +117,40 @@ export default {
       this.$emit('select-end', this.selectedPolicy, this.selectedCrowd)
     },
     listToTree(data, options) {
-        data = JSON.parse(JSON.stringify(data))
-        options = options || {};
-        var ID_KEY = options.idKey || 'value';
-        var PARENT_KEY = options.parentKey || 'parentValue';
-        var CHILDREN_KEY = options.childrenKey || 'children';
-        
-        var tree = [], childrenOf = {};
-        var item, id, parentId;
+      data = JSON.parse(JSON.stringify(data))
+      options = options || {}
+      var ID_KEY = options.idKey || 'value'
+      var PARENT_KEY = options.parentKey || 'parentValue'
+      var CHILDREN_KEY = options.childrenKey || 'children'
 
-        for(var i = 0, length = data.length; i < length; i++) {
-            item = data[i];
-            id = item[ID_KEY];
-            parentId = item[PARENT_KEY] || 0;
-            // every item may have children
-            childrenOf[id] = childrenOf[id] || [];
-            // init its children
-            item[CHILDREN_KEY] = childrenOf[id];
-            if (parentId != 0) {
-            // init its parent's children object
-            childrenOf[parentId] = childrenOf[parentId] || [];
-            // push it into its parent's children object
-            childrenOf[parentId].push(item);
-            } else {
-            tree.push(item);
-            }    
-        };
+      var tree = []; var childrenOf = {}
+      var item, id, parentId
 
-        data.forEach(function(item) {
-            if (item.children.length === 0) {
-                item.children = undefined
-            }
-        })
+      for (var i = 0, length = data.length; i < length; i++) {
+        item = data[i]
+        id = item[ID_KEY]
+        parentId = item[PARENT_KEY] || 0
+        // every item may have children
+        childrenOf[id] = childrenOf[id] || []
+        // init its children
+        item[CHILDREN_KEY] = childrenOf[id]
+        if (parentId != 0) {
+          // init its parent's children object
+          childrenOf[parentId] = childrenOf[parentId] || []
+          // push it into its parent's children object
+          childrenOf[parentId].push(item)
+        } else {
+          tree.push(item)
+        }
+      };
 
-        return tree;
+      data.forEach(function(item) {
+        if (item.children.length === 0) {
+          item.children = undefined
+        }
+      })
+
+      return tree
     }
   },
   created () {
@@ -193,5 +193,5 @@ export default {
 .el-cascader >>> .el-input__inner {
   width: 300px;
 }
- 
+
 </style>

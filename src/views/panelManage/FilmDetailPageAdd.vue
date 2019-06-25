@@ -147,7 +147,7 @@
         </CommonContent>
       </ContentCard>
     </PageContentWrapper>
-    
+
     <PageContentWrapper v-if="activePage === 'panel_preview'">
       <PrivatePanelInfo
         v-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1"
@@ -307,7 +307,7 @@ export default {
       productItems: [],
       eduProductItems: [],
       blockTable: [], // 版块列表
-      categoryEdit: false,
+      categoryEdit: false
     }
   },
   computed: {
@@ -541,7 +541,7 @@ export default {
             type: 'success',
             message: '内容源切换成功!'
           })
-           this.form.panelInfoList = []
+          this.form.panelInfoList = []
         })
         .catch(() => {
           this.$message({
@@ -556,7 +556,7 @@ export default {
     // 服务
     getMediaResourceInfos() {
       const toOptions = (arr, labelKey, valueKey) => {
-        return arr.map((item) => ({label: item[labelKey], value: item[valueKey]}))
+        return arr.map((item) => ({ label: item[labelKey], value: item[valueKey] }))
       }
       return this.$service.getMediaResourceInfo().then(data => {
         var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
@@ -698,7 +698,7 @@ export default {
   created() {
     this.mode = this.initMode || 'create'
     this.getMediaResourceInfos().then(() => {
-      this.handleTabResourceChange(this.form.tabResource) //给频道，产品包赋值
+      this.handleTabResourceChange(this.form.tabResource) // 给频道，产品包赋值
       if (this.id) {
         this.categoryEdit = true
         this.form.tabResource = ''

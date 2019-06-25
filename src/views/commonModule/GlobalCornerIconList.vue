@@ -70,7 +70,7 @@ export default {
     ContentWrapper,
     GlobalIconAudit,
     GlobelIconLevel,
-    ButtonGroupForListPage,
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -84,8 +84,8 @@ export default {
         教育角标: '105',
         策划类: '104',
         素材播出属性: '102'
-      }, //角标分类
-      attributeTypes: {}, //角标类别
+      }, // 角标分类
+      attributeTypes: {}, // 角标类别
       dialogPLVisible: false,
       dialogLevelVisible: false,
       typePositions: {
@@ -94,7 +94,7 @@ export default {
         左下: 3,
         右下: 2
       },
-      picDialogVisible: false, //预览图片弹出框
+      picDialogVisible: false, // 预览图片弹出框
       reviewPicUrl: null,
       filter: this.genDefaultFilter(),
       filterSchema: null,
@@ -185,7 +185,7 @@ export default {
       }
       return filter
     },
-    //批量审核
+    // 批量审核
     batchHandle() {
       var that = this
       if (that.selected.length == 0) {
@@ -196,7 +196,7 @@ export default {
         for (var i = 0; i < ids.length; i++) {
           for (var j = 0; j < that.table.data.length; j++) {
             if (ids[i] == that.table.data[j].cornerIconId) {
-              if (that.table.data[j].cornerStatus == 3||that.table.data[j].cornerStatuses == 2) {
+              if (that.table.data[j].cornerStatus == 3 || that.table.data[j].cornerStatuses == 2) {
                 this.dialogPLVisible = true
               } else {
                 that.$message('[' + ids[i] + ']' + '不是待审核状态，不允许审核')
@@ -223,7 +223,7 @@ export default {
           this.dialogPLVisible = false
         })
     },
-    //取消事件
+    // 取消事件
     cancle(data) {
       this.dialogPLVisible = data
     },
@@ -233,25 +233,25 @@ export default {
     changePriority() {
       this.dialogLevelVisible = true
     },
-    //查询
+    // 查询
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.cornerIconId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.cornerIconId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
-    //重置
+    // 重置
     handleFilterReset() {
-      this.filter = this.genDefaultFilter() 
+      this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    //角标分类
+    // 角标分类
     getCornerTypes() {
       return this.$service.getCornerTypes().then(data => {
         data.forEach(element => {
@@ -260,7 +260,7 @@ export default {
         console.log(this.globalTypes)
       })
     },
-    //角标类别
+    // 角标类别
     getIconAttributes() {
       return this.$service.getIconAttributes().then(data => {
         data.attributes.forEach(element => {
@@ -301,7 +301,7 @@ export default {
         placeholder: '审核状态'
       })
     }).other('form', {
-        cols: {
+      cols: {
         item: 6,
         label: 0,
         wrapper: 20
@@ -335,9 +335,9 @@ export default {
       this.getIconAttributes().then(() => {
         this.filterSchema = filterSchema
       })
-    }) //获取角标分类
+    }) // 获取角标分类
 
-    //角标类别
+    // 角标类别
   }
 }
 </script>

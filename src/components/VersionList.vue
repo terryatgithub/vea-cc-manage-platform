@@ -1,23 +1,23 @@
 <template>
   <el-form class="version-list" :inline="true">
     <el-form-item label="版本" v-if="versionList && versionList.length > 0">
-        <el-select 
-          class="version-selector" 
+        <el-select
+          class="version-selector"
           :value="version"
-          @input="handleSelectVersion" 
+          @input="handleSelectVersion"
           placeholder="请选择"
         >
-            <el-option 
-              v-for="item in versionList" 
-              :key="item.version" 
-              :label="item.label" 
+            <el-option
+              v-for="item in versionList"
+              :key="item.version"
+              :label="item.label"
               :value="item.value"
             >
             </el-option>
         </el-select>
     </el-form-item>
     <el-form-item>
-        <div class="status"> 
+        <div class="status">
          {{ $consts.statusText[status] }}
           </div>
     </el-form-item>
@@ -34,7 +34,7 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.version-selector 
+.version-selector
   width 350px
 .status {
   display: inline-block;
@@ -48,4 +48,3 @@ export default {
   border-radius: 3px;
 }
 </style>
-

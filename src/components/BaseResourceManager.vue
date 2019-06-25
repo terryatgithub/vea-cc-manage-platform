@@ -37,7 +37,7 @@ export default {
     resourceInfo() {
       return {
         type: 'resource',
-        idField: 'id',
+        idField: 'id'
       }
     }
   },
@@ -65,7 +65,7 @@ export default {
         .deleteResource({
           type: resourceInfo.type,
           id: selected.map(item => item[idField]).join(',')
-        },'删除成功')
+        }, '删除成功')
         .then(() => {
           this.$refs.list.fetchData()
         })
@@ -76,7 +76,7 @@ export default {
       this.isShowList = false
     },
     handleUpsertEnd(onlyRefreshList) {
-      this.$refs.list.fetchData() 
+      this.$refs.list.fetchData()
       if (!onlyRefreshList) {
         this.isShowList = true
         this.mode = 'list'

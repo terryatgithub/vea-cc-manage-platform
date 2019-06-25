@@ -7,8 +7,8 @@
 export default {
   methods: {
     editData() {
-      if( this.$isAllowEdit(this.selected)) {
-         this.$emit('open-add-page',this.selected[0])
+      if (this.$isAllowEdit(this.selected)) {
+        this.$emit('open-add-page', this.selected[0])
       }
     }
   }
@@ -17,5 +17,3 @@ export default {
 <style lang="stylus" scoped>
 
 </style>
-
-

@@ -1,8 +1,8 @@
 <template>
   <div class="content-auth-manager">
-    <el-button 
+    <el-button
       type="primary"
-      v-show="showManageButton" 
+      v-show="showManageButton"
       @click="handleOpenAuthManagement"
     >
       内容权限管理
@@ -25,7 +25,7 @@
           class="user-search-input"
           v-model="keyword"
           placeholder="用户名称、账号、邮箱"
-          :fetch-suggestions="handleSearch" 
+          :fetch-suggestions="handleSearch"
           @select="handleAddUser"
         >
         </el-autocomplete>
@@ -76,7 +76,7 @@ export default {
                 on: {
                   input: function(val) {
                     params.row.browser = val ? 1 : 0
-                  }.bind(this)
+                  }
                 }
               })
             }.bind(this)
@@ -142,7 +142,7 @@ export default {
     handleSearch(keyword, cb) {
       if (keyword) {
         this.$service
-          .userConfigPageList({keyword: keyword})
+          .userConfigPageList({ keyword: keyword })
           .then(function(data) {
             const userExistsIndexed = this.table.data.reduce(function(result, item) {
               result[item.userId] = true
@@ -191,7 +191,7 @@ export default {
           }
         ]
       }
-      this.$service.upsertResourceContentAuthList(data, '保存成功').catch(function(){
+      this.$service.upsertResourceContentAuthList(data, '保存成功').catch(function() {
         row[type] = originVal
       })
     },
@@ -224,7 +224,7 @@ export default {
       }).then(function(data) {
         if (data.enableContentAuth && data.contentAuth.contentAuthSetting) {
           this.showManageButton = true
-        } 
+        }
       }.bind(this))
     }
   }

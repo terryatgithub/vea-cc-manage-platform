@@ -7,9 +7,9 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-        <ButtonGroupForListPage 
+        <ButtonGroupForListPage
           v-if="dataList === undefined"
-          pageName='privatePanel' 
+          pageName='privatePanel'
           @add="handleCreate"
           @edit="handleEdit"
           @delete="handleDelete">
@@ -163,9 +163,9 @@ export default {
               pannelGroupRemark: tableRow.pannelGroupRemark,
               duplicateVersion: tableRow.duplicateVersion,
               pannelType: tableRow.pannelType
-              //type: 'PrivatePannelInfo'
+              // type: 'PrivatePannelInfo'
             }
-             console.log("PrivatePannelInfo")
+            console.log('PrivatePannelInfo')
             rows.push(row)
           }
         })
@@ -174,7 +174,7 @@ export default {
     }
   },
   methods: {
-    //初始化表格‘
+    // 初始化表格‘
     fetchData() {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
@@ -199,14 +199,14 @@ export default {
       return filter
     },
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter}
-      if(this.$validateId(this.filter.pannelId)) {
+      if (filter) { this.filter = filter }
+      if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
           if (this.pagination) {
             this.pagination.currentPage = 1
           }
         }
-        this.fetchData() 
+        this.fetchData()
       }
     },
     handleFilterReset() {
@@ -222,9 +222,9 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    //获取业务分类
+    // 获取业务分类
     getDictType() {
-      return this.$service.getDictType({type: 'businessType'}).then(data => {
+      return this.$service.getDictType({ type: 'businessType' }).then(data => {
         data.forEach(element => {
           this.pannelCategories[element.dictCnName] = element.dictId
         })

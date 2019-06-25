@@ -72,7 +72,7 @@ export default {
     fetchData () {
       this.$service.getAdminMasterControllInfo({ id: this.id }).then((data) => {
         console.log(data)
-         this.form = data
+        this.form = data
       })
     },
     submitForm () {

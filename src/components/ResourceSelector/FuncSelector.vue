@@ -15,7 +15,7 @@
     @select-end="$emit('select-end')"
   ></BaseSelector>
 </template>
- 
+
 <script>
 import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
@@ -47,14 +47,14 @@ export default {
           },
           {
             prop: 'pluginName',
-            label: '功能名称',
+            label: '功能名称'
           },
           {
             prop: 'source',
             label: '内容源',
             width: '120',
             options: [],
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               let content = ''
               switch (row.source) {
                 case 0:
@@ -79,7 +79,7 @@ export default {
           {
             prop: 'globalPicture.pictureId',
             label: '通用内容图片',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               const globalPicture = row.globalPicture
               const imgSrc = globalPicture && globalPicture.pictureUrl
               if (imgSrc) {
@@ -155,7 +155,7 @@ export default {
     let sourceOptions = this.$consts.sourceOptionsWithEmpty
     if (source) {
       sourceOptions = sourceOptions.filter(item => item.value === source || item.value === '')
-    } 
+    }
     const sourceEnums = sourceOptions.reduce((result, item) => {
       result[item.label] = sourceValueMap[item.value]
       return result
@@ -198,5 +198,5 @@ export default {
   }
 }
 </script>
- 
+
  <style lang='stylus' scoped></style>
