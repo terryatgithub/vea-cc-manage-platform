@@ -8,8 +8,8 @@
       @edit="edit"
       @unaudit="$emit('upsert-end')"
       @shelves="fetchData"
-      @submit-audit="submitCheck($event,3)"
-      @save-draft="submitCheck($event,2)"
+      @submit-audit="submitCheck($event,$consts.status.waiting)"
+      @save-draft="submitCheck($event,$consts.status.draft)"
       @audit="$emit('upsert-end')"
       @select-version="fetchData"
       @cancel-timing="fetchData(basicForm.currentVersion)"
@@ -63,7 +63,7 @@
         <ResourceSelector
           v-if="basicForm.configModel === 'group'&&!disabled "
           ref="resourceSelector"
-          :disable-partner="!!basicForm.source"
+          :disable-partner="!!source"
           :source="source"
           :selectors="resourceOptions"
           :is-live="false"
@@ -151,7 +151,7 @@
           <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName">
             <ResourceSelector
               ref="resourceSelector"
-              :disable-partner="!!basicForm.source"
+              :disable-partner="!!source"
               :source="source"
               v-if="autoWrite&&normalResourceBtn==='轮播资源'&&!disabled "
               :selectors="['rotate']"
@@ -164,7 +164,7 @@
             <ResourceSelector
               ref="resourceSelector"
               :source="source"
-              :disable-partner="!!basicForm.source"
+              :disable-partner="!!source"
               v-if="autoWrite&&normalResourceBtn==='播放资源'&&!disabled "
               :selectors="resourceOptions"
               :is-live="false"
@@ -286,7 +286,7 @@
               <ResourceSelector
                 ref="resourceSelector"
                 v-if="!disabled "
-                :disable-partner="!!basicForm.source"
+                :disable-partner="!!source"
                 :source="source"
                 :selectors="resourceOptions"
                 :is-live="false"
@@ -358,7 +358,7 @@
             <ResourceSelector
               ref="resourceSelector"
               v-if="!disabled "
-               :disable-partner="!!basicForm.source"
+               :disable-partner="!!source"
               :source="source"
               :selectors="resourceOptions"
               :is-live="false"
@@ -1568,7 +1568,7 @@ export default {
       if (val === 'app') {
         this.resourceOptions = ['app']
       } else {
-        this.resourceOptions = ['video', 'edu', 'live', 'topic', 'rotate']
+        this.resourceOptions = ['video', 'edu', 'live', 'rotate']
       }
       var newForm = Object.assign({}, this.versionForm)
       newForm.type = val
@@ -1577,6 +1577,7 @@ export default {
         newForm.sign = 'openMode==app'
         newForm.contentType = 'custom'
         newForm.params = '{}'
+        newForm.clickTemplateType = 'custom'
       }
 
       this.lowerForm = newForm
@@ -1599,24 +1600,13 @@ export default {
         }
       })
     },
-    // submitCheck_1() {
-    //   if (this.basicForm.currentVersion === 'V1' || this.basicForm.currentVersion === undefined) {
-    //     return this.doSave()
-    //   }
-    //   if (this.mode === 'replicate') {
-    //     this.basicForm.currentVersion = ''
-    //   }
-    //   if (this.$consts.idPrefix == '10') {
-    //     this.$refs.commonContent.showReleaseTimeSetter = true
-    //   } else {
-    //     this.doSave()
-    //   }
-    // },
-    
     submitCheck: function(timing, status) {
       this.basicForm.status = status
       if (this.basicForm.currentVersion === 'V1' || this.basicForm.currentVersion === undefined) {
-        return this.doSave()
+        if (this.mode === 'replicate') {
+          this.basicForm.currentVersion = ''
+        }
+        return this.doSave(status)
       }
       if (this.mode === 'replicate') {
         this.basicForm.currentVersion = ''
@@ -1625,19 +1615,19 @@ export default {
         if (timing) {
           this.basicForm.isTiming = timing.isTiming
           this.basicForm.releaseTime = timing.releaseTime
-          this.doSave()
+          this.doSave(status)
         } else {
           if (status ===3) {
             this.$refs.commonContent.showReleaseTimeSetter = true
           } else {
-            this.doSave()
+            this.doSave(status)
           }
         }
       } else {
-        this.doSave()
+        this.doSave(status)
       }
     },
-    doSave() {
+    doSave(status) {
       let _this = this
       this.$refs.basicForm.validate(function(valid) {
         if (valid) {
@@ -1664,7 +1654,7 @@ export default {
               obj.lowerVersionContent = _this.lowerForm
               var resultObj = Object.assign(obj, _this.basicForm)
              
-              resultObj.status = 3
+              resultObj.status = status
               resultObj.parentType = 'Block'
               console.log('resultObj', resultObj)
               _this.$service

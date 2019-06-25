@@ -488,7 +488,7 @@
         </div>
         <!--海报素材弹框-->
         <el-dialog :visible.sync="dialogTableVisible" width="1200px">
-          <selectResource @selected="getSelectResource"></selectResource>
+          <selectResource v-if="dialogTableVisible" @selected="getSelectResource"></selectResource>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogTableVisible = false">取 消</el-button>
             <!-- <el-button type="primary" @click="dialogTableVisible = false;selectSubmit()">确 定</el-button> -->
@@ -1044,6 +1044,9 @@ export default {
     },
     getData(status) {
       const data = JSON.parse(JSON.stringify(this.block))
+       if (this.mode === 'replicate') {
+          data.pluginInfo.currentVersion = ''
+       }
       data.pluginInfo.pluginStatus = status
       return data
     },

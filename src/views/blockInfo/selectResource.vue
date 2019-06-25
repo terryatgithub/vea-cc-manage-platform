@@ -217,40 +217,29 @@ export default {
     }
   },
   created() {
-    let filterSchema = _.map({
+        const filterSchema = _.map({
       pictureId: _.o.string.other('form', {
-        component: 'Input',
         placeholder: 'ID',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        component: 'Input'
       }),
       pictureName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '素材名称',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        placeholder: '名称',
+        component: 'Input'
       }),
       pictureCategory: _.o.enum(this.materialTypes).other('form', {
-        component: 'Select',
         placeholder: '素材类别',
-        cols: {
-          item: 3,
-          label: 0
-        }
+        component: 'Select'
       }),
       pictureStatus: _.o.enum(this.pictureStatus).other('form', {
-        component: 'Select',
-        placeholder: '审核状态',
-        cols: {
-          item: 3,
-          label: 0
-        }
-      })
+        placeholder: '状态',
+        component: 'Select'
+      }),
     }).other('form', {
+      cols: {
+        item: 5,
+        label: 0,
+        wrapper: 18
+      },
       layout: 'inline',
       footer: {
         cols: {
@@ -270,7 +259,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
  .content-list >>> .card-list{
 display: flex;

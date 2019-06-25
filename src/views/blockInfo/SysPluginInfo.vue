@@ -1081,6 +1081,9 @@ export default {
     },
     getData(status) {
       const data = JSON.parse(JSON.stringify(this.block))
+       if (this.mode === 'replicate') {
+          data.pluginInfo.currentVersion = ''
+       }
       data.pluginInfo.pluginStatus = status
       return data
     },
@@ -1373,7 +1376,7 @@ export default {
           formData = this.parseData(formData)
           console.log(formData)
           this.$service.SavePlugin(formData, '保存成功').then(data => {
-            this.$emit('open-list-page')
+             this.$emit('upsert-end')
           })
         }.bind(this)
       )

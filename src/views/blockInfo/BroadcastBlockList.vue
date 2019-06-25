@@ -105,6 +105,13 @@ export default {
               return this.$consts.statusText[row.status]
             }
           },
+           {
+            label: '内容源',
+            prop: 'source',
+            render: (h, { row }) => {
+              return this.$consts.sourceText[row.source]
+            }
+          },
           {
             label: '更新时间',
             prop: 'lastUpdateDate',
@@ -167,11 +174,15 @@ export default {
       status: _.o.enum(this.$consts.statusEnums).other('form', {
         component: 'Select',
         placeholder: '审核状态'
+      }),
+      source: _.o.enum(this.$consts.sourceEnums).other('form', {
+        component: 'Select',
+        placeholder: '内容源'
       })
     }).other('form', {
       layout: 'inline',
       cols: {
-        item: 6,
+        item: 5,
         label: 0,
         wrapper: 20
       },
