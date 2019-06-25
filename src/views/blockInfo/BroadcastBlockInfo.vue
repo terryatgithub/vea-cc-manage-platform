@@ -982,7 +982,6 @@ export default {
             type: 'info',
             message: '已取消切换'
           })
-
           var newForm = Object.assign({}, _this.basicForm)
           newForm.configModel = _this.modelType
           _this.basicForm = newForm
@@ -992,6 +991,7 @@ export default {
       // debugger
       // 清空正常版本和低版本数据
       this.normalForm = Object.assign({}, this.versionForm)
+      this.normalForm.clickType = 'detail'
       this.lowerForm = Object.assign({}, this.versionForm)
       var arr = []
       arr.push(this.normalForm)

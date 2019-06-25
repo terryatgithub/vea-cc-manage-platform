@@ -354,9 +354,9 @@
                 />-->
               </div>
             </template>
-            <el-form-item>
+            <!-- <el-form-item>
               <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-            </el-form-item>
+            </el-form-item> -->
           </el-form>
         </div>
         <div v-if="mode=== 'read'">

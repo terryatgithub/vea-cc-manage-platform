@@ -329,6 +329,7 @@
                     <TabSelector
                       selectionType="single"
                       :selected-close="true"
+                      :source="block.pluginInfo.source"
                       @select-single="handleSelectTabEnd($event, item)"
                     />
                     <!-- <el-button type="primary" @click="handleSelectTabStart(index)">选择版面</el-button> -->
@@ -869,6 +870,8 @@ export default {
         })
     },
     handleChangePluginParentType(val) {
+      debugger
+    //  document.querySelectorAll(".el-form-item__error").style.display='none'
       const originType = this.block.pluginInfo.pluginParentType
       const confirmOK = function() {
         this.pluginTypes = []
