@@ -511,13 +511,6 @@ import selectImg from './selectImg'
 import { AppParams, AppParamsRead } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
 import TabSelector from '@/components/selectors/TabSelector'
-const PARENT_TYPES = {
- sign: 'sign', //标记推荐位
-  multi: 'multi',
-  builtIn: 'builtIn',
- secKill: 'secKill'
-}
-window.basicFn = {}
 export default {
   components: {
     // ccAppParamsForm,
@@ -765,6 +758,7 @@ export default {
     fetchData(version) {
       this.$service.editSysPlugin({ id: this.id, version }).then(data => {
         if (data) {
+          debugger
           this.setData(data)
           // this.pluginType = data.pluginInfo.pluginType
           if (this.pluginType) {
