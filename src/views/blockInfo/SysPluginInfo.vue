@@ -140,16 +140,19 @@
                 <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
                   <el-form-item
                     label="状态栏文字"
-                    :prop="'rlsInfo.' + index + '.title'"
-                    :rules="rules.barText"
+                     :rules="rules.barText" :prop="'rlsInfo.' + index + '.title'"
                   >
                     <el-row class="leftSide">
                       <el-col :span="11">
-                        <el-input v-model.trim="item.title"></el-input>
+                        <el-form-item  :rules="rules.barText" :prop="'rlsInfo.' + index + '.title'">
+                         <el-input v-model.trim="item.title"></el-input>
+                        </el-form-item>
                       </el-col>
                       <el-col :span="2" class="textAlignCenter">|</el-col>
                       <el-col :span="11">
-                        <el-input v-model.trim="item.subTitle"></el-input>
+                         <el-form-item  :rules="rules.barText" :prop="'rlsInfo.' + index + '.subTitle'">
+                         <el-input v-model.trim="item.subTitle"></el-input>
+                        </el-form-item>
                       </el-col>
                     </el-row>
                     <!-- <el-input v-model.trim="item.title"></el-input>|
@@ -844,6 +847,7 @@ export default {
       })
         .then(
           function() {
+            this.$refs['blockForm'].clearValidate()
             this.block.pluginInfo.source = val
           }.bind(this)
         )
@@ -853,6 +857,7 @@ export default {
     },
     /** 类型选择——父类 */
     handleChangePluginParentType(val) {
+        this.$refs['blockForm'].clearValidate()
       const originType = this.block.pluginInfo.pluginParentType
       const confirmOK = function() {
         this.pluginTypes = []
@@ -891,6 +896,7 @@ export default {
     },
     /** 多功能推荐位类型 */
     handleChangePluginType(val) {
+        this.$refs['blockForm'].clearValidate()
       const originType = this.block.pluginInfo.pluginType
       const confirmOK = function() {
         this.setPluginType(val)
@@ -1075,6 +1081,7 @@ export default {
     },
     /** 打开方式 */
     handleChangeOpenMode(item, openMode) {
+      this.$refs['blockForm'].clearValidate()
       item.openMode = openMode
       if (openMode === 'webpage') {
         item.onclick = {
@@ -1109,7 +1116,6 @@ export default {
       )
     },
     setData(data) {
-      debugger
       const helper = this.block.helper
       const block = JSON.parse(JSON.stringify(data))
       const pluginParentType = block.pluginInfo.pluginParentType

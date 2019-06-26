@@ -1603,13 +1603,7 @@ export default {
     submitCheck: function(timing, status) {
       this.basicForm.status = status
       if (this.basicForm.currentVersion === 'V1' || this.basicForm.currentVersion === undefined) {
-        if (this.mode === 'replicate') {
-          this.basicForm.currentVersion = ''
-        }
         return this.doSave(status)
-      }
-      if (this.mode === 'replicate') {
-        this.basicForm.currentVersion = ''
       }
       if (this.$consts.idPrefix == '10') {
         if (timing) {
@@ -1628,6 +1622,9 @@ export default {
       }
     },
     doSave(status) {
+      if (this.mode === 'replicate') {
+        this.basicForm.currentVersion = ''
+      }
       let _this = this
       this.$refs.basicForm.validate(function(valid) {
         if (valid) {

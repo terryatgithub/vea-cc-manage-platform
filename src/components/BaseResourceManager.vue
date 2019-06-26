@@ -48,6 +48,7 @@ export default {
       this.isShowList = false
     },
     handleEdit(item) {
+      debugger
       this.id = item[this.resourceInfo.idField]
       this.mode = 'edit'
       this.isShowList = false

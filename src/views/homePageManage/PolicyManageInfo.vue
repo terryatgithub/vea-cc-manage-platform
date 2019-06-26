@@ -244,6 +244,24 @@
       @add-home-page-close="addHomePageClose"
       @create-home-page="createHomePage"
     ></PolicyManageAddHomePage>
+    <el-dialog
+  title="提示"
+  :visible.sync="dialogVisible"
+  width="30%">
+  <span>
+    <!-- <HomePageInfo
+      :id="id"
+      :init-mode="mode"
+      :version="version"
+      @upsert-end="handleUpsertEnd"
+      @go-back="goBack"
+    /> -->
+  </span>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+</el-dialog>
   </ContentCard>
 </template>
 <script>
@@ -253,6 +271,7 @@ import HomePageModel from './../../components/HomePageModel'
 import PolicyManageAddHomePage from './PolicyManageAddHomePage'
 import SelectedHomePage from './../../components/SelectedHomePage.vue'
 import CommonContent from '@/components/CommonContent.vue'
+import HomePageInfo from './HomePageInfo'
 export default {
   components: {
     ChipModel,
@@ -260,11 +279,13 @@ export default {
     HomePageModel,
     PolicyManageAddHomePage,
     SelectedHomePage,
-    CommonContent
+    CommonContent,
+    HomePageInfo
   },
   props: ['id', 'initMode', 'version'],
   data() {
     return {
+      
       mode: undefined,
       title: null,
       selectionType: 'multiple',

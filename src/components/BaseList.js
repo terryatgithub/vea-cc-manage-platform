@@ -47,12 +47,12 @@ export default {
         }
       }
 
-      if (['sysPlugin', 'crowdRel'].indexOf(resourceType) > -1) {
+      if (['crowdRel'].indexOf(resourceType) > -1) {
         // 有些资源审核通过也可以编辑。。
         return this.$emit('edit', item)
       }
 
-      if (['picture', 'layout', 'cornerIcon', 'cornerIconType', 'clickEvent'].indexOf(resourceType) > -1) {
+      if (['sysPlugin', 'picture', 'layout', 'cornerIcon', 'cornerIconType', 'clickEvent'].indexOf(resourceType) > -1) {
         // 有些资源在待审核状态也能编辑
         if (status === STATUS.accepted) {
           return this.$message({

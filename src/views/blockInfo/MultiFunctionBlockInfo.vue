@@ -863,6 +863,7 @@ export default {
       })
         .then(
           function() {
+            this.$refs['blockForm'].clearValidate()
             this.block.pluginInfo.source = val
           }.bind(this)
         )
@@ -871,7 +872,7 @@ export default {
         })
     },
     handleChangePluginParentType(val) {
-    //  document.querySelectorAll(".el-form-item__error").style.display='none'
+     this.$refs['blockForm'].clearValidate()
       const originType = this.block.pluginInfo.pluginParentType
       const confirmOK = function() {
         this.pluginTypes = []
@@ -908,6 +909,7 @@ export default {
       helper.subTitle = ''
     },
     handleChangePluginType(val) {
+      this.$refs['blockForm'].clearValidate()
       const originType = this.block.pluginInfo.pluginType
       const confirmOK = function() {
         this.setPluginType(val)
@@ -1031,6 +1033,7 @@ export default {
       return onclick
     },
     handleChangeOpenMode(item, openMode) {
+       this.$refs['blockForm'].clearValidate()
       item.openMode = openMode
       if (openMode === 'webpage') {
         item.onclick = {
