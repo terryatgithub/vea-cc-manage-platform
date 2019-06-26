@@ -51,8 +51,8 @@
         </div>
 
       </ContentCard>
-      <ContentCard style="margin-top: 20px">
-        <div v-if="$consts.idPrefix == '11'">
+      <ContentCard v-if="$consts.idPrefix == '11'" style="margin-top: 20px">
+        <div >
           <h2>
             江苏有线
             <span style="float:right; font-weight: normal" v-show="isAutoSync !== undefined">
