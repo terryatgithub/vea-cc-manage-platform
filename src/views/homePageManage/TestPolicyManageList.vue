@@ -14,6 +14,7 @@
         @delete="handleDelete"
       ></ButtonGroupForListPage>
       <Table
+        class="policy-list"
         :props="table.props"
         :header="table.header"
         :data="table.data"
@@ -291,9 +292,9 @@ export default {
   }
 }
 </script>
-<style lang = 'stylus' scoped>
-.btns
-  margin-bottom: 10px
-  display: flex
-  flex-direction: row
+<style lang='stylus' scoped>
+.policy-list >>> .el-table__row .el-table__expand-icon
+  position absolute
+  left 3px
+  line-height 25px
 </style>

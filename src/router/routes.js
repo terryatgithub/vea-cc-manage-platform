@@ -42,7 +42,7 @@ import MyReviewTasks from '../views/todoTask/MyReviewTasksIndex'
 import MySubmitTasks from '../views/todoTask/MySubmitTasksIndex'
 import FilmDetailAdBit from '../views/adBitMgr/FilmDetailAdBit.vue'
 import Main from '@/components/Main'
-import Desktop from '@/views/Desktop'
+import Desktop from '@/views/desktop/Desktop'
 import FramePage from '../views/FramePage'
 import CrowdRel from '../views/crowdRel/Index.vue'
 
@@ -473,7 +473,6 @@ const children = [
         component: MySubmitTasks,
         meta: {
           title: '我提交的任务',
-
           tagId: 'mySubmitTasks'
         }
       },
@@ -483,7 +482,6 @@ const children = [
         component: MyReviewTasks,
         meta: {
           title: '我的审核任务',
-
           tagId: 'myReviewTasks'
         }
       },

@@ -31,6 +31,7 @@ import * as mediaResource from './mediaResource'
 import * as crowdRel from './crowdRel'
 import * as dmp from './dmp'
 import * as contentAuth from './contentAuth'
+import * as desktop from './desktop'
 
 const service = {
   state: {},
@@ -66,7 +67,8 @@ const service = {
   ...mediaResource,
   ...crowdRel,
   ...dmp,
-  ...contentAuth
+  ...contentAuth,
+  ...desktop
 }
 
 export default function install(Vue) {
