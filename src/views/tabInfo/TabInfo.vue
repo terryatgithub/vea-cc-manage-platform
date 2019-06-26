@@ -308,11 +308,11 @@
                       ></i>
                     </div>
                   </el-form-item>
-                  <el-form-item label="启用高清背景切换模式" prop="enableHdBackground">
+                  <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
                     <el-switch
                       :disabled="isReplicate"
-                      :value="!!tabInfo.enableHdBackground"
-                      @input="tabInfo.enableHdBackground = $event&&1||0"
+                      :value="!!tabInfo.flagIsBlockBg"
+                      @input="tabInfo.flagIsBlockBg = $event ? 1 : 0"
                       on-text="是"
                       off-text="否"
                     />
@@ -538,6 +538,10 @@
                     <div class="image-preview-wrapper" v-if="tabInfo.alumbTabLongBg">
                       <img class="image-preview" :src="tabInfo.alumbTabLongBg">
                     </div>
+                  </el-form-item>
+
+                  <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
+                    {{ tabInfo.flagIsBlockBg ? '是' : '否'}}
                   </el-form-item>
 
                   <el-form-item label="版面简介显示高">{{ tabInfo.sinkSize }}</el-form-item>
@@ -771,7 +775,7 @@ export default {
         tabParentType: 'home',
         tabType: 1,
         hasSubTab: 0,
-        enableHdBackground: 0,
+        flagIsBlockBg: 0,
         tabName: undefined,
         tabCnTitle: undefined,
         tabEnTitle: undefined,
@@ -2039,7 +2043,8 @@ export default {
         sinkSize: tabInfo.sinkSize,
         pannelTitleColor: tabInfo.pannelTitleColor,
         blockTitleFocusColor: tabInfo.blockTitleFocusColor,
-        blockTitleUnfocusColor: tabInfo.blockTitleUnfocusColor
+        blockTitleUnfocusColor: tabInfo.blockTitleUnfocusColor,
+        flagIsBlockBg: tabInfo.flagIsBlockBg,
       }
 
       const vipButtonSourceId = tabInfo.vipButtonSourceId
@@ -2085,7 +2090,6 @@ export default {
         currentVersion: tabInfo.currentVersion,
         flagIsRecord: tabInfo.flagIsRecord,
         hasSubTab: tabInfo.hasSubTab,
-        enableHdBackground: tabInfo.enableHdBackground,
         isTiming: tabInfo.isTiming,
         panelInfoList: panelInfoList,
         pictureName: tabInfo.pictureName,
@@ -2185,7 +2189,7 @@ export default {
         tabParentType: data.tabParentType,
         tabType: data.tabType,
         hasSubTab: data.hasSubTab,
-        enableHdBackground: data.enableHdBackground,
+        flagIsBlockBg: tabExtArr.flagIsBlockBg,
         tabName: data.tabName,
         tabCnTitle: data.tabCnTitle,
         tabEnTitle: data.tabEnTitle,
