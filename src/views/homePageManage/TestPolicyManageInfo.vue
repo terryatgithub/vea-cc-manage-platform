@@ -1,4 +1,6 @@
 <template>
+<PageWrapper class="testPolicy-info-wrapper">
+    <PageContentWrapper v-show="activePage === 'policy_info'">
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <!--新增编辑界面-->
     <CommonContent
@@ -25,7 +27,7 @@
               :model="form"
               :rules="formRules"
               ref="form"
-              label-width="110px"
+              label-width="160px"
               class="el-form-add"
             >
               <el-form-item label="策略名称" prop="policyName">
@@ -72,14 +74,14 @@
                 <el-button type="primary" plain @click="selectHomePageModel('normal')">选择标准模式首页</el-button>
                 <span v-if="typeof(form.homepageInfoListObj['normal'])!=='undefined'" class="tip">
                   已选首页：
-                  <el-tag type="success">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
+                  <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('normal')">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
                 </span>
               </el-form-item>
               <el-form-item label="关联首页方案">
                 <el-button type="primary" plain @click="selectHomePageModel('child')">选择儿童模式首页</el-button>
                 <span v-if="typeof(form.homepageInfoListObj['child'])!=='undefined'" class="tip">
                   已选首页：
-                  <el-tag type="success">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
+                  <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('child')">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
                 </span>
               </el-form-item>
               <el-form-item label="定向首页方案">
@@ -111,7 +113,7 @@
         <!--预览界面-->
         <el-row :gutter="40">
           <el-col :span="24">
-            <el-form :model="form" ref="form" label-width="100px" class="el-form-add">
+            <el-form :model="form" ref="form" label-width="160px" class="el-form-add">
               <el-form-item label="策略名称" prop="policyName">{{form.policyName}}</el-form-item>
               <el-form-item label="机型机芯" prop="chipModel">
                 <SelectedTag v-if="form.deviceInfos.length>0">
@@ -152,14 +154,14 @@
                 {{form.priority}}
                 <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
               </el-form-item>
-              <el-form-item label="关联首页方案">
+              <el-form-item label="关联首页方案(标准)">
                 <span v-if="typeof(form.homepageInfoListObj['normal'])!=='undefined'" class="tip">
-                  <el-tag type="success">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
+                  <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('normal')">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
                 </span>
               </el-form-item>
-              <el-form-item label="关联首页方案">
+              <el-form-item label="关联首页方案(儿童)">
                 <span v-if="typeof(form.homepageInfoListObj['child'])!=='undefined'" class="tip">
-                  <el-tag type="success">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
+                  <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('child')">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
                 </span>
               </el-form-item>
               <el-form-item label="定向首页方案">
@@ -215,6 +217,17 @@
       @create-home-page="createHomePage"
     ></PolicyManageAddHomePage>
   </ContentCard>
+  </PageContentWrapper>
+   <PageContentWrapper v-if="activePage === 'showHomePageDetail'">
+    <HomePageInfo
+      :id="homePageId"
+      init-mode="read"
+      :version="homePageVersion"
+      :title-prefix="title"
+      @go-back="activePage = 'policy_info'"
+    />
+   </PageContentWrapper>
+  </PageWrapper>
 </template>
 <script>
 import ChipModel from './../../components/ChipModel'
@@ -223,20 +236,32 @@ import HomePageModel from './../../components/HomePageModel'
 import PolicyManageAddHomePage from './PolicyManageAddHomePage'
 import SelectedHomePage from './../../components/SelectedHomePage.vue'
 import CommonContent from '@/components/CommonContent.vue'
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
+import titleMixin from '@/mixins/title'
+import HomePageInfo from './HomePageInfo'
 export default {
+    mixins: [titleMixin],
   components: {
     ChipModel,
     SelectedTag,
     HomePageModel,
     PolicyManageAddHomePage,
     SelectedHomePage,
-    CommonContent
+    CommonContent,
+    HomePageInfo,
+    PageWrapper,
+    PageContentWrapper
   },
   props: ['id', 'initMode', 'version'],
   data() {
     return {
+      homePageId: undefined,
+      homePageVersion: undefined,
+      homePageReadDialogVisible: false,
+      activePage: 'policy_info',
       mode: undefined,
-      title: null,
+     // title: null,
       selectionType: 'multiple',
       dialogTitle: null,
       dialogVisible: false,
@@ -322,6 +347,11 @@ export default {
     }
   },
   methods: {
+    showHomePageDetail(type) {
+      this.homePageId = this.form.homepageInfoListObj[type].homepageId
+      this.homePageVersion = this.form.homepageInfoListObj[type].currentVersion
+      this.activePage = 'showHomePageDetail'
+    },
     ChipModelRowClick(row) {
       this.dialogVisible = false
       this.form.deviceInfos = [
@@ -561,22 +591,22 @@ export default {
     // }
 
     this.mode = this.initMode || 'create'
-    switch (this.mode) {
-      case 'create':
-        this.title = '新增'
-        break
-      case 'copy':
-        this.title = '复制'
-        break
-      case 'edit':
-        this.title = '编辑'
-        break
-      case 'replica':
-        this.title = '创建副本'
-      case 'read':
-        this.title = '预览'
-        break
-    }
+    // switch (this.mode) {
+    //   case 'create':
+    //     this.title = '新增'
+    //     break
+    //   case 'copy':
+    //     this.title = '复制'
+    //     break
+    //   case 'edit':
+    //     this.title = '编辑'
+    //     break
+    //   case 'replica':
+    //     this.title = '创建副本'
+    //   case 'read':
+    //     this.title = '预览'
+    //     break
+    // }
     if (this.id) {
       this.selectionType = 'single'
       this.fetchData(this.version)

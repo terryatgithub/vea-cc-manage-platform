@@ -1,4 +1,6 @@
 <template>
+<PageWrapper class="policy-info-wrapper">
+  <PageContentWrapper v-show="activePage === 'policy_info'">
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <!--新增编辑界面-->
     <CommonContent
@@ -24,7 +26,7 @@
               :model="form"
               :rules="formRules"
               ref="form"
-              label-width="110px"
+              label-width="160px"
               class="el-form-add"
             >
               <el-form-item label="策略名称" prop="policyName">
@@ -82,14 +84,14 @@
                 <el-button type="primary" plain @click="selectHomePageModel('normal')">选择标准模式首页</el-button>
                 <span v-if="typeof(form.homepageInfoListObj['normal'])!=='undefined'" class="tip">
                   已选首页：
-                  <el-tag type="success">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
+                  <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('normal')">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
                 </span>
               </el-form-item>
               <el-form-item label="关联首页方案">
                 <el-button type="primary" plain @click="selectHomePageModel('child')">选择儿童模式首页</el-button>
                 <span v-if="typeof(form.homepageInfoListObj['child'])!=='undefined'" class="tip">
                   已选首页：
-                  <el-tag type="success">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
+                  <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('child')">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
                 </span>
               </el-form-item>
               <el-form-item label="定向首页方案">
@@ -121,7 +123,7 @@
         <!--预览界面-->
         <el-row :gutter="40">
           <el-col :span="24">
-            <el-form :model="form" ref="form" label-width="100px" class="el-form-add">
+            <el-form :model="form" ref="form" label-width="160px" class="el-form-add">
               <el-form-item label="策略名称" prop="policyName">{{form.policyName}}</el-form-item>
               <el-form-item label="机型机芯" prop="chipModel">
                 <SelectedTag v-if="form.deviceInfos.length>0">
@@ -182,14 +184,14 @@
                 {{form.priority}}
                 <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
               </el-form-item>
-              <el-form-item label="关联首页方案">
+              <el-form-item label="关联首页方案(标准)">
                 <span v-if="typeof(form.homepageInfoListObj['normal'])!=='undefined'" class="tip">
-                  <el-tag type="success">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
+                  <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('normal')">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
                 </span>
               </el-form-item>
-              <el-form-item label="关联首页方案">
+              <el-form-item label="关联首页方案(儿童)">
                 <span v-if="typeof(form.homepageInfoListObj['child'])!=='undefined'" class="tip">
-                  <el-tag type="success">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
+                  <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('child')">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
                 </span>
               </el-form-item>
               <el-form-item label="定向首页方案">
@@ -244,35 +246,33 @@
       @add-home-page-close="addHomePageClose"
       @create-home-page="createHomePage"
     ></PolicyManageAddHomePage>
-    <el-dialog
-  title="提示"
-  :visible.sync="dialogVisible"
-  width="30%">
-  <span>
-    <!-- <HomePageInfo
-      :id="id"
-      :init-mode="mode"
-      :version="version"
-      @upsert-end="handleUpsertEnd"
-      @go-back="goBack"
-    /> -->
-  </span>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-  </span>
-</el-dialog>
+
   </ContentCard>
+  </PageContentWrapper>
+   <PageContentWrapper v-if="activePage === 'showHomePageDetail'">
+    <HomePageInfo
+      :id="homePageId"
+      init-mode="read"
+      :version="homePageVersion"
+      :title-prefix="title"
+      @go-back="activePage = 'policy_info'"
+    />
+   </PageContentWrapper>
+  </PageWrapper>
 </template>
 <script>
 import ChipModel from './../../components/ChipModel'
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
 import SelectedTag from './../../components/SelectedTag'
 import HomePageModel from './../../components/HomePageModel'
 import PolicyManageAddHomePage from './PolicyManageAddHomePage'
 import SelectedHomePage from './../../components/SelectedHomePage.vue'
 import CommonContent from '@/components/CommonContent.vue'
 import HomePageInfo from './HomePageInfo'
+import titleMixin from '@/mixins/title'
 export default {
+  mixins: [titleMixin],
   components: {
     ChipModel,
     SelectedTag,
@@ -280,14 +280,20 @@ export default {
     PolicyManageAddHomePage,
     SelectedHomePage,
     CommonContent,
-    HomePageInfo
+    HomePageInfo,
+    PageWrapper,
+    PageContentWrapper
   },
   props: ['id', 'initMode', 'version'],
   data() {
     return {
-      
+      homePageId: undefined,
+      homePageVersion: undefined,
+      homePageReadDialogVisible: false,
+      activePage: 'policy_info',
       mode: undefined,
-      title: null,
+      resourceName: '策略管理',
+      //title: null,
       selectionType: 'multiple',
       dialogTitle: null,
       mode: 'normal',
@@ -373,6 +379,11 @@ export default {
     }
   },
   methods: {
+    showHomePageDetail(type) {
+      this.homePageId = this.form.homepageInfoListObj[type].homepageId
+      this.homePageVersion = this.form.homepageInfoListObj[type].currentVersion
+      this.activePage = 'showHomePageDetail'
+    },
     ChipModelRowClick(row) {
       this.dialogVisible = false
       this.form.deviceInfos = [
@@ -630,22 +641,22 @@ export default {
     // }
 
     this.mode = this.initMode || 'create'
-    switch (this.mode) {
-      case 'create':
-        this.title = '新增'
-        break
-      case 'copy':
-        this.title = '复制'
-        break
-      case 'edit':
-        this.title = '编辑'
-        break
-      case 'replica':
-        this.title = '创建副本'
-      case 'read':
-        this.title = '预览'
-        break
-    }
+    // switch (this.mode) {
+    //   case 'create':
+    //     this.title = '新增'
+    //     break
+    //   case 'copy':
+    //     this.title = '复制'
+    //     break
+    //   case 'edit':
+    //     this.title = '编辑'
+    //     break
+    //   case 'replica':
+    //     this.title = '创建副本'
+    //   case 'read':
+    //     this.title = '预览'
+    //     break
+    // }
     if (this.id) {
       this.selectionType = 'single'
       this.fetchData(this.version)
@@ -657,4 +668,6 @@ export default {
 .tip
   font-size: 12px
   margin-left: 10px
+.el-tag
+  cursor: pointer;
 </style>
