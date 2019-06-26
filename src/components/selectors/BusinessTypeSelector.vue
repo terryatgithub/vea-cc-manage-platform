@@ -34,7 +34,8 @@ export default {
   props: ['value', 'isRead'],
   methods: {},
   created() {
-    this.$service.getDictType({ type: 'businessType' }).then(data => {
+    const isRead = this.isRead
+    this.$service.getDictType({ type: 'businessType', isFilter: isRead ? 0 : 1 }).then(data => {
       this.options = data.map(function(item) {
         return {
           label: item.dictCnName,
