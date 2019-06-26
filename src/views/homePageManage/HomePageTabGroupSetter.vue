@@ -53,6 +53,7 @@ import OrderableTable from '@/components/OrderableTable.vue'
 import TabInfo from '@/views/tabInfo/TabInfo'
 import CrowdSelector from '@/components/CrowdSelector.vue'
 import titleMixin from '@/mixins/title'
+import { cloneDeep } from 'lodash'
 export default {
   mixins: [titleMixin],
   components: {
@@ -292,11 +293,10 @@ export default {
     handleRemoveCrowd(index) {
       const tabList = this.tabList
       tabList[index].dmpInfo = undefined
-      // this.tabList = tabList.slice()
     }
   },
   created() {
-    this.tabList = this.tabs.slice()
+    this.tabList = cloneDeep(this.tabs)
   }
 }
 </script>
