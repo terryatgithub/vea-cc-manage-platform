@@ -14,9 +14,9 @@
         @select-version="fetchData"
         @delete="$emit('upsert-end', $event)"
       >
-    <!-- <div slot="auditAndDraft">
+        <!-- <div slot="auditAndDraft">
         <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-    </div> -->
+        </div>-->
         <div class="form-legend-header">
           <i class="el-icon-edit">基本信息</i>
         </div>
@@ -263,15 +263,12 @@
                       v-if="pluginParentType === 'builtIn' ||  pluginType === 'REFERENCE_MOVIE_VIP' || pluginType === 'REFERENCE_ACTIVITY'"
                       label="网页"
                       value="webpage"
-                    ></el-option> -->
-                      <el-option
-                      label="网页"
-                      value="webpage"
-                    ></el-option>
+                    ></el-option>-->
+                    <el-option label="网页" value="webpage"></el-option>
                     <!-- <template v-if=" pluginType === 'REFERENCE_ACTIVITY'"> -->
-                      <el-option label="视频" value="video"></el-option>
-                      <el-option label="图片" value="picture"></el-option>
-                      <el-option label="版面" value="tab"></el-option>
+                    <el-option label="视频" value="video"></el-option>
+                    <el-option label="图片" value="picture"></el-option>
+                    <el-option label="版面" value="tab"></el-option>
                     <!-- </template> -->
                     <el-option label="第三方应用" value="app"></el-option>
                   </el-select>
@@ -330,7 +327,7 @@
                     <TabSelector
                       selectionType="single"
                       :selected-close="true"
-                      :source="block.pluginInfo.source"
+                      :source="source"
                       @select-single="handleSelectTabEnd($event, item)"
                     />
                     <!-- <el-button type="primary" @click="handleSelectTabStart(index)">选择版面</el-button> -->
@@ -696,6 +693,23 @@ export default {
     }
   },
   computed: {
+    source() {
+      //内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
+      switch (this.block.pluginInfo.source) {
+        case 0:
+          return ''
+          break
+        case 1:
+          return 'o_tencent'
+          break
+        case 2:
+          return 'o_iqiyi'
+          break
+        case 3:
+          return 'o_youku'
+          break
+      }
+    },
     pluginTypeText() {
       const pluginType = this.pluginType
       const pluginTypes = this.pluginTypes
@@ -872,7 +886,7 @@ export default {
         })
     },
     handleChangePluginParentType(val) {
-     this.$refs['blockForm'].clearValidate()
+      this.$refs['blockForm'].clearValidate()
       const originType = this.block.pluginInfo.pluginParentType
       const confirmOK = function() {
         this.pluginTypes = []
@@ -1033,7 +1047,7 @@ export default {
       return onclick
     },
     handleChangeOpenMode(item, openMode) {
-       this.$refs['blockForm'].clearValidate()
+      this.$refs['blockForm'].clearValidate()
       item.openMode = openMode
       if (openMode === 'webpage') {
         item.onclick = {
@@ -1047,9 +1061,9 @@ export default {
     },
     getData(status) {
       const data = JSON.parse(JSON.stringify(this.block))
-       if (this.mode === 'replicate') {
-          data.pluginInfo.currentVersion = ''
-       }
+      if (this.mode === 'replicate') {
+        data.pluginInfo.currentVersion = ''
+      }
       data.pluginInfo.pluginStatus = status
       return data
     },

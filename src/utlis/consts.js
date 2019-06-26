@@ -54,6 +54,10 @@ const statusEnums = Object.keys(statusText).reduceRight((result, key) => {
 
 const sourceOptions = [
   {
+    label: '无',
+    value: ''
+  },
+  {
     label: '腾讯',
     value: 'o_tencent'
   },

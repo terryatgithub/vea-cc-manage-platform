@@ -73,7 +73,8 @@ const deleteUrlMap = {
   icon: '',
   material: '', // 素材图片
   layout: '', // 布局
-  block: '' // 轮播推荐位
+  block: 'api/v1/blockInfo/delHistory.html', // 轮播推荐位
+  systemPlugin: 'api/v1/sysPlugin/delHistory.html' // 系统插件
 }
 export function deleteVersion (data) {
   return this.fetch({
