@@ -598,10 +598,11 @@ export default {
       this.showAddTagDialog = false
     },
     getSharedTags() {
-      if (!this.isShowTagsField) {
+      const resourceIds = this.panelResourceIds
+      const isNoResources = resourceIds && resourceIds.length === 0
+      if (!this.isShowTagsField || isNoResources) {
         return this.sharedTags = []
       }
-      const resourceIds = this.panelResourceIds
       this.$service.getSharedTags({ coocaaVIds: resourceIds.join(',') }).then((data) => {
         const tags = data.data.tags
         this.sharedTags = tags ? tags.split(',') : []

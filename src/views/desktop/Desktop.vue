@@ -108,6 +108,7 @@
         :panel-data-type="panelPreview.dataType"
         :init-mode="'read'"
         :version="panelPreview.version"
+        @upsert-end="goBack(panelPreview.dataType == 3 ? 'album-list' : 'panel-list')"
         @go-back="goBack(panelPreview.dataType == 3 ? 'album-list' : 'panel-list')">
       </PanelInfo>
     </PageContentWrapper>
@@ -116,6 +117,7 @@
         :id="tabPreview.id"
         :init-mode="'read'"
         :version="tabPreview.version"
+        @upsert-end="goBack('tab-list')"
         @go-back="goBack('tab-list')">
       </TabInfo>
     </PageContentWrapper>
@@ -124,6 +126,7 @@
         :id="filmPreview.id"
         :init-mode="'read'"
         :version="filmPreview.version"
+        @upsert-end="goBack('tab-list')"
         @go-back="goBack('tab-list')">
       </TabInfo>
     </PageContentWrapper>

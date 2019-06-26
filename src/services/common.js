@@ -34,6 +34,14 @@ export function revokeAudit (data) {
   })
 }
 
+export function secondAudit(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/secondAudit/audit.html',
+    data
+  })
+}
+
 export function getTimedTaskLimit() {
   return this.fetch({
     url: 'api/v1/timedTask/taskLimit.html'

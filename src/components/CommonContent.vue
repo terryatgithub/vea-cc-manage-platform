@@ -58,6 +58,7 @@
             @shelves="handleShelves"
             @delete="handleDelete"
             @cancel-timing="handleCancelTiming"
+            @second-audit="handleSecondAudit"
           />
 
           <!-- <cc-button-group
@@ -209,6 +210,23 @@ export default {
             })
         }
       })
+    },
+    handleSecondAudit() {
+      const { id, version, type } = this.resourceInfo
+      this.$confirm('是否对该内容进行二次审核', '提示')
+        .then(() => {
+          this.$service.secondAudit({
+            id,
+            version,
+            type,
+          }, '操作成功')
+            .then(data => {
+              this.$emit('audit')
+            })
+        })
+        .catch((e) => {
+          console.log(e) 
+        })
     },
     handleUnAudit() {
       const { id, version, type } = this.resourceInfo
