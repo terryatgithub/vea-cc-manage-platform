@@ -1,5 +1,5 @@
 <template>
-  <ContentCard class="content">
+  <ContentCard ref="contentCard" class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <!-- 筛选部分 -->
       <el-form inline ref="form" v-model="filter" label-width="90px" class="form">
@@ -257,7 +257,7 @@ export default {
           },
           {
             label: '操作',
-            width: 140,
+            width: 180,
             fixed: 'right',
             render: (h, { row }) => {
               return h('div', [
@@ -281,7 +281,16 @@ export default {
                 }, [
                   h('el-icon', { class: row.collected ? 'el-icon-star-on' : 'el-icon-star-off' }),
                   row.collected ? '取消' : '收藏'
-                ])
+                ]),
+                (!!row.showContentAuthSettingBtn) && h('el-button', {
+                  props: { type: 'text'},
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleOpenContentAuthManager(row)
+                    }
+                  }
+                }, '内容权限')
               ])
             }
           }
@@ -293,6 +302,13 @@ export default {
   },
 
   methods: {
+    handleOpenContentAuthManager(row) {
+      this.$refs.contentCard.handleShowContentAuthManager({
+        id: row.tabId,
+        type: 'tab',
+        menuElId: 'tabInfo'
+      })
+    },
     genDefaultFilter() {
       return {
         idPrefix: this.$consts.idPrefix

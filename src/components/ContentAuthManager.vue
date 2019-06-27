@@ -1,12 +1,14 @@
 <template>
   <div class="content-auth-manager">
-    <el-button
-      type="primary"
-      v-show="showManageButton"
-      @click="handleOpenAuthManagement"
-    >
-      内容权限管理
-    </el-button>
+    <slot name="button">
+      <el-button
+        type="primary"
+        v-show="showManageButton"
+        @click="handleOpenAuthManagement"
+      >
+        内容权限管理
+      </el-button>
+    </slot>
     <el-dialog
       class="content-auth-manager__dialog"
       title="权限设置"

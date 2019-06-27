@@ -11,12 +11,39 @@
         <div class="content-card__main">
             <slot name="default" />
         </div>
+        <content-auth-manager
+            v-if="showContentAuthManager"
+            ref="contentAuthManager"
+            :resource-id="contentAuthInfo.id"
+            :menu-elid="contentAuthInfo.menuElId"
+            :resource-type="contentAuthInfo.type">
+            <div slot="button"></div>
+        </content-auth-manager>
     </div>
 </template>
 
 <script>
+import ContentAuthManager from '@/components/ContentAuthManager'
 export default {
-  props: ['title']
+  components: {
+      ContentAuthManager
+  },
+  props: ['title'],
+  data() {
+      return {
+        showContentAuthManager: false,
+        contentAuthInfo: null
+      }
+  },
+  methods: {
+      handleShowContentAuthManager(info) {
+        this.showContentAuthManager = true
+        this.contentAuthInfo = info
+        this.$nextTick(() => {
+            this.$refs.contentAuthManager.handleOpenAuthManagement()
+        })
+      }
+  }
 }
 </script>
 

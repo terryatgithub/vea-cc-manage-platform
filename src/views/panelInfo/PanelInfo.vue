@@ -222,7 +222,7 @@
             </div>
             <el-form ref="form" :model="pannel" label-width="120px">
               <el-form-item label="业务分类" v-if="businessTypeEnums.length > 0">
-                {{ businessTypeEnums.find(item => item.value == pannel.panelGroupCategory).label }}
+                {{ (businessTypeEnums.find(item => item.value == pannel.panelGroupCategory) || {}).label }}
               </el-form-item>
 
               <el-form-item

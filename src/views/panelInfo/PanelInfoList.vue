@@ -1,5 +1,5 @@
 <template>
-  <ContentCard class="content">
+  <ContentCard ref="contentCard" class="content">
     <ContentWrapper
       :filter="filter"
       :filterSchema="filterSchema"
@@ -40,8 +40,7 @@ export default {
   components: {
     ContentWrapper,
     Table,
-    ButtonGroupForListPage
-
+    ButtonGroupForListPage,
   },
 
   props: {
@@ -153,7 +152,7 @@ export default {
           {
             label: '操作',
             fixed: 'right',
-            width: 140,
+            width: 180,
             render: (h, { row }) => {
               return h('div', [
                 h('el-button', {
@@ -176,7 +175,16 @@ export default {
                 }, [
                   h('el-icon', { class: row.collected ? 'el-icon-star-on' : 'el-icon-star-off' }),
                   row.collected ? '取消' : '收藏'
-                ])
+                ]),
+                (!!row.showContentAuthSettingBtn) && h('el-button', {
+                  props: { type: 'text'},
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleOpenContentAuthManager(row)
+                    }
+                  }
+                }, '内容权限')
               ])
             }
           }
@@ -209,6 +217,13 @@ export default {
   },
 
   methods: {
+    handleOpenContentAuthManager(row) {
+      this.$refs.contentCard.handleShowContentAuthManager({
+        id: row.pannelGroupId,
+        menuElId: 'pannelInfo',
+        type: 'pannel'
+      })
+    },
     genDefaultFilter() {
       return {
         idPrefix: this.$consts.idPrefix

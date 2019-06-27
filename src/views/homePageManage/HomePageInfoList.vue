@@ -1,7 +1,7 @@
 <template>
   <PageWrapper>
     <PageContentWrapper v-show="activePage == 'homepage_list'">
-      <ContentCard class="content">
+      <ContentCard refs="contentCard"  class="content">
         <ContentWrapper
           :filter="filter"
           :filterSchema="filterSchema"
@@ -213,20 +213,31 @@ export default {
           },
           {
             label: '操作',
-            width: '100',
+            width: '140',
             fixed: 'right',
             render: (h, { row }) => {
-              return h('el-button', {
-                props: {
-                  type: 'text'
-                },
-                on: {
-                  click: (event) => {
-                    event.stopPropagation()
-                    this.handleCopy(row)
+              return h('div', [
+                h('el-button', {
+                  props: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleCopy(row)
+                    }
                   }
-                }
-              }, '复制')
+                }, '复制'),
+                (!!row.showContentAuthSettingBtn) && h('el-button', {
+                  props: { type: 'text'},
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleOpenContentAuthManager(row)
+                    }
+                  }
+                }, '内容权限')
+              ])
             }
           }
         ],
@@ -239,6 +250,13 @@ export default {
   computed: {
   },
   methods: {
+    handleOpenContentAuthManager(row) {
+      this.$refs.contentCard.handleShowContentAuthManager({
+        id: row.homepageId,
+        type: 'homepage',
+        menuElId: 'homepageInfo',
+      })
+    },
     handleShowChips(chipStr) {
       this.chips = chipStr.split(',')
       this.showChipDialog = true

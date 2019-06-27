@@ -1,5 +1,5 @@
 <template>
-  <ContentCard class="content">
+  <ContentCard ref="contentCard" class="content">
     <ContentWrapper
       :filter="filter"
       :filterSchema="filterSchema"
@@ -187,7 +187,7 @@ export default {
           },
           {
             label: '操作',
-            width: 100,
+            width: 180,
             fixed: 'right',
             render: this.createOperationRender(this)
           }
@@ -199,8 +199,15 @@ export default {
   },
 
   methods: {
+    handleOpenContentAuthManager(row) {
+      this.$refs.contentCard.handleShowContentAuthManager({
+        id: row.tabId,
+        type: 'tab',
+        menuElId: 'tabInfo',
+      })
+    },
     createOperationRender(obj) {
-      return function render(h, { row }) {
+      return (h, { row }) => {
         let btn1 = h('el-button',
           {
             props: {
@@ -244,7 +251,16 @@ export default {
             '收藏'
           )
         }
-        return [btn1, btn2]
+        const contentAuthBtn = (!!row.showContentAuthSettingBtn) && h('el-button', {
+                  props: { type: 'text'},
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleOpenContentAuthManager(row)
+                    }
+                  }
+                }, '内容权限')
+        return [btn1, btn2, contentAuthBtn]
       }
     },
     collect(row) {
