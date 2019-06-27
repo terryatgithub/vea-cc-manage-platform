@@ -48,12 +48,12 @@
               <el-form-item
                 label="内容源"
                 v-if="panelGroupCategoryValue === 'common' || panelGroupCategoryValue === 'video'"
-              >
+              > 
                 <el-radio-group
                   :value="panel.pannelResource"
                   @input="handlePannelResourceChange"
-                  :disabled="mode!=='read'"
-                >
+                  :disabled="sourceDisabled"
+                > 
                   <el-radio
                     v-for="(item, index) in $consts.sourceOptions"
                     :label="item.value"
@@ -344,6 +344,9 @@ export default {
     }
   },
   computed: {
+    sourceDisabled() {
+     return this.mode ==='replicate' || (this.panel.currentVersion !== undefined && panel.pannelList[0].pannelStatus !==2) 
+    },
     panelGroupCategoryValue() {
       const options = this.panelGroupCategoryOptions
       const panelGroupCategory = this.panel.panelGroupCategory

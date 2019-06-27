@@ -28,6 +28,7 @@
       <el-dialog title="设置操作" :visible.sync="setDialogVisible" v-if="setDialogVisible">
         <span>
           <el-transfer
+            class="el-transfer"
             v-model="svalue"
             :data="sdata"
             :titles="['待选操作','已选操作']"
@@ -410,9 +411,7 @@ export default {
   display: flex;
   flex-direction: row;
 }
-.el-checkbox, .el-checkbox__input {
+.el-transfer >>>.el-checkbox {
     display: block;
-    position: relative;
-    white-space: nowrap;
 }
 </style>

@@ -522,7 +522,8 @@ import selectResource from './selectResource'
 import TabSelector from '@/components/selectors/TabSelector'
 import selectClick from './selectClick'
 import selectImg from './selectImg'
-import { AppParams, AppParamsRead } from 'admin-toolkit'
+import AppParams from '@/components/AppParams.vue'
+import AppParamsRead from '@/components/AppParamsRead.vue'
 const PARENT_TYPES = {
   sign: 'sign', // 标记推荐位
   multi: 'multi',
