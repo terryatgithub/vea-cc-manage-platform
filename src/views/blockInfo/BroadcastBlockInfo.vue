@@ -313,9 +313,6 @@
               >快速填充</el-button>
             </el-form-item>
             <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled">
-            <el-form-item label="数据配置">
-              <el-input type="textarea" v-model.trim="normalForm.onclick.data"></el-input>
-            </el-form-item>
             </AppParams>
             <AppParamsRead :value="normalForm.onclick" v-if="disabled">
 
@@ -466,9 +463,6 @@
               ref="openWayLower"
               v-if="!disabled"
             >{{lowerForm.onclick}}
-            <el-form-item label="数据配置">
-              <el-input type="textarea" v-model.trim="lowerForm.onclick.data"></el-input>
-            </el-form-item>
             </AppParams>
             <AppParamsRead :value="lowerForm.onclick" v-if="disabled"/>
           </div>
