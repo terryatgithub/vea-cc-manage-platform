@@ -527,7 +527,8 @@ import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
 import CommonContent from '@/components/CommonContent.vue'
-import { AppParams, AppParamsRead } from 'admin-toolkit'
+import AppParams from '@/components/AppParams.vue'
+import AppParamsRead from '@/components/AppParamsRead.vue'
 import _ from 'gateschema'
 export default {
   components: {
@@ -687,14 +688,6 @@ export default {
         subchannelIs: '', // 是否显示子频道
         params: {},
         onclick: {
-          packagename: undefined,
-          versioncode: undefined,
-          dowhat: undefined,
-          bywhat: undefined,
-          byvalue: undefined,
-          params: [],
-          data: '',
-          exception: {}
         },
         sign: 'autoSet',
         contentType: '',
@@ -835,16 +828,7 @@ export default {
         // 手动设置
         this.normalForm.coverType = 'custom'
         this.normalForm.contentType = 'custom'
-        this.normalForm.onclick = {
-          packagename: undefined,
-          versioncode: undefined,
-          dowhat: undefined,
-          bywhat: undefined,
-          byvalue: undefined,
-          params: [],
-          data: '' ,
-          exception: {}
-        }
+        this.normalForm.onclick = {}
         if (this.autoWrite === false) {
           // autoWrite为true时，选择资源  coverType为custom
           this.normalForm.type = 'url'
@@ -905,9 +889,7 @@ export default {
         params: paramsArr,
         exception: data.exception
       }
-      let target = this[this.onclickEventVisibleFlag + 'Form']['onclick']
-       Object.assign(target, o)
-       this[this.onclickEventVisibleFlag + 'Form']['onclick'] = target
+       this[this.onclickEventVisibleFlag + 'Form']['onclick'] = o
     },
     handleChangeSign(newVal) {
       // if (newVal === 'manualSet' && this.autoWrite === false) {  // 手动设置
