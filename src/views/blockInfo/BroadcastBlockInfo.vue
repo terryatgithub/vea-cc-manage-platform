@@ -1630,7 +1630,7 @@ export default {
     },
     submitCheck: function(timing, status) {
       this.basicForm.status = status
-      if (this.basicForm.currentVersion === 'V1' || this.basicForm.currentVersion === undefined) {
+      if ((this.basicForm.currentVersion === 'V1'&& this.mode !== 'replicate') || this.basicForm.currentVersion === undefined) {
         return this.doSave(status)
       }
       if (this.$consts.idPrefix == '10') {

@@ -320,7 +320,7 @@
                     :prop="'rlsInfo.' + index + '.onclick.tab'"
                     :rules="rules.tab"
                   >
-                  <TabSelector @select-single="handleSelectTabEnd($event, item)" selectionType="single"/>
+                  <TabSelector @select-single="handleSelectTabEnd($event, item)"    :source="source" selectionType="single"/>
                     <!-- <el-button type="primary" @click="handleSelectTabStart(index)">选择版面</el-button> -->
                     <el-tag type="primary" v-if="item.onclick.tab">已选择: {{ item.onclick.tab.tabId }}</el-tag>
                   </el-form-item>
@@ -544,7 +544,7 @@ export default {
       selectResource: {},
       selectImgData: {},
       urls: {
-        uploadImg: '/api' + '/uploadHomeImg.html' // 上传图片接口
+         uploadImg: 'api/v1/upload/image.html' // 上传图片接口
       },
       PARENT_TYPES: PARENT_TYPES,
       mode: 'create',
@@ -680,6 +680,23 @@ export default {
     }
   },
   computed: {
+      source() {
+      //内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
+      switch (this.block.pluginInfo.source) {
+        case 0:
+          return ''
+          break
+        case 1:
+          return 'o_tencent'
+          break
+        case 2:
+          return 'o_iqiyi'
+          break
+        case 3:
+          return 'o_youku'
+          break
+      }
+    },
     resourceInfo() {
       const form = this.block.pluginInfo
       if (form.pluginId) {
@@ -1053,7 +1070,7 @@ export default {
           this.$set(item.onclick, 'picture', [
             {
               name: '已上传',
-              url: response.url
+              url: response.data[0].url
             }
           ])
         } else {
