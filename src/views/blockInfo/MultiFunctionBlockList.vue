@@ -66,6 +66,7 @@
         pageName="multiFunctionBlock"
         @add="handleCreate"
         @edit="handleEdit"
+        @delete="handleDelete"
       ></ButtonGroupForListPage>
       <Table
         :props="table.props"

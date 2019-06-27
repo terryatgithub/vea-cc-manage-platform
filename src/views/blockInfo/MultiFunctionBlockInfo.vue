@@ -563,7 +563,7 @@ export default {
       selectResource: {}, // 素材选择事件
       selectImgData: {},
       urls: {
-        uploadImg: '/api' + '/uploadHomeImg.html' // 上传图片接口
+        uploadImg: 'api/v1/upload/image.html' // 上传图片接口
       },
       PARENT_TYPES: PARENT_TYPES,
       mode: 'create',
@@ -1020,7 +1020,7 @@ export default {
           this.$set(item.onclick, 'picture', [
             {
               name: '已上传',
-              url: response.url
+              url: response.data[0].url
             }
           ])
         } else {

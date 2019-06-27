@@ -410,4 +410,9 @@ export default {
   display: flex;
   flex-direction: row;
 }
+.el-checkbox, .el-checkbox__input {
+    display: block;
+    position: relative;
+    white-space: nowrap;
+}
 </style>

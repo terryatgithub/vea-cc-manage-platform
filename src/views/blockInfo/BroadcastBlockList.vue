@@ -11,7 +11,7 @@
         pageName="blockInfo"
         @add="handleCreate"
         @edit="handleEdit"
-        @delete="handleDelete"
+
       ></ButtonGroupForListPage>
       <Table
         :props="table.props"
@@ -109,7 +109,7 @@ export default {
             label: '内容源',
             prop: 'source',
             render: (h, { row }) => {
-              return this.$consts.sourceText[row.source]
+              return this.$consts.sourceTextWithNone[row.source]
             }
           },
           {
@@ -175,7 +175,7 @@ export default {
         component: 'Select',
         placeholder: '审核状态'
       }),
-      source: _.o.enum(this.$consts.sourceEnums).other('form', {
+      source: _.o.enum(this.$consts.sourceOptionsWithNoneEnums).other('form', {
         component: 'Select',
         placeholder: '内容源'
       })

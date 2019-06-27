@@ -311,8 +311,14 @@
                 @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'"
               >快速填充</el-button>
             </el-form-item>
-            <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled"></AppParams>
-            <AppParamsRead :value="normalForm.onclick" v-if="disabled"/>
+            <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled">
+            <el-form-item label="数据配置">
+              <el-input type="textarea" v-model.trim="normalForm.onclick.data"></el-input>
+            </el-form-item>
+            </AppParams>
+            <AppParamsRead :value="normalForm.onclick" v-if="disabled">
+
+            </AppParamsRead>
             <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
           </div>
         </el-form>
@@ -458,7 +464,11 @@
               v-model="lowerForm.onclick"
               ref="openWayLower"
               v-if="!disabled"
-            ></AppParams>
+            >{{lowerForm.onclick}}
+            <el-form-item label="数据配置">
+              <el-input type="textarea" v-model.trim="lowerForm.onclick.data"></el-input>
+            </el-form-item>
+            </AppParams>
             <AppParamsRead :value="lowerForm.onclick" v-if="disabled"/>
           </div>
         </el-form>
@@ -553,9 +563,10 @@ export default {
         status: undefined,
         source: 'none'
       },
-      normalForm: {},
+      normalForm: {
+      },
       lowerForm: {
-        coverType: 'media'
+          coverType: 'media',
       },
       auditDisabled: false,
       normalRules: {
@@ -674,7 +685,16 @@ export default {
         subchannelId: '', // 子频道ID
         subchannelIs: '', // 是否显示子频道
         params: {},
-        onclick: '',
+        onclick: {
+          packagename: undefined,
+          versioncode: undefined,
+          dowhat: undefined,
+          bywhat: undefined,
+          byvalue: undefined,
+          params: [],
+          data: '',
+          exception: {}
+        },
         sign: 'autoSet',
         contentType: '',
         clickParams: '',
@@ -814,7 +834,16 @@ export default {
         // 手动设置
         this.normalForm.coverType = 'custom'
         this.normalForm.contentType = 'custom'
-        this.normalForm.onclick = ''
+        this.normalForm.onclick = {
+          packagename: undefined,
+          versioncode: undefined,
+          dowhat: undefined,
+          bywhat: undefined,
+          byvalue: undefined,
+          params: [],
+          data: '' ,
+          exception: {}
+        }
         if (this.autoWrite === false) {
           // autoWrite为true时，选择资源  coverType为custom
           this.normalForm.type = 'url'
@@ -875,10 +904,9 @@ export default {
         params: paramsArr,
         exception: data.exception
       }
-      this[this.onclickEventVisibleFlag + 'Form']['onclick'] = o
-      //  if (this.onclickEventVisibleFlag === 'normal') {
-      //      this.normalVersionContent.splice(this.currentIndex, 1, this[this.onclickEventVisibleFlag+"Form"])
-      //  }
+      let target = this[this.onclickEventVisibleFlag + 'Form']['onclick']
+       Object.assign(target, o)
+       this[this.onclickEventVisibleFlag + 'Form']['onclick'] = target
     },
     handleChangeSign(newVal) {
       // if (newVal === 'manualSet' && this.autoWrite === false) {  // 手动设置

@@ -476,7 +476,7 @@
         </div>
         <!--海报-->
         <el-dialog :visible.sync="dialogTableVisible" width="1200px">
-          <selectResource @selected="getSelectResource"></selectResource>
+          <selectResource v-if="dialogTableVisible" @selected="getSelectResource"></selectResource>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogTableVisible = false">取 消</el-button>
             <!-- <el-button type="primary" @click="dialogTableVisible = false;selectSubmit()">确 定</el-button> -->

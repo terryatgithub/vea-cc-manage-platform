@@ -224,6 +224,7 @@
       init-mode="read"
       :version="homePageVersion"
       :title-prefix="title"
+       @upsert-end="activePage = 'policy_info'"
       @go-back="activePage = 'policy_info'"
     />
    </PageContentWrapper>
