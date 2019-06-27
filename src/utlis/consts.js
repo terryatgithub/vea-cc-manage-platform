@@ -54,10 +54,6 @@ const statusEnums = Object.keys(statusText).reduceRight((result, key) => {
 
 const sourceOptions = [
   {
-    label: '无',
-    value: ''
-  },
-  {
     label: '腾讯',
     value: 'o_tencent'
   },
@@ -70,16 +66,20 @@ const sourceOptions = [
     value: 'o_youku'
   }
 ]
-
 const sourceEnums = optionsToEnums(sourceOptions)
-
 const sourceOptionsWithEmpty = [
   {
     label: '无',
     value: ''
   }
 ].concat(sourceOptions)
-
+const sourceOptionsWithNone = [
+  {
+    label: '无',
+    value: 'none'
+  }
+].concat(sourceOptions)
+const sourceOptionsWithNoneEnums = optionsToEnums(sourceOptionsWithNone)
 const sourceToPartner = {
   'o_tencent': 'tencent',
   'o_iqiyi': 'yinhe',
@@ -87,12 +87,16 @@ const sourceToPartner = {
 }
 
 const sourceText = {
-  '': '无',
   o_tencent: '腾讯',
   o_iqiyi: '爱奇艺',
   o_youku: '优酷'
 }
-
+const sourceTextWithNone = {
+  none: '无',
+  o_tencent: '腾讯',
+  o_iqiyi: '爱奇艺',
+  o_youku: '优酷'
+}
 const sourceNumberOptions = [
   {
     label: '无',
@@ -198,9 +202,12 @@ export default {
 
   sourceOptions,
   sourceEnums,
+  sourceOptionsWithNoneEnums,
   sourceOptionsWithEmpty,
+  sourceOptionsWithNone,
   sourceToPartner,
   sourceText,
+  sourceTextWithNone,
 
   sourceNumberOptions,
   sourceNumberText,
