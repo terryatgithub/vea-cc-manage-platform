@@ -10,14 +10,6 @@ Vue.prototype.$isLoggedIn = async function () {
   if ($appState.user) {
     return
   }
-  // storage
-  const user = $appState.$get('user')
-  if (user) {
-    this.$service.state = user
-    return getInitData(this).then(() => {
-      this.$appState.user = user
-    })
-  }
   throw new Error('ERR_NOT_LOGIN')
 }
 Vue.prototype.$login = async function (data) {

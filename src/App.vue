@@ -1,4 +1,4 @@
-<template>
+push<template>
   <div id="app">
     <router-view v-if="isReady" />
   </div>
@@ -20,7 +20,7 @@ export default {
         this.$appState.$set('user', {
           name
         })
-      } else {
+      } else if (this.$router.name !== 'login') {
         this.$router.push({name: 'login'})
       }
       this.isReady = true

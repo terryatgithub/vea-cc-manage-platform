@@ -88,12 +88,16 @@ export default function install(Vue) {
             return result
           })
           .catch((error) => {
-            Vue.prototype.$notify({
-              title: '操作失败',
-              type: 'error',
-              message: error.message
-            })
-            return Promise.reject(error)
+            if (error.request && error.request.status === 401) {
+              location.hash = '#/login'
+            } else {
+              Vue.prototype.$notify({
+                title: '操作失败',
+                type: 'error',
+                message: error.message
+              })
+              return Promise.reject(error)
+            }
           })
       }
     } else {
