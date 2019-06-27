@@ -28,7 +28,7 @@
         <el-form-item
           label="推荐位名称"
           prop="containerName"
-          :rules="[{required: true, message:'请输入控件名称', trigger: 'blur'}]"
+          :rules="[{required: true, message:'请输入推荐位名称', trigger: 'blur'}]"
         >
           <el-input v-model="basicForm.containerName" :disabled="disabled"></el-input>
         </el-form-item>
@@ -275,6 +275,7 @@
             <el-radio-group
               :value="normalForm.sign"
               @input="handleChangeSign"
+              :disabled="signDisabled"
             >
               <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
               <el-radio label="manualResource" :disabled="disabled">跳转其他播放资源</el-radio>
