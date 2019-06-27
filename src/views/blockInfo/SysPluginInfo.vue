@@ -511,8 +511,10 @@ import ccTimeSpinner from './ccTimeSpinner'
 import selectResource from './selectResource'
 import selectClick from './selectClick'
 import selectImg from './selectImg'
-import { AppParams, AppParamsRead } from 'admin-toolkit'
+// import { AppParams, AppParamsRead } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
+import AppParams from '@/components/AppParams.vue'
+import AppParamsRead from '@/components/AppParamsRead.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 const PARENT_TYPES = {
  sign: 'sign', //标记推荐位
