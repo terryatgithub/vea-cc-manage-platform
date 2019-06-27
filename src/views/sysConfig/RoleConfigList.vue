@@ -251,8 +251,8 @@ export default {
       AuthList: [],
       isIndeterminate: true,
       checkAllValue: false,
-      headerItems: ['菜单名称', '浏览', '新增', '编辑', '删除', '搜索', '刷新', '打印', '导入', '导出', '审核', '认领', '撤销认领', '撤销审核', '上架', '创建副本', '批量审核'],
-      dataItems: ['browser', 'add', 'edit', 'delete', 'search', 'refresh', 'print', 'inport', 'export', 'audit', 'claim', 'unclaim', 'unaudit', 'shelves', 'copy', 'batchAudit']
+      headerItems: ['菜单名称', '浏览', '新增', '编辑', '删除', '内容权限', '搜索', '刷新', '打印', '导入', '导出', '审核', '认领', '撤销认领', '撤销审核', '上架', '创建副本', '批量审核'],
+      dataItems: ['browser', 'add', 'edit', 'delete', 'contentAuthSetting', 'search', 'refresh', 'print', 'inport', 'export', 'audit', 'claim', 'unclaim', 'unaudit', 'shelves', 'copy', 'batchAudit']
     }
   },
   methods: {
