@@ -1020,7 +1020,7 @@ export default {
           this.$set(item.onclick, 'picture', [
             {
               name: '已上传',
-              url: response.url
+              url: response.data[0].url
             }
           ])
         } else {
