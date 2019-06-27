@@ -1,5 +1,5 @@
 import fetch from './fetch'
-import login from './login'
+import * as login from './login'
 import * as getMenu from './getMenu'
 import * as upload from './upload'
 import * as userConfig from './systemSetting/userConfig'
@@ -36,7 +36,7 @@ import * as desktop from './desktop'
 const service = {
   state: {},
   fetch,
-  login,
+  ...login,
   ...getMenu,
   ...advertisement,
   ...upload,

@@ -11,7 +11,7 @@ function beforeEach (to, from, next) {
         : undefined
       : { name: '/' }
     )
-  }).catch(() => {
+  }).catch((e) => {
     next(to.name === 'login'
       ? undefined
       : { name: 'login', query: { redirect: to.fullPath } }

@@ -2,6 +2,10 @@ import Vue from 'vue'
 function getInitData (app) {
   return app.$service.getEnv().then((env) => {
     app.$consts.idPrefix = env.idPrefix
+    if (env.userInfo) {
+      const { loginName: name } = env.userInfo
+      app.$appState.user = { name }
+    }
   })
 }
 Vue.prototype.$isLoggedIn = async function () {
@@ -10,7 +14,11 @@ Vue.prototype.$isLoggedIn = async function () {
   if ($appState.user) {
     return
   }
-  throw new Error('ERR_NOT_LOGIN')
+  return getInitData(this).then(() => {
+    if (!$appState.user) {
+      throw new Error('ERR_NOT_LOGIN')
+    }
+  })
 }
 Vue.prototype.$login = async function (data) {
   return this.$service.login(data).then(res => {
@@ -27,4 +35,5 @@ Vue.prototype.$login = async function (data) {
 Vue.prototype.$logout = async function () {
   this.$appState.user = undefined
   this.$appState.$remove('user')
+  return this.$service.logout()
 }
