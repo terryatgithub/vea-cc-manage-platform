@@ -39,6 +39,7 @@
                 <el-cascader
                     :options="crowd.cascadeItems"
                     filterable
+                    :expandTrigger="'hover'"
                     v-model="selectedCascaderCrowd"
                     :disabled="crowd.cascadeItems.length === 0"
                     :placeholder="crowd.cascadeItems.length > 0 ? '请选择' : '无人群数据'"
@@ -144,11 +145,13 @@ export default {
         }
       };
 
+      /*
       data.forEach(function(item) {
         if (item.children.length === 0) {
           item.children = undefined
         }
       })
+      */
 
       return tree
     }

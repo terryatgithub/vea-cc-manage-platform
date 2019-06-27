@@ -4,7 +4,8 @@
       <div class="log_center">
         <div class="log_bj">
           <div class="log_logo">
-            <img src="@/assets/logo-coocaa.png">
+            <img v-if="$consts.idPrefix == '11'" src="@/assets/logo-jscn.png">
+            <img v-else src="@/assets/logo-coocaa.png">
             <span>内容运营平台</span>
           </div>
           <div class="log-box">

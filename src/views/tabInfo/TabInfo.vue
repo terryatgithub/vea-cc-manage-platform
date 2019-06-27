@@ -81,7 +81,10 @@
                     picture-resolution="178*80"
                   >
                     <el-form-item class="tab-title-icon-wrapper" prop="imgOnSelected">
-                      <img v-if="tabInfo.imgOnSelected" :src="tabInfo.imgOnSelected">
+                      <template v-if="tabInfo.imgOnSelected">
+                        <img :src="tabInfo.imgOnSelected">
+                        <i @click.stop="tabInfo.imgOnSelected = ''" class="el-icon el-icon-close tab-title-icon__remove"></i>
+                      </template>
                       <div class="tab-title-icon__title">选中</div>
                     </el-form-item>
                   </cc-global-picture-selector>
@@ -92,7 +95,10 @@
                     picture-resolution="178*80"
                   >
                     <el-form-item class="tab-title-icon-wrapper" prop="imgOnFocus">
-                      <img v-if="tabInfo.imgOnFocus" :src="tabInfo.imgOnFocus">
+                      <template v-if="tabInfo.imgOnFocus">
+                        <img :src="tabInfo.imgOnFocus">
+                        <i @click.stop="tabInfo.imgOnFocus = ''" class="el-icon el-icon-close tab-title-icon__remove"></i>
+                      </template>
                       <div class="tab-title-icon__title">落焦</div>
                     </el-form-item>
                   </cc-global-picture-selector>
@@ -103,7 +109,10 @@
                     picture-resolution="178*80"
                   >
                     <el-form-item class="tab-title-icon-wrapper" prop="imgOnBlur">
-                      <img v-if="tabInfo.imgOnBlur" :src="tabInfo.imgOnBlur">
+                      <template v-if="tabInfo.imgOnBlur">
+                        <img :src="tabInfo.imgOnBlur">
+                        <i @click.native="tabInfo.imgOnBlur = ''" class="el-icon el-icon-close tab-title-icon__remove"></i>
+                      </template>
                       <div class="tab-title-icon__title">非落焦</div>
                     </el-form-item>
                   </cc-global-picture-selector>
@@ -2264,14 +2273,17 @@ export default {
           }
         })
       })
+    },
+    handleModeChange(mode) {
+      if (mode === 'edit' || mode === 'copy' || mode === 'replicate') {
+        this.isCollapseBase = true
+      }
     }
   },
   created() {
     const mode = this.initMode
     this.mode = mode
-    if (mode === 'edit' || mode === 'copy' || mode === 'replicate') {
-      this.isCollapseBase = true
-    }
+    this.$watch('mode', this.handleModeChange, { immediate: true })
     if (this.id) {
       this.fetchData(this.version)
     }
@@ -2312,8 +2324,13 @@ export default {
   border: 1px solid #ccc;
   cursor: pointer;
 }
-.tab-info__virtual-tab-menu {
+.tab-title-icon__remove {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  color: red;
 }
+
 .tab-info__virtual-tab {
   display: inline-block;
   vertical-align: top;

@@ -208,23 +208,7 @@
         </GlobalPictureSelector>
       </el-form-item>
 
-      <el-form-item label="背景图" prop="bgImgUrl">
-        <GlobalPictureSelector
-          :disabled="isReadonly"
-          @select-end="handleSelectBgEnd">
-          <div class="bg-preview">
-            <img :src="contentForm.bgImgUrl" referrerpolicy="no-referrer">
-            <i
-              v-show="!isReadonly && contentForm.bgImgUrl"
-              title="删除背景"
-              class="el-icon-circle-close"
-              @click.stop="contentForm.bgImgUrl = ''"></i>
-          </div>
-        </GlobalPictureSelector>
-      </el-form-item>
-
-
-      <el-form-item label="背景视频" prop="bgParams.id">
+      <el-form-item v-if="false" label="背景视频" prop="bgParams.id">
         <ResourceSelector
           ref="resourceSelector"
           v-if="!isReadonly"
@@ -238,6 +222,18 @@
           <el-button>选择资源</el-button>
         </ResourceSelector>
         <el-tag type="primary" :closable="!isReadonly" @close="handleRemoveBgMedia" v-if="contentForm.bgParams && contentForm.bgParams.id">已选择: {{ contentForm.bgParams.id }} </el-tag>
+      </el-form-item>
+
+      <el-form-item v-if="contentForm.bgParams && contentForm.bgParams.id" label="背景图" prop="bgImgUrl">
+        <GlobalPictureSelector
+          :disabled="isReadonly"
+          @select-end="handleSelectBgEnd">
+          <img v-if="contentForm.bgImgUrl" 
+            class="bg-img"
+            :src="contentForm.bgImgUrl" 
+            referrerpolicy="no-referrer">
+          <div v-else class="bg-placeholder"></div>
+        </GlobalPictureSelector>
       </el-form-item>
 
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
@@ -518,6 +514,9 @@ export default {
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
       contentRule: {
+        bgImgUrl: [
+          {required: true, message: '请选择背景图'}
+        ],
         webpageUrl: [
           { required: true, validator: checkWebpageUrl, trigger: 'blur' }
         ],
@@ -1049,6 +1048,7 @@ export default {
         id: ''
       }
       contentForm.bgType = ''
+      contentForm.bgImgUrl = ''
     },
     handleSelectBlockEnd(resources) {
       const selectedFunc = resources.func[0]
@@ -1266,19 +1266,13 @@ $width = 100px;
 }
 </style>
 <style lang="stylus">
-.bg-preview
+.bg-placeholder
   position relative
   border 1px solid #ccc
   width 250px
   height 250px
   cursor pointer
-  overflow hidden
-  img
-    max-height 100%
-    max-width 100%
-  .el-icon-circle-close
-    position absolute
-    top 5px
-    right 5px
-    color red
+.bg-img
+  max-width 350px
+  max-height 350px
 </style>
