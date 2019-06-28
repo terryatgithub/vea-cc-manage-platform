@@ -212,7 +212,7 @@
         <ResourceSelector
           ref="resourceSelector"
           v-if="!isReadonly"
-          :is-live="true"
+          :is-live="false"
           :disable-partner="!!source"
           :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
           selection-type="single"
@@ -243,7 +243,7 @@
         <ResourceSelector
           v-if="!isReadonly"
           ref="blockSelector"
-          :is-live="true"
+          :is-live="false"
           :selectors="['func', 'broadcast']"
           selection-type="single"
           :source="source"
