@@ -73,7 +73,9 @@ export default {
   },
   methods: {
     getDefaultFilter() {
-      const filter = {}
+      const filter = {
+        pictureStatus: 1
+      }
       if (this.$consts.idPrefix != '10') {
         filter.idPrefix = this.$consts.idPrefix
       }
