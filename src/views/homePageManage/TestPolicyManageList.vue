@@ -71,7 +71,10 @@ export default {
             minWidth: 150,
             'show-overflow-tooltip': true,
             render: (h, { row }) => {
-              return h(
+              const icon = h('i', {
+                class: row.children ? 'el-icon-folder' : 'el-icon-document'
+              })
+              const link =  h(
                 'el-button',
                 {
                   attrs: {
@@ -85,6 +88,10 @@ export default {
                 },
                 row.policyName
               )
+              return h('div', null, [
+                icon,
+                link
+              ])
             }
           },
           {

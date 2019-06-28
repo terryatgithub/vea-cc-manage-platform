@@ -951,7 +951,9 @@ export default {
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
     }
   },
-  watch: {},
+  watch: {
+    'tabInfo.tabResource': 'getVipButtonSource'
+  },
   methods: {
     parseMinToStr(min) {
       const hours = Math.floor(min / 60)
@@ -2264,7 +2266,7 @@ export default {
           source: source
         }
       }
-      this.$service.getVipButtonSource().then((data) => {
+      this.$service.getVipButtonSource(params).then((data) => {
         this.vipEnumsData = data
         this.vipEnums = data.map(function(item) {
           return {

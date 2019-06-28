@@ -89,7 +89,7 @@ export default function install(Vue) {
           })
           .catch((error) => {
             if (error.request && error.request.status === 401) {
-              location.hash = '#/login'
+              location.href = location.origin + location.pathname
             } else {
               Vue.prototype.$notify({
                 title: '操作失败',
