@@ -1593,6 +1593,13 @@ export default {
     lowerFill: function() {
       var newForm = cloneDeep(this.normalVersionContent[0])
       // 由于改变 coverType 会触发清除低版本表单，所以先修改 coverType 再赋值 lowerForm
+      if (newForm.sign === 'manualSet') {
+        this.$message({
+          type: 'error',
+          message: '手动填写的资源不能填充，请填充自动配置的播放资源，资源填充使用的是正常版本的第一个资源。'
+        })
+        return
+      }
       this.lowerForm.coverType = newForm.coverType
       this.$nextTick(() => {
         this.lowerForm = newForm
