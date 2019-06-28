@@ -1788,7 +1788,7 @@ export default {
 
           _this.lowerForm = lowerData
           _this.lowerForm.onclick = JSON.parse(_this.lowerForm.onclick)
-          _this.lowerForm.thirdIdOrPackageName = _this.getThirdId(lowerData.clickParams)
+          _this.lowerForm.thirdIdOrPackageName = _this.getThirdId(lowerData.params)
           var corners = [{}, {}, {}, {}]
           if (lowerData.cornerIconList.length === 0) {
             lowerData.cornerIconList = corners
