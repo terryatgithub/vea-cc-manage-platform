@@ -1487,4 +1487,7 @@ export default {
   right: 5px;
   color: red;
 }
+.open-picture__img {
+  width: 200px;
+}
 </style>

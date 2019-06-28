@@ -1574,9 +1574,9 @@ export default {
       console.log(event)
     },
     onDragtEnd: function(event) {
-      console.log(event)
       this.currentIndex = event.newIndex
       this.normalForm = this.normalVersionContent[event.newIndex]
+      this.autoWrite = this.normalForm.sign === 'autoSet' ? true : false 
     },
 
     // 快速填充
