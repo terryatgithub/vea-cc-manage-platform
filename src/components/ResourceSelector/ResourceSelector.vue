@@ -184,6 +184,7 @@ export default {
       })
     },
     handleSelectEnd() {
+      debugger
       const selectionType = this.selectionType
       const activeSelector = this.activeSelector
       const $refs = this.$refs

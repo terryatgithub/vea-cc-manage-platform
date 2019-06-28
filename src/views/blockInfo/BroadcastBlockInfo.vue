@@ -1600,7 +1600,6 @@ export default {
         newForm.params = '{}'
         newForm.clickTemplateType = 'custom'
       }
-
       this.lowerForm = newForm
     },
     saveNormal: function(cb) {
@@ -1721,18 +1720,19 @@ export default {
               item.cornerIconList = corners
             }
             if (item.sign === 'manualSet') {
+              item.onclick = JSON.parse(item.onclick)
               // 手动设置
               var packageName = Object.values(JSON.parse(item.params))[0]
               item = Object.assign({}, item, {
                 thirdIdOrPackageName: packageName
               })
             } else {
+              item.onclick = {}
               var packageName = Object.values(JSON.parse(item.clickParams))[0]
               item = Object.assign({}, item, {
                 thirdIdOrPackageName: packageName
               })
             }
-            item.onclick = JSON.parse(item.onclick)
             data.normalVersionContent.splice(j, 1, item)
           })
 
