@@ -228,7 +228,7 @@
         :homepageModel="mode"
         :homepageResource="platform"
         homepageStatusArray="4"
-        v-if="selectHomePageDialogVisible"
+        v-if="dialogVisible && selectHomePageDialogVisible"
         @row-click="rowClick"
         @row-selection-change="rowClick"
       ></HomePageModel>

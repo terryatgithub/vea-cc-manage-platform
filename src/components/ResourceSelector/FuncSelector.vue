@@ -19,6 +19,7 @@
 <script>
 import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
+const BLOCK_SIGN_IMG_SRC = require('@/assets/images/block/sign.png')
 const sourceValueMap = {
   '': '0',
   'o_tencent': '1',
@@ -81,19 +82,18 @@ export default {
             label: '通用内容图片',
             render: (h, { row }) => {
               const globalPicture = row.globalPicture
-              const imgSrc = globalPicture && globalPicture.pictureUrl
-              if (imgSrc) {
-                return h('img', {
-                  style: {
-                    'max-height': '64px',
-                    'max-width': '120px'
-                  },
-                  attrs: {
-                    src: imgSrc,
-                    'referrerpolicy': 'no-referrer'
-                  }
-                })
-              }
+              const pictureUrl = (globalPicture && globalPicture.pictureUrl) || BLOCK_SIGN_IMG_SRC
+              const imgSrc = pictureUrl === '/themes/images/block/sign.png' ? BLOCK_SIGN_IMG_SRC : pictureUrl
+              return h('img', {
+                style: {
+                  'max-height': '64px',
+                  'max-width': '120px'
+                },
+                attrs: {
+                  src: imgSrc,
+                  'referrerpolicy': 'no-referrer'
+                }
+              })
             }
           },
           {
@@ -120,7 +120,9 @@ export default {
       return {
         pluginId: undefined,
         pluginName: undefined,
-        source: sourceValueMap[this.source]
+        // 只显示审核通过的
+        pluginStatus: 4,
+        source: sourceValueMap[this.source],
       }
     },
     getFilter() {

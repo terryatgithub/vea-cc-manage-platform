@@ -38,8 +38,6 @@ export default {
   data() {
     return {
       filter: {
-        sort: undefined,
-        order: undefined
       },
       filterSchema: null,
       pagination: {
@@ -118,10 +116,7 @@ export default {
       }
     },
     handleFilterReset() {
-      this.filter = {
-        sort: undefined,
-        order: undefined
-      }
+      this.filter = {}
       this.pagination.currentPage = 1
       this.fetchData()
     },

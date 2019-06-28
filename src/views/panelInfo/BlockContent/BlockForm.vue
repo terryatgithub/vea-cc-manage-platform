@@ -774,14 +774,14 @@ export default {
       let selectedType
       let selected
       let selectedEpisode
+      const episode = resources.episode || {}
       Object.keys(resources).forEach(key => {
         const resource = resources[key][0]
         if (resource) {
           selectedType = key
-          if (key === 'episode') {
-            selectedEpisode = resource
-          } else {
-            selected = resource
+          selected = resource
+          if (key === 'video' && episode[resource.coocaaVId]) {
+            selectedEpisode = episode[resource.coocaaVId]
           }
         }
       })

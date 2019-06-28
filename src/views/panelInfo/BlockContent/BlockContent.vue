@@ -40,7 +40,7 @@
           :hide-title-options="hideTitleOptions"
         />
       </el-collapse-item>
-      <el-collapse-item title="精细化定向内容" name="specific">
+      <el-collapse-item v-show="contentForm.coverType !== 'block'" title="精细化定向内容" name="specific">
         <el-row class="addedContents-wrapper" :gutter="8">
           <component :is="mode === 'read' ? 'div': 'draggable'"
             v-model="specificContentList"
