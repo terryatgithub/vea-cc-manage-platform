@@ -1023,8 +1023,8 @@ export default {
       this.resourceConfirm(data, 'normalForm')
     },
     handleSelectNormalmultipleResourceEnd(selectedResources) {
-      if(!this.autoWrite) {
-       this.autoWriteFun()
+      if (!this.autoWrite) {
+        this.autoWriteFun()
       }
       let dataArr = []
       let resourceOptions = this.resourceOptions
@@ -1039,7 +1039,6 @@ export default {
           )
         })
       }
-    debugger
       this.resourceConfirm(dataArr, 'normalForm')
     },
     handleSelectLowerSingleResourceEnd(selectedResources) {
@@ -1577,6 +1576,7 @@ export default {
       this.currentIndex = event.newIndex
       this.normalForm = this.normalVersionContent[event.newIndex]
       this.autoWrite = this.normalForm.sign === 'autoSet' ? true : false 
+      this.signDisabled = !this.autoWrite
     },
 
     // 快速填充
