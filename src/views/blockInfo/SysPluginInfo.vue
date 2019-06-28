@@ -373,7 +373,18 @@
               <el-form-item
                 label="固定刷新时间"
                 prop="pluginInfo.refreshTime"
-              >{{ parseMinToStr(block.pluginInfo.refreshTime) }}</el-form-item>
+              >
+                <div class="el-input" style="max-width: 400px">
+                  <el-time-select
+                    v-model="block.pluginInfo.refreshTime"
+                    :disabled="true"
+                    :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
+                    placeholder="选择时间"
+                    @change="handleTime"
+                  ></el-time-select>
+                </div>
+              <!-- {{ parseMinToStr(block.pluginInfo.refreshTime) }} -->
+              </el-form-item>
               <el-form-item label="活动形式" prop="hasActivity">
                 <el-radio-group disabled v-model="block.hasActivity">
                   <el-radio :label="0">非活动</el-radio>
@@ -1475,7 +1486,6 @@ export default {
   border: 1px solid #eee;
   cursor: pointer;
 }
-
 .multi-func-block-upsert .poster img,
 .multi-func-block-upsert .focus-transition__img {
   max-width: 100%;

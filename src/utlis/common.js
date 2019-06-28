@@ -197,6 +197,8 @@ Vue.prototype.$platform = function (platform) {
       return '腾讯'
     case 'voole':
       return '优朋'
+    case 'youku':
+      return '优酷'
   }
 }
 /** 检验MAC地址是否正确 */

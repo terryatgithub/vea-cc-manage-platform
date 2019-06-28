@@ -1081,8 +1081,8 @@ export default {
       switch (tabName) {
         case 'video': {
            if (selected.selectedEpisodes !==undefined) { 
-             selected.coocaaVId = selected.selectedEpisodes.coocaaMId
-             selected.pictureUrl = selected.selectedEpisodes.thumb
+             //selected.coocaaVId = selected.selectedEpisodes.coocaaMId
+             selected.thumb = selected.selectedEpisodes.thumb
              selected.title = selected.selectedEpisodes.urlTitle
              selected.subTitle = selected.selectedEpisodes.urlSubTitle
            }
@@ -1295,6 +1295,7 @@ export default {
         form.contentType = item.contentType
         form.subTitle = item.subTitle
         form.thirdIdOrPackageName = item.thirdIdOrPackageName
+        debugger
         if (item.pictureUrl) {
           var newForm = Object.assign({}, form.poster)
           newForm.pictureUrl = item.pictureUrl
