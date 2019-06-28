@@ -1,5 +1,5 @@
 <template>
-  <FrameDialog :url="url" @close="$emit('close')"></FrameDialog>
+  <FrameDialog :url="url" @close="handleClose"></FrameDialog>
 </template>
 
 <script>
@@ -19,8 +19,19 @@ export default {
       const server = /^(127|172)/.test(location.host)
         ? 'http://dev-mgr-media.tc.cc0808.com'
         : 'http://mgr.media.tc.skysrt.com'
-      return server + `/ccGlobalMediaTag/com.html?referrer=homepage&enableDelete=0&coocaaVId=` + ids.join(',')
+      return server + `/ccGlobalMediaTag/com.html?origin=${location.origin}&referrer=homepage&enableDelete=0&coocaaVId=` + ids.join(',')
     }
+  },
+  methods: {
+    handleClose() {
+      this.$emit('close')
+    }
+  },
+  mounted() {
+    window.addEventListener('message', this.handleClose)
+  },
+  beforeDestroy() {
+    window.removeEventListener('message', this.handleClose)
   }
 }
 </script>

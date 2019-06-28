@@ -38,7 +38,7 @@
         <ResourceSelector
           ref="resourceSelector"
           v-if="!isReadonly"
-          :is-live="true"
+          :is-live="false"
           :disable-partner="!!source"
           :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
           selection-type="single"
@@ -54,7 +54,7 @@
         <ResourceSelector
           ref="resourceSelector"
           v-if="!isReadonly"
-          :is-live="true"
+          :is-live="false"
           :selectors="['app']"
           :disable-partner="!!source"
           selection-type="single"
