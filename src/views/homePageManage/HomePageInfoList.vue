@@ -1,7 +1,7 @@
 <template>
   <PageWrapper>
     <PageContentWrapper v-show="activePage == 'homepage_list'">
-      <ContentCard refs="contentCard"  class="content">
+      <ContentCard ref="contentCard"  class="content">
         <ContentWrapper
           :filter="filter"
           :filterSchema="filterSchema"
