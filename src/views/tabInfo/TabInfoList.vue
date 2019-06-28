@@ -108,7 +108,6 @@ export default {
       resourceType: 'tabInfo',
       selected: [],
       tabTypeOption: [
-        { label: '信号源版面', value: '5' },
         { label: '第三方版面', value: '4' },
         { label: '专题版面', value: '2' },
         { label: '普通版面', value: '1' }
