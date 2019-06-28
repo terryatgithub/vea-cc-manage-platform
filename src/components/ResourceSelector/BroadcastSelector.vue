@@ -58,7 +58,7 @@ export default {
             width: '120',
             options: [],
             render: (h, { row }) => {
-              return this.$consts.sourceText[row.source] || '未知'
+              return this.$consts.sourceTextWithNone[row.source] || '未知'
             }
           },
           {
