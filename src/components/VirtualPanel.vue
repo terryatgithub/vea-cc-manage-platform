@@ -162,8 +162,12 @@ export default {
           height: height * ratio + 'px',
           width: width * ratio + 'px'
         }
-        if (content.pictureUrl) {
-          block.img = content.pictureUrl
+        const pictureUrl = content.pictureUrl
+        if (pictureUrl) {
+          const BLOCK_SIGN_IMG_SRC = process.env.BASE_URL + 'block/sign.png'
+          block.img = pictureUrl === '/themes/images/block/sign.png'
+            ? BLOCK_SIGN_IMG_SRC
+            : pictureUrl
           // block.style['background-image'] = 'url(' + content.pictureUrl + ')'
         }
 

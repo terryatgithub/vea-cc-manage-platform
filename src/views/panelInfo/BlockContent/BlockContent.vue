@@ -21,7 +21,7 @@
                 class="remove-handle el-icon-close"
                 @click.stop.prevent="handleRemoveContent(index, 'normal')"
               ></i>
-              <img :src="content.pictureUrl" referrerpolicy="no-referrer">
+              <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
             </el-card>
           </el-col>
         </el-row>
@@ -56,7 +56,7 @@
                   class="remove-handle el-icon-close"
                   @click.stop.prevent="handleRemoveContent(index, 'specific')"
                 ></i>
-                <img :src="content.pictureUrl" referrerpolicy="no-referrer">
+                <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
               </el-card>
             </el-col>
           </component>
@@ -118,6 +118,15 @@ export default {
     }
   },
   methods: {
+    getPictureUrl(pictureUrl) {
+        if (pictureUrl) {
+          const BLOCK_SIGN_IMG_SRC = process.env.BASE_URL + 'block/sign.png'
+          return pictureUrl === '/themes/images/block/sign.png'
+            ? BLOCK_SIGN_IMG_SRC
+            : pictureUrl
+          // block.style['background-image'] = 'url(' + content.pictureUrl + ')'
+        }
+    },
     handleDragConentStart(event) {
     },
     handleDragConentEnd(event, type) {

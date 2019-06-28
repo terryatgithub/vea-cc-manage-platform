@@ -1634,7 +1634,7 @@ export default {
       })
     },
     submitCheck: function(timing, status) {
-      this.basicForm.status = status
+      //this.basicForm.status = status
       if ((this.basicForm.currentVersion === 'V1'&& this.mode !== 'replicate') || this.basicForm.currentVersion === undefined) {
         return this.doSave(status)
       }
@@ -1781,9 +1781,7 @@ export default {
 
           _this.lowerForm = lowerData
           _this.lowerForm.onclick = JSON.parse(_this.lowerForm.onclick)
-          _this.lowerForm.thirdIdOrPackageName = Object.values(
-            JSON.parse(lowerData.clickParams)
-          )[0]
+          _this.lowerForm.thirdIdOrPackageName = _this.getThirdId(lowerData.clickParams)
           var corners = [{}, {}, {}, {}]
           if (lowerData.cornerIconList.length === 0) {
             lowerData.cornerIconList = corners

@@ -107,7 +107,7 @@
       </el-collapse-item>
     </el-collapse>
 
-    <EpisodeSelector ref="episodeSelector" :id="currentVideoId" :source="filter.partner" @select-end="handleSelectEpisodeEnd">
+    <EpisodeSelector ref="episodeSelector" :id="currentVideoId" :source="filter.sources" @select-end="handleSelectEpisodeEnd">
       <!-- default slot -->
       <span></span>
     </EpisodeSelector>
