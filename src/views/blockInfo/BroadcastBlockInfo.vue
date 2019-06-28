@@ -1368,7 +1368,7 @@ export default {
           result.push(this.packageFormParam(current, this.currentForm))
           return result
         }, [])
-        this.normalVersionContent.splice(this.currentIndex, 0, ...data)
+        this.normalVersionContent.splice(this.currentIndex, 1, ...data)
         this[form] = data[0]
       } else {
         console.log(' no array')
@@ -1379,7 +1379,7 @@ export default {
         } else {
           this[form] = this.packageFormParam(callbackData, this.currentForm)
           if (form === 'normalForm') {
-            this.normalVersionContent.splice(this.currentIndex, 0, this[form])
+            this.normalVersionContent.splice(this.currentIndex, 1, this[form])
           }
         }
       }
@@ -1574,10 +1574,11 @@ export default {
       console.log(event)
     },
     onDragtEnd: function(event) {
-      this.currentIndex = event.newIndex
-      this.normalForm = this.normalVersionContent[event.newIndex]
-      this.autoWrite = this.normalForm.sign === 'autoSet' ? true : false 
-      this.signDisabled = !this.autoWrite
+      if (event.oldIndex === this.currentIndex) {
+          this.currentIndex = event.newIndex
+      } else if (event.newIndex === this.currentIndex) {
+          this.currentIndex = event.oldIndex
+      }
     },
 
     // 快速填充
