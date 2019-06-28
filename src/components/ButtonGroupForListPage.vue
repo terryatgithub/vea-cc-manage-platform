@@ -40,7 +40,9 @@ export default {
   created() {
     this.$service.getButtonGroupForPageList(this.pageName).then(data => {
       let action = {}
-      data.forEach(v => {
+      data.filter((item) => {
+        return item.runComm !== 'contentAuthSetting'
+      }).forEach(v => {
         if (!this.notContainBtns.includes(v.runComm)) {
           switch (v.runComm) {
             case 'add':
