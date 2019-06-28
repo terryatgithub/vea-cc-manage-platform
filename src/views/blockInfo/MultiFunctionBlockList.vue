@@ -1,5 +1,5 @@
 <template>
-  <ContentCard class="content">
+  <ContentCard ref="contentCard" class="content">
     <ContentWrapper
       :filter="filter"
       :filterSchema="filterSchema"
@@ -173,6 +173,22 @@ export default {
           {
             label: '更新时间',
             prop: 'lastUpdateDate'
+          },
+          {
+            label: '操作',
+            render: (h, {row}) => {
+              if (!!row.showContentAuthSettingBtn) {
+                return h('el-button', {
+                  props: { type: 'text'},
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleOpenContentAuthManager(row)
+                    }
+                  }
+                }, '内容权限')
+              } 
+            }
           }
         ],
         data: [],
@@ -182,6 +198,13 @@ export default {
     }
   },
   methods: {
+    handleOpenContentAuthManager(row) {
+      this.$refs.contentCard.handleShowContentAuthManager({
+        id: row.pluginId,
+        menuElId: 'multiFunctionBlock',
+        type: 'systemPlugin'
+      })
+    },
     getPluginType() {
       this.$service
         .getPluginType({ pluginParentType: this.filter.pluginParentType })

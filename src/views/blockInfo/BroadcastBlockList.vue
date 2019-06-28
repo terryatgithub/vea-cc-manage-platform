@@ -120,7 +120,8 @@ export default {
           {
             label: '操作',
             render: (h, {row}) => {
-              return (!!row.showContentAuthSettingBtn) && h('el-button', {
+              if (!!row.showContentAuthSettingBtn) {
+                return h('el-button', {
                   props: { type: 'text'},
                   on: {
                     click: (event) => {
@@ -129,6 +130,7 @@ export default {
                     }
                   }
                 }, '内容权限')
+              } 
             }
           }
         ],
