@@ -681,6 +681,7 @@ export default {
         subchannelId: '', // 子频道ID
         subchannelIs: '', // 是否显示子频道
         params: {},
+        clickType: "detail",
         onclick: {
         },
         sign: 'autoSet',
