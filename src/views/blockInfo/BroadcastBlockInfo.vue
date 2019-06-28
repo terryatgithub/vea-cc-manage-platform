@@ -1023,6 +1023,9 @@ export default {
       this.resourceConfirm(data, 'normalForm')
     },
     handleSelectNormalmultipleResourceEnd(selectedResources) {
+      if(!this.autoWrite) {
+       this.autoWriteFun()
+      }
       let dataArr = []
       let resourceOptions = this.resourceOptions
       for (var i = 0; i < resourceOptions.length; i++) {
@@ -1036,6 +1039,7 @@ export default {
           )
         })
       }
+    debugger
       this.resourceConfirm(dataArr, 'normalForm')
     },
     handleSelectLowerSingleResourceEnd(selectedResources) {
@@ -1077,6 +1081,12 @@ export default {
       }
       switch (tabName) {
         case 'video': {
+           if (selected.selectedEpisodes !==undefined) { 
+             selected.coocaaVId = selected.selectedEpisodes.coocaaMId
+             selected.pictureUrl = selected.selectedEpisodes.thumb
+             selected.title = selected.selectedEpisodes.urlTitle
+             selected.subTitle = selected.selectedEpisodes.urlSubTitle
+           }
           s.contentType = 'movie'
           switch (sourceType) {
             case 'yinhe':
@@ -1092,9 +1102,15 @@ export default {
               break
           }
           s.singleId = selected.singleId
-          s.pictureUrl = selected.thumb
-          s.title = selected.title
-          s.subTitle = selected.subTitle
+          //  if (selected.selectedEpisodes !==undefined) { 
+          //     s.pictureUrl = selected.selectedEpisodes.thumb
+          //     s.title = selected.selectedEpisodes.title
+          //     s.subTitle = selected.selectedEpisodes.subTitle
+          //  } else {
+            s.pictureUrl = selected.thumb
+            s.title = selected.title
+            s.subTitle = selected.subTitle
+          // }
           s.type = 'res'
           break
         }
@@ -1276,16 +1292,15 @@ export default {
       } else {
         form.smallTopicsIs = false
       }
-      form.title = item.title
-      form.contentType = item.contentType
-      form.subTitle = item.subTitle
-      form.thirdIdOrPackageName = item.thirdIdOrPackageName
-      if (item.pictureUrl) {
-        var newForm = Object.assign({}, form.poster)
-        newForm.pictureUrl = item.pictureUrl
-        form.poster = newForm
-      }
-      form.subTitle = item.subTitle
+        form.title = item.title
+        form.contentType = item.contentType
+        form.subTitle = item.subTitle
+        form.thirdIdOrPackageName = item.thirdIdOrPackageName
+        if (item.pictureUrl) {
+          var newForm = Object.assign({}, form.poster)
+          newForm.pictureUrl = item.pictureUrl
+          form.poster = newForm
+        }
       var param = this.paramIdFun(item)
       form.params = JSON.stringify(param)
       if (form.sign === 'autoSet') {
@@ -1362,7 +1377,6 @@ export default {
           this[form].clickTemplateType = callbackData.contentType
           this.selectingManualResource = false
         } else {
-          debugger
           this[form] = this.packageFormParam(callbackData, this.currentForm)
           if (form === 'normalForm') {
             this.normalVersionContent.splice(this.currentIndex, 0, this[form])

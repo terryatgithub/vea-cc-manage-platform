@@ -9,7 +9,8 @@
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
-    @select-end="$emit('select-end')">
+    @select-end="selectEnd"
+    >
 
     <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
@@ -325,6 +326,13 @@ export default {
     'filter.category': 'onCategoryChange'
   },
   methods: {
+    selectEnd(data) {
+      data = data.map((e)=> {
+         e.selectedEpisodes = this.selectedEpisodes[e.coocaaVId]
+         return e
+      })
+      this.$emit("select-end", data)
+    },
     handleCollapseChange() {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'))
