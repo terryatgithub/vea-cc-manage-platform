@@ -38,7 +38,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item class="el-col el-col-6">
+        <!-- <el-form-item class="el-col el-col-6">
           <el-select
             v-model="filter.tabStatusArray"
             :clearable="true"
@@ -52,7 +52,7 @@
               :label="item.label"
             />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
 
         <el-form-item v-if="source === undefined" class="el-col el-col-6">
           <SourceSelector v-model="filter.tabResource" placeholder="内容源" title="内容源"/>
@@ -283,7 +283,7 @@ export default {
       filter.page = pagination.currentPage
       filter.rows = pagination.pageSize
       if (!filter.tabStatusArray) {
-        filter.tabStatusArray = '3,4'
+        filter.tabStatusArray = '4'
       }
       if (this.hasSubTab !== undefined) {
         filter.hasSubTab = this.hasSubTab
