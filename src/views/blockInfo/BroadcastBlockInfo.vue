@@ -348,7 +348,7 @@
           class="el-form-add"
         >
           <el-form-item label="资源类别" prop="coverType">
-            <el-radio-group v-model="lowerForm.coverType" @change="cleanLowerForm">
+            <el-radio-group v-model="lowerForm.coverType">
               <el-radio label="media" :disabled="disabled">媒体资源</el-radio>
               <el-radio label="app" :disabled="disabled">应用</el-radio>
               <el-radio label="custom" :disabled="disabled">自定义</el-radio>
@@ -523,6 +523,7 @@ import selectClick from '@/views/blockInfo/selectClick'
 import CommonContent from '@/components/CommonContent.vue'
 import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
+import { cloneDeep } from 'lodash'
 import _ from 'gateschema'
 export default {
   components: {
@@ -800,12 +801,13 @@ export default {
     getThirdId(clickParams) {
       if (clickParams) {
         const clickParamsObj = JSON.parse(clickParams)
-        return (
-          clickParamsObj.id ||
+        const result = ( clickParamsObj.id ||
           clickParamsObj.rotateId ||
           clickParamsObj.pTopicCode ||
           clickParamsObj.url
         )
+        console.log(result)
+        return result
       }
     },
     replicate() {
@@ -1574,17 +1576,27 @@ export default {
       console.log(event)
     },
     onDragtEnd: function(event) {
-      if (event.oldIndex === this.currentIndex) {
-          this.currentIndex = event.newIndex
-      } else if (event.newIndex === this.currentIndex) {
-          this.currentIndex = event.oldIndex
+      const { oldIndex, newIndex } = event
+      const currentIndex = this.currentIndex
+      if (oldIndex === currentIndex) {
+        this.currentIndex = event.newIndex
+      } else if (newIndex === currentIndex) {
+        this.currentIndex = oldIndex
+      } else if (oldIndex < currentIndex && newIndex >= currentIndex ) {
+        this.currentIndex = currentIndex - 1
+      } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
+        this.currentIndex = currentIndex + 1
       }
     },
 
     // 快速填充
     lowerFill: function() {
-      var newForm = Object.assign({}, this.normalVersionContent[0])
-      this.lowerForm = newForm
+      var newForm = cloneDeep(this.normalVersionContent[0])
+      // 由于改变 coverType 会触发清除低版本表单，所以先修改 coverType 再赋值 lowerForm
+      this.lowerForm.coverType = newForm.coverType
+      this.$nextTick(() => {
+        this.lowerForm = newForm
+      })
     },
     cleanLowerForm: function(val) {
       if (val === 'app') {
@@ -1653,23 +1665,26 @@ export default {
             _this.checkLowerForm(function() {
               var obj = { normalVersionContent: [], lowerVersionContent: {} }
               if (_this.basicForm.configModel === 'group') {
-                _this.normalVersionContent.map(function(item) {
+                const normalVersionContent  = cloneDeep(_this.normalVersionContent)
+                normalVersionContent.map(function(item) {
                   item.onclick
                     ? (item.onclick = JSON.stringify(item.onclick))
                     : ''
                   delete item.thirdIdOrPackageName
                 })
-                obj.normalVersionContent = _this.normalVersionContent
+                obj.normalVersionContent = normalVersionContent
               } else {
-                _this.normalForm.onclick
-                  ? (_this.normalForm.onclick = JSON.stringify(
-                    _this.normalForm.onclick
+                const normalForm = cloneDeep(_this.normalForm)
+                normalForm.onclick
+                  ? (normalForm.onclick = JSON.stringify(
+                    normalForm.onclick
                   ))
                   : ''
-                obj.normalVersionContent.push(_this.normalForm)
+                obj.normalVersionContent.push(normalForm)
               }
-              delete _this.lowerForm.smallTopicsId
-              obj.lowerVersionContent = _this.lowerForm
+              const lowerForm = _this.lowerForm
+              delete lowerForm.smallTopicsId
+              obj.lowerVersionContent = lowerForm
               var resultObj = Object.assign(obj, _this.basicForm)
              
               resultObj.status = status
@@ -1723,15 +1738,13 @@ export default {
             if (item.sign === 'manualSet') {
               item.onclick = JSON.parse(item.onclick)
               // 手动设置
-              var packageName = Object.values(JSON.parse(item.params))[0]
               item = Object.assign({}, item, {
-                thirdIdOrPackageName: packageName
+                thirdIdOrPackageName: this.getThirdId(item.params)
               })
             } else {
               item.onclick = {}
-              var packageName = Object.values(JSON.parse(item.clickParams))[0]
               item = Object.assign({}, item, {
-                thirdIdOrPackageName: packageName
+                thirdIdOrPackageName: this.getThirdId(item.params)
               })
             }
             data.normalVersionContent.splice(j, 1, item)
@@ -1796,8 +1809,8 @@ export default {
   },
   created() {
     var _this = this
-    this.normalForm = Object.assign({}, this.versionForm)
-    this.lowerForm = Object.assign({}, this.versionForm)
+    this.normalForm = cloneDeep(this.versionForm)
+    this.lowerForm = cloneDeep(this.versionForm)
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
     this.mode = this.initMode || 'create'

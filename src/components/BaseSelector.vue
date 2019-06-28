@@ -24,6 +24,7 @@
           @row-selection-remove="handleTableRowSelectionRemove"
           @row-selection-change="handleTableRowSelectionChange"
           @all-row-selection-change="handleTableAllRowSelectionChange"
+          @row-dblclick="handleRowDblClick"
         />
       </slot>
     </div>
@@ -72,7 +73,7 @@ export default {
       viewFilter: {}
     }
   },
-  props: ['idField', 'filter', 'filterSchema', 'table', 'pagination', 'selectionType'],
+  props: ['idField', 'filter', 'filterSchema', 'table', 'pagination', 'selectionType', 'selectEndOnDblClick'],
   computed: {
     tableProps() {
       const originProps = this.table.Props || {}
@@ -165,6 +166,11 @@ export default {
     },
     setTableHeight() {
       this.tableHeight = this.$refs.selectorContent.clientHeight + 'px'
+    },
+    handleRowDblClick() {
+      if (this.selectEndOnDblClick && this.selectionType === 'single') {
+        this.handleSelectEnd()
+      }
     }
   },
   created() {

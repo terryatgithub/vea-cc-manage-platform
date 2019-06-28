@@ -40,6 +40,7 @@
 
                 <el-form-item label="业务分类" prop="tabCategory" class="selectItem">
                   <cc-business-type-selector
+                    :is-read="isReplicate"
                     :value="tabInfo.tabCategory"
                     @input="handleChangeTabCategory"
                   />
@@ -56,6 +57,7 @@
 
                 <el-form-item label="AppId" prop="tabAppid" class="selectItem">
                   <cc-appid-selector
+                    :is-read="isReplicate"
                     :disabled="disableAppId"
                     v-model="tabInfo.tabAppid"
                   />
