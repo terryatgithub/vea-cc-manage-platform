@@ -43,7 +43,7 @@
         </div> -->
       </el-header>
       <TagNav ref="tag" default-path="/desktop" :titles="titles" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
-      <el-main>
+      <el-main ref="main">
         <keep-alive>
           <router-view v-if="isKeepAlive"/>
         </keep-alive>
@@ -177,7 +177,19 @@ export default {
       return meta && meta.isCache !== false
     },
     initTags() {
-      return this.$appState.$get('tags' + '_' + this.$appState.user.name) || []
+      const tags = this.$appState.$get('tags' + '_' + this.$appState.user.name) || []
+      if (tags.length === 0) {
+        tags.push({
+          fullPath: '/desktop',
+          meta: {
+            title: '我的桌面',
+            tagId: 'desktop'
+          },
+          name: 'desktop',
+          isCloseable: false
+        })
+      }
+      return tags
     },
     defaultMenu() {
       const mainRoute = this.$router.options.routes.find(item => {
@@ -254,30 +266,6 @@ export default {
     },
     saveTags() {
       const tags = this.$refs.tag.tags
-      if (tags.length === 0) {
-        tags.unshift({
-          fullPath: '/desktop',
-          meta: {
-            title: '我的桌面',
-            tagId: 'desktop'
-          },
-          name: 'desktop',
-          isCloseable: false
-        })
-      } else {
-        if (tags[0].name !== 'desktop') {
-          tags.unshift({
-            fullPath: '/desktop',
-            meta: {
-              title: '我的桌面',
-              tagId: 'desktop'
-            },
-            name: 'desktop',
-            isCloseable: false
-          })
-        }
-      }
-      // this.initTags = tags
       this.$appState.$set('tags' + '_' + this.$appState.user.name, tags)
     },
     getMenu() {
@@ -316,6 +304,9 @@ export default {
     this.isCollapseMenu = !!this.$appState.$get('isCollapseMenu')
     this.$bus.$on('breadcrumb-change', breadcrumb => {
       this.breadcrumb = breadcrumb
+    })
+    this.$bus.$on('scroll-top', () => {
+      this.$refs.main.$el.scrollTo(0,0)
     })
     this.getMenu()
   },

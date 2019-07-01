@@ -6,7 +6,9 @@
 
 <script>
 export default {
-
+  created() {
+    this.$bus.$emit('scroll-top')
+  }
 }
 </script>
 

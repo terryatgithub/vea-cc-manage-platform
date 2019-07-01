@@ -506,6 +506,7 @@ const routes = [
   {
     path: '/',
     component: Main,
+    redirect: '/desktop',
     children
   },
   {
