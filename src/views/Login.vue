@@ -56,8 +56,8 @@ export default {
   data() {
     return {
       user: {
-        username: 'yuanjunnan',
-        password: 'yuanjunnan@yjn@'
+        username: '',
+        password: ''
         // valicode: ''
       },
       codeUrl: 'captcha.jpg',
