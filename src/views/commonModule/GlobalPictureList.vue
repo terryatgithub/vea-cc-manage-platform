@@ -125,7 +125,7 @@ export default {
                   width: '50px',
                   height: '50px',
                   class: 'imgs',
-                  'referrer-policy': 'no-referrer'
+                  'referrerpolicy': 'no-referrer'
                 },
                 on: {
                   click: () => {
@@ -318,6 +318,10 @@ export default {
       pictureCategory: _.o.enum(this.materialTypes).other('form', {
         component: 'Select',
         placeholder: '素材类别'
+      }),
+      pictureResolution: _.o.string.other('form', {
+        component: 'Input',
+        placeholder: '分辨率'
       }),
       pictureStatus: _.o.enum(this.$baseStatus()).other('form', {
         component: 'Select',
