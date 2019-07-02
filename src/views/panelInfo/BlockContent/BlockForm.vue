@@ -208,7 +208,7 @@
         </GlobalPictureSelector>
       </el-form-item>
 
-      <el-form-item v-if="false" label="背景视频" prop="bgParams.id">
+      <el-form-item label="背景视频" prop="bgParams.id">
         <ResourceSelector
           ref="resourceSelector"
           v-if="!isReadonly"
