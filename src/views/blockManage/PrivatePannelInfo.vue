@@ -117,31 +117,26 @@
                   </div>
                 </el-form-item>
               </div>
-              <!-- <el-form-item
-            v-if="panel.panelGroupType === 9 || panel.panelGroupType === 10"
-            label="内容免/付费比例"
-            class="leftSide"
-              >-->
-              <el-form-item
-                prop="pannelList.0.firstPageVipContentAmount"
-                label="首屏付费内容数"
-                :rules="rules.amount"
-              >
-                <el-input-number
-                  v-model="panel.pannelList[0].firstPageVipContentAmount"
-                  :max="6"
-                  :min="0"
-                />
-              </el-form-item>
-              <el-form-item
-                prop="pannelList.0.vipContentAmount"
-                label="总付费内容数"
-                :rules="rules.amount"
-              >
-                <el-input-number v-model="panel.pannelList[0].vipContentAmount" :max="15" :min="0"/>
-              </el-form-item>
-
-              <!-- </el-form-item> -->
+              <template v-if="panel.panelGroupType === 9 || panel.panelGroupType === 10">
+                <el-form-item
+                  prop="pannelList.0.firstPageVipContentAmount"
+                  label="首屏付费内容数"
+                  :rules="rules.amount"
+                >
+                  <el-input-number
+                    v-model="panel.pannelList[0].firstPageVipContentAmount"
+                    :max="6"
+                    :min="0"
+                  />
+                </el-form-item>
+                <el-form-item
+                  prop="pannelList.0.vipContentAmount"
+                  label="总付费内容数"
+                  :rules="rules.amount"
+                >
+                  <el-input-number v-model="panel.pannelList[0].vipContentAmount" :max="15" :min="0"/>
+                </el-form-item>
+              </template>
             </el-form>
           </div>
           <div v-if="mode === 'read'">
