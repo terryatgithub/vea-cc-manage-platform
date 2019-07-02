@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  created() {
+  mounted() {
     this.$bus.$emit('scroll-top')
   }
 }
