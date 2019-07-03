@@ -224,7 +224,7 @@
         <el-tag type="primary" :closable="!isReadonly" @close="handleRemoveBgMedia" v-if="contentForm.bgParams && contentForm.bgParams.id">已选择: {{ contentForm.bgParams.id }} </el-tag>
       </el-form-item>
 
-      <el-form-item v-if="contentForm.bgParams && contentForm.bgParams.id" label="背景图" prop="bgImgUrl">
+      <el-form-item label="背景图" prop="bgImgUrl">
         <GlobalPictureSelector
           :disabled="isReadonly"
           @select-end="handleSelectBgEnd">
@@ -515,7 +515,16 @@ export default {
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
       contentRule: {
         bgImgUrl: [
-          {required: true, message: '请选择背景图'}
+          {
+            validator: (_, val, cb) => {
+              const bgParams = this.contentForm.bgParams
+              if (bgParams && bgParams.id && !val) {
+                cb(new Error('选择背景视频之后必须选择背景图'))
+              } else {
+                cb()
+              }
+            },
+          }
         ],
         webpageUrl: [
           { required: true, validator: checkWebpageUrl, trigger: 'blur' }
