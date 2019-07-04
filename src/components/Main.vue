@@ -89,9 +89,17 @@ import Menu from './Menu'
 
 // 菜单 name 到 路由 name 之间到映射
 const routerMap = {
+  // 轮播管理
   rotateStationCategory: 'rotateStationCategory',
   rotateStationCategory_viewStation: 'rotateStationCategory_viewStation',
   rotateTopicInfo: 'rotateTopicInfo',
+
+  // 点播资源管理
+  ownMediaResManage: 'ownMediaResManage', 
+  rankingListManage: 'rankingListManage',
+  ccShortVideoConnectPositiveDetail: 'ccShortVideoConnectPositiveDetail',
+  rightsContentManage: 'rightsContentManage',
+
   broadcastBlock: 'broadcastBlock',
   multiFunctionBlock: 'multiFunctionBlock',
   sysPlugin: 'sysPlugin',

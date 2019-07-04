@@ -346,7 +346,40 @@ const children = [
     name: 'videoOnDemand',
     component: Wrapper,
     meta: { title: '点播资源管理', icon: 'el-icon-cc-huaban' },
-    children: []
+    children: [
+      {
+        path: 'frame-page',
+        name: 'ownMediaResManage',
+        component: FramePage,
+        meta: {
+          tagId: 'ownMediaResManage'
+        }
+      },
+      {
+        path: 'frame-page',
+        name: 'rankingListManage',
+        component: FramePage,
+        meta: {
+          tagId: 'rankingListManage'
+        }
+      },
+      {
+        path: 'frame-page',
+        name: 'ccShortVideoConnectPositiveDetail',
+        component: FramePage,
+        meta: {
+          tagId: 'ccShortVideoConnectPositiveDetail'
+        }
+      },
+      {
+        path: 'frame-page',
+        name: 'rightsContentManage',
+        component: FramePage,
+        meta: {
+          tagId: 'rightsContentManage'
+        }
+      }
+    ]
   },
   {
     path: 'themeManage',
