@@ -60,7 +60,12 @@
         >
           <span class="title">高度:</span>
           <el-col :span="9">
-            <el-select v-model="row.height" placeholder="请选择">
+            <el-select v-model="row.height" 
+            allow-create 
+            clearable
+            filterable
+            default-first-option
+            placeholder="请选择">
               <el-option v-for="(v,index) in heightInit" :key="index" :label="v" :value="v">{{v}}</el-option>
             </el-select>
           </el-col>
