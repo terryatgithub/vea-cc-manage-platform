@@ -319,7 +319,7 @@
                       ></i>
                     </div>
                   </el-form-item>
-                  <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
+                  <el-form-item v-if="false" label="启用高清背景切换模式" prop="flagIsBlockBg">
                     <el-switch
                       :disabled="isReplicate"
                       :value="!!tabInfo.flagIsBlockBg"
@@ -551,7 +551,7 @@
                     </div>
                   </el-form-item>
 
-                  <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
+                  <el-form-item v-if="false" label="启用高清背景切换模式" prop="flagIsBlockBg">
                     {{ tabInfo.flagIsBlockBg ? '是' : '否'}}
                   </el-form-item>
 
