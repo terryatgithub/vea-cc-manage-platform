@@ -15,7 +15,7 @@
       @go-back="goBack">
     </MarkPanelInfo>
     <PanelInfo
-       v-if="!isShowList&&pannelType===1"
+       v-if="!isShowList && (pannelType === 1 || pannelType === 7)"
       :id="id"
       :panel-data-type="1"
       :init-mode="mode"

@@ -65,13 +65,14 @@
     <el-tab-pane label="策略" name="policy">
       <MySubmitTasksList resourceType="policy" v-show="mode==='policyList'" @read="handleRead"></MySubmitTasksList>
 
-               <PolicyManageInfo
-       v-if="mode==='policyPreview'"
-      :id="previewData.resourceId"
-      :init-mode="'read'"
-      :version="undefined"
-      @upsert-end="handleUpsertEnd"
-      @go-back="goBack">
+        <PolicyManageInfo
+          class="el-tab-preview"
+          v-if="mode==='policyPreview'"
+          :id="previewData.resourceId"
+          :init-mode="'read'"
+          :version="undefined"
+          @upsert-end="handleUpsertEnd"
+          @go-back="goBack">
     </PolicyManageInfo>
     </el-tab-pane>
     <el-tab-pane label="主题" name="theme">

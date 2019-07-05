@@ -1,36 +1,60 @@
 <template>
-  <ContentCard class="content">
-    <ContentWrapper
-      :filter="filter"
-      :filterSchema="filterSchema"
-      :pagination="pagination"
-      @filter-change="handleFilterChange"
-      @filter-reset="handleFilterReset"
-    >
-      <Table
-        :props="table.props"
-        :header="table.header"
-        :data="table.data"
-        :selected="table.selected"
-        :selection-type="table.selectionType"
+  <PageWrapper class="tab-info-wrapper">
+    <PageContentWrapper v-show="activePage === 'movie_list'">
+      <ContentCard class="content">
+        <ContentWrapper
+          :filter="filter"
+          :filterSchema="filterSchema"
+          :pagination="pagination"
+          @filter-change="handleFilterChange"
+          @filter-reset="handleFilterReset"
+        >
+          <Table
+            :props="table.props"
+            :header="table.header"
+            :data="table.data"
+            :selected="table.selected"
+            :selection-type="table.selectionType"
+          />
+        </ContentWrapper>
+      </ContentCard>
+    </PageContentWrapper>
+    <PageContentWrapper v-if="activePage === 'panel_preview'">
+      <PanelInfo
+        :title-prefix="'下架影片通知'"
+        :init-mode="panelPreview.initMode"
+        :id="panelPreview.id"
+        :version="panelPreview.version"
+        :panel-data-type="panelPreview.dataType"
+        :init-group-index="panelPreview.initGroupIndex"
+        :init-block-index="panelPreview.initBlockIndex"
+        @upsert-end="handlePreviewPanelEnd"
+        @go-back="handlePreviewPanelEnd"
       />
-    </ContentWrapper>
-  </ContentCard>
+    </PageContentWrapper>
+  </PageWrapper>
 </template>
 <script>
 import _ from 'gateschema'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
+import PanelInfo from '../panelInfo/PanelInfo'
+import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
 export default {
   components: {
     Table,
-    ContentWrapper
+    ContentWrapper,
+    PageWrapper,
+    PageContentWrapper,
+    PanelInfo,
+    PrivatePanelInfo
   },
   data() {
     return {
       filter: {
-        sort: undefined,
-        order: undefined
       },
+      activePage: 'movie_list',
       filterSchema: null,
       pagination: {},
       selected: [],
@@ -96,7 +120,15 @@ export default {
         data: [],
         selected: [],
         selectionType: 'none'
-      }
+      },
+      panelPreview: {
+        panel: null,
+        id: undefined,
+        version: undefined,
+        initMode: undefined,
+        initGroupIndex: undefined,
+        initBlockIndex: undefined
+      },
     }
   },
   methods: {
@@ -109,7 +141,17 @@ export default {
       let paramPannel = itemTitle.slice(start, end).split(',')
       let id = paramPannel[0]
       let version = paramPannel[1]
-      this.$emit('read', id, version)
+
+      this.activePage = 'panel_preview'
+      this.panelPreview = {
+        initMode: 'read',
+        id,
+        dataType: 1,
+        version
+      }
+    },
+    handlePreviewPanelEnd() {
+      this.activePage = 'movie_list'
     },
     handleFilterChange(type, filter) {
       if (filter) { this.filter = filter }

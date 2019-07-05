@@ -31,7 +31,7 @@
     </template>
     <template v-else>
         <content-auth-manager
-          v-if="resourceInfo.id && resourceInfo.menuElId"
+          v-if="resourceInfo.id && resourceInfo.menuElId && showContentAuthManager"
           :resource-id="resourceInfo.id"
           :menu-elid="resourceInfo.menuElId"
           :resource-type="resourceInfo.type"/>
@@ -150,6 +150,13 @@ export default {
     resourceInfo: 'handleResourceChange'
   },
   computed: {
+    showContentAuthManager() {
+      const resourceInfo = this.resourceInfo
+      if (resourceInfo.type) {
+        return ['homepage', 'policy', 'tab', 'pannel', 'block', 'systemPlugin'].indexOf(resourceInfo.type) > -1
+      }
+      return false
+    },
     buttonGroupOptions() {
       const { draft, waiting, rejected, processing, waiting2 } = this.$consts.status
       const isAllowCopy = !this.versionList.some(function(item) {
