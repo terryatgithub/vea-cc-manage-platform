@@ -43,7 +43,8 @@
         </div> -->
       </el-header>
       <TagNav ref="tag" default-path="/desktop" :titles="titles" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
-      <el-main ref="main">
+      <!-- safari 兼容性问题 -->
+      <el-main style="height: calc(100vh - 93px)" ref="main">
         <keep-alive>
           <router-view v-if="isKeepAlive"/>
         </keep-alive>
@@ -313,12 +314,12 @@ export default {
     this.$bus.$on('breadcrumb-change', breadcrumb => {
       this.breadcrumb = breadcrumb
     })
-    this.$bus.$on('scroll-top', () => {
-      this.$refs.main.$el.scrollTo(0,0)
-    })
     this.getMenu()
   },
   mounted() {
+    this.$bus.$on('scroll-top', () => {
+      this.$refs.main.$el.scrollTo(0,0)
+    })
   //  this.saveTags()
     window.addEventListener('beforeunload', this.saveTags)
   },
