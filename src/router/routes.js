@@ -205,7 +205,7 @@ const children = [
     meta: { title: '轮播管理' },
     children: [
       {
-        path: 'frame-page',
+        path: 'rotateStationCategory',
         name: 'rotateStationCategory',
         component: FramePage,
         meta: {
@@ -213,7 +213,7 @@ const children = [
         }
       },
       {
-        path: 'frame-page',
+        path: 'rotateStationCategory_viewStation',
         name: 'rotateStationCategory_viewStation',
         component: FramePage,
         meta: {
@@ -348,7 +348,7 @@ const children = [
     meta: { title: '点播资源管理', icon: 'el-icon-cc-huaban' },
     children: [
       {
-        path: 'frame-page',
+        path: 'ownMediaResManage',
         name: 'ownMediaResManage',
         component: FramePage,
         meta: {
@@ -356,7 +356,7 @@ const children = [
         }
       },
       {
-        path: 'frame-page',
+        path: 'rankingListManage',
         name: 'rankingListManage',
         component: FramePage,
         meta: {
@@ -364,7 +364,7 @@ const children = [
         }
       },
       {
-        path: 'frame-page',
+        path: 'ccShortVideoConnectPositiveDetail',
         name: 'ccShortVideoConnectPositiveDetail',
         component: FramePage,
         meta: {
@@ -372,7 +372,7 @@ const children = [
         }
       },
       {
-        path: 'frame-page',
+        path: 'rightsContentManage',
         name: 'rightsContentManage',
         component: FramePage,
         meta: {
