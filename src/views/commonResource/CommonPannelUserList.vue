@@ -62,11 +62,13 @@ export default {
         header: [
           {
             label: 'ID',
-            prop: 'pannelGroupId'
+            prop: 'pannelGroupId',
+            width: 100
           },
           {
             label: '名称',
             prop: 'pannelGroupRemark',
+            width: 220,
             render: (createElement, { row }) => {
               return createElement('el-button', {
                 attrs: {
@@ -351,8 +353,6 @@ export default {
 <style lang='stylus' scoped>
 .content >>> .el-table .cell
   display flex
-  justify-content center
-  align-items center
   height 40px
 .btns
   margin 20px auto
