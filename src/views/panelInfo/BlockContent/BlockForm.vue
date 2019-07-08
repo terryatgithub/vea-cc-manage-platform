@@ -208,7 +208,7 @@
         </GlobalPictureSelector>
       </el-form-item>
 
-      <el-form-item v-if="false" label="背景视频" prop="bgParams.id">
+      <el-form-item label="背景视频" prop="bgParams.id">
         <ResourceSelector
           ref="resourceSelector"
           v-if="!isReadonly"
@@ -224,7 +224,7 @@
         <el-tag type="primary" :closable="!isReadonly" @close="handleRemoveBgMedia" v-if="contentForm.bgParams && contentForm.bgParams.id">已选择: {{ contentForm.bgParams.id }} </el-tag>
       </el-form-item>
 
-      <el-form-item v-if="false" label="背景图" prop="bgImgUrl">
+      <el-form-item label="背景图" prop="bgImgUrl">
         <GlobalPictureSelector
           :disabled="isReadonly"
           @select-end="handleSelectBgEnd">
