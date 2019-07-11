@@ -272,7 +272,7 @@ export default {
         },
         { height: 0 }
       )
-      if (!this.lengthwiseIs) {
+      if (!this.dynamicValidateForm.lengthwiseIs) {
         // 非纵向扩展布局
         this.data.type = 'Panel'
       } else {

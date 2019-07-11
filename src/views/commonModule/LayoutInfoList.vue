@@ -113,21 +113,15 @@ export default {
           },
           {
             label: '扩展方式',
-            prop: 'layoutFlag',
+            prop: 'layoutModel',
             width: '80',
             render: (createElement, { row }) => {
-              if (typeof row.layoutFlag === 'undefined') {
-                return '无'
-              } else {
-                switch (row.layoutFlag) {
-                  case 0:
-                    return '横向扩展'
-                    break
-                  case 1:
-                    return '纵向扩展'
-                    break
-                }
-              }
+              const layoutModel = row.layoutModel
+              return layoutModel === 'Expandar'
+                ? '横向拓展'
+                : layoutModel === 'Lengthwise'
+                  ? '纵向拓展'
+                  : '无'
             }
           },
           // {
