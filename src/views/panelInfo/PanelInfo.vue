@@ -150,7 +150,7 @@
                 <ResourceSelector
                   ref="resourceSelector"
                   v-show="selectedLayout"
-                  :selectors="['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate']"
+                  :selectors="['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate', 'good']"
                   :is-live="false"
                   :disable-partner="!!pannel.pannelResource"
                   selection-type="multiple"
@@ -854,7 +854,7 @@ export default {
                 extraValue1: item.appPackageName,
                 pictureUrl: item.appImageUrl,
                 title: item.appName,
-                blockResourceType: 0
+                blockResourceType: 3
               }
             })
 
@@ -947,6 +947,18 @@ export default {
               }
             })
 
+            const selectedGood = selectedResources.good.map((item) => {
+              return {
+                coverType: 'mall',
+                contentType: 13,
+                videoContentType: 'mall',
+                extraValue1: item.resourceId + '',
+                pictureUrl: item.resourceImgUrl,
+                title: item.resourceName,
+                blockResourceType: -1
+              }
+            })
+
             const resourcesToInsert = []
               .concat(
                 selectedViedos,
@@ -955,7 +967,8 @@ export default {
                 selectedLives,
                 selectedPPTVs,
                 selectedTopics,
-                selectedBroadcast
+                selectedBroadcast,
+                selectedGood
               )
               .map(function(item) {
                 return {

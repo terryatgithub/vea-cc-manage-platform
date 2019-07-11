@@ -14,6 +14,7 @@
     <div ref="selectorContent" class="remote-selector-main__content">
       <slot name="item-list">
         <Table
+          :key="Math.random().toString()"
           :data="table.data"
           :header="table.header"
           :selected="tableSelected"
@@ -163,6 +164,9 @@ export default {
         }
         return result
       }, [])
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+      }, 0)
     },
     setTableHeight() {
       this.tableHeight = this.$refs.selectorContent.clientHeight + 'px'

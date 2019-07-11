@@ -96,6 +96,14 @@
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
+          <good-selector
+            v-show="activeSelector === 'good'"
+            ref="good-selector"
+            :source="source"
+            :disable-partner="disablePartner"
+            :selection-type="selectionType"
+            @select-cancel="handleSelectCancel"
+            @select-end="handleSelectEnd" />
       </template>
     </template>
     <slot></slot>
@@ -114,6 +122,7 @@ import VideoSelector from './VideoSelector'
 import FuncSelector from './FuncSelector'
 import RotateSelector from './RotateSelector'
 import ShortVideoTopicSelector from './ShortVideoTopicSelector'
+import GoodSelector from './GoodSelector'
 
 const SELECTORS = [
   {
@@ -159,6 +168,10 @@ const SELECTORS = [
   {
     label: '短视频话题',
     value: 'shortVideoTopic'
+  },
+  {
+    label: '商品',
+    value: 'good'
   }
 ]
 export default {
@@ -174,7 +187,8 @@ export default {
     VideoSelector,
     FuncSelector,
     RotateSelector,
-    ShortVideoTopicSelector
+    ShortVideoTopicSelector,
+    GoodSelector
   },
   data() {
     return {
@@ -204,7 +218,7 @@ export default {
     autoFetchSelectors: {
       type: Array,
       default() {
-        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic']
+        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'good']
       }
     }
   },
@@ -215,7 +229,7 @@ export default {
     },
     handleActivateSelector(name) {
       this.activeSelector = name
-      setTimeout(() => {
+      this.$nextTick(() => {
         const shouldAutoFetch = this.shouldAutoFetch
         const index = shouldAutoFetch.indexOf(name)
         const $selector = this.$refs[name + '-selector']
@@ -223,8 +237,7 @@ export default {
           shouldAutoFetch.splice(index, 1)
           $selector.fetchData()
         }
-        window.dispatchEvent(new Event('resize'))
-      }, 0)
+      })
     },
     handleSelectEnd() {
       const selectionType = this.selectionType

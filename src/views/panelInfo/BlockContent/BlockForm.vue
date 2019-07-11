@@ -66,6 +66,21 @@
         <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
       </el-form-item>
 
+      <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'mall'">
+        <ResourceSelector
+          ref="resourceSelector"
+          v-if="!isReadonly"
+          :is-live="false"
+          :selectors="['good']"
+          selection-type="single"
+          :auto-fetch-selectors="['good']"
+          @select-end="handleSelectGoodEnd"
+        >
+          <el-button>选择商品</el-button>
+        </ResourceSelector>
+        <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
+      </el-form-item>
+
       <template v-if="contentType === 'specfic'">
         <el-form-item label="内容类型" v-if="contentForm.coverType === 'custom'">
           <el-select v-model="contentForm.blockResourceType" :disabled="isReadonly">
@@ -682,6 +697,10 @@ export default {
           label: '推荐位管理',
           value: 'block',
           disabled: this.isMall
+        },
+        {
+          label: '商品',
+          value: 'mall'
         }
       ]
 
@@ -956,7 +975,20 @@ export default {
         this.contentForm.title = selected.appName
         this.contentForm.subTitle = this.chopSubTitle(selected.appName)
         this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 0
+        this.contentForm.blockResourceType = 3
+      }
+    },
+    handleSelectGoodEnd({good}) {
+      const selected = good[0]
+      if (selected) {
+        this.contentForm.contentType = 13 
+        this.contentForm.videoContentType = 'mall'
+        this.contentForm.extraValue1 = selected.resourceId
+        this.contentForm.pictureUrl = selected.resourceImgUrl
+        this.contentForm.title = selected.resourceName
+        this.contentForm.subTitle = this.chopSubTitle(selected.resourceName)
+        this.contentForm.singleSubTitle = ''
+        this.contentForm.blockResourceType = -1
       }
     },
     handleSelectClickEventEnd(data) {
