@@ -290,7 +290,10 @@ export default {
         this.$emit('open-add-page', this.selected[0])
       }
     },
-    handleFilterChange (type) {
+    handleFilterChange (type, filter) {
+      if (filter) {
+        this.filter = filter
+      }
       if (type === 'query') {
         if (this.pagination) {
           this.pagination.currentPage = 1
