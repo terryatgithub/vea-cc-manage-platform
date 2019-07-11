@@ -321,7 +321,6 @@
                   </el-form-item>
                   <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
                     <el-switch
-                      :disabled="isReplicate"
                       :value="!!tabInfo.flagIsBlockBg"
                       @input="tabInfo.flagIsBlockBg = $event ? 1 : 0"
                       on-text="是"
