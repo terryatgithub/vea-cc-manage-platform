@@ -177,7 +177,7 @@ export default {
       source: _.o.enum(sourceEnums).other('form', {
         component: 'Select',
         placeholder: '内容源',
-        label: ' '
+        label: ' ',
       })
     }).other('form', {
       cols: {

@@ -1,7 +1,7 @@
  <template>
   <BaseSelector
     ref="baseSelector"
-    id-field="pluginId"
+    id-field="id"
     :is-live="isLive"
     :selection-type="selectionType"
     :table="table"

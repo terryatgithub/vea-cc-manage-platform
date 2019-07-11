@@ -80,6 +80,22 @@
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
+          <short-video-selector
+            v-show="activeSelector === 'shortVideo'"
+            ref="shortVideo-selector"
+            :source="source"
+            :disable-partner="disablePartner"
+            :selection-type="selectionType"
+            @select-cancel="handleSelectCancel"
+            @select-end="handleSelectEnd" />
+          <short-video-topic-selector
+            v-show="activeSelector === 'shortVideoTopic'"
+            ref="shortVideoTopic-selector"
+            :source="source"
+            :disable-partner="disablePartner"
+            :selection-type="selectionType"
+            @select-cancel="handleSelectCancel"
+            @select-end="handleSelectEnd" />
       </template>
     </template>
     <slot></slot>
@@ -97,6 +113,7 @@ import EduSelector from './EduSelector'
 import VideoSelector from './VideoSelector'
 import FuncSelector from './FuncSelector'
 import RotateSelector from './RotateSelector'
+import ShortVideoTopicSelector from './ShortVideoTopicSelector'
 
 const SELECTORS = [
   {
@@ -134,9 +151,18 @@ const SELECTORS = [
   {
     label: '轮播推荐位',
     value: 'broadcast'
+  },
+  {
+    label: '短视频',
+    value: 'shortVideo'
+  },
+  {
+    label: '短视频话题',
+    value: 'shortVideoTopic'
   }
 ]
 export default {
+  name: 'ResourceSelector',
   components: {
     RemoteSelectorWrapper,
     TopicSelector,
@@ -147,12 +173,14 @@ export default {
     EduSelector,
     VideoSelector,
     FuncSelector,
-    RotateSelector
+    RotateSelector,
+    ShortVideoTopicSelector
   },
   data() {
     return {
       showDialog: false,
       activeSelector: undefined,
+      shouldAutoFetch: [],
       SELECTORS
     }
   },
@@ -171,33 +199,47 @@ export default {
       default() {
         return 'single'
       }
+    },
+    // 显示的时候自动查询数据的 selector
+    autoFetchSelectors: {
+      type: Array,
+      default() {
+        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic']
+      }
     }
   },
   methods: {
     handleSelectStart() {
+      this.shouldAutoFetch = (this.autoFetchSelectors || []).slice()
       this.handleActivateSelector(this.selectors[0])
     },
     handleActivateSelector(name) {
       this.activeSelector = name
-      this.$nextTick(() => {
-        this.$refs[name + '-selector'].$refs.baseSelector.setTableHeight()
-      })
+      setTimeout(() => {
+        const shouldAutoFetch = this.shouldAutoFetch
+        const index = shouldAutoFetch.indexOf(name)
+        const $selector = this.$refs[name + '-selector']
+        if (index > -1) {
+          shouldAutoFetch.splice(index, 1)
+          $selector.fetchData()
+        }
+        window.dispatchEvent(new Event('resize'))
+      }, 0)
     },
     handleSelectEnd() {
-      debugger
       const selectionType = this.selectionType
       const activeSelector = this.activeSelector
       const $refs = this.$refs
       $refs.wrapper.handleSelectEnd()
       const result = this.selectors.reduce((result, item) => {
         const ref = $refs[item + '-selector']
-        if (selectionType === 'multiple' || selectionType === 'single' && item === activeSelector) {
+        if (selectionType === 'multiple' || (selectionType === 'single' && item === activeSelector)) {
           result[item] = ref.selected
           if (item === 'video') {
             result.episode = { ...ref.selectedEpisodes }
           }
         } else {
-          result[item] = {}
+          result[item] = []
           if (item === 'video') {
             result.episode = {}
           }
@@ -224,6 +266,12 @@ export default {
         }
       })
     }
+  },
+  created() {
+  },
+  beforeCreate() {
+    // circular reference
+    this.$options.components['short-video-selector'] = require('./ShortVideoSelector.vue').default
   },
   mounted() {
   }

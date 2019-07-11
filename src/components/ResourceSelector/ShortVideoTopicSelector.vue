@@ -35,19 +35,33 @@ export default {
         props: {},
         header: [
           {
-            label: '轮播入口ID',
+            label: '话题ID',
             prop: 'id'
           },
           {
-            label: '轮播入口名称',
-            prop: 'title'
+            label: '话题名',
+            prop: 'topicName'
+          },
+          {
+            label: '话题类型',
+            prop: 'type',
+            render: (h, {row}) => {
+              return this.$consts.topicTypesText[row.type]
+            }
+          },
+          {
+            label: '内容源',
+            prop: 'source',
+            render: (h, {row}) => {
+              return this.$consts.sourceText[row.source]
+            }
           }
         ],
         data: []
       }
     }
   },
-  props: ['isLive', 'selectionType'],
+  props: ['isLive', 'selectionType', 'source', 'disablePartner'],
   computed: {
     selected() {
       return this.$refs.baseSelector.selected.slice()
@@ -56,12 +70,9 @@ export default {
   methods: {
     getDefaultFilter() {
       return {
-        id: undefined,
-        title: undefined,
-        resType: 'operation',
-        dataType: 'rotate',
-        levelType: 'rotateSta',
-        callback: 'result'
+        type: undefined,
+        topicName: undefined,
+        source: this.source
       }
     },
     getFilter() {
@@ -85,7 +96,7 @@ export default {
     },
     fetchData() {
       const filter = this.getFilter()
-      this.$service.getMediaVideoInfos(filter).then(result => {
+      this.$service.topicGetList(filter).then(result => {
         this.pagination.total = result.total
         this.table.data = result.rows || []
       })
@@ -93,15 +104,23 @@ export default {
   },
   created() {
     const filterSchema = _.map({
-      id: _.o.number.other('form', {
+      topicName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '轮播入口ID',
+        placeholder: '话题名',
         label: ' '
       }),
-      title: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '轮播入口名称',
-        label: ' '
+      type: _.o.enum(this.$consts.topicTypesEnum).other('form', {
+        component: 'Select',
+        placeholder: '话题类型',
+        label: ' ',
+        clearable: true
+      }),
+      source: _.o.enum(this.$consts.sourceEnums).other('form', {
+        component: 'Select',
+        placeholder: '内容源',
+        label: ' ',
+        clearable: true,
+        disabled: this.disablePartner
       })
     }).other('form', {
       cols: {

@@ -64,7 +64,6 @@ export default {
             prop: 'title',
             label: '专题名称',
             fixed: true,
-            width: '220'
           },
           {
             prop: 'picture',
@@ -81,7 +80,7 @@ export default {
                 })
               }
             },
-            width: '120'
+            width: '220'
           },
           {
             prop: 'dataSign',

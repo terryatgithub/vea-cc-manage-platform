@@ -53,5 +53,13 @@ export default {
   },
   crowdRel: {
     id: 'id'
+  },
+  topic: {
+    id: 'id',
+    status: 'status'
+  },
+  topicConfig: {
+    id: 'id',
+    status: 'status'
   }
 }

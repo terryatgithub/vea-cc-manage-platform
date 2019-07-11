@@ -46,6 +46,9 @@ import Desktop from '@/views/desktop/Desktop'
 import FramePage from '../views/FramePage'
 import CrowdRel from '../views/crowdRel/Index.vue'
 
+const Topic = () => import('../views/topic/Index')
+const TopicConfig = () => import('../views/topicConfig/Index')
+
 /** */
 const children = [
   {
@@ -523,6 +526,29 @@ const children = [
         path: '/v1/msn/view.html',
         component: MovieNotice,
         meta: { title: '下架影片通知', tagId: 'msn' }
+      }
+    ]
+  },
+  {
+    path: 'svMgr',
+    name: 'svMgr',
+    component: Wrapper,
+    children: [
+      {
+        name: 'topic',
+        path: '/svMgr/topic',
+        component: Topic,
+        meta: {
+          tagId: 'topic'
+        }
+      },
+      {
+        name: 'topicConfig',
+        path: '/svMgr/topic-config',
+        component: TopicConfig,
+        meta: {
+          tagId: 'topic-config'
+        }
       }
     ]
   },

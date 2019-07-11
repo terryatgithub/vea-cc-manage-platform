@@ -134,6 +134,9 @@ const partnerOptions = [
   }
 ]
 
+const partnerText = optionsToText(partnerOptions)
+const partnerEnums = optionsToEnums(partnerOptions)
+
 const panelTypeOptions = [
   {
     label: '普通版块',
@@ -181,6 +184,19 @@ const cornerIconPositionOptions = [
 const cornerIconPositionEnums = optionsToEnums(cornerIconPositionOptions)
 const cornerIconPositionText = optionsToText(cornerIconPositionOptions)
 
+const topicTypesOptions = [
+  {
+    label: '标记话题',
+    value: 1
+  },
+  {
+    label: '普通话题',
+    value: 2
+  }
+]
+const topicTypesText = optionsToText(topicTypesOptions)
+const topicTypesEnum = optionsToEnums(topicTypesOptions)
+
 const idPrefix = '10'
 const idPrefixOptions = [
   {
@@ -214,6 +230,9 @@ export default {
   sourceNumberEnums,
 
   partnerOptions,
+  partnerText,
+  partnerEnums,
+
   panelFocusOptions,
   panelFocusText,
   panelTypeOptions,
@@ -223,7 +242,14 @@ export default {
   cornerIconPositionEnums,
   cornerIconPositionText,
 
+  topicTypesOptions,
+  topicTypesText,
+  topicTypesEnum,
+
   idPrefix,
   idPrefixOptions,
-  idPrefixEnums
+  idPrefixEnums,
+
+  optionsToEnums,
+  optionsToText
 }

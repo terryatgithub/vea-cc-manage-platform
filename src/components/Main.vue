@@ -141,7 +141,10 @@ const routerMap = {
   myReviewTasks: 'myReviewTasks',
   mySubmitTasks: 'mySubmitTasks',
   filmDetailAdBit: 'filmDetailAdBit',
-  dmpMgr: 'dmpMgr'
+  dmpMgr: 'dmpMgr',
+  // 短视频
+  topic: 'topic',
+  topicConfig: 'topicConfig'
 }
 export default {
   components: {

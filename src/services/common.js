@@ -77,12 +77,13 @@ const deleteUrlMap = {
   theme: 'api/v1/theme/delHistory.html', // 所有版块
   policy: 'api/v1/policyConf/delHistory.html',
   testPolicy: 'api/v1/testPolicyConf/delHistory.html',
-  systemPlugin: '', // 系统功能-所有系统功能
   icon: '',
   material: '', // 素材图片
   layout: '', // 布局
   block: 'api/v1/blockInfo/delHistory.html', // 轮播推荐位
-  systemPlugin: 'api/v1/sysPlugin/delHistory.html' // 系统插件
+  systemPlugin: 'api/v1/sysPlugin/delHistory.html', // 系统插件
+  topic: 'api/v1/topic/delHistory.html',
+  topicConfig: 'api/v1/topicConfig/delHistory.html'
 }
 export function deleteVersion (data) {
   return this.fetch({
@@ -99,7 +100,9 @@ const RESOURCE_DELETE_URL_MAP = {
   markPanel: 'api/v1/panel/remove.html',
   multiFunctionBlock: 'api/v1/sysPlugin/remove.html',
   sysPlugin: 'api/v1/sysPlugin/remove.html',
-  crowdRel: 'api/v1/dmpMgr/remove.html'
+  crowdRel: 'api/v1/dmpMgr/remove.html',
+  topic: 'api/v1/topic/remove.html',
+  topicConfig: 'api/v1/topicConfig/remove.html'
 }
 
 export function deleteResource(data) {

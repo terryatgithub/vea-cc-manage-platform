@@ -32,6 +32,8 @@ import * as crowdRel from './crowdRel'
 import * as dmp from './dmp'
 import * as contentAuth from './contentAuth'
 import * as desktop from './desktop'
+import * as topic from './topic'
+import * as topicConfig from './topicConfig'
 
 const service = {
   state: {},
@@ -68,7 +70,9 @@ const service = {
   ...crowdRel,
   ...dmp,
   ...contentAuth,
-  ...desktop
+  ...desktop,
+  ...topic,
+  ...topicConfig
 }
 
 export default function install(Vue) {
