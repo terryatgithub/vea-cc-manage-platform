@@ -208,33 +208,44 @@
         </GlobalPictureSelector>
       </el-form-item>
 
-      <el-form-item label="背景视频" prop="bgParams.id">
-        <ResourceSelector
-          ref="resourceSelector"
-          v-if="!isReadonly"
-          :is-live="false"
-          :disable-partner="!!source"
-          :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
-          selection-type="single"
-          :source="source"
-          @select-end="handleSelectBgMediaEnd"
-        >
-          <el-button>选择资源</el-button>
-        </ResourceSelector>
-        <el-tag type="primary" :closable="!isReadonly" @close="handleRemoveBgMedia" v-if="contentForm.bgParams && contentForm.bgParams.id">已选择: {{ contentForm.bgParams.id }} </el-tag>
-      </el-form-item>
+      <template v-if="contentForm.coverType === 'media'">
+        <el-form-item label="背景视频" prop="bgParams.id">
+          <ResourceSelector
+            ref="resourceSelector"
+            v-if="!isReadonly"
+            :is-live="false"
+            :disable-partner="!!source"
+            :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
+            selection-type="single"
+            :source="source"
+            @select-end="handleSelectBgMediaEnd"
+          >
+            <el-button>选择资源</el-button>
+          </ResourceSelector>
+          <el-tag type="primary" :closable="!isReadonly" @close="handleRemoveBgMedia" v-if="contentForm.bgParams && contentForm.bgParams.id">
+            已选择: {{ contentForm.bgParams.id }} {{ contentForm.bgParams.title ? ('(' + contentForm.bgParams.title + ')') : ''}}
+          </el-tag>
+        </el-form-item>
 
-      <el-form-item label="背景图" prop="bgImgUrl">
-        <GlobalPictureSelector
-          :disabled="isReadonly"
-          @select-end="handleSelectBgEnd">
-          <img v-if="contentForm.bgImgUrl" 
-            class="bg-img"
-            :src="contentForm.bgImgUrl" 
-            referrerpolicy="no-referrer">
-          <div v-else class="bg-placeholder"></div>
-        </GlobalPictureSelector>
-      </el-form-item>
+        <el-form-item label="背景图" prop="bgImgUrl">
+          <GlobalPictureSelector
+            :disabled="isReadonly"
+            @select-end="handleSelectBgEnd">
+            <div v-if="contentForm.bgImgUrl"  class="bg-img-wrapper">
+              <img 
+                class="bg-img"
+                :src="contentForm.bgImgUrl" 
+                referrerpolicy="no-referrer">
+              <i
+                  v-show="!isReadonly && contentForm.bgImgUrl"
+                  title="删除背景"
+                  class="el-icon-close"
+                  @click.stop="contentForm.bgImgUrl = ''"></i>
+            </div>
+            <div v-else class="bg-placeholder"></div>
+          </GlobalPictureSelector>
+        </el-form-item>
+      </template>
 
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
         <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
@@ -1003,6 +1014,7 @@ export default {
       const contentForm = this.contentForm
       const partner = resources.videoSource
       let mediaId
+      let mediaTitle
       let episodeId
       if (selectedType === 'video') {
         // 影视中心
@@ -1046,8 +1058,10 @@ export default {
         mediaId = selected.id + ''
       }
 
+      mediaTitle = selectedEpisode ? selectedEpisode.urlTitle : selected.title
       contentForm.bgParams = {
         id: mediaId,
+        title: mediaTitle
       }
       contentForm.bgType = 'res'
     },
@@ -1057,7 +1071,6 @@ export default {
         id: ''
       }
       contentForm.bgType = ''
-      contentForm.bgImgUrl = ''
     },
     handleSelectBlockEnd(resources) {
       const selectedFunc = resources.func[0]
@@ -1282,6 +1295,14 @@ $width = 100px;
   height 250px
   cursor pointer
 .bg-img
-  max-width 350px
-  max-height 350px
+  width 100%
+.bg-img-wrapper
+  position relative
+  width 300px
+  i
+    color red
+    cursor pointer
+    position absolute
+    top 0px
+    right -12px
 </style>

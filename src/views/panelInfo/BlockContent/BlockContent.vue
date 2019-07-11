@@ -177,7 +177,8 @@ export default {
         // Sprint2.8.2 背景图片和视频
         bgImgUrl: '',
         bgParams: {
-          id: ''
+          id: '',
+          title: ''
         },
         bgType: ''
       }
@@ -495,6 +496,7 @@ export default {
         content.onclick = onclick
         content.params = params
         if (content.bgParams) {
+          delete content.bgParams.title
           content.bgParams = JSON.stringify(content.bgParams)
         }
         delete content.redundantParams
