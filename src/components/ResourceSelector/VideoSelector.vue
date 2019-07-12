@@ -45,14 +45,14 @@
               size="small"
               v-model="filter.yearStart"
               @blur="yearStartListen"
-              style="width: 80px;"
+              style="width: 70px;"
             ></el-input>
             -
             <el-input
               size="small"
               v-model="filter.yearEnd"
               @blur="yearEndListen"
-              style="width: 80px;"
+              style="width: 70px;"
             ></el-input>
           </el-form-item>
           <span v-show="isMore">
