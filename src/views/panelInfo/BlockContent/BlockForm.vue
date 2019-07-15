@@ -694,19 +694,19 @@ export default {
           value: 'custom'
         },
         {
+          label: '商品',
+          value: 'mall'
+        },
+        {
           label: '推荐位管理',
           value: 'block',
           disabled: this.isMall
-        },
-        {
-          label: '商品',
-          value: 'mall'
         }
       ]
 
       if (this.contentType === 'specific') {
         return enums.filter(
-          item => item.value === 'media' || item.value === 'custom'
+          item => item.value !== 'block'
         )
       }
 
