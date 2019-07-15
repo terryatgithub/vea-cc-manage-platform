@@ -106,7 +106,25 @@ export default {
             label: '话题状态',
             prop: 'status',
             render: (h, {row}) => {
-              return this.$consts.statusText[row.status]
+              return `${row.currentVersion}/${this.$consts.statusText[row.status]}`
+            }
+          },
+          {
+            label: '待审核副本',
+            prop: 'duplicateVersion',
+            render: (h, {row}) => {
+              const duplicateVersion = row.duplicateVersion
+              if (duplicateVersion) {
+                return <el-button type="text" onClick={
+                    (event) => {
+                      event.stopPropagation()
+                      this.handleRead(row, duplicateVersion)
+                    }
+                  }
+                >
+                  { duplicateVersion }
+                </el-button>
+              }
             }
           },
           {

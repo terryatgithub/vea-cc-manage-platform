@@ -25,9 +25,10 @@
             </div>
             <String label="话题名" prop="topicName" v-model="topic.topicName" />
             <String v-if="topic.type === 1" prop="recommendSign" label="推荐流标记" v-model="topic.recommendSign" />
-            <Enum label="话题icon" type="radio" :options="iconOptions" v-model="topic.iconType">
+            <Enum label="话题icon" type="radio" :options="iconOptions" :value="topic.iconType" @input="handleInputIconType">
               <div v-if="topic.iconType === 'custom'">
                 <GlobalPictureSelector
+                  :disabled="mode === 'read'"
                   resolution="30*30"
                   @select-end="handleSelectIcon">
                   <img class="icon-img" v-if="topic.icon" :src="topic.icon" />
@@ -36,7 +37,7 @@
                 </GlobalPictureSelector>
               </div>
             </Enum>
-            <Enum label="内容源" :confirm="{title: '提示', content: '切换源将清空短视频，确定切换?'}" type="radio" :options="$consts.sourceOptions" :value="topic.source" @input="topic.source = $event, topic.contentList = []" />
+            <Enum v-if="topic.type === 2" label="内容源" :confirm="{title: '提示', content: '切换源将清空短视频，确定切换?'}" type="radio" :options="$consts.sourceOptions" :value="topic.source" @input="topic.source = $event, topic.contentList = []" />
             <template v-if="topic.type === 2">
               <div class="form-legend-header">
                 <i class="el-icon-edit">短视频筛选</i>
@@ -147,7 +148,7 @@ export default {
         id: undefined,
         type: this.$consts.topicTypesOptions[0].value,
         topicName: '',
-        source: 'o_tencent',
+        source: '',
         iconType: 'default',
         icon: '',
         status: undefined,
@@ -158,7 +159,8 @@ export default {
       },
       rules: {
         topicName: [
-          {required: true, message: '请输入话题标题'}
+          {required: true, message: '请输入话题标题'},
+          {max: 45, message: '不能超过 45 个字符'}
         ],
         recommendSign: [
           {required: true, message: '请输入标记'}
@@ -182,6 +184,12 @@ export default {
     }
   },
   methods: {
+    handleInputIconType(val) {
+      this.topic.iconType = val
+      if (val === 'default') {
+        this.topic.icon = ''
+      }
+    },
     fetchData(version) {
       this.$service.topicGetDetail({ id: this.id, version }).then(data => {
         this.setData(data)
@@ -211,7 +219,11 @@ export default {
       this.topic.icon = img.pictureUrl
     },
     handleTopicTypeChange() {
-      this.topic.contentList = []
+      const $consts = this.$consts
+      const topic = this.topic
+      topic.source = topic.type === 2 ? $consts.sourceOptions[0].value : ''
+      topic.recommendSign = ''
+      topic.contentList = []
     },
     handleTopicSourceChange() {
       this.topic.contentList = []
