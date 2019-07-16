@@ -98,7 +98,7 @@
       </el-form-item>
     </el-form>
     <section>
-      <LayoutBloack :content="data.contents"  @change-width="changeWidth" class="layoutBloack"></LayoutBloack>
+      <LayoutBloack :content="contentsForPreview"  @change-width="changeWidth" class="layoutBloack"></LayoutBloack>
     </section>
   </ContentCard>
 </template>
@@ -139,6 +139,7 @@ export default {
         parents: '',
         type: 'Panel'
       },
+      contentsForPreview: [],
       fileName: ''
     }
   },
@@ -168,9 +169,7 @@ export default {
       }
       fileName = fileName + '.txt'
       this.fileName = fileName
-      if (this.data.contents.length === 0) {
-        this.getLayoutData()
-      }
+      this.getLayoutData()
       if (type === undefined) {
         this.$emit('generator-layout', {
           fileName: fileName,
@@ -292,6 +291,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.getLayoutData()
+          this.contentsForPreview = JSON.parse(JSON.stringify(this.data.contents))
         } else {
           return false
         }
