@@ -72,7 +72,8 @@ export default {
       return {
         type: undefined,
         topicName: undefined,
-        source: this.source
+        source: this.source,
+        status: this.$consts.status.accepted
       }
     },
     getFilter() {

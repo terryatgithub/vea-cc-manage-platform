@@ -118,7 +118,11 @@ const sourceNumberOptions = [
 
 const sourceNumberText = optionsToText(sourceNumberOptions)
 const sourceNumberEnums = optionsToEnums(sourceNumberOptions)
-
+const sourcePrefix = {
+  o_tencent: '_otx_',
+  o_iqiyi: '_oqy_',
+  o_youku: '_oyk_'
+}
 const partnerOptions = [
   {
     label: '腾讯',
@@ -251,5 +255,7 @@ export default {
   idPrefixEnums,
 
   optionsToEnums,
-  optionsToText
+  optionsToText,
+
+  sourcePrefix
 }

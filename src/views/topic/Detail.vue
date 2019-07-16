@@ -26,7 +26,8 @@
             <String label="话题名" prop="topicName" v-model="topic.topicName" />
             <String v-if="topic.type === 1" prop="recommendSign" label="推荐流标记" v-model="topic.recommendSign" />
             <Enum label="话题icon" type="radio" :options="iconOptions" :value="topic.iconType" @input="handleInputIconType">
-              <div v-if="topic.iconType === 'custom'">
+            </Enum>
+            <el-form-item label="" prop="icon" v-if="topic.iconType === 'custom'">
                 <GlobalPictureSelector
                   :disabled="mode === 'read'"
                   pictureResolution="30*30"
@@ -35,8 +36,7 @@
                   <div class="icon-img" v-else>
                   </div>
                 </GlobalPictureSelector>
-              </div>
-            </Enum>
+            </el-form-item>
             <Enum v-if="topic.type === 2" label="内容源" :confirm="{title: '提示', content: '切换源将清空短视频，确定切换?'}" type="radio" :options="$consts.sourceOptions" :value="topic.source" @input="topic.source = $event, topic.contentList = []" />
             <template v-if="topic.type === 2">
               <div class="form-legend-header">
@@ -164,7 +164,11 @@ export default {
         ],
         recommendSign: [
           {required: true, message: '请输入标记'}
+        ],
+        icon: [
+          {required: true, message: '请选择自定义 icon'}
         ]
+
       }
     }
   },
@@ -236,6 +240,10 @@ export default {
         result[item[idField]] = index
         return result
       }, {})
+      const prefix = this.$consts.sourcePrefix[this.topic.source] || ''
+      selectedList.forEach((item) => {
+        item.sCoocaaMId = prefix + item.sCoocaaMId
+      })
       const result = selectedList.filter(function(item) {
         return originSelectedListIndexed[item[idField]] === undefined
       })
@@ -280,7 +288,7 @@ export default {
       const mode = this.mode
       data.contentList = data.contentList.map((item) => {
         return {
-          shortVideoId: item.sCoocaaVId,
+          shortVideoId: item.sCoocaaMId,
           title: item.sShowTitle,
           thumb: item.sShowThumb,
           positiveInfo: JSON.stringify({

@@ -150,13 +150,15 @@ export default {
       })
     },
     handleSetDefaultFocus(index) {
-      this.topic.contentList.forEach((item, idx) => {
+      const contentList = this.topic.contentList
+      contentList.forEach((item, idx) => {
         if (index === idx) {
           item.topicIsFocus = 1
         } else {
           item.topicIsFocus = 0
         }
       })
+      this.topic.contentList = contentList.slice()
     },
     setData(data) {
       data = cloneDeep(data)
@@ -203,9 +205,14 @@ export default {
       }
       this.$refs.dataForm.$refs.form.validate((valid) => {
         if (valid) {
-          const defaultFocus = data.contentList.find(({topicIsFocus}) => topicIsFocus === 1)
-          if (!defaultFocus) {
-            return error('请设置默认落焦')
+          if (data.status === this.$consts.status.waiting) {
+            if (data.contentList.length === 0) {
+              return error('请选择话题')
+            }
+            const defaultFocus = data.contentList.find(({topicIsFocus}) => topicIsFocus === 1)
+            if (!defaultFocus) {
+              return error('请设置默认落焦')
+            }
           }
           cb()
         } else {
