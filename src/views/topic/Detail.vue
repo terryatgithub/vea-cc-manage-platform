@@ -29,7 +29,7 @@
               <div v-if="topic.iconType === 'custom'">
                 <GlobalPictureSelector
                   :disabled="mode === 'read'"
-                  resolution="30*30"
+                  pictureResolution="30*30"
                   @select-end="handleSelectIcon">
                   <img class="icon-img" v-if="topic.icon" :src="topic.icon" />
                   <div class="icon-img" v-else>

@@ -46,12 +46,6 @@
                   ></el-time-select>
                 </div>
               </el-form-item>
-              <el-form-item label="活动形式" prop="hasActivity">
-                <el-radio-group v-model="block.hasActivity" @change="handleChangeActivityFlag">
-                  <el-radio :label="0">非活动</el-radio>
-                  <el-radio :label="1">活动</el-radio>
-                </el-radio-group>
-              </el-form-item>
             </template>
             <el-form-item
               v-show="block.pluginInfo.pluginParentType !== 'builtIn'"
@@ -133,234 +127,39 @@
               </el-form-item>
             </template>
             <template v-if="pluginParentType !== 'sign'">
-              <div v-for="(item, index) in block.rlsInfo" :key="index">
-                <div class="form-legend-header">
-                  <span>{{ item.label }}</span>
-                </div>
-                <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
-                  <el-form-item
-                    label="状态栏文字"
-                     :rules="rules.barText" :prop="'rlsInfo.' + index + '.title'"
-                  >
-                    <el-row class="leftSide">
-                      <el-col :span="11">
-                        <el-form-item  :rules="rules.barText" :prop="'rlsInfo.' + index + '.title'">
-                         <el-input v-model.trim="item.title"></el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="2" class="textAlignCenter">|</el-col>
-                      <el-col :span="11">
-                         <el-form-item  :rules="rules.barText" :prop="'rlsInfo.' + index + '.subTitle'">
-                         <el-input v-model.trim="item.subTitle"></el-input>
-                        </el-form-item>
-                      </el-col>
-                    </el-row>
-                    <!-- <el-input v-model.trim="item.title"></el-input>|
-                    <el-input v-model.trim="item.subTitle"></el-input>-->
-                  </el-form-item>
-                </template>
-                <template v-if="versionHasTitle">
-                  <el-form-item
-                    label="标题"
-                    :prop="'rlsInfo.' + index + '.title'"
-                    :rules="rules.title"
-                  >
-                    <el-input v-model.trim="item.title"></el-input>
-                  </el-form-item>
-                  <el-form-item
-                    label="副标题"
-                    :prop="'rlsInfo.' + index + '.subTitle'"
-                    :rules="rules.subTitle"
-                  >
-                    <el-input v-model.trim="item.subTitle"></el-input>
-                  </el-form-item>
-                </template>
-                <template v-if="block.pluginInfo.pluginParentType === 'secKill'">
-                  <el-form-item
-                    label="商品ID"
-                    :prop="'rlsInfo.' + index + '.goodsId'"
-                    :rules="rules.goodsId"
-                  >
-                    <el-input v-model.trim="item.goodsId"></el-input>
-                  </el-form-item>
-                  <el-form-item
-                    label="商品名称"
-                    :prop="'rlsInfo.' + index + '.title'"
-                    :rules="rules.goodsId"
-                  >
-                    <el-input v-model.trim="item.title"></el-input>
-                  </el-form-item>
-                </template>
-                <el-form-item
-                  label="海报"
-                  :prop="'rlsInfo.' + index + '.poster.pictureUrl'"
-                  :rules="rules.poster.pictureUrl"
-                >
-                  <div class="poster" @click="handleSelectPosterStart(index)">
-                    <img
-                      class="poster__img"
-                      v-if="item.poster.pictureUrl"
-                      :src="item.poster.pictureUrl"
-                    >
-                  </div>
-                </el-form-item>
-                <template v-if=" pluginType === 'REFERENCE_ACTIVITY'">
-                  <el-form-item
-                    label="异形焦点"
-                    :prop="'rlsInfo.' + index + '.extendInfo.focusImgUrl'"
-                    :rules="rules.focusImgUrl"
-                  >
-                    <el-button
-                      type="primary"
-                      @click="handleSelectFocusImgStart(index)"
-                      style="margin-bottom: 10px"
-                    >选择异形焦点</el-button>
-                    <div v-if="item.extendInfo.focusImgUrl" class="focus-transition">
-                      <i
-                        title="移除异形焦点"
-                        class="focus-transition__remove el-icon-circle-close"
-                        @click="handleRemoveFocusImg(index)"
-                      ></i>
-                      <img class="focus-transition__img" :src="item.extendInfo.focusImgUrl">
-                    </div>
-                  </el-form-item>
-                  <el-form-item
-                    label="存活时间"
-                    :prop="'rlsInfo.' + index + '.extendInfo.aliveTime'"
-                    :rules="rules.aliveTime"
-                  >
-                    <div class="el-input" style="max-width: 400px">
-                      <el-time-select
-                        v-model.number="item.extendInfo.aliveTime"
-                        :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
-                        placeholder="选择时间"
-                        @change="handleTime"
-                      ></el-time-select>
-                    </div>
-                  </el-form-item>
-                  <el-form-item
-                    label="点击次数"
-                    :prop="'rlsInfo.' + index + '.extendInfo.clickCount'"
-                    :rules="rules.clickCount"
-                  >
-                    <el-input v-model.number="item.extendInfo.clickCount"></el-input>
-                  </el-form-item>
-                </template>
-                <el-form-item
-                  v-if="pluginParentType === 'multi' || pluginParentType === 'secKill' || pluginParentType === 'builtIn'"
-                  label="打开方式"
-                  :rules="rules.openMode"
-                >
-                  <el-select :value="item.openMode" @input="handleChangeOpenMode(item, $event)">
-                    <!-- <el-option
-                      v-if="pluginParentType === 'builtIn' ||  pluginType === 'REFERENCE_MOVIE_VIP' || pluginType === 'REFERENCE_ACTIVITY'"
-                      label="网页"
-                      value="webpage"
-                    ></el-option> -->
-                      <el-option
-                      label="网页"
-                      value="webpage"
-                    ></el-option>
-                    <!-- <template v-if=" pluginType === 'REFERENCE_ACTIVITY'"> -->
-                      <el-option label="视频" value="video"></el-option>
-                      <el-option label="图片" value="picture"></el-option>
-                      <el-option label="版面" value="tab"></el-option>
-                    <!-- </template> -->
-                    <el-option label="第三方应用" value="app"></el-option>
-                  </el-select>
-                  <el-button
-                    class="marginL"
-                    v-if="item.openMode === 'app' "
-                    type="primary"
-                    plain
-                    @click="handleSelectClickStart(index)"
-                  >快速填充</el-button>
-                </el-form-item>
-                <template v-if="item.openMode === 'webpage'">
-                  <el-form-item
-                    label="网页地址"
-                    :prop="'rlsInfo.' + index + '.onclick.webpageUrl'"
-                    :rules="rules.webpageUrl"
-                  >
-                    <el-input v-model.trim="item.onclick.webpageUrl"></el-input>
-                  </el-form-item>
-                  <el-form-item label="网页类型" :prop="'rlsInfo.' + index + '.onclick.webpageType'">
-                    <el-radio-group v-model="item.onclick.webpageType">
-                      <el-radio label="1">浮窗网页</el-radio>
-                      <el-radio label="2">全屏网页</el-radio>
-                    </el-radio-group>
-                  </el-form-item>
-                  <el-form-item
-                    label="应用版本号"
-                    :prop="'rlsInfo.' + index + '.onclick.webpageAppVersion'"
-                    :rules="rules.webpageAppVersion"
-                  >
-                    <el-input v-model.trim="item.onclick.webpageAppVersion"></el-input>
-                  </el-form-item>
-                </template>
-                <template v-if="item.openMode === 'video'">
-                  <el-form-item
-                    label="视频名称"
-                    :prop="'rlsInfo.' + index + '.onclick.videoName'"
-                    :rules="rules.videoName"
-                  >
-                    <el-input v-model.trim="item.onclick.videoName"></el-input>
-                  </el-form-item>
-                  <el-form-item
-                    label="视频地址"
-                    :prop="'rlsInfo.' + index + '.onclick.videoUrl'"
-                    :rules="rules.videoUrl"
-                  >
-                    <el-input v-model.trim="item.onclick.videoUrl"></el-input>
-                  </el-form-item>
-                </template>
-                <template v-if="item.openMode === 'tab'">
-                  <el-form-item
-                    label="版面"
-                    :prop="'rlsInfo.' + index + '.onclick.tab'"
-                    :rules="rules.tab"
-                  >
-                  <TabSelector @select-single="handleSelectTabEnd($event, item)"    :source="source" selectionType="single"/>
-                    <!-- <el-button type="primary" @click="handleSelectTabStart(index)">选择版面</el-button> -->
-                    <el-tag type="primary" v-if="item.onclick.tab">已选择: {{ item.onclick.tab.tabId }}</el-tag>
-                  </el-form-item>
-                </template>
-                <template v-if="item.openMode === 'picture'">
-                  <el-form-item
-                    label="选择图片"
-                    :prop="'rlsInfo.' + index + '.onclick.picture'"
-                    :rules="rules.picture"
-                  >
-                    <el-upload
-                      :action="urls.uploadImg"
-                      :on-success="createUploadSuccessHandler(index)"
-                      :on-remove="createUploadRemoveHandler(index)"
-                      :multiple="false"
-                      :file-list="item.onclick.picture"
-                      accept="image/png, image/gif, image/jpeg, image/bmp"
-                      list-type="picture"
-                    >
-                      <el-button type="primary">点击上传</el-button>
-                      <span slot="tip" class="el-upload__tip">提示:只能上传png/gif/jpg/bmp文件</span>
-                    </el-upload>
-                  </el-form-item>
-                </template>
-                <AppParams
-                  v-if="item.openMode === 'app'"
-                  :prop-prefix="'rlsInfo.' + index + '.onclick.'"
-                  v-model="item.onclick"
-                ></AppParams>
-                <!-- <ccAppParamsForm
-              v-if="item.openMode === 'app'"
-              v-model="item.onclick"
-              label-width="140px"
-              :prop-prefix="'rlsInfo.' + index + '.onclick.'"
-                />-->
+              <div class="form-legend-header">
+                <span>多版本信息</span>
               </div>
+              <Gallery 
+                class="gallery"
+                :items="block.rlsInfo" 
+                :active-index="currentIndex"
+                :addable="true"
+                @activate="handleActivatePluginVersion"
+                @add="handleAddPluginVersion">
+                <div slot="item" slot-scope="{item, index}">
+                  {{ item.label }}
+                  <i 
+                    @click.stop="handleRemovePluginVersion(index)"
+                    class="el-icon el-icon-close" 
+                    title="移除">
+                  </i>
+                </div>
+                <div class="gallery-add" slot="add">
+                  <el-button v-show="!hasActivity" type="text" @click.stop="handleAddPluginVersion('activity')">+ 添加活动</el-button>
+                  <br />
+                  <el-button type="text" @click.stop="handleAddPluginVersion('dmp')">+ 添加DMP</el-button>
+                </div>
+                <PluginContent 
+                  slot="detail"
+                  ref="pluginContent"
+                  :source="source"
+                  :mode="mode"
+                  :plugin="currentPlugin" 
+                  :plugin-type="pluginType" 
+                  :parent-type="block.pluginInfo.pluginParentType" />
+              </Gallery>
             </template>
-            <!-- <el-form-item>
-              <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-            </el-form-item> -->
           </el-form>
         </div>
         <div v-if="mode=== 'read'">
@@ -384,12 +183,6 @@
                   ></el-time-select>
                 </div>
               <!-- {{ parseMinToStr(block.pluginInfo.refreshTime) }} -->
-              </el-form-item>
-              <el-form-item label="活动形式" prop="hasActivity">
-                <el-radio-group disabled v-model="block.hasActivity">
-                  <el-radio :label="0">非活动</el-radio>
-                  <el-radio :label="1">活动</el-radio>
-                </el-radio-group>
               </el-form-item>
             </template>
             <el-form-item
@@ -417,90 +210,29 @@
               <el-form-item label="副标题" prop="helper.subTitle">{{ block.helper.subTitle }}</el-form-item>
             </template>
             <template v-if="pluginParentType !== 'sign'">
-              <div v-for="(item, index) in block.rlsInfo" :key="index">
-                <div class="form-legend-header">
-                  <span>{{ item.label }}</span>
-                </div>
-                <template v-if="versionHasTitle">
-                  <el-form-item label="标题">{{ item.title }}</el-form-item>
-                  <el-form-item label="副标题">{{ item.subTitle }}</el-form-item>
-                </template>
-                <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
-                  <el-form-item
-                    label="状态栏文字"
-                  >{{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }}</el-form-item>
-                </template>
-                <template v-if="block.pluginInfo.pluginParentType === 'secKill'">
-                  <el-form-item label="商品ID">{{ item.goodsId }}</el-form-item>
-                  <el-form-item label="商品名称">{{ item.title }}</el-form-item>
-                </template>
-                <el-form-item label="海报">
-                  <div class="poster">
-                    <img
-                      class="poster__img"
-                      v-if="item.poster.pictureUrl"
-                      :src="item.poster.pictureUrl"
-                    >
-                  </div>
-                </el-form-item>
-                <template v-if=" pluginType === 'REFERENCE_ACTIVITY'">
-                  <el-form-item label="异形焦点">
-                    <div v-if="item.extendInfo.focusImgUrl" class="focus-transition">
-                      <img class="focus-transition__img" :src="item.extendInfo.focusImgUrl">
-                    </div>
-                    <span v-else>无</span>
-                  </el-form-item>
-                  <el-form-item label="存活时间">{{ parseMinToStr(item.extendInfo.aliveTime) }}</el-form-item>
-                  <el-form-item label="点击次数">{{ item.extendInfo.clickCount}}</el-form-item>
-                </template>
-                <el-form-item
-                  v-if="pluginParentType === 'multi' || pluginParentType === 'secKill'"
-                  label="打开方式"
-                >{{ OPEN_MODE_TEXT[item.openMode] }}</el-form-item>
-                <template v-if="item.openMode === 'webpage'">
-                  <el-form-item label="网页地址">{{ item.onclick.webpageUrl }}</el-form-item>
-                  <el-form-item label="网页类型">{{ ['', '浮窗网页', '全屏网页'][+item.onclick.webpageType] }}</el-form-item>
-                  <el-form-item label="应用版本号">{{ item.onclick.webpageAppVersion }}</el-form-item>
-                </template>
-                <template v-if="item.openMode === 'video'">
-                  <el-form-item label="视频名称">{{ item.onclick.videoName }}</el-form-item>
-                  <el-form-item label="视频地址">{{ item.onclick.videoUrl }}</el-form-item>
-                </template>
-                <template v-if="item.openMode === 'picture'">
-                  <el-form-item label="图片">
-                    <div class="open-picture">
-                      <img class="open-picture__img" :src="item.onclick.picture[0].url">
-                    </div>
-                  </el-form-item>
-                </template>
-                <template v-if="item.openMode === 'tab'">
-                  <el-form-item label="版面">{{ item.onclick.tab.tabId }}</el-form-item>
-                </template>
-                <AppParamsRead
-                  v-if="item.openMode === 'app'"
-                  v-model="item.onclick"
-                  label-width="140px"
-                />
+              <div class="form-legend-header">
+                <span>多版本信息</span>
               </div>
+              <Gallery 
+                class="gallery"
+                :items="block.rlsInfo" 
+                :active-index="currentIndex"
+                @activate="handleActivatePluginVersion">
+                <div slot="item" slot-scope="{item}">
+                  {{ item.label }}
+                </div>
+                <PluginContent 
+                  slot="detail"
+                  :source="source"
+                  :mode="mode"
+                  :addable="false"
+                  :plugin="currentPlugin" 
+                  :plugin-type="pluginType" 
+                  :parent-type="block.pluginInfo.pluginParentType" />
+              </Gallery>
             </template>
           </el-form>
         </div>
-        <!--海报-->
-        <el-dialog :visible.sync="dialogTableVisible" width="1200px">
-          <selectResource v-if="dialogTableVisible" @selected="getSelectResource"></selectResource>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogTableVisible = false">取 消</el-button>
-            <!-- <el-button type="primary" @click="dialogTableVisible = false;selectSubmit()">确 定</el-button> -->
-          </div>
-        </el-dialog>
-        <!--点击事件弹框-->
-        <el-dialog :visible.sync="dialogClickTableVisible" width="1200px">
-          <selectClick @row-click="getClickData"></selectClick>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogClickTableVisible = false">取 消</el-button>
-            <!-- <el-button type="primary" @click="dialogClickTableVisible = false;clickSubmit()">确 定</el-button> -->
-          </div>
-        </el-dialog>
         <!--选择异形焦点-->
         <el-dialog :visible.sync="showFocusImgSelectorVisible" width="1200px">
           <selectImg @selectImg="getSelectImg"></selectImg>
@@ -527,6 +259,8 @@ import CommonContent from '@/components/CommonContent.vue'
 import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
 import TabSelector from '@/components/selectors/TabSelector'
+import PluginContent from './PluginContent'
+import Gallery from '@/components/Gallery'
 const PARENT_TYPES = {
  sign: 'sign', //标记推荐位
   multi: 'multi',
@@ -544,11 +278,14 @@ export default {
     AppParams,
     CommonContent,
     AppParamsRead,
-    TabSelector
+    TabSelector,
+    PluginContent,
+    Gallery
   },
   props: ['id', 'initMode', 'version'],
   data() {
     return {
+      currentIndex: 0,
       title: null,
       dialogTableVisible: false,
       dialogClickTableVisible: false,
@@ -612,88 +349,22 @@ export default {
           ],
           pluginType: [{ required: true, message: '不能为空', trigger: 'blur' }]
         },
-        barText: [
-          { max: 45, message: '不超过 45 个字符', trigger: 'blur' },
-          { required: true, message: '请输入状态栏文字', trigger: 'blur' }
-        ],
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' },
           { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
-        subTitle: [{ max: 100, message: '不超过 100 个字符', trigger: 'blur' }],
-        openMode: [
-          { required: true, message: '请选择打开方式', trigger: 'blur' }
-        ],
-        goodsId: [
-          { required: true, message: '请填写商品ID', trigger: 'blur' },
-          { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
-        ],
-        webpageUrl: [
-          { required: true, message: '请填写网页地址', trigger: 'blur' }
-        ],
-        webpageAppVersion: [
-          { required: true, message: '请填写应用版本号', trigger: 'blur' }
-        ],
-        videoName: [
-          { required: true, message: '请填写视频名称', trigger: 'blur' }
-        ],
-        videoUrl: [
-          { required: true, message: '请填写视频地址', trigger: 'blur' }
-        ],
-        picture: [
-          {
-            trigger: 'change',
-            validator: function(_, value, cb) {
-              cb(
-                value && value.length > 0 ? undefined : new Error('请上传图片')
-              )
-            }
-          },
-          {
-            required: true,
-            message: '请上传图片'
-          }
-        ],
-        tab: [
-          {
-            trigger: 'change',
-            validator: function(_, value, cb) {
-              cb(value ? undefined : new Error('请选择版面'))
-            }
-          },
-          {
-            required: true,
-            message: '请选择版面'
-          }
-        ],
-        clickCount: [
-          { required: true, message: '请填入点击次数' },
-          { type: 'number', message: '请填入数字' },
-          {
-            validator: function(_, value, cb) {
-              if (/^[1-9][0-9]*$/.test(value)) {
-                cb()
-              } else {
-                cb(new Error('请输入正整数'))
-              }
-            }
-          }
-        ],
-        aliveTime: [
-          { required: true, message: '请填入存活时间' },
-          { type: 'number', message: '请填入数字' }
-        ],
-        focusImgUrl: [{ required: true, message: '请选择异形焦点' }],
-        poster: {
-          pictureUrl: [
-            { required: true, message: '请选择海报', trigger: 'blur' }
-          ]
-        }
+        subTitle: [{ max: 100, message: '不超过 100 个字符', trigger: 'blur' }]
       }
     }
   },
   computed: {
-      source() {
+    hasActivity() {
+      return this.block.rlsInfo.find(({dataType}) => dataType === 4)
+    },
+    currentPlugin() {
+      return this.block.rlsInfo[this.currentIndex]
+    },
+    source() {
       //内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
       switch (this.block.pluginInfo.source) {
         case 0:
@@ -776,8 +447,41 @@ export default {
   },
   watch: {},
   methods: {
-    handleSelectTabEnd(tab, item) {
-      this.$set(item.onclick, 'tab', tab)
+    handleActivatePluginVersion(index) {
+      if (this.mode === 'read') {
+        this.currentIndex = index
+      } else {
+        this.$refs.pluginContent.validate(() => {
+          this.currentIndex = index
+        })
+      }
+    },
+    handleAddPluginVersion(type) {
+      this.$refs.pluginContent.validate(() => {
+        const options = type === 'activity'
+          ? { label: '活动形式', dataType: 4}
+          : { label: 'dmp', dataType: 7}
+        const rlsInfo = this.block.rlsInfo
+        rlsInfo.push(
+          this.genRlsInfo(options)
+        )
+        this.currentIndex = rlsInfo.length - 1
+      })
+    },
+    handleRemovePluginVersion(index) {
+      const rlsInfo = this.block.rlsInfo
+      rlsInfo.splice(index, 1)
+      let currentIndex = this.currentIndex
+      const length = rlsInfo.length
+      if (currentIndex === index && length > 0) {
+        while(!rlsInfo[currentIndex]) {
+          currentIndex = currentIndex === 0 
+            ? length - 1
+            : (currentIndex - 1)
+        }
+        this.currentIndex = currentIndex
+      }
+
     },
     //时间处理-:转换为数值
     parseMinToStr(str) {
@@ -996,64 +700,7 @@ export default {
         preset
       )
     },
-    /** 弹框选择素材 */
-    handleSelectPosterStart(index) {
-      this.selectingPostForIndex = index
-      this.dialogTableVisible = true
-    },
-    /** 弹框选择素材 */
-    getSelectResource(data) {
-      this.selectResource = data
-      this.dialogTableVisible = false
-      const selectObj = {
-        pictureId: this.selectResource.pictureId,
-        pictureStatus: this.selectResource.pictureStatus,
-        pictureUrl: this.selectResource.pictureUrl
-      }
-      this.block.rlsInfo[this.selectingPostForIndex].poster = selectObj
-    },
     selectSubmit() {},
-    /** 快速填充 */
-    handleSelectClickStart(index) {
-      this.selectingClickForIndex = index
-      this.dialogClickTableVisible = true
-    },
-    /** 点击事件弹框 */
-    getClickData1(data) {
-      this.clickData = data
-      this.dialogClickTableVisible = false
-      var selectClick = this.clickData
-      selectClick = JSON.parse(selectClick.onlickJson)
-      const index = this.selectingClickForIndex
-      const item = this.block.rlsInfo[index]
-      item.onclick = this.parseOnclick(selectClick)
-      this.showselectClickor = false
-      this.selectingClickForIndex = undefined
-    },
-    getClickData(data) {
-      this.dialogClickTableVisible = false
-      let params = JSON.parse(data.params)
-      let keys = Object.keys(params)
-      let paramsArr = keys.reduce((result, current, index) => {
-        var obj = {}
-        obj.key = current
-        obj.value = params[current]
-        result.push(obj)
-        return result
-      }, [])
-      let o = {
-        packagename: data.packagename,
-        versioncode: data.versioncode,
-        dowhat: data.dowhat,
-        bywhat: data.bywhat,
-        byvalue: data.byvalue,
-        params: paramsArr,
-        exception: data.exception
-      }
-      const index = this.selectingClickForIndex
-      const item = this.block.rlsInfo[index]
-      item.onclick = o
-    },
     clickSubmit() {},
     /** 异形焦点选择 */
     handleSelectFocusImgStart(index) {
@@ -1069,33 +716,8 @@ export default {
       this.selectingFocusImgForIndex = undefined
     },
     selectImgSubmit() {},
-    handleSelectTabStart(index) {
-      this.showTabSelector = true
-      this.selectingTabForIndex = index
-    },
     handleRemoveFocusImg(index) {
       this.block.rlsInfo[index].extendInfo.focusImgUrl = undefined
-    },
-    createUploadSuccessHandler: function(index) {
-      return function uploadSuccess(response) {
-        if (response.success) {
-          const item = this.block.rlsInfo[index]
-          this.$set(item.onclick, 'picture', [
-            {
-              name: '已上传',
-              url: response.data[0].url
-            }
-          ])
-        } else {
-          this.$message(response.msg)
-        }
-      }.bind(this)
-    },
-    createUploadRemoveHandler(index) {
-      return function uploadRemove() {
-        const item = this.block.rlsInfo[index]
-        item.onclick.picture = []
-      }.bind(this)
     },
     parseOnclick(onclick) {
       if (onclick.params) {
@@ -1108,20 +730,6 @@ export default {
         })
       }
       return onclick
-    },
-    /** 打开方式 */
-    handleChangeOpenMode(item, openMode) {
-      this.$refs['blockForm'].clearValidate()
-      item.openMode = openMode
-      if (openMode === 'webpage') {
-        item.onclick = {
-          webpageType: '1',
-          webpageUrl: undefined,
-          webpageAppVersion: ''
-        }
-      } else {
-        item.onclick = {}
-      }
     },
     getData(status) {
       const data = JSON.parse(JSON.stringify(this.block))
@@ -1425,22 +1033,6 @@ export default {
         }.bind(this)
       )
     },
-    /** 活动形式单选事件 */
-    handleChangeActivityFlag(val) {
-      // 非常丑陋， 改变活动形式，要控制某个版本的显示和隐藏
-      if (val) {
-        this.block.rlsInfo.unshift(
-          this.genRlsInfo({
-            label: '活动形式',
-            dataType: 4
-          })
-        )
-      } else {
-        this.block.rlsInfo = this.block.rlsInfo.filter(function(item) {
-          return item.dataType !== 4
-        })
-      }
-    }
   },
   created() {
     this.basicFn = basicFn
@@ -1500,4 +1092,18 @@ export default {
 .open-picture__img {
   width: 200px;
 }
+
 </style>
+<style lang="stylus" scoped>
+.gallery .el-icon-close
+  position absolute
+  top 2px
+  right 2px
+  color red
+  cursor pointer
+.gallery-add
+  text-align center
+  padding-top 20px
+</style>
+
+

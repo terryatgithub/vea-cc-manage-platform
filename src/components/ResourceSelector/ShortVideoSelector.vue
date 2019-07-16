@@ -127,6 +127,7 @@ export default {
     },
     handleFilterChange() {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
+      this.pagination.currentPage = 1
       this.fetchData()
     },
     handleFilterReset() {
