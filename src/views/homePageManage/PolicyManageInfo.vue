@@ -220,12 +220,12 @@
       <el-dialog :dialogTitle="dialogTitle" :visible.sync="dialogVisible" width="80%">
         <ChipModel
           ref="chipModelSelected"
-          v-if="mode==='modelChip'"
+          v-if="dialogType ==='modelChip'"
           :selectionType="selectionType"
           @row-click="ChipModelRowClick"
         ></ChipModel>
         <HomePageModel
-          :homepageModel="mode"
+          :homepageModel="dialogType"
           :homepageResource="platform"
           homepageStatusArray="4"
           v-if="dialogVisible && selectHomePageDialogVisible"
@@ -234,13 +234,13 @@
         ></HomePageModel>
 
         <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false;mode=''">取 消</el-button>
+          <el-button @click="dialogVisible = false;dialogType=''">取 消</el-button>
           <el-button type="primary" @click="dialogSubmit">确 定</el-button>
         </span>
       </el-dialog>
       <PolicyManageAddHomePage
         v-if="addHomePageDialogVisible"
-        :itemType="mode"
+        :itemType="dialogType"
         :selected-crowds="selectedCrowds"
         :editHomePageData="editHomePageData"
         @add-home-page-close="addHomePageClose"
@@ -293,6 +293,7 @@ export default {
       homePageReadDialogVisible: false,
       activePage: 'policy_info',
       mode: undefined,
+      dialogType: undefined,
       resourceName: '策略管理',
       //title: null,
       selectionType: 'multiple',
@@ -401,7 +402,7 @@ export default {
     /** 关联首页选择 */
     rowClick(row) {
       this.dialogVisible = false
-      this.form.homepageInfoListObj[this.mode] = {
+      this.form.homepageInfoListObj[this.dialogType] = {
         homepageId: row.homepageId,
         homepageModel: row.homepageModel,
         homepageName: row.homepageName,
@@ -415,7 +416,7 @@ export default {
     editHomePage(mode, index) {
       this.addHomePageDialogVisible = true
       //  this.editHomePageMode = mode
-      this.mode = mode
+      this.dialogType = mode
       this.editHomePageIndex = index
       if (mode === 'normal') {
         this.selectedCrowds = this.form.specialNormalHp
@@ -448,7 +449,7 @@ export default {
               break
             }
           }
-          if (this.mode === 'normal') {
+          if (this.dialogType === 'normal') {
             if (isEdit) {
               this.form.specialNormalHp[this.editHomePageIndex] = form
             } else {
@@ -509,7 +510,7 @@ export default {
     addHomePage(mode) {
       this.addHomePageDialogVisible = true
       // this.title = '添加定向首页方案'
-      this.mode = mode
+      this.dialogType = mode
       if (mode === 'normal') {
         this.selectedCrowds = this.form.specialNormalHp
       } else {
@@ -525,7 +526,7 @@ export default {
     },
     dialogSubmit() {
       this.dialogVisible = false
-      switch (this.mode) {
+      switch (this.dialogType) {
         case 'modelChip':
           let platform = this.$refs.chipModelSelected.platform
           if (platform !== this.platform) {
@@ -547,13 +548,13 @@ export default {
     selectChipModel() {
       this.dialogVisible = true
       this.dialogTitle = '选择机型机芯'
-      this.mode = 'modelChip'
+      this.dialogType = 'modelChip'
     },
     selectHomePageModel(mode) {
       this.dialogVisible = true
       this.dialogTitle = '选择首页方案模式'
       //  this.mode = 'HomePageModel'
-      this.mode = mode
+      this.dialogType = mode
       this.selectHomePageDialogVisible = true
     },
     submitBtn(status) {

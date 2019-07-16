@@ -191,7 +191,7 @@ export default {
     // 查询
     handleFilterChange(type, filter) {
       if (filter) { this.filter = filter }
-      if (this.pagination) {
+      if (type === 'query') {
         this.pagination.currentPage = 1
       }
       let pagination = this.pagination
@@ -202,8 +202,6 @@ export default {
     // 重置
     handleFilterReset() {
       this.filter = {
-        sort: undefined,
-        order: undefined
       }
       this.pagination.currentPage = 1
       this.fetchData()
