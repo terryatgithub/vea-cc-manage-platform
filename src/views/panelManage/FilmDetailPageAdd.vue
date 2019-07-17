@@ -482,6 +482,7 @@ export default {
         this.$message('请添加版块')
         return false
       }
+      const mode = this.mode
       const form = this.form
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -502,7 +503,7 @@ export default {
             tabType: 3,
             tabStatus: status,
             tabResource: form.tabCategory === 0 ? form.tabResource : '',
-            currentVersion: form.currentVersion,
+            currentVersion: mode === 'replicate' ? '' : form.currentVersion,
             tabCategory: form.tabCategory,
             hasSubTab: 0,
             tabCnTitle: form.tabName,
