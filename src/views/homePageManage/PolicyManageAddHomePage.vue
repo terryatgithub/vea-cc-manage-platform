@@ -65,6 +65,7 @@
 <script>
 import CrowdSelector from '@/components/CrowdSelector'
 import HomePageModel from './../../components/HomePageModel'
+import { cloneDeep } from 'lodash'
 export default {
   components: {
     CrowdSelector,
@@ -341,6 +342,15 @@ export default {
         useABTest: false,
         testHomeList: []
       }
+    },
+    setFormData() {
+      if (JSON.stringify(this.editHomePageData) !== '{}') {
+        const data = cloneDeep(this.editHomePageData)
+        if (data.testHomeList && data.testHomeList.length > 0) {
+          data.useABTest = true
+        }
+        this.form = data
+      }
     }
   },
   created() {
@@ -348,9 +358,7 @@ export default {
       this.itemType === 'child'
         ? this.getInitSpecialChild()
         : this.getInitSpecialNormal()
-    if (JSON.stringify(this.editHomePageData) !== '{}') {
-      this.form = this.editHomePageData
-    }
+    this.setFormData()
   }
 }
 </script>
