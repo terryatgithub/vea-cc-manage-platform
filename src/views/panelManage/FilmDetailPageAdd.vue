@@ -301,9 +301,9 @@ export default {
       iqiyiSource: [],
       qqSource: [],
       youkuSource: [],
-      pannel: '',
+      pannel: '0',
       pannelItems: [],
-      product: '',
+      product: '0',
       productItems: [],
       eduProductItems: [],
       blockTable: [], // 版块列表
@@ -636,8 +636,8 @@ export default {
       if (this.tabResourceFlag === 0 && this.globalTabResource === value) {
         this.tabResourceFlag = 1
       } else {
-        this.pannel = ''
-        this.product = ''
+        this.pannel = '0'
+        this.product = '0'
       }
       switch (value) {
         case 'qq': {
