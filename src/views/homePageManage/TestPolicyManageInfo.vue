@@ -385,6 +385,8 @@ export default {
     /* 定向首页方案编辑 */
     editHomePage(mode, index) {
       this.addHomePageDialogVisible = true
+      this.dialogType = mode
+      this.editHomePageIndex = index
       if (mode === 'normal') {
         this.selectedCrowds = this.form.specialNormalHp
         this.editHomePageData = this.form.specialNormalHp[index]
@@ -418,13 +420,13 @@ export default {
           }
           if (this.dialogType === 'normal') {
             if (isEdit) {
-              this.form.specialNormalHp[this.editHomePageIndex] = form
+              this.$set(this.form.specialNormalHp, this.editHomePageIndex, form)
             } else {
               this.form.specialNormalHp.push(form)
             }
           } else {
             if (isEdit) {
-              this.form.specialChildHp[this.editHomePageIndex] = form
+              this.$set(this.form.specialChildHp, this.editHomePageIndex, form)
             } else {
               this.form.specialChildHp.push(form)
             }

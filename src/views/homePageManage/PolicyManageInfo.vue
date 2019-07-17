@@ -451,7 +451,7 @@ export default {
           }
           if (this.dialogType === 'normal') {
             if (isEdit) {
-              this.form.specialNormalHp[this.editHomePageIndex] = form
+              this.$set(this.form.specialNormalHp, this.editHomePageIndex, form)
             } else {
               if (
                 !this.isContainCrowdName(this.form.specialNormalHp, crowdId)
@@ -466,7 +466,7 @@ export default {
             }
           } else {
             if (isEdit) {
-              this.form.specialChildHp[this.editHomePageIndex] = form
+              this.$set(this.form.specialChildHp, this.editHomePageIndex, form)
             } else {
               if (!this.isContainCrowdName(this.form.specialChildHp, crowdId)) {
                 this.form.specialChildHp.push(form)
