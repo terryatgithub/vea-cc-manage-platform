@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="plugin-content">
     <el-form
       v-if="form"
       :model="form"
@@ -9,9 +9,7 @@
       <template v-if="mode !== 'read'">
         <template v-if="parentType === 'builtIn'">
           <el-form-item
-            label="状态栏文字"
-              :rules="rules.barText" prop="title"
-          >
+            label="状态栏文字">
             <el-row class="leftSide">
               <el-col :span="11">
                 <el-form-item  :rules="rules.barText" prop="title">
@@ -61,6 +59,16 @@
             <el-input v-model.trim="form.title"></el-input>
           </el-form-item>
         </template>
+        <template v-if="form.dataType === 7">
+          <el-form-item label="人群" prop="dmpRegistryInfo">
+            <el-button @click="handleSelectCrowdStart">
+              选择人群
+            </el-button>
+            <span v-if="form.dmpRegistryInfo">
+              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}/{{ form.dmpRegistryInfo.dmpCrowdName }}
+            </span>
+          </el-form-item>
+        </template>
         <el-form-item
           label="海报"
           prop="poster.pictureUrl'"
@@ -71,6 +79,8 @@
               v-if="form.poster.pictureUrl"
               :src="form.poster.pictureUrl"
             >
+            <div v-else class="poster__placeholder">
+            </div>
           </div>
         </el-form-item>
         <template v-if=" pluginType === 'REFERENCE_ACTIVITY'">
@@ -292,6 +302,13 @@
       </div>
     </el-dialog>
 
+
+    <CrowdSelector
+      v-if="showCrowdSelector"
+      @select-cancel="handleSelectCrowdCancel"
+      @select-end="handleSelectCrowdEnd"
+    />
+
   </div>
 </template>
 
@@ -302,17 +319,20 @@ import PostSelector from './selectResource'
 import ClickSelector from './selectClick'
 import TabSelector from '@/components/selectors/TabSelector'
 import { cloneDeep } from 'lodash'
+import CrowdSelector from '@/components/CrowdSelector'
 export default {
   components: {
     AppParams,
     AppParamsRead,
     PostSelector,
     ClickSelector,
-    TabSelector
+    TabSelector,
+    CrowdSelector
   },
   data() {
     return {
       form: null,
+      showCrowdSelector: false,
       showPosterSelector: false,
       showClickSelector: false,
       urls: {
@@ -395,11 +415,14 @@ export default {
           pictureUrl: [
             { required: true, message: '请选择海报', trigger: 'blur' }
           ]
-        }
+        },
+        dmpRegistryInfo: [
+          { required: true, message: '请选择人群', trigger: 'blur' }
+        ]
       }
     }
   },
-  props: ['mode', 'plugin', 'pluginType', 'parentType', 'source'],
+  props: ['mode', 'plugin', 'pluginList', 'pluginType', 'parentType', 'source'],
   computed: {
     versionHasTitle() {
       return this.pluginType === 'REFERENCE_MOVIE_VIP'
@@ -497,6 +520,37 @@ export default {
     handleSelectTabEnd(tab, item) {
       this.$set(item.onclick, 'tab', tab)
     },
+    handleSelectCrowdStart() {
+      this.showCrowdSelector = true
+    },
+    handleSelectCrowdCancel() {
+      this.showCrowdSelector = false
+    },
+    handleSelectCrowdEnd(policy, crowd) {
+      const currentItem = this.form
+      const dmpPolicyId = policy.value
+      const dmpPolicyName = policy.label
+      const dmpCrowdId = crowd.value
+      const dmpCrowdName = crowd.label
+      const isCrowdHasBeenSelected = this.pluginList.find((item) => {
+        return item.dmpRegistryInfo && item.dmpRegistryInfo.dmpCrowdId === dmpCrowdId && item !== currentItem
+      })
+
+      if (!isCrowdHasBeenSelected) {
+        this.$set(this.form, 'dmpRegistryInfo', {
+          dmpPolicyId,
+          dmpCrowdId,
+          dmpPolicyName,
+          dmpCrowdName
+        })
+        this.showCrowdSelector = false
+      } else {
+        this.$message({
+          type: 'error',
+          message: '该人群已被选择'
+        })
+      }
+    }
   },
   created() {
     this.$watch('plugin', this.handlePluginChange, {
@@ -510,15 +564,21 @@ export default {
 .plugin-content .poster,
 .plugin-content .focus-transition {
   position: relative;
-  height: 200px;
-  width: 200px;
-  border: 1px solid #eee;
+  display: inline-block;
+  max-height: 200px;
+  max-width: 200px;
   cursor: pointer;
 }
-.plugin-content .poster img,
+.plugin-content .poster__img,
 .plugin-content .focus-transition__img {
-  max-width: 100%;
-  max-height: 100%;
+  max-height: 200px;
+  max-width: 200px;
+}
+.plugin-content .poster__placeholder,
+.plugin-content .focus-transition__placeholder {
+  border: 1px solid #eee;
+  width: 200px;
+  height: 200px;
 }
 .plugin-content .focus-transition__remove {
   position: absolute;

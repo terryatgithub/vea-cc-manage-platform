@@ -1,14 +1,21 @@
 <template>
   <div class="gallery__wrapper">
     <div class="gallery__list">
-      <div 
-        v-for="(item, index) in items"
-        :key="index"
-        :class="['gallery__item', index === activeIndex ? 'active' : '']"
-        @click="handleActivate(index)">
-        <slot name="item" :item="item" :index="index">
-        </slot>
-      </div>
+
+      <draggable
+        v-model="items"
+        @start="onDragStart($event)"
+        @end="onDragEnd($event)"
+        v-if="!disabled">
+        <div 
+          v-for="(item, index) in items"
+          :key="index"
+          :class="['gallery__item', index === activeIndex ? 'active' : '']"
+          @click="handleActivate(index)">
+          <slot name="item" :item="item" :index="index">
+          </slot>
+        </div>
+      </draggable>
       <div
         v-if="addable"
         class="gallery__item" @click="handleAdd">
@@ -27,7 +34,11 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 export default {
+  components: {
+    draggable
+  },
   props: ['items', 'activeIndex', 'addable'],
   methods: {
     handleActivate(index) {
@@ -36,6 +47,12 @@ export default {
     handleAdd(event) {
       event.stopPropagation()
       this.$emit('add')
+    },
+    onDragStart() {
+
+    },
+    onDragEnd() {
+
     }
   }
 }
@@ -64,6 +81,7 @@ export default {
   cursor pointer
   box-shadow 0 2px 12px 0 rgba(0,0,0,.1)
   transition 0.3s
+  background #fff
   &.active
     border 2px dashed #f49e54
 .gallery__detail

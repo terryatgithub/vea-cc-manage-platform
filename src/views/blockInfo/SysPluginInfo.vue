@@ -135,10 +135,14 @@
                 :items="block.rlsInfo" 
                 :active-index="currentIndex"
                 :addable="true"
-                @activate="handleActivatePluginVersion"
-                @add="handleAddPluginVersion">
+                @activate="handleActivatePluginVersion">
                 <div slot="item" slot-scope="{item, index}">
-                  {{ item.label }}
+                  <span v-if="item.dmpRegistryInfo">
+                    人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
+                  </span>
+                  <span v-else>
+                    {{ item.label }}
+                  </span>
                   <i 
                     @click.stop="handleRemovePluginVersion(index)"
                     class="el-icon el-icon-close" 
@@ -146,9 +150,9 @@
                   </i>
                 </div>
                 <div class="gallery-add" slot="add">
-                  <el-button v-show="!hasActivity" type="text" @click.stop="handleAddPluginVersion('activity')">+ 添加活动</el-button>
-                  <br />
                   <el-button type="text" @click.stop="handleAddPluginVersion('dmp')">+ 添加DMP</el-button>
+                  <br />
+                  <el-button v-show="!hasActivity" type="text" @click.stop="handleAddPluginVersion('activity')">+ 添加活动</el-button>
                 </div>
                 <PluginContent 
                   slot="detail"
@@ -157,6 +161,7 @@
                   :mode="mode"
                   :plugin="currentPlugin" 
                   :plugin-type="pluginType" 
+                  :plugin-list="block.rlsInfo"
                   :parent-type="block.pluginInfo.pluginParentType" />
               </Gallery>
             </template>
@@ -219,7 +224,12 @@
                 :active-index="currentIndex"
                 @activate="handleActivatePluginVersion">
                 <div slot="item" slot-scope="{item}">
-                  {{ item.label }}
+                  <span v-if="item.dmpRegistryInfo">
+                    人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
+                  </span>
+                  <span v-else>
+                    {{ item.label }}
+                  </span>
                 </div>
                 <PluginContent 
                   slot="detail"
@@ -448,19 +458,21 @@ export default {
   watch: {},
   methods: {
     handleActivatePluginVersion(index) {
-      if (this.mode === 'read') {
-        this.currentIndex = index
-      } else {
-        this.$refs.pluginContent.validate(() => {
+      if (this.currentIndex !== index) {
+        if (this.mode === 'read') {
           this.currentIndex = index
-        })
+        } else {
+          this.$refs.pluginContent.validate(() => {
+            this.currentIndex = index
+          })
+        }
       }
     },
     handleAddPluginVersion(type) {
       this.$refs.pluginContent.validate(() => {
         const options = type === 'activity'
           ? { label: '活动形式', dataType: 4}
-          : { label: 'dmp', dataType: 7}
+          : { label: '', dataType: 7}
         const rlsInfo = this.block.rlsInfo
         rlsInfo.push(
           this.genRlsInfo(options)
@@ -509,21 +521,16 @@ export default {
               function(versions) {
                 if (versions) {
                   const rlsInfo = this.block.rlsInfo
-                  const rlsInfoIndexed = rlsInfo.reduce(function(result, item) {
-                    result[item.dataType] = item
+                  const versionIndexed = versions.reduce((result, item) => {
+                    result[item.dictEnName] = item
                     return result
                   }, {})
-                  this.block.rlsInfo = versions.reduce(
-                    function(result, item) {
-                      const rlsItem = rlsInfoIndexed[item.dictEnName]
-                      if (rlsItem) {
-                        this.$set(rlsItem, 'label', item.dictCnName)
-                        result.push(rlsItem)
-                      }
-                      return result
-                    }.bind(this),
-                    []
-                  )
+                  rlsInfo.forEach((item) => {
+                    const versionItem = versionIndexed[item.dataType]
+                    if (versionItem) {
+                      this.$set(item, 'label', versionItem.dictCnName)
+                    }
+                  })
                 }
               }.bind(this)
             )
