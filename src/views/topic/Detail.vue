@@ -160,7 +160,7 @@ export default {
       rules: {
         topicName: [
           {required: true, message: '请输入话题标题'},
-          {max: 45, message: '不能超过 45 个字符'}
+          {max: 30, message: '不能超过 30 个字符'}
         ],
         recommendSign: [
           {required: true, message: '请输入标记'}
