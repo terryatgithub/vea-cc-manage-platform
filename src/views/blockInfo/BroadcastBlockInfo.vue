@@ -1580,8 +1580,6 @@ export default {
       const currentIndex = this.currentIndex
       if (oldIndex === currentIndex) {
         this.currentIndex = event.newIndex
-      } else if (newIndex === currentIndex) {
-        this.currentIndex = oldIndex
       } else if (oldIndex < currentIndex && newIndex >= currentIndex ) {
         this.currentIndex = currentIndex - 1
       } else if (oldIndex > currentIndex && newIndex <= currentIndex) {

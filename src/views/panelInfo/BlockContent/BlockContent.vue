@@ -130,12 +130,15 @@ export default {
     handleDragConentStart(event) {
     },
     handleDragConentEnd(event, type) {
-      const { newIndex, oldIndex } = event
+      const { oldIndex, newIndex } = event
+      const currentIndex = this.activeIndex
       if (this.activeType === type) {
-        if (this.activeIndex === oldIndex) {
+        if (oldIndex === currentIndex) {
           this.activeIndex = newIndex
-        } else if (this.activeIndex === newIndex) {
-          this.activeIndex = oldIndex
+        } else if (oldIndex < currentIndex && newIndex >= currentIndex ) {
+          this.activeIndex = currentIndex - 1
+        } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
+          this.activeIndex = currentIndex + 1
         }
       }
     },
