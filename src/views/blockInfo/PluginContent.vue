@@ -73,7 +73,11 @@
           label="海报"
           prop="poster.pictureUrl'"
           :rules="rules.poster.pictureUrl">
-          <div class="poster" @click="handleSelectPosterStart()">
+          <GlobalPictureSelector
+            class="poster"
+            :disabled="mode === 'read'"
+            @select-end="handleSelectPosterEnd"
+          >
             <img
               class="poster__img"
               v-if="form.poster.pictureUrl"
@@ -81,7 +85,7 @@
             >
             <div v-else class="poster__placeholder">
             </div>
-          </div>
+          </GlobalPictureSelector>
         </el-form-item>
         <template v-if=" pluginType === 'REFERENCE_ACTIVITY'">
           <el-form-item
@@ -89,19 +93,19 @@
             prop="extendInfo.focusImgUrl"
             :rules="rules.focusImgUrl"
           >
-            <el-button
-              type="primary"
-              @click="handleSelectFocusImgStart()"
-              style="margin-bottom: 10px"
-            >选择异形焦点</el-button>
-            <div v-if="form.extendInfo.focusImgUrl" class="focus-transition">
-              <i
-                title="移除异形焦点"
-                class="focus-transition__remove el-icon-circle-close"
-                @click="handleRemoveFocusImg()"
-              ></i>
-              <img class="focus-transition__img" :src="form.extendInfo.focusImgUrl">
-            </div>
+            <GlobalPictureSelector
+              class="poster"
+              :disabled="mode === 'read'"
+              @select-end="handleSelectFocusImgEnd"
+            >
+              <img
+                class="poster__img"
+                v-if="form.extendInfo.focusImgUrl"
+                :src="form.extendInfo.focusImgUrl"
+              >
+              <div v-else class="poster__placeholder">
+              </div>
+            </GlobalPictureSelector>
           </el-form-item>
           <el-form-item
             label="存活时间"
@@ -122,7 +126,7 @@
             prop="extendInfo.clickCount"
             :rules="rules.clickCount"
           >
-            <el-input v-model.number="extendInfo.clickCount"></el-input>
+            <el-input v-model.number="form.extendInfo.clickCount"></el-input>
           </el-form-item>
         </template>
         <el-form-item
@@ -302,7 +306,6 @@
       </div>
     </el-dialog>
 
-
     <CrowdSelector
       v-if="showCrowdSelector"
       @select-cancel="handleSelectCrowdCancel"
@@ -320,6 +323,24 @@ import ClickSelector from './selectClick'
 import TabSelector from '@/components/selectors/TabSelector'
 import { cloneDeep } from 'lodash'
 import CrowdSelector from '@/components/CrowdSelector'
+import selectImg from './selectImg'
+
+import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
+
+const PARENT_TYPES = {
+  sign: 'sign', // 标记推荐位
+  multi: 'multi',
+  builtIn: 'builtIn',
+  secKill: 'secKill'
+}
+
+const OPEN_MODE_TEXT = {
+  webpage: '网页',
+  app: '第三方应用',
+  video: '视频',
+  tab: '版面',
+  picture: '图片'
+}
 export default {
   components: {
     AppParams,
@@ -327,7 +348,10 @@ export default {
     PostSelector,
     ClickSelector,
     TabSelector,
-    CrowdSelector
+    CrowdSelector,
+    selectImg,
+
+    GlobalPictureSelector
   },
   data() {
     return {
@@ -335,6 +359,9 @@ export default {
       showCrowdSelector: false,
       showPosterSelector: false,
       showClickSelector: false,
+      showFocusImgSelectorVisible: false,
+      PARENT_TYPES,
+      OPEN_MODE_TEXT,
       urls: {
          uploadImg: 'api/v1/upload/image.html' // 上传图片接口
       },
@@ -430,16 +457,21 @@ export default {
   },
   methods: {
     validate(cb) {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          cb()
-        } else {
-          this.$message({
-            type: 'error',
-            message: '请填写完整表单'
-          })
-        }
-      })
+      const currentForm = this.$refs.form
+      if (currentForm) {
+        currentForm.validate((valid) => {
+          if (valid) {
+            cb()
+          } else {
+            this.$message({
+              type: 'error',
+              message: '请填写完整表单'
+            })
+          }
+        })
+      } else {
+        cb()
+      }
     },
     handlePluginChange(val) {
       this.form = val
@@ -454,7 +486,6 @@ export default {
     },
     /** 弹框选择素材 */
     handleSelectPosterEnd(data) {
-      this.showPosterSelector = false
       this.form.poster = {
         pictureId: data.pictureId,
         pictureStatus: data.pictureStatus,
@@ -550,7 +581,12 @@ export default {
           message: '该人群已被选择'
         })
       }
-    }
+    },
+    handleTime() {},
+    handleSelectFocusImgEnd(data) {
+      this.$set(this.form.extendInfo, 'focusImgUrl', data.pictureUrl)
+    },
+    selectImgSubmit() {},
   },
   created() {
     this.$watch('plugin', this.handlePluginChange, {

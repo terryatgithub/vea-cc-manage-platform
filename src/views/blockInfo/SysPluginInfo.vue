@@ -42,7 +42,6 @@
                     v-model="block.pluginInfo.refreshTime"
                     :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
                     placeholder="选择时间"
-                    @change="handleTime"
                   ></el-time-select>
                 </div>
               </el-form-item>
@@ -154,7 +153,7 @@
                 <div class="gallery-add" slot="add">
                   <el-button type="text" @click.stop="handleAddPluginVersion('dmp')">+ 添加DMP</el-button>
                   <br />
-                  <el-button v-show="!hasActivity" type="text" @click.stop="handleAddPluginVersion('activity')">+ 添加活动</el-button>
+                  <el-button v-show="canAddActivity" type="text" @click.stop="handleAddPluginVersion('activity')">+ 添加活动</el-button>
                 </div>
                 <PluginContent 
                   slot="detail"
@@ -186,7 +185,6 @@
                     :disabled="true"
                     :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
                     placeholder="选择时间"
-                    @change="handleTime"
                   ></el-time-select>
                 </div>
               <!-- {{ parseMinToStr(block.pluginInfo.refreshTime) }} -->
@@ -246,17 +244,6 @@
             </template>
           </el-form>
         </div>
-        <!--选择异形焦点-->
-        <el-dialog :visible.sync="showFocusImgSelectorVisible" width="1200px">
-          <selectImg @selectImg="getSelectImg"></selectImg>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="showFocusImgSelectorVisible = false">取 消</el-button>
-            <!-- <el-button type="primary" @click="showFocusImgSelectorVisible = false;selectImgSubmit()">确 定</el-button> -->
-          </div>
-        </el-dialog>
-        <!-- <div style="padding: 10px;text-align:right">
-        <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-        </div>-->
       </CommonContent>
     </div>
   </ContentCard>
@@ -264,14 +251,8 @@
 <script>
 // import ccAppParamsForm from './ccAppParamsForm'
 import ccTimeSpinner from './ccTimeSpinner'
-import selectResource from './selectResource'
-import selectClick from './selectClick'
-import selectImg from './selectImg'
 // import { AppParams, AppParamsRead } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
-import AppParams from '@/components/AppParams.vue'
-import AppParamsRead from '@/components/AppParamsRead.vue'
-import TabSelector from '@/components/selectors/TabSelector'
 import PluginContent from './PluginContent'
 import Gallery from '@/components/Gallery'
 const PARENT_TYPES = {
@@ -283,19 +264,12 @@ const PARENT_TYPES = {
 window.basicFn = {}
 export default {
   components: {
-    // ccAppParamsForm,
     ccTimeSpinner,
-    selectResource,
-    selectClick,
-    selectImg,
-    AppParams,
     CommonContent,
-    AppParamsRead,
-    TabSelector,
     PluginContent,
     Gallery
   },
-  props: ['id', 'initMode', 'version'],
+  props: ['id', 'initMode', 'version', 'contentProps'],
   data() {
     return {
       currentIndex: 0,
@@ -345,8 +319,7 @@ export default {
           pluginStatus: undefined,
           refreshTime: 240
         },
-        rlsInfo: [],
-        hasActivity: 0
+        rlsInfo: []
       },
       rules: {
         pluginInfo: {
@@ -371,8 +344,10 @@ export default {
     }
   },
   computed: {
-    hasActivity() {
-      return this.block.rlsInfo.find(({dataType}) => dataType === 4)
+    canAddActivity() {
+      if (this.resourceInfo.menuElId === 'sysPlugin') {
+        return !this.block.rlsInfo.find(({dataType}) => dataType === 4)
+      }
     },
     currentPlugin() {
       return this.block.rlsInfo[this.currentIndex]
@@ -400,7 +375,7 @@ export default {
         return {
           id: form.pluginId,
           type: 'systemPlugin',
-          menuElId: 'sysPlugin',
+          menuElId: this.contentProps.menuElId, 
           version: form.currentVersion,
           status: form.pluginStatus
         }
@@ -563,8 +538,6 @@ export default {
           }
         })
     },
-    /** 时间选择时间 */
-    handleTime() {},
     getPluginVersions(type) {
       var that = this
       const pluginVersions = this.pluginVersions
@@ -712,23 +685,6 @@ export default {
     },
     selectSubmit() {},
     clickSubmit() {},
-    /** 异形焦点选择 */
-    handleSelectFocusImgStart(index) {
-      this.showFocusImgSelectorVisible = true
-      this.selectingFocusImgForIndex = index
-    },
-    getSelectImg(data) {
-      this.selectImgData = data
-      this.showFocusImgSelectorVisible = false
-      const index = this.selectingFocusImgForIndex
-      const item = this.block.rlsInfo[index]
-      this.$set(item.extendInfo, 'focusImgUrl', this.selectImgData.pictureUrl)
-      this.selectingFocusImgForIndex = undefined
-    },
-    selectImgSubmit() {},
-    handleRemoveFocusImg(index) {
-      this.block.rlsInfo[index].extendInfo.focusImgUrl = undefined
-    },
     parseOnclick(onclick) {
       if (onclick.params) {
         const params = onclick.params

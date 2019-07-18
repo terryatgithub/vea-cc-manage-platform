@@ -3,6 +3,7 @@
     <ResourceList
       v-show="isShowList"
       ref="list"
+      :list-props="listProps"
       @create="handleCreate"
       @delete="handleDelete"
       @read="handleRead"
@@ -13,6 +14,7 @@
       v-if="!isShowList"
       :id="id"
       :init-mode="mode"
+      :content-props="contentProps"
       :version="version"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack"
@@ -39,6 +41,12 @@ export default {
         type: 'resource',
         idField: 'id'
       }
+    },
+    listProps() {
+
+    },
+    contentProps() {
+
     }
   },
   methods: {

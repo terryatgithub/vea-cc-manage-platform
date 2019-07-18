@@ -17,6 +17,11 @@ export default {
         type: 'sysPlugin',
         idField: 'pluginId'
       }
+    },
+    contentProps() {
+      return {
+        menuElId: 'sysPlugin',
+      }
     }
   }
 }
