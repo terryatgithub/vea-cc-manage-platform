@@ -37,7 +37,15 @@
                   </div>
                 </GlobalPictureSelector>
             </el-form-item>
-            <Enum v-if="topic.type === 2" label="内容源" :confirm="{title: '提示', content: '切换源将清空短视频，确定切换?'}" type="radio" :options="$consts.sourceOptions" :value="topic.source" @input="topic.source = $event, topic.contentList = []" />
+            <Enum v-if="topic.type === 2" 
+              label="内容源" 
+              :confirm="{title: '提示', content: '切换源将清空短视频，确定切换?'}" 
+              type="radio" 
+              :disabled="mode === 'replicate'"
+              :options="$consts.sourceOptions" 
+              :value="topic.source" 
+              @input="topic.source = $event, topic.contentList = []" 
+            />
             <template v-if="topic.type === 2">
               <div class="form-legend-header">
                 <i class="el-icon-edit">短视频筛选</i>
