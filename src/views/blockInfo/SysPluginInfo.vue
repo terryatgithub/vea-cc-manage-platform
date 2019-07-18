@@ -1035,31 +1035,6 @@ export default {
 }
 </script>
 
-<style scoped>
-.multi-func-block-upsert .poster,
-.multi-func-block-upsert .focus-transition {
-  position: relative;
-  height: 200px;
-  width: 200px;
-  border: 1px solid #eee;
-  cursor: pointer;
-}
-.multi-func-block-upsert .poster img,
-.multi-func-block-upsert .focus-transition__img {
-  max-width: 100%;
-  max-height: 100%;
-}
-.multi-func-block-upsert .focus-transition__remove {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  color: red;
-}
-.open-picture__img {
-  width: 200px;
-}
-
-</style>
 <style lang="stylus" scoped>
 .gallery .el-icon-close
   position absolute

@@ -15,7 +15,7 @@
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
           @delete="$emit('upsert-end', $event)">
-          <DataForm :readonly="mode === 'read'" ref="dataForm" :model="topic" :rules="rules" label-width="100px">
+          <DataForm :readonly="mode === 'read'" ref="dataForm" :model="topic" :rules="rules" label-width="120px">
             <div class="form-legend-header">
               <i class="el-icon-edit">话题类型</i>
             </div>
@@ -156,7 +156,7 @@ export default {
         id: undefined,
         type: this.$consts.topicTypesOptions[1].value,
         topicName: '',
-        source: '',
+        source: 'o_tencent',
         iconType: 'default',
         icon: '',
         status: undefined,
