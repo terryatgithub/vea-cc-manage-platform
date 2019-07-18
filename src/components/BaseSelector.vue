@@ -14,7 +14,7 @@
     <div ref="selectorContent" class="remote-selector-main__content">
       <slot name="item-list">
         <Table
-          :key="Math.random().toString()"
+          ref="table"
           :data="table.data"
           :header="table.header"
           :selected="tableSelected"
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { Table } from 'admin-toolkit'
+import  { Table } from 'admin-toolkit'
 export default {
   components: {
     Table
@@ -158,18 +158,22 @@ export default {
       const ID = this.idField
       const table = this.table
       const newSelectedIndex = this.selected.map(item => item[ID])
-      this.tableSelected = table.data.reduce((result, item, index) => {
+      const tableSelected = table.data.reduce((result, item, index) => {
         if (newSelectedIndex.indexOf(item[ID]) > -1) {
           result.push(index)
         }
         return result
       }, [])
+      this.tableSelected = this.selectionType === 'single'
+        ? tableSelected[0]
+        : tableSelected
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'))
       }, 0)
     },
     setTableHeight() {
       this.tableHeight = this.$refs.selectorContent.clientHeight + 'px'
+      this.$refs.table.$refs.table.doLayout()
     },
     handleRowDblClick() {
       if (this.selectEndOnDblClick && this.selectionType === 'single') {

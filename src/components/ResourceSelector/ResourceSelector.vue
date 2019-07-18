@@ -237,6 +237,10 @@ export default {
           shouldAutoFetch.splice(index, 1)
           $selector.fetchData()
         }
+        const baseSelector = $selector.$refs.baseSelector
+        if (baseSelector) {
+          baseSelector.setTableHeight()
+        }
       })
     },
     handleSelectEnd() {
