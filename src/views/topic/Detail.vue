@@ -154,7 +154,7 @@ export default {
       ],
       topic: {
         id: undefined,
-        type: this.$consts.topicTypesOptions[0].value,
+        type: this.$consts.topicTypesOptions[1].value,
         topicName: '',
         source: '',
         iconType: 'default',

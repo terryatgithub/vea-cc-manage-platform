@@ -17,13 +17,14 @@
         <CommonSelector v-model="filter.source" placeholder="内容源" :options="$consts.partnerOptions" :disabled="disablePartner" />
       </el-form-item>
       <el-form-item>
-        <el-input placeholder="关联正片" clearable v-model="filter.pCoocaaVId">
+        <el-input placeholder="正片id" clearable v-model="filter.pThirdVId">
           <ResourceSelector
             slot="append"
             :selectors="['video', 'edu']"
             :source="source"
             :disable-partner="true"
             @select-end="handleSelectParentVideoEnd">
+            <el-button>选择正片</el-button>
           </ResourceSelector>
         </el-input>
       </el-form-item>
@@ -91,26 +92,26 @@ export default {
   },
   methods: {
     handleSelectParentVideoEnd({video, episode, edu}) {
-      let pCoocaaVId
+      let pThirdVId
       if (video.length > 0) {
         const coocaaVId = video[0].coocaaVId
         const selectedEpisode = episode[coocaaVId]
         if (selectedEpisode) {
-          pCoocaaVId = selectedEpisode.coocaaMId
+          pThirdVId = selectedEpisode.coocaaMId
         } else {
-          pCoocaaVId = coocaaVId
+          pThirdVId = coocaaVId
         }
       } else if (edu.length > 0) {
-        pCoocaaVId = edu[0].coocaaVId
+        pThirdVId = edu[0].coocaaVId
       }
-      this.filter.pCoocaaVId = pCoocaaVId
+      this.filter.pThirdVId = pThirdVId
 
     },
     getDefaultFilter() {
       return {
         source: this.$consts.sourceToPartner[this.source || this.$consts.partnerOptions[0].value],
         mTitle: '',
-        pCoocaaVId: '',
+        pThirdVId: '',
         resType: 'shortVideo',
         callback: 'result'
       }
