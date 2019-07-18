@@ -59,6 +59,7 @@
             <el-input v-model.trim="form.title"></el-input>
           </el-form-item>
         </template>
+  
         <template v-if="form.dataType === 7">
           <el-form-item label="人群" prop="dmpRegistryInfo">
             <el-button @click="handleSelectCrowdStart">
@@ -69,9 +70,10 @@
             </span>
           </el-form-item>
         </template>
+
         <el-form-item
           label="海报"
-          prop="poster.pictureUrl'"
+          prop="poster.pictureUrl"
           :rules="rules.poster.pictureUrl">
           <GlobalPictureSelector
             class="poster"
@@ -440,7 +442,7 @@ export default {
         focusImgUrl: [{ required: true, message: '请选择异形焦点' }],
         poster: {
           pictureUrl: [
-            { required: true, message: '请选择海报', trigger: 'blur' }
+            { required: true, message: '请选择海报'}
           ]
         },
         dmpRegistryInfo: [

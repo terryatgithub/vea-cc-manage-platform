@@ -706,18 +706,20 @@ export default {
       return data
     },
     validateData(data, cb) {
-      this.$refs.blockForm.validate(
-        function(valid) {
-          if (valid) {
-            cb(data)
-          } else {
-            this.$message({
-              type: 'error',
-              message: '请把表单填写完整'
-            })
-          }
-        }.bind(this)
-      )
+      this.$refs.pluginContent.validate(() => {
+        this.$refs.blockForm.validate(
+          function(valid) {
+            if (valid) {
+              cb(data)
+            } else {
+              this.$message({
+                type: 'error',
+                message: '请把表单填写完整'
+              })
+            }
+          }.bind(this)
+        )
+      })
     },
     setData(data) {
       const helper = this.block.helper
