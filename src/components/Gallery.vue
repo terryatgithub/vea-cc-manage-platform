@@ -2,22 +2,23 @@
   <div class="gallery__wrapper">
     <div class="gallery__list">
 
-      <draggable
-        v-model="items"
-        @start="onDragStart($event)"
-        @end="onDragEnd($event)"
-        v-if="!disabled">
+      <component 
+        :is="mode === 'read' ? 'div' : 'draggable'"
+        :value="value"
+        @input="$emit('input', $event)"
+        @start="handleDragStart"
+        @end="handleDragEnd">
         <div 
-          v-for="(item, index) in items"
+          v-for="(item, index) in value"
           :key="index"
           :class="['gallery__item', index === activeIndex ? 'active' : '']"
           @click="handleActivate(index)">
           <slot name="item" :item="item" :index="index">
           </slot>
         </div>
-      </draggable>
+      </component>
       <div
-        v-if="addable"
+        v-if="mode !== 'read'"
         class="gallery__item" @click="handleAdd">
         <slot name="add">
           <div class="gallery__add">
@@ -39,7 +40,7 @@ export default {
   components: {
     draggable
   },
-  props: ['items', 'activeIndex', 'addable'],
+  props: ['value', 'activeIndex', 'mode'],
   methods: {
     handleActivate(index) {
       this.$emit('activate', index)
@@ -48,11 +49,24 @@ export default {
       event.stopPropagation()
       this.$emit('add')
     },
-    onDragStart() {
-
+    handleDragStart(event) {
+      event.preventDefault()
+      return false
     },
-    onDragEnd() {
-
+    handleDragEnd(event) {
+      const { oldIndex, newIndex } = event
+      const currentIndex = this.activeIndex
+      let nextActiveIndex
+      if (oldIndex === currentIndex) {
+        nextActiveIndex = newIndex
+      } else if (oldIndex < currentIndex && newIndex >= currentIndex ) {
+        nextActiveIndex = currentIndex - 1
+      } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
+        nextActiveIndex = currentIndex + 1
+      }
+      if (nextActiveIndex !== undefined) {
+        this.$emit('active-index-change', nextActiveIndex)
+      }
     }
   }
 }

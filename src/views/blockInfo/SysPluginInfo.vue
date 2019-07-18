@@ -132,9 +132,10 @@
               </div>
               <Gallery 
                 class="gallery"
-                :items="block.rlsInfo" 
+                :mode="mode"
+                v-model="block.rlsInfo" 
                 :active-index="currentIndex"
-                :addable="true"
+                @active-index-change="currentIndex = $event"
                 @activate="handleActivatePluginVersion">
                 <div slot="item" slot-scope="{item, index}">
                   <span v-if="item.dmpRegistryInfo">
@@ -144,6 +145,7 @@
                     {{ item.label }}
                   </span>
                   <i 
+                    v-show="item.dataType === 7 || item.dataType === 4"
                     @click.stop="handleRemovePluginVersion(index)"
                     class="el-icon el-icon-close" 
                     title="移除">
@@ -220,8 +222,9 @@
               </div>
               <Gallery 
                 class="gallery"
-                :items="block.rlsInfo" 
+                v-model="block.rlsInfo" 
                 :active-index="currentIndex"
+                :mode="mode"
                 @activate="handleActivatePluginVersion">
                 <div slot="item" slot-scope="{item}">
                   <span v-if="item.dmpRegistryInfo">
