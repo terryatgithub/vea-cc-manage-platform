@@ -71,24 +71,28 @@
           </el-form-item>
         </template>
 
-        <el-form-item
-          label="海报"
-          prop="poster.pictureUrl"
-          :rules="rules.poster.pictureUrl">
-          <GlobalPictureSelector
-            class="poster"
-            :disabled="mode === 'read'"
-            @select-end="handleSelectPosterEnd"
-          >
-            <img
-              class="poster__img"
-              v-if="form.poster.pictureUrl"
-              :src="form.poster.pictureUrl"
+        <div>
+          <!-- 不知哪里的问题，要加个 div 才会校验 -->
+          <el-form-item
+            label="海报"
+            prop="poster.pictureUrl"
+            :rules="rules.poster.pictureUrl">
+            <GlobalPictureSelector
+              class="poster"
+              :disabled="mode === 'read'"
+              @select-end="handleSelectPosterEnd"
             >
-            <div v-else class="poster__placeholder">
-            </div>
-          </GlobalPictureSelector>
-        </el-form-item>
+              <img
+                class="poster__img"
+                v-if="form.poster.pictureUrl"
+                :src="form.poster.pictureUrl"
+              >
+              <div v-else class="poster__placeholder">
+              </div>
+            </GlobalPictureSelector>
+          </el-form-item>
+        </div>
+
         <template v-if=" pluginType === 'REFERENCE_ACTIVITY'">
           <el-form-item
             label="异形焦点"
@@ -239,6 +243,13 @@
         <template v-if="parentType === 'secKill'">
           <el-form-item label="商品ID">{{ form.goodsId }}</el-form-item>
           <el-form-item label="商品名称">{{ form.title }}</el-form-item>
+        </template>
+        <template v-if="form.dataType === 7">
+          <el-form-item label="人群" prop="dmpRegistryInfo">
+            <span v-if="form.dmpRegistryInfo">
+              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}/{{ form.dmpRegistryInfo.dmpCrowdName }}
+            </span>
+          </el-form-item>
         </template>
         <el-form-item label="海报">
           <div class="poster">
@@ -442,7 +453,7 @@ export default {
         focusImgUrl: [{ required: true, message: '请选择异形焦点' }],
         poster: {
           pictureUrl: [
-            { required: true, message: '请选择海报'}
+            { required: true, message: '请选择海报', trigger: 'blur'}
           ]
         },
         dmpRegistryInfo: [
@@ -479,7 +490,7 @@ export default {
       this.form = val
       const $form = this.$refs.form
       if ($form) {
-        $form.clearValidate()
+        // $form.clearValidate()
       }
     },
     /** 弹框选择素材 */

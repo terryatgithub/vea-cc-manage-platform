@@ -143,6 +143,7 @@
                   <span v-else>
                     {{ item.label }}
                   </span>
+                  <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
                   <i 
                     v-show="item.dataType === 7 || item.dataType === 4"
                     @click.stop="handleRemovePluginVersion(index)"
@@ -231,6 +232,7 @@
                   <span v-else>
                     {{ item.label }}
                   </span>
+                  <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
                 </div>
                 <PluginContent 
                   slot="detail"
