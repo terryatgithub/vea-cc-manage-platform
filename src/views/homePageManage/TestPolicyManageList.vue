@@ -51,7 +51,7 @@ export default {
       },
       filterSchema: null,
       pagination: {
-        pageSize: 15
+        pageSize: 10
       },
       selected: [],
       selectedItems: [],
