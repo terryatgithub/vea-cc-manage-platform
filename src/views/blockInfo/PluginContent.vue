@@ -115,17 +115,10 @@
           </el-form-item>
           <el-form-item
             label="存活时间"
-            prop="extendInfo.aliveTime'"
+            prop="extendInfo.aliveTime"
             :rules="rules.aliveTime"
           >
-            <div class="el-input" style="max-width: 400px">
-              <el-time-select
-                v-model.number="form.extendInfo.aliveTime"
-                :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
-                placeholder="选择时间"
-                @change="handleTime"
-              ></el-time-select>
-            </div>
+            <InputMinute v-model="form.extendInfo.aliveTime" :max="60 * 24" :min="5" />
           </el-form-item>
           <el-form-item
             label="点击次数"
@@ -164,7 +157,7 @@
           >
             <el-input v-model.trim="form.onclick.webpageUrl"></el-input>
           </el-form-item>
-          <el-form-item label="网页类型" prop="onclick.webpageType'">
+          <el-form-item label="网页类型" prop="onclick.webpageType">
             <el-radio-group v-model="form.onclick.webpageType">
               <el-radio label="1">浮窗网页</el-radio>
               <el-radio label="2">全屏网页</el-radio>
@@ -337,6 +330,7 @@ import TabSelector from '@/components/selectors/TabSelector'
 import { cloneDeep } from 'lodash'
 import CrowdSelector from '@/components/CrowdSelector'
 import selectImg from './selectImg'
+import InputMinute from '@/components/InputMinute'
 
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 
@@ -363,6 +357,7 @@ export default {
     TabSelector,
     CrowdSelector,
     selectImg,
+    InputMinute,
 
     GlobalPictureSelector
   },
@@ -490,7 +485,7 @@ export default {
       this.form = val
       const $form = this.$refs.form
       if ($form) {
-        // $form.clearValidate()
+        $form.clearValidate()
       }
     },
     /** 弹框选择素材 */

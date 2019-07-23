@@ -19,7 +19,8 @@ export default {
   top 0
 .page-content-wrapper
     >>> .el-input__inner,
-    >>> .el-select
+    >>> .el-select,
+    >>> .el-textarea
         max-width 450px
     >>> .el-input + .el-checkbox
     >>> .el-select + .el-checkbox

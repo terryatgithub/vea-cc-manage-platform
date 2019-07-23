@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-input-number
+      class="input-hour"
       @change="handleInputHour"
       controls-position="right"
       :precision="0"
@@ -8,6 +9,7 @@
       :max="hourMax"
       v-model="hour" /> 小时
     <el-input-number
+      class="input-minute"
       @change="handleInputMinute"
       controls-position="right"
       :precision="0"
@@ -80,6 +82,9 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="stylus" scoped>
+.input-hour,
+.input-minute
+  display inline-block
+  width 200px
 </style>

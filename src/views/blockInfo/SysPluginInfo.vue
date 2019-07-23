@@ -1,254 +1,256 @@
 <template>
-  <ContentCard :title="title" @go-back="$emit('go-back')">
-    <div class="multi-func-block-upsert">
-      <CommonContent
-        :mode="mode"
-        :resource-info="resourceInfo"
-        @replicate="mode = 'replicate'; title='创建副本'"
-        @edit="mode = 'edit'; title='编辑'"
-        @unaudit="$emit('upsert-end')"
-        @shelves="fetchData"
-        @submit-audit="handleSubmitAudit($event, $consts.status.waiting)"
-        @save-draft="handleSubmitAudit($event, $consts.status.draft)"
-        @audit="$emit('upsert-end')"
-        @select-version="fetchData"
-        @delete="$emit('upsert-end', $event)"
-      >
-        <!-- <div slot="auditAndDraft">
-          <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
-        </div> -->
-        <div class="form-legend-header">
-          <i class="el-icon-edit">基本信息</i>
-        </div>
-        <div v-if="mode!== 'read'">
-          <el-form
-            ref="blockForm"
-            :rules="rules"
-            :model="block"
-            label-width="140px"
-            class="el-form-add"
+  <PageWrapper class="tab-info-wrapper">
+    <PageContentWrapper>
+      <ContentCard :title="title" @go-back="$emit('go-back')">
+        <div class="multi-func-block-upsert">
+          <CommonContent
+            :mode="mode"
+            :resource-info="resourceInfo"
+            @replicate="mode = 'replicate'; title='创建副本'"
+            @edit="mode = 'edit'; title='编辑'"
+            @unaudit="$emit('upsert-end')"
+            @shelves="fetchData"
+            @submit-audit="handleSubmitAudit($event, $consts.status.waiting)"
+            @save-draft="handleSubmitAudit($event, $consts.status.draft)"
+            @audit="$emit('upsert-end')"
+            @select-version="fetchData"
+            @delete="$emit('upsert-end', $event)"
           >
-            <el-form-item
-              label="系统功能名称"
-              prop="pluginInfo.pluginName"
-              :rules="rules.pluginInfo.pluginName"
-            >
-              <el-input v-model.trim="block.pluginInfo.pluginName"></el-input>
-            </el-form-item>
-            <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
-              <el-form-item label="固定刷新时间" prop="pluginInfo.refreshTime">
-                <div class="el-input" style="max-width: 400px">
-                  <el-time-select
-                    v-model="block.pluginInfo.refreshTime"
-                    :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
-                    placeholder="选择时间"
-                  ></el-time-select>
-                </div>
-              </el-form-item>
-            </template>
-            <el-form-item
-              v-show="block.pluginInfo.pluginParentType !== 'builtIn'"
-              label="类型"
-              prop="pluginInfo.pluginParentType"
-              :rules="rules.pluginInfo.pluginParentType"
-            >
-              <el-select
-                class="plugin-parent-type-selector"
-                :value="block.pluginInfo.pluginParentType"
-                @input="handleChangePluginParentType"
-                :disabled="mode === 'edit'"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in pluginParentTypes"
-                  :key="item.id"
-                  :label="item.dictCnName"
-                  :value="item.dictEnName"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item
-              v-if="pluginParentType !== 'secKill'"
-              label="内容源"
-              prop="pluginInfo.source"
-              :rules="rules.pluginInfo.source"
-            >
-              <el-radio-group
-                :value="block.pluginInfo.source"
-                @input="handleChangeSource"
-                :disabled="isDisabledSource"
-              >
-                <el-radio
-                  v-for="(item, key) in $consts.sourceNumberOptions"
-                  :key="key"
-                  :label="item.value"
-                >{{ item.label }}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <!--类型位标记推荐位-->
-            <template v-if="pluginParentType === 'sign'">
-              <el-form-item
-                label="标记推荐位类型"
-                prop="pluginInfo.pluginType"
-                :rules="rules.pluginInfo.pluginType"
-              >
-                <el-input v-model.trim="block.pluginInfo.pluginType"></el-input>
-              </el-form-item>
-            </template>
-            <!--end-->
-            <el-form-item
-              v-if="pluginParentType !== 'sign' && pluginTypes.length > 0"
-              label="多功能推荐位类型"
-              prop="pluginInfo.pluginType"
-              :rules="rules.pluginInfo.pluginType"
-            >
-              <el-select
-                class="plugin-type-selector"
-                :value="block.pluginInfo.pluginType"
-                @input="handleChangePluginType"
-                placeholder="请选择"
-                style="width: 300px; max-width: 300px"
-              >
-                <el-option
-                  v-for="item in pluginTypes"
-                  :key="item.dictId"
-                  :label="item.dictCnName"
-                  :value="item.dictEnName"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <template v-if="baseHasTitle">
-              <el-form-item label="标题" prop="helper.title" :rules="rules.title">
-                <el-input v-model.trim="block.helper.title"></el-input>
-              </el-form-item>
-              <el-form-item label="副标题" prop="helper.subTitle" :rules="rules.subTitle">
-                <el-input v-model.trim="block.helper.subTitle"></el-input>
-              </el-form-item>
-            </template>
-            <template v-if="pluginParentType !== 'sign'">
-              <div class="form-legend-header">
-                <span>多版本信息</span>
-              </div>
-              <Gallery 
-                class="gallery"
-                :mode="mode"
-                v-model="block.rlsInfo" 
-                :active-index="currentIndex"
-                @active-index-change="currentIndex = $event"
-                @activate="handleActivatePluginVersion">
-                <div slot="item" slot-scope="{item, index}">
-                  <span v-if="item.dmpRegistryInfo">
-                    人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
-                  </span>
-                  <span v-else>
-                    {{ item.label }}
-                  </span>
-                  <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
-                  <i 
-                    v-show="item.dataType === 7 || item.dataType === 4"
-                    @click.stop="handleRemovePluginVersion(index)"
-                    class="el-icon el-icon-close" 
-                    title="移除">
-                  </i>
-                </div>
-                <div class="gallery-add" slot="add">
-                  <el-button type="text" @click.stop="handleAddPluginVersion('dmp')">+ 添加DMP</el-button>
-                  <br />
-                  <el-button v-show="canAddActivity" type="text" @click.stop="handleAddPluginVersion('activity')">+ 添加活动</el-button>
-                </div>
-                <PluginContent 
-                  slot="detail"
-                  ref="pluginContent"
-                  :source="source"
-                  :mode="mode"
-                  :plugin="currentPlugin" 
-                  :plugin-type="pluginType" 
-                  :plugin-list="block.rlsInfo"
-                  :parent-type="block.pluginInfo.pluginParentType" />
-              </Gallery>
-            </template>
-          </el-form>
+            <!-- <div slot="auditAndDraft">
+              <el-button type="primary" @click="handleSubmitAudit">提交审核</el-button>
+            </div> -->
+            <div class="form-legend-header">
+              <i class="el-icon-edit">基本信息</i>
+            </div>
+            <div v-if="mode!== 'read'">
+              <el-form
+                ref="blockForm"
+                :rules="rules"
+                :model="block"
+                label-width="140px">
+                <el-form-item
+                  label="系统功能名称"
+                  prop="pluginInfo.pluginName"
+                  :rules="rules.pluginInfo.pluginName"
+                >
+                  <el-input v-model.trim="block.pluginInfo.pluginName"></el-input>
+                </el-form-item>
+                <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
+                  <el-form-item label="固定刷新时间" prop="pluginInfo.refreshTime">
+                    <div class="el-input" style="max-width: 400px">
+                      <el-time-select
+                        v-model="block.pluginInfo.refreshTime"
+                        :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
+                        placeholder="选择时间"
+                      ></el-time-select>
+                    </div>
+                  </el-form-item>
+                </template>
+                <el-form-item
+                  v-show="block.pluginInfo.pluginParentType !== 'builtIn'"
+                  label="类型"
+                  prop="pluginInfo.pluginParentType"
+                  :rules="rules.pluginInfo.pluginParentType"
+                >
+                  <el-select
+                    class="plugin-parent-type-selector"
+                    :value="block.pluginInfo.pluginParentType"
+                    @input="handleChangePluginParentType"
+                    :disabled="mode === 'edit'"
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      v-for="item in pluginParentTypes"
+                      :key="item.id"
+                      :label="item.dictCnName"
+                      :value="item.dictEnName"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item
+                  v-if="pluginParentType !== 'secKill'"
+                  label="内容源"
+                  prop="pluginInfo.source"
+                  :rules="rules.pluginInfo.source"
+                >
+                  <el-radio-group
+                    :value="block.pluginInfo.source"
+                    @input="handleChangeSource"
+                    :disabled="isDisabledSource"
+                  >
+                    <el-radio
+                      v-for="(item, key) in $consts.sourceNumberOptions"
+                      :key="key"
+                      :label="item.value"
+                    >{{ item.label }}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <!--类型位标记推荐位-->
+                <template v-if="pluginParentType === 'sign'">
+                  <el-form-item
+                    label="标记推荐位类型"
+                    prop="pluginInfo.pluginType"
+                    :rules="rules.pluginInfo.pluginType"
+                  >
+                    <el-input v-model.trim="block.pluginInfo.pluginType"></el-input>
+                  </el-form-item>
+                </template>
+                <!--end-->
+                <el-form-item
+                  v-if="pluginParentType !== 'sign' && pluginTypes.length > 0"
+                  label="多功能推荐位类型"
+                  prop="pluginInfo.pluginType"
+                  :rules="rules.pluginInfo.pluginType"
+                >
+                  <el-select
+                    class="plugin-type-selector"
+                    :value="block.pluginInfo.pluginType"
+                    @input="handleChangePluginType"
+                    placeholder="请选择"
+                    style="width: 300px; max-width: 300px"
+                  >
+                    <el-option
+                      v-for="item in pluginTypes"
+                      :key="item.dictId"
+                      :label="item.dictCnName"
+                      :value="item.dictEnName"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+                <template v-if="baseHasTitle">
+                  <el-form-item label="标题" prop="helper.title" :rules="rules.title">
+                    <el-input v-model.trim="block.helper.title"></el-input>
+                  </el-form-item>
+                  <el-form-item label="副标题" prop="helper.subTitle" :rules="rules.subTitle">
+                    <el-input v-model.trim="block.helper.subTitle"></el-input>
+                  </el-form-item>
+                </template>
+                <template v-if="pluginParentType !== 'sign'">
+                  <div class="form-legend-header">
+                    <span>多版本信息</span>
+                  </div>
+                  <Gallery 
+                    class="gallery"
+                    :mode="mode"
+                    v-model="block.rlsInfo" 
+                    :active-index="currentIndex"
+                    @active-index-change="currentIndex = $event"
+                    @activate="handleActivatePluginVersion">
+                    <div slot="item" slot-scope="{item, index}">
+                      <span v-if="item.dmpRegistryInfo">
+                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
+                      </span>
+                      <span v-else>
+                        {{ item.label }}
+                      </span>
+                      <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
+                      <i 
+                        v-show="item.dataType === 7 || item.dataType === 4"
+                        @click.stop="handleRemovePluginVersion(index)"
+                        class="el-icon el-icon-close" 
+                        title="移除">
+                      </i>
+                    </div>
+                    <div class="gallery-add" slot="add">
+                      <el-button type="text" @click.stop="handleAddPluginVersion('dmp')">+ 添加DMP</el-button>
+                      <br />
+                      <el-button v-show="canAddActivity" type="text" @click.stop="handleAddPluginVersion('activity')">+ 添加活动</el-button>
+                    </div>
+                    <PluginContent 
+                      slot="detail"
+                      ref="pluginContent"
+                      :source="source"
+                      :mode="mode"
+                      :plugin="currentPlugin" 
+                      :plugin-type="pluginType" 
+                      :plugin-list="block.rlsInfo"
+                      :parent-type="block.pluginInfo.pluginParentType" />
+                  </Gallery>
+                </template>
+              </el-form>
+            </div>
+            <div v-if="mode=== 'read'">
+              <el-form ref="blockForm" label-width="140px">
+                <el-form-item
+                  label="系统功能名称"
+                  prop="pluginInfo.pluginName"
+                >{{ block.pluginInfo.pluginName }}</el-form-item>
+                <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
+                  <el-form-item
+                    label="固定刷新时间"
+                    prop="pluginInfo.refreshTime"
+                  >
+                    <div class="el-input" style="max-width: 400px">
+                      <el-time-select
+                        v-model="block.pluginInfo.refreshTime"
+                        :disabled="true"
+                        :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
+                        placeholder="选择时间"
+                      ></el-time-select>
+                    </div>
+                  <!-- {{ parseMinToStr(block.pluginInfo.refreshTime) }} -->
+                  </el-form-item>
+                </template>
+                <el-form-item
+                  v-show="block.pluginInfo.pluginParentType !== 'builtIn'"
+                  label="类型"
+                  prop="pluginInfo.pluginParentType"
+                >{{ pluginParentTypeText }}</el-form-item>
+                <el-form-item
+                  v-if="pluginParentType !== 'secKill'"
+                  label="内容源"
+                >{{ $consts.sourceNumberText[block.pluginInfo.source] }}</el-form-item>
+                <template v-if="pluginParentType === 'sign'">
+                  <el-form-item
+                    label="标记推荐位类型"
+                    prop="pluginInfo.pluginType"
+                  >{{ block.pluginInfo.pluginType }}</el-form-item>
+                </template>
+                <el-form-item
+                  v-if="pluginParentType !== 'sign' && pluginTypes.length > 0 && pluginTypeText"
+                  label="多功能推荐位类型"
+                  prop="pluginInfo.pluginType"
+                >{{ pluginTypeText }}</el-form-item>
+                <template v-if="baseHasTitle">
+                  <el-form-item label="标题" prop="helper.title">{{ block.helper.title }}</el-form-item>
+                  <el-form-item label="副标题" prop="helper.subTitle">{{ block.helper.subTitle }}</el-form-item>
+                </template>
+                <template v-if="pluginParentType !== 'sign'">
+                  <div class="form-legend-header">
+                    <span>多版本信息</span>
+                  </div>
+                  <Gallery 
+                    class="gallery"
+                    v-model="block.rlsInfo" 
+                    :active-index="currentIndex"
+                    :mode="mode"
+                    @activate="handleActivatePluginVersion">
+                    <div slot="item" slot-scope="{item}">
+                      <span v-if="item.dmpRegistryInfo">
+                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
+                      </span>
+                      <span v-else>
+                        {{ item.label }}
+                      </span>
+                      <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
+                    </div>
+                    <PluginContent 
+                      slot="detail"
+                      :source="source"
+                      :mode="mode"
+                      :addable="false"
+                      :plugin="currentPlugin" 
+                      :plugin-type="pluginType" 
+                      :parent-type="block.pluginInfo.pluginParentType" />
+                  </Gallery>
+                </template>
+              </el-form>
+            </div>
+          </CommonContent>
         </div>
-        <div v-if="mode=== 'read'">
-          <el-form ref="blockForm" label-width="140px">
-            <el-form-item
-              label="系统功能名称"
-              prop="pluginInfo.pluginName"
-            >{{ block.pluginInfo.pluginName }}</el-form-item>
-            <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
-              <el-form-item
-                label="固定刷新时间"
-                prop="pluginInfo.refreshTime"
-              >
-                <div class="el-input" style="max-width: 400px">
-                  <el-time-select
-                    v-model="block.pluginInfo.refreshTime"
-                    :disabled="true"
-                    :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
-                    placeholder="选择时间"
-                  ></el-time-select>
-                </div>
-              <!-- {{ parseMinToStr(block.pluginInfo.refreshTime) }} -->
-              </el-form-item>
-            </template>
-            <el-form-item
-              v-show="block.pluginInfo.pluginParentType !== 'builtIn'"
-              label="类型"
-              prop="pluginInfo.pluginParentType"
-            >{{ pluginParentTypeText }}</el-form-item>
-            <el-form-item
-              v-if="pluginParentType !== 'secKill'"
-              label="内容源"
-            >{{ $consts.sourceNumberText[block.pluginInfo.source] }}</el-form-item>
-            <template v-if="pluginParentType === 'sign'">
-              <el-form-item
-                label="标记推荐位类型"
-                prop="pluginInfo.pluginType"
-              >{{ block.pluginInfo.pluginType }}</el-form-item>
-            </template>
-            <el-form-item
-              v-if="pluginParentType !== 'sign' && pluginTypes.length > 0 && pluginTypeText"
-              label="多功能推荐位类型"
-              prop="pluginInfo.pluginType"
-            >{{ pluginTypeText }}</el-form-item>
-            <template v-if="baseHasTitle">
-              <el-form-item label="标题" prop="helper.title">{{ block.helper.title }}</el-form-item>
-              <el-form-item label="副标题" prop="helper.subTitle">{{ block.helper.subTitle }}</el-form-item>
-            </template>
-            <template v-if="pluginParentType !== 'sign'">
-              <div class="form-legend-header">
-                <span>多版本信息</span>
-              </div>
-              <Gallery 
-                class="gallery"
-                v-model="block.rlsInfo" 
-                :active-index="currentIndex"
-                :mode="mode"
-                @activate="handleActivatePluginVersion">
-                <div slot="item" slot-scope="{item}">
-                  <span v-if="item.dmpRegistryInfo">
-                    人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
-                  </span>
-                  <span v-else>
-                    {{ item.label }}
-                  </span>
-                  <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
-                </div>
-                <PluginContent 
-                  slot="detail"
-                  :source="source"
-                  :mode="mode"
-                  :addable="false"
-                  :plugin="currentPlugin" 
-                  :plugin-type="pluginType" 
-                  :parent-type="block.pluginInfo.pluginParentType" />
-              </Gallery>
-            </template>
-          </el-form>
-        </div>
-      </CommonContent>
-    </div>
-  </ContentCard>
+      </ContentCard>
+    </PageContentWrapper>
+  </PageWrapper>
 </template>
 <script>
 // import ccAppParamsForm from './ccAppParamsForm'
@@ -257,6 +259,8 @@ import ccTimeSpinner from './ccTimeSpinner'
 import CommonContent from '@/components/CommonContent.vue'
 import PluginContent from './PluginContent'
 import Gallery from '@/components/Gallery'
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
 const PARENT_TYPES = {
  sign: 'sign', //标记推荐位
   multi: 'multi',
@@ -269,7 +273,9 @@ export default {
     ccTimeSpinner,
     CommonContent,
     PluginContent,
-    Gallery
+    Gallery,
+    PageWrapper,
+    PageContentWrapper
   },
   props: ['id', 'initMode', 'version', 'contentProps'],
   data() {
@@ -346,11 +352,6 @@ export default {
     }
   },
   computed: {
-    canAddActivity() {
-      if (this.resourceInfo.menuElId === 'sysPlugin') {
-        return !this.block.rlsInfo.find(({dataType}) => dataType === 4)
-      }
-    },
     currentPlugin() {
       return this.block.rlsInfo[this.currentIndex]
     },
@@ -381,6 +382,11 @@ export default {
           version: form.currentVersion,
           status: form.pluginStatus
         }
+      }
+    },
+    canAddActivity() {
+      if (this.type === 'sysPlugin') {
+        return !this.block.rlsInfo.find(({dataType}) => dataType === 4)
       }
     },
     pluginTypeText() {
