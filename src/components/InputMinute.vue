@@ -2,20 +2,20 @@
   <div>
     <el-input-number
       class="input-hour"
-      @change="handleInputHour"
       controls-position="right"
       :precision="0"
       :min="0"
       :max="hourMax"
-      v-model="hour" /> 小时
+      :value="hour"
+      @input="handleInputHour" /> 小时
     <el-input-number
       class="input-minute"
-      @change="handleInputMinute"
       controls-position="right"
       :precision="0"
       :min="0"
       :max="minMax"
-      v-model="minute" /> 分钟
+      :value="minute"
+      @input="handleInputMinute"/> 分钟
   </div>
 </template>
 
@@ -23,6 +23,7 @@
 export default {
   data() {
     return {
+      inited: false,
       hour: 0,
       minute: 0
     }
@@ -52,7 +53,7 @@ export default {
         return this.setHourAndMinute(this.min)
       }
       this.minute = minute
-      this.$emit('input', total)
+      this.emitInput(total)
     },
     handleInputHour(hour) {
       const total = hour * 60 + this.minute
@@ -63,7 +64,7 @@ export default {
         return this.setHourAndMinute(this.min)
       }
       this.hour = hour
-      this.$emit('input', total)
+      this.emitInput(total)
     },
     setHourAndMinute(val) {
       if (val) {
@@ -72,12 +73,19 @@ export default {
           this.minute = val % 60
         })
       }
+    },
+    emitInput(val) {
+      if (this.inited) {
+        this.$emit('input', val)
+      }
     }
   },
-  created() {
+  mounted() {
+    // mounted 之后再初始化值，因为elementui一开始就会触发 input 事件... 坑...
     this.$watch('value', this.setHourAndMinute, {
       immediate: true
     })
+    this.inited = true
   }
 }
 </script>
