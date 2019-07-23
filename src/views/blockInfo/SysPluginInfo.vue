@@ -50,7 +50,7 @@
                     class="plugin-parent-type-selector"
                     :value="block.pluginInfo.pluginParentType"
                     @input="handleChangePluginParentType"
-                    :disabled="mode === 'edit'"
+                    :disabled="mode === 'edit' || mode === 'replicate'"
                     placeholder="请选择"
                   >
                     <el-option
@@ -119,7 +119,7 @@
                     <el-input v-model.trim="block.helper.subTitle"></el-input>
                   </el-form-item>
                 </template>
-                <template v-if="pluginParentType !== 'sign'">
+                <template v-if="pluginParentType && pluginParentType !== 'sign'">
                   <div class="form-legend-header">
                     <span>多版本信息</span>
                   </div>
@@ -702,20 +702,26 @@ export default {
       return data
     },
     validateData(data, cb) {
-      this.$refs.pluginContent.validate(() => {
-        this.$refs.blockForm.validate(
-          function(valid) {
-            if (valid) {
-              cb(data)
-            } else {
-              this.$message({
-                type: 'error',
-                message: '请把表单填写完整'
+      this.$refs.blockForm.validate(
+        function(valid) {
+          if (valid) {
+            const pluginContent = this.$refs.pluginContent
+            // 标记推荐位没有版本信息
+            if (pluginContent) {
+              pluginContent.validate(() => {
+                cb(data)
               })
+            } else {
+              cb(data)
             }
-          }.bind(this)
-        )
-      })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '请把表单填写完整'
+            })
+          }
+        }.bind(this)
+      )
     },
     setData(data) {
       const helper = this.block.helper

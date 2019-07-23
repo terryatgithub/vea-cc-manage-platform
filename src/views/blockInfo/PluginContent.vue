@@ -10,7 +10,7 @@
         <template v-if="parentType === 'builtIn'">
           <el-form-item
             label="状态栏文字">
-            <el-row class="leftSide">
+            <el-row style="max-width: 450px">
               <el-col :span="11">
                 <el-form-item  :rules="rules.barText" prop="title">
                   <el-input v-model.trim="form.title"></el-input>
@@ -131,6 +131,7 @@
         <el-form-item
           v-if="parentType === 'multi' || parentType === 'secKill' || parentType === 'builtIn'"
           label="打开方式"
+          prop="openMode"
           :rules="rules.openMode"
         >
           <el-select :value="form.openMode" @input="handleChangeOpenMode(form, $event)">
