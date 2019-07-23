@@ -118,7 +118,7 @@
             prop="extendInfo.aliveTime"
             :rules="rules.aliveTime"
           >
-            <InputMinute v-model="form.extendInfo.aliveTime" :max="60 * 24" :min="5" />
+            <InputMinute v-model="form.extendInfo.aliveTime" :max="60 * 24 - 1" :min="5" />
           </el-form-item>
           <el-form-item
             label="点击次数"

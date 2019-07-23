@@ -37,7 +37,7 @@
                 </el-form-item>
                 <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
                   <el-form-item label="固定刷新时间" prop="pluginInfo.refreshTime">
-                    <InputMinute :min="5" :max="60 * 24" v-model="block.pluginInfo.refreshTime" />
+                    <InputMinute :min="5" :max="60 * 24 - 1" v-model="block.pluginInfo.refreshTime" />
                   </el-form-item>
                 </template>
                 <el-form-item
