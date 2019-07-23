@@ -37,13 +37,7 @@
                 </el-form-item>
                 <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
                   <el-form-item label="固定刷新时间" prop="pluginInfo.refreshTime">
-                    <div class="el-input" style="max-width: 400px">
-                      <el-time-select
-                        v-model="block.pluginInfo.refreshTime"
-                        :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
-                        placeholder="选择时间"
-                      ></el-time-select>
-                    </div>
+                    <InputMinute :min="5" :max="60 * 24" v-model="block.pluginInfo.refreshTime" />
                   </el-form-item>
                 </template>
                 <el-form-item
@@ -180,15 +174,7 @@
                     label="固定刷新时间"
                     prop="pluginInfo.refreshTime"
                   >
-                    <div class="el-input" style="max-width: 400px">
-                      <el-time-select
-                        v-model="block.pluginInfo.refreshTime"
-                        :disabled="true"
-                        :picker-options="{  start: '00:00', step: '00:10',  end: '24:00' }"
-                        placeholder="选择时间"
-                      ></el-time-select>
-                    </div>
-                  <!-- {{ parseMinToStr(block.pluginInfo.refreshTime) }} -->
+                    {{ parseMinToStr(block.pluginInfo.refreshTime) }}
                   </el-form-item>
                 </template>
                 <el-form-item
@@ -261,6 +247,7 @@ import PluginContent from './PluginContent'
 import Gallery from '@/components/Gallery'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
+import InputMinute from '@/components/InputMinute'
 const PARENT_TYPES = {
  sign: 'sign', //标记推荐位
   multi: 'multi',
@@ -275,7 +262,8 @@ export default {
     PluginContent,
     Gallery,
     PageWrapper,
-    PageContentWrapper
+    PageContentWrapper,
+    InputMinute,
   },
   props: ['id', 'initMode', 'version', 'contentProps'],
   data() {
@@ -325,7 +313,7 @@ export default {
           enableEdit: 1,
           // 系统功能状态，2-草稿，3-待审核，4-审核通过，5-审核不通过
           pluginStatus: undefined,
-          refreshTime: 240
+          refreshTime: this.contentProps.menuElId === 'sysPlugin' ?  240 : ''
         },
         rlsInfo: []
       },
@@ -385,7 +373,7 @@ export default {
       }
     },
     canAddActivity() {
-      if (this.type === 'sysPlugin') {
+      if (this.contentProps.menuElId === 'sysPlugin') {
         return !this.block.rlsInfo.find(({dataType}) => dataType === 4)
       }
     },
@@ -461,7 +449,7 @@ export default {
           : { label: '', dataType: 7}
         const rlsInfo = this.block.rlsInfo
         rlsInfo.push(
-          this.genRlsInfo(options)
+          this.genRlsInfo(options, this.block.pluginInfo.pluginType)
         )
         this.currentIndex = rlsInfo.length - 1
       })
@@ -482,14 +470,14 @@ export default {
 
     },
     //时间处理-:转换为数值
-    parseMinToStr(str) {
+    parseStrToMin(str) {
       const timeArr = str.split(':')
       const hours = parseInt(timeArr[0])
       const mins = parseInt(timeArr[1])
       return hours * 60 + mins
     },
     // 转换位时间格式 ：hh:mm
-    parseStrToMin(min) {
+    parseMinToStr(min) {
       const hours = Math.floor(min / 60)
       const mins = min % 60
       const hoursStr = hours > 9 ? '' + hours : '0' + hours
@@ -800,20 +788,6 @@ export default {
         }
       }
       this.block = Object.assign(this.block, block)
-      this.block.pluginInfo.refreshTime = this.parseStrToMin(
-        this.block.pluginInfo.refreshTime
-      )
-      for (let i = 0; i < this.block.rlsInfo.length; i++) {
-        if (typeof this.block.rlsInfo[i].extendInfo !== 'undefined') {
-          if (
-            typeof this.block.rlsInfo[i].extendInfo.aliveTime !== 'undefined'
-          ) {
-            this.block.rlsInfo[i].extendInfo.aliveTime = this.parseStrToMin(
-              this.block.rlsInfo[i].extendInfo.aliveTime
-            )
-          }
-        }
-      }
     },
     parseData(data) {
       const helper = data.helper
@@ -987,20 +961,6 @@ export default {
       this.validateData(
         formData,
         function() {
-          formData.pluginInfo.refreshTime = this.parseMinToStr(
-            formData.pluginInfo.refreshTime
-          )
-          for (let i = 0; i < formData.rlsInfo.length; i++) {
-            if (typeof formData.rlsInfo[i].extendInfo !== 'undefined') {
-              if (
-                typeof formData.rlsInfo[i].extendInfo.aliveTime !== 'undefined'
-              ) {
-                formData.rlsInfo[i].extendInfo.aliveTime = this.parseMinToStr(
-                  formData.rlsInfo[i].extendInfo.aliveTime
-                )
-              }
-            }
-          }
           formData = this.parseData(formData)
           console.log(formData)
           this.$service.SavePlugin(formData, '保存成功').then(data => {

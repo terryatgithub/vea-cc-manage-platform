@@ -590,6 +590,13 @@ export default {
         })
       }
     },
+    parseMinToStr(min) {
+      const hours = Math.floor(min / 60)
+      const mins = min % 60
+      const hoursStr = hours > 9 ? '' + hours : '0' + hours
+      const minsStr = mins > 9 ? '' + mins : '0' + mins
+      return hoursStr + ':' + minsStr
+    },
     handleTime() {},
     handleSelectFocusImgEnd(data) {
       this.$set(this.form.extendInfo, 'focusImgUrl', data.pictureUrl)
