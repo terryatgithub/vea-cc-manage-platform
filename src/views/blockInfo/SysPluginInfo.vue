@@ -535,12 +535,10 @@ export default {
         })
     },
     getPluginVersions(type) {
-      var that = this
       const pluginVersions = this.pluginVersions
-      return new Promise(function(resolve, reject) {
+      return new Promise((resolve, reject) => {
         if (!pluginVersions[type]) {
-          that.$service.getPluginVersions(type).then(data => {
-            console.log(data)
+          this.$service.getPluginVersions(type).then(data => {
             if (data) {
               pluginVersions[type] = data
               resolve(pluginVersions[type])
@@ -570,7 +568,7 @@ export default {
     },
     /** 类型选择——父类 */
     handleChangePluginParentType(val) {
-        this.$refs['blockForm'].clearValidate()
+      this.$refs['blockForm'].clearValidate()
       const originType = this.block.pluginInfo.pluginParentType
       const confirmOK = function() {
         this.pluginTypes = []
@@ -609,7 +607,7 @@ export default {
     },
     /** 多功能推荐位类型 */
     handleChangePluginType(val) {
-        this.$refs['blockForm'].clearValidate()
+      this.$refs['blockForm'].clearValidate()
       const originType = this.block.pluginInfo.pluginType
       const confirmOK = function() {
         this.setPluginType(val)
@@ -646,6 +644,7 @@ export default {
                 )
               }.bind(this)
             )
+            this.currentIndex = 0
           }.bind(this)
         )
         .then(function() {})
@@ -702,6 +701,25 @@ export default {
       return data
     },
     validateData(data, cb) {
+      const error = (msg) => {
+        this.$message({
+          type: 'error',
+          message: msg
+        })
+      }
+      const checkRlsInfo = (cb) => {
+        // 可能存在个别版本用户从没切换过去，导致信息没填
+        // 海报是每个版本都必填都，所以检查海报信息来确认
+        if (data.rlsInfo && data.rlsInfo.length > 0) {
+          const invalid = data.rlsInfo.find((item) => {
+            return item.poster && !item.poster.pictureUrl
+          })
+          if (invalid) {
+            return error('请把每个版本都信息填写完整')
+          } 
+        } 
+        cb()
+      }
       this.$refs.blockForm.validate(
         function(valid) {
           if (valid) {
@@ -709,16 +727,17 @@ export default {
             // 标记推荐位没有版本信息
             if (pluginContent) {
               pluginContent.validate(() => {
-                cb(data)
+                checkRlsInfo(() => {
+                  cb(data)
+                })
               })
             } else {
-              cb(data)
+              checkRlsInfo(() => {
+                cb(data)
+              })
             }
           } else {
-            this.$message({
-              type: 'error',
-              message: '请把表单填写完整'
-            })
+            error('请把表单填写完整')
           }
         }.bind(this)
       )
