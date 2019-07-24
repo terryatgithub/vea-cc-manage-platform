@@ -68,6 +68,7 @@
         </el-form-item>
       </el-form>
          <ButtonGroupForListPage
+          v-if="!listProps.isCollectionPage"
           pageName='tab'
           @add="handleCreate"
           @edit="handleEdit"
@@ -299,7 +300,17 @@ export default {
       }
     }
   },
-
+  props: {
+    listProps: {
+      type: Object,
+      default() {
+        return {
+          // 是否是 常用tab版面 页面
+          isCollectionPage: false
+        }
+      }
+    }
+  },
   methods: {
     handleOpenContentAuthManager(row) {
       this.$refs.contentCard.handleShowContentAuthManager({
@@ -322,10 +333,17 @@ export default {
           message: 'ID 必须为正整数'
         })
       }
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
-      })
+      if (this.listProps.isCollectionPage) {
+        this.$service.collectionGetList({type: 'tab', data: filter}).then(data => {
+          this.pagination.total = data.total
+          this.table.data = data.rows
+        })
+      } else {
+        this.$service.tabInfoList(filter).then(data => {
+          this.pagination.total = data.total
+          this.table.data = data.rows
+        })
+      }
     },
     parseFilter() {
       const pagination = this.pagination

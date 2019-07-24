@@ -65,6 +65,10 @@
           <el-button type="primary" @click="emitSelectEnd">确 定</el-button>
         </span>
       </el-dialog>
+      <el-dialog :visible.sync="showPreviewDialog" :append-to-body="true">
+        <LayoutRead :content="previewContent" :content-width="600">
+        </LayoutRead>
+      </el-dialog>
     </div>
 
     <el-pagination
@@ -82,6 +86,7 @@
       <el-button type="primary" @click="handleSelectEnd">确定</el-button>
       <el-button @click="$refs.wrapper.handleSelectCancel()">取消</el-button>
     </div>
+
     <slot></slot>
   </remote-selector-wrapper>
 </template>
@@ -89,6 +94,7 @@
 <script>
 import { Table } from 'admin-toolkit'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
+import LayoutRead from '@/components/LayoutBlock'
 
 const layoutTypeOptoins = [
   {
@@ -109,11 +115,14 @@ const ID = 'layoutId'
 export default {
   components: {
     Table,
-    RemoteSelectorWrapper
+    RemoteSelectorWrapper,
+    LayoutRead
   },
   data() {
     return {
       options: [],
+      showPreviewDialog: false,
+      previewContent: [],
       showBlockCountDialog: false,
       layoutTypeOptoins,
       layoutTypeLabels,
@@ -154,8 +163,15 @@ export default {
           },
           {
             label: '预览',
-            render: h => {
-              return ''
+            render: (h, { row } ) => {
+              return <el-button 
+                type="text" 
+                onClick={(event) => {
+                  event.stopPropagation()
+                  this.handlePreview(row)
+                }}>
+                  预览
+                </el-button>
             }
           },
           {
@@ -190,6 +206,10 @@ export default {
     }
   },
   methods: {
+    handlePreview(row) {
+      this.showPreviewDialog = true
+      this.previewContent = JSON.parse(row.layoutJson).contents
+    },
     validateNum(rule, value, callback) {
       var reg = /^[1-9]\d*$/
       const length = this.selectedLayout.layoutJsonParsed.contents.length

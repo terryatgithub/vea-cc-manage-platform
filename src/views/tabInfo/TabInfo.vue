@@ -522,6 +522,7 @@
                     @click-block="handleClickBlock"
                     @collapse="handleChangeCollapseState"
                     @uncollapse="handleChangeCollapseState"
+                    @show-all-panel="handleShowAllPanels"
                     :read-only="true"
                     :width="840"
                     :ratio="0.4"
