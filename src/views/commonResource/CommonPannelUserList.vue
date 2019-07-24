@@ -189,7 +189,7 @@ export default {
     fetchData() {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
-      this.$service.commonPannelUserList({ data: filter, type: 'pannel' }).then(data => {
+      this.$service.collectionGetList({ data: filter, type: 'pannel' }).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })

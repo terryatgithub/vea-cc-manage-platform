@@ -3,6 +3,7 @@
     <TabInfoList
       v-show="isShowList"
       ref="list"
+      :list-props="listProps"
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
@@ -11,6 +12,7 @@
     />
     <TabInfo
       v-if="!isShowList"
+      :content-props="contentProps"
       :id="id"
       :init-mode="mode"
       :version="version"
@@ -35,6 +37,7 @@ export default {
       version: undefined
     }
   },
+  props: ['listProps', 'contentProps'],
   methods: {
     handleCreate() {
       this.id = undefined

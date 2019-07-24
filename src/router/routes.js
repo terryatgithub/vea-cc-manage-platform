@@ -82,6 +82,15 @@ const children = [
           title: '常用业务专辑',
           tagId: 'commonAlbumPanneleUser'
         }
+      },
+      {
+        name: 'commonTabUser',
+        path: '/commonResourceUser/Tab/view.html',
+        component: CommonTabUser,
+        meta: {
+          title: '常用Tab版面',
+          tagId: 'commonTabUser'
+        }
       }
     ]
   },
