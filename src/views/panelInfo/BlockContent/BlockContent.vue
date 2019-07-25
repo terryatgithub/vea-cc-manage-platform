@@ -57,6 +57,7 @@
                   @click.stop.prevent="handleRemoveContent(index, 'specific')"
                 ></i>
                 <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
+                <span class="content-id" v-if="content.vContentId"> {{ content.vContentId }} </span>
               </el-card>
             </el-col>
           </component>
@@ -673,3 +674,13 @@ export default {
   border: 2px dashed #F7BA2A;
 }
 </style>
+<style lang="stylus" scoped>
+.content-id
+  position absolute
+  top 0
+  left 0
+  background #000
+  color #fff
+  opacity 0.8
+</style>
+
