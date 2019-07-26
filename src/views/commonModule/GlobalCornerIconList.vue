@@ -37,6 +37,7 @@
         @all-row-selection-change="handleAllRowSelectionChange"
       /> -->
       <CardList
+        class="img-list"
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
@@ -385,6 +386,8 @@ export default {
   img
     max-width 100%
     max-height 100%
+  .img-list
+    width 1070px
   .img-detail
     position absolute
     bottom 20px
