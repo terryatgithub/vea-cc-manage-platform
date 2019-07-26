@@ -5,8 +5,8 @@
         ref="commonContent"
         :mode="mode"
         :resource-info="resourceInfo"
-        @replicate="mode = 'replicate'; title='创建副本'"
-        @edit="mode = 'edit'; title='编辑'"
+        @replicate="mode = 'replicate'"
+        @edit="mode = 'edit'"
         @unaudit="$emit('upsert-end')"
         @shelves="fetchData"
         @audit="$emit('upsert-end')"
@@ -14,6 +14,7 @@
         @delete="$emit('upsert-end', $event)"
         @submit-audit="handleSubmitAudit"
         @save-draft="handleSaveDraft"
+        @cancel-timing="fetchData(form.currentVersion)"
       >
         <div class="form-legend-header">
           <i class="el-icon-edit">基本信息</i>
@@ -91,7 +92,9 @@
 </template>
 <script>
 import CommonContent from '@/components/CommonContent.vue'
+import titleMixin from '@/mixins/title'
 export default {
+  mixins: [titleMixin],
   components: {
     CommonContent
   },
@@ -115,7 +118,8 @@ export default {
     }
     return {
       STATUS,
-      title: '',
+      mode: 'create',
+      resourceName: '功能板块',
       showTimeShelf: false,
       releaseTime: undefined,
       form: {
@@ -252,22 +256,6 @@ export default {
   },
   created() {
     this.mode = this.initMode || 'create'
-    switch (this.mode) {
-      case 'create':
-        this.title = '新增'
-        break
-      case 'copy':
-        this.title = '复制'
-        break
-      case 'edit':
-        this.title = '编辑'
-        break
-      case 'replica':
-        this.title = '创建副本'
-      case 'read':
-        this.title = '预览'
-        break
-    }
     if (this.id) {
       this.fetchData(this.version)
     }
