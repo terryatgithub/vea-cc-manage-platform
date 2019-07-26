@@ -37,7 +37,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="内容源" v-if="form.tabCategory == 0">
-                <el-radio-group v-model="form.tabResource" @change.native.prevent="changeResource">
+                <el-radio-group :value="form.tabResource" @input="changeResource">
                   <el-radio label="qq">腾讯</el-radio>
                   <el-radio label="iqiyi">爱奇艺</el-radio>
                   <el-radio label="youku">优酷</el-radio>
@@ -542,6 +542,7 @@ export default {
             type: 'success',
             message: '内容源切换成功!'
           })
+          this.form.tabResource = value
           this.form.panelInfoList = []
         })
         .catch(() => {

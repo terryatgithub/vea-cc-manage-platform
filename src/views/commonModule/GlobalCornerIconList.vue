@@ -7,12 +7,17 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <ButtonGroupForListPage
-        pageName="cornerIcon"
-        @add="handleCreate"
-        @edit="handleEdit"
-        @delete="handleDelete"
-      ></ButtonGroupForListPage>
+      <div class="control-button-group">
+        <ButtonGroupForListPage
+          class="auth-button-group"
+          pageName="cornerIcon"
+          @add="handleCreate"
+          @edit="handleEdit"
+          @delete="handleDelete"
+        >
+        </ButtonGroupForListPage>
+        <el-button type="primary" @click="handleAllRowSelectionChange(checkAll = !checkAll)">全选/全不选</el-button> 
+      </div>
       <!-- <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="editData">编辑</el-button>
@@ -20,7 +25,7 @@
         <el-button type="primary" icon="el-icon-edit-outline" @click="batchHandle">批量审核</el-button>
         <el-button type="primary" @click="changePriority">调整优先级</el-button>
       </div>-->
-      <Table
+      <!-- <Table
         :props="table.props"
         :header="table.header"
         :data="table.data"
@@ -30,12 +35,36 @@
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
-      />
+      /> -->
+      <CardList
+        :data="table.data"
+        :selected="table.selected"
+        :selection-type="table.selectionType"
+        :select-on-row-click="true"
+        @row-selection-add="handleRowSelectionAdd"
+        @row-selection-remove="handleRowSelectionRemove"
+      >
+        <div class="img-item" slot="row" slot-scope="{row: item}" @click.stop="handleRead(item)">
+          <img :src="item.imgUrl" />
+          <a class="img-preview" @click.stop="reviewPic(item)">预览</a>
+          <div class="img-detail">
+            <span>角标id：{{ item.cornerIconId }}</span>
+            <span>角标标题：{{ item.cornerIconName }} </span>
+            <span>角标分类：{{ item.cornerIconType.typeName }}</span>
+            <span>角标类别：{{ item.attributeCode }} </span>
+            <span>角标位置：{{ typePositionText[item.cornerIconType.typePosition] }}</span>
+          </div>
+          <div class="img-info">
+            <span class="img-title">{{ item.cornerIconName }}</span>
+            <span class="img-status">{{ $consts.statusText[item.cornerStatus] }}</span>
+          </div>
+        </div>
+      </CardList>
     </ContentWrapper>
     <!-- 预览图片 -->
     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
       <span class="pics">
-        <img :src="reviewPicUrl" alt="图片" style="width:200px">
+        <img :src="reviewPicUrl" alt="图片" style="width:400px">
       </span>
     </el-dialog>
     <!--批量审核-->
@@ -59,12 +88,13 @@ import ButtonList from './../../components/ButtonLIst'
 import GlobalIconAudit from './GlobalIconAudit'
 import GlobelIconLevel from './GlobelIconLevel'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-
 import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
+import { CardList } from 'admin-toolkit'
 export default {
   extends: BaseList,
   components: {
+    CardList,
     ActionList,
     Table,
     ContentWrapper,
@@ -94,6 +124,7 @@ export default {
         左下: 3,
         右下: 2
       },
+      typePositionText: ['左上', '右上', '左下', '右下'], 
       picDialogVisible: false, // 预览图片弹出框
       reviewPicUrl: null,
       filter: this.genDefaultFilter(),
@@ -172,9 +203,9 @@ export default {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getGlobalMgrList(filter).then(data => {
-        console.log(data)
         this.pagination.total = data.total
         this.table.data = data.rows
+        this.checkAll = false
       })
     },
     parseFilter() {
@@ -342,7 +373,58 @@ export default {
 }
 </script>
 
-<style lang = 'stylus' scoped>
+<style lang='stylus' scoped>
 .btns
-  margin-bottom: 10px
+  margin-bottom 10px
+.img-item
+  position relative
+  width 202px
+  height 202px
+  border 1px solid #ccc
+  margin 0 10px 10px 0
+  img
+    max-width 100%
+    max-height 100%
+  .img-detail
+    position absolute
+    bottom 20px
+    text-align center
+    opacity 0.8
+    background #f5f5f5
+    width 100%
+    display none
+    span
+      display block
+  &:hover
+    .img-detail
+      display block
+  .img-info
+    position absolute
+    bottom 0
+    height 20px
+    width 100%
+    background #000
+    color #fff
+    opacity 0.8
+  .img-title
+    display inline-block
+    overflow hidden
+    width 130px
+    text-overflow ellipsis
+    white-space nowrap
+  .img-status
+    float right
+  .img-preview
+    position absolute
+    top 0
+    right 0
+    cursor pointer
+    height 20px
+    border 1px solid #ccc
+    color #444
+    background #fff
+    padding 0px 5px
+.auth-button-group
+  display inline-block
+  margin-right 10px
 </style>
