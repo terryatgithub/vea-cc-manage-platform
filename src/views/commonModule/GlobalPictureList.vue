@@ -19,6 +19,7 @@
         <el-button type="primary" @click="handleAllRowSelectionChange(checkAll = !checkAll)">全选/全不选</el-button> 
       </div>
       <CardList
+        class="img-list"
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
@@ -388,6 +389,8 @@ export default {
 <style lang='stylus' scoped>
 .btns
   margin-bottom 10px
+.img-list
+  width 1070px
 .img-item
   position relative
   width 202px
