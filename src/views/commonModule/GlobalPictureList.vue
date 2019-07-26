@@ -7,24 +7,40 @@
       @filter-change="handleFilterChange"
       @filter-reset="handleFilterReset"
     >
-      <ButtonGroupForListPage
-        pageName="poster"
-        @add="handleCreate"
-        @edit="handleEdit"
-        @delete="handleDelete"
-        @batch-audit="batchAudit"
-      ></ButtonGroupForListPage>
-      <Table
-        :props="table.props"
-        :header="table.header"
+      <div class="control-button-group">
+        <ButtonGroupForListPage
+          class="auth-button-group"
+          pageName="poster"
+          @add="handleCreate"
+          @edit="handleEdit"
+          @delete="handleDelete"
+          @batch-audit="batchAudit"
+        ></ButtonGroupForListPage>
+        <el-button type="primary" @click="handleAllRowSelectionChange(checkAll = !checkAll)">全选/全不选</el-button> 
+      </div>
+      <CardList
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
         :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
-        @all-row-selection-change="handleAllRowSelectionChange"
-      />
+      >
+        <div class="img-item" slot="row" slot-scope="{row: item}" @click.stop="handleRead(item)">
+          <img :src="item.pictureUrl" referrerpolicy="no-referrer" />
+          <a class="img-preview" @click.stop="reviewPic(item)">预览</a>
+          <div class="img-detail">
+            <span>素材id：{{ item.pictureId }}</span>
+            <span>素材标题: {{ item.pictureName }}</span>
+            <span>素材类型：{{ item.materialTypes ? item.materialTypes[0].dictCnName : '' }}</span>
+            <span>分辨率：{{ item.pictureResolution }}</span>
+          </div>
+          <div class="img-info">
+            <span class="img-title">{{ item.pictureName }}</span>
+            <span class="img-status">{{ $consts.statusText[item.pictureStatus] }}</span>
+          </div>
+        </div>
+      </CardList>
     </ContentWrapper>
     <!-- 预览图片 -->
     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
@@ -64,16 +80,19 @@ import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
+import { CardList } from 'admin-toolkit'
 export default {
   extends: BaseList,
   components: {
     Table,
     ContentWrapper,
-    ButtonGroupForListPage
+    ButtonGroupForListPage,
+    CardList
   },
   data() {
     return {
       resourceType: 'picture',
+      checkAll: false,
       materialTypes: {}, // 素材类型
       // pictureStatus: {
       //   //状态
@@ -292,6 +311,7 @@ export default {
       this.$service.getMaterialPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
+        this.checkAll = false
       })
     },
     /**
@@ -352,7 +372,7 @@ export default {
   }
 }
 </script>
-<style lang = 'stylus' scoped>
+<style lang='stylus' scoped>
 .pics img
   max-width: 350px
   max-height: 500px
@@ -363,4 +383,60 @@ export default {
   margin-bottom: 10px
 .checkItemStyle
   margin: 10px
+</style>
+
+<style lang='stylus' scoped>
+.btns
+  margin-bottom 10px
+.img-item
+  position relative
+  width 202px
+  height 202px
+  border 1px solid #ccc
+  margin 0 10px 10px 0
+  img
+    max-width 100%
+    max-height 100%
+  .img-detail
+    position absolute
+    bottom 20px
+    text-align center
+    opacity 0.8
+    background #f5f5f5
+    width 100%
+    display none
+    span
+      display block
+  &:hover
+    .img-detail
+      display block
+  .img-info
+    position absolute
+    bottom 0
+    height 20px
+    width 100%
+    background #000
+    color #fff
+    opacity 0.8
+  .img-title
+    display inline-block
+    overflow hidden
+    width 130px
+    text-overflow ellipsis
+    white-space nowrap
+  .img-status
+    float right
+  .img-preview
+    position absolute
+    top 0
+    right 0
+    cursor pointer
+    height 20px
+    border 1px solid #ccc
+    color #444
+    background #fff
+    padding 0px 5px
+.auth-button-group
+  display inline-block
+  margin-right 10px
 </style>
