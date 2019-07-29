@@ -2,12 +2,12 @@
   <ContentCard ref="contentCard" class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <!-- 筛选部分 -->
-      <el-form inline ref="form" v-model="filter" label-width="90px" class="form">
+      <el-form inline ref="form" v-model="filter" @keypress.enter.native="handleFilterChange" @submit.native="preventSubmit" label-width="90px" class="form">
         <el-form-item class="el-col-6">
-          <InputPositiveInt v-model="filter.tabId" placeholder="版面ID" />
+          <InputPositiveInt name="tabId" autocomplete="on" v-model="filter.tabId" placeholder="版面ID" />
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-input v-model="filter.tabName" placeholder="版面标题"/>
+          <el-input name="tabName" autocomplete="on" v-model="filter.tabName" placeholder="版面标题"/>
         </el-form-item>
         <el-form-item class="el-col-6">
           <el-select v-model="filter.tabType" placeholder="版面属性">
@@ -63,7 +63,7 @@
           </el-select>
         </el-form-item>
         <el-form-item class="el-form-item-submit">
-          <el-button type="primary"  @click="handleFilterChange">查询</el-button>
+          <el-button type="primary" native-type="submit"  @click="handleFilterChange">查询</el-button>
           <el-button  @click="handleFilterReset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -312,6 +312,9 @@ export default {
     }
   },
   methods: {
+    preventSubmit(event) {
+      event.preventDefault()
+    },
     handleOpenContentAuthManager(row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.tabId,

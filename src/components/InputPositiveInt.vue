@@ -2,6 +2,8 @@
   <el-input
     ref="input"
     type="text"
+    :name="name"
+    :autocomplete="autocomplete"
     :value="inputValue"
     @input="handleInputValue"
     :disabled="disabled"
@@ -26,7 +28,7 @@ export default {
       inputValue: undefined
     }
   },
-  props: ['value', 'disabled', 'append', 'prepend', 'placeholder'],
+  props: ['value', 'disabled', 'append', 'prepend', 'placeholder', 'name', 'autocomplete'],
   methods: {
     handleInputValue(val) {
       if (val === '' || /^[1-9]\d*$/.test(val)) {

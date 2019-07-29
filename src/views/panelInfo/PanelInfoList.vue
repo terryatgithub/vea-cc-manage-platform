@@ -302,19 +302,27 @@ export default {
       }),
       pannelId: _.o.string.other('form', {
         placeholder: 'ID',
-        component: 'Input'
+        component: 'Input',
+        name: 'pannelId',
+        autocomplete: 'on'
       }),
       pannelName: _.o.string.other('form', {
         placeholder: '版块名称',
-        component: 'Input'
+        component: 'Input',
+        name: 'pannelName',
+        autocomplete: 'on'
       }),
       pannelTitle: _.o.string.other('form', {
         placeholder: '版块标题',
-        component: 'Input'
+        component: 'Input',
+        name: 'pannelTitle',
+        autocomplete: 'on'
       }),
       tabName: _.o.string.other('form', {
         placeholder: '引用状态',
-        component: 'Input'
+        component: 'Input',
+        name: 'tabName',
+        autocomplete: 'on'
       }),
       pannelResource: _.o.enum(this.$consts.sourceEnums).other('form', {
         placeholder: '内容源',
