@@ -62,6 +62,7 @@
         </el-collapse-item>
       </el-collapse>
       <Table
+        ref="table"
         :props="table.props"
         :header="table.header"
         :data="table.data"
@@ -251,6 +252,7 @@ export default {
       this.$service.getChipAndModelPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
+        this.$refs.table.$refs.table.doLayout()
       })
     }
   },

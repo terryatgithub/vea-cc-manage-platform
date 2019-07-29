@@ -62,6 +62,7 @@
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
             <el-select v-model="filter['filmDetailPageInfo.product']" clearable placeholder="产品包">
+              <el-option value="0" label="不限"/>
               <el-option
                 v-for="(item, index) in productOptions"
                 :key="index"
