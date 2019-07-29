@@ -340,7 +340,8 @@ export default {
   },
   computed: {
     sourceDisabled() {
-     return this.mode ==='replicate' || (this.panel.currentVersion !== undefined && panel.pannelList[0].pannelStatus !==2) 
+      const panel = this.panel
+      return this.mode ==='replicate' || (panel.currentVersion !== undefined && panel.pannelList[0].pannelStatus !==2) 
     },
     panelGroupCategoryValue() {
       const options = this.panelGroupCategoryOptions
