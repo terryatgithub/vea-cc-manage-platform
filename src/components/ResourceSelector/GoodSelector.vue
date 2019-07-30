@@ -48,10 +48,7 @@ export default {
           },
           {
             label: '商品价格',
-            prop: 'salePrice',
-            render: (h, {row}) => {
-              return row.salePrice/100
-            }
+            prop: 'originPrice',
           },
           {
             label: '宝贝图片',

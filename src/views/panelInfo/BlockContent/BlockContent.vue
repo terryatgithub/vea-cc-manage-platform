@@ -218,6 +218,12 @@ export default {
         // 定向运营时保留内容类别和关联人群
         contentForm.resourceType = originContentForm.resourceType // 内容类别
         contentForm.dmpRegistryInfo = originContentForm.dmpRegistryInfo // 关联人群
+      } else {
+        if (coverType === 'block') {
+          // 清除定向内容
+          // 类型为 推荐位管理时 没有定向内容
+          this.specificContentList = []
+        }
       }
       this.$set(contentList, activeIndex, contentForm)
     },
