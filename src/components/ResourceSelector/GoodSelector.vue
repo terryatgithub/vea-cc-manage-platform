@@ -49,6 +49,9 @@ export default {
           {
             label: '商品价格',
             prop: 'originPrice',
+            render: (h, {row}) => {
+              return row.originPrice/100
+            }
           },
           {
             label: '宝贝图片',
