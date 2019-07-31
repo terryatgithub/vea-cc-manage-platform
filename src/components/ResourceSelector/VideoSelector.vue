@@ -356,11 +356,11 @@ export default {
       const video = tableData[index]
       const baseSelector = this.$refs.baseSelector
       if (this.selectionType === 'single') {
-        if (baseSelector.selected !== index) {
+        if (baseSelector.tableSelected !== index) {
           baseSelector.handleTableRowSelectionChange(video, index)
         }
       } else if (this.selectionType === 'multiple') {
-        if (baseSelector.selected.indexOf(index) === -1) {
+        if (baseSelector.tableSelected.indexOf(index) === -1) {
           baseSelector.handleTableRowSelectionAdd(video, index)
         }
       }
