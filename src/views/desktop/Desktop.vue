@@ -192,7 +192,7 @@ export default {
       this.activePage = type
     },
     handleSetAutoSync(val) {
-      const message = val 
+      const message = val
         ? '开启同步后，酷开数据将会自动更新至该平台，确认开启？'
         : '关闭同步后，您需要进行手动确认才可同步酷开数据，确认关闭？'
       this.$confirm(message, '提示').then(() => {
@@ -233,7 +233,7 @@ export default {
       this.activePage = 'film-read'
     },
     goTo(routeName) {
-      return this.$router.push({name: routeName})
+      return this.$router.push({ name: routeName })
     },
     goBack(page) {
       this.activePage = page || 'desktop'

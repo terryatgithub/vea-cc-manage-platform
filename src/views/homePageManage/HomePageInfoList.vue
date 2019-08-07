@@ -229,7 +229,7 @@ export default {
                   }
                 }, '复制'),
                 (!!row.showContentAuthSettingBtn) && h('el-button', {
-                  props: { type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()
@@ -254,7 +254,7 @@ export default {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.homepageId,
         type: 'homepage',
-        menuElId: 'homepageInfo',
+        menuElId: 'homepageInfo'
       })
     },
     handleShowChips(chipStr) {

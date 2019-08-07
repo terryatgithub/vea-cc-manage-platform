@@ -203,7 +203,7 @@ export default {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.tabId,
         type: 'tab',
-        menuElId: 'tabInfo',
+        menuElId: 'tabInfo'
       })
     },
     createOperationRender(obj) {
@@ -252,14 +252,14 @@ export default {
           )
         }
         const contentAuthBtn = (!!row.showContentAuthSettingBtn) && h('el-button', {
-                  props: { type: 'text'},
-                  on: {
-                    click: (event) => {
-                      event.stopPropagation()
-                      this.handleOpenContentAuthManager(row)
-                    }
-                  }
-                }, '内容权限')
+          props: { type: 'text' },
+          on: {
+            click: (event) => {
+              event.stopPropagation()
+              this.handleOpenContentAuthManager(row)
+            }
+          }
+        }, '内容权限')
         return [btn1, btn2, contentAuthBtn]
       }
     },

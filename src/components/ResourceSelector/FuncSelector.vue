@@ -82,7 +82,7 @@ export default {
             render: (h, { row }) => {
               const globalPicture = row.globalPicture
               const BLOCK_SIGN_IMG_SRC = process.env.BASE_URL + 'block/sign.png'
-              const pictureUrl = (globalPicture && globalPicture.pictureUrl) 
+              const pictureUrl = (globalPicture && globalPicture.pictureUrl)
               const imgSrc = pictureUrl === '/themes/images/block/sign.png'
                 ? BLOCK_SIGN_IMG_SRC
                 : pictureUrl
@@ -124,7 +124,7 @@ export default {
         pluginName: undefined,
         // 只显示审核通过的
         pluginStatus: 4,
-        source: sourceValueMap[this.source],
+        source: sourceValueMap[this.source]
       }
     },
     getFilter() {
@@ -177,7 +177,7 @@ export default {
       source: _.o.enum(sourceEnums).other('form', {
         component: 'Select',
         placeholder: '内容源',
-        label: ' ',
+        label: ' '
       })
     }).other('form', {
       cols: {

@@ -16,7 +16,7 @@
           @delete="handleDelete"
         >
         </ButtonGroupForListPage>
-        <el-button type="primary" @click="handleAllRowSelectionChange(checkAll = !checkAll)">全选/全不选</el-button> 
+        <el-button type="primary" @click="handleAllRowSelectionChange(checkAll = !checkAll)">全选/全不选</el-button>
       </div>
       <!-- <div class="btns">
         <el-button type="primary" icon="el-icon-plus" @click="addData">新增</el-button>
@@ -125,7 +125,7 @@ export default {
         左下: 3,
         右下: 2
       },
-      typePositionText: ['左上', '右上', '左下', '右下'], 
+      typePositionText: ['左上', '右上', '左下', '右下'],
       picDialogVisible: false, // 预览图片弹出框
       reviewPicUrl: null,
       filter: this.genDefaultFilter(),

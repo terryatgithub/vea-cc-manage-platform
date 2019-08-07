@@ -23,7 +23,7 @@
             <CommonSelector v-model="filter.sources" :options="sourceEnums" />
           </el-form-item>
           <el-form-item v-show="filter.sources === 'tencent'" label="牌照">
-            <CommonSelector v-model="filter.licensee" :options="licenseEnums" clearable />
+            <CommonSelector v-model="filter.license" :options="licenseEnums" clearable />
           </el-form-item>
           <el-form-item label="频道类型">
             <CommonSelector v-model="filter.category" :options="categoryEnums"  />
@@ -277,7 +277,7 @@ export default {
       return this.$refs.baseSelector.selected.slice()
     },
     licenseEnums() {
-      return (this.conditionList.licensee || [])
+      return (this.conditionList.license || [])
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
     categoryEnums() {
@@ -332,11 +332,11 @@ export default {
   },
   methods: {
     selectEnd(data) {
-      data = data.map((e)=> {
-         e.selectedEpisodes = this.selectedEpisodes[e.coocaaVId]
-         return e
+      data = data.map((e) => {
+        e.selectedEpisodes = this.selectedEpisodes[e.coocaaVId]
+        return e
       })
-      this.$emit("select-end", data)
+      this.$emit('select-end', data)
     },
     handleCollapseChange() {
       setTimeout(() => {
@@ -389,7 +389,7 @@ export default {
     },
     onSourceChange(val) {
       if (val !== 'tencent') {
-        this.filter.licensee = undefined
+        this.filter.license = undefined
       }
     },
     onCategoryChange() {
@@ -430,7 +430,7 @@ export default {
         sources: '', // 内容源
         category: '', // 频道类型
         videoTypes: '', // 影片类型
-        licensee: '', // 牌照
+        license: '', // 牌照
         payTypes: '', // 付费类型
         provider: '', // 聚合内容
         title: '', // 标题

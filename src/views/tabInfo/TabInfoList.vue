@@ -283,7 +283,7 @@ export default {
                   row.collected ? '取消' : '收藏'
                 ]),
                 (!!row.showContentAuthSettingBtn) && h('el-button', {
-                  props: { type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()
@@ -337,7 +337,7 @@ export default {
         })
       }
       if (this.listProps.isCollectionPage) {
-        this.$service.collectionGetList({type: 'tab', data: filter}).then(data => {
+        this.$service.collectionGetList({ type: 'tab', data: filter }).then(data => {
           this.pagination.total = data.total
           this.table.data = data.rows
         })

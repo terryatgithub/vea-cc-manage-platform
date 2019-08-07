@@ -26,23 +26,23 @@
 import ContentAuthManager from '@/components/ContentAuthManager'
 export default {
   components: {
-      ContentAuthManager
+    ContentAuthManager
   },
   props: ['title'],
   data() {
-      return {
-        showContentAuthManager: false,
-        contentAuthInfo: null
-      }
+    return {
+      showContentAuthManager: false,
+      contentAuthInfo: null
+    }
   },
   methods: {
-      handleShowContentAuthManager(info) {
-        this.showContentAuthManager = true
-        this.contentAuthInfo = info
-        this.$nextTick(() => {
-            this.$refs.contentAuthManager.handleOpenAuthManagement()
-        })
-      }
+    handleShowContentAuthManager(info) {
+      this.showContentAuthManager = true
+      this.contentAuthInfo = info
+      this.$nextTick(() => {
+        this.$refs.contentAuthManager.handleOpenAuthManagement()
+      })
+    }
   }
 }
 </script>

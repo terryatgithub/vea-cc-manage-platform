@@ -162,7 +162,7 @@ export default {
             label: '更新人',
             prop: 'modifierName',
             width: 100
-          },
+          }
         ],
         selected: [],
         selectionType: 'multiple'

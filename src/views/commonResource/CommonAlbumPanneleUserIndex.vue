@@ -173,7 +173,7 @@ export default {
   methods: {
     genDefaultFilter() {
       return {
-        idPrefix: this.$consts.idPrefix,
+        idPrefix: this.$consts.idPrefix
       }
     },
     handleCopy({ row }) {
@@ -218,7 +218,7 @@ export default {
       if (this.dataList) {
         this.filter = Object.assign({}, this.dataList.filter)
       } else {
-        this.filter = this.genDefaultFilter() 
+        this.filter = this.genDefaultFilter()
       }
       this.pagination.currentPage = 1
       this.fetchData()
@@ -264,7 +264,7 @@ export default {
         }
         return result
       }, [])
-    },
+    }
   },
 
   created() {
@@ -342,4 +342,3 @@ export default {
 .btns
   margin 20px auto
 </style>
-

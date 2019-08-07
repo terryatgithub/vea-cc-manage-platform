@@ -59,7 +59,7 @@
             <el-input v-model.trim="form.title"></el-input>
           </el-form-item>
         </template>
-  
+
         <template v-if="form.dataType === 7">
           <el-form-item label="人群" prop="dmpRegistryInfo">
             <el-button @click="handleSelectCrowdStart">
@@ -303,7 +303,6 @@
       </div>
     </el-dialog>
 
-
     <!--点击事件弹框-->
     <el-dialog :visible.sync="showClickSelector" width="1200px">
       <ClickSelector @row-click="handleSelectClickEnd"></ClickSelector>
@@ -372,7 +371,7 @@ export default {
       PARENT_TYPES,
       OPEN_MODE_TEXT,
       urls: {
-         uploadImg: 'api/v1/upload/image.html' // 上传图片接口
+        uploadImg: 'api/v1/upload/image.html' // 上传图片接口
       },
       rules: {
         barText: [
@@ -449,7 +448,7 @@ export default {
         focusImgUrl: [{ required: true, message: '请选择异形焦点' }],
         poster: {
           pictureUrl: [
-            { required: true, message: '请选择海报', trigger: 'blur'}
+            { required: true, message: '请选择海报', trigger: 'blur' }
           ]
         },
         dmpRegistryInfo: [
@@ -542,13 +541,13 @@ export default {
     },
     handleUploadSuccess(response) {
       if (response.success) {
-          const item = this.form
-          this.$set(item.onclick, 'picture', [
-            {
-              name: '已上传',
-              url: response.data[0].url
-            }
-          ])
+        const item = this.form
+        this.$set(item.onclick, 'picture', [
+          {
+            name: '已上传',
+            url: response.data[0].url
+          }
+        ])
       } else {
         this.$message(response.msg)
       }
@@ -602,7 +601,7 @@ export default {
     handleSelectFocusImgEnd(data) {
       this.$set(this.form.extendInfo, 'focusImgUrl', data.pictureUrl)
     },
-    selectImgSubmit() {},
+    selectImgSubmit() {}
   },
   created() {
     this.$watch('plugin', this.handlePluginChange, {

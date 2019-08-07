@@ -17,6 +17,9 @@
       </div>
       <slot name="content" :is-show="showDialog">
         <div class="remote-selector-main">
+          <div class="remote-selector-main__prepend">
+            <slot name="prepend"></slot>
+          </div>
           <div class="remote-selector-main__filter">
             <slot name="filter">
               <GateSchemaForm

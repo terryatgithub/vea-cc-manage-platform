@@ -37,14 +37,14 @@
                   </div>
                 </GlobalPictureSelector>
             </el-form-item>
-            <Enum v-if="topic.type === 2" 
-              label="内容源" 
-              :confirm="{title: '提示', content: '切换源将清空短视频，确定切换?'}" 
-              type="radio" 
+            <Enum v-if="topic.type === 2"
+              label="内容源"
+              :confirm="{title: '提示', content: '切换源将清空短视频，确定切换?'}"
+              type="radio"
               :disabled="mode === 'replicate'"
-              :options="$consts.sourceOptions" 
-              :value="topic.source" 
-              @input="topic.source = $event, topic.contentList = []" 
+              :options="$consts.sourceOptions"
+              :value="topic.source"
+              @input="topic.source = $event, topic.contentList = []"
             />
             <template v-if="topic.type === 2">
               <div class="form-legend-header">
@@ -136,17 +136,17 @@ export default {
         {
           label: '内容源',
           prop: 'source',
-          render: (h, {row}) => {
+          render: (h, { row }) => {
             return this.$consts.partnerText[row.source]
           }
         },
         {
           label: '短视频时长',
           prop: 'mDuration',
-          render: (h, {row}) => {
+          render: (h, { row }) => {
             const mDuration = row.mDuration
-            const hour = Math.floor(mDuration/3600)
-            const min = Math.floor((mDuration - 3600 * hour)/60)
+            const hour = Math.floor(mDuration / 3600)
+            const min = Math.floor((mDuration - 3600 * hour) / 60)
             const sec = mDuration - 3600 * hour - 60 * min
             return `${hour}小时${min}分${sec}秒`
           }
@@ -167,14 +167,14 @@ export default {
       },
       rules: {
         topicName: [
-          {required: true, message: '请输入话题标题'},
-          {max: 30, message: '不能超过 30 个字符'}
+          { required: true, message: '请输入话题标题' },
+          { max: 30, message: '不能超过 30 个字符' }
         ],
         recommendSign: [
-          {required: true, message: '请输入标记'}
+          { required: true, message: '请输入标记' }
         ],
         icon: [
-          {required: true, message: '请选择自定义 icon'}
+          { required: true, message: '请选择自定义 icon' }
         ]
 
       }
@@ -240,7 +240,7 @@ export default {
     handleTopicSourceChange() {
       this.topic.contentList = []
     },
-    handleSelectVideoEnd({shortVideo}) {
+    handleSelectVideoEnd({ shortVideo }) {
       const idField = 'sCoocaaMId'
       const selectedList = shortVideo || []
       const originSelectList = this.topic.contentList || []
@@ -309,7 +309,7 @@ export default {
         data.currentVersion = ''
       }
       return data
-    },
+    }
   },
   created() {
     this.mode = this.initMode || 'create'

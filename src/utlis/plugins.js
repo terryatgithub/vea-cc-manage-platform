@@ -12,7 +12,13 @@ import shadowDrag from '@/directives/shadowDrag'
 import AppState from '@william17/vue-app-state'
 
 import 'admin-toolkit/dist/admin-toolkit.css'
-import { GateSchemaForm } from 'admin-toolkit'
+import { GateSchemaForm, DataForm,
+  Boolean as DataBoolean,
+  String as DataString,
+  Number as DataNumber,
+  Enum as DataEnum,
+  EnumList as DataEnumList,
+  Any as DataAny } from 'admin-toolkit'
 
 import '@/assets/icon/iconfont.css'
 
@@ -29,5 +35,14 @@ Vue.use(AppState)
 Vue.use(service)
 Vue.component('GateSchemaForm', GateSchemaForm)
 Vue.component('ContentCard', ContentCard)
+
+Vue.component('DataForm', DataForm)
+Vue.component('DataBoolean', DataBoolean)
+Vue.component('DataString', DataString)
+Vue.component('DataNumber', DataNumber)
+Vue.component('DataEnum', DataEnum)
+Vue.component('DataEnumList', DataEnumList)
+Vue.component('DataAny', DataAny)
+
 Vue.directive('shadow-drag', shadowDrag)
 Vue.prototype.$consts = constants

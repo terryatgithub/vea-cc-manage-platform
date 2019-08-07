@@ -45,14 +45,14 @@ export default {
           {
             label: '话题类型',
             prop: 'type',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return this.$consts.topicTypesText[row.type]
             }
           },
           {
             label: '内容源',
             prop: 'source',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return this.$consts.sourceText[row.source]
             }
           }

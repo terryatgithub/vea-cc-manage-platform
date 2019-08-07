@@ -176,10 +176,10 @@ export default {
           },
           {
             label: '操作',
-            render: (h, {row}) => {
-              if (!!row.showContentAuthSettingBtn) {
+            render: (h, { row }) => {
+              if (row.showContentAuthSettingBtn) {
                 return h('el-button', {
-                  props: { type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()
@@ -187,7 +187,7 @@ export default {
                     }
                   }
                 }, '内容权限')
-              } 
+              }
             }
           }
         ],

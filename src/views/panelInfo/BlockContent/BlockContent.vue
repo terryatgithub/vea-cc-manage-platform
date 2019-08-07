@@ -120,13 +120,13 @@ export default {
   },
   methods: {
     getPictureUrl(pictureUrl) {
-        if (pictureUrl) {
-          const BLOCK_SIGN_IMG_SRC = process.env.BASE_URL + 'block/sign.png'
-          return pictureUrl === '/themes/images/block/sign.png'
-            ? BLOCK_SIGN_IMG_SRC
-            : pictureUrl
+      if (pictureUrl) {
+        const BLOCK_SIGN_IMG_SRC = process.env.BASE_URL + 'block/sign.png'
+        return pictureUrl === '/themes/images/block/sign.png'
+          ? BLOCK_SIGN_IMG_SRC
+          : pictureUrl
           // block.style['background-image'] = 'url(' + content.pictureUrl + ')'
-        }
+      }
     },
     handleDragConentStart(event) {
     },
@@ -136,7 +136,7 @@ export default {
       if (this.activeType === type) {
         if (oldIndex === currentIndex) {
           this.activeIndex = newIndex
-        } else if (oldIndex < currentIndex && newIndex >= currentIndex ) {
+        } else if (oldIndex < currentIndex && newIndex >= currentIndex) {
           this.activeIndex = currentIndex - 1
         } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
           this.activeIndex = currentIndex + 1
@@ -173,6 +173,8 @@ export default {
         cornerList: [{}, {}],
         blockResourceType: -1,
         moviePercent: 100,
+        // 推荐位点击跳转
+        jumpType: 'detail',
         versionCode: '',
         price: '',
         secKillPrice: '',
@@ -689,4 +691,3 @@ export default {
   color #fff
   opacity 0.8
 </style>
-

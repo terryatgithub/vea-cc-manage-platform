@@ -41,7 +41,7 @@ export default {
   },
   props: {
     title: String,
-    pictureResolution:{
+    pictureResolution: {
       type: String,
       default: ''
     }

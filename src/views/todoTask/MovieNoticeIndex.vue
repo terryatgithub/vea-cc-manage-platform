@@ -128,7 +128,7 @@ export default {
         initMode: undefined,
         initGroupIndex: undefined,
         initBlockIndex: undefined
-      },
+      }
     }
   },
   methods: {

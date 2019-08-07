@@ -44,18 +44,18 @@ export default {
           },
           {
             label: '供应商名称',
-            prop: 'sourceName',
+            prop: 'sourceName'
           },
           {
             label: '商品价格',
             prop: 'originPrice',
-            render: (h, {row}) => {
-              return row.originPrice/100
+            render: (h, { row }) => {
+              return row.originPrice / 100
             }
           },
           {
             label: '宝贝图片',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return h('img', {
                 class: 'good-img',
                 style: {
@@ -118,7 +118,7 @@ export default {
         component: 'Input',
         placeholder: '商品名称/ID',
         label: ' '
-      }),
+      })
     }).other('form', {
       cols: {
         item: 3,

@@ -217,7 +217,7 @@ export default {
     }
   },
   created() {
-        const filterSchema = _.map({
+    const filterSchema = _.map({
       pictureId: _.o.string.other('form', {
         placeholder: 'ID',
         component: 'Input'
@@ -233,7 +233,7 @@ export default {
       pictureStatus: _.o.enum(this.pictureStatus).other('form', {
         placeholder: '状态',
         component: 'Select'
-      }),
+      })
     }).other('form', {
       cols: {
         item: 5,

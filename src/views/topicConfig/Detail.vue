@@ -91,12 +91,12 @@ export default {
         },
         {
           label: '话题名',
-          prop: 'topicName',
+          prop: 'topicName'
         },
         {
           label: '默认落焦',
           prop: 'topicIsFocus',
-          render: (h, {row, $index}) => {
+          render: (h, { row, $index }) => {
             if (this.mode === 'read') {
               return row.topicIsFocus ? '是' : ''
             }
@@ -122,7 +122,7 @@ export default {
         status: undefined,
         currentVersion: '',
         duplicateVersion: undefined,
-        contentList: [],
+        contentList: []
       },
       rules: {
       }
@@ -169,7 +169,7 @@ export default {
           topicIsFocus: item.topicIsFocus
         }
       })
-      
+
       this.topic = data
     },
     handleSelectIcon(img) {
@@ -181,7 +181,7 @@ export default {
     handleTopicSourceChange() {
       this.topic.contentList = []
     },
-    handleSelectVideoTopicEnd({shortVideoTopic}) {
+    handleSelectVideoTopicEnd({ shortVideoTopic }) {
       const idField = 'id'
       const selectedList = shortVideoTopic || []
       const originSelectList = this.topic.contentList || []
@@ -209,7 +209,7 @@ export default {
             if (data.contentList.length === 0) {
               return error('请选择话题')
             }
-            const defaultFocus = data.contentList.find(({topicIsFocus}) => topicIsFocus === 1)
+            const defaultFocus = data.contentList.find(({ topicIsFocus }) => topicIsFocus === 1)
             if (!defaultFocus) {
               return error('请设置默认落焦')
             }
@@ -257,7 +257,7 @@ export default {
         data.currentVersion = ''
       }
       return data
-    },
+    }
   },
   created() {
     this.mode = this.initMode || 'create'

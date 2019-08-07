@@ -163,15 +163,15 @@ export default {
           },
           {
             label: '预览',
-            render: (h, { row } ) => {
-              return <el-button 
-                type="text" 
+            render: (h, { row }) => {
+              return <el-button
+                type="text"
                 onClick={(event) => {
                   event.stopPropagation()
                   this.handlePreview(row)
                 }}>
                   预览
-                </el-button>
+              </el-button>
             }
           },
           {

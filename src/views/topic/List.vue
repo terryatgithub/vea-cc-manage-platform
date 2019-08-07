@@ -90,7 +90,7 @@ export default {
           {
             label: '话题类型',
             prop: 'type',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return this.$consts.topicTypesText[row.type]
             }
           },
@@ -98,29 +98,29 @@ export default {
             label: '短视频源',
             prop: 'source',
             width: 140,
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return this.$consts.sourceText[row.source]
             }
           },
           {
             label: '话题状态',
             prop: 'status',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return `${row.currentVersion}/${this.$consts.statusText[row.status]}`
             }
           },
           {
             label: '待审核副本',
             prop: 'duplicateVersion',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               const duplicateVersion = row.duplicateVersion
               if (duplicateVersion) {
                 return <el-button type="text" onClick={
-                    (event) => {
-                      event.stopPropagation()
-                      this.handleRead(row, duplicateVersion)
-                    }
+                  (event) => {
+                    event.stopPropagation()
+                    this.handleRead(row, duplicateVersion)
                   }
+                }
                 >
                   { duplicateVersion }
                 </el-button>
@@ -160,7 +160,7 @@ export default {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.homepageId,
         type: 'topic',
-        menuElId: 'topic',
+        menuElId: 'topic'
       })
     },
     handleFilterChange(type, filter) {

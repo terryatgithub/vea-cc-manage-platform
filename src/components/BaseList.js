@@ -47,7 +47,7 @@ export default {
         }
       }
 
-      if (['crowdRel'].indexOf(resourceType) > -1) {
+      if (['crowdRel', 'panelRecommend'].indexOf(resourceType) > -1) {
         // 有些资源审核通过也可以编辑。。
         return this.$emit('edit', item)
       }

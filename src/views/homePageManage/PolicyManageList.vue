@@ -75,7 +75,7 @@ export default {
               const icon = h('i', {
                 class: row.children ? 'el-icon-folder' : 'el-icon-document'
               })
-              const link =  h(
+              const link = h(
                 'el-button',
                 {
                   attrs: {
@@ -160,10 +160,10 @@ export default {
           },
           {
             label: '操作',
-            render: (h, {row}) => {
-              if (!!row.showContentAuthSettingBtn) {
+            render: (h, { row }) => {
+              if (row.showContentAuthSettingBtn) {
                 return h('el-button', {
-                  props: { type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()
@@ -171,7 +171,7 @@ export default {
                     }
                   }
                 }, '内容权限')
-              } 
+              }
             }
           }
         ],
@@ -186,7 +186,7 @@ export default {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.policyId,
         type: 'policy',
-        menuElId: 'policyConf',
+        menuElId: 'policyConf'
       })
     },
     // 查询

@@ -539,7 +539,7 @@ export default {
   props: ['id', 'initMode', 'version'],
   data() {
     return {
-      pictureResolution: '797*449', //海报尺寸
+      pictureResolution: '797*449', // 海报尺寸
       selectingManualResource: false,
       type: 'block',
       menuElId: 'broadcastBlock',
@@ -563,7 +563,7 @@ export default {
       normalForm: {
       },
       lowerForm: {
-          coverType: 'media',
+        coverType: 'media'
       },
       auditDisabled: false,
       normalRules: {
@@ -682,7 +682,7 @@ export default {
         subchannelId: '', // 子频道ID
         subchannelIs: '', // 是否显示子频道
         params: {},
-        clickType: "detail",
+        clickType: 'detail',
         onclick: {
         },
         sign: 'autoSet',
@@ -721,8 +721,8 @@ export default {
   },
 
   computed: {
-    source(){
-      return this.basicForm.source ==='none' ? '' : this.basicForm.source
+    source() {
+      return this.basicForm.source === 'none' ? '' : this.basicForm.source
     },
     thirdIdOrPackageNameForClick() {
       return this.getThirdId(this.normalForm.clickParams)
@@ -801,7 +801,7 @@ export default {
     getThirdId(clickParams) {
       if (clickParams) {
         const clickParamsObj = JSON.parse(clickParams)
-        const result = ( clickParamsObj.id ||
+        const result = (clickParamsObj.id ||
           clickParamsObj.rotateId ||
           clickParamsObj.pTopicCode ||
           clickParamsObj.url
@@ -886,7 +886,7 @@ export default {
         params: paramsArr,
         exception: data.exception
       }
-       this[this.onclickEventVisibleFlag + 'Form']['onclick'] = o
+      this[this.onclickEventVisibleFlag + 'Form']['onclick'] = o
     },
     handleChangeSign(newVal) {
       // if (newVal === 'manualSet' && this.autoWrite === false) {  // 手动设置
@@ -1082,12 +1082,12 @@ export default {
       }
       switch (tabName) {
         case 'video': {
-           if (selected.selectedEpisodes !==undefined) { 
-             //selected.coocaaVId = selected.selectedEpisodes.coocaaMId
-             selected.thumb = selected.selectedEpisodes.thumb
-             selected.title = selected.selectedEpisodes.urlTitle
-             selected.subTitle = selected.selectedEpisodes.urlSubTitle
-           }
+          if (selected.selectedEpisodes !== undefined) {
+            // selected.coocaaVId = selected.selectedEpisodes.coocaaMId
+            selected.thumb = selected.selectedEpisodes.thumb
+            selected.title = selected.selectedEpisodes.urlTitle
+            selected.subTitle = selected.selectedEpisodes.urlSubTitle
+          }
           s.contentType = 'movie'
           switch (sourceType) {
             case 'yinhe':
@@ -1103,14 +1103,14 @@ export default {
               break
           }
           s.singleId = selected.singleId
-          //  if (selected.selectedEpisodes !==undefined) { 
+          //  if (selected.selectedEpisodes !==undefined) {
           //     s.pictureUrl = selected.selectedEpisodes.thumb
           //     s.title = selected.selectedEpisodes.title
           //     s.subTitle = selected.selectedEpisodes.subTitle
           //  } else {
-            s.pictureUrl = selected.thumb
-            s.title = selected.title
-            s.subTitle = selected.subTitle
+          s.pictureUrl = selected.thumb
+          s.title = selected.title
+          s.subTitle = selected.subTitle
           // }
           s.type = 'res'
           break
@@ -1293,16 +1293,16 @@ export default {
       } else {
         form.smallTopicsIs = false
       }
-        form.title = item.title
-        form.contentType = item.contentType
-        form.subTitle = item.subTitle
-        form.thirdIdOrPackageName = item.thirdIdOrPackageName
-        debugger
-        if (item.pictureUrl) {
-          var newForm = Object.assign({}, form.poster)
-          newForm.pictureUrl = item.pictureUrl
-          form.poster = newForm
-        }
+      form.title = item.title
+      form.contentType = item.contentType
+      form.subTitle = item.subTitle
+      form.thirdIdOrPackageName = item.thirdIdOrPackageName
+      debugger
+      if (item.pictureUrl) {
+        var newForm = Object.assign({}, form.poster)
+        newForm.pictureUrl = item.pictureUrl
+        form.poster = newForm
+      }
       var param = this.paramIdFun(item)
       form.params = JSON.stringify(param)
       if (form.sign === 'autoSet') {
@@ -1580,7 +1580,7 @@ export default {
       const currentIndex = this.currentIndex
       if (oldIndex === currentIndex) {
         this.currentIndex = event.newIndex
-      } else if (oldIndex < currentIndex && newIndex >= currentIndex ) {
+      } else if (oldIndex < currentIndex && newIndex >= currentIndex) {
         this.currentIndex = currentIndex - 1
       } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
         this.currentIndex = currentIndex + 1
@@ -1639,8 +1639,8 @@ export default {
       })
     },
     submitCheck: function(timing, status) {
-      //this.basicForm.status = status
-      if ((this.basicForm.currentVersion === 'V1'&& this.mode !== 'replicate') || this.basicForm.currentVersion === undefined) {
+      // this.basicForm.status = status
+      if ((this.basicForm.currentVersion === 'V1' && this.mode !== 'replicate') || this.basicForm.currentVersion === undefined) {
         return this.doSave(status)
       }
       if (this.$consts.idPrefix == '10') {
@@ -1649,7 +1649,7 @@ export default {
           this.basicForm.releaseTime = timing.releaseTime
           this.doSave(status)
         } else {
-          if (status ===3) {
+          if (status === 3) {
             this.$refs.commonContent.showReleaseTimeSetter = true
           } else {
             this.doSave(status)
@@ -1670,7 +1670,7 @@ export default {
             _this.checkLowerForm(function() {
               var obj = { normalVersionContent: [], lowerVersionContent: {} }
               if (_this.basicForm.configModel === 'group') {
-                const normalVersionContent  = cloneDeep(_this.normalVersionContent)
+                const normalVersionContent = cloneDeep(_this.normalVersionContent)
                 normalVersionContent.map(function(item) {
                   item.onclick
                     ? (item.onclick = JSON.stringify(item.onclick))
@@ -1691,7 +1691,7 @@ export default {
               delete lowerForm.smallTopicsId
               obj.lowerVersionContent = lowerForm
               var resultObj = Object.assign(obj, _this.basicForm)
-             
+
               resultObj.status = status
               resultObj.parentType = 'Block'
               console.log('resultObj', resultObj)

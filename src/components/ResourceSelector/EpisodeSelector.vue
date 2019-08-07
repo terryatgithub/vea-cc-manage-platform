@@ -17,7 +17,7 @@
       @select-end="handleSelectEnd">
       <el-form slot="filter" :inline="true" v-model="filter" label-width="72px">
         <el-form-item label="素材类型">
-          <el-select v-model="filter.urlIsTrailer">
+          <el-select v-model="filter.urlIsTrailer" clearable>
             <el-option
               v-for="option in episodeTypeEnums"
               :key="option.label"
@@ -48,8 +48,12 @@ const episodeTypeEnums = [
     value: '0'
   },
   {
-    label: '非正片',
+    label: '预告',
     value: '1'
+  },
+  {
+    label: '短视频',
+    value: '6'
   }
 ]
 export default {
