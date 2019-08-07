@@ -359,15 +359,15 @@
                     :value="!!tabInfo.panelRecommendConfig.enableRecommend" 
                     @input="handleInputRecommendFlag" />
                 </el-form-item>
-                <template v-if="tabInfo.panelRecommendConfig.enableRecommend">
-                  <el-form-item label="选择板块流">
+                <div v-if="tabInfo.panelRecommendConfig.enableRecommend">
+                  <el-form-item label="选择板块流" prop="panelRecommendConfig.recommendSign" :rules="[{required: true, message: '请选择板块流'}]">
                     <RecommendStreamSignSelector 
                       confirm="改变板块流将清空优先推荐板块，确认修改？"
                       :value="tabInfo.panelRecommendConfig.recommendSign"
                       @input="handleInputRecommendSign"/>
                     该流可推荐板块: {{ recommendStreamSignPanelCount }} 个
                   </el-form-item>
-                  <el-form-item label="从第几个位置开始推荐" prop="panelRecommendConfig.recommendIndex" :rules="[{required: true, message: '不能为空'}]">
+                  <el-form-item label="从第几个位置开始推荐" prop="panelRecommendConfig.recommendIndex" :rules="[{required: true, message: '请设置开始推荐位置', trigger: 'blur'}]">
                     <InputPositiveInt style="width: 200px" v-model="tabInfo.panelRecommendConfig.recommendIndex" />
                     例: 选择 1， 则整个版面都是个性化推荐
                   </el-form-item>
@@ -384,7 +384,7 @@
                       :header="panelRecommendHeader"
                     />
                 </el-form-item>
-                </template>
+                </div>
               </div>
             </el-form>
 
@@ -921,7 +921,7 @@ export default {
           // 是	String	板块推荐流 recommendStreamSign-推荐流标记-数据字典 dictCnName
           recommendSign: '',
           // 是	Integer	开始推荐的位置，默认4,前3屏运营配置，保证质量
-          recommendIndex: 1,
+          recommendIndex: undefined,
           // 否	List	优先推荐的板块列表信息
           panelInfoList: []
         }
@@ -985,7 +985,16 @@ export default {
         {
           label: '板块名称',
           prop: 'pannelName'
-        }
+        },
+        // {
+        //   label: '生效',
+        //   render: (h, {row}) => {
+        //     const recommendSign = this.tabInfo.panelRecommendConfig.recommendSign
+        //     if (row.panelGroupCategory.indexOf(`[${recommendSign}]`) === -1) {
+        //       return <span class="color-red">板块不在本流中， 无法生效</span>
+        //     }
+        //   }
+        // }
       ]
     }
   },
@@ -2066,15 +2075,27 @@ export default {
 
       let error
       if (tabStatus === STATUS.draft) {
-        if (!data.tabName) {
-          error = '请填写版面名称'
+        const fields = [
+          'tabName',
+          'panelRecommendConfig.recommendIndex',
+          'panelRecommendConfig.recommendSign'
+        ]
+        let count = fields.length
+        let isValid = true
+        const validateFieldCb = (error) => {
+          count--
+          if (error) {
+            isValid = false
+          }
+          if (count === 0) {
+            if (!isValid) {
+              showError('请把表单填写完整')
+            } else {
+              cb()
+            }
+          }
         }
-
-        if (error) {
-          showError(error)
-        } else {
-          cb()
-        }
+        this.$refs.tabForm.validateField(fields, validateFieldCb)
       } else {
         this.$refs.tabForm.validate(function(valid) {
           if (!valid) {
@@ -2460,7 +2481,9 @@ export default {
       }
     },
     resetPanelRecommendConfig() {
-      this.tabInfo.panelRecommendConfig.panelInfoList = []
+      const panelRecommendConfig = this.tabInfo.panelRecommendConfig
+      panelRecommendConfig.panelInfoList = []
+      panelRecommendConfig.recommendIndex = undefined
       this.setRecommendStreamSignPanelCount()
     }
   },
