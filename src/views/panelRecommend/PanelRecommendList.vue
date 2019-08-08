@@ -191,7 +191,7 @@ export default {
     },
     handleToggleRecommendFlag(row) {
       const flag = row.flag ? 0 : 1
-      this.$service.panelRecommendUpsert({...row, flag}, '设置成功').then(() => {
+      this.$service.panelRecommendFlagUpsert({panelGroupId: row.panelGroupId, flag}, '设置成功').then(() => {
         row.flag = flag
       })
     },

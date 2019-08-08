@@ -84,3 +84,11 @@ export function panelRecommendUpsert(data) {
     data: { jsonStr: JSON.stringify(data) }
   })
 }
+
+export function panelRecommendFlagUpsert(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/panelRecommend/switchRecommend.html',
+    data: { jsonStr: JSON.stringify(data) }
+  })
+}
