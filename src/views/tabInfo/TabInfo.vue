@@ -141,9 +141,9 @@
                 <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
                 <span>版面数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                昨日UVCTR：<span class="data-UVCTR">{{UVCTR.value}}</span>，
-                日环比<span style="color: #00AA00">2.35%&darr;</span>；
-                周同比<span style="color: red">3.34%&uarr;</span>
+                昨日UVCTR：<span>{{tabUVCTR.value?toPercent(tabUVCTR.value):'N/A'}}</span>，
+                日环比<span :class="tabUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{tabUVCTRPercent.dailyGrowth}}</span>；
+                周同比<span :class="tabUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{tabUVCTRPercent.weeklyGrowth}}</span>
               </div>
               <div :style="{display: isCollapseData ? 'none' : 'block'}">
                 <div class="chart-box">
@@ -854,6 +854,16 @@ export default {
         dailyGrowth: '',
         weeklyGrowth: ''
       },
+      tabUVCTR: {
+        value: '',
+        dailyGrowth: '',
+        weeklyGrowth: ''
+      },
+      tabUVCTRPercent: {
+        value: 'N/A',
+        dailyGrowth: 'N/A',
+        weeklyGrowth: 'N/A'
+      },
       mode: 'create',
       activePage: 'tab_info',
       panelPreview: {
@@ -1131,6 +1141,13 @@ export default {
     'tabInfo.tabResource': 'getVipButtonSource'
   },
   methods: {
+    toPercent: decimal => {
+      return (Math.round(decimal * 10000) / 100.00 + "%")
+    },
+    toArrowPercent (decimal) {
+      const rs = this.toPercent(Math.abs(decimal))
+      return rs + (decimal>0 ? ' ↑' : ' ↓')
+    },
     parseMinToStr(min) {
       const hours = Math.floor(min / 60)
       const mins = min % 60
@@ -2492,9 +2509,10 @@ export default {
     },
     getSimpleBrowseData() {
       this.$service.getTabSimpleBrowseData({ id: this.id }).then(data => {
-        const tabUVCTR = data.rows[0].data[0].uVCTR
-        this.UVCTR = Object.assign({}, tabUVCTR)
-        console.log('tab', this.tabUVCTR);
+        const tabUVCTR = data.rows[0].data[0].uvctr
+        this.tabUVCTR = tabUVCTR
+        tabUVCTR.dailyGrowth ? this.tabUVCTRPercent.dailyGrowth = this.toArrowPercent(tabUVCTR.dailyGrowth) : 'N/A'
+        tabUVCTR.weeklyGrowth ? this.tabUVCTRPercent.weeklyGrowth = this.toArrowPercent(tabUVCTR.weeklyGrowth) : 'N/A'
       })
     },
     getVipButtonSourceItem(id) {
@@ -2635,4 +2653,8 @@ export default {
   line-height: 44px
   text-align: center
   font-size: 25px
+.data-up
+  color: red
+.data-down
+  color: #00AA00
 </style>
