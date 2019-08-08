@@ -133,14 +133,17 @@ export default {
             fixed: 'right',
             width: 180,
             render: (h, { row }) => {
-              return (<div>
-                <el-button type="text" onClick={(event) => {
-                  event.stopPropagation();
-                  this.handleToggleRecommendFlag(row)
-                }}>
-                  { row.flag ? '不可推荐' : '可推荐' }
-                </el-button>
-              </div>)
+              return h('el-button', {
+                props: {
+                  type: 'text'
+                },
+                on: {
+                  click: (event) => {
+                    event.stopPropagation()
+                    this.handleToggleRecommendFlag(row)
+                  }
+                }
+              },  row.flag ? '不可推荐' : '可推荐')
             }
           }
         ],
