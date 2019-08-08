@@ -12,6 +12,31 @@
     @select-start="fetchData"
     :disabled="disabled"
   >
+    <el-collapse 
+      slot="prepend" 
+      class="rel-picture-wrapper"
+      v-model="collapseActiveItems">
+      <el-collapse-item title="关联图片" name="relPicture">
+        <CardList
+          class="rel-picture-list"
+          :data="table.data"
+          :selected="table.selected"
+          :selection-type="table.selectionType"
+          :select-on-row-click="true"
+          @row-selection-change="handleRowSelectionChange">
+          <div class="picture-item" slot="row" slot-scope="{row: item}">
+            <div class="img-wrapper">
+              <img class="list-img" :src="item.pictureUrl">
+            </div>
+            <p>{{item.pictureName}}</p>
+            <div>
+              {{ item.pictureId }} / {{ $consts.statusText[item.pictureStatus] }} / {{item.pictureResolution}}
+            </div>
+          </div>
+        </CardList>
+      </el-collapse-item>
+    </el-collapse>
+
     <CardList
       slot="item-list"
       :data="table.data"
@@ -19,11 +44,11 @@
       :selection-type="table.selectionType"
       :select-on-row-click="true"
       @row-selection-change="handleRowSelectionChange">
-      <div class="box-list" slot="row" slot-scope="{row: item}">
-        <p class="list-p">
+      <div class="picture-item" slot="row" slot-scope="{row: item}">
+        <p class="img-wrapper">
           <img class="list-img" :src="item.pictureUrl">
         </p>
-        <p class="list-title">{{item.pictureName}}</p>
+        <p>{{item.pictureName}}</p>
         <div>
           {{ item.pictureId }} / {{ $consts.statusText[item.pictureStatus] }} / {{item.pictureResolution}}
         </div>
@@ -47,6 +72,7 @@ export default {
   props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled'],
   data() {
     return {
+      collapseActiveItems: ['relPicture'],
       materialTypes: {}, // 素材类型
       pictureStatus: {
         // 状态
@@ -135,38 +161,42 @@ export default {
   created() {
     let filterSchema = _.map({
       pictureId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
-        label: ' ',
+        label: '',
         component: 'Input',
         placeholder: 'ID',
         cols: {
           item: 3,
+          label: 0,
           wrapper: 23
         }
       }),
       pictureName: _.o.string.other('form', {
-        label: ' ',
+        label: '',
         component: 'Input',
         placeholder: '素材名称',
         cols: {
           item: 3,
+          label: 0,
           wrapper: 23
         }
       }),
       pictureCategory: _.o.enum(this.materialTypes).other('form', {
-        label: ' ',
+        label: '',
         component: 'Select',
         placeholder: '素材类别',
         cols: {
           item: 3,
+          label: 0,
           wrapper: 23
         }
       }),
       pictureStatus: _.o.enum(this.pictureStatus).other('form', {
-        label: ' ',
+        label: '',
         component: 'Select',
         placeholder: '审核状态',
         cols: {
           item: 3,
+          label: 0,
           wrapper: 23
         }
       })
@@ -175,6 +205,7 @@ export default {
       footer: {
         cols: {
           item: 3,
+          label: 0,
           wrapper: 23
         },
         showSubmit: true,
@@ -204,28 +235,46 @@ export default {
 }
 </script>
 
-<style scoped>
-.content-list >>> .card-list {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-.card-list  >>> .card-item__selection {
-  display: none
-}
-.card-list >>> .card-item-wrapper:hover {
-  border: 1px solid #444
-}
-.card-list >>> .card-item-wrapper {
-  width: 17%;
-  border: 1px solid #ccc;
-  margin: 5px;
-  padding: 10px;
-  cursor: pointer;
-}
-.list-p >>> img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
+<style scoped lang="stylus">
+.content-list >>> .card-list 
+  display flex
+  flex-direction row
+  flex-wrap wrap
+
+.card-list  >>> .card-item__selection 
+  display none
+
+.card-list >>> .card-item-wrapper:hover 
+  border 1px solid #444
+
+.card-list >>> .card-item-wrapper 
+  width 17%
+  height 256px
+  border 1px solid #ccc
+  margin 5px
+  padding 10px
+  cursor pointer
+
+.img-wrapper img 
+  width 100%
+  height 200px
+  object-fit cover
+
+.rel-picture-wrapper
+  margin-bottom 20px
+.rel-picture-list
+  width 100%
+  display block
+  overflow-x auto
+  white-space nowrap
+  >>> .card-item-wrapper
+    width 13%
+    display inline-block
+  .img-wrapper img
+    display block
+    margin 0 auto
+    width unset
+    max-width 100%
+    max-height 200px
 </style>
+

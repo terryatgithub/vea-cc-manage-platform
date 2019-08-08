@@ -105,7 +105,7 @@ export default {
               return this.$consts.statusText[row.status]
             }
           },
-           {
+          {
             label: '内容源',
             prop: 'source',
             render: (h, { row }) => {
@@ -119,10 +119,10 @@ export default {
           },
           {
             label: '操作',
-            render: (h, {row}) => {
-              if (!!row.showContentAuthSettingBtn) {
+            render: (h, { row }) => {
+              if (row.showContentAuthSettingBtn) {
                 return h('el-button', {
-                  props: { type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()
@@ -130,7 +130,7 @@ export default {
                     }
                   }
                 }, '内容权限')
-              } 
+              }
             }
           }
         ],
@@ -145,7 +145,7 @@ export default {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.id,
         type: 'block',
-        menuElId: 'broadcastBlock',
+        menuElId: 'broadcastBlock'
       })
     },
     genDefaultFilter() {

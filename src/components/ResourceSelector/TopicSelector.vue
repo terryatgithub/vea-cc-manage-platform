@@ -63,7 +63,7 @@ export default {
           {
             prop: 'title',
             label: '专题名称',
-            fixed: true,
+            fixed: true
           },
           {
             prop: 'picture',

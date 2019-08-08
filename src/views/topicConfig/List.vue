@@ -71,14 +71,14 @@ export default {
           {
             label: '名称',
             prop: 'topicConfigName',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return (
-                <el-button 
-                  type="text" 
+                <el-button
+                  type="text"
                   onClick={(event) => {
-                      event.stopPropagation()
-                      this.handleRead(row)
-                    }
+                    event.stopPropagation()
+                    this.handleRead(row)
+                  }
                   }>
                   { row.topicConfigName }
                 </el-button>
@@ -88,29 +88,29 @@ export default {
           {
             label: '内容源',
             prop: 'source',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return this.$consts.sourceText[row.source]
             }
           },
           {
             label: '状态',
             prop: 'status',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return `${row.currentVersion}/${this.$consts.statusText[row.status]}`
             }
           },
           {
             label: '待审核副本',
             prop: 'duplicateVersion',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               const duplicateVersion = row.duplicateVersion
               if (duplicateVersion) {
                 return <el-button type="text" onClick={
-                    (event) => {
-                      event.stopPropagation()
-                      this.handleRead(row, duplicateVersion)
-                    }
+                  (event) => {
+                    event.stopPropagation()
+                    this.handleRead(row, duplicateVersion)
                   }
+                }
                 >
                   { duplicateVersion }
                 </el-button>
@@ -136,7 +136,7 @@ export default {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.homepageId,
         type: 'topic',
-        menuElId: 'topic',
+        menuElId: 'topic'
       })
     },
     handleFilterChange(type, filter) {

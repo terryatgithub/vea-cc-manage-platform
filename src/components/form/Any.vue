@@ -1,5 +1,5 @@
 <template>
-  <el-form-item :label="label" :prop="prop" :rules="rules">  
+  <el-form-item :label="label" :prop="prop" :rules="rules">
     <template v-if="!isReadonly">
       <slot name="edit"> {{ value }}</slot>
     </template>

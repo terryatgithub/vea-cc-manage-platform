@@ -264,7 +264,7 @@ export default {
       mode: undefined,
       resourceName: '测试策略',
       dialogType: undefined,
-     // title: null,
+      // title: null,
       selectionType: 'multiple',
       dialogTitle: null,
       dialogVisible: false,

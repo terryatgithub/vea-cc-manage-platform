@@ -1,5 +1,5 @@
 <template>
-  <el-form-item :label="label" :prop="prop" :rules="rules">  
+  <el-form-item :label="label" :prop="prop" :rules="rules">
     <template v-if="!isReadonly">
       <el-radio-group
         v-if="type === 'radio'"
@@ -35,7 +35,7 @@
         </el-option>
       </el-select>
     </template>
-    
+
     <template v-else> {{ getLabel(value) }}</template>
     <slot></slot>
   </el-form-item>
@@ -54,7 +54,7 @@ export default {
   methods: {
     getLabel(val) {
       const options = this.options || []
-      const selected = options.find(({value}) => value === val)
+      const selected = options.find(({ value }) => value === val)
       if (selected) {
         return selected.label
       }
@@ -85,4 +85,3 @@ export default {
 <style>
 
 </style>
-

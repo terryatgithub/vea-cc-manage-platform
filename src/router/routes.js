@@ -45,6 +45,7 @@ import Main from '@/components/Main'
 import Desktop from '@/views/desktop/Desktop'
 import FramePage from '../views/FramePage'
 import CrowdRel from '../views/crowdRel/Index.vue'
+import PanelRecommend from '../views/panelRecommend/PanelRecommendIndex.vue'
 
 const Topic = () => import('../views/topic/Index')
 const TopicConfig = () => import('../views/topicConfig/Index')
@@ -63,7 +64,6 @@ const children = [
         component: undefined,
         meta: {
           title: '常用排行榜',
-
           tagId: 'commonTopPannelUser'
         }
       },
@@ -73,7 +73,6 @@ const children = [
         component: CommonPannelUser,
         meta: {
           title: '常用常规运营版块',
-
           tagId: 'commonPannelUser'
         }
       },
@@ -206,6 +205,15 @@ const children = [
         meta: {
           title: '智能化推荐',
           tagId: 'intelliReccomendPannel'
+        }
+      },
+      {
+        name: 'panelRecommend',
+        path: '/panelRecommend',
+        component: PanelRecommend,
+        meta: {
+          title: '板块推荐流管理',
+          tagId: 'panelRecommend'
         }
       }
     ]

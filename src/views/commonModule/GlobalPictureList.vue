@@ -16,7 +16,7 @@
           @delete="handleDelete"
           @batch-audit="batchAudit"
         ></ButtonGroupForListPage>
-        <el-button type="primary" @click="handleAllRowSelectionChange(checkAll = !checkAll)">全选/全不选</el-button> 
+        <el-button type="primary" @click="handleAllRowSelectionChange(checkAll = !checkAll)">全选/全不选</el-button>
       </div>
       <CardList
         class="img-list"
@@ -222,7 +222,7 @@ export default {
     submitAudit() {
       this.$refs.auditForm.validate(valid => {
         if (valid) {
-          this.auditForm.idStr = this.selected.map(({pictureId}) => pictureId).join(',')
+          this.auditForm.idStr = this.selected.map(({ pictureId }) => pictureId).join(',')
           this.$service
             .materialBatchAudit(this.auditForm, this.auditForm.auditFlag === '4' ? '审批成功' : '打回成功')
             .then(data => {

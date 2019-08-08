@@ -695,7 +695,7 @@ export default {
   },
   computed: {
     source() {
-      //内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
+      // 内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
       switch (this.block.pluginInfo.source) {
         case 0:
           return ''
@@ -1322,7 +1322,7 @@ export default {
       delete data.helper
       return data
     },
-    //提交审核
+    // 提交审核
     handleSubmitAudit(d, status) {
       const data = this.getData(status)
       this.validateData(

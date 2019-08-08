@@ -136,7 +136,15 @@
                 </div>
               </el-form-item>
               <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item }}</el-tag>
+                <div class="media-tag-list">
+                  <div
+                    v-for="(item, index) in sharedTags"
+                    :key="index"
+                    class="media-tag-list__item">
+                    {{ item }}
+                    <el-input-number :max="1.5" :min="0.5" :value="1" :step="0.1" />
+                  </div>
+                </div>
               </el-form-item>
               <el-form-item v-show="isShowTagsField"  class="tag-list" label="资源批量打标签">
                 <el-button type="primary" plain @click="handleBatchAddTag">
@@ -1950,4 +1958,29 @@ export default {
 .tag-list >>> .el-tag {
   margin-right: 10px;
 }
+</style>
+<style lang="stylus" scoped>
+.media-tag-list__item
+  display inline-block
+  border 1px solid #3ba7f0
+  background #e8f5ff
+  margin 0 10px 10px 0
+  padding-left 5px
+  color #666
+  >>>
+    .el-input-number--small
+      width 100px
+      margin-left 5px
+    .el-input-number__decrease,
+    .el-input-number__increase,
+    .el-input__inner
+      background #e8f5ff
+      border-radius 0
+      border none
+    .el-input-number__decrease
+      border-left 1px solid #3ba7f0
+      border-right 1px solid #3ba7f0
+    .el-input-number__increase
+      border-left 1px solid #3ba7f0
+
 </style>

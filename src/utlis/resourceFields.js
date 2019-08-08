@@ -61,5 +61,8 @@ export default {
   topicConfig: {
     id: 'id',
     status: 'status'
+  },
+  panelRecommend: {
+    id: 'panelGroupId'
   }
 }

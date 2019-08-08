@@ -20,7 +20,7 @@ export default {
     },
     contentProps() {
       return {
-        menuElId: 'sysPlugin',
+        menuElId: 'sysPlugin'
       }
     }
   }

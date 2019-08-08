@@ -71,8 +71,19 @@ export default {
           {
             label: '内容源',
             prop: 'source',
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return this.$consts.partnerText[row.source]
+            }
+          },
+          {
+            label: '短视频时长',
+            prop: 'mDuration',
+            render: (h, { row }) => {
+              const mDuration = row.mDuration
+              const hour = Math.floor(mDuration / 3600)
+              const min = Math.floor((mDuration - 3600 * hour) / 60)
+              const sec = mDuration - 3600 * hour - 60 * min
+              return `${hour}小时${min}分${sec}秒`
             }
           },
           {
@@ -91,7 +102,7 @@ export default {
     }
   },
   methods: {
-    handleSelectParentVideoEnd({video, episode, edu}) {
+    handleSelectParentVideoEnd({ video, episode, edu }) {
       let pThirdVId
       if (video.length > 0) {
         const coocaaVId = video[0].coocaaVId
@@ -105,7 +116,6 @@ export default {
         pThirdVId = edu[0].coocaaVId
       }
       this.filter.pThirdVId = pThirdVId
-
     },
     getDefaultFilter() {
       return {
@@ -113,7 +123,9 @@ export default {
         mTitle: '',
         pThirdVId: '',
         resType: 'shortVideo',
-        callback: 'result'
+        callback: 'result',
+        orderBy: 'm_duration',
+        order: 'desc'
       }
     },
     getFilter() {

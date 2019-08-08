@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import  { Table } from 'admin-toolkit'
+import { Table } from 'admin-toolkit'
 export default {
   components: {
     Table

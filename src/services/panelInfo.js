@@ -61,3 +61,26 @@ export function getSharedTags(params) {
     params
   })
 }
+
+export function panelRecommendList(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/panelRecommend/dataList.html',
+    data
+  })
+}
+
+export function panelRecommendGetDetail(params) {
+  return this.fetch({
+    url: 'api/v1/panelRecommend/getDetailInfo.html',
+    params
+  })
+}
+
+export function panelRecommendUpsert(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/panelRecommend/save.html',
+    data
+  })
+}

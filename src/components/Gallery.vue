@@ -2,13 +2,13 @@
   <div class="gallery__wrapper">
     <div class="gallery__list">
 
-      <component 
+      <component
         :is="mode === 'read' ? 'div' : 'draggable'"
         :value="value"
         @input="$emit('input', $event)"
         @start="handleDragStart"
         @end="handleDragEnd">
-        <div 
+        <div
           v-for="(item, index) in value"
           :key="index"
           :class="['gallery__item', index === activeIndex ? 'active' : '']"
@@ -59,7 +59,7 @@ export default {
       let nextActiveIndex
       if (oldIndex === currentIndex) {
         nextActiveIndex = newIndex
-      } else if (oldIndex < currentIndex && newIndex >= currentIndex ) {
+      } else if (oldIndex < currentIndex && newIndex >= currentIndex) {
         nextActiveIndex = currentIndex - 1
       } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
         nextActiveIndex = currentIndex + 1
@@ -83,7 +83,7 @@ export default {
   top 10px
   left 0
   width 200px
-  height 600px 
+  height 600px
   overflow-y auto
 
 .gallery__item
@@ -106,4 +106,3 @@ export default {
   font-size 20px
   margin-top 45px
 </style>
-

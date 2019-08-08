@@ -96,7 +96,7 @@ const routerMap = {
   rotateTopicInfo: 'rotateTopicInfo',
 
   // 点播资源管理
-  ownMediaResManage: 'ownMediaResManage', 
+  ownMediaResManage: 'ownMediaResManage',
   rankingListManage: 'rankingListManage',
   ccShortVideoConnectPositiveDetail: 'ccShortVideoConnectPositiveDetail',
   rightsContentManage: 'rightsContentManage',
@@ -144,7 +144,10 @@ const routerMap = {
   dmpMgr: 'dmpMgr',
   // 短视频
   topic: 'topic',
-  topicConfig: 'topicConfig'
+  topicConfig: 'topicConfig',
+
+  // 板块推荐
+  panelRecommend: 'panelRecommend',
 }
 export default {
   components: {
@@ -321,9 +324,9 @@ export default {
   },
   mounted() {
     this.$bus.$on('scroll-top', () => {
-      this.$refs.main.$el.scrollTo(0,0)
+      this.$refs.main.$el.scrollTo(0, 0)
     })
-  //  this.saveTags()
+    //  this.saveTags()
     window.addEventListener('beforeunload', this.saveTags)
   },
   destroyed() {

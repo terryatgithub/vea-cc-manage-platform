@@ -21,7 +21,7 @@ export default {
     },
     contentProps() {
       return {
-        menuElId: 'multiFunctionBlock',
+        menuElId: 'multiFunctionBlock'
       }
     }
   }

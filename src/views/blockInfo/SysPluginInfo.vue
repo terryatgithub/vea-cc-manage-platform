@@ -123,10 +123,10 @@
                   <div class="form-legend-header">
                     <span>多版本信息</span>
                   </div>
-                  <Gallery 
+                  <Gallery
                     class="gallery"
                     :mode="mode"
-                    v-model="block.rlsInfo" 
+                    v-model="block.rlsInfo"
                     :active-index="currentIndex"
                     @active-index-change="currentIndex = $event"
                     @activate="handleActivatePluginVersion">
@@ -138,10 +138,10 @@
                         {{ item.label }}
                       </span>
                       <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
-                      <i 
+                      <i
                         v-show="item.dataType === 7 || item.dataType === 4"
                         @click.stop="handleRemovePluginVersion(index)"
-                        class="el-icon el-icon-close" 
+                        class="el-icon el-icon-close"
                         title="移除">
                       </i>
                     </div>
@@ -150,13 +150,13 @@
                       <br />
                       <el-button v-show="canAddActivity" type="text" @click.stop="handleAddPluginVersion('activity')">+ 添加活动</el-button>
                     </div>
-                    <PluginContent 
+                    <PluginContent
                       slot="detail"
                       ref="pluginContent"
                       :source="source"
                       :mode="mode"
-                      :plugin="currentPlugin" 
-                      :plugin-type="pluginType" 
+                      :plugin="currentPlugin"
+                      :plugin-type="pluginType"
                       :plugin-list="block.rlsInfo"
                       :parent-type="block.pluginInfo.pluginParentType" />
                   </Gallery>
@@ -205,9 +205,9 @@
                   <div class="form-legend-header">
                     <span>多版本信息</span>
                   </div>
-                  <Gallery 
+                  <Gallery
                     class="gallery"
-                    v-model="block.rlsInfo" 
+                    v-model="block.rlsInfo"
                     :active-index="currentIndex"
                     :mode="mode"
                     @activate="handleActivatePluginVersion">
@@ -220,13 +220,13 @@
                       </span>
                       <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
                     </div>
-                    <PluginContent 
+                    <PluginContent
                       slot="detail"
                       :source="source"
                       :mode="mode"
                       :addable="false"
-                      :plugin="currentPlugin" 
-                      :plugin-type="pluginType" 
+                      :plugin="currentPlugin"
+                      :plugin-type="pluginType"
                       :parent-type="block.pluginInfo.pluginParentType" />
                   </Gallery>
                 </template>
@@ -249,10 +249,10 @@ import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import InputMinute from '@/components/InputMinute'
 const PARENT_TYPES = {
- sign: 'sign', //标记推荐位
+  sign: 'sign', // 标记推荐位
   multi: 'multi',
   builtIn: 'builtIn',
- secKill: 'secKill'
+  secKill: 'secKill'
 }
 window.basicFn = {}
 export default {
@@ -263,7 +263,7 @@ export default {
     Gallery,
     PageWrapper,
     PageContentWrapper,
-    InputMinute,
+    InputMinute
   },
   props: ['id', 'initMode', 'version', 'contentProps'],
   data() {
@@ -277,7 +277,7 @@ export default {
       selectResource: {},
       selectImgData: {},
       urls: {
-         uploadImg: 'api/v1/upload/image.html' // 上传图片接口
+        uploadImg: 'api/v1/upload/image.html' // 上传图片接口
       },
       PARENT_TYPES: PARENT_TYPES,
       mode: 'create',
@@ -313,7 +313,7 @@ export default {
           enableEdit: 1,
           // 系统功能状态，2-草稿，3-待审核，4-审核通过，5-审核不通过
           pluginStatus: undefined,
-          refreshTime: this.contentProps.menuElId === 'sysPlugin' ?  240 : ''
+          refreshTime: this.contentProps.menuElId === 'sysPlugin' ? 240 : ''
         },
         rlsInfo: []
       },
@@ -344,7 +344,7 @@ export default {
       return this.block.rlsInfo[this.currentIndex]
     },
     source() {
-      //内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
+      // 内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
       switch (this.block.pluginInfo.source) {
         case 0:
           return ''
@@ -366,7 +366,7 @@ export default {
         return {
           id: form.pluginId,
           type: 'systemPlugin',
-          menuElId: this.contentProps.menuElId, 
+          menuElId: this.contentProps.menuElId,
           version: form.currentVersion,
           status: form.pluginStatus
         }
@@ -374,7 +374,7 @@ export default {
     },
     canAddActivity() {
       if (this.contentProps.menuElId === 'sysPlugin') {
-        return !this.block.rlsInfo.find(({dataType}) => dataType === 4)
+        return !this.block.rlsInfo.find(({ dataType }) => dataType === 4)
       }
     },
     pluginTypeText() {
@@ -445,8 +445,8 @@ export default {
     handleAddPluginVersion(type) {
       this.$refs.pluginContent.validate(() => {
         const options = type === 'activity'
-          ? { label: '活动形式', dataType: 4}
-          : { label: '', dataType: 7}
+          ? { label: '活动形式', dataType: 4 }
+          : { label: '', dataType: 7 }
         const rlsInfo = this.block.rlsInfo
         rlsInfo.push(
           this.genRlsInfo(options, this.block.pluginInfo.pluginType)
@@ -460,16 +460,15 @@ export default {
       let currentIndex = this.currentIndex
       const length = rlsInfo.length
       if (currentIndex === index && length > 0) {
-        while(!rlsInfo[currentIndex]) {
-          currentIndex = currentIndex === 0 
+        while (!rlsInfo[currentIndex]) {
+          currentIndex = currentIndex === 0
             ? length - 1
             : (currentIndex - 1)
         }
         this.currentIndex = currentIndex
       }
-
     },
-    //时间处理-:转换为数值
+    // 时间处理-:转换为数值
     parseStrToMin(str) {
       const timeArr = str.split(':')
       const hours = parseInt(timeArr[0])
@@ -694,9 +693,9 @@ export default {
     },
     getData(status) {
       const data = JSON.parse(JSON.stringify(this.block))
-       if (this.mode === 'replicate') {
-          data.pluginInfo.currentVersion = ''
-       }
+      if (this.mode === 'replicate') {
+        data.pluginInfo.currentVersion = ''
+      }
       data.pluginInfo.pluginStatus = status
       return data
     },
@@ -716,8 +715,8 @@ export default {
           })
           if (invalid) {
             return error('请把每个版本都信息填写完整')
-          } 
-        } 
+          }
+        }
         cb()
       }
       this.$refs.blockForm.validate(
@@ -971,7 +970,7 @@ export default {
       delete data.helper
       return data
     },
-    /** 提交审核*/
+    /** 提交审核 */
     handleSubmitAudit(d, status) {
       const data = this.getData(status)
       this.validateData(
@@ -989,11 +988,11 @@ export default {
           formData = this.parseData(formData)
           console.log(formData)
           this.$service.SavePlugin(formData, '保存成功').then(data => {
-             this.$emit('upsert-end')
+            this.$emit('upsert-end')
           })
         }.bind(this)
       )
-    },
+    }
   },
   created() {
     this.basicFn = basicFn
@@ -1041,5 +1040,3 @@ export default {
   text-align center
   padding-top 20px
 </style>
-
-

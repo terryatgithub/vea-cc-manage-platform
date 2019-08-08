@@ -8,7 +8,7 @@
     </el-form-item>
     <el-form-item label="启动动作" :prop="formProp('dowhat')" :rules="rules.dowhat">
       <el-select v-model="inputValue.dowhat">
-        <el-option 
+        <el-option
             v-for="(item, index) in dowhatOptions"
             :key="index"
             :label="item.label"
@@ -19,7 +19,7 @@
     </el-form-item>
     <el-form-item label="启动方式" :prop="formProp('bywhat')" :rules="rules.bywhat">
       <el-select v-model="inputValue.bywhat">
-        <el-option 
+        <el-option
             v-for="(item, index) in bywhatOptions"
             :key="index"
             :label="item.label"
@@ -114,52 +114,52 @@ export default {
     }
   },
   props: {
-      value: {
+    value: {
 
-      }, 
-      propPrefix: {
+    },
+    propPrefix: {
 
-      },
-      dowhatOptions: {
-          default() {
-              return [
-                  {
-                      label: 'startActivity',
-                      value: 'startActivity'
-                  },
-                  {
-                      label: 'startService',
-                      value: 'startService'
-                  },
-                  {
-                      label: 'sendBroadcast',
-                      value: 'sendBroadcast'
-                  }
-              ]
+    },
+    dowhatOptions: {
+      default() {
+        return [
+          {
+            label: 'startActivity',
+            value: 'startActivity'
+          },
+          {
+            label: 'startService',
+            value: 'startService'
+          },
+          {
+            label: 'sendBroadcast',
+            value: 'sendBroadcast'
           }
-      },
-      bywhatOptions: {
-          default() {
-              return [
-                {
-                    label: 'action',
-                    value: 'action'
-                },
-                {
-                    label: 'class',
-                    value: 'class'
-                },
-                {
-                    label: 'uri',
-                    value: 'uri'
-                },
-                {
-                    label: 'activity',
-                    value: 'activity'
-                }
-              ]
-          }
+        ]
       }
+    },
+    bywhatOptions: {
+      default() {
+        return [
+          {
+            label: 'action',
+            value: 'action'
+          },
+          {
+            label: 'class',
+            value: 'class'
+          },
+          {
+            label: 'uri',
+            value: 'uri'
+          },
+          {
+            label: 'activity',
+            value: 'activity'
+          }
+        ]
+      }
+    }
   },
   watch: {
     value: 'setInputValue'

@@ -29,7 +29,7 @@ export default {
   extends: BaseList,
   components: {
     ContentWrapper,
-    Table,
+    Table
   },
   data () {
     return {
@@ -165,7 +165,7 @@ export default {
       }
       this.pagination.currentPage = 1
       this.fetchData()
-    },
+    }
   },
   created() {
     this.fetchData()
@@ -176,4 +176,3 @@ export default {
 
 <style lang='stylus' scoped>
 </style>
-

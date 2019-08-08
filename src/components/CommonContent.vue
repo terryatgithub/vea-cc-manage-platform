@@ -225,14 +225,14 @@ export default {
           this.$service.secondAudit({
             id,
             version,
-            type,
+            type
           }, '操作成功')
             .then(data => {
               this.$emit('audit')
             })
         })
         .catch((e) => {
-          console.log(e) 
+          console.log(e)
         })
     },
     handleUnAudit() {

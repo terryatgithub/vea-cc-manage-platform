@@ -247,9 +247,9 @@
             :disabled="isReadonly"
             @select-end="handleSelectBgEnd">
             <div v-if="contentForm.bgImgUrl"  class="bg-img-wrapper">
-              <img 
+              <img
                 class="bg-img"
-                :src="contentForm.bgImgUrl" 
+                :src="contentForm.bgImgUrl"
                 referrerpolicy="no-referrer">
               <i
                   v-show="!isReadonly && contentForm.bgImgUrl"
@@ -262,6 +262,12 @@
         </el-form-item>
       </template>
 
+      <el-form-item label="推荐位点击跳转" prop="jumpType" v-if="contentForm.coverType === 'media'">
+        <el-radio-group v-model="contentForm.jumpType" :disabled="isReadonly">
+          <el-radio label="detail">影片详情页</el-radio>
+          <el-radio label="fullscreen">全屏播放页</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
         <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
       </el-form-item>
@@ -549,7 +555,7 @@ export default {
               } else {
                 cb()
               }
-            },
+            }
           }
         ],
         webpageUrl: [
@@ -824,7 +830,7 @@ export default {
           }
         }
       })
-      return {selectedType, selected, selectedEpisode}
+      return { selectedType, selected, selectedEpisode }
     },
     handleSelectMediaEnd(resources) {
       const { selectedType, selected, selectedEpisode } = this.getSelectedResource(resources)
@@ -978,10 +984,10 @@ export default {
         this.contentForm.blockResourceType = 3
       }
     },
-    handleSelectGoodEnd({good}) {
+    handleSelectGoodEnd({ good }) {
       const selected = good[0]
       if (selected) {
-        this.contentForm.contentType = 13 
+        this.contentForm.contentType = 13
         this.contentForm.videoContentType = 'mall'
         this.contentForm.extraValue1 = selected.resourceId
         this.contentForm.pictureUrl = selected.resourceImgUrl

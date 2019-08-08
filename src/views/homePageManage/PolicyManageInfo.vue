@@ -295,7 +295,7 @@ export default {
       mode: undefined,
       dialogType: undefined,
       resourceName: '策略管理',
-      //title: null,
+      // title: null,
       selectionType: 'multiple',
       dialogTitle: null,
       mode: 'normal',

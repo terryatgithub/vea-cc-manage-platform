@@ -181,7 +181,7 @@ export default {
                   row.collected ? '取消' : '收藏'
                 ]),
                 (!!row.showContentAuthSettingBtn) && h('el-button', {
-                  props: { type: 'text'},
+                  props: { type: 'text' },
                   on: {
                     click: (event) => {
                       event.stopPropagation()

@@ -5,7 +5,7 @@ const cache = {
 
 export function getCrowdOfPolicyWithCache({ id }) {
   if (!cache.fetchCrowdPromise[id]) {
-    cache.fetchCrowdPromise[id] = this.getCrowdOfPolicy(id)
+    cache.fetchCrowdPromise[id] = this.getCrowdOfPolicy({ id })
   }
   return cache.fetchCrowdPromise[id]
 }
