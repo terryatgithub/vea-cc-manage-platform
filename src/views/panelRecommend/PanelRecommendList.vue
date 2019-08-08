@@ -16,7 +16,6 @@
         </ButtonGroupForListPage> -->
       <div style="margin: 5px 0 10px 0">
         <el-button type="primary" @click="handleEdit">编辑</el-button>
-        <el-button type="primary">不可推荐</el-button>
       </div>
       <Table
         :props="table.props"
@@ -87,13 +86,20 @@ export default {
             label: '版本',
             prop: 'panelGroupVersion'
           },
-          // {
-          //   label: '内容源',
-          //   prop: 'pannelResource',
-          //   formatter: (row) => {
-          //     return this.$consts.sourceText[row.pannelList[0].pannelResource]
-          //   }
-          // },
+          {
+            label: '内容源',
+            prop: 'pannelResource',
+            formatter: (row) => {
+              return this.$consts.sourceText[row.source]
+            }
+          },
+          {
+            label: '可推荐',
+            prop: 'pannelResource',
+            formatter: (row) => {
+              return row.flag ? '是' : '否'
+            }
+          },
           // {
           //   label: '待审核副本',
           //   width: '100',
@@ -122,18 +128,21 @@ export default {
           //   width: '100',
           //   prop: 'userName'
           // },
-          // {
-          //   label: '操作',
-          //   fixed: 'right',
-          //   width: 180,
-          //   render: (h, { row }) => {
-          //     return (<div>
-          //       <el-button type="text" onClick={() => this.handleEdit(row)}>
-          //         编辑
-          //       </el-button>
-          //     </div>)
-          //   }
-          // }
+          {
+            label: '操作',
+            fixed: 'right',
+            width: 180,
+            render: (h, { row }) => {
+              return (<div>
+                <el-button type="text" onClick={(event) => {
+                  event.stopPropagation();
+                  this.handleToggleRecommendFlag(row)
+                }}>
+                  { row.flag ? '不可推荐' : '可推荐' }
+                </el-button>
+              </div>)
+            }
+          }
         ],
         selected: [],
         selectionType: 'multiple'
@@ -172,8 +181,16 @@ export default {
     },
     genDefaultFilter() {
       return {
-        idPrefix: this.$consts.idPrefix
+        panelGroupId: undefined,
+        panelGroupName: undefined,
+        source: undefined
       }
+    },
+    handleToggleRecommendFlag(row) {
+      const flag = row.flag ? 0 : 1
+      this.$service.panelRecommendUpsert({...row, flag}, '设置成功').then(() => {
+        row.flag = flag
+      })
     },
     fetchData() {
       const filter = this.parseFilter()
@@ -234,28 +251,33 @@ export default {
     }
   },
   created() {
-    const filterSchema = _.map({
-      pannelId: _.o.string.other('form', {
-        placeholder: 'ID',
-        component: 'Input',
-        name: 'pannelId',
-        autocomplete: 'on'
-      }),
-      pannelName: _.o.string.other('form', {
-        placeholder: '版块名称',
-        component: 'Input',
-        name: 'pannelName',
-        autocomplete: 'on'
-      }),
-      pannelResource: _.o.enum(this.$consts.sourceEnums).other('form', {
-        placeholder: '内容源',
-        component: 'Select'
-      }),
-      pannelType: _.o.enum({ '影视推荐版块': 6, '定向版块': 7, '常规版块': 1 }).other('form', {
-        placeholder: '版块类别',
-        component: 'Select'
+    this.$service.getDictType({ type: 'recommendStreamSign' }).then(data => {
+      const panelGroupCategoryEnums = data.reduce((result, {dictCnName}) => {
+        result[dictCnName] = dictCnName
+        return result
+      }, {})
+      const filterSchema = _.map({
+        panelGroupId: _.o.string.other('form', {
+          placeholder: 'ID',
+          component: 'Input',
+          name: 'pannelId',
+          autocomplete: 'on'
+        }),
+        panelGroupName: _.o.string.other('form', {
+          placeholder: '版块名称',
+          component: 'Input',
+          name: 'pannelName',
+          autocomplete: 'on'
+        }),
+        source: _.o.enum(this.$consts.sourceEnums).other('form', {
+          placeholder: '内容源',
+          component: 'Select'
+        }),
+        panelGroupCategory: _.o.enum(panelGroupCategoryEnums).other('form', {
+          placeholder: '推荐流',
+          component: 'Select'
+        })
       })
-    })
       .other('form', {
         cols: {
           item: 6,
@@ -274,29 +296,11 @@ export default {
           resetText: '重置'
         }
       })
-    if (this.$consts.idPrefix != '10') {
-      filterSchema.map({
-        idPrefix: _.o.enum({
-          '酷开': '10',
-          '江苏广电': '11'
-        }).other('form', {
-          component: 'Select',
-          placeholder: '数据来源'
-        })
-      })
-    }
-    this.getBusinessType().then(() => {
-      this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
+
+      this.filterSchema = filterSchema
     })
-    // 影片详情页中的版块
-    const dataList = this.dataList
-    if (dataList) {
-      this.filter = Object.assign({}, dataList.filter)
-      this.table = dataList.table
-    }
     this.fetchData()
   }
-
 }
 </script>
 

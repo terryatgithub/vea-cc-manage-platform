@@ -2,8 +2,9 @@
   <PageWrapper>
     <PageContentWrapper>
       <ContentCard :title="title" @go-back="$emit('go-back')">
-        <div>
-          <el-button type="primary" @click="handleSave">保存</el-button>
+        <div class="action-list">
+          <el-button v-if="mode === 'edit'" type="primary" @click="handleSave">保存</el-button>
+          <el-button v-if="mode === 'read'" type="primary" @click="mode = 'edit'">编辑</el-button>
         </div>
         <DataForm label-width="120px">
           <DataString label="板块ID" 
@@ -149,6 +150,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.action-list
+  margin-bottom 20px
 .stream-sign-list
   width 600px
 .stream-sign-item
