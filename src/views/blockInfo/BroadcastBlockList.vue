@@ -24,6 +24,13 @@
         @all-row-selection-change="handleAllRowSelectionChange"
       />
     </ContentWrapper>
+
+    <el-dialog title="数据表现" :visible.sync="isShowChart" width="70%">
+      <VeLine></VeLine>
+      <VeLine></VeLine>
+      <VeLine></VeLine>
+    </el-dialog>
+
   </ContentCard>
 </template>
 <script>
@@ -31,15 +38,19 @@ import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
+import VeLine from 'v-charts/lib/line.common'
+
 export default {
   extends: BaseList,
   components: {
     Table,
     ContentWrapper,
-    ButtonGroupForListPage
+    ButtonGroupForListPage,
+    VeLine
   },
   data() {
     return {
+      isShowChart: false,
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
       filterSchema: null,
@@ -72,6 +83,24 @@ export default {
                   }
                 },
                 row.containerName
+              )
+            }
+          },
+          {
+            label: '数据表现',
+            width: 300,
+            render: (h, {row}) => {
+              return h(
+                'div',
+                {
+                  on: {
+                    click: () => {
+                      console.log('111')
+                      this.isShowChart = true
+                    }
+                  }
+                },
+                111
               )
             }
           },

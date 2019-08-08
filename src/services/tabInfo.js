@@ -130,3 +130,19 @@ export function getVipButtonSource(params) {
     params
   })
 }
+
+export function getTabSimpleBrowseData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/tab/getSimpleBrowseData.html',
+    params
+  })
+}
+
+export function getTabChartData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/tab/getChartData.html',
+    params
+  })
+}

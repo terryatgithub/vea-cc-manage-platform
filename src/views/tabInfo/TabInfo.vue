@@ -135,6 +135,32 @@
                   <span class="hint remarks">设置范围:5分钟-6小时</span>
                 </el-form-item>
               </div>
+
+              <div v-if="mode === 'edit'">
+              <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
+                <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
+                <i v-else class="el-icon-arrow-up"></i>
+                <span>版面数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                昨日UVCTR：<span class="data-UVCTR">{{UVCTR.value}}</span>，
+                日环比<span style="color: #00AA00">2.35%&darr;</span>；
+                周同比<span style="color: red">3.34%&uarr;</span>
+              </div>
+              <div :style="{display: isCollapseData ? 'none' : 'block'}">
+                <div class="chart-box">
+                  <div class="chart-box--header">板面曝光UV</div>
+                  <VeLine :data="chartData" :legend-visible="false" :extend="extend"></VeLine>
+                </div>
+                <div class="chart-box">
+                  <div class="chart-box--header">板面曝光UVCTR</div>
+                  <VeLine :data="chartData" :legend-visible="false" :extend="extend"></VeLine>
+                </div>
+                <div class="chart-box">
+                  <div class="chart-box--header">板面曝光UVCTR（小时）</div>
+                  <VeLine :data="chartData" :legend-visible="false" :extend="extend"></VeLine>
+                </div>
+              </div>
+              </div>
+
               <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
                 <i v-if="isCollapseExtend" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
@@ -744,6 +770,7 @@ import InputMinute from '@/components/InputMinute'
 import RecommendStreamSignSelector from '@/components/selectors/RecommendStreamSign'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendPanelSelector from '@/components/selectors/RecommendPanelSelector'
+import VeLine from 'v-charts/lib/line.common'
 
 export default {
   name: 'TabInfo',
@@ -776,7 +803,8 @@ export default {
     InputMinute,
     RecommendStreamSignSelector,
     RecommendPanelSelector,
-    OrderableTable
+    OrderableTable,
+    VeLine
   },
   data() {
     const STATUS = {
@@ -794,7 +822,38 @@ export default {
       '5': '审核不通过',
       '7': '审核通过未上线'
     }
+    this.extend = {
+      grid: {
+        top: "2%",
+        left: "5%",
+        right: "5%",
+        bottom: "10%",
+        containLabel: true
+      },
+      series: v => {
+        v[0].smooth = false
+        return v
+      },
+      color: ['#1E90FF ','#2f4554'],
+    }
+
     return {
+      chartData: {
+          columns: ['日期', '访问用户'],
+          rows: [
+            { '日期': '1/1', '访问用户': 1393 },
+            { '日期': '1/2', '访问用户': 3530 },
+            { '日期': '1/3', '访问用户': 2923 },
+            { '日期': '1/4', '访问用户': 1723 },
+            { '日期': '1/5', '访问用户': 3792 },
+            { '日期': '1/6', '访问用户': 4593 }
+          ]
+      },
+      UVCTR: {
+        value: '',
+        dailyGrowth: '',
+        weeklyGrowth: ''
+      },
       mode: 'create',
       activePage: 'tab_info',
       panelPreview: {
@@ -813,6 +872,7 @@ export default {
       isCollapseExtend: false,
       isCollapseSpec: false,
       isCollapseCustom: false,
+      isCollapseData: false,
       isPanelDragging: false,
       STATUS: STATUS,
       STATUS_TEXT: STATUS_TEXT,
@@ -2430,6 +2490,13 @@ export default {
         this.setTabInfo(data)
       })
     },
+    getSimpleBrowseData() {
+      this.$service.getTabSimpleBrowseData({ id: this.id }).then(data => {
+        const tabUVCTR = data.rows[0].data[0].uVCTR
+        this.UVCTR = Object.assign({}, tabUVCTR)
+        console.log('tab', this.tabUVCTR);
+      })
+    },
     getVipButtonSourceItem(id) {
       const result = this.vipEnumsData.find(function(item) {
         return item.sourceId === id
@@ -2493,6 +2560,7 @@ export default {
     this.$watch('mode', this.handleModeChange, { immediate: true })
     if (this.id) {
       this.fetchData(this.version)
+      this.getSimpleBrowseData()
     }
     this.getVipButtonSource()
   }
@@ -2562,4 +2630,9 @@ export default {
   max-width: unset
 .image-preview-wrapper--long img
   height: 300px
+.chart-box--header
+  height: 44px
+  line-height: 44px
+  text-align: center
+  font-size: 25px
 </style>
