@@ -81,6 +81,6 @@ export function panelRecommendUpsert(data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/panelRecommend/save.html',
-    data
+    data: { jsonStr: JSON.stringify(data) }
   })
 }
