@@ -23,11 +23,13 @@
                 v-for="(item, index) in recommendStreamSignOptions" 
                 :key="index">
                 <el-checkbox 
+                  :disabled="mode === 'read'"
                   @input="handleInputCategoryItem($event, item.value)"
                   :value="panelRecommend.panelGroupCategory.indexOf(item.value) > -1" 
                   :label="item.label">
                 </el-checkbox>
                 <el-radio 
+                  :disabled="mode === 'read'"
                   @click.native.prevent="handleInputLockItem(item.value)"
                   :value="panelRecommend.recLockCategory.indexOf(item.value) > -1" 
                   :label="true">
@@ -103,13 +105,6 @@ export default {
       })
     },
     setPanelRecommend(data) {
-      data = {
-        panelGroupId: 123,
-        panelGroupName: 'test',
-        source: 'o_tencent',
-        panelGroupCategory: '动漫,体育',
-        recLockCategory: '精选,游戏'
-      }
       const panelRecommend = this.panelRecommend
       const panelGroupCategory = data.panelGroupCategory
       const recLockCategory = data.recLockCategory
@@ -120,7 +115,7 @@ export default {
         panelRecommend.recLockCategory = recLockCategory.split(',')
       }
       Object.assign(panelRecommend, pick(data, [
-        'panenGroupId',
+        'panelGroupId',
         'panelGroupName',
         'panelGroupVersion',
         'source',
@@ -137,7 +132,9 @@ export default {
       return data
     },
     handleSave() {
-      this.$service.panelRecommendUpsert(this.parseDataToApi(this.panelRecommend)).then(() => {
+      this.$service
+      .panelRecommendUpsert(this.parseDataToApi(this.panelRecommend))
+      .then(() => {
         this.$emit('upsert-end')
       })
     }
