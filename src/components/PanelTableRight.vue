@@ -1,6 +1,7 @@
 <template>
   <div class="table-box">
-    <Table :data="table.data" :props="table.props" :header="table.header" :selection-type="table.selectionType" />
+    <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
+    <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
   </div>
 </template>
 <script>
@@ -12,7 +13,7 @@
     },
     data() {
       return {
-        table: {
+        clickUvTable: {
           props: {
             border: true,
             size: 'small',
@@ -24,54 +25,157 @@
             {
               label: '',
               prop: 'date',
-              width: 35
+              width: 40
             },
             {
-              label: '曝光UV',
-              prop: 'exposureUV',
-              width: 70
+              label: '点击UV',
+              prop: 'clickUv',
+              width: 80
             },
             {
               label: '环比',
               prop: 'dailyGrowth',
-              width: 70
+              width: 80,
+              render: (h, { row }) => {
+                if(!row.dailyGrowth) return 'N/A'
+                let mark = row.dailyGrowth.split(' ').pop() == '↑' ? 0 : 1
+                return h(
+                  'div',
+                  {
+                    style: {
+                      color: ['red', '#00AA00'][mark]
+                    }
+                  },
+                  row.dailyGrowth
+                )
+              }
             },
             {
               label: '同比',
               prop: 'weeklyGrowth',
-              width: 70
+              width: 80,
+              render: (h, { row }) => {
+                if(!row.weeklyGrowth) return 'N/A'
+                let mark = row.weeklyGrowth.split(' ').pop() == '↑' ? 0 : 1
+                return h(
+                  'div',
+                  {
+                    style: {
+                      color: ['red', '#00AA00'][mark]
+                    }
+                  },
+                  row.weeklyGrowth
+                )
+              }
             }
           ],
-          data: [
+          data: [],
+          selectionType: 'none'
+        },
+        uvctrTable: {
+          props: {
+            border: true,
+            size: 'small',
+            'row-style': () => { return "height: 20px" },
+            'cell-style': () => { return "padding: 0" },
+            'header-cell-style': () => { return "padding: 0" }
+          },
+          header: [
             {
-              date: '27',
-              exposureUV: '178123',
-              dailyGrowth: '13.3%',
-              weeklyGrowth: '13.3%'
+              label: '',
+              prop: 'date',
+              width: 40
             },
             {
-              date: '28',
-              exposureUV: '178123',
-              dailyGrowth: '13.3%',
-              weeklyGrowth: '13.3%'
+              label: 'UVCTR',
+              prop: 'uvctr',
+              width: 80
             },
             {
-              date: '29',
-              exposureUV: '178123',
-              dailyGrowth: '13.3%',
-              weeklyGrowth: '13.3%'
+              label: '环比',
+              prop: 'dailyGrowth',
+              width: 80,
+              render: (h, { row }) => {
+                if(!row.dailyGrowth) return 'N/A'
+                let mark = row.dailyGrowth.split(' ').pop() == '↑' ? 0 : 1
+                return h(
+                  'div',
+                  {
+                    style: {
+                      color: ['red', '#00AA00'][mark]
+                    }
+                  },
+                  row.dailyGrowth
+                )
+              }
+            },
+            {
+              label: '同比',
+              prop: 'weeklyGrowth',
+              width: 80,
+              render: (h, { row }) => {
+                if(!row.weeklyGrowth) return 'N/A'
+                let mark = row.weeklyGrowth.split(' ').pop() == '↑' ? 0 : 1
+                return h(
+                  'div',
+                  {
+                    style: {
+                      color: ['red', '#00AA00'][mark]
+                    }
+                  },
+                  row.weeklyGrowth
+                )
+              }
             }
           ],
+          data: [],
           selectionType: 'none'
         }
       };
     },
     props: ['panelID'],
     methods: {
-
+      toPercent: decimal => {
+        return ((Math.round(decimal * 10000) / 100.00).toFixed(2) + "%")
+      },
+      toArrowPercent (decimal) {
+        const rs = this.toPercent(Math.abs(decimal))
+        return rs + (decimal>0 ? ' ↑' : ' ↓')
+      },
+      getDateday(date) {
+        return date.split('-').pop()
+      }
     },
     created() {
-      console.log('panelID', this.panelID);
+      this.$service.getPanelSimpleBrowseData({id: this.panelID, days: 3}).then(data => {
+        const rows = data.rows[0].data
+        let clickUvData = []
+        let uvctrData = []
+        rows.map(item => {
+          console.log('item', item);
+          let clickUvRow = {}
+          let uvctrRow = {}
+          const date = this.getDateday(item.date)
+          const clickUv = item.clickUv
+          const uvctr = item.uvctr
+          clickUvRow = {
+            date: date,
+            clickUv: clickUv.value,
+            dailyGrowth: this.toArrowPercent(clickUv.dailyGrowth),
+            weeklyGrowth: this.toArrowPercent(clickUv.weeklyGrowth)
+          }
+          uvctrRow = {
+            date,
+            uvctr: uvctr.value,
+            dailyGrowth: this.toArrowPercent(uvctr.dailyGrowth),
+            weeklyGrowth: this.toArrowPercent(uvctr.weeklyGrowth)
+          }
+          clickUvData.push(clickUvRow)
+          uvctrData.push(uvctrRow)
+        })
+        this.clickUvTable.data = clickUvData.reverse()
+        this.uvctrTable.data = uvctrData.reverse()
+      })
     }
   };
 </script>
@@ -81,5 +185,5 @@
 .table-box 
   position: absolute 
   top: 0% 
-  right: -270px
+  right: -300px
 </style>
