@@ -86,6 +86,21 @@
                 <BinCheckBox label="4K" v-model="pannel.flagIs4k" :disabled="isReplica" />
               </el-form-item>
             </el-form>
+            
+            <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
+              <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
+              <i v-else class="el-icon-arrow-up"></i>
+              <span>版面数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              昨日UVCTR：<span>{{panelUVCTR.value?toPercent(panelUVCTR.value):'N/A'}}</span>，
+              日环比<span :class="panelUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.dailyGrowth}}</span>；
+              周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
+            </div>
+            <div v-if="!isCollapseData">
+              <div v-for="panelChartData in panelChartDataArr" class="chart-box">
+                <div class="chart-box--title">{{panelChartData.title}}</div>
+                <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
+              </div>
+            </div>
 
             <div class="form-legend-header">
               <span>内容配置</span>
@@ -366,6 +381,7 @@ import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 
 import TagFrame from './TagFrame'
+import VeLine from 'v-charts/lib/line.common'
 
 export default {
   mixins: [titleMixin],
@@ -383,7 +399,8 @@ export default {
     BinCheckBox,
     ResourceSelector,
     PanelGroupInfoSetter,
-    TagFrame
+    TagFrame,
+    VeLine
   },
   data() {
     var checkNum = function(rule, value, callback) {
@@ -398,7 +415,42 @@ export default {
         callback()
       }
     }
+    const extend = {
+      'xAxis.0.axisLabel.rotate': 45,
+      grid: {
+        top: "2%",
+        left: "5%",
+        right: "5%",
+        bottom: "10%",
+        containLabel: true
+      },
+      series: v => {
+        v[0].smooth = false
+        return v
+      },
+      color: ['#1E90FF ','#2f4554'],
+    }
     return {
+      // 数据展现
+      extend: extend,
+      settings: {
+          labelMap: {
+          y: '曝光UV'
+        }
+      },
+      isCollapseData: true,
+      panelUVCTR: {
+        value: '',
+        dailyGrowth: '',
+        weeklyGrowth: ''
+      },
+      panelUVCTRPercent: {
+        value: 'N/A',
+        dailyGrowth: 'N/A',
+        weeklyGrowth: 'N/A'
+      },
+      panelChartDataArr: [],
+
       mode: 'create',
       activePage: 'panel_info',
       PANNEL_STATUS: {
@@ -598,6 +650,43 @@ export default {
     }
   },
   methods: {
+    toPercent: decimal => {
+      return (Math.round(decimal * 10000) / 100.00 + "%")
+    },
+    toArrowPercent (decimal) {
+      const rs = this.toPercent(Math.abs(decimal))
+      return rs + (decimal>0 ? ' ↑' : ' ↓')
+    },
+    handleChartData(panelChartData) {
+      return {
+        title: panelChartData.title,
+        unit: panelChartData.unit,
+        columns: ['x', 'y'],
+        rows: panelChartData.data
+      }
+    },
+    handleChartSettings(panelChartData) {
+      return {
+        labelMap: {
+          y: panelChartData.title
+        }
+      }
+      console.log('', );
+    },
+    handleChartExtend(panelChartData) {
+      const yAxis = {
+        axisLabel: {
+          formatter: '{value}%'
+        }
+      }
+      const extend = Object.assign({}, this.extend)
+      return panelChartData.unit === '%' ? 
+      Object.assign(extend, {
+        yAxis
+      })
+      : extend
+    },
+
     handleBatchAddTag() {
       this.showAddTagDialog = true
     },
@@ -1916,6 +2005,17 @@ export default {
       if (initBlockIndex !== undefined) {
         this.handleClickBlock(initBlockIndex)
       }
+    },
+    getSimpleBrowseData() {
+      this.$service.getPanelSimpleBrowseData({id: this.id}).then(data => {
+        const panelUVCTR = data.rows[0].data[0].uvctr
+        this.panelUVCTR = panelUVCTR
+        panelUVCTR.dailyGrowth ? this.panelUVCTRPercent.dailyGrowth = this.toArrowPercent(panelUVCTR.dailyGrowth) : 'N/A'
+        panelUVCTR.weeklyGrowth ? this.panelUVCTRPercent.weeklyGrowth = this.toArrowPercent(panelUVCTR.weeklyGrowth) : 'N/A'
+      })
+      this.$service.getPanelChartData({id: this.id}).then(data => {
+        this.panelChartDataArr = data.rows
+      })
     }
   },
   created() {
@@ -1928,7 +2028,8 @@ export default {
           disabled: item.disabled
         }
       })
-    })
+    }),
+    this.getSimpleBrowseData()
   },
   mounted() {
     if (this.id) {
@@ -1982,5 +2083,13 @@ export default {
       border-right 1px solid #3ba7f0
     .el-input-number__increase
       border-left 1px solid #3ba7f0
-
+.data-up
+  color: red
+.data-down
+  color: #00AA00
+.chart-box--title
+  height: 44px
+  line-height: 44px
+  text-align: center
+  font-size: 25px
 </style>

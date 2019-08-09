@@ -152,7 +152,6 @@
         let clickUvData = []
         let uvctrData = []
         rows.map(item => {
-          console.log('item', item);
           let clickUvRow = {}
           let uvctrRow = {}
           const date = this.getDateday(item.date)

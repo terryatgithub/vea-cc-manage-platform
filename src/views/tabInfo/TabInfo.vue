@@ -145,7 +145,7 @@
                 日环比<span :class="tabUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{tabUVCTRPercent.dailyGrowth}}</span>；
                 周同比<span :class="tabUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{tabUVCTRPercent.weeklyGrowth}}</span>
               </div>
-              <div :style="{display: isCollapseData ? 'none' : 'block'}">
+              <div v-if="!isCollapseData">
                 <div class="chart-box">
                   <div class="chart-box--title">{{exposureUvChartData.title}}</div>
                   <VeLine :data="exposureUvChartData" :legend-visible="false" :extend="exposureUvChartExtend" :settings="exposureUvChartSettings"></VeLine>
@@ -854,17 +854,6 @@ export default {
     }
 
     return {
-      chartData: {
-          columns: ['日期', '访问用户'],
-          rows: [
-            { '日期': '1/1', '访问用户': 1393 },
-            { '日期': '1/2', '访问用户': 3530 },
-            { '日期': '1/3', '访问用户': 2923 },
-            { '日期': '1/4', '访问用户': 1723 },
-            { '日期': '1/5', '访问用户': 3792 },
-            { '日期': '1/6', '访问用户': 4593 }
-          ]
-      },
       UVCTR: {
         value: '',
         dailyGrowth: '',
@@ -2623,7 +2612,7 @@ export default {
     equipChartStyle() {
       const yAxis = {
         axisLabel: {
-          formatter: '{value} %'
+          formatter: '{value}%'
         }
       }
       this.uvctrChartExtend.yAxis = yAxis
