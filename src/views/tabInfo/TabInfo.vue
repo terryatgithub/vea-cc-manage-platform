@@ -147,16 +147,16 @@
               </div>
               <div :style="{display: isCollapseData ? 'none' : 'block'}">
                 <div class="chart-box">
-                  <div class="chart-box--header">板面曝光UV</div>
-                  <VeLine :data="chartData" :legend-visible="false" :extend="extend"></VeLine>
+                  <div class="chart-box--title">{{exposureUvChartData.title}}</div>
+                  <VeLine :data="exposureUvChartData" :legend-visible="false" :extend="exposureUvChartExtend" :settings="exposureUvChartSettings"></VeLine>
                 </div>
                 <div class="chart-box">
-                  <div class="chart-box--header">板面曝光UVCTR</div>
-                  <VeLine :data="chartData" :legend-visible="false" :extend="extend"></VeLine>
+                  <div class="chart-box--title">{{uvctrChartData.title}}</div>
+                  <VeLine :data="uvctrChartData" :legend-visible="false" :extend="uvctrChartExtend" :settings="uvctrChartSettings"></VeLine>
                 </div>
                 <div class="chart-box">
-                  <div class="chart-box--header">板面曝光UVCTR（小时）</div>
-                  <VeLine :data="chartData" :legend-visible="false" :extend="extend"></VeLine>
+                  <div class="chart-box--title">{{uvctrHourChartData.title}}</div>
+                  <VeLine :data="uvctrHourChartData" :legend-visible="false" :extend="uvctrHourChartExtend":settings="uvctrHourChartSettings"></VeLine>
                 </div>
               </div>
               </div>
@@ -822,7 +822,8 @@ export default {
       '5': '审核不通过',
       '7': '审核通过未上线'
     }
-    this.extend = {
+    const extend = {
+      'xAxis.0.axisLabel.rotate': 45,
       grid: {
         top: "2%",
         left: "5%",
@@ -835,6 +836,21 @@ export default {
         return v
       },
       color: ['#1E90FF ','#2f4554'],
+    }
+    this.exposureUvChartSettings = {
+      labelMap: {
+        y: '曝光UV'
+      }
+    }
+    this.uvctrChartSettings = {
+      labelMap: {
+        y: 'UVCTR'
+      }
+    }
+    this.uvctrHourChartSettings = {
+      labelMap: {
+        y: 'UVCTR'
+      }
     }
 
     return {
@@ -864,6 +880,27 @@ export default {
         dailyGrowth: 'N/A',
         weeklyGrowth: 'N/A'
       },
+      exposureUvChartData: {
+        title: '',
+        columns: ['x', 'y'],
+        rows: [],
+        unit: ''
+      },
+      uvctrChartData: {
+        title: '',
+        columns: ['x', 'y'],
+        rows: [],
+        unit: ''
+      },
+      uvctrHourChartData: {
+        title: '',
+        columns: ['x', 'y'],
+        rows: [],
+        unit: ''
+      },
+      exposureUvChartExtend: Object.assign({}, extend),
+      uvctrChartExtend: Object.assign({}, extend),
+      uvctrHourChartExtend: Object.assign({}, extend),
       mode: 'create',
       activePage: 'tab_info',
       panelPreview: {
@@ -2514,6 +2551,18 @@ export default {
         tabUVCTR.dailyGrowth ? this.tabUVCTRPercent.dailyGrowth = this.toArrowPercent(tabUVCTR.dailyGrowth) : 'N/A'
         tabUVCTR.weeklyGrowth ? this.tabUVCTRPercent.weeklyGrowth = this.toArrowPercent(tabUVCTR.weeklyGrowth) : 'N/A'
       })
+      this.$service.getTabChartData({ id: this.id }).then(data => {
+        const rows = data.rows
+        this.exposureUvChartData.rows = rows[0].data
+        this.exposureUvChartData.title = rows[0].title
+        this.exposureUvChartData.unit = rows[0].unit
+        this.uvctrChartData.rows = rows[1].data
+        this.uvctrChartData.title = rows[1].title
+        this.uvctrChartData.unit = rows[1].unit
+        this.uvctrHourChartData.rows = rows[2].data
+        this.uvctrHourChartData.title = rows[2].title
+        this.uvctrHourChartData.unit = rows[2].unit
+      })
     },
     getVipButtonSourceItem(id) {
       const result = this.vipEnumsData.find(function(item) {
@@ -2570,6 +2619,15 @@ export default {
       panelRecommendConfig.panelInfoList = []
       panelRecommendConfig.recommendIndex = undefined
       this.setRecommendStreamSignPanelCount()
+    },
+    equipChartStyle() {
+      const yAxis = {
+        axisLabel: {
+          formatter: '{value} %'
+        }
+      }
+      this.uvctrChartExtend.yAxis = yAxis
+      this.uvctrHourChartExtend.yAxis = yAxis
     }
   },
   created() {
@@ -2581,6 +2639,7 @@ export default {
       this.getSimpleBrowseData()
     }
     this.getVipButtonSource()
+    this.equipChartStyle()
   }
 }
 </script>
@@ -2648,7 +2707,7 @@ export default {
   max-width: unset
 .image-preview-wrapper--long img
   height: 300px
-.chart-box--header
+.chart-box--title
   height: 44px
   line-height: 44px
   text-align: center

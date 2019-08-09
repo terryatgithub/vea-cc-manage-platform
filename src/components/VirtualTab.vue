@@ -230,20 +230,7 @@
           </div>
         </div>
         <!-- table right -->
-        <div class="table-box" style="position: absolute; top: 0%; right: -270px;">
-          <Table
-            :data="table.data"
-            :props="table.props"
-            :header="table.header"
-            :selection-type="table.selectionType"
-          />
-          <Table
-            :data="table2.data"
-            :props="table2.props"
-            :header="table2.header"
-            :selection-type="table2.selectionType"
-          />
-        </div>
+        <PanelTableRight :panelID="panelItem.panel.id"/>
       </div>
 
       <!-- placeholder bottom -->
@@ -264,7 +251,7 @@ import Var from './Var'
 import VirtualPanel from './VirtualPanel'
 import VirtualPanelGroup from './VirtualPanelGroup'
 import InputOrder from '@/components/InputOrder'
-import { Table } from 'admin-toolkit'
+import PanelTableRight from './PanelTableRight'
 
 let key = 0
 export default {
@@ -273,113 +260,9 @@ export default {
     'cc-virtual-panel': VirtualPanel,
     'cc-virtual-panel-group': VirtualPanelGroup,
     InputOrder,
-    Table
+    PanelTableRight
   },
   data() {
-    this.table = {
-      props: {
-        border: true,
-        size: 'small',
-        'row-style': () => {return "height: 20px"},
-        'cell-style': () => {return "padding: 0"} ,
-        'header-cell-style': () => {return "padding: 0" }
-      },
-      header: [
-        {
-          label: '',
-          prop: 'date',
-          width: 35
-        },
-        {
-          label: '曝光UV',
-          prop: 'exposureUV',
-          width: 70
-        },
-        {
-          label: '环比',
-          prop: 'dailyGrowth',
-          width: 70
-        },
-        {
-          label: '同比',
-          prop: 'weeklyGrowth',
-          width: 70
-        }
-      ],
-      data: [
-        {
-          date: '27',
-          exposureUV: '178123',
-          dailyGrowth: '13.3%',
-          weeklyGrowth: '13.3%'
-        },
-        {
-          date: '28',
-          exposureUV: '178123',
-          dailyGrowth: '13.3%',
-          weeklyGrowth: '13.3%'
-        },
-        {
-          date: '29',
-          exposureUV: '178123',
-          dailyGrowth: '13.3%',
-          weeklyGrowth: '13.3%'
-        }
-      ],
-      selectionType: 'none'
-    }
-    this.table2 = {
-      props: {
-        border: true,
-        size: 'small',
-        'row-style': () => {return "height: 20px"},
-        'cell-style': () => {return "padding: 0"} ,
-        'header-cell-style': () => {return "padding: 0" }
-      },
-      header: [
-        {
-          label: '',
-          prop: 'date',
-          width: 35
-        },
-        {
-          label: 'UVCTR',
-          prop: 'UVCTR',
-          width: 70
-        },
-        {
-          label: '环比',
-          prop: 'dailyGrowth',
-          width: 70
-        },
-        {
-          label: '同比',
-          prop: 'weeklyGrowth',
-          width: 70
-        }
-      ],
-      data: [
-        {
-          date: '27',
-          UVCTR: '178123',
-          dailyGrowth: '13.3%',
-          weeklyGrowth: '13.3%'
-        },
-        {
-          date: '28',
-          UVCTR: '178123',
-          dailyGrowth: '13.3%',
-          weeklyGrowth: '13.3%'
-        },
-        {
-          date: '29',
-          UVCTR: '178123',
-          dailyGrowth: '13.3%',
-          weeklyGrowth: '13.3%'
-        }
-      ],
-      selectionType: 'none'
-    }
     return {
       isDragging: false,
       draggingIndex: undefined,
