@@ -135,14 +135,17 @@
                   >
                 </div>
               </el-form-item>
-              <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+              <el-form-item v-if="!pannel.pannelGroupId" v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}</el-tag>
+              </el-form-item>
+              <el-form-item v-else v-show="isShowTagsField" class="tag-list" label="资源共有标签">
                 <div class="media-tag-list">
                   <div
                     v-for="(item, index) in sharedTags"
                     :key="index"
                     class="media-tag-list__item">
-                    {{ item }}
-                    <el-input-number :max="1.5" :min="0.5" :value="1" :step="0.1" />
+                    {{ item.tagName }}
+                    <el-input-number :max="1.5" :min="0.5" @change="handleInputTagWeight(arguments[0], arguments[1], item)" v-model="item.tagWeight" :step="0.1" />
                   </div>
                 </div>
               </el-form-item>
@@ -284,7 +287,7 @@
                 </div>
               </el-form-item>
               <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item }}</el-tag>
+                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}</el-tag>
               </el-form-item>
               <el-form-item label="推荐位">
                 <div class="pannel-blocks">
@@ -605,15 +608,30 @@ export default {
       this.getSharedTags()
       this.showAddTagDialog = false
     },
+    handleInputTagWeight(weight, originWeight, tag) {
+      this.$service.panelTagUpsert({
+        panelId: this.pannel.pannelGroupId,
+        tagId: tag.tagId,
+        tagName: tag.tagName,
+        tagWeight: tag.tagWeight
+      })
+        .catch((e) => {
+          tag.tagWeight = originWeight
+        })
+    },
     getSharedTags() {
+      const panelId = this.pannel.pannelGroupId 
       const resourceIds = this.panelResourceIds
       const isNoResources = resourceIds && resourceIds.length === 0
       if (!this.isShowTagsField || isNoResources) {
         return this.sharedTags = []
       }
-      this.$service.getSharedTags({ coocaaVIds: resourceIds.join(',') }).then((data) => {
-        const tags = data.data.tags
-        this.sharedTags = tags ? tags.split(',') : []
+      this.$service.getSharedTags({ 
+        coocaaVIds: resourceIds.join(','), 
+        panelId 
+      }).then((data) => {
+        console.log(data)
+        this.sharedTags = data.tags || []
       })
     },
     handleFocusConfigChange(val) {

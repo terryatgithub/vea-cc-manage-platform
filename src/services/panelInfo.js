@@ -62,6 +62,14 @@ export function getSharedTags(params) {
   })
 }
 
+export function panelTagUpsert(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/tvos/updateTagWeight.html',
+    data
+  })
+}
+
 export function panelRecommendList(data) {
   return this.fetch({
     method: 'post',
