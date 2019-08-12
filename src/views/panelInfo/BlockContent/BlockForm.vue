@@ -24,7 +24,7 @@
           >已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}} / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}</el-tag>
         </el-form-item>
       </template>
-      <el-form-item label="资源类别" prop="coverType">
+      <el-form-item v-if="isSpecific" label="资源类别" prop="coverType">
         <CommonSelector
           :disabled="isReadonly"
           type="radio"
@@ -262,15 +262,6 @@
         </el-form-item>
       </template>
 
-      <el-form-item label="推荐位点击跳转" prop="jumpType" v-if="contentForm.coverType === 'media'">
-        <el-radio-group v-model="contentForm.jumpType" :disabled="isReadonly">
-          <el-radio label="detail">影片详情页</el-radio>
-          <el-radio label="fullscreen">全屏播放页</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
-        <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
-      </el-form-item>
       <el-form-item label="推荐位" prop="vContentId" v-if="contentForm.coverType === 'block'">
         <ResourceSelector
           v-if="!isReadonly"
@@ -309,18 +300,6 @@
           :disabled="isReadonly"
         ></Price>(元)
       </el-form-item>
-      <template v-if="contentType === 'normal'">
-        <el-form-item
-          label="设置广告位"
-          v-if="data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (contentForm.coverType === 'media' || contentForm.coverType === 'app' || contentForm.coverType === 'custom')"
-          prop="flagIsSetad"
-        >
-          <el-radio-group v-model="contentForm.flagIsSetad" :disabled="isReadonly">
-            <el-radio :label="0">否</el-radio>
-            <el-radio :label="1">是</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </template>
       <template v-if="contentForm.coverType === 'custom'">
         <el-form-item label="打开方式">
           <el-select
@@ -436,6 +415,24 @@
           <AppParamsRead v-else :value="contentForm.redundantParams" />
         </template>
       </template>
+      <!-- Sprint2.10 儿童模式 需求，这个字段非精细化情况下放外面了 -->
+      <el-form-item label="应用版本号" prop="versionCode" v-if="isSpecific && contentForm.coverType === 'media'">
+        <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
+      </el-form-item>
+      <!-- 儿童模式这个字段放外层了
+      <template v-if="contentType === 'normal'">
+        <el-form-item
+          label="设置广告位"
+          v-if="data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (contentForm.coverType === 'media' || contentForm.coverType === 'app' || contentForm.coverType === 'custom')"
+          prop="flagIsSetad"
+        >
+          <el-radio-group v-model="contentForm.flagIsSetad" :disabled="isReadonly">
+            <el-radio :label="0">否</el-radio>
+            <el-radio :label="1">是</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </template>
+      -->
     </el-form>
     <CrowdSelector
       v-if="showCrowdSelector"
@@ -463,6 +460,7 @@ import CrowdSelector from '@/components/CrowdSelector.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 import ClickEventSelector from '@/components/selectors/ClickEventSelector'
 import TagFrame from '../TagFrame'
+import { getSelectedResource, chopSubTitle, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
 export default {
   components: {
     Upload,
@@ -638,6 +636,9 @@ export default {
     'checkCrowd'
   ],
   computed: {
+    isSpecific() {
+      return this.contentType === 'specific'
+    },
     currentResourceId() {
       return this.contentForm.extraValue1
     },
@@ -812,190 +813,20 @@ export default {
       this.contentForm.redundantParams.versioncode =
         val == '1' ? '1' : '102007'
     },
-    chopSubTitle(title) {
-      return (title || '').slice(0, 50)
-    },
-    getSelectedResource(resources) {
-      let selectedType
-      let selected
-      let selectedEpisode
-      const episode = resources.episode || {}
-      Object.keys(resources).forEach(key => {
-        const resource = resources[key][0]
-        if (resource) {
-          selectedType = key
-          selected = resource
-          if (key === 'video' && episode[resource.coocaaVId]) {
-            selectedEpisode = episode[resource.coocaaVId]
-          }
-        }
-      })
-      return { selectedType, selected, selectedEpisode }
-    },
     handleSelectMediaEnd(resources) {
-      const { selectedType, selected, selectedEpisode } = this.getSelectedResource(resources)
-      const partner = resources.videoSource
-      const chopSubTitle = this.chopSubTitle
-      const contentForm = this.contentForm
-      // 清空由app可能引起的遗留数据
-      Object.assign(contentForm, {
-        vContentId: '',
-        blockResourceType: '',
-        platformId: '',
-        versionCode: ''
-      })
-      if (selectedType === 'video') {
-        // 影视中心
-        if (selectedEpisode) {
-          this.contentForm.contentType = 0
-          this.contentForm.videoContentType = 'movie'
-          if (partner === 'tencent') {
-            this.contentForm.extraValue1 = '_otx_' + selected.coocaaVId
-            this.contentForm.extraValue5 = selectedEpisode.coocaaMId
-          } else if (partner === 'yinhe') {
-            this.contentForm.extraValue1 = '_oqy_' + selected.coocaaVId
-            this.contentForm.extraValue5 = selectedEpisode.coocaaMId
-          } else if (partner === 'youku') {
-            this.contentForm.extraValue1 = '_oyk_' + selected.coocaaVId
-            this.contentForm.extraValue5 = selectedEpisode.coocaaMId
-          }
-          this.contentForm.singleId = selectedEpisode.coocaaMId
-          this.contentForm.platformId = this.source
-          this.contentForm.pictureUrl = selectedEpisode.thumb
-          this.contentForm.title = selectedEpisode.urlTitle
-          this.contentForm.subTitle = chopSubTitle(selectedEpisode.urlSubTitle)
-          this.contentForm.singleSubTitle = ''
-          this.contentForm.blockResourceType = 1
-        } else {
-          if (partner === 'tencent') {
-            this.contentForm.extraValue1 = '_otx_' + selected.coocaaVId
-          } else if (partner === 'yinhe') {
-            this.contentForm.extraValue1 = '_oqy_' + selected.coocaaVId
-          } else if (partner === 'youku') {
-            this.contentForm.extraValue1 = '_oyk_' + selected.coocaaVId
-          }
-          this.contentForm.singleId = ''
-          this.contentForm.singleId = ''
-          this.contentForm.contentType = 0
-          this.contentForm.videoContentType = 'movie'
-          this.contentForm.extraValue5 = null
-          this.contentForm.platformId = selected.source
-          this.contentForm.pictureUrl = selected.thumb
-          this.contentForm.title = selected.title
-          this.contentForm.subTitle = chopSubTitle(selected.subTitle)
-          this.contentForm.singleSubTitle = ''
-          this.contentForm.blockResourceType = 1
-        }
-
-        const entity = selected.ccVideoSourceEntities[0]
-        const score = entity.score
-        const updatedSegment = entity.updatedSegment
-        const publishSegment = entity.publishSegment
-        const isUnknown = publishSegment == 0
-        const publishStatus = isUnknown
-          ? 'unknown'
-          : updatedSegment == publishSegment
-            ? 'ended'
-            : 'updating'
-        contentForm.publishStatus = publishStatus
-        contentForm.score = score
-        contentForm.series = isUnknown ? null : updatedSegment
-        contentForm.variety = entity.lastCollection
-      } else if (selectedType === 'edu') {
-        // 教育中心
-        this.contentForm.contentType = 3
-        this.contentForm.videoContentType = 'edu'
-        this.contentForm.extraValue1 = '_otx_' + selected.coocaaVId
-        this.contentForm.platformId = selected.source
-        this.contentForm.pictureUrl = selected.thumb
-        this.contentForm.title = selected.title
-        this.contentForm.subTitle = chopSubTitle(selected.subTitle)
-        this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1
-        const ccVideoSourceEntities = selected.ccVideoSourceEntities
-        if (
-          ccVideoSourceEntities &&
-          ccVideoSourceEntities[0] &&
-          ccVideoSourceEntities[0].isTvod === 1
-        ) {
-          // Sprint2.2 教育中心单点付费预置版本号
-          this.contentForm.versionCode = 3420000
-        }
-      } else if (selectedType === 'pptv') {
-        // pptv
-        this.contentForm.contentType = 4
-        this.contentForm.videoContentType = 'pptv'
-        this.contentForm.extraValue1 =
-          'pptv_tvsports://tvsports_detail?section_id=' +
-          selected.pid +
-          '&from_internal=1'
-        this.contentForm.title = selected.pTitle
-        this.contentForm.subTitle = chopSubTitle(selected.pTitle)
-        this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1
-      } else if (selectedType === 'live') {
-        // 直播资源
-        this.contentForm.contentType = 6
-        this.contentForm.videoContentType = 'txLive'
-        this.contentForm.extraValue1 = '_otx_' + selected.vId + ''
-        this.contentForm.platformId = selected.source
-        this.contentForm.pictureUrl = selected.thumb
-        this.contentForm.title = selected.title
-        this.contentForm.subTitle = chopSubTitle(selected.subTitle)
-        this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1
-      } else if (selectedType === 'topic') {
-        // 专题资源
-        selected.dataSign === 'parentTopic'
-          ? (this.contentForm.contentType = 8)
-          : (this.contentForm.contentType = 7)
-        selected.dataSign === 'parentTopic'
-          ? (this.contentForm.videoContentType = 'bigTopic')
-          : (this.contentForm.videoContentType = 'topic')
-        this.contentForm.extraValue1 = selected.id + ''
-        this.contentForm.pictureUrl = selected.picture
-        this.contentForm.title = selected.title
-        this.contentForm.subTitle = chopSubTitle(selected.subTitle)
-        this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1
-      } else if (selectedType === 'rotate') {
-        // 轮播资源
-        this.contentForm.extraValue1 = selected.id + ''
-        this.contentForm.pictureUrl = selected.picture
-        this.contentForm.title = selected.title
-        this.contentForm.subTitle = chopSubTitle(selected.subTitle)
-        this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 1
-        this.contentForm.videoContentType = 'rotate'
-      }
-      this.contentForm.categoryId = selected.categoryId
+      const selectedResult = getSelectedResource(resources)
+      const partner = selectedResult.partner
+      const selectedType = selectedResult.selectedType
+      const selected = selectedResult.selected[0]
+      const selectedEpisode = selectedResult.selectedEpisode[selected.coocaaVId]
+      setMediaContent(this.contentForm, {partner, selectedType, selected, selectedEpisode})
       this.$refs.resourceSelector.clearSelected()
     },
     handleSelectAppEnd(resources) {
-      const selected = resources.app[0]
-      if (selected) {
-        this.contentForm.contentType = 2
-        this.contentForm.videoContentType = 'app'
-        this.contentForm.extraValue1 = selected.appPackageName
-        this.contentForm.pictureUrl = selected.appImageUrl
-        this.contentForm.title = selected.appName
-        this.contentForm.subTitle = this.chopSubTitle(selected.appName)
-        this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = 3
-      }
+      setAppContent(this.contentForm, resources.app[0])
     },
-    handleSelectGoodEnd({ good }) {
-      const selected = good[0]
-      if (selected) {
-        this.contentForm.contentType = 13
-        this.contentForm.videoContentType = 'mall'
-        this.contentForm.extraValue1 = selected.resourceId
-        this.contentForm.pictureUrl = selected.resourceImgUrl
-        this.contentForm.title = selected.resourceName
-        this.contentForm.subTitle = this.chopSubTitle(selected.resourceName)
-        this.contentForm.singleSubTitle = ''
-        this.contentForm.blockResourceType = -1
-      }
+    handleSelectGoodEnd(resources) {
+      setGoodContent(this.contentForm, resources.good[0])
     },
     handleSelectClickEventEnd(data) {
       const clickEvent = data[0]
@@ -1048,9 +879,13 @@ export default {
       this.contentForm.bgImgUrl = post.pictureUrl
     },
     handleSelectBgMediaEnd(resources) {
-      const { selectedType, selected, selectedEpisode } = this.getSelectedResource(resources)
+      const selectedResult = getSelectedResource(resources)
+      const partner = selectedResult.partner
+      const selectedType = selectedResult.selectedType
+      const selected = selectedResult.selected[0]
+      const selectedEpisode = selectedResult.selectedEpisode[selected.coocaaVId]
+
       const contentForm = this.contentForm
-      const partner = resources.videoSource
       let mediaId
       let mediaTitle
       let episodeId

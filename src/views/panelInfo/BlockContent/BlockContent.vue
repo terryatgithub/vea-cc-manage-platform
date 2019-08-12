@@ -9,63 +9,144 @@
     </el-button>
     <el-collapse class="wrapper-collapse" v-model="activeNames">
       <el-collapse-item title="通用内容" name="normal">
-        <el-row class="addedContents-wrapper" :gutter="8">
-          <el-col v-for="(content, index) in normalContentList" :span="3" :key="index">
-            <el-card
-              :class="{activeContent: activeType === 'normal' && index === activeIndex}"
-              :body-style="{ padding: '0px' }"
-              @click.native="handleActivate('normal', index)"
-            >
-              <i
-                v-if="normalContentList.length > 1"
-                class="remove-handle el-icon-close"
-                @click.stop.prevent="handleRemoveContent(index, 'normal')"
-              ></i>
-              <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
-            </el-card>
-          </el-col>
-        </el-row>
-        <BlockForm
-          v-if="activeType === 'normal'"
-          ref="normalBlockForm"
-          @click.stop
-          @cover-type-change="handleCoverTypeChange"
-          :mode="mode"
-          :check-crowd="checkCrowd"
-          content-type="normal"
-          :source="source"
-          :data="data"
-          :pannel="pannel"
-          :content-form="contentForm"
-          :hide-title-options="hideTitleOptions"
-        />
+        <el-form label-width="120px">
+          <el-form-item label="资源类别" prop="coverType">
+            <CommonSelector
+              :disabled="mode === 'read'"
+              type="radio"
+              :value="normalContentWrapper.props.coverType"
+              @input="handleInputNormalContentWrapperCoverType"
+              :options="coverTypeEnums"
+            />
+          </el-form-item>
+          <el-form-item label="内容资源">
+            <el-select v-show="mode !== 'read'" v-model="normalContentWrapper.selectionType" style="margin-bottom: 10px">
+              <el-option value="manual" label="手动添加"></el-option>
+            </el-select>
+            <template v-if="mode !== 'read'">
+              <div v-if="normalContentWrapper.props.coverType === 'media'">
+                <ResourceSelector
+                  ref="resourceSelector"
+                  :is-live="false"
+                  :disable-partner="!!source"
+                  :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
+                  selection-type="multiple"
+                  :source="source"
+                  @select-end="handleSelectMediaEnd"
+                >
+                  <el-button>选择资源</el-button>
+                </ResourceSelector>
+              </div>
+              <div v-if="normalContentWrapper.props.coverType === 'app'">
+                <ResourceSelector
+                  ref="resourceSelector"
+                  :is-live="false"
+                  :selectors="['app']"
+                  :disable-partner="!!source"
+                  selection-type="multiple"
+                  :source="source"
+                  @select-end="handleSelectAppEnd"
+                >
+                  <el-button>选择资源</el-button>
+                </ResourceSelector>
+              </div>
+              <div v-if="normalContentWrapper.props.coverType === 'mall'">
+                <ResourceSelector
+                  ref="resourceSelector"
+                  :is-live="false"
+                  :selectors="['good']"
+                  selection-type="multiple"
+                  :auto-fetch-selectors="['good']"
+                  @select-end="handleSelectGoodEnd"
+                >
+                  <el-button>选择商品</el-button>
+                </ResourceSelector>
+              </div>
+            </template>
+
+            <div class="normal-content-wrapper__list">
+              <div class="added-contents-wrapper" :gutter="8">
+                <component :is="mode === 'read' ? 'div': 'draggable'"
+                  class="added-contents-list"
+                  v-model="normalContentList"
+                  @start="handleDragConentStart"
+                  @end="handleDragConentEnd($event, 'normal')">
+                  <el-card
+                    v-for="(content, index) in normalContentList" 
+                    :key="index"
+                    :class="{activeContent: activeType === 'normal' && index === activeIndex}"
+                    :body-style="{ padding: '0px' }"
+                    @click.native="handleActivate('normal', index)"
+                  >
+                    <i
+                      v-if="mode !== 'read' && normalContentList.length > 1"
+                      class="remove-handle el-icon-close"
+                      @click.stop.prevent="handleRemoveContent(index, 'normal')"
+                    ></i>
+                    <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
+                  </el-card>
+                </component>
+
+                <el-card v-if="mode !== 'read'" @click.native="handleAddContent('normal')">
+                  <i class="el-icon-plus">添加资源</i>
+                </el-card>
+              </div>
+              <BlockForm
+                v-if="activeType === 'normal'"
+                ref="normalBlockForm"
+                @click.stop
+                @cover-type-change="handleCoverTypeChange"
+                :mode="mode"
+                :check-crowd="checkCrowd"
+                content-type="normal"
+                :source="source"
+                :data="data"
+                :pannel="pannel"
+                :content-form="contentForm"
+                :hide-title-options="hideTitleOptions"
+              />
+            </div>
+          </el-form-item>
+          <el-form-item label="应用版本号" prop="versionCode" v-if="normalContentWrapper.props.coverType === 'media'">
+            <el-input v-model.trim="normalContentWrapper.props.versionCode" :disabled="mode === 'read'"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="设置广告位"
+            v-if="data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (normalContentWrapper.props.coverType === 'media' || normalContentWrapper.props.coverType === 'app' || normalContentWrapper.props.coverType === 'custom')"
+            prop="flagIsSetad"
+          >
+            <el-radio-group v-model="normalContentWrapper.props.flagIsSetad" :disabled="mode === 'read'">
+              <el-radio :label="0">否</el-radio>
+              <el-radio :label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
       </el-collapse-item>
       <el-collapse-item v-show="contentForm.coverType !== 'block'" title="精细化定向内容" name="specific">
-        <el-row class="addedContents-wrapper" :gutter="8">
+        <el-row class="added-contents-wrapper" :gutter="8">
           <component :is="mode === 'read' ? 'div': 'draggable'"
+            class="added-contents-list"
             v-model="specificContentList"
             @start="handleDragConentStart"
             @end="handleDragConentEnd($event, 'specific')">
-            <el-col v-for="(content, index) in specificContentList" :span="3" :key="index">
-              <el-card
-                :class="{activeContent: activeType === 'specific' && index === activeIndex}"
-                :body-style="{ padding: '0px' }"
-                @click.native="handleActivate('specific', index)">
-                <i
-                  v-if="mode !== 'read'"
-                  class="remove-handle el-icon-close"
-                  @click.stop.prevent="handleRemoveContent(index, 'specific')"
-                ></i>
-                <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
-                <span class="content-id" v-if="content.vContentId"> {{ content.vContentId }} </span>
-              </el-card>
-            </el-col>
-          </component>
-          <el-col :span="3" v-if="mode !== 'read'" >
-            <el-card @click.native="handleAddContent('specific')">
-              <i class="el-icon-plus">添加资源</i>
+            <el-card
+              v-for="(content, index) in specificContentList" 
+              :key="index"
+              :class="{activeContent: activeType === 'specific' && index === activeIndex}"
+              :body-style="{ padding: '0px' }"
+              @click.native="handleActivate('specific', index)">
+              <i
+                v-if="mode !== 'read'"
+                class="remove-handle el-icon-close"
+                @click.stop.prevent="handleRemoveContent(index, 'specific')"
+              ></i>
+              <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
+              <span class="content-id" v-if="content.vContentId"> {{ content.vContentId }} </span>
             </el-card>
-          </el-col>
+          </component>
+          <el-card v-if="mode !== 'read'" @click.native="handleAddContent('specific')">
+            <i class="el-icon-plus">添加资源</i>
+          </el-card>
         </el-row>
         <BlockForm
           v-if="activeType === 'specific'"
@@ -89,17 +170,23 @@
 <script>
 import draggable from 'vuedraggable'
 import BlockForm from './BlockForm'
+import CommonSelector from '@/components/CommonSelector'
+import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
+import { getSelectedResource, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
 export default {
   components: {
     draggable,
-    BlockForm
+    BlockForm,
+    CommonSelector,
+    ResourceSelector
   },
   data() {
     return {
       activeNames: ['normal', 'specific'],
       activeType: 'normal',
       activeIndex: 0,
-      normalContentList: [this.getDefaultContentForm()],
+      normalContentWrapper: this.genDefaultNormalContentWrapper(),
+      normalContentList: [this.genDefaultContentForm()],
       specificContentList: []
     }
   },
@@ -116,9 +203,85 @@ export default {
     },
     contentForm() {
       return this[this.activeType + 'ContentList'][this.activeIndex]
+    },
+    coverTypeEnums() {
+      const enums = [
+        {
+          label: '媒体资源',
+          value: 'media'
+        },
+        {
+          label: '应用圈',
+          value: 'app'
+        },
+        {
+          label: '自定义',
+          value: 'custom'
+        },
+        {
+          label: '商品',
+          value: 'mall'
+        },
+        {
+          label: '推荐位管理',
+          value: 'block',
+          disabled: this.isMall
+        }
+      ]
+      return enums
     }
   },
   methods: {
+    handleInputNormalContentWrapperCoverType(coverType) {
+      if (this.mode === 'read') {
+        return
+      }
+      const props = this.normalContentWrapper.props
+      props.coverType = coverType
+      this.normalContentList = [this.genDefaultContentForm(props)]
+      if (coverType === 'block') {
+        // 清除定向内容
+        // 类型为 推荐位管理时 没有定向内容
+        this.specificContentList = []
+      }
+      this.activeIndex = 0
+    },
+    handleSelectMediaEnd(resources) {
+      const selectedResult = getSelectedResource(resources)
+      const selectedType = selectedResult.selectedType
+      const selected = selectedResult.selected
+      const selectedEpisode = selectedResult.selectedEpisode
+      const contentFormPreset = this.normalContentWrapper.props
+      const contentList = selected.map(item => {
+        const content = this.genDefaultContentForm(contentFormPreset)
+        setMediaContent(content, {
+          partner: selectedResult.partner,
+          selectedType,
+          selected: item, 
+          selectedEpisode: selectedEpisode[item.coocaaVId],
+        })
+        return content
+      })
+      this.normalContentList.splice(this.activeIndex, 1, ...contentList)
+    },
+    handleSelectAppEnd(resources) {
+      const contentFormPreset = this.normalContentWrapper.props
+      const contentList = resources.app.map((item) => {
+        const content = this.genDefaultContentForm(contentFormPreset)
+        setAppContent(content, item)
+        return content
+      })
+      this.normalContentList.splice(this.activeIndex, 1, ...contentList)
+    },
+    handleSelectGoodEnd(resources) {
+      const contentFormPreset = this.normalContentWrapper.props
+      const contentList = resources.good.map((item) => {
+        const content = this.genDefaultContentForm(contentFormPreset)
+        setGoodContent(content, item)
+        return content
+      })
+      this.normalContentList.splice(this.activeIndex, 1, ...contentList)
+    },
     getPictureUrl(pictureUrl) {
       if (pictureUrl) {
         const BLOCK_SIGN_IMG_SRC = process.env.BASE_URL + 'block/sign.png'
@@ -151,7 +314,17 @@ export default {
         })
       })
     },
-    getDefaultContentForm() {
+    genDefaultNormalContentWrapper() {
+      return {
+        selectionType: 'manual',
+        props: {
+          coverType: this.isMall ? 'custom' : 'media',
+          versionCode: '',
+          flagIsSetad: 0
+        }
+      }
+    },
+    genDefaultContentForm(preset) {
       return {
         // 如果是购物，默认是 custom 类型
         coverType: this.isMall ? 'custom' : 'media',
@@ -186,7 +359,8 @@ export default {
           id: '',
           title: ''
         },
-        bgType: ''
+        bgType: '',
+        ...preset
       }
     },
     getDefaultParams() {
@@ -214,7 +388,7 @@ export default {
       const { activeType, activeIndex } = this
       const contentList = this[activeType + 'ContentList']
       const originContentForm = contentList[activeIndex]
-      const contentForm = this.getDefaultContentForm()
+      const contentForm = this.genDefaultContentForm()
       contentForm.coverType = coverType
       if (activeType === 'specific') {
         // 定向运营时保留内容类别和关联人群
@@ -254,7 +428,11 @@ export default {
       this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
         if (!err) {
           const contentList = this[contentType + 'ContentList']
-          contentList.push(this.getDefaultContentForm())
+          if (contentType === 'normal') {
+            contentList.push(this.genDefaultContentForm(this.normalContentWrapper.props))
+          } else {
+            contentList.push(this.genDefaultContentForm())
+          }
           this.activeType = contentType
           this.activeIndex = contentList.length - 1
         } else {
@@ -295,7 +473,7 @@ export default {
       const specificContentList = block.specificContentList || []
       const parse = (data) => {
         let redundantParams
-        const defaultContentForm = this.getDefaultContentForm()
+        const defaultContentForm = this.genDefaultContentForm()
         data.cornerList = (data.cornerList || []).reduce((result, item) => {
           result[item.position] = item
           return result
@@ -365,10 +543,17 @@ export default {
       }
       this.normalContentList = normalContentList.length > 0
         ? normalContentList.map(parse)
-        : [this.getDefaultContentForm()]
+        : [this.genDefaultContentForm()]
       this.specificContentList = specificContentList.map(parse)
+      
+      const normalContentWrapperProps = this.normalContentWrapper.props
+      const firstNormalContent = this.normalContentList[0]
+      ;['coverType', 'versionCode', 'flagIsSetad'].forEach((key) => {
+        normalContentWrapperProps[key] = firstNormalContent[key]
+      })
     },
     parseContentList(contentList) {
+      const normalContentWrapperProps = this.normalContentWrapper.props
       contentList = JSON.parse(JSON.stringify(contentList))
 
       function parse(content) {
@@ -511,6 +696,11 @@ export default {
           delete content.bgParams.title
           content.bgParams = JSON.stringify(content.bgParams)
         }
+        // contentWrapperProps
+        ;['coverType', 'versionCode', 'flagIsSetad'].forEach((key) => {
+          content[key] = normalContentWrapperProps[key]
+        })
+
         delete content.redundantParams
         return content
       }
@@ -645,14 +835,24 @@ export default {
   }
 }
 
-.addedContents-wrapper {
+.added-contents-wrapper {
   margin-bottom: 16px;
   padding: 8px;
-  border: 2px dashed #C0CCDA;
+  border-top: 2px dashed #C0CCDA;
+  border-bottom: 2px dashed #C0CCDA;
+  white-space: nowrap;
+  overflow: auto;
+
+  .added-contents-list {
+    display: inline-block;
+  }
 
   >>> .el-card {
     position: relative;
+    display: inline-block;
+    width: 190px;
     height: 120px;
+    margin-right: 5px;
     text-align: center;
     cursor: pointer;
 
@@ -690,4 +890,8 @@ export default {
   background #000
   color #fff
   opacity 0.8
+.normal-content-wrapper__list
+  margin-top 10px
+  padding 10px 5px
+  border 1px solid #ccc
 </style>

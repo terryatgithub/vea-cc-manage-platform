@@ -11,17 +11,23 @@ export function setMediaContent(contentForm, options) {
   if (selectedType === 'video') {
     // 影视中心
     if (selectedEpisode) {
+      const fieldMap = {
+        0: 'extraValue5',
+        1: 'extraValue5',
+        6: 'extraValue4'
+      }
+      const extraIdField = fieldMap[selectedEpisode.urlIsTrailer] || 'extraValue5'
       contentForm.contentType = 0
       contentForm.videoContentType = 'movie'
       if (partner === 'tencent') {
         contentForm.extraValue1 = '_otx_' + selected.coocaaVId
-        contentForm.extraValue5 = selectedEpisode.coocaaMId
+        contentForm[extraIdField] = selectedEpisode.coocaaMId
       } else if (partner === 'yinhe') {
         contentForm.extraValue1 = '_oqy_' + selected.coocaaVId
-        contentForm.extraValue5 = selectedEpisode.coocaaMId
+        contentForm[extraIdField] = selectedEpisode.coocaaMId
       } else if (partner === 'youku') {
         contentForm.extraValue1 = '_oyk_' + selected.coocaaVId
-        contentForm.extraValue5 = selectedEpisode.coocaaMId
+        contentForm[extraIdField] = selectedEpisode.coocaaMId
       }
       contentForm.singleId = selectedEpisode.coocaaMId
       contentForm.platformId = this.source

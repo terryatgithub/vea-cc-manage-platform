@@ -18,7 +18,7 @@
               </el-col>
               <el-col :span="2" class="textAlignCenter">|</el-col>
               <el-col :span="11">
-                  <el-form-item  :rules="rules.barText" prop="subTitle">
+                  <el-form-item prop="subTitle">
                   <el-input v-model.trim="form.subTitle"></el-input>
                 </el-form-item>
               </el-col>
