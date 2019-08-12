@@ -90,7 +90,7 @@
             <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
               <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
               <i v-else class="el-icon-arrow-up"></i>
-              <span>版面数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <span>版块数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
               昨日UVCTR：<span>{{panelUVCTR.value?toPercent(panelUVCTR.value):'N/A'}}</span>，
               日环比<span :class="panelUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.dailyGrowth}}</span>；
               周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
@@ -414,6 +414,21 @@ export default {
       } else {
         callback()
       }
+    }
+    const border = {
+      'xAxis.0.axisLabel.rotate': 45,
+      grid: {
+        top: "2%",
+        left: "5%",
+        right: "5%",
+        bottom: "10%",
+        containLabel: true
+      },
+      series: v => {
+        v[0].smooth = false
+        return v
+      },
+      color: ['#1E90FF ','#2f4554'],
     }
     const extend = {
       'xAxis.0.axisLabel.rotate': 45,

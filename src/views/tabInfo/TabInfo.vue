@@ -147,8 +147,8 @@
               </div>
               <div v-if="!isCollapseData">
                 <div class="chart-box">
-                  <div class="chart-box--title">{{exposureUvChartData.title}}</div>
-                  <VeLine :data="exposureUvChartData" :legend-visible="false" :extend="exposureUvChartExtend" :settings="exposureUvChartSettings"></VeLine>
+                  <div class="chart-box--title">{{clickUvChartData.title}}</div>
+                  <VeLine :data="clickUvChartData" :legend-visible="false" :extend="clickUvChartExtend" :settings="clickUvChartSettings"></VeLine>
                 </div>
                 <div class="chart-box">
                   <div class="chart-box--title">{{uvctrChartData.title}}</div>
@@ -837,9 +837,9 @@ export default {
       },
       color: ['#1E90FF ','#2f4554'],
     }
-    this.exposureUvChartSettings = {
+    this.clickUvChartSettings = {
       labelMap: {
-        y: '曝光UV'
+        y: '点击UV'
       }
     }
     this.uvctrChartSettings = {
@@ -869,7 +869,7 @@ export default {
         dailyGrowth: 'N/A',
         weeklyGrowth: 'N/A'
       },
-      exposureUvChartData: {
+      clickUvChartData: {
         title: '',
         columns: ['x', 'y'],
         rows: [],
@@ -887,7 +887,7 @@ export default {
         rows: [],
         unit: ''
       },
-      exposureUvChartExtend: Object.assign({}, extend),
+      clickUvChartExtend: Object.assign({}, extend),
       uvctrChartExtend: Object.assign({}, extend),
       uvctrHourChartExtend: Object.assign({}, extend),
       mode: 'create',
@@ -2542,9 +2542,9 @@ export default {
       })
       this.$service.getTabChartData({ id: this.id }).then(data => {
         const rows = data.rows
-        this.exposureUvChartData.rows = rows[0].data
-        this.exposureUvChartData.title = rows[0].title
-        this.exposureUvChartData.unit = rows[0].unit
+        this.clickUvChartData.rows = rows[0].data
+        this.clickUvChartData.title = rows[0].title
+        this.clickUvChartData.unit = rows[0].unit
         this.uvctrChartData.rows = rows[1].data
         this.uvctrChartData.title = rows[1].title
         this.uvctrChartData.unit = rows[1].unit
