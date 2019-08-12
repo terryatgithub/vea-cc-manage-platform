@@ -24,6 +24,7 @@
         @all-row-selection-change="handleAllRowSelectionChange"
       />
     </ContentWrapper>
+
   </ContentCard>
 </template>
 <script>
@@ -31,12 +32,15 @@ import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
+import BroadcastSimpleData from './BroadcastSimpleData'
+
 export default {
   extends: BaseList,
   components: {
     Table,
     ContentWrapper,
-    ButtonGroupForListPage
+    ButtonGroupForListPage,
+    BroadcastSimpleData
   },
   data() {
     return {
@@ -72,6 +76,18 @@ export default {
                   }
                 },
                 row.containerName
+              )
+            }
+          },
+          {
+            label: '数据表现',
+            width: 300,
+            render: (h, {row}) => {
+              return h(
+                BroadcastSimpleData,
+                {
+                  props: {id: row.id}
+                }
               )
             }
           },
@@ -182,6 +198,22 @@ export default {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
+    },
+    toPercent: decimal => {
+      return (Math.round(decimal * 10000) / 100.00 + "%")
+    },
+    getSimpleBrowseData(id) {
+      let dataShow = {}
+      this.$service.getBlockSimpleBrowseData({id}).then(data => {
+        const uvctr = data.rows[0].data[0].uvctr
+        dataShow = {
+          value: this.toPercent(uvctr.value),
+          dailyGrowth: this.toPercent(uvctr.dailyGrowth),
+          weeklyGrowth: this.toPercent(uvctr.weeklyGrowth) 
+        }
+        console.log('data2',dataShow );
+      })
+      return dataShow
     }
   },
   created() {

@@ -135,6 +135,32 @@
                   <span class="hint remarks">设置范围:5分钟-6小时</span>
                 </el-form-item>
               </div>
+
+              <div v-if="mode === 'edit'">
+              <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
+                <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
+                <i v-else class="el-icon-arrow-up"></i>
+                <span>版面数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                昨日UVCTR：<span>{{tabUVCTR.value?toPercent(tabUVCTR.value):'N/A'}}</span>，
+                日环比<span :class="tabUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{tabUVCTRPercent.dailyGrowth}}</span>；
+                周同比<span :class="tabUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{tabUVCTRPercent.weeklyGrowth}}</span>
+              </div>
+              <div v-if="!isCollapseData">
+                <div class="chart-box">
+                  <div class="chart-box--title">{{clickUvChartData.title}}</div>
+                  <VeLine :data="clickUvChartData" :legend-visible="false" :extend="clickUvChartExtend" :settings="clickUvChartSettings"></VeLine>
+                </div>
+                <div class="chart-box">
+                  <div class="chart-box--title">{{uvctrChartData.title}}</div>
+                  <VeLine :data="uvctrChartData" :legend-visible="false" :extend="uvctrChartExtend" :settings="uvctrChartSettings"></VeLine>
+                </div>
+                <div class="chart-box">
+                  <div class="chart-box--title">{{uvctrHourChartData.title}}</div>
+                  <VeLine :data="uvctrHourChartData" :legend-visible="false" :extend="uvctrHourChartExtend":settings="uvctrHourChartSettings"></VeLine>
+                </div>
+              </div>
+              </div>
+
               <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
                 <i v-if="isCollapseExtend" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
@@ -744,6 +770,7 @@ import InputMinute from '@/components/InputMinute'
 import RecommendStreamSignSelector from '@/components/selectors/RecommendStreamSign'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendPanelSelector from '@/components/selectors/RecommendPanelSelector'
+import VeLine from 'v-charts/lib/line.common'
 
 export default {
   name: 'TabInfo',
@@ -776,7 +803,8 @@ export default {
     InputMinute,
     RecommendStreamSignSelector,
     RecommendPanelSelector,
-    OrderableTable
+    OrderableTable,
+    VeLine
   },
   data() {
     const STATUS = {
@@ -794,7 +822,74 @@ export default {
       '5': '审核不通过',
       '7': '审核通过未上线'
     }
+    const extend = {
+      'xAxis.0.axisLabel.rotate': 45,
+      grid: {
+        top: "2%",
+        left: "5%",
+        right: "5%",
+        bottom: "10%",
+        containLabel: true
+      },
+      series: v => {
+        v[0].smooth = false
+        return v
+      },
+      color: ['#1E90FF ','#2f4554'],
+    }
+    this.clickUvChartSettings = {
+      labelMap: {
+        y: '点击UV'
+      }
+    }
+    this.uvctrChartSettings = {
+      labelMap: {
+        y: 'UVCTR'
+      }
+    }
+    this.uvctrHourChartSettings = {
+      labelMap: {
+        y: 'UVCTR'
+      }
+    }
+
     return {
+      UVCTR: {
+        value: '',
+        dailyGrowth: '',
+        weeklyGrowth: ''
+      },
+      tabUVCTR: {
+        value: '',
+        dailyGrowth: '',
+        weeklyGrowth: ''
+      },
+      tabUVCTRPercent: {
+        value: 'N/A',
+        dailyGrowth: 'N/A',
+        weeklyGrowth: 'N/A'
+      },
+      clickUvChartData: {
+        title: '',
+        columns: ['x', 'y'],
+        rows: [],
+        unit: ''
+      },
+      uvctrChartData: {
+        title: '',
+        columns: ['x', 'y'],
+        rows: [],
+        unit: ''
+      },
+      uvctrHourChartData: {
+        title: '',
+        columns: ['x', 'y'],
+        rows: [],
+        unit: ''
+      },
+      clickUvChartExtend: Object.assign({}, extend),
+      uvctrChartExtend: Object.assign({}, extend),
+      uvctrHourChartExtend: Object.assign({}, extend),
       mode: 'create',
       activePage: 'tab_info',
       panelPreview: {
@@ -813,6 +908,7 @@ export default {
       isCollapseExtend: false,
       isCollapseSpec: false,
       isCollapseCustom: false,
+      isCollapseData: false,
       isPanelDragging: false,
       STATUS: STATUS,
       STATUS_TEXT: STATUS_TEXT,
@@ -1071,6 +1167,13 @@ export default {
     'tabInfo.tabResource': 'getVipButtonSource'
   },
   methods: {
+    toPercent: decimal => {
+      return (Math.round(decimal * 10000) / 100.00 + "%")
+    },
+    toArrowPercent (decimal) {
+      const rs = this.toPercent(Math.abs(decimal))
+      return rs + (decimal>0 ? ' ↑' : ' ↓')
+    },
     parseMinToStr(min) {
       const hours = Math.floor(min / 60)
       const mins = min % 60
@@ -2430,6 +2533,26 @@ export default {
         this.setTabInfo(data)
       })
     },
+    getSimpleBrowseData() {
+      this.$service.getTabSimpleBrowseData({ id: this.id }).then(data => {
+        const tabUVCTR = data.rows[0].data[0].uvctr
+        this.tabUVCTR = tabUVCTR
+        tabUVCTR.dailyGrowth ? this.tabUVCTRPercent.dailyGrowth = this.toArrowPercent(tabUVCTR.dailyGrowth) : 'N/A'
+        tabUVCTR.weeklyGrowth ? this.tabUVCTRPercent.weeklyGrowth = this.toArrowPercent(tabUVCTR.weeklyGrowth) : 'N/A'
+      })
+      this.$service.getTabChartData({ id: this.id }).then(data => {
+        const rows = data.rows
+        this.clickUvChartData.rows = rows[0].data
+        this.clickUvChartData.title = rows[0].title
+        this.clickUvChartData.unit = rows[0].unit
+        this.uvctrChartData.rows = rows[1].data
+        this.uvctrChartData.title = rows[1].title
+        this.uvctrChartData.unit = rows[1].unit
+        this.uvctrHourChartData.rows = rows[2].data
+        this.uvctrHourChartData.title = rows[2].title
+        this.uvctrHourChartData.unit = rows[2].unit
+      })
+    },
     getVipButtonSourceItem(id) {
       const result = this.vipEnumsData.find(function(item) {
         return item.sourceId === id
@@ -2485,6 +2608,15 @@ export default {
       panelRecommendConfig.panelInfoList = []
       panelRecommendConfig.recommendIndex = undefined
       this.setRecommendStreamSignPanelCount()
+    },
+    equipChartStyle() {
+      const yAxis = {
+        axisLabel: {
+          formatter: '{value}%'
+        }
+      }
+      this.uvctrChartExtend.yAxis = yAxis
+      this.uvctrHourChartExtend.yAxis = yAxis
     }
   },
   created() {
@@ -2493,8 +2625,10 @@ export default {
     this.$watch('mode', this.handleModeChange, { immediate: true })
     if (this.id) {
       this.fetchData(this.version)
+      this.getSimpleBrowseData()
     }
     this.getVipButtonSource()
+    this.equipChartStyle()
   }
 }
 </script>
@@ -2562,4 +2696,13 @@ export default {
   max-width: unset
 .image-preview-wrapper--long img
   height: 300px
+.chart-box--title
+  height: 44px
+  line-height: 44px
+  text-align: center
+  font-size: 25px
+.data-up
+  color: red
+.data-down
+  color: #00AA00
 </style>

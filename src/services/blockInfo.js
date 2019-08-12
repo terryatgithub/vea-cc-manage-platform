@@ -244,3 +244,19 @@ export function broadcastBlockDataList (params) {
     params
   })
 }
+
+export function getBlockSimpleBrowseData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/block/getSimpleBrowseData.html',
+    params
+  })
+}
+
+export function getBlockChartData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/block/getChartData.html',
+    params
+  })
+}

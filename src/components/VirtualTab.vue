@@ -34,6 +34,7 @@
 
     <template v-for="(panelItem, index) in panels">
       <div
+        style="min-height: 193px"
         :class="{
           'tab-placeholder': true,
           'tab-placeholder--normal': panelItem.type === 'NORMAL',
@@ -229,6 +230,8 @@
             </cc-var>
           </div>
         </div>
+        <!-- table right -->
+        <PanelTableRight :panelID="panelItem.panel.id"/>
       </div>
 
       <!-- placeholder bottom -->
@@ -249,13 +252,16 @@ import Var from './Var'
 import VirtualPanel from './VirtualPanel'
 import VirtualPanelGroup from './VirtualPanelGroup'
 import InputOrder from '@/components/InputOrder'
+import PanelTableRight from './PanelTableRight'
+
 let key = 0
 export default {
   components: {
     'cc-var': Var,
     'cc-virtual-panel': VirtualPanel,
     'cc-virtual-panel-group': VirtualPanelGroup,
-    InputOrder
+    InputOrder,
+    PanelTableRight
   },
   data() {
     return {
