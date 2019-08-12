@@ -185,4 +185,6 @@
   position: absolute 
   top: 0% 
   right: -300px
+.table-box >>> .cc-table-wrapper
+  padding: 0
 </style>

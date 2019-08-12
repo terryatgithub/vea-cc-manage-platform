@@ -34,6 +34,7 @@
 
     <template v-for="(panelItem, index) in panels">
       <div
+        style="min-height: 193px"
         :class="{
           'tab-placeholder': true,
           'tab-placeholder--normal': panelItem.type === 'NORMAL',
