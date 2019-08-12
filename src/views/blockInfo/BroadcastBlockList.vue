@@ -25,12 +25,6 @@
       />
     </ContentWrapper>
 
-    <el-dialog title="数据表现" :visible.sync="isShowChart" width="70%">
-      <VeLine></VeLine>
-      <VeLine></VeLine>
-      <VeLine></VeLine>
-    </el-dialog>
-
   </ContentCard>
 </template>
 <script>
@@ -38,8 +32,7 @@ import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
-import VeLine from 'v-charts/lib/line.common'
-import BroadcastSimpleData from './BroadcatSimpleData'
+import BroadcastSimpleData from './BroadcastSimpleData'
 
 export default {
   extends: BaseList,
@@ -47,12 +40,10 @@ export default {
     Table,
     ContentWrapper,
     ButtonGroupForListPage,
-    VeLine,
     BroadcastSimpleData
   },
   data() {
     return {
-      isShowChart: false,
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
       filterSchema: null,
@@ -91,29 +82,14 @@ export default {
           {
             label: '数据表现',
             width: 300,
-            // render: (h, {row}) => {
-            //   const dataShow = this.getSimpleBrowseData(row.id)
-            //   console.log('dataShow', dataShow);
-            //   return h(
-            //     'div',
-            //     {
-            //       on: {
-            //         click: () => {
-            //           this.isShowChart = true
-            //         }
-            //       }
-            //     },
-            //     111
-            //   )
-            // }
-            // render: (h, {row}) => {
-            //   return h(
-            //     BroadcastSimpleData,
-            //     {
-            //       props: {id: row.id}
-            //     }
-            //   )
-            // }
+            render: (h, {row}) => {
+              return h(
+                BroadcastSimpleData,
+                {
+                  props: {id: row.id}
+                }
+              )
+            }
           },
           {
             label: '待审核的版本',

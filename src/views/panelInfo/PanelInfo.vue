@@ -657,30 +657,29 @@ export default {
       const rs = this.toPercent(Math.abs(decimal))
       return rs + (decimal>0 ? ' ↑' : ' ↓')
     },
-    handleChartData(panelChartData) {
+    handleChartData(chartData) {
       return {
-        title: panelChartData.title,
-        unit: panelChartData.unit,
+        title: chartData.title,
+        unit: chartData.unit,
         columns: ['x', 'y'],
-        rows: panelChartData.data
+        rows: chartData.data
       }
     },
-    handleChartSettings(panelChartData) {
+    handleChartSettings(chartData) {
       return {
         labelMap: {
-          y: panelChartData.title
+          y: chartData.title
         }
       }
-      console.log('', );
     },
-    handleChartExtend(panelChartData) {
+    handleChartExtend(chartData) {
       const yAxis = {
         axisLabel: {
           formatter: '{value}%'
         }
       }
       const extend = Object.assign({}, this.extend)
-      return panelChartData.unit === '%' ? 
+      return chartData.unit === '%' ? 
       Object.assign(extend, {
         yAxis
       })
