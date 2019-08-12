@@ -39,6 +39,7 @@ import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 import VeLine from 'v-charts/lib/line.common'
+import BroadcastSimpleData from './BroadcatSimpleData'
 
 export default {
   extends: BaseList,
@@ -46,7 +47,8 @@ export default {
     Table,
     ContentWrapper,
     ButtonGroupForListPage,
-    VeLine
+    VeLine,
+    BroadcastSimpleData
   },
   data() {
     return {
@@ -89,20 +91,29 @@ export default {
           {
             label: '数据表现',
             width: 300,
-            render: (h, {row}) => {
-              return h(
-                'div',
-                {
-                  on: {
-                    click: () => {
-                      console.log('111')
-                      this.isShowChart = true
-                    }
-                  }
-                },
-                111
-              )
-            }
+            // render: (h, {row}) => {
+            //   const dataShow = this.getSimpleBrowseData(row.id)
+            //   console.log('dataShow', dataShow);
+            //   return h(
+            //     'div',
+            //     {
+            //       on: {
+            //         click: () => {
+            //           this.isShowChart = true
+            //         }
+            //       }
+            //     },
+            //     111
+            //   )
+            // }
+            // render: (h, {row}) => {
+            //   return h(
+            //     BroadcastSimpleData,
+            //     {
+            //       props: {id: row.id}
+            //     }
+            //   )
+            // }
           },
           {
             label: '待审核的版本',
@@ -211,6 +222,22 @@ export default {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
+    },
+    toPercent: decimal => {
+      return (Math.round(decimal * 10000) / 100.00 + "%")
+    },
+    getSimpleBrowseData(id) {
+      let dataShow = {}
+      this.$service.getBlockSimpleBrowseData({id}).then(data => {
+        const uvctr = data.rows[0].data[0].uvctr
+        dataShow = {
+          value: this.toPercent(uvctr.value),
+          dailyGrowth: this.toPercent(uvctr.dailyGrowth),
+          weeklyGrowth: this.toPercent(uvctr.weeklyGrowth) 
+        }
+        console.log('data2',dataShow );
+      })
+      return dataShow
     }
   },
   created() {
