@@ -136,7 +136,7 @@
                 </div>
               </el-form-item>
               <el-form-item v-if="!pannel.pannelGroupId" v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}</el-tag>
+                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight}}</el-tag>
               </el-form-item>
               <el-form-item v-else v-show="isShowTagsField" class="tag-list" label="资源共有标签">
                 <div class="media-tag-list">
@@ -287,7 +287,7 @@
                 </div>
               </el-form-item>
               <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}</el-tag>
+                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
               </el-form-item>
               <el-form-item label="推荐位">
                 <div class="pannel-blocks">
