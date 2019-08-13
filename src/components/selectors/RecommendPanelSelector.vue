@@ -90,7 +90,7 @@ export default {
             'show-overflow-tooltip': true
           },
           {
-            label: '板块组标题',
+            label: '版块组标题',
             prop: 'panelGroupTitle',
             'show-overflow-tooltip': true
           },

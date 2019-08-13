@@ -7,10 +7,10 @@
           <el-button v-if="mode === 'read'" type="primary" @click="mode = 'edit'">编辑</el-button>
         </div>
         <DataForm label-width="120px">
-          <DataString label="板块ID" 
+          <DataString label="版块ID" 
             v-model="panelRecommend.panelGroupName" 
             :readonly="true" />
-          <DataString label="板块名称" 
+          <DataString label="版块名称" 
             v-model="panelRecommend.panelGroupName" 
             :readonly="true" />
           <DataEnum label="内容源" 
@@ -60,7 +60,7 @@ export default {
   mixins: [titleMixin],
   data() {
     return {
-      resourceName: '板块推荐流',
+      resourceName: '版块推荐流',
       mode: 'create',
       panelRecommend: {
         panelGroupId: '',

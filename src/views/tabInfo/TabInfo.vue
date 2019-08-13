@@ -120,16 +120,6 @@
                   </cc-global-picture-selector>
                 </el-form-item>
 
-                <el-form-item label="自动化推荐" prop="autoPromotion">
-                  <el-radio-group v-model="tabInfo.autoPromotion">
-                    <el-radio
-                      v-for="(item, key) in PROMOTIONS"
-                      :key="key"
-                      :label="item.value"
-                    >{{ item.label }}</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-
                 <el-form-item label="固定刷新时间" prop="timeCycle">
                   <InputMinute v-model="tabInfo.timeCycle" :min="5" :max="360" />
                   <span class="hint remarks">设置范围:5分钟-6小时</span>
@@ -164,7 +154,7 @@
               <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
                 <i v-if="isCollapseExtend" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
-                <span>板块配置</span>
+                <span>版块配置</span>
               </div>
 
               <div :style="{display: isCollapseExtend ? 'none' : 'block'}">
@@ -380,27 +370,27 @@
               </div>
 
               <div :style="{display: isCollapseCustom ? 'none' : 'block'}">
-                <el-form-item label="启动板块个性化推荐">
+                <el-form-item label="启动版块个性化推荐">
                   <el-switch 
                     :value="!!tabInfo.panelRecommendConfig.enableRecommend" 
                     @input="handleInputRecommendFlag" />
                 </el-form-item>
                 <div v-if="tabInfo.panelRecommendConfig.enableRecommend">
-                  <el-form-item label="选择板块流" prop="panelRecommendConfig.recommendSign" :rules="[{required: true, message: '请选择板块流'}]">
+                  <el-form-item label="选择版块流" prop="panelRecommendConfig.recommendSign" :rules="[{required: true, message: '请选择版块流'}]">
                     <RecommendStreamSignSelector 
-                      confirm="改变板块流将清空优先推荐板块，确认修改？"
+                      confirm="改变版块流将清空优先推荐版块，确认修改？"
                       :value="tabInfo.panelRecommendConfig.recommendSign"
                       @input="handleInputRecommendSign"/>
-                    该流可推荐板块: {{ recommendStreamSignPanelCount }} 个
+                    该流可推荐版块: {{ recommendStreamSignPanelCount }} 个
                   </el-form-item>
                   <el-form-item label="从第几个位置开始推荐" prop="panelRecommendConfig.recommendIndex" :rules="[{required: true, message: '请设置开始推荐位置', trigger: 'blur'}]">
                     <InputPositiveInt style="width: 200px" v-model="tabInfo.panelRecommendConfig.recommendIndex" />
                     例: 选择 1， 则整个版面都是个性化推荐
                   </el-form-item>
-                  <el-form-item label="优先推荐板块">
+                  <el-form-item label="优先推荐版块">
                     <RecommendPanelSelector 
                       :disabled="!tabInfo.panelRecommendConfig.recommendSign"
-                      :title="tabInfo.panelRecommendConfig.recommendSign ? '选择板块' : '请先选择板块流'"
+                      :title="tabInfo.panelRecommendConfig.recommendSign ? '选择版块' : '请先选择版块流'"
                       :category="tabInfo.panelRecommendConfig.recommendSign" 
                       :source="tabInfo.tabResource" 
                       @select-end="handleSelectRecommendPanelEnd" />
@@ -487,11 +477,6 @@
                     <div class="tab-title-icon__title">非落焦</div>
                   </el-form-item>
                 </el-form-item>
-
-                <el-form-item
-                  label="自动化推荐"
-                  prop="autoPromotion"
-                >{{ tabInfo.autoPromotion === 'movie' ? '影视' : '无'}}</el-form-item>
 
                 <el-form-item label="固定刷新时间" prop="timeCycle">{{ parseMinToStr(tabInfo.timeCycle) }}</el-form-item>
               </div>
@@ -646,20 +631,20 @@
               </div>
 
               <div :style="{display: isCollapseCustom ? 'none' : 'block'}">
-                <el-form-item label="启动板块个性化推荐">
+                <el-form-item label="启动版块个性化推荐">
                   {{ tabInfo.panelRecommendConfig.enableRecommend ? '是' : '否' }}
                 </el-form-item>
                 <template v-if="tabInfo.panelRecommendConfig.enableRecommend">
-                  <el-form-item label="选择板块流">
+                  <el-form-item label="选择版块流">
                     <RecommendStreamSignSelector 
                       :is-read="true"
-                      confirm="改变板块流将清空优先推荐板块，确认修改？"
+                      confirm="改变版块流将清空优先推荐版块，确认修改？"
                       v-model="tabInfo.panelRecommendConfig.recommendSign" />
                   </el-form-item>
                   <el-form-item label="从第几个位置开始推荐" prop="panelRecommendConfig.recommendIndex" :rules="[{required: true, message: '不能为空'}]">
                     {{ tabInfo.panelRecommendConfig.recommendIndex }}
                   </el-form-item>
-                  <el-form-item label="优先推荐板块">
+                  <el-form-item label="优先推荐版块">
                     <OrderableTable
                       :readonly="true"
                       :hide-action="true"
@@ -946,16 +931,6 @@ export default {
           value: 2
         }
       ],
-      PROMOTIONS: [
-        {
-          label: '无',
-          value: 'none'
-        },
-        {
-          label: '影视',
-          value: 'movie'
-        }
-      ],
       panelListIndexed: {},
       vipEnums: [],
       vipEnumsData: [],
@@ -999,8 +974,6 @@ export default {
         blockTitleUnfocusColor: undefined,
 
         // 自动推荐
-        autoPromotion: 'none',
-        //
         // 活动浮窗
         activityFloatWindow: undefined,
 
@@ -1014,11 +987,11 @@ export default {
         panelRecommendConfig: {
           // 是	Integer	启动推荐，状态:1为开启,0为关闭
           enableRecommend: 0,
-          // 是	String	板块推荐流 recommendStreamSign-推荐流标记-数据字典 dictCnName
+          // 是	String	版块推荐流 recommendStreamSign-推荐流标记-数据字典 dictCnName
           recommendSign: '',
           // 是	Integer	开始推荐的位置，默认4,前3屏运营配置，保证质量
           recommendIndex: undefined,
-          // 否	List	优先推荐的板块列表信息
+          // 否	List	优先推荐的版块列表信息
           panelInfoList: []
         }
       },
@@ -1075,11 +1048,11 @@ export default {
       ],
       panelRecommendHeader: [
         {
-          label: '板块ID',
+          label: '版块ID',
           prop: 'pannelGroupId'
         },
         {
-          label: '板块名称',
+          label: '版块名称',
           prop: 'pannelName'
         },
         // {
@@ -1087,7 +1060,7 @@ export default {
         //   render: (h, {row}) => {
         //     const recommendSign = this.tabInfo.panelRecommendConfig.recommendSign
         //     if (row.panelGroupCategory.indexOf(`[${recommendSign}]`) === -1) {
-        //       return <span class="color-red">板块不在本流中， 无法生效</span>
+        //       return <span class="color-red">版块不在本流中， 无法生效</span>
         //     }
         //   }
         // }
@@ -2324,9 +2297,6 @@ export default {
 
       let tabParams = {}
       {
-        if (tabInfo.autoPromotion !== 'none') {
-          tabParams.autodata = tabInfo.autoPromotion
-        }
         tabParams = JSON.stringify(tabParams)
       }
 
@@ -2509,7 +2479,6 @@ export default {
         blockTitleUnfocusColor: tabExtArr.blockTitleUnfocusColor,
         sinkSize: tabExtArr.sinkSize,
 
-        autoPromotion: tabParams.autodata || 'none',
         activityFloatWindow: activityFloatWindow,
 
         imgOnBlur: tabTitleIcons.unfocus_img_url,

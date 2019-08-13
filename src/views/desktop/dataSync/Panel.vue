@@ -1,5 +1,5 @@
 <template>
-  <ContentCard title="待处理板块" @go-back="$emit('go-back')">
+  <ContentCard title="待处理版块" @go-back="$emit('go-back')">
     <ContentWrapper
       :pagination="pagination"
       @filter-change="handleFilterChange"
