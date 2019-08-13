@@ -56,6 +56,11 @@ const episodeTypeEnums = [
     value: '6'
   }
 ]
+const episodeTypeText = {
+  '0': '正片',
+  '1': '预告',
+  '6': '短视频'
+}
 export default {
   components: {
     BaseSelector,
@@ -106,7 +111,7 @@ export default {
             width: '120',
             prop: 'urlIsTrailer',
             render: (createElement, { row }) => {
-              return row.urlIsTrailer === '1' ? '非正片' : '正片'
+              return episodeTypeText[row.urlIsTrailer]
             }
           }
         ],
