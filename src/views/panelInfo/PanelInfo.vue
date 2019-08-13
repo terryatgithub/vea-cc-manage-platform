@@ -87,7 +87,7 @@
               </el-form-item>
             </el-form>
             
-            <div v-if="mode === 'edit'">
+            <div v-if="mode === 'edit' || mode === 'replicate'">
             <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
               <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
               <i v-else class="el-icon-arrow-up"></i>
@@ -2067,7 +2067,7 @@ export default {
         }
       })
     })
-    if(this.mode === 'edit'){
+    if(this.mode === 'edit' || this.mode === 'replicate' || this.mode === 'copy' || this.mode === 'read'){
       this.getSimpleBrowseData()
     }
   },

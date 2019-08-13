@@ -136,7 +136,7 @@
                 </el-form-item>
               </div>
 
-              <div v-if="mode === 'edit'">
+              <div v-if="mode === 'edit'|| mode ==='replicate'">
               <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
                 <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
@@ -2028,7 +2028,7 @@ export default {
           })
         }
       })
-      console.log(panelList)
+      console.log('panelList', panelList)
     },
     handleSelectTabStart() {
       this.$nextTick(
