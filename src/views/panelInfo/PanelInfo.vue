@@ -87,6 +87,7 @@
               </el-form-item>
             </el-form>
             
+            <div v-if="mode === 'edit'">
             <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
               <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
               <i v-else class="el-icon-arrow-up"></i>
@@ -100,6 +101,7 @@
                 <div class="chart-box--title">{{panelChartData.title}}</div>
                 <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
               </div>
+            </div>
             </div>
 
             <div class="form-legend-header">
@@ -2060,8 +2062,10 @@ export default {
           disabled: item.disabled
         }
       })
-    }),
-    this.getSimpleBrowseData()
+    })
+    if(this.mode === 'edit'){
+      this.getSimpleBrowseData()
+    }
   },
   mounted() {
     if (this.id) {
