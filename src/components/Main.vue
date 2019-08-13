@@ -146,7 +146,7 @@ const routerMap = {
   topic: 'topic',
   topicConfig: 'topicConfig',
 
-  // 板块推荐
+  // 版块推荐
   panelRecommend: 'panelRecommend',
 }
 export default {
@@ -324,7 +324,9 @@ export default {
   },
   mounted() {
     this.$bus.$on('scroll-top', () => {
-      this.$refs.main.$el.scrollTo(0, 0)
+      if (this.$refs.main) {
+        this.$refs.main.$el.scrollTo(0, 0)
+      }
     })
     //  this.saveTags()
     window.addEventListener('beforeunload', this.saveTags)
