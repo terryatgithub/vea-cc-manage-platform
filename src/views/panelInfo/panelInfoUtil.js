@@ -48,7 +48,7 @@ export function setMediaContent(contentForm, options) {
       contentForm.singleId = ''
       contentForm.contentType = 0
       contentForm.videoContentType = 'movie'
-      contentForm.extraValue5 = null
+      contentForm.extraValue5 = undefined
       contentForm.platformId = selected.source
       contentForm.pictureUrl = selected.thumb
       contentForm.title = selected.title

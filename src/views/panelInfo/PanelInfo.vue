@@ -930,13 +930,18 @@ export default {
               const episode = selectedEpisodes[item.coocaaVId]
               let finalItem
               if (episode) {
+                const fieldMap = {
+                  0: 'extraValue5',
+                  1: 'extraValue5',
+                  6: 'extraValue4'
+                }
+                const extraIdField = fieldMap[episode.urlIsTrailer] || 'extraValue5'
                 finalItem = {
                   contentType: 0, // ??
-
                   coverType: 'media',
                   videoContentType: 'movie',
                   extraValue1: getExtravue1(item.coocaaVId),
-                  extraValue5: episode.coocaaMId,
+                  [extraIdField]: episode.coocaaMId,
                   pictureUrl: episode.thumb,
                   title: episode.urlTitle,
                   subTitle: episode.urlSubTitle,
@@ -945,7 +950,6 @@ export default {
               } else {
                 finalItem = {
                   contentType: 0, // ??
-
                   coverType: 'media',
                   videoContentType: 'movie',
                   extraValue1: getExtravue1(item.coocaaVId),
