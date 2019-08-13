@@ -231,7 +231,7 @@
           </div>
         </div>
         <!-- table right -->
-        <PanelTableRight :panelID="panelItem.panel.id"/>
+        <PanelTableRight v-if="panelItem.panel" :panelID="panelItem.panel.id"/>
       </div>
 
       <!-- placeholder bottom -->
