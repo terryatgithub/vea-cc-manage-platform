@@ -77,12 +77,24 @@ export default {
   props: ['id', 'initMode'],
   methods: {
     handleInputCategoryItem(isChecked, category) {
-      const panelRecommend = this.panelRecommend
-      const panelGroupCategory = panelRecommend.panelGroupCategory
+      const doInput = () => {
+        const panelRecommend = this.panelRecommend
+        const panelGroupCategory = panelRecommend.panelGroupCategory
+        if (isChecked) {
+          panelGroupCategory.push(category)
+        } else {
+          panelRecommend.panelGroupCategory = panelGroupCategory.filter(item => item !== category )
+        }
+      }
       if (isChecked) {
-        panelGroupCategory.push(category)
+        this.$message({
+          type: 'warn',
+          message: '不支持从不推荐设为推荐'
+        })
       } else {
-        panelRecommend.panelGroupCategory = panelGroupCategory.filter(item => item !== category )
+        this
+          .$confirm('本操作将该流设为不可推荐，设置后该版块不会被推荐到这个流中；但是，若要将该版本恢复成可以推荐，则非常困难，需要联系开发处理')
+          .then(doInput).catch(() => {})
       }
     },
     handleInputLockItem(category) {
