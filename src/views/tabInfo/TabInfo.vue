@@ -495,6 +495,30 @@
 
                 <el-form-item label="固定刷新时间" prop="timeCycle">{{ parseMinToStr(tabInfo.timeCycle) }}</el-form-item>
               </div>
+              
+              <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
+                <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
+                <i v-else class="el-icon-arrow-up"></i>
+                <span>版面数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                昨日UVCTR：<span>{{tabUVCTR.value?toPercent(tabUVCTR.value):'N/A'}}</span>，
+                日环比<span :class="tabUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{tabUVCTRPercent.dailyGrowth}}</span>；
+                周同比<span :class="tabUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{tabUVCTRPercent.weeklyGrowth}}</span>
+              </div>
+              <div v-if="!isCollapseData">
+                <div class="chart-box">
+                  <div class="chart-box--title">{{clickUvChartData.title}}</div>
+                  <VeLine :data="clickUvChartData" :legend-visible="false" :extend="clickUvChartExtend" :settings="clickUvChartSettings"></VeLine>
+                </div>
+                <div class="chart-box">
+                  <div class="chart-box--title">{{uvctrChartData.title}}</div>
+                  <VeLine :data="uvctrChartData" :legend-visible="false" :extend="uvctrChartExtend" :settings="uvctrChartSettings"></VeLine>
+                </div>
+                <div class="chart-box">
+                  <div class="chart-box--title">{{uvctrHourChartData.title}}</div>
+                  <VeLine :data="uvctrHourChartData" :legend-visible="false" :extend="uvctrHourChartExtend":settings="uvctrHourChartSettings"></VeLine>
+                </div>
+              </div>
+              
               <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
                 <i v-if="isCollapseExtend" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
@@ -823,7 +847,6 @@ export default {
       '7': '审核通过未上线'
     }
     const extend = {
-      'xAxis.0.axisLabel.rotate': 45,
       grid: {
         top: "2%",
         left: "5%",
@@ -834,6 +857,25 @@ export default {
       series: v => {
         v[0].smooth = false
         return v
+      },
+      xAxis: {
+        axisLabel: {
+          rotate: 45,
+          formatter: function(val) {
+            let mark = val.indexOf('(')
+            if(mark === -1)
+            {
+              return val
+            }else {
+              let version = val.slice(mark-val.length)
+              let date = val.slice(0, mark)
+              return [`{a|${version}}`, date].join('')
+            }
+          },
+          rich: {
+            a: { color: 'red' }
+          }
+        }
       },
       color: ['#1E90FF ','#2f4554'],
     }
@@ -908,7 +950,7 @@ export default {
       isCollapseExtend: false,
       isCollapseSpec: false,
       isCollapseCustom: false,
-      isCollapseData: false,
+      isCollapseData: true,
       isPanelDragging: false,
       STATUS: STATUS,
       STATUS_TEXT: STATUS_TEXT,
