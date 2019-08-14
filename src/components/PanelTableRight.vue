@@ -18,7 +18,7 @@
             border: true,
             size: 'small',
             'row-style': () => { return "height: 20px" },
-            'cell-style': () => { return "padding: 0" },
+            'cell-style': () => { return "padding: 0; text-align: center" },
             'header-cell-style': () => { return "padding: 0" }
           },
           header: [
@@ -165,7 +165,7 @@
           }
           uvctrRow = {
             date,
-            uvctr: uvctr.value,
+            uvctr: this.toPercent(uvctr.value),
             dailyGrowth: this.toArrowPercent(uvctr.dailyGrowth),
             weeklyGrowth: this.toArrowPercent(uvctr.weeklyGrowth)
           }

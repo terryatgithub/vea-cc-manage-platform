@@ -436,7 +436,6 @@ export default {
       color: ['#1E90FF ','#2f4554'],
     }
     const extend = {
-      'xAxis.0.axisLabel.rotate': 45,
       grid: {
         top: "2%",
         left: "5%",
@@ -447,6 +446,25 @@ export default {
       series: v => {
         v[0].smooth = false
         return v
+      },
+      xAxis: {
+        axisLabel: {
+          rotate: 45,
+          formatter: function(val) {
+            let mark = val.indexOf('(')
+            if(mark === -1)
+            {
+              return val
+            }else {
+              let version = val.slice(mark-val.length)
+              let date = val.slice(0, mark)
+              return [`{a|${version}}`, date].join('')
+            }
+          },
+          rich: {
+            a: { color: 'red' }
+          }
+        }
       },
       color: ['#1E90FF ','#2f4554'],
     }
