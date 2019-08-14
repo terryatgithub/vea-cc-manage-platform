@@ -975,6 +975,8 @@ export default {
                   extraValue1: getExtravue1(item.coocaaVId),
                   extraValue5: undefined,
                   pictureUrl: item.thumb,
+                  // 候选图片列表，用于选出最合适尺寸第图片  
+                  picturePreset: item.imageInfoList,
                   title: item.title,
                   subTitle: item.urlSubTitle,
                   blockResourceType: 1
@@ -1020,6 +1022,7 @@ export default {
                 videoContentType: 'edu',
                 extraValue1: '_otx_' + item.coocaaVId,
                 pictureUrl: item.thumb,
+                picturePreset: item.imageInfoList,
                 title: item.title,
                 subTitle: item.subTitle,
                 blockResourceType: 1,
@@ -1501,36 +1504,31 @@ export default {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
-        const content = contentList[0]
         // 有 extraValue1 才判断重复, 自定义不判断
-        if (
-          content &&
-          (content.coverType === 'media' || content.coverType === 'block')
-        ) {
-          let id
-          if (content.extraValue1) {
-            id =
-              content.contentType +
-              '/' +
-              content.extraValue1 +
-              (content.extraValue5 || '')
-          } else if (content.vContentId) {
-            id = content.contentType + '/' + content.vContentId
-          }
-
-          if (id) {
-            const duplicatedItem = resourceIndexed[id]
-            if (duplicatedItem) {
-              duplicatedItem.duplicated = true
-              resource.duplicated = true
-            } else {
-              resource.duplicated = false
-              resourceIndexed[id] = resource
+        contentList.forEach((content) => {
+          if (content && (content.coverType === 'media' || content.coverType === 'block')) {
+            let id
+            if (content.extraValue1) {
+              id = content.extraValue1 +
+                (content.extraValue5 || '')
+            } else if (content.vContentId) {
+              id = content.vContentId
             }
+
+            if (id) {
+              const duplicatedItem = resourceIndexed[id]
+              if (duplicatedItem) {
+                duplicatedItem.duplicated = true
+                resource.duplicated = true
+              } else {
+                resource.duplicated = false
+                resourceIndexed[id] = resource
+              }
+            }
+          } else {
+            resource.duplicated = false
           }
-        } else {
-          resource.duplicated = false
-        }
+        })
 
         // 如果推荐位带标题，则强制显示标题
         ;[].concat(contentList, specificContentList).forEach(function(cItem) {

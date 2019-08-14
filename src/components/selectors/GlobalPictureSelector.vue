@@ -13,24 +13,24 @@
     :disabled="disabled"
   >
     <el-collapse 
+      v-if="picturePresetMatchResolution.length > 0"
       slot="prepend" 
       class="rel-picture-wrapper"
       v-model="collapseActiveItems">
       <el-collapse-item title="关联图片" name="relPicture">
         <CardList
           class="rel-picture-list"
-          :data="table.data"
+          :data="picturePresetMatchResolution"
           :selected="table.selected"
-          :selection-type="table.selectionType"
+          selection-type="single"
           :select-on-row-click="true"
           @row-selection-change="handleRowSelectionChange">
           <div class="picture-item" slot="row" slot-scope="{row: item}">
             <div class="img-wrapper">
-              <img class="list-img" :src="item.pictureUrl">
+              <img class="list-img" :src="item.url">
             </div>
-            <p>{{item.pictureName}}</p>
             <div>
-              {{ item.pictureId }} / {{ $consts.statusText[item.pictureStatus] }} / {{item.pictureResolution}}
+              {{ item.size }}
             </div>
           </div>
         </CardList>
@@ -69,7 +69,7 @@ export default {
     CardList,
     RemoteSelectorWrapper
   },
-  props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled'],
+  props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled', 'picturePreset'],
   data() {
     return {
       collapseActiveItems: ['relPicture'],
@@ -95,6 +95,12 @@ export default {
         selected: undefined,
         selectionType: 'single'
       }
+    }
+  },
+  computed: {
+    picturePresetMatchResolution() {
+      const preset = this.picturePreset || []
+      return preset
     }
   },
   methods: {

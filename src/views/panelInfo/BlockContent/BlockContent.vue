@@ -232,6 +232,12 @@ export default {
     }
   },
   methods: {
+    error(message) {
+      return this.$message({
+        type: 'error',
+        message
+      })
+    },
     handleInputNormalContentWrapperCoverType(coverType) {
       if (this.mode === 'read') {
         return
@@ -247,6 +253,7 @@ export default {
       this.activeIndex = 0
     },
     handleSelectMediaEnd(resources) {
+      const blockInfo = this.data.blockInfo
       const selectedResult = getSelectedResource(resources)
       const selectedType = selectedResult.selectedType
       const selected = selectedResult.selected
@@ -259,6 +266,7 @@ export default {
           selectedType,
           selected: item, 
           selectedEpisode: selectedEpisode[item.coocaaVId],
+          blockSize: [blockInfo.width, blockInfo.height]
         })
         return content
       })
@@ -308,6 +316,19 @@ export default {
     },
     handleSave() {
       this.validateCurrentContent(() => {
+        // 验证所有资源
+        const normalContentList = this.normalContentList
+        const resourcesIndexed = {}
+        for (let i = 0, length = normalContentList.length; i < length; i++) {
+          const id = normalContentList[i].extraValue1
+          const existsId = resourcesIndexed[id] 
+          if (existsId !== undefined) {
+            return this.error(`通用内容第 ${existsId + 1} 个资源与第 ${i + 1} 相同`)
+          } else {
+            resourcesIndexed[id] = i
+          }
+        }
+
         this.$emit('save', {
           videoContentList: this.parseContentList(this.normalContentList),
           specificContentList: this.parseContentList(this.specificContentList)
@@ -456,14 +477,12 @@ export default {
       }
     },
     validateCurrentContent(cb) {
-      this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
+      const contentForm = this.contentForm
+      this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
           cb()
         } else {
-          this.$message({
-            type: 'error',
-            message: err
-          })
+          return this.error(err)
         }
       })
     },
@@ -701,6 +720,7 @@ export default {
           content[key] = normalContentWrapperProps[key]
         })
 
+        delete content.picturePreset 
         delete content.redundantParams
         return content
       }

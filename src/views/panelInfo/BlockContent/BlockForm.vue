@@ -116,6 +116,7 @@
         <GlobalPictureSelector
           :disabled="isReadonly"
           :picture-resolution="resolution[0] + '*' + resolution[1]"
+          :picture-preset="contentForm.picturePreset"
           @select-end="handleSelectPostEnd"
         >
           <div
@@ -819,7 +820,8 @@ export default {
       const selectedType = selectedResult.selectedType
       const selected = selectedResult.selected[0]
       const selectedEpisode = selectedResult.selectedEpisode[selected.coocaaVId]
-      setMediaContent(this.contentForm, {partner, selectedType, selected, selectedEpisode})
+      const blockSize = this.resolution
+      setMediaContent(this.contentForm, {partner, selectedType, selected, selectedEpisode, blockSize})
       this.$refs.resourceSelector.clearSelected()
     },
     handleSelectAppEnd(resources) {

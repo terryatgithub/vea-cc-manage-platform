@@ -1,5 +1,42 @@
+function getMatchedPictureUrl (blockSize, imgList) {
+  let maxMatchingValue = -1
+  let url
+  imgList.forEach((item) => {
+    const matchingValue = getMatchingValue(blockSize, item.size.split('*'))
+    if (matchingValue > maxMatchingValue) {
+      maxMatchingValue = matchingValue
+      url = item.url
+    }
+  })
+  return url
+}
+
+function getMatchingValue (blockSize, imgSize) {
+  const [w, h] = blockSize
+  const [imgW, imgH] = imgSize
+
+  const ratio = w / h
+  const imgRatio = imgW / imgH
+
+  const ratioMatchingValue = 60 - 12 * Math.abs(ratio - imgRatio)
+
+  let scale
+  if (ratio > imgRatio) {
+    scale = w > imgW
+      ? w / imgW
+      : imgW / w
+  } else {
+    scale = h > imgH
+      ? h / imgH
+      : imgH / h
+  }
+  const sizeMatchingValue = 48 - 8 * scale
+
+  return ratioMatchingValue + sizeMatchingValue
+}
+
 export function setMediaContent(contentForm, options) {
-  const { partner, selectedType, selected, selectedEpisode } = options
+  const { partner, selectedType, selected, selectedEpisode, blockSize } = options
 
   // 清空由app可能引起的遗留数据
   Object.assign(contentForm, {
@@ -50,7 +87,8 @@ export function setMediaContent(contentForm, options) {
       contentForm.videoContentType = 'movie'
       contentForm.extraValue5 = undefined
       contentForm.platformId = selected.source
-      contentForm.pictureUrl = selected.thumb
+      contentForm.pictureUrl = getMatchedPictureUrl(blockSize, selected.imageInfoList)
+      contentForm.picturePreset = selected.imageInfoList
       contentForm.title = selected.title
       contentForm.subTitle = chopSubTitle(selected.subTitle)
       contentForm.singleSubTitle = ''
@@ -77,7 +115,8 @@ export function setMediaContent(contentForm, options) {
     contentForm.videoContentType = 'edu'
     contentForm.extraValue1 = '_otx_' + selected.coocaaVId
     contentForm.platformId = selected.source
-    contentForm.pictureUrl = selected.thumb
+    contentForm.pictureUrl = getMatchedPictureUrl(blockSize, selected.imageInfoList)
+    contentForm.picturePreset = selected.imageInfoList
     contentForm.title = selected.title
     contentForm.subTitle = chopSubTitle(selected.subTitle)
     contentForm.singleSubTitle = ''

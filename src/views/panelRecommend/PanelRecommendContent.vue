@@ -25,7 +25,7 @@
                 :key="index">
                 <el-checkbox 
                   :disabled="mode === 'read'"
-                  @input="handleInputCategoryItem($event, item.value)"
+                  @input="handleInputCategoryItem(item.value)"
                   :value="panelRecommend.panelGroupCategory.indexOf(item.value) > -1" 
                   :label="item.label">
                 </el-checkbox>
@@ -76,17 +76,17 @@ export default {
   },
   props: ['id', 'initMode'],
   methods: {
-    handleInputCategoryItem(isChecked, category) {
+    handleInputCategoryItem(category) {
+      const panelRecommend = this.panelRecommend
+      const panelGroupCategory = panelRecommend.panelGroupCategory
       const doInput = () => {
-        const panelRecommend = this.panelRecommend
-        const panelGroupCategory = panelRecommend.panelGroupCategory
-        if (isChecked) {
+        if (panelGroupCategory.indexOf(category) === -1) {
           panelGroupCategory.push(category)
         } else {
           panelRecommend.panelGroupCategory = panelGroupCategory.filter(item => item !== category )
         }
       }
-      if (isChecked) {
+      if (panelGroupCategory.indexOf(category) === -1) {
         this.$message({
           type: 'warn',
           message: '不支持从不推荐设为推荐'
