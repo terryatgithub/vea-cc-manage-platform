@@ -1,5 +1,5 @@
 <template>
-  <div class="table-box">
+  <div v-if="isShow" class="table-box">
     <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
     <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
   </div>
@@ -133,7 +133,7 @@
         }
       };
     },
-    props: ['panelID'],
+    props: ['panelID', 'isShow'],
     methods: {
       toPercent: decimal => {
         return ((Math.round(decimal * 10000) / 100.00).toFixed(2) + "%")
@@ -144,37 +144,40 @@
       },
       getDateday(date) {
         return date.split('-').pop()
+      },
+      getPanelSimpleBrowseData(){
+        this.$service.getPanelSimpleBrowseData({id: this.panelID, days: 3}).then(data => {
+          const rows = data.rows[0].data
+          let clickUvData = []
+          let uvctrData = []
+          rows.map(item => {
+            let clickUvRow = {}
+            let uvctrRow = {}
+            const date = this.getDateday(item.date)
+            const clickUv = item.clickUv
+            const uvctr = item.uvctr
+            clickUvRow = {
+              date: date,
+              clickUv: clickUv.value,
+              dailyGrowth: this.toArrowPercent(clickUv.dailyGrowth),
+              weeklyGrowth: this.toArrowPercent(clickUv.weeklyGrowth)
+            }
+            uvctrRow = {
+              date,
+              uvctr: this.toPercent(uvctr.value),
+              dailyGrowth: this.toArrowPercent(uvctr.dailyGrowth),
+              weeklyGrowth: this.toArrowPercent(uvctr.weeklyGrowth)
+            }
+            clickUvData.push(clickUvRow)
+            uvctrData.push(uvctrRow)
+          })
+          this.clickUvTable.data = clickUvData.reverse()
+          this.uvctrTable.data = uvctrData.reverse()
+        })
       }
     },
     created() {
-      this.$service.getPanelSimpleBrowseData({id: this.panelID, days: 3}).then(data => {
-        const rows = data.rows[0].data
-        let clickUvData = []
-        let uvctrData = []
-        rows.map(item => {
-          let clickUvRow = {}
-          let uvctrRow = {}
-          const date = this.getDateday(item.date)
-          const clickUv = item.clickUv
-          const uvctr = item.uvctr
-          clickUvRow = {
-            date: date,
-            clickUv: clickUv.value,
-            dailyGrowth: this.toArrowPercent(clickUv.dailyGrowth),
-            weeklyGrowth: this.toArrowPercent(clickUv.weeklyGrowth)
-          }
-          uvctrRow = {
-            date,
-            uvctr: this.toPercent(uvctr.value),
-            dailyGrowth: this.toArrowPercent(uvctr.dailyGrowth),
-            weeklyGrowth: this.toArrowPercent(uvctr.weeklyGrowth)
-          }
-          clickUvData.push(clickUvRow)
-          uvctrData.push(uvctrRow)
-        })
-        this.clickUvTable.data = clickUvData.reverse()
-        this.uvctrTable.data = uvctrData.reverse()
-      })
+      setTimeout(this.getPanelSimpleBrowseData, 0)
     }
   };
 </script>

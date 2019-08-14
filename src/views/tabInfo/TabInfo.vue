@@ -137,7 +137,7 @@
               </div>
 
               <div v-if="mode === 'edit'|| mode ==='replicate'">
-              <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
+              <div class="form-legend-header" @click="handleTabDataClick">
                 <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
                 <span>版面数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -496,7 +496,7 @@
                 <el-form-item label="固定刷新时间" prop="timeCycle">{{ parseMinToStr(tabInfo.timeCycle) }}</el-form-item>
               </div>
               
-              <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
+              <div class="form-legend-header" @click="handleTabDataClick">
                 <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
                 <span>版面数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -2582,18 +2582,6 @@ export default {
         tabUVCTR.dailyGrowth ? this.tabUVCTRPercent.dailyGrowth = this.toArrowPercent(tabUVCTR.dailyGrowth) : 'N/A'
         tabUVCTR.weeklyGrowth ? this.tabUVCTRPercent.weeklyGrowth = this.toArrowPercent(tabUVCTR.weeklyGrowth) : 'N/A'
       })
-      this.$service.getTabChartData({ id: this.id }).then(data => {
-        const rows = data.rows
-        this.clickUvChartData.rows = rows[0].data
-        this.clickUvChartData.title = rows[0].title
-        this.clickUvChartData.unit = rows[0].unit
-        this.uvctrChartData.rows = rows[1].data
-        this.uvctrChartData.title = rows[1].title
-        this.uvctrChartData.unit = rows[1].unit
-        this.uvctrHourChartData.rows = rows[2].data
-        this.uvctrHourChartData.title = rows[2].title
-        this.uvctrHourChartData.unit = rows[2].unit
-      })
     },
     getVipButtonSourceItem(id) {
       const result = this.vipEnumsData.find(function(item) {
@@ -2659,6 +2647,25 @@ export default {
       }
       this.uvctrChartExtend.yAxis = yAxis
       this.uvctrHourChartExtend.yAxis = yAxis
+    },
+    // 点击版面数据展示折线图
+    handleTabDataClick() {
+      this.isCollapseData = !this.isCollapseData
+      if(this.clickUvChartData.title !== '') {
+        return
+      }
+      this.$service.getTabChartData({ id: this.id }).then(data => {
+        const rows = data.rows
+        this.clickUvChartData.rows = rows[0].data
+        this.clickUvChartData.title = rows[0].title
+        this.clickUvChartData.unit = rows[0].unit
+        this.uvctrChartData.rows = rows[1].data
+        this.uvctrChartData.title = rows[1].title
+        this.uvctrChartData.unit = rows[1].unit
+        this.uvctrHourChartData.rows = rows[2].data
+        this.uvctrHourChartData.title = rows[2].title
+        this.uvctrHourChartData.unit = rows[2].unit
+      })
     }
   },
   created() {

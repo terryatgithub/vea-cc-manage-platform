@@ -88,7 +88,7 @@
             </el-form>
             
             <div v-if="mode === 'edit' || mode === 'replicate'">
-            <div class="form-legend-header" @click="isCollapseData = !isCollapseData">
+            <div class="form-legend-header" @click="handlePanelDataClick">
               <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
               <i v-else class="el-icon-arrow-up"></i>
               <span>版块数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -2065,6 +2065,13 @@ export default {
         panelUVCTR.dailyGrowth ? this.panelUVCTRPercent.dailyGrowth = this.toArrowPercent(panelUVCTR.dailyGrowth) : 'N/A'
         panelUVCTR.weeklyGrowth ? this.panelUVCTRPercent.weeklyGrowth = this.toArrowPercent(panelUVCTR.weeklyGrowth) : 'N/A'
       })
+    },
+    // 点击板块数据展示折线图
+    handlePanelDataClick() {
+      this.isCollapseData = !this.isCollapseData
+      if(this.panelChartDataArr.length !== 0){
+        return
+      }
       this.$service.getPanelChartData({id: this.id}).then(data => {
         this.panelChartDataArr = data.rows
       })
