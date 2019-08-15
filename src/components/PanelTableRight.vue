@@ -1,15 +1,19 @@
 <template>
   <div v-if="isShow" class="table-box">
-    <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
-    <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
+    <!-- <vue-lazy-component @init="init"> -->
+      <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
+      <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
+    <!-- </vue-lazy-component> -->
   </div>
 </template>
 <script>
+  // import { component as VueLazyComponent } from '@xunlei/vue-lazy-component'
   import { Table } from 'admin-toolkit'
 
   export default {
     components: {
-      Table
+      Table,
+      // 'vue-lazy-component': VueLazyComponent
     },
     data() {
       return {
@@ -174,6 +178,13 @@
           this.clickUvTable.data = clickUvData.reverse()
           this.uvctrTable.data = uvctrData.reverse()
         })
+      },
+      // 懒加载组件
+      init() {
+        if(this.clickUvTable.data.length !== 0) {
+          return 
+        }
+        this.getPanelSimpleBrowseData()
       }
     },
     created() {
