@@ -388,6 +388,8 @@ import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 import TagFrame from './TagFrame'
 import VeLine from 'v-charts/lib/line.common'
 
+import { genResourceContentList } from './panelInfoUtil'
+
 export default {
   mixins: [titleMixin],
   components: {
@@ -946,6 +948,7 @@ export default {
           function(result) {
             const insertAfter = result.value || 1
             const selectedLayout = this.selectedLayout
+            /** 
             const selectedViedos = selectedResources.video.map(function(item) {
               const episode = selectedEpisodes[item.coocaaVId]
               let finalItem
@@ -1114,18 +1117,15 @@ export default {
                 blockResourceType: -1
               }
             })
+            */
 
-            const resourcesToInsert = []
-              .concat(
-                selectedViedos,
-                selectedApps,
-                selectedEdus,
-                selectedLives,
-                selectedPPTVs,
-                selectedTopics,
-                selectedBroadcast,
-                selectedGood
-              )
+            const resourcesToInsert = genResourceContentList(selectedResources, {
+              // 把一些值置为为定义，
+              // 因为 gen 出来的默认数据结构只适用于推荐位详情里面，在外面没必要用
+              bgParams: undefined, 
+              cornerList: undefined,
+              redundantParams: undefined,
+            })
               .map(function(item) {
                 return {
                   contentPosition: null,
@@ -1154,8 +1154,17 @@ export default {
               i++
             ) {
               if (i >= start && i <= end) {
-                newResources[i] = resourcesToInsert[i - start]
+                // 覆盖原来的
+                newResources[i] =  resourcesToInsert[i - start]
+                // 只覆盖第一个，后面的补上
+                const videoContentList = newResources[i].videoContentList
+                const originSelectedResources = activePannel.selectedResources[i] || {}
+                const originVideoContentList = originSelectedResources.videoContentList
+                if (originVideoContentList && originVideoContentList.length > 1) {
+                  newResources[i].videoContentList = videoContentList.concat(originVideoContentList.slice(1))
+                }
               } else {
+                // 新资源填充完毕，后面的还是原来的
                 newResources[i] = activePannel.selectedResources[i]
               }
             }
@@ -1834,6 +1843,13 @@ export default {
             )
           }
         }
+        if (hasDuplicated) {
+          return cb('含有重复推荐位内容')
+        }
+
+        if (emptyBlock) {
+          return cb('含有空推荐位')
+        }
 
         if (
           pannel.focusConfig === '' &&
@@ -1841,12 +1857,6 @@ export default {
           pannel.parentType === 'group'
         ) {
           return cb('请选择默认落焦')
-        }
-        if (emptyBlock) {
-          return cb('含有空推荐位')
-        }
-        if (hasDuplicated) {
-          return cb('含有重复推荐位内容')
         }
       }
       cb()
@@ -1881,6 +1891,7 @@ export default {
           emptyPannelTitleIndex = i
           break checkBlock
         }
+
         // 标题重复检查
         const pannelTitle = pannel.pannelTitle.trim()
         if (pannelTitleIndex[pannelTitle]) {
@@ -1889,6 +1900,7 @@ export default {
         } else {
           pannelTitleIndex[pannelTitle] = true
         }
+
         // 落焦时间段重叠检查
         if (focusConfig === 'timeSlot') {
           if (!(pannel.startTime && pannel.endTime) && !pannel.panelIsFocus) {

@@ -24,7 +24,7 @@
           >已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}} / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}</el-tag>
         </el-form-item>
       </template>
-      <el-form-item v-if="isSpecific" label="资源类别" prop="coverType">
+      <el-form-item label="资源类别" prop="coverType">
         <CommonSelector
           :disabled="isReadonly"
           type="radio"
@@ -416,11 +416,9 @@
           <AppParamsRead v-else :value="contentForm.redundantParams" />
         </template>
       </template>
-      <!-- Sprint2.10 儿童模式 需求，这个字段非精细化情况下放外面了 -->
-      <el-form-item label="应用版本号" prop="versionCode" v-if="isSpecific && contentForm.coverType === 'media'">
+      <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
         <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
       </el-form-item>
-      <!-- 儿童模式这个字段放外层了
       <template v-if="contentType === 'normal'">
         <el-form-item
           label="设置广告位"
@@ -433,7 +431,6 @@
           </el-radio-group>
         </el-form-item>
       </template>
-      -->
     </el-form>
     <CrowdSelector
       v-if="showCrowdSelector"
