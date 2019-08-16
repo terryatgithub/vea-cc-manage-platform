@@ -1,19 +1,19 @@
 <template>
   <div v-if="isShow" class="table-box">
-    <!-- <vue-lazy-component @init="init"> -->
+    <vue-lazy-component @init="init">
       <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
       <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
-    <!-- </vue-lazy-component> -->
+    </vue-lazy-component>
   </div>
 </template>
 <script>
-  // import { component as VueLazyComponent } from '@xunlei/vue-lazy-component'
+  import { component as VueLazyComponent } from '@xunlei/vue-lazy-component'
   import { Table } from 'admin-toolkit'
 
   export default {
     components: {
       Table,
-      // 'vue-lazy-component': VueLazyComponent
+      'vue-lazy-component': VueLazyComponent
     },
     data() {
       return {
@@ -187,9 +187,9 @@
         this.getPanelSimpleBrowseData()
       }
     },
-    created() {
-      setTimeout(this.getPanelSimpleBrowseData, 0)
-    }
+    // created() {
+    //   setTimeout(this.getPanelSimpleBrowseData, 0)
+    // }
   };
 </script>
 

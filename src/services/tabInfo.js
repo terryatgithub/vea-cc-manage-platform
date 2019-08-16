@@ -1,3 +1,4 @@
+import axios from 'axios'
 /**
  * 版面管理 -> Tab版面管理
  */
@@ -132,10 +133,12 @@ export function getVipButtonSource(params) {
 }
 
 export function getTabSimpleBrowseData(params) {
-  return this.fetch({
+  return axios({
     method: 'get',
     url: 'api/v1/dataShow/tab/getSimpleBrowseData.html',
     params
+  }).then(({ data }) => {
+    return data.data
   })
 }
 
