@@ -173,7 +173,7 @@
                     <el-switch
                       :disabled="isReplicate"
                       :value="!!tabInfo.hasSubTab"
-                      @input="tabInfo.hasSubTab= $event&&1||0"
+                      @input="handleInputHasSubTab"
                       on-text="是"
                       off-text="否"
                     />
@@ -363,13 +363,13 @@
                 </div>
               </template>
 
-              <div class="form-legend-header" @click="isCollapseCustom = !isCollapseCustom">
+              <div v-if="!tabInfo.hasSubTab" class="form-legend-header" @click="isCollapseCustom = !isCollapseCustom">
                 <i v-if="isCollapseCustom" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
                 <span>版块个性化排序配置</span>
               </div>
 
-              <div :style="{display: isCollapseCustom ? 'none' : 'block'}">
+              <div v-if="!tabInfo.hasSubTab"  :style="{display: isCollapseCustom ? 'none' : 'block'}">
                 <el-form-item label="启动版块个性化推荐">
                   <el-switch 
                     :value="!!tabInfo.panelRecommendConfig.enableRecommend" 
@@ -385,7 +385,7 @@
                   </el-form-item>
                   <el-form-item label="从第几个位置开始推荐" prop="panelRecommendConfig.recommendIndex" :rules="[{required: true, message: '请设置开始推荐位置', trigger: 'blur'}]">
                     <InputPositiveInt style="width: 200px" v-model="tabInfo.panelRecommendConfig.recommendIndex" />
-                    例: 选择 1， 则整个版面都是个性化推荐
+                    例: 选择 1， 则整个版面都是个性化推荐, 当前版块总数 {{ tabInfo.pannelList.length }}
                   </el-form-item>
                   <el-form-item label="优先推荐版块">
                     <RecommendPanelSelector 
@@ -648,13 +648,13 @@
 
               </div>
 
-              <div class="form-legend-header" @click="isCollapseCustom = !isCollapseCustom">
+              <div v-if="!tabInfo.hasSubTab"  class="form-legend-header" @click="isCollapseCustom = !isCollapseCustom">
                 <i v-if="isCollapseCustom" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
                 <span>版块个性化排序配置</span>
               </div>
 
-              <div :style="{display: isCollapseCustom ? 'none' : 'block'}">
+              <div v-if="!tabInfo.hasSubTab"  :style="{display: isCollapseCustom ? 'none' : 'block'}">
                 <el-form-item label="启动版块个性化推荐">
                   {{ tabInfo.panelRecommendConfig.enableRecommend ? '是' : '否' }}
                 </el-form-item>
@@ -2184,6 +2184,7 @@ export default {
     validateFormData(data, cb) {
       const STATUS = this.STATUS
       const tabStatus = data.tabStatus
+      const enableRecommend = data.panelRecommendConfig.enableRecommend 
       const showError = function(message) {
         this.$message({
           type: 'error',
@@ -2193,11 +2194,13 @@ export default {
 
       let error
       if (tabStatus === STATUS.draft) {
-        const fields = [
-          'tabName',
-          'panelRecommendConfig.recommendIndex',
-          'panelRecommendConfig.recommendSign'
-        ]
+        let fields = ['tabName']
+        if (enableRecommend) {
+          fields = fields.concat([
+            'panelRecommendConfig.recommendIndex',
+            'panelRecommendConfig.recommendSign'
+          ])
+        }
         let count = fields.length
         let isValid = true
         const validateFieldCb = (error) => {
@@ -2263,6 +2266,14 @@ export default {
             ) {
               //  专题版面且含有长图
               error = '长图专题版块不能超过6个'
+            }
+
+            const panelRecommendConfig = data.panelRecommendConfig
+            const panelListLength = data.pannelList.length
+            if (panelRecommendConfig.enableRecommend && 
+                panelRecommendConfig.recommendIndex > panelListLength
+            ) {
+              error = `推荐开始位置不能大于版面的版块数, 当前版块总数 ${panelListLength}`
             }
 
             if (error) {
@@ -2588,6 +2599,11 @@ export default {
       const panelRecommendConfig = this.tabInfo.panelRecommendConfig
       panelRecommendConfig.recommendSign = val
       this.resetPanelRecommendConfig()
+    },
+    handleInputHasSubTab(val) {
+      this.tabInfo.hasSubTab = val ? 1 : 0
+      // 含有二级版面的，没有推荐
+      this.tabInfo.panelRecommendConfig.enableRecommend = 0
     },
     setRecommendStreamSignPanelCount() {
       const tabInfo = this.tabInfo

@@ -4,13 +4,13 @@
     :title="title"
     custom-class="resource-selector"
     :disabled="disabled"
+    :is-live="isLive"
     @select-start="handleSelectStart">
     <template slot="content" slot-scope="{isShow}">
       <BaseSelector
         v-if="isLive ? true : isShow"
         ref="baseSelector"
         id-field="panelGroupId"
-        :is-live="isLive"
         :selection-type="selectionType"
         :table="table"
         :pagination="pagination"
@@ -115,9 +115,17 @@ export default {
     BaseSelector
   },
   methods: {
+    print(val) {
+      console.log(val)
+      return val
+    },
     handleSelectStart() {
       this.$emit('select-start')
-      this.fetchData()
+      if (!this.isLive) {
+        this.handleResetFilter()
+      } else {
+        this.fetchData()
+      }
     },
     handleSelectCancel() {
       this.$refs.wrapper.handleSelectCancel()
