@@ -10,6 +10,7 @@
   "dependencies": {
     "@stateform/element": "^0.1.14",
     "@william17/vue-app-state": "^0.1.1",
+    "@xunlei/vue-lazy-component": "^1.1.3",
     "admin-toolkit": "git+ssh://git@gitlab.skysri.com:FrontEnd/admin-toolkit.git",
     "axios": "^0.18.1",
     "echarts": "^4.2.1",
