@@ -1514,7 +1514,7 @@ export default {
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
         // 有 extraValue1 才判断重复, 自定义不判断
-        contentList.forEach((content) => {
+        contentList.forEach((content, contentIndex) => {
           if (content && (content.coverType === 'media' || content.coverType === 'block')) {
             let id
             if (content.extraValue1) {
@@ -1527,11 +1527,27 @@ export default {
             if (id) {
               const duplicatedItem = resourceIndexed[id]
               if (duplicatedItem) {
-                duplicatedItem.duplicated = true
-                resource.duplicated = true
+                duplicatedItem.resource.duplicated = {
+                  // 与当前的重复
+                  index: duplicatedItem.index,
+                  contentIndex: duplicatedItem.contentIndex,
+                  duplicatedIndex: index,
+                  duplicatedContentIndex: contentIndex
+                }
+                resource.duplicated = {
+                  // 与上面的重复
+                  index,
+                  contentIndex,
+                  duplicatedIndex: duplicatedItem.index,
+                  duplicatedContentIndex: duplicatedItem.contentIndex
+                }
               } else {
                 resource.duplicated = false
-                resourceIndexed[id] = resource
+                resourceIndexed[id] = {
+                  resource,
+                  index,
+                  contentIndex
+                }
               }
             }
           } else {
@@ -1773,8 +1789,11 @@ export default {
         const emptyTitleIndex = validateBlocksRes.emptyTitleIndex
         const emptyTitleBlockIndex = validateBlocksRes.emptyTitleBlockIndex
         const emptyBlock = validateBlocksRes.emptyBlock
-        const hasDuplicated = validateBlocksRes.hasDuplicated
+        const duplicatedIndex = validateBlocksRes.duplicatedIndex
+        const duplicatedInfo = validateBlocksRes.duplicatedInfo
         const focusIndex = validateBlocksRes.focusIndex
+
+        const isPanelGroup = pannel.parentType === 'group'
 
         if (this.isPanelCommonOrVideo) {
           if (!pannel.pannelResource) {
@@ -1843,8 +1862,14 @@ export default {
             )
           }
         }
-        if (hasDuplicated) {
-          return cb('含有重复推荐位内容')
+        if (duplicatedInfo) {
+          const prefix = isPanelGroup 
+            ?`第 ${duplicatedIndex} 个分组`
+            : ''
+          return cb(`${prefix}第 ${duplicatedInfo.index + 1} 推荐位
+            第 ${duplicatedInfo.contentIndex + 1} 
+            个内容与第 ${duplicatedInfo.duplicatedIndex + 1} 个推荐位第 
+            ${duplicatedInfo.duplicatedContentIndex + 1} 个内容重复`)
         }
 
         if (emptyBlock) {
@@ -1881,7 +1906,8 @@ export default {
       let emptyTitleBlockIndex
 
       let emptyBlock
-      let hasDuplicated
+      let duplicatedIndex
+      let duplicatedInfo
       let focusIndex
 
       checkBlock:
@@ -1922,7 +1948,8 @@ export default {
             break checkBlock
           }
           if (content.duplicated) {
-            hasDuplicated = true
+            duplicatedIndex = i
+            duplicatedInfo = content.duplicated
             break checkBlock
           }
 
@@ -1963,7 +1990,8 @@ export default {
         emptyTitleIndex,
         emptyTitleBlockIndex,
         emptyBlock,
-        hasDuplicated,
+        duplicatedIndex,
+        duplicatedInfo,
         focusIndex
       }
     },

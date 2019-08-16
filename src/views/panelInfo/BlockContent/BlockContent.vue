@@ -212,9 +212,7 @@ export default {
         showTitle: this.hideTitleOptions ? 1 : 0,
       }
       const contentList = genResourceContentList(resources, contentPreset)
-      if (contentList.length > 0) {
-        this.normalContentList.splice(this.activeIndex, 1, ...contentList)
-      }
+      this.normalContentList.splice(this.activeIndex, contentList.length, ...contentList)
     },
     getPictureUrl(pictureUrl) {
       if (pictureUrl) {
