@@ -1,3 +1,4 @@
+import axios from 'axios'
 /**
  * 版块管理 -> 常规运营
  */
@@ -102,10 +103,12 @@ export function panelRecommendFlagUpsert(data) {
 }
 
 export function getPanelSimpleBrowseData(params) {
-  return this.fetch({
+  return axios({
     method: 'get',
     url: 'api/v1/dataShow/panel/getSimpleBrowseData.html',
     params
+  }).then(({ data }) => {
+    return data.data
   })
 }
 

@@ -34,7 +34,7 @@
 
     <template v-for="(panelItem, index) in panels">
       <div
-        style="min-height: 193px"
+        :style="panelItem.isCollapse===false?'min-height: 193px':'min-height: auto'"
         :class="{
           'tab-placeholder': true,
           'tab-placeholder--normal': panelItem.type === 'NORMAL',
@@ -231,7 +231,7 @@
           </div>
         </div>
         <!-- table right -->
-        <PanelTableRight v-if="panelItem.panel" :panelID="panelItem.panel.id"/>
+        <PanelTableRight v-if="panelItem.panel" :panelID="panelItem.panel.id" :isShow="!panelItem.isCollapse"/>
       </div>
 
       <!-- placeholder bottom -->

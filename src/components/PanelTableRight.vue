@@ -1,15 +1,19 @@
 <template>
-  <div class="table-box">
-    <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
-    <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
+  <div v-if="isShow" class="table-box">
+    <vue-lazy-component @init="init">
+      <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
+      <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
+    </vue-lazy-component>
   </div>
 </template>
 <script>
+  import { component as VueLazyComponent } from '@xunlei/vue-lazy-component'
   import { Table } from 'admin-toolkit'
 
   export default {
     components: {
-      Table
+      Table,
+      'vue-lazy-component': VueLazyComponent
     },
     data() {
       return {
@@ -133,7 +137,7 @@
         }
       };
     },
-    props: ['panelID'],
+    props: ['panelID', 'isShow'],
     methods: {
       toPercent: decimal => {
         return ((Math.round(decimal * 10000) / 100.00).toFixed(2) + "%")
@@ -144,38 +148,48 @@
       },
       getDateday(date) {
         return date.split('-').pop()
+      },
+      getPanelSimpleBrowseData(){
+        this.$service.getPanelSimpleBrowseData({id: this.panelID, days: 3}).then(data => {
+          const rows = data.rows[0].data
+          let clickUvData = []
+          let uvctrData = []
+          rows.map(item => {
+            let clickUvRow = {}
+            let uvctrRow = {}
+            const date = this.getDateday(item.date)
+            const clickUv = item.clickUv
+            const uvctr = item.uvctr
+            clickUvRow = {
+              date: date,
+              clickUv: clickUv.value,
+              dailyGrowth: this.toArrowPercent(clickUv.dailyGrowth),
+              weeklyGrowth: this.toArrowPercent(clickUv.weeklyGrowth)
+            }
+            uvctrRow = {
+              date,
+              uvctr: this.toPercent(uvctr.value),
+              dailyGrowth: this.toArrowPercent(uvctr.dailyGrowth),
+              weeklyGrowth: this.toArrowPercent(uvctr.weeklyGrowth)
+            }
+            clickUvData.push(clickUvRow)
+            uvctrData.push(uvctrRow)
+          })
+          this.clickUvTable.data = clickUvData.reverse()
+          this.uvctrTable.data = uvctrData.reverse()
+        })
+      },
+      // 懒加载组件
+      init() {
+        if(this.clickUvTable.data.length !== 0) {
+          return 
+        }
+        this.getPanelSimpleBrowseData()
       }
     },
-    created() {
-      this.$service.getPanelSimpleBrowseData({id: this.panelID, days: 3}).then(data => {
-        const rows = data.rows[0].data
-        let clickUvData = []
-        let uvctrData = []
-        rows.map(item => {
-          let clickUvRow = {}
-          let uvctrRow = {}
-          const date = this.getDateday(item.date)
-          const clickUv = item.clickUv
-          const uvctr = item.uvctr
-          clickUvRow = {
-            date: date,
-            clickUv: clickUv.value,
-            dailyGrowth: this.toArrowPercent(clickUv.dailyGrowth),
-            weeklyGrowth: this.toArrowPercent(clickUv.weeklyGrowth)
-          }
-          uvctrRow = {
-            date,
-            uvctr: this.toPercent(uvctr.value),
-            dailyGrowth: this.toArrowPercent(uvctr.dailyGrowth),
-            weeklyGrowth: this.toArrowPercent(uvctr.weeklyGrowth)
-          }
-          clickUvData.push(clickUvRow)
-          uvctrData.push(uvctrRow)
-        })
-        this.clickUvTable.data = clickUvData.reverse()
-        this.uvctrTable.data = uvctrData.reverse()
-      })
-    }
+    // created() {
+    //   setTimeout(this.getPanelSimpleBrowseData, 0)
+    // }
   };
 </script>
 
