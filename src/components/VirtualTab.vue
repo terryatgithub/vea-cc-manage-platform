@@ -34,7 +34,6 @@
 
     <template v-for="(panelItem, index) in panels">
       <div
-        :style="panelItem.isCollapse===false?'min-height: 193px':'min-height: auto'"
         :class="{
           'tab-placeholder': true,
           'tab-placeholder--normal': panelItem.type === 'NORMAL',
@@ -152,7 +151,9 @@
                                                         activeIndex: arguments[0],
                                                         blockIndex:arguments[1]
                                                     })"
-                    />
+                    >
+                      <PanelStatisticTable slot="stat" v-if="panelItem.panel" :panelID="panelItem.panel.id" :isShow="!panelItem.isCollapse"/>
+                    </cc-virtual-panel-group>
                   </div>
                 </template>
               </cc-var>
@@ -224,14 +225,16 @@
                                                     activeIndex: arguments[0],
                                                     blockIndex:arguments[1]
                                                 })"
-                  />
+                  >
+                  </cc-virtual-panel-group>
                 </div>
+                <PanelStatisticTable v-if="panelItem.panel" :panelID="panelItem.panel.id" :isShow="!panelItem.isCollapse"/>
               </template>
             </cc-var>
           </div>
         </div>
         <!-- table right -->
-        <PanelTableRight v-if="panelItem.panel" :panelID="panelItem.panel.id" :isShow="!panelItem.isCollapse"/>
+        <!-- <PanelStatisticTable v-if="panelItem.panel" :panelID="panelItem.panel.id" :isShow="!panelItem.isCollapse"/> -->
       </div>
 
       <!-- placeholder bottom -->
@@ -252,7 +255,7 @@ import Var from './Var'
 import VirtualPanel from './VirtualPanel'
 import VirtualPanelGroup from './VirtualPanelGroup'
 import InputOrder from '@/components/InputOrder'
-import PanelTableRight from './PanelTableRight'
+import PanelStatisticTable from './PanelStatisticTable'
 
 let key = 0
 export default {
@@ -261,7 +264,7 @@ export default {
     'cc-virtual-panel': VirtualPanel,
     'cc-virtual-panel-group': VirtualPanelGroup,
     InputOrder,
-    PanelTableRight
+    PanelStatisticTable
   },
   data() {
     return {
@@ -405,7 +408,6 @@ export default {
 }
 .cc-virtual-tab .panel-group-content {
   padding: 5px 10px;
-  overflow: hidden;
 }
 .cc-virtual-tab .tab-placeholder.collapse .panel-group-content {
   display: none;
@@ -457,6 +459,7 @@ export default {
   vertical-align: top;
   box-sizing: border-box;
   background: #f3f3f3;
+  min-height: 200px;
 }
 .cc-virtual-tab .tab-placeholder__panel-remove {
   position: absolute;

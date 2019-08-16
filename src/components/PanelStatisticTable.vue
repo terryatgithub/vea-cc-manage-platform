@@ -184,12 +184,11 @@
         if(this.clickUvTable.data.length !== 0) {
           return 
         }
-        this.getPanelSimpleBrowseData()
+        this.$watch('panelID', this.getPanelSimpleBrowseData, {
+          immediate: true
+        })
       }
-    },
-    // created() {
-    //   setTimeout(this.getPanelSimpleBrowseData, 0)
-    // }
+    }
   };
 </script>
 
