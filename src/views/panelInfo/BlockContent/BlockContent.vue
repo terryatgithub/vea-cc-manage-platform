@@ -243,14 +243,23 @@ export default {
         // 验证所有资源
         const normalContentList = this.normalContentList
         const resourcesIndexed = {}
+        const idFieldMap = {
+          media: 'extraValue1',
+          block: 'vContentId',
+          mall: 'extraValue1'
+        }
         for (let i = 0, length = normalContentList.length; i < length; i++) {
           const content = normalContentList[i]
-          const id = content.extraValue1
-          const existsId = resourcesIndexed[id] 
-          if (existsId !== undefined) {
-            return this.error(`通用内容第 ${existsId + 1} 个资源与第 ${i + 1} 相同`)
-          } else {
-            resourcesIndexed[id] = i
+          const coverType = content.coverType
+          const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall'
+          const id = content[idFieldMap[coverType]]
+          if (id && shouldCheck) {
+            const existsId = resourcesIndexed[id] 
+            if (existsId !== undefined) {
+              return this.error(`通用内容第 ${existsId + 1} 个资源与第 ${i + 1} 相同`)
+            } else {
+              resourcesIndexed[id] = i
+            }
           }
 
           if (!content.pictureUrl) {

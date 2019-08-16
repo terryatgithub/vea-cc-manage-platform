@@ -624,8 +624,8 @@ export default {
       const contentTypeMap = {
         movie: true,
         edu: true,
-        shopping: true,
-        app: true
+        shopping: false,
+        app: false
       }
       this.pannel.pannelList.forEach(function(item) {
         item.contentList.forEach(function(blockItem) {
@@ -1513,17 +1513,17 @@ export default {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
+        const idFieldMap = {
+          media: 'extraValue1',
+          block: 'vContentId',
+          mall: 'extraValue1'
+        }
         // 有 extraValue1 才判断重复, 自定义不判断
         contentList.forEach((content, contentIndex) => {
-          if (content && (content.coverType === 'media' || content.coverType === 'block')) {
-            let id
-            if (content.extraValue1) {
-              id = content.extraValue1 +
-                (content.extraValue5 || '')
-            } else if (content.vContentId) {
-              id = content.vContentId
-            }
-
+          const coverType = content.coverType
+          const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall'
+          if (shouldCheck) {
+            const id = content[idFieldMap[coverType]]
             if (id) {
               const duplicatedItem = resourceIndexed[id]
               if (duplicatedItem) {
@@ -1864,7 +1864,7 @@ export default {
         }
         if (duplicatedInfo) {
           const prefix = isPanelGroup 
-            ?`第 ${duplicatedIndex} 个分组`
+            ?`第 ${duplicatedIndex + 1} 个分组`
             : ''
           return cb(`${prefix}第 ${duplicatedInfo.index + 1} 推荐位
             第 ${duplicatedInfo.contentIndex + 1} 
