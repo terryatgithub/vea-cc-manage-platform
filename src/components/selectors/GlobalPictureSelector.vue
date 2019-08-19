@@ -9,28 +9,28 @@
     @filter-reset="handleFilterReset"
     @pagination-change="fetchData"
     @select-end="handleSelectEnd"
-    @select-start="fetchData"
+    @select-start="handleSelectStart"
     :disabled="disabled"
   >
     <el-collapse 
-      v-if="picturePresetMatchResolution.length > 0"
+      v-if="presetTable.data.length > 0"
       slot="prepend" 
       class="rel-picture-wrapper"
       v-model="collapseActiveItems">
       <el-collapse-item title="关联图片" name="relPicture">
         <CardList
           class="rel-picture-list"
-          :data="picturePresetMatchResolution"
-          :selected="table.selected"
+          :data="presetTable.data"
+          :selected="presetTable.selected"
           selection-type="single"
           :select-on-row-click="true"
-          @row-selection-change="handleRowSelectionChange">
+          @row-selection-change="handlePresetTableRowSelectionChange">
           <div class="picture-item" slot="row" slot-scope="{row: item}">
             <div class="img-wrapper">
-              <img class="list-img" :src="item.url">
+              <img class="list-img" :src="item.pictureUrl">
             </div>
             <div>
-              {{ item.size }}
+              {{ item.pictureResolution }}
             </div>
           </div>
         </CardList>
@@ -69,7 +69,7 @@ export default {
     CardList,
     RemoteSelectorWrapper
   },
-  props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled', 'picturePreset'],
+  props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled', 'resource'],
   data() {
     return {
       collapseActiveItems: ['relPicture'],
@@ -88,19 +88,20 @@ export default {
         currentPage: 1,
         pageSize: 15
       },
+      selectedCollection: 'normal', // 'normal' 是正常选择， 'preset' 是预置图片
       selected: [],
       table: {
         props: {},
         data: [],
         selected: undefined,
         selectionType: 'single'
-      }
-    }
-  },
-  computed: {
-    picturePresetMatchResolution() {
-      const preset = this.picturePreset || []
-      return preset
+      },
+      presetTable: {
+        data: [],
+        selected: undefined
+      },
+      // 与资源关联的海报
+      picturePreset: []
     }
   },
   methods: {
@@ -114,6 +115,7 @@ export default {
       return filter
     },
     handleRowSelectionChange(row, index) {
+      this.selectedCollection = 'normal'
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
     },
@@ -158,10 +160,49 @@ export default {
         })
       })
     },
+    handleSelectStart() {
+      this.getPresetPictures()
+      this.fetchData()
+    },
     handleSelectEnd() {
-      const { data, selected } = this.table
+      const selectedCollection = this.selectedCollection
+      const table = selectedCollection === 'preset' ? this.presetTable : this.table
+      const { data, selected } = table
       this.$emit('select-end', data[selected])
       this.table.selected = undefined
+    },
+    handlePresetTableRowSelectionChange(row, index) {
+      this.selectedCollection = 'preset'
+      this.presetTable.selected = index
+      this.$refs.selectorWrapper.handleSelectEnd()
+    },
+    getPresetPictures() {
+      const resource = this.resource
+      if (resource && resource.coverType === 'media') {
+        const mapPictures = (items) => items.map((item) => {
+          return {
+            pictureResolution: item.size,
+            pictureUrl: item.url
+          }
+        })
+        if (resource.picturePreset) {
+          this.presetTable.data = mapPictures(resource.picturePreset)
+          return
+        } 
+        const resourceId = resource.extraValue1
+        if (resourceId) {
+          const options = {
+            id: resourceId.replace(/_.*_/, ''),
+            // resType: 'vod',
+            callbackparam: 'result',
+            page: 1,
+            rows: 15
+          }
+          this.$service.getMediaVideoInfos(options).then((result) => {
+
+          })
+        }
+      }
     }
   },
   created() {
@@ -237,6 +278,7 @@ export default {
     this.getMaterialTypes().then(() => {
       this.filterSchema = filterSchema
     })
+
   }
 }
 </script>

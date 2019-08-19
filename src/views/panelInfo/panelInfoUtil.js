@@ -223,7 +223,7 @@ export function getSelectedResourceByType(resources, selectedType) {
 }
 
 export function chopSubTitle(title) {
-  return (title || '').slice(0, 50)
+  return (title || '').slice(0, 45)
 }
 
 export function genDefaultContentForm(preset) {

@@ -116,7 +116,7 @@
         <GlobalPictureSelector
           :disabled="isReadonly"
           :picture-resolution="resolution[0] + '*' + resolution[1]"
-          :picture-preset="contentForm.picturePreset"
+          :resource="contentForm"
           @select-end="handleSelectPostEnd"
         >
           <div

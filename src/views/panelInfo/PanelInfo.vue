@@ -1573,6 +1573,8 @@ export default {
           }
         })
 
+        // 获取最匹配的海报
+
         resource.videoContentList = contentList
         resource.contentPosition = Object.assign({}, item, {
           resize: undefined

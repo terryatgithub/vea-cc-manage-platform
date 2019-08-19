@@ -113,6 +113,32 @@ export default {
             render: (createElement, { row }) => {
               return episodeTypeText[row.urlIsTrailer]
             }
+          },
+          // {
+          //   label: '时长',
+          //   width: 120,
+          //   render: (h, {row}) => {
+
+          //   }
+          // },
+          {
+            label: '跳转播放',
+            width: 100,
+            render: (h, {row}) => {
+              const source = this.source
+              if (source === 'tencent' || source === 'yinhe') {
+                const url = source === 'tencent'
+                  ? `https://v.qq.com/x/cover/${row.coocaaMId}/${row.thirdVuId}.html`
+                  : `http://so.iqiyi.com/so/q_${row.urlTitle}`
+                return h('a', {
+                  class: "link",
+                  attrs: {
+                    target: '_blank',
+                    href: url
+                  }
+                }, '跳转')
+              }
+            }
           }
         ],
         data: [],
