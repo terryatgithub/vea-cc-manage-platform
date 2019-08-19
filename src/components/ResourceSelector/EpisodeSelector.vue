@@ -114,13 +114,13 @@ export default {
               return episodeTypeText[row.urlIsTrailer]
             }
           },
-          // {
-          //   label: '时长',
-          //   width: 120,
-          //   render: (h, {row}) => {
-
-          //   }
-          // },
+          {
+            label: '时长',
+            width: 120,
+            render: (h, {row}) => {
+              return this.secondToTimeStr(row.duration)
+            }
+          },
           {
             label: '跳转播放',
             width: 100,
@@ -153,6 +153,14 @@ export default {
     'id': 'handleFilterReset'
   },
   methods: {
+    secondToTimeStr(seconds) {
+      if (seconds) {
+        const hour = Math.floor(seconds / 3600)
+        const min = Math.floor((seconds - 3600 * hour) / 60)
+        const sec = seconds - 3600 * hour - 60 * min
+        return `${hour}小时${min}分${sec}秒`
+      }
+    },
     handleSelectStart() {
       const baseSelector = this.$refs.baseSelector
       if (baseSelector) {
