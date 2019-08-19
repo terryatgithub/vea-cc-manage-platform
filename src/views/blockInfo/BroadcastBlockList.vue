@@ -83,12 +83,16 @@ export default {
             label: '数据表现',
             width: 300,
             render: (h, {row}) => {
-              return h(
-                BroadcastSimpleData,
-                {
-                  props: {id: row.id}
-                }
-              )
+              const id = row.id
+              if( id === 10101 || id === 10107 || id ===10109 ) 
+              {
+                return h(
+                  BroadcastSimpleData,
+                  {
+                    props: { id }
+                  }
+                )
+              }
             }
           },
           {

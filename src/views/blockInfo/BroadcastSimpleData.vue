@@ -1,8 +1,8 @@
 <template>
   <div>
     <div @click="handleClick">
-      昨日UVCTR <span>{{uvctr.value}}</span>,
-      日环比<span :class="judgeColor(uvctr.dailyGrowth)">{{dailyGrowthShow}}</span>;<div></div>
+      位置0：昨日UVCTR <span>{{uvctr.value}}</span>,
+      日环比<span :class="judgeColor(uvctr.dailyGrowth)">{{dailyGrowthShow}}</span>；
       周同比<span :class= "judgeColor(uvctr.weeklyGrowth)">{{weeklyGrowthShow}}</span>
     </div>
 
@@ -97,10 +97,12 @@ export default {
       return percentStr === 'N/A' ? '' : (percentStr.charAt(0) === '-' ? 'data-down' : 'data-up')
     },
     handleClick() {
-      this.$service.getBlockChartData({id: this.id}).then(data => {
-        this.broadcastChartDataArr = data.rows
-        this.isShowChart = true
-      })
+      if(this.broadcastChartDataArr.length === 0) {
+        this.$service.getBlockChartData({id: this.id}).then(data => {
+          this.broadcastChartDataArr = data.rows
+        })
+      }
+      this.isShowChart = true
     },
     handleChartData(chartData) {
       return {
@@ -130,15 +132,20 @@ export default {
       })
       : extend
     },
-  },
-  created() {
-    this.$service.getBlockSimpleBrowseData({id: this.id}).then(data => {
+    getBlockSimpleBrowseData() {
+      this.$service.getBlockSimpleBrowseData({id: this.id}).then(data => {
       const uvctr = data.rows[0].data[0].uvctr
       this.uvctr = {
         value: uvctr.value ? this.toPercent(uvctr.value) : 'N/A',
         dailyGrowth: uvctr.dailyGrowth ? this.toPercent(uvctr.dailyGrowth) : 'N/A',
         weeklyGrowth: uvctr.weeklyGrowth ? this.toPercent(uvctr.weeklyGrowth) : 'N/A'
-      }
+        }
+      })
+    }
+  },
+  created() {
+    this.$watch('id', this.getBlockSimpleBrowseData, {
+      immediate: true
     })
   }
 };
@@ -154,4 +161,9 @@ export default {
   color: red
 .data-down
   color: #00AA00
+.el-dialog__wrapper{
+  &.dialog-fade-leave-active{
+    -ms-animation:none;
+  }
+}
 </style>
