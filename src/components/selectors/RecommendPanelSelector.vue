@@ -115,10 +115,6 @@ export default {
     BaseSelector
   },
   methods: {
-    print(val) {
-      console.log(val)
-      return val
-    },
     handleSelectStart() {
       this.$emit('select-start')
       if (!this.isLive) {
