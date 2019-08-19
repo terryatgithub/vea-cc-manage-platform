@@ -22,6 +22,7 @@
         @click-block="handleClickBlock(0, $event)"
       ></cc-virtual-panel>
     </template>
+    <slot name="stat"></slot>
   </div>
 </template>
 
