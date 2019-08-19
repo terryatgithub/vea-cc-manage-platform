@@ -277,6 +277,23 @@
               </el-form-item>
             </el-form>
 
+            <div>
+            <div class="form-legend-header" @click="handlePanelDataClick">
+              <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
+              <i v-else class="el-icon-arrow-up"></i>
+              <span>版块数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              昨日UVCTR：<span>{{panelUVCTR.value?toPercent(panelUVCTR.value):'N/A'}}</span>，
+              日环比<span :class="panelUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.dailyGrowth}}</span>；
+              周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
+            </div>
+            <div v-if="!isCollapseData">
+              <div v-for="panelChartData in panelChartDataArr" class="chart-box">
+                <div class="chart-box--title">{{panelChartData.title}}</div>
+                <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
+              </div>
+            </div>
+            </div>
+
             <div class="form-legend-header">
               <span>内容配置</span>
             </div>
