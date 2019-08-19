@@ -82,7 +82,6 @@
                  :disabled="data[dataItem] == -1"
                  :key="data.menuId+index+Math.random()"
                  @input="data[dataItem] = $event ? '1' : '0'"
-                 :runId="index+1"
               ></el-checkbox>
             </span>
           </span>
@@ -251,8 +250,96 @@ export default {
       AuthList: [],
       isIndeterminate: true,
       checkAllValue: false,
-      headerItems: ['菜单名称', '浏览', '新增', '编辑', '删除', '内容权限', '搜索', '刷新', '打印', '导入', '导出', '审核', '认领', '撤销认领', '撤销审核', '上架', '创建副本', '批量审核'],
-      dataItems: ['browser', 'add', 'edit', 'delete', 'contentAuthSetting', 'search', 'refresh', 'print', 'inport', 'export', 'audit', 'claim', 'unclaim', 'unaudit', 'shelves', 'copy', 'batchAudit']
+      headerItems: [],
+      dataItems: [],
+      accessItemToRunId: {},
+      accessList: [
+        {
+            "label":"浏览",
+            "value":"browser",
+            runId:1
+        },
+        {
+            "label":"新增",
+            value:"add",
+            runId:2
+        },
+        {
+            "label":"编辑",
+            value:"edit",
+            runId: 3
+        },
+        {
+            "label":"删除",
+            "value":"delete",
+            runId: 4
+        },
+        {
+            "label":"内容权限",
+            "value":"contentAuthSetting",
+            runId: 17
+        },
+        {
+            "label":"搜索",
+            "value":"search",
+            runId: 5
+        },
+        {
+            "label":"刷新",
+            "value":"refresh",
+            runId: 6
+        },
+        {
+            "label":"打印",
+            "value":"print",
+            runId: 7
+        },
+        {
+            "label":"导入",
+            "value":"inport",
+            runId: 8
+        },
+        {
+            "label":"导出",
+            "value":"export",
+            runId: 9
+        },
+        {
+            "label":"审核",
+            "value":"audit",
+            runId: 10
+        },
+        {
+            "label":"认领",
+            "value":"claim",
+            runId: 11
+        },
+        {
+            "label":"撤销认领",
+            "value":"unclaim",
+            runId: 12
+        },
+        {
+            "label":"撤销审核",
+            "value":"unaudit",
+            runId: 13
+        },
+        {
+            "label":"上架",
+            "value":"shelves",
+            runId: 14
+        },
+        {
+            "label":"创建副本",
+            "value":"copy",
+            runId: 15
+        },
+        {
+            "label":"批量审核",
+            "value":"batchAudit",
+            runId: 16
+        }
+      ]
     }
   },
   methods: {
@@ -362,12 +449,13 @@ export default {
       const self = this
       const roleId = this.roleId
       const keys = this.dataItems
+      const accessItemToRunId = this.accessItemToRunId
       const menuIds = []
       function checkSelect (data) {
         data.forEach((item) => {
           keys.forEach((key, index) => {
             if (item[key] === '1') {
-              menuIds.push({ 'menuId': item['menuId'], 'runId': (index + 1).toString() })
+              menuIds.push({ 'menuId': item['menuId'], 'runId': accessItemToRunId[key] })
             }
           })
           if (item.children) {
@@ -466,6 +554,15 @@ export default {
     }
   },
   created () {
+    const accessListSorted = this.accessList.sort((prev, next) => {
+      return prev.runId > next.runId ? 1 : -1
+    })
+    this.accessItemToRunId = this.accessList.reduce((result, item) => {
+      result[item.value] = item.runId
+      return result
+    }, {})
+    this.headerItems = ['菜单名称'].concat(accessListSorted.map(item => item.label))
+    this.dataItems = accessListSorted.map(item => item.value)
     this.fetchData()
   }
 
