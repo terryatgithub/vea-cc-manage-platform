@@ -475,7 +475,7 @@ export default {
       this.form.childHpList = this.mergeSelected({
         idField: 'homepageId',
         parse: (item) => {
-          return this.getHomepageInfo(item, {age: '0'})
+          return this.getHomepageInfo(item, {age: 0})
         },
         selectedList: selected,
         originSelectedList: this.form.childHpList
