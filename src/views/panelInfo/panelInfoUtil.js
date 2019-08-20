@@ -1,4 +1,4 @@
-function getMatchedPictureUrl (blockSize, imgList) {
+export function getMatchedPictureUrl (blockSize, imgList) {
   let maxMatchingValue = -1
   let url
   if (blockSize && imgList) {

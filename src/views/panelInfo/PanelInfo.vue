@@ -405,7 +405,7 @@ import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 import TagFrame from './TagFrame'
 import VeLine from 'v-charts/lib/line.common'
 
-import { genResourceContentList } from './panelInfoUtil'
+import { genResourceContentList, getMatchedPictureUrl } from './panelInfoUtil'
 
 export default {
   mixins: [titleMixin],
@@ -1142,6 +1142,8 @@ export default {
               bgParams: undefined, 
               cornerList: undefined,
               redundantParams: undefined,
+              // 定义一个标识，在填充的时候，填充最合适尺寸的图片
+              shouldFindFitestPicture: true
             })
               .map(function(item) {
                 return {
@@ -1591,6 +1593,13 @@ export default {
         })
 
         // 获取最匹配的海报
+        const firstContent = contentList[0] || {}
+        const picturePreset = firstContent.picturePreset
+        if (firstContent.shouldFindFitestPicture && picturePreset) {
+          const size = [item.width, item.height]
+          firstContent.pictureUrl = getMatchedPictureUrl(size, picturePreset) 
+          firstContent.shouldFindFitestPicture = undefined
+        }
 
         resource.videoContentList = contentList
         resource.contentPosition = Object.assign({}, item, {
