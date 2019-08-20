@@ -12,6 +12,7 @@
         ref="baseSelector"
         id-field="homepageId"
         :selection-type="selectionType"
+        :select-end-on-click="true"
         :table="table"
         :filter="filter"
         :filterSchema="filterSchema"
