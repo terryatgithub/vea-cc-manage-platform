@@ -70,7 +70,6 @@ export function setMediaContent(contentForm, options) {
         contentForm[extraIdField] = selectedEpisode.coocaaMId
       }
       contentForm.singleId = selectedEpisode.coocaaMId
-      contentForm.platformId = this.source
       contentForm.pictureUrl = selectedEpisode.thumb
       contentForm.title = selectedEpisode.urlTitle
       contentForm.subTitle = chopSubTitle(selectedEpisode.urlSubTitle)

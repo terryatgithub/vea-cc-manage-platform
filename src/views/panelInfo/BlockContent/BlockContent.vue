@@ -256,8 +256,10 @@ export default {
           const content = normalContentList[i]
           const coverType = content.coverType
           const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall'
-          const id = content[idFieldMap[coverType]]
+          let id = content[idFieldMap[coverType]]
           if (id && shouldCheck) {
+            // 单集的 extraValue1 相同，可能有 extraValue4 或 extraValue5
+            id = id + (content.extraValue4 || '') + (content.extraValue5 || '')
             const existsId = resourcesIndexed[id] 
             if (existsId !== undefined) {
               return this.error(`通用内容第 ${existsId + 1} 个资源与第 ${i + 1} 相同`)

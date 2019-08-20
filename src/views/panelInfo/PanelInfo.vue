@@ -1542,8 +1542,10 @@ export default {
           const coverType = content.coverType
           const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall'
           if (shouldCheck) {
-            const id = content[idFieldMap[coverType]]
+            let id = content[idFieldMap[coverType]]
             if (id) {
+              // 单集的 extraValue1 相同，可能有 extraValue4 或 extraValue5
+              id = id + (content.extraValue4 || '') + (content.extraValue5 || '')
               const duplicatedItem = resourceIndexed[id]
               if (duplicatedItem) {
                 duplicatedItem.resource.duplicated = {
