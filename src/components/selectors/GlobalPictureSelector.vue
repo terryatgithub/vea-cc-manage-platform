@@ -45,10 +45,10 @@
       :select-on-row-click="true"
       @row-selection-change="handleRowSelectionChange">
       <div class="picture-item" slot="row" slot-scope="{row: item}">
-        <p class="img-wrapper">
+        <div class="img-wrapper">
           <img class="list-img" :src="item.pictureUrl">
-        </p>
-        <p>{{item.pictureName}}</p>
+        </div>
+        <div>{{item.pictureName}}</div>
         <div>
           {{ item.pictureId }} / {{ $consts.statusText[item.pictureStatus] }} / {{item.pictureResolution}}
         </div>
@@ -178,28 +178,44 @@ export default {
     },
     getPresetPictures() {
       const resource = this.resource
-      if (resource && resource.coverType === 'media') {
-        const mapPictures = (items) => items.map((item) => {
-          return {
-            pictureResolution: item.size,
-            pictureUrl: item.url
-          }
+      const mapPictures = (items) => items.map((item) => {
+        return {
+          pictureResolution: item.size,
+          pictureUrl: item.url
+        }
+      })
+      const filterPictures = (items) => {
+        const resolution = this.pictureResolution.split('*')
+        const [width, height] = resolution
+        return items.filter(item => {
+          const pictureResolution = item.pictureResolution.split('*')
+          const [pWidth, pHeight] = pictureResolution
+          return Math.abs(pWidth - width) < 5 && Math.abs(pHeight - height) < 5
         })
+      }
+
+      if (resource && resource.coverType === 'media') {
         if (resource.picturePreset) {
-          this.presetTable.data = mapPictures(resource.picturePreset)
+          this.presetTable.data = filterPictures(mapPictures(resource.picturePreset))
           return
         } 
+
         const resourceId = resource.extraValue1
         if (resourceId) {
           const options = {
-            id: resourceId.replace(/_.*_/, ''),
-            // resType: 'vod',
+            id: resourceId,
+            resType: 'vod',
             callbackparam: 'result',
             page: 1,
-            rows: 15
+            rows: 1
           }
           this.$service.getMediaVideoInfos(options).then((result) => {
-
+            const rows = result.rows || []
+            const targetResource = rows[0]
+            if (targetResource) {
+              const picturePreset = targetResource.imageInfoList || []
+              this.presetTable.data = filterPictures(mapPictures(picturePreset))
+            }
           })
         }
       }

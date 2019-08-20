@@ -687,6 +687,24 @@ export default {
               message: '请选择儿童模式首页'
             })
           }
+
+          const childHpListIndexed = childHpList.reduce((result, item) => {
+            result[item.age] = item
+            return result
+          }, {})
+          if (!childHpListIndexed['0']) {
+            return this.$message({
+              type: 'error',
+              message: '至少要有一个不限年龄的儿童模式首页'
+            })
+          }
+          if (Object.keys(childHpListIndexed).length < childHpList.length) {
+            return this.$message({
+              type: 'error',
+              message: '存在重复年龄或多个不限年龄的儿童模式首页'
+            })
+          }
+
           cb()
         } else {
           this.$message({
