@@ -801,7 +801,7 @@ export default {
       this.ageOptions = data.map(item => {
         return {
           label: item.dictCnName,
-          value: item.dictEnName,
+          value: +item.dictEnName,
           disabled: item.disabled
         }
       })
