@@ -27,7 +27,6 @@
                 :rules="formRules"
                 ref="form"
                 label-width="160px"
-                class="el-form-add"
               >
                 <el-form-item label="策略名称" prop="policyName">
                   <el-input v-model="form.policyName" placeholder="策略名称"></el-input>
@@ -81,18 +80,39 @@
                   <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
                 </el-form-item>
                 <el-form-item label="关联首页方案">
-                  <el-button type="primary" plain @click="selectHomePageModel('normal')">选择标准模式首页</el-button>
-                  <span v-if="typeof(form.homepageInfoListObj['normal'])!=='undefined'" class="tip">
+                  <HomepageSelector title="选择首页方案" homepageModel="normal" @select-end="handleSelectNormalHomepageEnd" selection-type="single" />
+                  <!-- <el-button type="primary" plain @click="selectHomePageModel('normal')">选择标准模式首页</el-button> -->
+                  <span v-if="form.normalHpList[0]" class="tip">
                     已选首页：
-                    <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('normal')">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
+                    <el-tag type="success" class="el-tag" @click.native="showHomePageDetail(form.normalHpList[0])">
+                      {{ form.normalHpList[0].homepageName }}
+                    </el-tag>
                   </span>
                 </el-form-item>
-                <el-form-item label="关联首页方案">
-                  <el-button type="primary" plain @click="selectHomePageModel('child')">选择儿童模式首页</el-button>
-                  <span v-if="typeof(form.homepageInfoListObj['child'])!=='undefined'" class="tip">
-                    已选首页：
-                    <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('child')">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
-                  </span>
+                <el-form-item label="关联儿童首页方案">
+                  <HomepageSelector title="选择首页方案" homepageModel="child"  @select-end="handleSelectChildHomepageEnd" />
+                  <!-- <el-button type="primary" plain @click="selectHomePageModel('child')">选择儿童模式首页</el-button> -->
+                  <div class="child-homepage-list">
+                    <div 
+                      v-for="(item, index) in form.childHpList" 
+                      :key="index"
+                      class="child-homepage-item">
+                      <el-form-item label="首页方案" label-width="80px">
+                        {{ item.homepageName }}
+                      </el-form-item>
+                      <el-form-item label="年龄" label-width="80px">
+                        <el-select v-model="item.age" placeholder="请选择" size="small">
+                          <el-option
+                            v-for="item in ageOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                      <i class="el-icon-close" @click="handleRemoveChildHpItem(index)"></i>
+                    </div>
+                  </div>
                 </el-form-item>
                 <el-form-item label="定向首页方案">
                   <el-button type="primary" plain @click="addHomePage('normal')">添加标准模式</el-button>
@@ -123,7 +143,7 @@
           <!--预览界面-->
           <el-row :gutter="40">
             <el-col :span="24">
-              <el-form :model="form" ref="form" label-width="160px" class="el-form-add">
+              <el-form :model="form" ref="form" label-width="160px">
                 <el-form-item label="策略名称" prop="policyName">{{form.policyName}}</el-form-item>
                 <el-form-item label="机型机芯" prop="chipModel">
                   <SelectedTag v-if="form.deviceInfos.length>0">
@@ -185,14 +205,27 @@
                   <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
                 </el-form-item>
                 <el-form-item label="关联首页方案(标准)">
-                  <span v-if="typeof(form.homepageInfoListObj['normal'])!=='undefined'" class="tip">
-                    <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('normal')">{{form.homepageInfoListObj['normal'].homepageName}}</el-tag>
+                  <span v-if="form.normalHpList[0]" class="tip">
+                    已选首页：
+                    <el-tag type="success" class="el-tag" @click.native="showHomePageDetail(form.normalHpList[0])">
+                      {{ form.normalHpList[0].homepageName }}
+                    </el-tag>
                   </span>
                 </el-form-item>
                 <el-form-item label="关联首页方案(儿童)">
-                  <span v-if="typeof(form.homepageInfoListObj['child'])!=='undefined'" class="tip">
-                    <el-tag type="success" class="el-tag" @click.native="showHomePageDetail('child')">{{form.homepageInfoListObj['child'].homepageName}}</el-tag>
-                  </span>
+                  <div class="child-homepage-list">
+                    <div 
+                      v-for="(item, index) in form.childHpList" 
+                      :key="index"
+                      class="child-homepage-item">
+                      <el-form-item label="首页方案" label-width="80px">
+                        {{ item.homepageName }}
+                      </el-form-item>
+                      <el-form-item label="年龄" label-width="80px">
+                        {{ ageEnums[item.age] }}
+                      </el-form-item>
+                    </div>
+                  </div>
                 </el-form-item>
                 <el-form-item label="定向首页方案">
                   <SelectedHomePage
@@ -271,7 +304,9 @@ import PolicyManageAddHomePage from './PolicyManageAddHomePage'
 import SelectedHomePage from './../../components/SelectedHomePage.vue'
 import CommonContent from '@/components/CommonContent.vue'
 import HomePageInfo from './HomePageInfo'
+import HomepageSelector from '@/components/selectors/HomepageSelector'
 import titleMixin from '@/mixins/title'
+import { cloneDeep } from 'lodash'
 export default {
   mixins: [titleMixin],
   components: {
@@ -283,7 +318,9 @@ export default {
     CommonContent,
     HomePageInfo,
     PageWrapper,
-    PageContentWrapper
+    PageContentWrapper,
+    
+    HomepageSelector
   },
   props: ['id', 'initMode', 'version'],
   data() {
@@ -318,8 +355,8 @@ export default {
         priority: null,
         policyStatus: 3,
         deviceInfos: [], // 机型机芯{chip:'',model:''}
-        homepageInfoList: [],
-        homepageInfoListObj: {},
+        normalHpList: [],
+        childHpList: [],
         schemeFilterEntity: {
           partner: 'tencent'
         },
@@ -354,7 +391,9 @@ export default {
         homePageVerEnd: [
           { required: true, message: '请输入首页版本结束值', trigger: 'blur' }
         ]
-      }
+      },
+      ageOptions: [],
+      ageEnums: {}
     }
   },
   watch: {
@@ -381,9 +420,47 @@ export default {
     }
   },
   methods: {
-    showHomePageDetail(type) {
-      this.homePageId = this.form.homepageInfoListObj[type].homepageId
-      this.homePageVersion = this.form.homepageInfoListObj[type].currentVersion
+    mergeSelected(options) {
+      const { idField, parse, selectedList, originSelectedList } = options
+      const originSelectedListIndexed = originSelectedList.reduce(function(result, item, index) {
+        result[item[idField]] = index
+        return result
+      }, {})
+      const appendList = selectedList
+        .filter((item) => originSelectedListIndexed[item[idField]] === undefined)
+        .map(parse)
+      return [...originSelectedList, ...appendList]
+    },
+    handleRemoveChildHpItem(index) {
+      this.form.childHpList.splice(index, 1)
+    },
+    getHomepageInfo(homepage, preset) {
+      return {
+        homepageId: homepage.homepageId,
+        homepageModel: homepage.homepageModel,
+        homepageName: homepage.homepageName,
+        homepageVersion: homepage.homepageVersion,
+        ...preset
+      }
+    },
+    handleSelectNormalHomepageEnd([homepage]) {
+      this.form.normalHpList = [
+        this.getHomepageInfo(homepage)
+      ]
+    },
+    handleSelectChildHomepageEnd(selected) {
+      this.form.childHpList = this.mergeSelected({
+        idField: 'homepageId',
+        parse: (item) => {
+          return this.getHomepageInfo(item, {age: '0'})
+        },
+        selectedList: selected,
+        originSelectedList: this.form.childHpList
+      })
+    },
+    showHomePageDetail(homepage) {
+      this.homePageId = homepage.homepageId
+      this.homePageVersion = homepage.currentVersion
       this.activePage = 'showHomePageDetail'
     },
     ChipModelRowClick(row) {
@@ -557,112 +634,126 @@ export default {
       this.dialogType = mode
       this.selectHomePageDialogVisible = true
     },
-    submitBtn(status) {
+    getFormData() {
+      const data = cloneDeep(this.form)
+      return data
+    },
+    validateFormData(data, cb) {
       this.$refs.form.validate(valid => {
-        let form = this.form
-        form.homepageInfoList = []
-        let obj = form.homepageInfoListObj
-        Object.keys(obj).forEach(e => {
-          form.homepageInfoList.push(obj[e])
-        })
-        form.policyStatus = status
         if (valid) {
-          if (obj['normal'] === undefined) {
-            this.$message({
-              type: 'error',
-              message: '请选择标准模式首页'
-            })
-            return
-          }
-          if (obj['child'] === undefined) {
-            this.$message({
-              type: 'error',
-              message: '请选择儿童模式首页'
-            })
-            return
-          }
-          if (form.macStart === '' || form.macEnd === '') {
-            form.macStart = form.macEnd = ''
-          }
-          if (form.deviceInfos.length === 0 && form.macStart === '') {
-            this.$message({
+          const { normalHpList, childHpList, macStart, macEnd, deviceInfos } = data
+          
+          const hasSetMac = macStart && macEnd
+          if (deviceInfos.length === 0 && hasSetMac) {
+            return this.$message({
               type: 'error',
               message: 'mac地址或者机型机芯至少选择一项'
             })
-            return
           }
-          if (this.mode === 'replicate') {
-            form.currentVersion = ''
-          }
-          this.$service
-            .policyConfSave({ jsonStr: JSON.stringify(form) }, '保存成功')
-            .then(data => {
-              this.$emit('upsert-end')
+
+          if (normalHpList.length === 0) {
+            return this.$message({
+              type: 'error',
+              message: '请选择标准模式首页'
             })
+          }
+          if (childHpList.length === 0) {
+            return this.$message({
+              type: 'error',
+              message: '请选择儿童模式首页'
+            })
+          }
+          cb()
+        } else {
+          this.$message({
+            type: 'error',
+            message: '请把表单填写完整'
+          })
         }
       })
     },
+    parseDataToApi(data) {
+      data.childHpList = data.childHpList.map((item) => {
+        return {
+          homepageId: item.homepageId,
+          age: item.age
+        }
+      })
+      data.normalHpList = data.normalHpList.map((item) => {
+        return {
+          homepageId: item.homepageId
+        }
+      })
 
+      if (!(data.macStart && data.macEnd)) {
+        data.macStart = data.macEnd = ''
+      }
+      if (this.mode === 'replicate') {
+        data.currentVersion = ''
+      }
+      return data
+    },
+    submitBtn(status) {
+      const data = this.getFormData()
+      data.policyStatus = status
+      this.validateFormData(data, () => {
+          this.$service
+            .policyConfSave({ 
+              jsonStr: JSON.stringify(this.parseDataToApi(data)) 
+            }, '保存成功')
+            .then(data => {
+              this.$emit('upsert-end')
+            })
+      })
+    },
+    setData(data) {
+      data = cloneDeep(data)
+      this.form = {
+        currentVersion: data.currentVersion,
+        policyId: data.policyId,
+        policyName: data.policyName,
+        macStart: data.macStart,
+        macEnd: data.macEnd,
+        homePageVerEnd: data.homePageVerEnd,
+        homePageVerStart: data.homepageVerStart,
+        priority: data.priority,
+        policyStatus: data.policyStatus,
+        deviceInfos: [{ chip: data.chip, model: data.model }], // 机型机芯{chip:'',model:''}
+        normalHpList: data.normalHpList,
+        childHpList: data.childHpList,
+        schemeFilterEntity: {
+          partner: data.platform
+        },
+        regionCityPairs: [],
+        specialNormalHp: this.getCrowdNames(data.specialNormalHp),
+        specialChildHp: this.getCrowdNames(data.specialChildHp)
+      }
+    },
     fetchData(version) {
       this.$service.getPolicyConfDetail({ id: this.id, version }).then(data => {
-        this.form = {
-          currentVersion: data.currentVersion,
-          policyId: data.policyId,
-          policyName: data.policyName,
-          macStart: data.macStart,
-          macEnd: data.macEnd,
-          homePageVerEnd: data.homePageVerEnd,
-          homePageVerStart: data.homepageVerStart,
-          priority: data.priority,
-          policyStatus: data.policyStatus,
-          deviceInfos: [{ chip: data.chip, model: data.model }], // 机型机芯{chip:'',model:''}
-          homepageInfoList: data.homepageInfoList,
-          homepageInfoListObj: {
-            normal:
-              data.homepageInfoList.length > 0 ? data.homepageInfoList[0] : {},
-            child:
-              data.homepageInfoList.length === 2 ? data.homepageInfoList[1] : {}
-          },
-          schemeFilterEntity: {
-            partner: data.platform
-          },
-          regionCityPairs: [],
-          specialNormalHp: this.getCrowdNames(data.specialNormalHp),
-          specialChildHp: this.getCrowdNames(data.specialChildHp)
-        }
+        this.setData(data)
       })
     }
   },
   created() {
-    // if (this.editId !== null && this.editId !== undefined) {
-    //   this.isReplicate ? (this.title = '创建副本') : (this.title = '编辑')
-    //   this.selectionType = 'single'
-    //   this.getEditData()
-    // } else {
-    //   this.title = '新增'
-    // }
-
     this.mode = this.initMode || 'create'
-    // switch (this.mode) {
-    //   case 'create':
-    //     this.title = '新增'
-    //     break
-    //   case 'copy':
-    //     this.title = '复制'
-    //     break
-    //   case 'edit':
-    //     this.title = '编辑'
-    //     break
-    //   case 'replica':
-    //     this.title = '创建副本'
-    //   case 'read':
-    //     this.title = '预览'
-    //     break
-    // }
     if (this.id) {
       this.selectionType = 'single'
       this.fetchData(this.version)
     }
+    this.$service.getDictType({ type: 'childAge' }).then(data => {
+      this.ageOptions = data.map(item => {
+        return {
+          label: item.dictCnName,
+          value: item.dictEnName,
+          disabled: item.disabled
+        }
+      })
+      this.ageEnums = data.reduce((result, item) => {
+        result[item.dictEnName] = item.dictCnName
+        return result
+      }, {})
+    })
   }
 }
 </script>
@@ -672,4 +763,16 @@ export default {
   margin-left: 10px
 .el-tag
   cursor: pointer;
+.child-homepage-item
+  position relative
+  width 380px
+  border 1px solid #ccc
+  display inline-block
+  margin 10px 10px 0 0
+  padding 10px
+  .el-icon-close
+    position absolute
+    top 10px
+    right 10px
+    cursor pointer
 </style>
