@@ -62,7 +62,12 @@
                     </el-form-item>
                   </el-col>
                 </el-form-item>
-                <el-form-item label="Mac地址" class="linkwork">
+
+                <el-form-item v-if="isTestPolicy" label="Mac地址" prop="macStart" class="linkwork">
+                  <el-input placeholder="Mac地址" v-model="form.macStart"></el-input>
+                </el-form-item>
+
+                <el-form-item v-else label="Mac地址" class="linkwork">
                   <el-col :span="11" style="padding-left:0px;padding-right:0px;">
                     <el-form-item prop="macStart">
                       <el-input placeholder="Mac地址起始" v-model="form.macStart" style="width: 100%;"></el-input>
@@ -75,6 +80,8 @@
                     </el-form-item>
                   </el-col>
                 </el-form-item>
+
+
                 <el-form-item label="策略优先级" prop="priority">
                   <el-input-number v-model="form.priority" placeholder="策略优先级" :min="1" :max="9999"></el-input-number>
                   <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
@@ -322,8 +329,21 @@ export default {
     
     HomepageSelector
   },
-  props: ['id', 'initMode', 'version'],
+  props: ['id', 'initMode', 'version', 'isTestPolicy'],
   data() {
+    const isTestPolicy = this.isTestPolicy
+    function checkMacType(rule, value, callback) {
+      if (value === '') {
+        return callback()
+      }
+      value = value.replace(/(^\s*)|(\s*$)/g, '') // 去掉空格
+      var reg = /^[a-zA-Z0-9]{12}$/
+      if (reg.test(value)) {
+        callback()
+      } else {
+        callback(new Error('请请输入12位以字母数字组成的MAC地址'))
+      } 
+    }
     return {
       homePageId: undefined,
       homePageVersion: undefined,
@@ -331,7 +351,7 @@ export default {
       activePage: 'policy_info',
       mode: undefined,
       dialogType: undefined,
-      resourceName: '策略管理',
+      resourceName: isTestPolicy ? '测试策略' : '策略管理',
       // title: null,
       selectionType: 'multiple',
       dialogTitle: null,
@@ -348,7 +368,7 @@ export default {
       form: {
         policyId: null,
         policyName: null,
-        macStart: '000000000000',
+        macStart: isTestPolicy ? '' : '000000000000',
         macEnd: 'ffffffffffff',
         homePageVerEnd: '9999999',
         homePageVerStart: '',
@@ -373,14 +393,17 @@ export default {
         ],
         macStart: [
           {
-            validator: this.$checkMacType,
-            message: '请输入12位以字母数字组成的MAC地址',
+            required: isTestPolicy,
+            message: '请输入12位以字母数字组成的MAC地址'
+          },
+          {
+            validator: checkMacType,
             trigger: 'blur'
           }
         ],
         macEnd: [
           {
-            validator: this.$checkMacType,
+            validator: checkMacType,
             message: '请输入12位以字母数字组成的MAC地址',
             trigger: 'blur'
           }
@@ -642,8 +665,8 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           const { normalHpList, childHpList, macStart, macEnd, deviceInfos } = data
-          
           const hasSetMac = macStart && macEnd
+
           if (deviceInfos.length === 0 && hasSetMac) {
             return this.$message({
               type: 'error',
@@ -657,6 +680,7 @@ export default {
               message: '请选择标准模式首页'
             })
           }
+
           if (childHpList.length === 0) {
             return this.$message({
               type: 'error',
@@ -685,9 +709,15 @@ export default {
         }
       })
 
-      if (!(data.macStart && data.macEnd)) {
-        data.macStart = data.macEnd = ''
+      if (this.isTestPolicy) {
+        // 如果是测试策略, 做相应处理
+        data.macEnd = data.macStart
+      } else {
+        if (!(data.macStart && data.macEnd)) {
+          data.macStart = data.macEnd = ''
+        }
       }
+
       if (this.mode === 'replicate') {
         data.currentVersion = ''
       }
@@ -697,13 +727,18 @@ export default {
       const data = this.getFormData()
       data.policyStatus = status
       this.validateFormData(data, () => {
-          this.$service
-            .policyConfSave({ 
-              jsonStr: JSON.stringify(this.parseDataToApi(data)) 
-            }, '保存成功')
-            .then(data => {
-              this.$emit('upsert-end')
-            })
+        const options = { 
+          jsonStr: JSON.stringify(this.parseDataToApi(data)) 
+        }
+        if (this.isTestPolicy) {
+          this.$service.testPolicyConfSave(options, '保存成功').then(data => {
+            this.$emit('upsert-end')
+          })
+        } else {
+          this.$service.policyConfSave(options, '保存成功').then(data => {
+            this.$emit('upsert-end')
+          })
+        }
       })
     },
     setData(data) {
@@ -730,9 +765,12 @@ export default {
       }
     },
     fetchData(version) {
-      this.$service.getPolicyConfDetail({ id: this.id, version }).then(data => {
-        this.setData(data)
-      })
+      const options = { id: this.id, version }
+      if (this.isTestPolicy) {
+        this.$service.getPolicyConfDetail(options).then(this.setData)
+      } else {
+        this.$service.getTestPolicyConfDetail(options).then(this.setData)
+      }
     }
   },
   created() {

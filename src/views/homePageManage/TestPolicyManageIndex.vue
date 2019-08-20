@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <TabPage>
     <TestPolicyManageList
       v-show='isShowList'
       ref="list"
@@ -8,22 +8,25 @@
       @edit="handleEdit"
       @delete="handleDelete"
     />
-    <TestPolicyManageInfo
+    <PolicyManageInfo
       v-if='!isShowList'
       :id="id"
       :init-mode="mode"
       :version="version"
+      :is-test-policy="true"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
-    </TestPolicyManageInfo>
-  </div>
+    </PolicyManageInfo>
+  </TabPage>
 </template>
 <script>
-import TestPolicyManageInfo from './TestPolicyManageInfo'
+import TabPage from '@/components/TabPage'
+import PolicyManageInfo from './PolicyManageInfo'
 import TestPolicyManageList from './TestPolicyManageList'
 export default {
   components: {
-    TestPolicyManageInfo,
+    TabPage,
+    PolicyManageInfo,
     TestPolicyManageList
   },
   data () {
