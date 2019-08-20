@@ -1713,6 +1713,7 @@ export default {
             )
             .forEach(function(item) {
               item.forceTitle = undefined
+              item.picturePreset = undefined
             })
 
           delete contentItem.mallResize

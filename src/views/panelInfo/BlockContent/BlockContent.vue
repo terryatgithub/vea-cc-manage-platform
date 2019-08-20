@@ -242,11 +242,15 @@ export default {
       this.validateCurrentContent(() => {
         // 验证所有资源
         const normalContentList = this.normalContentList
+        const normalContentListLength = normalContentList.length
         const resourcesIndexed = {}
         const idFieldMap = {
           media: 'extraValue1',
           block: 'vContentId',
           mall: 'extraValue1'
+        }
+        if (normalContentListLength > 100) {
+          return this.error(`通用内容最多配 100 个, 当前 ${normalContentListLength}`)
         }
         for (let i = 0, length = normalContentList.length; i < length; i++) {
           const content = normalContentList[i]
