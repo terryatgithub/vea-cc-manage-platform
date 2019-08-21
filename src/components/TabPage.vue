@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'tab-page': true, 'tab-page--lock-scroll': modals.size > 0 }">
+  <div :class="{'tab-page': true, 'tab-page--lock-scroll': modals.length > 0 }">
     <slot></slot>
   </div>
 </template>
@@ -8,7 +8,7 @@
 export default {
   data() {
     return {
-      modals: new Set(),
+      modals: [],
       originScrollTop: undefined
     }
   },
@@ -21,14 +21,16 @@ export default {
     toggleLockScroll(val, id) {
       const modals = this.modals
       if (val) {
-        if (modals.size <= 0) {
+        if (modals.length <= 0) {
           this.originScrollTop = this.$el.scrollTop
         }
-        modals.add(id)
+        if (modals.indexOf(id) === -1) {
+          modals.push(id)
+        }
         this.$el.scroll({top: 0})
       } else {
-        modals.delete(id)
-        if (modals.size <= 0 && this.originScrollTop !== undefined) {
+        this.modals = modals.filter(item => item !== id)
+        if (modals.length <= 0 && this.originScrollTop !== undefined) {
           this.$el.scroll({top: this.originScrollTop})
         }
       }
