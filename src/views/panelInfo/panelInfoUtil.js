@@ -68,9 +68,9 @@ export function setMediaContent(contentForm, options) {
       const prefix = prefixMap[partner]
       contentForm.contentType = 0
       contentForm.videoContentType = 'movie'
-      if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVid) {
-        // 如果是短视频, 并且 thirdVid 存在
-        contentForm.extraValue1 = prefix + selectedEpisode.thirdVid
+      if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
+        // 如果是短视频, 并且 thirdVId 存在
+        contentForm.extraValue1 = prefix + selectedEpisode.thirdVId
       } else {
         contentForm.extraValue1 = prefix + selected.coocaaVId
       }
