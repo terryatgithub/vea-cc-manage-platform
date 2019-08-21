@@ -46,7 +46,10 @@ export function setMediaContent(contentForm, options) {
     vContentId: '',
     blockResourceType: '',
     platformId: '',
-    versionCode: ''
+    versionCode: '',
+    extraValue1: '',
+    extraValue4: '',
+    extraValue5: ''
   })
   if (selectedType === 'video') {
     // 影视中心
