@@ -575,7 +575,10 @@ export default {
       activePanelGroup: undefined,
 
       showAddTagDialog: false,
-      sharedTags: []
+      sharedTags: [],
+
+      // 用在 watcher 中，设置一个标识表示是否人为更新数据，避免 watcher 逻辑执行
+      isResetingData: false
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -704,7 +707,8 @@ export default {
       if (val === 'group') {
         this.pannel.showTitle = 1
       }
-    }
+    },
+    'pannel.focusConfig': 'handleFocusConfigChange'
   },
   methods: {
     toPercent: decimal => {
@@ -777,6 +781,9 @@ export default {
       })
     },
     handleFocusConfigChange(val) {
+      if (this.isResetingData) {
+        return
+      }
       if (val === 'week') {
         const pannel = this.pannel
         const pannelList = pannel.pannelList
@@ -2059,68 +2066,76 @@ export default {
           this.$emit('upsert-end')
         })
     },
+    resetingData(cb) {
+      this.isResetingData = true
+      cb()
+      this.$nextTick(() => {
+        this.isResetingData = false
+      })
+    },
     setPanelInfoData(panelInit) {
-      const initData = panelInit
-      const pannel = this.pannel
-      const pannelList = initData.pannelList || []
-      const firstPannel = pannelList[0]
-      Object.assign(pannel, panelInit)
-      pannel.pannelName = panelInit.pannelGroupRemark
+      this.resetingData(() => {
+        const initData = panelInit
+        const pannel = this.pannel
+        const pannelList = initData.pannelList || []
+        const firstPannel = pannelList[0]
+        Object.assign(pannel, panelInit)
+        pannel.pannelName = panelInit.pannelGroupRemark
 
-      if (firstPannel) {
-        firstPannel.contentList = firstPannel.contentList || []
-        this.blockCountList = pannelList.map(function(item) {
-          return item.contentList.length
-        })
-        pannel.pannelList = pannelList.map(function(item) {
-          item.contentList = item.contentList.map(function(contentItem) {
-            contentItem.contentPosition = JSON.parse(
-              contentItem.contentPosition
-            )
-            ;[]
-              .concat(
-                contentItem.videoContentList || [],
-                contentItem.specificContentList || []
-              )
-              .forEach(function(item) {
-                if (item.price == -1) {
-                  item.price = ''
-                }
-                if (item.secKillPrice == -1) {
-                  item.secKillPrice = ''
-                }
-              })
-            return contentItem
+        if (firstPannel) {
+          firstPannel.contentList = firstPannel.contentList || []
+          this.blockCountList = pannelList.map(function(item) {
+            return item.contentList.length
           })
-          if (item.timeSlot) {
-            const timeSlot = item.timeSlot.split(',')
-            item.startTime = new Date(timeSlot[0])
-            item.endTime = new Date(timeSlot[1])
+          pannel.pannelList = pannelList.map(function(item) {
+            item.contentList = item.contentList.map(function(contentItem) {
+              contentItem.contentPosition = JSON.parse(
+                contentItem.contentPosition
+              )
+              ;[]
+                .concat(
+                  contentItem.videoContentList || [],
+                  contentItem.specificContentList || []
+                )
+                .forEach(function(item) {
+                  if (item.price == -1) {
+                    item.price = ''
+                  }
+                  if (item.secKillPrice == -1) {
+                    item.secKillPrice = ''
+                  }
+                })
+              return contentItem
+            })
+            if (item.timeSlot) {
+              const timeSlot = item.timeSlot.split(',')
+              item.startTime = new Date(timeSlot[0])
+              item.endTime = new Date(timeSlot[1])
+            }
+            item.selectedResources = item.contentList
+            return item
+          })
+          pannel.pannelResource = firstPannel.pannelResource
+          pannel.flagIs4k = firstPannel.flagIs4k
+          pannel.showTitle = firstPannel.showTitle
+          pannel.focusShape = firstPannel.focusShape
+          pannel.pannelStatus = firstPannel.pannelStatus
+
+          const layout = firstPannel.layoutInfo
+          layout.layoutJsonParsed = JSON.parse(layout.layoutJson)
+          this.selectedLayout = layout
+
+          const firstBlock = firstPannel.contentList[0]
+          if (firstBlock) {
+            pannel.lucenyFlag = firstBlock.lucenyFlag
+            pannel.focusImgUrl = firstBlock.focusImgUrl
+            this.isShowfocusImgUrl = firstBlock.focusImgUrl
           }
-          item.selectedResources = item.contentList
-          return item
-        })
-        pannel.pannelResource = firstPannel.pannelResource
-        pannel.flagIs4k = firstPannel.flagIs4k
-        pannel.showTitle = firstPannel.showTitle
-        pannel.focusShape = firstPannel.focusShape
-        pannel.pannelStatus = firstPannel.pannelStatus
-
-        const layout = firstPannel.layoutInfo
-        layout.layoutJsonParsed = JSON.parse(layout.layoutJson)
-        this.selectedLayout = layout
-
-        const firstBlock = firstPannel.contentList[0]
-        if (firstBlock) {
-          pannel.lucenyFlag = firstBlock.lucenyFlag
-          pannel.focusImgUrl = firstBlock.focusImgUrl
-          this.isShowfocusImgUrl = firstBlock.focusImgUrl
         }
-      }
-      this.pannel = { ...pannel }
-      this.updateAllPosition()
-      this.getSharedTags()
-      this.$watch('pannel.focusConfig', this.handleFocusConfigChange)
+        this.pannel = { ...pannel }
+        this.updateAllPosition()
+        this.getSharedTags()
+      })
     },
     clickBlock() {
       const { initGroupIndex, initBlockIndex } = this
