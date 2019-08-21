@@ -431,11 +431,12 @@ export default {
   computed: {
     resourceInfo() {
       const form = this.form
+      const isTestPolicy = this.isTestPolicy
       if (form.policyId) {
         return {
           id: form.policyId,
           type: 'policy',
-          menuElId: 'policyConf',
+          menuElId: isTestPolicy ? 'testPolicyConf' : 'policyConf',
           version: form.currentVersion,
           status: form.policyStatus
         }
