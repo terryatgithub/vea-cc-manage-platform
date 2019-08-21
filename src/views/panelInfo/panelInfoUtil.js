@@ -59,19 +59,20 @@ export function setMediaContent(contentForm, options) {
         1: 'extraValue5',
         6: 'extraValue4'
       }
+      const prefixMap = {
+        tencent: '_otx_',
+        yinhe: '_oqy_',
+        youku: '_oyk_'
+      }
       const extraIdField = fieldMap[selectedEpisode.urlIsTrailer] || 'extraValue5'
+      const prefix = prefixMap[partner]
       contentForm.contentType = 0
       contentForm.videoContentType = 'movie'
-      if (partner === 'tencent') {
-        contentForm.extraValue1 = '_otx_' + selected.coocaaVId
-      } else if (partner === 'yinhe') {
-        contentForm.extraValue1 = '_oqy_' + selected.coocaaVId
-      } else if (partner === 'youku') {
-        contentForm.extraValue1 = '_oyk_' + selected.coocaaVId
-      }
       if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVid) {
         // 如果是短视频, 并且 thirdVid 存在
-        contentForm.extraValue1 = selectedEpisode.thirdVid
+        contentForm.extraValue1 = prefix + selectedEpisode.thirdVid
+      } else {
+        contentForm.extraValue1 = prefix + selected.coocaaVId
       }
       contentForm[extraIdField] = selectedEpisode.coocaaMId
       contentForm.singleId = selectedEpisode.coocaaMId
