@@ -64,14 +64,16 @@ export function setMediaContent(contentForm, options) {
       contentForm.videoContentType = 'movie'
       if (partner === 'tencent') {
         contentForm.extraValue1 = '_otx_' + selected.coocaaVId
-        contentForm[extraIdField] = selectedEpisode.coocaaMId
       } else if (partner === 'yinhe') {
         contentForm.extraValue1 = '_oqy_' + selected.coocaaVId
-        contentForm[extraIdField] = selectedEpisode.coocaaMId
       } else if (partner === 'youku') {
         contentForm.extraValue1 = '_oyk_' + selected.coocaaVId
-        contentForm[extraIdField] = selectedEpisode.coocaaMId
       }
+      if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVid) {
+        // 如果是短视频, 并且 thirdVid 存在
+        contentForm.extraValue1 = selectedEpisode.thirdVid
+      }
+      contentForm[extraIdField] = selectedEpisode.coocaaMId
       contentForm.singleId = selectedEpisode.coocaaMId
       contentForm.pictureUrl = selectedEpisode.thumb
       contentForm.title = selectedEpisode.urlTitle
