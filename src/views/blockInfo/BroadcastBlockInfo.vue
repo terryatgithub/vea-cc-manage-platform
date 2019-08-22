@@ -1090,19 +1090,21 @@ export default {
       switch (tabName) {
         case 'video': {
           const selectedEpisode = selected.selectedEpisodes
+          const prefix = (prefixMap[sourceType] || '')
           if (selectedEpisode) {
             if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
               // 如果是短视频, 并且 thirdVId 存在
+              s.thirdIdOrPackageName = prefix + selectedEpisode.thridVId
               s.sid = selectedEpisode.coocaaMId
             } else {
+              s.thirdIdOrPackageName = prefix + selected.coocaaVId
               s.vid = selectedEpisode.coocaaMId
             }
-            s.thirdIdOrPackageName = (prefixMap[sourceType] || '') + selectedEpisode.coocaaMId
             s.thumb = selectedEpisode.thumb
             s.title = selectedEpisode.urlTitle
             s.subTitle = selectedEpisode.urlSubTitle
           } else {
-            s.thirdIdOrPackageName = (prefixMap[sourceType] || '') + selected.coocaaVId
+            s.thirdIdOrPackageName = prefix + selected.coocaaVId
             s.pictureUrl = selected.thumb
             s.title = selected.title
             s.subTitle = selected.subTitle
