@@ -345,7 +345,9 @@ export default {
     },
     handleSelectEpisode(movie) {
       this.currentVideoId = movie.coocaaVId
-      this.$refs.episodeSelector.$refs.wrapper.handleSelectStart()
+      this.$nextTick(() => {
+        this.$refs.episodeSelector.$refs.wrapper.handleSelectStart()
+      })
     },
     handleSelectEpisodeEnd(episodes) {
       const currentVideoId = this.currentVideoId

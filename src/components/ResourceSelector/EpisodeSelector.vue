@@ -149,9 +149,6 @@ export default {
     }
   },
   props: ['selectionType', 'source', 'id'],
-  watch: {
-    'id': 'handleFilterReset'
-  },
   methods: {
     secondToTimeStr(seconds) {
       if (seconds) {
