@@ -1094,7 +1094,7 @@ export default {
           if (selectedEpisode) {
             if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
               // 如果是短视频, 并且 thirdVId 存在
-              s.thirdIdOrPackageName = prefix + selectedEpisode.thridVId
+              s.thirdIdOrPackageName = prefix + selectedEpisode.thirdVId
               s.sid = selectedEpisode.coocaaMId
             } else {
               s.thirdIdOrPackageName = prefix + selected.coocaaVId
