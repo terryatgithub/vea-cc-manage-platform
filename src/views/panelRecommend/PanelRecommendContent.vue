@@ -8,7 +8,7 @@
         </div>
         <DataForm label-width="120px">
           <DataString label="版块ID" 
-            v-model="panelRecommend.panelGroupName" 
+            v-model="panelRecommend.panelGroupId" 
             :readonly="true" />
           <DataString label="版块名称" 
             v-model="panelRecommend.panelGroupName" 

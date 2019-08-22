@@ -14,9 +14,9 @@
         @delete="handleDelete"
         >
         </ButtonGroupForListPage> -->
-      <div style="margin: 5px 0 10px 0">
+      <!-- <div style="margin: 5px 0 10px 0">
         <el-button type="primary" @click="handleEdit">编辑</el-button>
-      </div>
+      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
@@ -69,17 +69,18 @@ export default {
             minWidth: '180',
             'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
-              return createElement('el-button', {
-                attrs: {
-                  type: 'text'
-                },
-                on: {
-                  click: (event) => {
-                    event.stopPropagation()
-                    this.handleRead(row, row.panelGroupVersion)
-                  }
-                }
-              }, row.panelGroupName)
+              return row.panelGroupName
+            //   return createElement('el-button', {
+            //     attrs: {
+            //       type: 'text'
+            //     },
+            //     on: {
+            //       click: (event) => {
+            //         event.stopPropagation()
+            //         this.handleRead(row, row.panelGroupVersion)
+            //       }
+            //     }
+            //   }, row.panelGroupName)
             }
           },
           {
