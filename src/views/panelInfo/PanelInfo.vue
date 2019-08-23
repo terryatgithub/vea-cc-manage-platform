@@ -2077,7 +2077,7 @@ export default {
     },
     getSimpleBrowseData() {
       this.$service.getPanelSimpleBrowseData({id: this.id}).then(data => {
-        const panelUVCTR = data.rows[0].data[0].uvctr
+        const panelUVCTR = data.rows[0].data[0] ? data.rows[0].data[0].uvctr : 'N/A'
         this.panelUVCTR = panelUVCTR
         panelUVCTR.dailyGrowth ? this.panelUVCTRPercent.dailyGrowth = this.toArrowPercent(panelUVCTR.dailyGrowth) : 'N/A'
         panelUVCTR.weeklyGrowth ? this.panelUVCTRPercent.weeklyGrowth = this.toArrowPercent(panelUVCTR.weeklyGrowth) : 'N/A'

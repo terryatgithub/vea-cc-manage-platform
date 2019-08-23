@@ -2577,7 +2577,7 @@ export default {
     },
     getSimpleBrowseData() {
       this.$service.getTabSimpleBrowseData({ id: this.id }).then(data => {
-        const tabUVCTR = data.rows[0].data[0].uvctr
+        const tabUVCTR = data.rows[0].data[0] ? data.rows[0].data[0].uvctr : 'N/A'
         this.tabUVCTR = tabUVCTR
         tabUVCTR.dailyGrowth ? this.tabUVCTRPercent.dailyGrowth = this.toArrowPercent(tabUVCTR.dailyGrowth) : 'N/A'
         tabUVCTR.weeklyGrowth ? this.tabUVCTRPercent.weeklyGrowth = this.toArrowPercent(tabUVCTR.weeklyGrowth) : 'N/A'

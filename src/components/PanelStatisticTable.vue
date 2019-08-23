@@ -23,7 +23,7 @@
             size: 'small',
             'row-style': () => { return "height: 20px" },
             'cell-style': () => { return "padding: 0; text-align: center" },
-            'header-cell-style': () => { return "padding: 0" }
+            'header-cell-style': () => { return "padding: 0; text-align: center" }
           },
           header: [
             {
@@ -81,8 +81,8 @@
             border: true,
             size: 'small',
             'row-style': () => { return "height: 20px" },
-            'cell-style': () => { return "padding: 0" },
-            'header-cell-style': () => { return "padding: 0" }
+            'cell-style': () => { return "padding: 0; text-align: center" },
+            'header-cell-style': () => { return "padding: 0; text-align: center" }
           },
           header: [
             {
@@ -154,23 +154,40 @@
           const rows = data.rows[0].data
           let clickUvData = []
           let uvctrData = []
-          rows.map(item => {
+          rows.forEach(item => {
             let clickUvRow = {}
             let uvctrRow = {}
+            if(!item.date) {
+              clickUvRow = {
+                date: '-',
+                clickUv: '-',
+                dailyGrowth: '-',
+                weeklyGrowth: '-'
+              }
+              uvctrRow = {
+                date: '-',
+                uvctr: '-',
+                dailyGrowth: '-',
+                weeklyGrowth: '-'
+              }
+              clickUvData.push(clickUvRow)
+              uvctrData.push(uvctrRow)
+              return
+            }
             const date = this.getDateday(item.date)
             const clickUv = item.clickUv
             const uvctr = item.uvctr
             clickUvRow = {
               date: date,
               clickUv: clickUv.value,
-              dailyGrowth: this.toArrowPercent(clickUv.dailyGrowth),
-              weeklyGrowth: this.toArrowPercent(clickUv.weeklyGrowth)
+              dailyGrowth: clickUv.dailyGrowth ? this.toArrowPercent(clickUv.dailyGrowth) : '-',
+              weeklyGrowth: clickUv.weeklyGrowth ? this.toArrowPercent(clickUv.weeklyGrowth) : '-'
             }
             uvctrRow = {
               date,
               uvctr: this.toPercent(uvctr.value),
-              dailyGrowth: this.toArrowPercent(uvctr.dailyGrowth),
-              weeklyGrowth: this.toArrowPercent(uvctr.weeklyGrowth)
+              dailyGrowth: uvctr.dailyGrowth ? this.toArrowPercent(uvctr.dailyGrowth) : '-',
+              weeklyGrowth: uvctr.weeklyGrowth ? this.toArrowPercent(uvctr.weeklyGrowth) : '-'
             }
             clickUvData.push(clickUvRow)
             uvctrData.push(uvctrRow)
