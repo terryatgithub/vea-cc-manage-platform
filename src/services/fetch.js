@@ -6,12 +6,16 @@ export default function fetch({
   url,
   data,
   params,
-  isJSON = false
+  isJSON = false,
+  useLoading = true
 }) {
-  const loading = Vue.prototype.$loading({
-    lock: true,
-    body: true
-  })
+  let loading
+  if (useLoading) {
+    loading = Vue.prototype.$loading({
+      lock: true,
+      body: true
+    })
+  }
   let option = {
     method,
     url,
@@ -20,7 +24,9 @@ export default function fetch({
   }
   return axios(option)
     .then(function ({ data }) {
-      loading.close()
+      if (loading) {
+        loading.close()
+      }
       if (typeof data.success !== 'undefined' && typeof data.msg !== 'undefined') { // 返回success
         if (!data.success) {
           throw new Error(data.msg)
@@ -63,7 +69,9 @@ export default function fetch({
       }
     })
     .catch(e => {
-      loading.close()
+      if (loading) {
+        loading.close()
+      }
       throw e
     })
 }

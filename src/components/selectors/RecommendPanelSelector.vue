@@ -4,13 +4,13 @@
     :title="title"
     custom-class="resource-selector"
     :disabled="disabled"
+    :is-live="isLive"
     @select-start="handleSelectStart">
     <template slot="content" slot-scope="{isShow}">
       <BaseSelector
         v-if="isLive ? true : isShow"
         ref="baseSelector"
         id-field="panelGroupId"
-        :is-live="isLive"
         :selection-type="selectionType"
         :table="table"
         :pagination="pagination"
@@ -90,7 +90,7 @@ export default {
             'show-overflow-tooltip': true
           },
           {
-            label: '板块组标题',
+            label: '版块组标题',
             prop: 'panelGroupTitle',
             'show-overflow-tooltip': true
           },
@@ -117,7 +117,11 @@ export default {
   methods: {
     handleSelectStart() {
       this.$emit('select-start')
-      this.fetchData()
+      if (!this.isLive) {
+        this.handleResetFilter()
+      } else {
+        this.fetchData()
+      }
     },
     handleSelectCancel() {
       this.$refs.wrapper.handleSelectCancel()

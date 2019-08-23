@@ -79,11 +79,14 @@ export default {
             label: '短视频时长',
             prop: 'mDuration',
             render: (h, { row }) => {
-              const mDuration = row.mDuration
-              const hour = Math.floor(mDuration / 3600)
-              const min = Math.floor((mDuration - 3600 * hour) / 60)
-              const sec = mDuration - 3600 * hour - 60 * min
-              return `${hour}小时${min}分${sec}秒`
+              return this.secondToTimeStr(row.mDuration)
+            }
+          },
+          {
+            label: '平均播放时长',
+            prop: 'avgPerplayTimeSec',
+            render: (h, { row }) => {
+              return this.secondToTimeStr(row.avgPerplayTimeSec)
             }
           },
           {
@@ -102,6 +105,14 @@ export default {
     }
   },
   methods: {
+    secondToTimeStr(seconds) {
+      if (seconds) {
+        const hour = Math.floor(seconds / 3600)
+        const min = Math.floor((seconds - 3600 * hour) / 60)
+        const sec = seconds - 3600 * hour - 60 * min
+        return `${hour}小时${min}分${sec}秒`
+      }
+    },
     handleSelectParentVideoEnd({ video, episode, edu }) {
       let pThirdVId
       if (video.length > 0) {

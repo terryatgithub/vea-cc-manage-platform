@@ -212,7 +212,7 @@ const children = [
         path: '/panelRecommend',
         component: PanelRecommend,
         meta: {
-          title: '板块推荐流管理',
+          title: '版块推荐流管理',
           tagId: 'panelRecommend'
         }
       }

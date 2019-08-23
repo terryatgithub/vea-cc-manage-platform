@@ -74,7 +74,7 @@ export default {
       viewFilter: {}
     }
   },
-  props: ['idField', 'filter', 'filterSchema', 'table', 'pagination', 'selectionType', 'selectEndOnDblClick'],
+  props: ['idField', 'filter', 'filterSchema', 'table', 'pagination', 'selectionType', 'selectEndOnDblClick', 'selectEndOnClick'],
   computed: {
     tableProps() {
       const originProps = this.table.Props || {}
@@ -135,6 +135,9 @@ export default {
     handleTableRowSelectionChange(item, index) {
       this.selected = [item]
       this.tableSelected = index
+      if (this.selectEndOnClick && this.selectionType === 'single') {
+        this.handleSelectEnd()
+      }
     },
     handleTableRowSelectionAdd(targetItem) {
       this.selected = this.selected.concat(targetItem)

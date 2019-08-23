@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <TabPage>
     <TabInfoList
       v-show="isShowList"
       ref="list"
@@ -19,13 +19,15 @@
       @upsert-end="handleUpsertEnd"
       @go-back="goBack"
     ></TabInfo>
-  </div>
+  </TabPage>
 </template>
 <script>
+import TabPage from '@/components/TabPage'
 import TabInfoList from './TabInfoList'
 import TabInfo from './TabInfo'
 export default {
   components: {
+    TabPage,
     TabInfoList,
     TabInfo
   },

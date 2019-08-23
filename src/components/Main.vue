@@ -146,9 +146,102 @@ const routerMap = {
   topic: 'topic',
   topicConfig: 'topicConfig',
 
-  // 板块推荐
+  // 版块推荐
   panelRecommend: 'panelRecommend',
 }
+
+const iconMap = {
+  // 轮播管理
+  rotateStation: 'el-icon-cc-interation',
+  rotateStationCategory: 'el-icon-cc-right-square',
+  rotateStationCategory_viewStation: 'el-icon-cc-down-square',
+  rotateTopicInfo: 'el-icon-cc-down-square',
+
+  // 点播资源管理
+  ownMediaResManage: 'el-icon-cc-fund',
+  rankingListManage: 'el-icon-cc-fund',
+  ccShortVideoConnectPositiveDetail: 'el-icon-cc-fund',
+  rightsContentManage: 'el-icon-cc-fund',
+
+  broadcastBlock: 'el-icon-cc-gold',
+  multiFunctionBlock: 'el-icon-cc-control',
+  sysPlugin: 'el-icon-cc-minus-square',
+
+  blockInfo: 'el-icon-cc-appstore',
+  blockManage: 'el-icon-cc-border',
+  albumPannelInfo: 'el-icon-cc-block',
+  markPanel: 'el-icon-cc-table',
+  pannelInfo: 'el-icon-cc-block',
+  privatePannelInfo: 'el-icon-cc-gateway',
+
+  videoOnDemand: 'el-icon-cc-tablet',
+
+  commonModule: 'el-icon-cc-cloud',
+  commonOnclickInfo: 'el-icon-cc-attachment',
+  globalCornerIcon: 'el-icon-cc-image',
+  globalCornerIconType: 'el-icon-cc-fund',
+  globalPicture: 'el-icon-cc-file-image',
+  layoutInfo: 'el-icon-cc-build',
+
+  commonResource: 'el-icon-cc-star',
+  commonAlbumPanneleUser: 'commonAlbumPanneleUser',
+  commonPannelUser: 'commonPannelUser',
+  commonTabUser: 'commonTabUser',
+
+  slaveBizErrLog: 'slaveBizErrLog',
+  slaveSecondAudit: 'slaveSecondAudit',
+  actDmpGroupInfo: 'actDmpGroupInfo',
+
+  homePageManage: 'el-icon-cc-bank',
+  homepageInfo: 'el-icon-cc-home',
+  policyConf: 'el-icon-cc-fork',
+  testPolicyConf: 'el-icon-cc-branches',
+
+  panelManage: 'el-icon-cc-layout',
+  tabInfo: 'el-icon-cc-pic-center',
+  businessTab: 'el-icon-cc-pic-right',
+  filmDetailPage: 'el-icon-cc-pic-left',
+
+  resourceMgr: 'el-icon-cc-folder-open',
+  videoContent: 'el-icon-cc-video',
+  videoDataList: 'el-icon-cc-file-copy',
+
+  dataSyncMgr: 'el-icon-cc-sync',
+
+  sysConfig: 'el-icon-cc-setting',
+  adminMasterControl: 'adminMasterControl',
+  dict: 'dataDictionary',
+  baDept: 'baDept',
+  roleConfig: 'roleConfig',
+  sysLogLogin: 'sysLogLogin',
+  sysLogOp: 'sysLogOp',
+  sysMenu: 'sysMenu',
+  userConfig: 'userConfig',
+
+  themeManage: 'el-icon-cc-font-colors',
+  themeInfo: 'el-icon-cc-font-size',
+
+
+  msn: 'el-icon-cc-database',
+  todoTask: 'el-icon-cc-edit-square',
+  myDrafts: 'el-icon-cc-database',
+  myReviewTasks: 'el-icon-cc-database',
+  mySubmitTasks: 'el-icon-cc-database',
+
+  adBitMgr: 'el-icon-cc-banner',
+  filmDetailAdBit: 'el-icon-cc-calendar-check',
+
+  dirCrowdManager: 'el-icon-cc-team',
+
+  // 短视频
+  svMgr: 'el-icon-cc-play-square',
+  topic: 'el-icon-cc-message',
+  topicConfig: 'el-icon-cc-notification',
+
+  // 版块推荐
+  panelRecommend: 'el-icon-cc-border-outer',
+}
+
 export default {
   components: {
     Menu,
@@ -292,7 +385,7 @@ export default {
           }
           titles[menu.id] = menu.text
           const item = {
-            icon: menu.icon,
+            icon: iconMap[menu.id],
             route: menu.id,
             title: menu.text
           }
@@ -324,7 +417,9 @@ export default {
   },
   mounted() {
     this.$bus.$on('scroll-top', () => {
-      this.$refs.main.$el.scrollTo(0, 0)
+      if (this.$refs.main) {
+        this.$refs.main.$el.scrollTo(0, 0)
+      }
     })
     //  this.saveTags()
     window.addEventListener('beforeunload', this.saveTags)

@@ -9,28 +9,28 @@
     @filter-reset="handleFilterReset"
     @pagination-change="fetchData"
     @select-end="handleSelectEnd"
-    @select-start="fetchData"
+    @select-start="handleSelectStart"
     :disabled="disabled"
   >
     <el-collapse 
+      v-if="presetTable.data.length > 0"
       slot="prepend" 
       class="rel-picture-wrapper"
       v-model="collapseActiveItems">
       <el-collapse-item title="关联图片" name="relPicture">
         <CardList
           class="rel-picture-list"
-          :data="table.data"
-          :selected="table.selected"
-          :selection-type="table.selectionType"
+          :data="presetTable.data"
+          :selected="presetTable.selected"
+          selection-type="single"
           :select-on-row-click="true"
-          @row-selection-change="handleRowSelectionChange">
+          @row-selection-change="handlePresetTableRowSelectionChange">
           <div class="picture-item" slot="row" slot-scope="{row: item}">
             <div class="img-wrapper">
               <img class="list-img" :src="item.pictureUrl">
             </div>
-            <p>{{item.pictureName}}</p>
             <div>
-              {{ item.pictureId }} / {{ $consts.statusText[item.pictureStatus] }} / {{item.pictureResolution}}
+              {{ item.pictureResolution }}
             </div>
           </div>
         </CardList>
@@ -45,10 +45,10 @@
       :select-on-row-click="true"
       @row-selection-change="handleRowSelectionChange">
       <div class="picture-item" slot="row" slot-scope="{row: item}">
-        <p class="img-wrapper">
+        <div class="img-wrapper">
           <img class="list-img" :src="item.pictureUrl">
-        </p>
-        <p>{{item.pictureName}}</p>
+        </div>
+        <div>{{item.pictureName}}</div>
         <div>
           {{ item.pictureId }} / {{ $consts.statusText[item.pictureStatus] }} / {{item.pictureResolution}}
         </div>
@@ -69,7 +69,7 @@ export default {
     CardList,
     RemoteSelectorWrapper
   },
-  props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled'],
+  props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled', 'resource'],
   data() {
     return {
       collapseActiveItems: ['relPicture'],
@@ -88,13 +88,20 @@ export default {
         currentPage: 1,
         pageSize: 15
       },
+      selectedCollection: 'normal', // 'normal' 是正常选择， 'preset' 是预置图片
       selected: [],
       table: {
         props: {},
         data: [],
         selected: undefined,
         selectionType: 'single'
-      }
+      },
+      presetTable: {
+        data: [],
+        selected: undefined
+      },
+      // 与资源关联的海报
+      picturePreset: []
     }
   },
   methods: {
@@ -108,6 +115,7 @@ export default {
       return filter
     },
     handleRowSelectionChange(row, index) {
+      this.selectedCollection = 'normal'
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
     },
@@ -152,10 +160,65 @@ export default {
         })
       })
     },
+    handleSelectStart() {
+      this.getPresetPictures()
+      this.fetchData()
+    },
     handleSelectEnd() {
-      const { data, selected } = this.table
+      const selectedCollection = this.selectedCollection
+      const table = selectedCollection === 'preset' ? this.presetTable : this.table
+      const { data, selected } = table
       this.$emit('select-end', data[selected])
       this.table.selected = undefined
+    },
+    handlePresetTableRowSelectionChange(row, index) {
+      this.selectedCollection = 'preset'
+      this.presetTable.selected = index
+      this.$refs.selectorWrapper.handleSelectEnd()
+    },
+    getPresetPictures() {
+      const resource = this.resource
+      const mapPictures = (items) => items.map((item) => {
+        return {
+          pictureResolution: item.size,
+          pictureUrl: item.url
+        }
+      })
+      const filterPictures = (items) => {
+        const resolution = this.pictureResolution.split('*')
+        const [width, height] = resolution
+        return items.filter(item => {
+          const pictureResolution = item.pictureResolution.split('*')
+          const [pWidth, pHeight] = pictureResolution
+          return Math.abs(pWidth - width) < 5 && Math.abs(pHeight - height) < 5
+        })
+      }
+
+      if (resource && resource.coverType === 'media') {
+        if (resource.picturePreset) {
+          this.presetTable.data = filterPictures(mapPictures(resource.picturePreset))
+          return
+        } 
+
+        const resourceId = resource.extraValue1
+        if (resourceId) {
+          const options = {
+            id: resourceId,
+            resType: 'vod',
+            callbackparam: 'result',
+            page: 1,
+            rows: 1
+          }
+          this.$service.getMediaVideoInfos(options).then((result) => {
+            const rows = result.rows || []
+            const targetResource = rows[0]
+            if (targetResource) {
+              const picturePreset = targetResource.imageInfoList || []
+              this.presetTable.data = filterPictures(mapPictures(picturePreset))
+            }
+          })
+        }
+      }
     }
   },
   created() {
@@ -231,6 +294,7 @@ export default {
     this.getMaterialTypes().then(() => {
       this.filterSchema = filterSchema
     })
+
   }
 }
 </script>

@@ -7,10 +7,10 @@
           <el-button v-if="mode === 'read'" type="primary" @click="mode = 'edit'">编辑</el-button>
         </div>
         <DataForm label-width="120px">
-          <DataString label="板块ID" 
-            v-model="panelRecommend.panelGroupName" 
+          <DataString label="版块ID" 
+            v-model="panelRecommend.panelGroupId" 
             :readonly="true" />
-          <DataString label="板块名称" 
+          <DataString label="版块名称" 
             v-model="panelRecommend.panelGroupName" 
             :readonly="true" />
           <DataEnum label="内容源" 
@@ -25,7 +25,7 @@
                 :key="index">
                 <el-checkbox 
                   :disabled="mode === 'read'"
-                  @input="handleInputCategoryItem($event, item.value)"
+                  @input="handleInputCategoryItem(item.value)"
                   :value="panelRecommend.panelGroupCategory.indexOf(item.value) > -1" 
                   :label="item.label">
                 </el-checkbox>
@@ -60,7 +60,7 @@ export default {
   mixins: [titleMixin],
   data() {
     return {
-      resourceName: '板块推荐流',
+      resourceName: '版块推荐流',
       mode: 'create',
       panelRecommend: {
         panelGroupId: '',
@@ -76,10 +76,10 @@ export default {
   },
   props: ['id', 'initMode'],
   methods: {
-    handleInputCategoryItem(isChecked, category) {
+    handleInputCategoryItem(category) {
       const panelRecommend = this.panelRecommend
       const panelGroupCategory = panelRecommend.panelGroupCategory
-      if (isChecked) {
+      if (panelGroupCategory.indexOf(category) === -1) {
         panelGroupCategory.push(category)
       } else {
         panelRecommend.panelGroupCategory = panelGroupCategory.filter(item => item !== category )

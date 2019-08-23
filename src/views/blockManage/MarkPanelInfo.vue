@@ -119,7 +119,7 @@ export default {
     return {
       STATUS,
       mode: 'create',
-      resourceName: '功能板块',
+      resourceName: '功能版块',
       showTimeShelf: false,
       releaseTime: undefined,
       form: {

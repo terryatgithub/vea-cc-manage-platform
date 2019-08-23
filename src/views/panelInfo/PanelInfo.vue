@@ -405,6 +405,8 @@ import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 import TagFrame from './TagFrame'
 import VeLine from 'v-charts/lib/line.common'
 
+import { genResourceContentList, getMatchedPictureUrl } from './panelInfoUtil'
+
 export default {
   mixins: [titleMixin],
   components: {
@@ -573,7 +575,10 @@ export default {
       activePanelGroup: undefined,
 
       showAddTagDialog: false,
-      sharedTags: []
+      sharedTags: [],
+
+      // 用在 watcher 中，设置一个标识表示是否人为更新数据，避免 watcher 逻辑执行
+      isResetingData: false
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -639,8 +644,8 @@ export default {
       const contentTypeMap = {
         movie: true,
         edu: true,
-        shopping: true,
-        app: true
+        shopping: false,
+        app: false
       }
       this.pannel.pannelList.forEach(function(item) {
         item.contentList.forEach(function(blockItem) {
@@ -702,7 +707,8 @@ export default {
       if (val === 'group') {
         this.pannel.showTitle = 1
       }
-    }
+    },
+    'pannel.focusConfig': 'handleFocusConfigChange'
   },
   methods: {
     toPercent: decimal => {
@@ -775,6 +781,9 @@ export default {
       })
     },
     handleFocusConfigChange(val) {
+      if (this.isResetingData) {
+        return
+      }
       if (val === 'week') {
         const pannel = this.pannel
         const pannelList = pannel.pannelList
@@ -963,17 +972,23 @@ export default {
           function(result) {
             const insertAfter = result.value || 1
             const selectedLayout = this.selectedLayout
+            /** 
             const selectedViedos = selectedResources.video.map(function(item) {
               const episode = selectedEpisodes[item.coocaaVId]
               let finalItem
               if (episode) {
+                const fieldMap = {
+                  0: 'extraValue5',
+                  1: 'extraValue5',
+                  6: 'extraValue4'
+                }
+                const extraIdField = fieldMap[episode.urlIsTrailer] || 'extraValue5'
                 finalItem = {
                   contentType: 0, // ??
-
                   coverType: 'media',
                   videoContentType: 'movie',
                   extraValue1: getExtravue1(item.coocaaVId),
-                  extraValue5: episode.coocaaMId,
+                  [extraIdField]: episode.coocaaMId,
                   pictureUrl: episode.thumb,
                   title: episode.urlTitle,
                   subTitle: episode.urlSubTitle,
@@ -982,12 +997,13 @@ export default {
               } else {
                 finalItem = {
                   contentType: 0, // ??
-
                   coverType: 'media',
                   videoContentType: 'movie',
                   extraValue1: getExtravue1(item.coocaaVId),
                   extraValue5: undefined,
                   pictureUrl: item.thumb,
+                  // 候选图片列表，用于选出最合适尺寸第图片  
+                  picturePreset: item.imageInfoList,
                   title: item.title,
                   subTitle: item.urlSubTitle,
                   blockResourceType: 1
@@ -1033,6 +1049,7 @@ export default {
                 videoContentType: 'edu',
                 extraValue1: '_otx_' + item.coocaaVId,
                 pictureUrl: item.thumb,
+                picturePreset: item.imageInfoList,
                 title: item.title,
                 subTitle: item.subTitle,
                 blockResourceType: 1,
@@ -1124,18 +1141,17 @@ export default {
                 blockResourceType: -1
               }
             })
+            */
 
-            const resourcesToInsert = []
-              .concat(
-                selectedViedos,
-                selectedApps,
-                selectedEdus,
-                selectedLives,
-                selectedPPTVs,
-                selectedTopics,
-                selectedBroadcast,
-                selectedGood
-              )
+            const resourcesToInsert = genResourceContentList(selectedResources, {
+              // 把一些值置为为定义，
+              // 因为 gen 出来的默认数据结构只适用于推荐位详情里面，在外面没必要用
+              bgParams: undefined, 
+              cornerList: undefined,
+              redundantParams: undefined,
+              // 定义一个标识，在填充的时候，填充最合适尺寸的图片
+              shouldFindFitestPicture: true
+            })
               .map(function(item) {
                 return {
                   contentPosition: null,
@@ -1164,8 +1180,17 @@ export default {
               i++
             ) {
               if (i >= start && i <= end) {
-                newResources[i] = resourcesToInsert[i - start]
+                // 覆盖原来的
+                newResources[i] =  resourcesToInsert[i - start]
+                // 只覆盖第一个，后面的补上
+                const videoContentList = newResources[i].videoContentList
+                const originSelectedResources = activePannel.selectedResources[i] || {}
+                const originVideoContentList = originSelectedResources.videoContentList
+                if (originVideoContentList && originVideoContentList.length > 1) {
+                  newResources[i].videoContentList = videoContentList.concat(originVideoContentList.slice(1))
+                }
               } else {
+                // 新资源填充完毕，后面的还是原来的
                 newResources[i] = activePannel.selectedResources[i]
               }
             }
@@ -1514,36 +1539,49 @@ export default {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
-        const content = contentList[0]
-        // 有 extraValue1 才判断重复, 自定义不判断
-        if (
-          content &&
-          (content.coverType === 'media' || content.coverType === 'block')
-        ) {
-          let id
-          if (content.extraValue1) {
-            id =
-              content.contentType +
-              '/' +
-              content.extraValue1 +
-              (content.extraValue5 || '')
-          } else if (content.vContentId) {
-            id = content.contentType + '/' + content.vContentId
-          }
-
-          if (id) {
-            const duplicatedItem = resourceIndexed[id]
-            if (duplicatedItem) {
-              duplicatedItem.duplicated = true
-              resource.duplicated = true
-            } else {
-              resource.duplicated = false
-              resourceIndexed[id] = resource
-            }
-          }
-        } else {
-          resource.duplicated = false
+        const idFieldMap = {
+          media: 'extraValue1',
+          block: 'vContentId',
+          mall: 'extraValue1'
         }
+        // 有 extraValue1 才判断重复, 自定义不判断
+        contentList.forEach((content, contentIndex) => {
+          const coverType = content.coverType
+          const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall'
+          if (shouldCheck) {
+            let id = content[idFieldMap[coverType]]
+            if (id) {
+              // 单集的 extraValue1 相同，可能有 extraValue4 或 extraValue5
+              id = id + (content.extraValue4 || '') + (content.extraValue5 || '')
+              const duplicatedItem = resourceIndexed[id]
+              if (duplicatedItem) {
+                duplicatedItem.resource.duplicated = {
+                  // 与当前的重复
+                  index: duplicatedItem.index,
+                  contentIndex: duplicatedItem.contentIndex,
+                  duplicatedIndex: index,
+                  duplicatedContentIndex: contentIndex
+                }
+                resource.duplicated = {
+                  // 与上面的重复
+                  index,
+                  contentIndex,
+                  duplicatedIndex: duplicatedItem.index,
+                  duplicatedContentIndex: duplicatedItem.contentIndex
+                }
+              } else {
+                resource.duplicated = false
+                resourceIndexed[id] = {
+                  resource,
+                  index,
+                  contentIndex
+                }
+              }
+            }
+          } else {
+            resource.duplicated = false
+          }
+        })
 
         // 如果推荐位带标题，则强制显示标题
         ;[].concat(contentList, specificContentList).forEach(function(cItem) {
@@ -1562,6 +1600,15 @@ export default {
             cItem.showSubTitle = 0
           }
         })
+
+        // 获取最匹配的海报
+        const firstContent = contentList[0] || {}
+        const picturePreset = firstContent.picturePreset
+        if (firstContent.shouldFindFitestPicture && picturePreset) {
+          const size = [item.width, item.height]
+          firstContent.pictureUrl = getMatchedPictureUrl(size, picturePreset) 
+          firstContent.shouldFindFitestPicture = undefined
+        }
 
         resource.videoContentList = contentList
         resource.contentPosition = Object.assign({}, item, {
@@ -1675,6 +1722,7 @@ export default {
             )
             .forEach(function(item) {
               item.forceTitle = undefined
+              item.picturePreset = undefined
             })
 
           delete contentItem.mallResize
@@ -1779,8 +1827,11 @@ export default {
         const emptyTitleIndex = validateBlocksRes.emptyTitleIndex
         const emptyTitleBlockIndex = validateBlocksRes.emptyTitleBlockIndex
         const emptyBlock = validateBlocksRes.emptyBlock
-        const hasDuplicated = validateBlocksRes.hasDuplicated
+        const duplicatedIndex = validateBlocksRes.duplicatedIndex
+        const duplicatedInfo = validateBlocksRes.duplicatedInfo
         const focusIndex = validateBlocksRes.focusIndex
+
+        const isPanelGroup = pannel.parentType === 'group'
 
         if (this.isPanelCommonOrVideo) {
           if (!pannel.pannelResource) {
@@ -1849,6 +1900,19 @@ export default {
             )
           }
         }
+        if (duplicatedInfo) {
+          const prefix = isPanelGroup 
+            ?`第 ${duplicatedIndex + 1} 个分组`
+            : ''
+          return cb(`${prefix}第 ${duplicatedInfo.index + 1} 推荐位
+            第 ${duplicatedInfo.contentIndex + 1} 
+            个内容与第 ${duplicatedInfo.duplicatedIndex + 1} 个推荐位第 
+            ${duplicatedInfo.duplicatedContentIndex + 1} 个内容重复`)
+        }
+
+        if (emptyBlock) {
+          return cb('含有空推荐位')
+        }
 
         if (
           pannel.focusConfig === '' &&
@@ -1856,12 +1920,6 @@ export default {
           pannel.parentType === 'group'
         ) {
           return cb('请选择默认落焦')
-        }
-        if (emptyBlock) {
-          return cb('含有空推荐位')
-        }
-        if (hasDuplicated) {
-          return cb('含有重复推荐位内容')
         }
       }
       cb()
@@ -1886,7 +1944,8 @@ export default {
       let emptyTitleBlockIndex
 
       let emptyBlock
-      let hasDuplicated
+      let duplicatedIndex
+      let duplicatedInfo
       let focusIndex
 
       checkBlock:
@@ -1896,6 +1955,7 @@ export default {
           emptyPannelTitleIndex = i
           break checkBlock
         }
+
         // 标题重复检查
         const pannelTitle = pannel.pannelTitle.trim()
         if (pannelTitleIndex[pannelTitle]) {
@@ -1904,6 +1964,7 @@ export default {
         } else {
           pannelTitleIndex[pannelTitle] = true
         }
+
         // 落焦时间段重叠检查
         if (focusConfig === 'timeSlot') {
           if (!(pannel.startTime && pannel.endTime) && !pannel.panelIsFocus) {
@@ -1925,7 +1986,8 @@ export default {
             break checkBlock
           }
           if (content.duplicated) {
-            hasDuplicated = true
+            duplicatedIndex = i
+            duplicatedInfo = content.duplicated
             break checkBlock
           }
 
@@ -1966,7 +2028,8 @@ export default {
         emptyTitleIndex,
         emptyTitleBlockIndex,
         emptyBlock,
-        hasDuplicated,
+        duplicatedIndex,
+        duplicatedInfo,
         focusIndex
       }
     },
@@ -2003,68 +2066,76 @@ export default {
           this.$emit('upsert-end')
         })
     },
+    resetingData(cb) {
+      this.isResetingData = true
+      cb()
+      this.$nextTick(() => {
+        this.isResetingData = false
+      })
+    },
     setPanelInfoData(panelInit) {
-      const initData = panelInit
-      const pannel = this.pannel
-      const pannelList = initData.pannelList || []
-      const firstPannel = pannelList[0]
-      Object.assign(pannel, panelInit)
-      pannel.pannelName = panelInit.pannelGroupRemark
+      this.resetingData(() => {
+        const initData = panelInit
+        const pannel = this.pannel
+        const pannelList = initData.pannelList || []
+        const firstPannel = pannelList[0]
+        Object.assign(pannel, panelInit)
+        pannel.pannelName = panelInit.pannelGroupRemark
 
-      if (firstPannel) {
-        firstPannel.contentList = firstPannel.contentList || []
-        this.blockCountList = pannelList.map(function(item) {
-          return item.contentList.length
-        })
-        pannel.pannelList = pannelList.map(function(item) {
-          item.contentList = item.contentList.map(function(contentItem) {
-            contentItem.contentPosition = JSON.parse(
-              contentItem.contentPosition
-            )
-            ;[]
-              .concat(
-                contentItem.videoContentList || [],
-                contentItem.specificContentList || []
-              )
-              .forEach(function(item) {
-                if (item.price == -1) {
-                  item.price = ''
-                }
-                if (item.secKillPrice == -1) {
-                  item.secKillPrice = ''
-                }
-              })
-            return contentItem
+        if (firstPannel) {
+          firstPannel.contentList = firstPannel.contentList || []
+          this.blockCountList = pannelList.map(function(item) {
+            return item.contentList.length
           })
-          if (item.timeSlot) {
-            const timeSlot = item.timeSlot.split(',')
-            item.startTime = new Date(timeSlot[0])
-            item.endTime = new Date(timeSlot[1])
+          pannel.pannelList = pannelList.map(function(item) {
+            item.contentList = item.contentList.map(function(contentItem) {
+              contentItem.contentPosition = JSON.parse(
+                contentItem.contentPosition
+              )
+              ;[]
+                .concat(
+                  contentItem.videoContentList || [],
+                  contentItem.specificContentList || []
+                )
+                .forEach(function(item) {
+                  if (item.price == -1) {
+                    item.price = ''
+                  }
+                  if (item.secKillPrice == -1) {
+                    item.secKillPrice = ''
+                  }
+                })
+              return contentItem
+            })
+            if (item.timeSlot) {
+              const timeSlot = item.timeSlot.split(',')
+              item.startTime = new Date(timeSlot[0])
+              item.endTime = new Date(timeSlot[1])
+            }
+            item.selectedResources = item.contentList
+            return item
+          })
+          pannel.pannelResource = firstPannel.pannelResource
+          pannel.flagIs4k = firstPannel.flagIs4k
+          pannel.showTitle = firstPannel.showTitle
+          pannel.focusShape = firstPannel.focusShape
+          pannel.pannelStatus = firstPannel.pannelStatus
+
+          const layout = firstPannel.layoutInfo
+          layout.layoutJsonParsed = JSON.parse(layout.layoutJson)
+          this.selectedLayout = layout
+
+          const firstBlock = firstPannel.contentList[0]
+          if (firstBlock) {
+            pannel.lucenyFlag = firstBlock.lucenyFlag
+            pannel.focusImgUrl = firstBlock.focusImgUrl
+            this.isShowfocusImgUrl = firstBlock.focusImgUrl
           }
-          item.selectedResources = item.contentList
-          return item
-        })
-        pannel.pannelResource = firstPannel.pannelResource
-        pannel.flagIs4k = firstPannel.flagIs4k
-        pannel.showTitle = firstPannel.showTitle
-        pannel.focusShape = firstPannel.focusShape
-        pannel.pannelStatus = firstPannel.pannelStatus
-
-        const layout = firstPannel.layoutInfo
-        layout.layoutJsonParsed = JSON.parse(layout.layoutJson)
-        this.selectedLayout = layout
-
-        const firstBlock = firstPannel.contentList[0]
-        if (firstBlock) {
-          pannel.lucenyFlag = firstBlock.lucenyFlag
-          pannel.focusImgUrl = firstBlock.focusImgUrl
-          this.isShowfocusImgUrl = firstBlock.focusImgUrl
         }
-      }
-      this.pannel = { ...pannel }
-      this.updateAllPosition()
-      this.getSharedTags()
-      this.$watch('pannel.focusConfig', this.handleFocusConfigChange)
+        this.pannel = { ...pannel }
+        this.updateAllPosition()
+        this.getSharedTags()
+      })
     },
     clickBlock() {
       const { initGroupIndex, initBlockIndex } = this

@@ -10,59 +10,23 @@
     <el-collapse class="wrapper-collapse" v-model="activeNames">
       <el-collapse-item title="通用内容" name="normal">
         <el-form label-width="120px">
-          <el-form-item label="资源类别" prop="coverType">
-            <CommonSelector
-              :disabled="mode === 'read'"
-              type="radio"
-              :value="normalContentWrapper.props.coverType"
-              @input="handleInputNormalContentWrapperCoverType"
-              :options="coverTypeEnums"
-            />
-          </el-form-item>
           <el-form-item label="内容资源">
             <el-select v-show="mode !== 'read'" v-model="normalContentWrapper.selectionType" style="margin-bottom: 10px">
               <el-option value="manual" label="手动添加"></el-option>
             </el-select>
-            <template v-if="mode !== 'read'">
-              <div v-if="normalContentWrapper.props.coverType === 'media'">
-                <ResourceSelector
-                  ref="resourceSelector"
-                  :is-live="false"
-                  :disable-partner="!!source"
-                  :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
-                  selection-type="multiple"
-                  :source="source"
-                  @select-end="handleSelectMediaEnd"
-                >
-                  <el-button>选择资源</el-button>
-                </ResourceSelector>
-              </div>
-              <div v-if="normalContentWrapper.props.coverType === 'app'">
-                <ResourceSelector
-                  ref="resourceSelector"
-                  :is-live="false"
-                  :selectors="['app']"
-                  :disable-partner="!!source"
-                  selection-type="multiple"
-                  :source="source"
-                  @select-end="handleSelectAppEnd"
-                >
-                  <el-button>选择资源</el-button>
-                </ResourceSelector>
-              </div>
-              <div v-if="normalContentWrapper.props.coverType === 'mall'">
-                <ResourceSelector
-                  ref="resourceSelector"
-                  :is-live="false"
-                  :selectors="['good']"
-                  selection-type="multiple"
-                  :auto-fetch-selectors="['good']"
-                  @select-end="handleSelectGoodEnd"
-                >
-                  <el-button>选择商品</el-button>
-                </ResourceSelector>
-              </div>
-            </template>
+            <div v-if="mode !== 'read'">
+              <ResourceSelector
+                ref="resourceSelector"
+                :is-live="false"
+                :disable-partner="!!source"
+                :selectors="['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate', 'good']"
+                selection-type="multiple"
+                :source="source"
+                @select-end="handleSelectResourcesEnd"
+              >
+                <el-button>批量选择资源</el-button>
+              </ResourceSelector>
+            </div>
 
             <div class="normal-content-wrapper__list">
               <div class="added-contents-wrapper" :gutter="8">
@@ -107,7 +71,7 @@
               />
             </div>
           </el-form-item>
-          <el-form-item label="应用版本号" prop="versionCode" v-if="normalContentWrapper.props.coverType === 'media'">
+          <!-- <el-form-item label="应用版本号" prop="versionCode" v-if="normalContentWrapper.props.coverType === 'media'">
             <el-input v-model.trim="normalContentWrapper.props.versionCode" :disabled="mode === 'read'"></el-input>
           </el-form-item>
           <el-form-item
@@ -119,7 +83,7 @@
               <el-radio :label="0">否</el-radio>
               <el-radio :label="1">是</el-radio>
             </el-radio-group>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </el-collapse-item>
       <el-collapse-item v-show="contentForm.coverType !== 'block'" title="精细化定向内容" name="specific">
@@ -172,7 +136,10 @@ import draggable from 'vuedraggable'
 import BlockForm from './BlockForm'
 import CommonSelector from '@/components/CommonSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
-import { getSelectedResource, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
+import { 
+  genDefaultContentForm,
+  genResourceContentList
+} from '../panelInfoUtil'
 export default {
   components: {
     draggable,
@@ -232,55 +199,20 @@ export default {
     }
   },
   methods: {
-    handleInputNormalContentWrapperCoverType(coverType) {
-      if (this.mode === 'read') {
-        return
+    error(message) {
+      return this.$message({
+        type: 'error',
+        message
+      })
+    },
+    handleSelectResourcesEnd(resources) {
+      const contentPreset = {
+        coverType: this.isMall ? 'custom' : 'media',
+        // hideTitleOptions 表示强制需要标题，无法关闭
+        showTitle: this.hideTitleOptions ? 1 : 0,
       }
-      const props = this.normalContentWrapper.props
-      props.coverType = coverType
-      this.normalContentList = [this.genDefaultContentForm(props)]
-      if (coverType === 'block') {
-        // 清除定向内容
-        // 类型为 推荐位管理时 没有定向内容
-        this.specificContentList = []
-      }
-      this.activeIndex = 0
-    },
-    handleSelectMediaEnd(resources) {
-      const selectedResult = getSelectedResource(resources)
-      const selectedType = selectedResult.selectedType
-      const selected = selectedResult.selected
-      const selectedEpisode = selectedResult.selectedEpisode
-      const contentFormPreset = this.normalContentWrapper.props
-      const contentList = selected.map(item => {
-        const content = this.genDefaultContentForm(contentFormPreset)
-        setMediaContent(content, {
-          partner: selectedResult.partner,
-          selectedType,
-          selected: item, 
-          selectedEpisode: selectedEpisode[item.coocaaVId],
-        })
-        return content
-      })
-      this.normalContentList.splice(this.activeIndex, 1, ...contentList)
-    },
-    handleSelectAppEnd(resources) {
-      const contentFormPreset = this.normalContentWrapper.props
-      const contentList = resources.app.map((item) => {
-        const content = this.genDefaultContentForm(contentFormPreset)
-        setAppContent(content, item)
-        return content
-      })
-      this.normalContentList.splice(this.activeIndex, 1, ...contentList)
-    },
-    handleSelectGoodEnd(resources) {
-      const contentFormPreset = this.normalContentWrapper.props
-      const contentList = resources.good.map((item) => {
-        const content = this.genDefaultContentForm(contentFormPreset)
-        setGoodContent(content, item)
-        return content
-      })
-      this.normalContentList.splice(this.activeIndex, 1, ...contentList)
+      const contentList = genResourceContentList(resources, contentPreset)
+      this.normalContentList.splice(this.activeIndex, contentList.length, ...contentList)
     },
     getPictureUrl(pictureUrl) {
       if (pictureUrl) {
@@ -308,6 +240,39 @@ export default {
     },
     handleSave() {
       this.validateCurrentContent(() => {
+        // 验证所有资源
+        const normalContentList = this.normalContentList
+        const normalContentListLength = normalContentList.length
+        const resourcesIndexed = {}
+        const idFieldMap = {
+          media: 'extraValue1',
+          block: 'vContentId',
+          mall: 'extraValue1'
+        }
+        if (normalContentListLength > 100) {
+          return this.error(`通用内容最多配 100 个, 当前 ${normalContentListLength}`)
+        }
+        for (let i = 0, length = normalContentList.length; i < length; i++) {
+          const content = normalContentList[i]
+          const coverType = content.coverType
+          const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall'
+          let id = content[idFieldMap[coverType]]
+          if (id && shouldCheck) {
+            // 单集的 extraValue1 相同，可能有 extraValue4 或 extraValue5
+            id = id + (content.extraValue4 || '') + (content.extraValue5 || '')
+            const existsId = resourcesIndexed[id] 
+            if (existsId !== undefined) {
+              return this.error(`通用内容第 ${existsId + 1} 个资源与第 ${i + 1} 相同`)
+            } else {
+              resourcesIndexed[id] = i
+            }
+          }
+
+          if (!content.pictureUrl) {
+            return this.error(`第 ${i + 1} 个通用内容缺少内容海报`)
+          }
+        }
+
         this.$emit('save', {
           videoContentList: this.parseContentList(this.normalContentList),
           specificContentList: this.parseContentList(this.specificContentList)
@@ -318,68 +283,16 @@ export default {
       return {
         selectionType: 'manual',
         props: {
-          coverType: this.isMall ? 'custom' : 'media',
-          versionCode: '',
-          flagIsSetad: 0
         }
       }
     },
     genDefaultContentForm(preset) {
-      return {
-        // 如果是购物，默认是 custom 类型
+      const contentPreset = {
         coverType: this.isMall ? 'custom' : 'media',
-        title: '',
         // hideTitleOptions 表示强制需要标题，无法关闭
         showTitle: this.hideTitleOptions ? 1 : 0,
-        subTitle: '',
-        showSubTitle: 0,
-        singleSubTitle: '',
-        pictureUrl: '',
-        showSeries: 1,
-        showScore: 1,
-        alternativePictureUrl: '',
-        extraValue1: '',
-        extraValue5: '',
-        singleId: '',
-        vContentId: '',
-        resourceType: 0,
-        cornerList: [{}, {}],
-        blockResourceType: -1,
-        moviePercent: 100,
-        // 推荐位点击跳转
-        jumpType: 'detail',
-        versionCode: '',
-        price: '',
-        secKillPrice: '',
-        flagIsSetad: 0,
-        redundantParams: this.getDefaultParams(),
-        // Sprint2.8.2 背景图片和视频
-        bgImgUrl: '',
-        bgParams: {
-          id: '',
-          title: ''
-        },
-        bgType: '',
-        ...preset
       }
-    },
-    getDefaultParams() {
-      return {
-        openMode: 'app',
-        webpageUrl: '',
-        webpageType: '2',
-        videoName: '',
-        videoUrl: '',
-        pictureUrl: '',
-        tabId: '',
-        packagename: '',
-        versioncode: '-1',
-        dowhat: 'startActivity',
-        bywhat: 'action',
-        byvalue: '',
-        data: undefined,
-        params: [{ key: '', value: '' }]
-      }
+      return genDefaultContentForm(contentPreset)
     },
     handleCoverTypeChange(coverType) {
       if (this.mode === 'read') {
@@ -456,14 +369,12 @@ export default {
       }
     },
     validateCurrentContent(cb) {
-      this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
+      const contentForm = this.contentForm
+      this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
           cb()
         } else {
-          this.$message({
-            type: 'error',
-            message: err
-          })
+          return this.error(err)
         }
       })
     },
@@ -545,15 +456,8 @@ export default {
         ? normalContentList.map(parse)
         : [this.genDefaultContentForm()]
       this.specificContentList = specificContentList.map(parse)
-      
-      const normalContentWrapperProps = this.normalContentWrapper.props
-      const firstNormalContent = this.normalContentList[0]
-      ;['coverType', 'versionCode', 'flagIsSetad'].forEach((key) => {
-        normalContentWrapperProps[key] = firstNormalContent[key]
-      })
     },
     parseContentList(contentList) {
-      const normalContentWrapperProps = this.normalContentWrapper.props
       contentList = JSON.parse(JSON.stringify(contentList))
 
       function parse(content) {
@@ -696,11 +600,8 @@ export default {
           delete content.bgParams.title
           content.bgParams = JSON.stringify(content.bgParams)
         }
-        // contentWrapperProps
-        ;['coverType', 'versionCode', 'flagIsSetad'].forEach((key) => {
-          content[key] = normalContentWrapperProps[key]
-        })
 
+        delete content.picturePreset 
         delete content.redundantParams
         return content
       }

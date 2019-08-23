@@ -19,7 +19,7 @@
                 </el-col>
               </el-row>
             </div>
-            <GateSchemaForm ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin"></GateSchemaForm>
+            <GateSchemaForm @keypress.enter.native="$refs.loginForm.handleSubmit()" ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin"></GateSchemaForm>
             <!-- <div id="verifyCode">
               <el-input v-model="user.valicode" placeholder="验证码" @keyup.native="keyupSubmit"></el-input>
               <img :src="codeUrl" alt="验证码" @click="updateValicode">

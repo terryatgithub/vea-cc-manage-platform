@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <TabPage>
     <PolicyManageList
       v-show='isShowList'
       ref="list"
@@ -16,13 +16,15 @@
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </PolicyManageInfo>
-  </div>
+  </TabPage>
 </template>
 <script>
+import TabPage from '@/components/TabPage'
 import PolicyManageInfo from './PolicyManageInfo'
 import PolicyManageList from './PolicyManageList'
 export default {
   components: {
+    TabPage,
     PolicyManageInfo,
     PolicyManageList
   },

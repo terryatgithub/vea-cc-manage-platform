@@ -56,6 +56,11 @@ const episodeTypeEnums = [
     value: '6'
   }
 ]
+const episodeTypeText = {
+  '0': '正片',
+  '1': '预告',
+  '6': '短视频'
+}
 export default {
   components: {
     BaseSelector,
@@ -106,7 +111,33 @@ export default {
             width: '120',
             prop: 'urlIsTrailer',
             render: (createElement, { row }) => {
-              return row.urlIsTrailer === '1' ? '非正片' : '正片'
+              return episodeTypeText[row.urlIsTrailer]
+            }
+          },
+          {
+            label: '时长',
+            width: 120,
+            render: (h, {row}) => {
+              return this.secondToTimeStr(row.duration)
+            }
+          },
+          {
+            label: '跳转播放',
+            width: 100,
+            render: (h, {row}) => {
+              const source = this.source
+              if (source === 'tencent' || source === 'yinhe') {
+                const url = source === 'tencent'
+                  ? `https://v.qq.com/x/cover/${row.coocaaMId}/${row.thirdVuId}.html`
+                  : `http://so.iqiyi.com/so/q_${row.urlTitle}`
+                return h('a', {
+                  class: "link",
+                  attrs: {
+                    target: '_blank',
+                    href: url
+                  }
+                }, '跳转')
+              }
             }
           }
         ],
@@ -118,10 +149,15 @@ export default {
     }
   },
   props: ['selectionType', 'source', 'id'],
-  watch: {
-    'id': 'handleFilterReset'
-  },
   methods: {
+    secondToTimeStr(seconds) {
+      if (seconds) {
+        const hour = Math.floor(seconds / 3600)
+        const min = Math.floor((seconds - 3600 * hour) / 60)
+        const sec = seconds - 3600 * hour - 60 * min
+        return `${hour}小时${min}分${sec}秒`
+      }
+    },
     handleSelectStart() {
       const baseSelector = this.$refs.baseSelector
       if (baseSelector) {

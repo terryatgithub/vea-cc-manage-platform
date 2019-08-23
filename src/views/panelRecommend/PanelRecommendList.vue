@@ -14,9 +14,9 @@
         @delete="handleDelete"
         >
         </ButtonGroupForListPage> -->
-      <div style="margin: 5px 0 10px 0">
+      <!-- <div style="margin: 5px 0 10px 0">
         <el-button type="primary" @click="handleEdit">编辑</el-button>
-      </div>
+      </div> -->
       <Table
         :props="table.props"
         :header="table.header"
@@ -69,17 +69,18 @@ export default {
             minWidth: '180',
             'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
-              return createElement('el-button', {
-                attrs: {
-                  type: 'text'
-                },
-                on: {
-                  click: (event) => {
-                    event.stopPropagation()
-                    this.handleRead(row, row.panelGroupVersion)
-                  }
-                }
-              }, row.panelGroupName)
+              return row.panelGroupName
+            //   return createElement('el-button', {
+            //     attrs: {
+            //       type: 'text'
+            //     },
+            //     on: {
+            //       click: (event) => {
+            //         event.stopPropagation()
+            //         this.handleRead(row, row.panelGroupVersion)
+            //       }
+            //     }
+            //   }, row.panelGroupName)
             }
           },
           {
@@ -123,6 +124,12 @@ export default {
             width: '140',
             'show-overflow-tooltip': true
           },
+          {
+            label: '允许推荐的版块流',
+            prop: 'panelGroupCategory',
+            width: '140',
+            'show-overflow-tooltip': true
+          },
           // {
           //   label: '更新人',
           //   width: '100',
@@ -133,6 +140,9 @@ export default {
             fixed: 'right',
             width: 180,
             render: (h, { row }) => {
+              if (!row.flag) {
+                return '已设置不可推荐'
+              }
               return h('el-button', {
                 props: {
                   type: 'text'
@@ -143,7 +153,7 @@ export default {
                     this.handleToggleRecommendFlag(row)
                   }
                 }
-              },  row.flag ? '不可推荐' : '可推荐')
+              },  '不可推荐')
             }
           }
         ],
@@ -190,10 +200,14 @@ export default {
       }
     },
     handleToggleRecommendFlag(row) {
-      const flag = row.flag ? 0 : 1
-      this.$service.panelRecommendFlagUpsert({panelGroupId: row.panelGroupId, flag}, '设置成功').then(() => {
-        row.flag = flag
+      this.$confirm('设置为“不可推荐”后，该版块将不会出现在任何流中，但是，若要将该版块恢复成“可推荐”，则非常困难，需要联系开发处理', '提示')
+      .then(() => {
+        const flag = row.flag ? 0 : 1
+        this.$service.panelRecommendFlagUpsert({panelGroupId: row.panelGroupId, flag}, '设置成功').then(() => {
+          row.flag = flag
+        })
       })
+      .catch(() => {})
     },
     fetchData() {
       const filter = this.parseFilter()
@@ -231,26 +245,6 @@ export default {
       }
       this.pagination.currentPage = 1
       this.fetchData()
-    },
-    getBusinessType() {
-      return this.$service.getDictType({ type: 'businessType' }).then(data => {
-        data.forEach((item) => {
-          this.businessType[item.dictCnName] = item.dictId
-        })
-      })
-    },
-    handleToggleCollect(row) {
-      if (row.collected) {
-        this.$service.collectCancel({ type: 'pannel', data: { resourceId: row.pannelGroupId } }, '取消收藏成功')
-          .then(() => {
-            this.$set(row, 'collected', false)
-          })
-      } else {
-        this.$service.collect({ type: 'pannel', data: { resourceId: row.pannelGroupId } }, '收藏成功')
-          .then(() => {
-            this.$set(row, 'collected', true)
-          })
-      }
     }
   },
   created() {

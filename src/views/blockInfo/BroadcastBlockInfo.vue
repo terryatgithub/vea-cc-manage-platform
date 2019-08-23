@@ -1080,38 +1080,36 @@ export default {
         contentType: '', // 面向管理后台
         thirdIdOrPackageName: ''
       }
+      const prefixMap = {
+        tencent: '_otx_',
+        o_tencent: '_otx_',
+        yinhe: '_oqy_',
+        o_iqiyi: '_oqy_',
+        youku: '_oyk_'
+      }
       switch (tabName) {
         case 'video': {
-          if (selected.selectedEpisodes !== undefined) {
-            // selected.coocaaVId = selected.selectedEpisodes.coocaaMId
-            selected.thumb = selected.selectedEpisodes.thumb
-            selected.title = selected.selectedEpisodes.urlTitle
-            selected.subTitle = selected.selectedEpisodes.urlSubTitle
+          const selectedEpisode = selected.selectedEpisodes
+          const prefix = (prefixMap[sourceType] || '')
+          if (selectedEpisode) {
+            if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
+              // 如果是短视频, 并且 thirdVId 存在
+              s.thirdIdOrPackageName = prefix + selectedEpisode.thirdVId
+              s.sid = selectedEpisode.coocaaMId
+            } else {
+              s.thirdIdOrPackageName = prefix + selected.coocaaVId
+              s.vid = selectedEpisode.coocaaMId
+            }
+            s.thumb = selectedEpisode.thumb
+            s.title = selectedEpisode.urlTitle
+            s.subTitle = selectedEpisode.urlSubTitle
+          } else {
+            s.thirdIdOrPackageName = prefix + selected.coocaaVId
+            s.pictureUrl = selected.thumb
+            s.title = selected.title
+            s.subTitle = selected.subTitle
           }
           s.contentType = 'movie'
-          switch (sourceType) {
-            case 'yinhe':
-            case 'o_iqiyi':
-              s.thirdIdOrPackageName = '_oqy_' + selected.coocaaVId
-              break
-            case 'o_tencent':
-            case 'tencent':
-              s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
-              break
-            default:
-              s.thirdIdOrPackageName = selected.coocaaVId
-              break
-          }
-          s.singleId = selected.singleId
-          //  if (selected.selectedEpisodes !==undefined) {
-          //     s.pictureUrl = selected.selectedEpisodes.thumb
-          //     s.title = selected.selectedEpisodes.title
-          //     s.subTitle = selected.selectedEpisodes.subTitle
-          //  } else {
-          s.pictureUrl = selected.thumb
-          s.title = selected.title
-          s.subTitle = selected.subTitle
-          // }
           s.type = 'res'
           break
         }
@@ -1180,39 +1178,38 @@ export default {
       return s
     },
 
-    paramIdFun: function(seledted) {
+    paramIdFun: function(selected) {
       // 封装保存的id
-      if (seledted.contentType === 'movie') {
-        if (seledted.singleId) {
-          var param = {
-            id: seledted.thirdIdOrPackageName,
-            vid: seledted.singleId
-          }
-        } else {
-          var param = {
-            id: seledted.thirdIdOrPackageName
-          }
+      if (selected.contentType === 'movie') {
+        var param = {
+          id: selected.thirdIdOrPackageName
+        }
+        if (selected.vid) {
+          param.vid = selected.vid
+        } 
+        if (selected.sid) {
+          param.sid = selected.sid
         }
       } else if (
-        seledted.contentType === 'app' ||
-        seledted.contentType === 'edu' ||
-        seledted.contentType === 'txLive'
+        selected.contentType === 'app' ||
+        selected.contentType === 'edu' ||
+        selected.contentType === 'txLive'
       ) {
         var param = {
-          id: seledted.thirdIdOrPackageName
+          id: selected.thirdIdOrPackageName
         }
-      } else if (seledted.contentType === 'bigTopic') {
+      } else if (selected.contentType === 'bigTopic') {
         var param = {
-          pTopicCode: seledted.thirdIdOrPackageName
+          pTopicCode: selected.thirdIdOrPackageName
         }
-      } else if (seledted.contentType === 'topic') {
+      } else if (selected.contentType === 'topic') {
         // this.smallTopics = true;
         var param = {
-          topicCode: seledted.thirdIdOrPackageName
+          topicCode: selected.thirdIdOrPackageName
         }
-      } else if (seledted.contentType === 'rotate') {
+      } else if (selected.contentType === 'rotate') {
         var param = {
-          rotateId: seledted.thirdIdOrPackageName
+          rotateId: selected.thirdIdOrPackageName
         }
       }
 
