@@ -1739,6 +1739,15 @@ export default {
           _this.basicForm.status = data.status
           _this.basicForm.id = data.id
           _this.basicForm.currentVersion = data.currentVersion
+          const parseParams = (onclick) => {
+            const params = onclick.params || {}
+            onclick.params = Object.keys(params).map(key => {
+              return {
+                key,
+                value: params[key]
+              }
+            })
+          }
           var newFormNoraml = Object.assign({}, _this.normalForm)
           data.normalVersionContent.forEach((item, j) => {
             var corners = [{}, {}, {}, {}]
@@ -1765,6 +1774,7 @@ export default {
               })
             }
             data.normalVersionContent.splice(j, 1, item)
+            parseParams(item.onclick)
           })
 
           _this.normalVersionContent = data.normalVersionContent
@@ -1798,6 +1808,7 @@ export default {
 
           _this.lowerForm = lowerData
           _this.lowerForm.onclick = JSON.parse(_this.lowerForm.onclick)
+          parseParams(_this.lowerForm.onclick)
           _this.lowerForm.thirdIdOrPackageName = _this.getThirdId(lowerData.params)
           var corners = [{}, {}, {}, {}]
           if (lowerData.cornerIconList.length === 0) {
