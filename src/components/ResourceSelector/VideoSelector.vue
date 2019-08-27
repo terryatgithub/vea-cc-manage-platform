@@ -15,7 +15,7 @@
 
     <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
-        <el-form @keypress.enter.native="handleFilterChangeAndReset" :inline="true" :model="filter" class="search-form-inline" label-width="80px">
+        <el-form @keypress.enter.native="handleFilterChange" :inline="true" :model="filter" class="search-form-inline" label-width="80px">
           <el-form-item label="渠道">
             <CommonSelector v-model="filter.partner" :disabled="disablePartner" :options="$consts.partnerOptions" />
           </el-form-item>
@@ -100,9 +100,9 @@
               size="small"
               @click="isMore = !isMore"
             >{{ isMore ? '收起' : '展开'}}</el-button>
-            <el-button size="small" type="primary" @click="handleFilterChangeAndReset">查询并重置</el-button>
             <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
             <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
+            <el-button size="small" type="primary" @click="handleFilterChangeAndReset">查询并重置</el-button>
           </div>
         </el-form>
       </el-collapse-item>
