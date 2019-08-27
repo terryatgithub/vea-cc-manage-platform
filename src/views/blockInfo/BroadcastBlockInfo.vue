@@ -792,7 +792,7 @@ export default {
             this.normalForm = Object.assign({}, this.versionForm)
             this.normalVersionContent = [this.normalForm]
             this.currentIndex = 0
-            this.cleanLowerForm()
+            this.cleanLowerForm('media')
             this.basicForm.source = val
           }.bind(this)
         )
@@ -1089,6 +1089,7 @@ export default {
       }
       switch (tabName) {
         case 'video': {
+          debugger
           const selectedEpisode = selected.selectedEpisodes
           const prefix = (prefixMap[sourceType] || '')
           if (selectedEpisode) {
@@ -1100,7 +1101,7 @@ export default {
               s.thirdIdOrPackageName = prefix + selected.coocaaVId
               s.vid = selectedEpisode.coocaaMId
             }
-            s.thumb = selectedEpisode.thumb
+            s.pictureUrl = selectedEpisode.thumb
             s.title = selectedEpisode.urlTitle
             s.subTitle = selectedEpisode.urlSubTitle
           } else {
@@ -1607,6 +1608,7 @@ export default {
         this.resourceOptions = ['video', 'edu', 'live', 'rotate']
       }
       var newForm = Object.assign({}, this.versionForm)
+      debugger
       newForm.type = val
       newForm.coverType = val
       if (val === 'custom') {
@@ -1665,10 +1667,19 @@ export default {
         if (valid) {
           _this.saveNormal(function() {
             _this.checkLowerForm(function() {
+              const parseParams = (onclick) => {
+                const params = onclick.params || []
+                onclick.params = params.reduce((result, item) => {
+                  result[item.key] = item.value
+                  return result
+                }, {})
+              }
+              debugger
               var obj = { normalVersionContent: [], lowerVersionContent: {} }
               if (_this.basicForm.configModel === 'group') {
                 const normalVersionContent = cloneDeep(_this.normalVersionContent)
                 normalVersionContent.map(function(item) {
+                  parseParams(item.onclick)
                   item.onclick
                     ? (item.onclick = JSON.stringify(item.onclick))
                     : ''
@@ -1677,6 +1688,7 @@ export default {
                 obj.normalVersionContent = normalVersionContent
               } else {
                 const normalForm = cloneDeep(_this.normalForm)
+                parseParams(normalForm.onclick)
                 normalForm.onclick
                   ? (normalForm.onclick = JSON.stringify(
                     normalForm.onclick
@@ -1684,7 +1696,10 @@ export default {
                   : ''
                 obj.normalVersionContent.push(normalForm)
               }
-              const lowerForm = _this.lowerForm
+              const lowerForm = cloneDeep(_this.lowerForm)
+              if (lowerForm.onclick) {
+                parseParams(lowerForm.onclick)
+              }
               delete lowerForm.smallTopicsId
               obj.lowerVersionContent = lowerForm
               var resultObj = Object.assign(obj, _this.basicForm)
@@ -1837,6 +1852,8 @@ export default {
     }
     if (this.id) {
       this.fetchData(this.version)
+    } else {
+      _this.$watch('lowerForm.coverType', _this.cleanLowerForm)
     }
     // 素材类型获取
     this.$service.getDictType({ type: 'materialType' }).then(data => {
