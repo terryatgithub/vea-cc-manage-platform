@@ -46,6 +46,7 @@ import Desktop from '@/views/desktop/Desktop'
 import FramePage from '../views/FramePage'
 import CrowdRel from '../views/crowdRel/Index.vue'
 import PanelRecommend from '../views/panelRecommend/PanelRecommendIndex.vue'
+import AssignVideoRecom from '../views/blockInfo/AssignVideoRecomIndex.vue'
 
 const Topic = () => import('../views/topic/Index')
 const TopicConfig = () => import('../views/topicConfig/Index')
@@ -357,6 +358,15 @@ const children = [
         meta: {
           title: '多功能推荐位',
           tagId: 'multiFunctionBlock'
+        }
+      },
+      {
+        name: 'assignVideoRecom',
+        path: '/assignVideoRecom/view.html',
+        component: AssignVideoRecom,
+        meta: {
+          title: '指定影片推荐流',
+          tagId: 'assignVideoRecom'
         }
       }
     ]

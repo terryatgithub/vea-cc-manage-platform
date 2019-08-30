@@ -100,10 +100,12 @@ const routerMap = {
   rankingListManage: 'rankingListManage',
   ccShortVideoConnectPositiveDetail: 'ccShortVideoConnectPositiveDetail',
   rightsContentManage: 'rightsContentManage',
-
+  // 推荐位管理
   broadcastBlock: 'broadcastBlock',
   multiFunctionBlock: 'multiFunctionBlock',
   sysPlugin: 'sysPlugin',
+  assignVideoRecom: 'assignVideoRecom',
+
   albumPannelInfo: 'albumPannelInfo',
   markPanel: 'markPanel',
   pannelInfo: 'pannelInfo',
@@ -163,9 +165,11 @@ const iconMap = {
   ccShortVideoConnectPositiveDetail: 'el-icon-cc-fund',
   rightsContentManage: 'el-icon-cc-fund',
 
+  // 推荐位管理
   broadcastBlock: 'el-icon-cc-gold',
   multiFunctionBlock: 'el-icon-cc-control',
   sysPlugin: 'el-icon-cc-minus-square',
+  assignVideoRecom: 'el-icon-cc-tag',
 
   blockInfo: 'el-icon-cc-appstore',
   blockManage: 'el-icon-cc-border',
