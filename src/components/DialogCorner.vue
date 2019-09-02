@@ -16,7 +16,7 @@
       >
         <div class="box-list" slot="row" slot-scope="{row: item}">
           <p class="list-p">
-            <img class="list-img" :src="item.imgUrl" alt>
+            <img :key="item.imgUrl" class="list-img" :src="item.imgUrl" alt>
           </p>
           <p class="list-title">{{item.cornerIconName}}</p>
           <p style="margin:0">

@@ -27,7 +27,7 @@
           @row-selection-change="handlePresetTableRowSelectionChange">
           <div class="picture-item" slot="row" slot-scope="{row: item}">
             <div class="img-wrapper">
-              <img class="list-img" :src="item.pictureUrl">
+              <img :key="item.pictureUrl" class="list-img" :src="item.pictureUrl">
             </div>
             <div>
               {{ item.pictureResolution }}
@@ -46,7 +46,7 @@
       @row-selection-change="handleRowSelectionChange">
       <div class="picture-item" slot="row" slot-scope="{row: item}">
         <div class="img-wrapper">
-          <img class="list-img" :src="item.pictureUrl">
+          <img :key="item.pictureUrl" class="list-img" :src="item.pictureUrl">
         </div>
         <div>{{item.pictureName}}</div>
         <div>

@@ -16,7 +16,7 @@
       >
         <div class="box-list" slot="row" slot-scope="{row: item}">
           <p class="list-p">
-            <img class="list-img" :src="item.pictureUrl" alt>
+            <img :key="item.pictureUrl"  class="list-img" :src="item.pictureUrl" alt>
           </p>
           <p class="list-title">{{item.pictureName}}</p>
           <p style="margin:0">

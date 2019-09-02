@@ -28,7 +28,7 @@
         @row-selection-remove="handleRowSelectionRemove"
       >
         <div class="img-item" slot="row" slot-scope="{row: item}" @click.stop="handleRead(item)">
-          <img :src="item.pictureUrl" referrerpolicy="no-referrer" />
+          <img :key="item.pictureUrl" :src="item.pictureUrl" />
           <a class="img-preview" @click.stop="reviewPic(item)">预览</a>
           <div class="img-detail">
             <span>素材id：{{ item.pictureId }}</span>
