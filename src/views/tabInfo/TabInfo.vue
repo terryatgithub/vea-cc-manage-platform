@@ -2557,10 +2557,16 @@ export default {
     },
     getSimpleBrowseData() {
       this.$service.getTabSimpleBrowseData({ id: this.id }).then(data => {
+<<<<<<< Updated upstream
         const tabUVCTR = data.rows[0].data[0] ? data.rows[0].data[0].uvctr : 'N/A'
         this.tabUVCTR = tabUVCTR
         tabUVCTR.dailyGrowth ? this.tabUVCTRPercent.dailyGrowth = this.toArrowPercent(tabUVCTR.dailyGrowth) : 'N/A'
         tabUVCTR.weeklyGrowth ? this.tabUVCTRPercent.weeklyGrowth = this.toArrowPercent(tabUVCTR.weeklyGrowth) : 'N/A'
+=======
+        const tabUVCTR = data.rows[0].data[0].uVCTR
+        this.UVCTR = Object.assign({}, tabUVCTR)
+        console.log('tab', this.tabUVCTR);
+>>>>>>> Stashed changes
       })
     },
     getVipButtonSourceItem(id) {

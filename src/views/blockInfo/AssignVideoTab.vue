@@ -33,8 +33,13 @@
           <el-input/>
         </el-form-item>
         <el-form-item label="图片海报">
+          <div>
+            
+          </div>
+          <div>
             <el-checkbox v-model="value.isShowPeriod">不展示期数</el-checkbox>
             <el-checkbox v-model="value.isShowScore">备选项</el-checkbox>
+          </div>
         </el-form-item>
         <el-form-item label="视频资源">
           选择资源

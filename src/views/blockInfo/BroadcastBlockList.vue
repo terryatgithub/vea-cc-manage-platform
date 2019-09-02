@@ -44,6 +44,7 @@ export default {
   },
   data() {
     return {
+      isShowChart: false,
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
       filterSchema: null,

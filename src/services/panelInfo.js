@@ -120,3 +120,19 @@ export function getPanelChartData(params) {
     params
   })
 }
+
+export function getPanelSimpleBrowseData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/panel/getSimpleBrowseData.html',
+    params
+  })
+}
+
+export function getPanelChartData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/panel/getChartData.html',
+    params
+  })
+}
