@@ -30,7 +30,7 @@
         <el-form :model="basicForm" label-width="150px">
           <el-form-item label="推荐流ID">123123</el-form-item>
           <el-form-item label="推荐流名称">
-            <el-input/>
+            <el-input class="title-input"/>
           </el-form-item>
           <el-form-item label="源">
             <el-radio-group v-model="createForm.source">
@@ -51,7 +51,7 @@
       <div :style="{display: isCollapseVideo ? 'none' : 'block'}">
         <div class="video-select--header">
           <InputPositiveInt v-model="newVideoTabNum" class="num-input"/>
-          <el-button type="primary" @click="handleAddVideoTab">添加</el-button>
+          <el-button type="primary" @click="handleAddVideoTab(newVideoTabNum)">添加</el-button>
           <ResourceSelector
             ref="resourceSelector"
             :is-live="false"
@@ -79,7 +79,9 @@
             v-model="videoTabs[index]"
             :index="index"
             :source="basicForm.source"
+            :input-tags="sizeTags"
             @handle-delTab="handleDelTab"
+            @blur="handleBlurSort(index)"
           />
         </div>
       </div>
@@ -140,14 +142,15 @@ export default {
     handleCreate() {
 
     },
-    handleAddVideoTab() {
+    handleAddVideoTab(tabNum) {
       if(!this.newVideoTabNum || this.newVideoTabNum >100 || this.newVideoTabNum <=0){
         this.$message.error("请输入0~100之间的数字")
       }else if(this.sizeTags.length === 0){
         this.$message.error("请先添加尺寸")
       }else {
-        this.videoTabs.push({})
-        console.log('videoTabs', this.videoTabs);
+        for(let i=0; i<tabNum; i++) {
+          this.videoTabs.push({})
+        }
         this.newVideoTabNum = undefined
         this.$message.success("添加成功")
       }
@@ -182,6 +185,7 @@ export default {
     },
     handleDelTab(index) {
       this.videoTabs.splice(index, 1)
+      this.$message.success("删除成功")
     },
     handleSelectResourcesEnd(resources) {
       // const contentPreset = {
@@ -192,6 +196,9 @@ export default {
       // const contentList = genResourceContentList(resources, contentPreset)
       // this.normalContentList.splice(this.activeIndex, contentList.length, ...contentList)
     },
+    handleBlurSort(index) {
+      console.log('index', index);
+    }
   },
 
   created() {
@@ -241,6 +248,9 @@ export default {
 .num-input {
   width: 100px;
   margin: 0 20px;
+}
+.title-input {
+  width: 357px;
 }
 .text-center-align {
   text-align: center;

@@ -6,6 +6,7 @@
     :autocomplete="autocomplete"
     :value="inputValue"
     @input="handleInputValue"
+    @blur="$emit('blur')"
     :disabled="disabled"
     :placeholder="placeholder">
     <span
