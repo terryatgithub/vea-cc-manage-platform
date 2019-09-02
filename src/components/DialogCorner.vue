@@ -20,9 +20,7 @@
           </p>
           <p class="list-title">{{item.cornerIconName}}</p>
           <p style="margin:0">
-            <span v-if="item.cornerStatus==1">审核通过</span>
-            <span v-else>待审核</span>
-            <!-- <span>{{item.pictureResolution}}</span> -->
+            <span>{{ $consts.statusText[item.cornerStatus] }}</span>
           </p>
         </div>
       </CardList>
