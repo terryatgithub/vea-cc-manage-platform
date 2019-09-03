@@ -15,16 +15,10 @@
       @cancel-timing="fetchData(basicForm.currentVersion)"
       @delete="$emit('upsert-end', $event)"
     >
-      <!-- <div slot="auditAndDraft">
-        <el-button type="primary" @click="submitCheck_1">提交审核</el-button>
-      </div> -->
       <div class="form-legend-header">
         <i class="el-icon-edit">基本信息</i>
       </div>
       <el-form :model="basicForm" ref="basicForm" label-width="100px" class="el-form-add">
-        <!-- <el-form-item label="审核状态" v-if="disabled">
-         {{$numToAuditStatus(status)}}
-        </el-form-item>-->
         <el-form-item
           label="推荐位名称"
           prop="containerName"
@@ -41,14 +35,18 @@
           <el-radio-group v-model="basicForm.configModel" @change.native.prevent="modelChange">
             <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio>
             <el-radio label="group" :disabled="disabled">组合模式</el-radio>
+            <el-radio label="sign" :disabled="disabled">信号源</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="内容源">
           <el-radio-group :value="basicForm.source" @input="handleSourceChange">
-            <el-radio label="none" :disabled="disabled">无</el-radio>
-            <el-radio label="o_tencent" :disabled="disabled">腾讯</el-radio>
-            <el-radio label="o_iqiyi" :disabled="disabled">爱奇艺</el-radio>
-            <el-radio label="o_youku" :disabled="disabled">优酷</el-radio>
+            <el-radio 
+              v-for="item in $consts.sourceOptionsWithNone" 
+              :key="item.value" 
+              :label="item.value" 
+              :disabled="disabled">
+              {{ item.label }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -57,11 +55,11 @@
         <h4 class="version-title__h">正常版本</h4>
         <el-tag
           class="version-title__tag"
-          v-if="basicForm.configModel === 'group' "
+          v-if="isGroupModel "
           type="warning"
         >短标题模式需至少运营四个资源，长标题模式至少6个，才能填满布局哦~</el-tag>
         <ResourceSelector
-          v-if="basicForm.configModel === 'group'&&!disabled "
+          v-if="isGroupModel&&!disabled "
           ref="resourceSelector"
           :disable-partner="!!source"
           :source="source"
@@ -73,14 +71,6 @@
         >
           <el-button type="primary" plain>批量选择资源</el-button>
         </ResourceSelector>
-        <!-- <el-button
-        v-if="basicForm.configModel === 'group' "
-        type="primary" plain
-        style="float: right;"
-        :disabled="disabled"
-        @click.native="selectResource('normal', 'normalForm', 'multiSelect')"
-      >批量选择资源
-        </el-button>-->
       </div>
       <!-- {{normalVersionContent正常版本}} -->
       <div class="form-wrap">
@@ -88,7 +78,7 @@
         <el-row
           :gutter="4"
           class="normal-left-list"
-          v-if="basicForm.configModel === 'group'"
+          v-if="isGroupModel"
           :style="classObject"
         >
           <draggable
@@ -146,7 +136,7 @@
           :rules="normalRules"
           label-width="100px"
           style="float: left;width: 75%"
-          :class="{cutLine: basicForm.configModel === 'group'}"
+          :class="{cutLine: isGroupModel}"
         >
           <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName">
             <ResourceSelector
@@ -166,7 +156,7 @@
               :source="source"
               :disable-partner="!!source"
               v-if="autoWrite&&normalResourceBtn==='播放资源'&&!disabled "
-              :selectors="resourceOptions"
+              :selectors="currentIndex === 0 && basicForm.configModel === 'sign' ? ['rotate'] : resourceOptions"
               :is-live="false"
               selection-type="single"
               @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
@@ -188,19 +178,22 @@
             >已选择：{{normalForm.thirdIdOrPackageName}}</el-tag>
             <a
               class="write-play"
-              v-if="autoWrite && basicForm.configModel === 'group' && !disabled "
+              v-if="autoWrite && isGroupModel && !disabled "
               href="#"
               @click="autoWriteFun"
             >手动填写播放串</a>
             <a
               class="write-play"
-              v-if="!autoWrite && basicForm.configModel === 'group'&&!disabled "
+              v-if="!autoWrite && isGroupModel&&!disabled "
               href="#"
               @click="autoWriteFun"
               style="float: left"
             >自动配置播放资源</a>
+            <div v-if="basicForm.configModel === 'sign' && currentIndex === 0" class="sign-tip">
+              信号源模式的第一个资源必须是轮播资源
+            </div>
           </el-form-item>
-          <div v-if="basicForm.configModel === 'group'">
+          <div v-if="isGroupModel">
             <el-form-item label="指定子频道" prop="subchannelId" v-if="normalForm.subchannelIs">
               <el-input
                 v-model="normalForm.subchannelId"
@@ -255,7 +248,7 @@
               </span>
             </el-card>
           </el-form-item>
-          <el-form-item label="点击跳转" v-if="basicForm.configModel === 'group'">
+          <el-form-item label="点击跳转" v-if="isGroupModel">
             <el-radio-group v-model="normalForm.clickType">
               <el-radio label="detail" :disabled="disabled">点击进详情页</el-radio>
               <el-radio
@@ -265,13 +258,13 @@
               >点击直接全屏播放</el-radio>
             </el-radio-group>
           </el-form-item>
-          <!-- <el-form-item label="点击事件" prop="sign" v-if="basicForm.configModel === 'group'">
+          <!-- <el-form-item label="点击事件" prop="sign" v-if="isGroupModel">
             <el-radio-group v-model="normalForm.sign" :disabled="signDisabled" @change="signChange">
               <el-radio label="autoSet" :disabled="disabled">自动生成</el-radio>
               <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
             </el-radio-group>
           </el-form-item>-->
-          <el-form-item label="点击事件" prop="sign" v-if="basicForm.configModel === 'group'">
+          <el-form-item label="点击事件" prop="sign" v-if="isGroupModel">
             <el-radio-group
               :value="normalForm.sign"
               @input="handleChangeSign"
@@ -508,8 +501,6 @@
         </div>
       </el-dialog>
       <!-- 第三方运用快速填充弹框end -->
-      <!-- 选择资源 -->
-      <!-- <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector> -->
     </CommonContent>
   </ContentCard>
 </template>
@@ -721,6 +712,10 @@ export default {
   },
 
   computed: {
+    isGroupModel() {
+      const configModel = this.basicForm.configModel
+      return configModel === 'group' || configModel === 'sign'
+    },
     source() {
       return this.basicForm.source === 'none' ? '' : this.basicForm.source
     },
@@ -760,7 +755,7 @@ export default {
     'basicForm.configModel': {
       deep: true,
       handler: function(newVal, oldVal) {
-        if (newVal === 'group') {
+        if (newVal === 'group' || newVal === 'sign') {
           this.normalResourceBtn = '播放资源'
         } else if (newVal === 'broadcast') {
           this.normalResourceBtn = '轮播资源'
@@ -1013,10 +1008,12 @@ export default {
       } else {
         let resourceOptions = this.resourceOptions
         for (var i = 0; i < resourceOptions.length; i++) {
-          if (selectedResources[resourceOptions[i]].length === 1) {
+          const resourceType = resourceOptions[i]
+          const resources = selectedResources[resourceType]
+          if (resources && resources.length === 1) {
             data = this.callbackParam(
               resourceOptions[i],
-              selectedResources[resourceOptions[i]][0],
+              resources[0],
               selectedResources.videoSource
             )
           }
@@ -1047,10 +1044,11 @@ export default {
       let data
       let resourceOptions = this.resourceOptions
       for (var i = 0; i < resourceOptions.length; i++) {
-        if (selectedResources[resourceOptions[i]].length === 1) {
+        const resources = selectedResources[resourceOptions[i]]
+        if (resources && resources.length === 1) {
           data = this.callbackParam(
             resourceOptions[i],
-            selectedResources[resourceOptions[i]][0],
+            resources[0],
             selectedResources.videoSource
           )
         }
@@ -1089,7 +1087,6 @@ export default {
       }
       switch (tabName) {
         case 'video': {
-          debugger
           const selectedEpisode = selected.selectedEpisodes
           const prefix = (prefixMap[sourceType] || '')
           if (selectedEpisode) {
@@ -1165,6 +1162,7 @@ export default {
           break
         }
         case 'rotate': {
+          debugger
           s.contentType = 'rotate'
           s.thirdIdOrPackageName = selected.id + ''
           s.pictureUrl = selected.picture
@@ -1295,11 +1293,12 @@ export default {
       form.contentType = item.contentType
       form.subTitle = item.subTitle
       form.thirdIdOrPackageName = item.thirdIdOrPackageName
-      debugger
       if (item.pictureUrl) {
-        var newForm = Object.assign({}, form.poster)
-        newForm.pictureUrl = item.pictureUrl
-        form.poster = newForm
+        const poster = Object.assign({}, form.poster)
+        poster.pictureUrl = item.pictureUrl
+        form.poster = poster
+      } else {
+        form.poster = {pictureUrl: ''}
       }
       var param = this.paramIdFun(item)
       form.params = JSON.stringify(param)
@@ -1390,18 +1389,13 @@ export default {
       this.$refs.normalForm.validate(function(valid) {
         if (valid) {
           if (_this.normalForm.sign === 'manualSet') {
-            if (true) {
-              // _this.normalForm.onclick = _this.$refs.openWayNormal.assembleOnclick().onclick
-              _this.normalVersionContent.splice(
-                _this.currentIndex,
-                1,
-                _this.normalForm
-              )
-              cb()
-            } else {
-              _this.$message('请将表单填写完整')
-              return false
-            }
+            // _this.normalForm.onclick = _this.$refs.openWayNormal.assembleOnclick().onclick
+            _this.normalVersionContent.splice(
+              _this.currentIndex,
+              1,
+              _this.normalForm
+            )
+            cb()
           } else {
             cb()
           }
@@ -1621,17 +1615,19 @@ export default {
     },
     saveNormal: function(cb) {
       // debugger
-      var _this = this
-      this.checkNormalForm(function() {
-        if (_this.basicForm.configModel === 'group') {
-          if (_this.normalVersionContent.length < 4) {
-            _this.$message(
-              '组合模式下，正常版本的配置资源至少4个，才可以进行保存！'
-            )
-            return false
-          } else {
-            cb()
+      this.checkNormalForm(() => {
+        const configModel = this.basicForm.configModel
+        const normalVersionContent = this.normalVersionContent
+        if (configModel === 'group' || configModel === 'sign' ) {
+          if (normalVersionContent.length < 4) {
+            return this.$message.error('组合模式下，正常版本的配置资源至少4个，才可以进行保存！')
           }
+          if (configModel === 'sign') {
+            if (normalVersionContent[0].contentType !== 'rotate') {
+              return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
+            }
+          }
+          cb()
         } else {
           cb()
         }
@@ -1674,9 +1670,9 @@ export default {
                   return result
                 }, {})
               }
-              debugger
+              const configModel = _this.basicForm.configModel 
               var obj = { normalVersionContent: [], lowerVersionContent: {} }
-              if (_this.basicForm.configModel === 'group') {
+              if (configModel === 'group' || configModel === 'sign') {
                 const normalVersionContent = cloneDeep(_this.normalVersionContent)
                 normalVersionContent.map(function(item) {
                   parseParams(item.onclick)
@@ -2012,4 +2008,11 @@ export default {
 .submitCheck
   margin-top: 20px
   margin-left: 110px
+.sign-tip
+  font-size: 11px;
+  color: orange;
+  padding: 0;
+  line-height: 1;
+  margin-top: 10px;
+  clear: both;
 </style>
