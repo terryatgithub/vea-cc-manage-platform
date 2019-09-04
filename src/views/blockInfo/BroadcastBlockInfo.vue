@@ -318,7 +318,7 @@
       <div class="version-title" style="margin-top: 25px;">
         <h4 style="float: left;margin-top: 7px;">兼容低版本</h4>
         <div
-          v-if="basicForm.configModel === 'group'"
+          v-if="isGroupModel"
           style="display: inline-block;margin-left: 14px;"
         >
           <el-button
@@ -1475,7 +1475,7 @@ export default {
               ? (_this.signDisabled = false)
               : (_this.signDisabled = true)
           } else {
-            _this.signDisabled = true
+            _this.signDisabled = false
           }
         })
         .catch(function() {
