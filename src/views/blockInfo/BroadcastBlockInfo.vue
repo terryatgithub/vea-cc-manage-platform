@@ -519,6 +519,8 @@ export default {
   props: ['id', 'initMode', 'version'],
   data() {
     return {
+      mode: 'create',
+      resourceName: '轮播推荐位',
       pictureResolution: '797*449', // 海报尺寸
       selectingManualResource: false,
       type: 'block',
