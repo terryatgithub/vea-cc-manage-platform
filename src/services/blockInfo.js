@@ -260,3 +260,27 @@ export function getBlockChartData(params) {
     params
   })
 }
+/**
+ * 推荐位管理——指定影片推荐流
+ */
+export function getMediaAutomationDataList(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/mediaAutomation/dataList.html',
+    params
+  })
+}
+export function getMediaAutomationList(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/mediaAutomation/pageList.html',
+    params
+  })
+}
+export function saveMediaAutomation(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/mediaAutomation/save.html',
+    data
+  })
+}

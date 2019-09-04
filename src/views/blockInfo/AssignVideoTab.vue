@@ -2,8 +2,7 @@
   <div>
     <el-row class="header">
       <el-col :span="4" class="video-index">影片{{index+1}}</el-col>
-      <el-col :span="1">置顶值</el-col>
-      <el-col :span="13"><InputPositiveInt v-model="value.priority" class="num-input" @blur="$emit('blur')"/></el-col>
+      <el-col :span="14">置顶值<InputPositiveInt v-model="value.priority" class="num-input" @blur="$emit('blur')"/></el-col>
       <el-col :span="2">
         <el-button type="text" @click="flagRec=!flagRec">{{flagRec? '未屏蔽' : '屏蔽'}}</el-button>
       </el-col>
@@ -13,7 +12,7 @@
     </el-row>
     <div class="container">
       <el-form label-width="150px">
-        <el-form-item label="内容资源">
+        <el-form-item label="内容资源" :rules="rules.thirdIdOrPackageName">
             <ResourceSelector
               ref="resourceSelector"
               :is-live="false"
@@ -30,13 +29,13 @@
               v-show="thirdIdOrPackageName"
             >已选择：{{thirdIdOrPackageName}}</el-tag>
         </el-form-item>
-        <el-form-item label="主标题">
+        <el-form-item label="主标题" :rules="rules.title">
           <el-input v-model="value.title" class="title-input"/>
         </el-form-item>
-        <!-- <el-form-item label="副标题">
-          <el-input v-model="value.subTitle"/>
-        </el-form-item> -->
-        <el-form-item label="图片海报">
+        <el-form-item label="副标题">
+          <el-input v-model="value.subTitle" class="title-input"/>
+        </el-form-item>
+        <el-form-item label="图片海报" :rules="rules.picList">
           <div class="poster--wrapper">
             <div v-for="(picPoster, index) in picPosters" class="poster--container">
               <div 
@@ -45,6 +44,7 @@
                 @click="handlePicClick(index)"
               >
                 <img
+                  ref="img"
                   v-show="picPoster.pictureUrl"
                   :src="picPoster.pictureUrl"
                   class="poster-image"
@@ -54,13 +54,22 @@
               </div>
             </div>
           </div>
-          <div>
-            <el-checkbox v-model="value.isShowPeriod">不展示期数</el-checkbox>
-            <el-checkbox v-model="value.showScore">备选项</el-checkbox>
+          <div v-if="picPosters.length!==0">
+            <el-checkbox v-model="notShowSeries">不展示期数</el-checkbox>
+            <el-checkbox v-model="notShowScore">不展示评分</el-checkbox>
           </div>
         </el-form-item>
-        <el-form-item label="视频资源">
-          选择资源
+        <el-form-item label="视频海报">
+          <GlobalPictureSelector 
+            title="选择资源" 
+            @select-end="handleSelectPostEnd"
+          >
+          </GlobalPictureSelector>
+          <el-tag
+            type="success"
+            class="marginL"
+            v-show="videoId"
+          >已选择：{{videoId}}</el-tag>
         </el-form-item>
       </el-form>
     </div>
@@ -84,13 +93,16 @@
 import InputPositiveInt from '@/components/InputPositiveInt'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import DialogPicture from '@/components/DialogPicture'
+import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
+import { cloneDeep } from 'lodash'
 
 const resourceOptions = ['video', 'edu', 'live', 'rotate', 'app']
 export default {
   components: {
     InputPositiveInt,
     ResourceSelector,
-    DialogPicture
+    DialogPicture,
+    GlobalPictureSelector
   },
   data() {
     return {
@@ -100,7 +112,21 @@ export default {
       currentPicIndex: undefined,
       resourceOptions,
       thirdIdOrPackageName: undefined,
-      flagRec: false
+      videoId: undefined,
+      flagRec: false,
+      rules: {
+        thirdIdOrPackageName: [
+          { required: true }
+        ],
+        title: [
+          { required: true, message: '请输入主标题', trigger: 'blur' }
+        ],
+        picList: [
+          { required: true }
+        ]
+      },
+      notShowSeries: false,
+      notShowScore: false
     }
   },
   props: {
@@ -108,6 +134,10 @@ export default {
       type: Object,
       default() {
         return {
+          id: undefined,
+          mediaResourceId: undefined,
+          title: undefined,
+          subTitle: undefined,
           priority: undefined,
           flagRec: false
         }
@@ -115,7 +145,12 @@ export default {
     },
     index: Number,
     source: String,
-    'input-tags': Array
+    'input-tags': {
+      type: Array,
+      default() {
+        return []
+      }
+    }
   },
 
   watch: {
@@ -130,6 +165,42 @@ export default {
       handler: function(val) {
         this.value.flagRec = val
       }
+    },
+    'inputTags.length': {
+      handler: function(val, old) {
+        let inputTags = this.inputTags
+        let picPosters = this.picPosters
+        if(val > old) { // 增加尺寸
+          let newPic = {...cloneDeep(inputTags[old]), pictureUrl: undefined}
+          picPosters.push(newPic)
+        }
+        if(val < old) { // 删除尺寸
+          let delIndex = -1
+          picPosters.some((item, index) => {
+            if(item !== inputTags[index]) {
+              delIndex = index
+              return true
+            }
+          })
+          picPosters.splice(delIndex, 1)
+        }
+      },
+      immediate: true
+    },
+    notShowSeries: {
+      handler: function(val) {
+        this.value.showSeries = val ? 0 : 1
+      },
+      immediate: true
+    },
+    notShowScore: {
+      handler: function(val) {
+        this.value.showScore = val ? 0 : 1
+      },
+      immediate: true
+    },
+    videoId(val) {
+      this.value.videoId = val
     }
   },
   methods: {
@@ -143,18 +214,16 @@ export default {
       }).join("")
       let data = this.callbackParam(tabName, selectedResources[tabName][0], source)
       this.thirdIdOrPackageName = data.thirdIdOrPackageName
-      const { thirdIdOrPackageName, title } = data
-      this.value.thirdIdOrPackageName = thirdIdOrPackageName
+      const { thirdIdOrPackageName, title, subTitle } = data
+      this.value.mediaResourceId = thirdIdOrPackageName
       this.value.title = title
-      
-      // Object.assign(this.value, {
-      //   thirdIdOrPackageName: data.thirdIdOrPackageName,
-      //   title: data.title,
-      //   subTitle: data.subTitle
-      // })
+      this.value.subTitle = subTitle
     },
     handleDelPoster(index) {
-      this.picPosters.splice(index, 1)
+      let delUrl = this.picPosters[index].pictureUrl
+      let delndex = this.value.picList.indexOf(delUrl)
+      this.picPosters[index].pictureUrl = undefined
+      this.value.picList.splice(delndex, 1)
     },
     computePicStyle(width, height) {
       return {
@@ -279,13 +348,20 @@ export default {
           break
       }
       return s
+    },
+    handleSelectPostEnd(post) {
+      console.log('post', post);
+      this.videoId = post.pictureId
     }
   },
 
   created() {
     this.value.flagRec = this.value.flagRec || false
-    this.picPosters = JSON.parse(JSON.stringify(this.inputTags))  // 确定海报位置
+    this.picPosters = cloneDeep(this.inputTags).map(({width, height}) => ({height, width, pictureUrl: undefined}))  // 确定海报位置
     this.value.picList = []
+    if(this.value.mediaResourceId) {
+      this.thirdIdOrPackageName = this.value.mediaResourceId
+    }
   }
 }
 </script>

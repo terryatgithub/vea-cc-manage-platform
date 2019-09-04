@@ -1,9 +1,9 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <template v-if="mode !== 'create'">
-      <el-form :model="createForm" label-width="80px">
-        <el-form-item label="流名称" prop="name">
-          <el-input v-model="createForm.name"></el-input>
+      <el-form :model="createForm" label-width="80px" ref="createForm">
+        <el-form-item label="流名称" prop="name" :rules="basicFormRules.name">
+          <el-input v-model="createForm.name" class="title-input"></el-input>
         </el-form-item>
         <el-form-item label="源" prop="source">
           <el-radio-group v-model="createForm.source">
@@ -21,19 +21,23 @@
     </template>
 
     <template v-else>
+      <CommonContent
+        @submit-audit="handleSubmitAudit"
+        @save-draft="handleSaveDraft"
+      >
       <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
         <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
         <i v-else class="el-icon-arrow-up"></i>
         <span>&nbsp;流基本设置</span>
       </div>
       <div :style="{display: isCollapseBase ? 'none' : 'block'}">
-        <el-form :model="basicForm" label-width="150px">
+        <el-form :model="basicForm" label-width="150px" :rules="basicFormRules">
           <el-form-item label="推荐流ID">123123</el-form-item>
-          <el-form-item label="推荐流名称">
-            <el-input class="title-input"/>
+          <el-form-item label="推荐流名称" prop="name">
+            <el-input class="title-input" v-model="basicForm.name"/>
           </el-form-item>
-          <el-form-item label="源">
-            <el-radio-group v-model="createForm.source">
+          <el-form-item label="源" prop="source">
+            <el-radio-group v-model="basicForm.source">
               <el-radio v-for="item in $consts.sourceOptions" :label="item.value" disabled>{{item.label}}</el-radio>
             </el-radio-group>
           </el-form-item>
@@ -85,7 +89,9 @@
           />
         </div>
       </div>
+      </CommonContent>
     </template>
+
 
     <!-- 添加尺寸dialog -->
     <el-dialog title="添加尺寸" :visible.sync="isVisibleSize" width="30%">
@@ -107,11 +113,15 @@
 import InputPositiveInt from '@/components/InputPositiveInt'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import AssignVideoTab from './AssignVideoTab'
+import CommonContent from '@/components/CommonContent.vue'
+const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picList']
+const params = ['name', 'source', 'status']
 export default {
   components: {
     InputPositiveInt,
     ResourceSelector,
-    AssignVideoTab
+    AssignVideoTab,
+    CommonContent
   },
   data() {
     return {
@@ -132,7 +142,14 @@ export default {
       newTabSize: {
         width: undefined,
         height: undefined
-      }
+      },
+      basicFormRules: {
+        name: [
+          { required: true, message: '请输入名称', trigger: 'blur' },
+        ]
+      },
+      videoListParams,  // 必填参数
+      params
     }
   },
 
@@ -140,13 +157,21 @@ export default {
 
   methods: {
     handleCreate() {
-
+      const createForm = this.createForm
+      this.$refs.createForm.validate(valid => {
+        if(valid) {
+          this.$service.saveMediaAutomation({jsonStr: JSON.stringify(createForm)}, '保存成功').then(() => {
+            this.$emit('go-back')
+          })
+        }else {
+          this.$message.error("表单填写不完整")
+        }
+      })
+      
     },
     handleAddVideoTab(tabNum) {
       if(!this.newVideoTabNum || this.newVideoTabNum >100 || this.newVideoTabNum <=0){
         this.$message.error("请输入0~100之间的数字")
-      }else if(this.sizeTags.length === 0){
-        this.$message.error("请先添加尺寸")
       }else {
         for(let i=0; i<tabNum; i++) {
           this.videoTabs.push({})
@@ -188,17 +213,213 @@ export default {
       this.$message.success("删除成功")
     },
     handleSelectResourcesEnd(resources) {
-      // const contentPreset = {
-      //   coverType: this.isMall ? 'custom' : 'media',
-      //   // hideTitleOptions 表示强制需要标题，无法关闭
-      //   showTitle: this.hideTitleOptions ? 1 : 0,
-      // }
-      // const contentList = genResourceContentList(resources, contentPreset)
-      // this.normalContentList.splice(this.activeIndex, contentList.length, ...contentList)
+      const source = this.basicForm.source
+      let videoTabs = this.videoTabs
+      const videoResources = resources['video']
+      videoResources.map(item => {
+        const data = this.callbackParam('video', item, source)
+        videoTabs.push({
+          title: data.title,
+          subTitle: data.subTitle,
+          mediaResourceId: data.thirdIdOrPackageName
+        })
+      })
     },
     handleBlurSort(index) {
       console.log('index', index);
+    },
+    handleSubmit(status) {
+      const { basicForm, videoTabs, id } = this
+      
+      let basicParam = {
+        name: basicForm.name,
+        source: basicForm.source,
+        status
+      }
+      let videoList = videoTabs.map(item => {
+        if(item.mediaResourceId) {
+          return item
+        }
+      }).filter(item => item)
+      this.checkParams(basicParam, videoList, function() {
+        let data = Object.assign({}, basicParam)
+        data.videoList = videoTabs.length === 0 ? undefined : videoTabs
+        console.log('save', data);
+        this.$service.saveMediaAutomation({jsonStr: JSON.stringify(data)}, '保存成功').then(() => {
+          this.$emit('go-back')
+        })
+      }.bind(this))
+    },
+    handleSubmitAudit() {
+      this.handleSubmit(3)
+    },
+    handleSaveDraft() {
+      this.handleSubmit(2)
+    },
+    checkParams(basicParam, videos, cb) {
+      if(!this.checkBasicParam(basicParam)) {
+        this.$message.error("流基本设置，信息不完整")
+      }else {
+        if(videos.length === 0) {
+          cb()
+        }else {
+          const sizeTags = this.sizeTags
+          const picSize = sizeTags.map(item => {
+            return item.width + "*" + item.height
+          })
+          basicParam.picSize = picSize
+          let isAll = true
+          videos.some((item, index) => {
+            if(!this.checkVideoList(item)) {
+              const msg = '影片 ' + (index + 1) + '  配置不完整，无法保存'
+              this.$alert(msg, {
+                confirmButtonText: '确定'
+              })
+              isAll = false
+              return true
+            }
+          })
+          if(isAll) {
+            cb()
+          }
+        }
+      }
+    },
+    checkVideoList(video) {
+      const { videoListParams } = this
+      let isPass = true
+      videoListParams.forEach(param => {
+        if(!video[param]) {
+          isPass = false
+          return
+        }
+      })
+      if(!isPass) {
+        return isPass
+      }else {
+        if(video.picList.length === 0 || video.picList.length !== this.sizeTags.length){
+          isPass = false
+        }
+      }
+      return isPass
+    },
+    checkBasicParam(basicParams) {
+      const params = this.params
+      let isPass = true
+      params.forEach(item => {
+        if(!basicParams[item]){
+          isPass = false
+          return 
+        }
+      })
+      return isPass
+    },
+    /**
+     * 资源转换
+     */
+    callbackParam(tabName, selected, sourceType) {
+    let s = {
+      type: '', // 面向客户端
+      contentType: '', // 面向管理后台
+      thirdIdOrPackageName: ''
     }
+    const prefixMap = {
+      tencent: '_otx_',
+      o_tencent: '_otx_',
+      yinhe: '_oqy_',
+      o_iqiyi: '_oqy_',
+      youku: '_oyk_'
+    }
+    switch (tabName) {
+      case 'video': {
+        const selectedEpisode = selected.selectedEpisodes
+        const prefix = (prefixMap[sourceType] || '')
+        if (selectedEpisode) {
+          if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
+            // 如果是短视频, 并且 thirdVId 存在
+            s.thirdIdOrPackageName = prefix + selectedEpisode.thirdVId
+            s.sid = selectedEpisode.coocaaMId
+          } else {
+            s.thirdIdOrPackageName = prefix + selected.coocaaVId
+            s.vid = selectedEpisode.coocaaMId
+          }
+          s.thumb = selectedEpisode.thumb
+          s.title = selectedEpisode.urlTitle
+          s.subTitle = selectedEpisode.urlSubTitle
+        } else {
+          s.thirdIdOrPackageName = prefix + selected.coocaaVId
+          s.pictureUrl = selected.thumb
+          s.title = selected.title
+          s.subTitle = selected.subTitle
+        }
+        s.contentType = 'movie'
+        s.type = 'res'
+        break
+      }
+      case 'app': {
+        s.contentType = 'app'
+        s.coverType = 'app'
+        s.thirdIdOrPackageName = selected.appPackageName
+        s.pictureUrl = selected.appImageUrl
+        s.title = selected.appName
+        s.type = 'app'
+        break
+      }
+      case 'edu': {
+        s.contentType = 'edu'
+        s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
+        s.platformId = selected.source
+        s.pictureUrl = selected.thumb
+        s.title = selected.title
+        s.subTitle = selected.subTitle
+        s.type = 'res'
+        break
+      }
+      case 'pptv': {
+        s.contentType = 'pptv'
+        s.thirdIdOrPackageName =
+          'pptv_tvsports://tvsports_detail?section_id=' +
+          selected.pid +
+          '&from_internal=1'
+        s.title = selected.pTitle
+        s.type = ''
+        break
+      }
+      case 'live': {
+        s.contentType = 'txLive'
+        s.thirdIdOrPackageName = '_otx_' + selected.vId + ''
+        s.platformId = selected.source
+        s.pictureUrl = selected.thumb
+        s.title = selected.title
+        s.subTitle = selected.subTitle
+        s.type = 'live'
+        break
+      }
+      case 'topic': {
+        selected.dataSign === 'parentTopic'
+          ? (s.contentType = 'bigTopic')
+          : (s.contentType = 'topic')
+        s.thirdIdOrPackageName = selected.id + ''
+        s.pictureUrl = selected.picture
+        s.title = selected.title
+        s.subTitle = selected.subTitle
+        s.type = 'topic'
+        break
+      }
+      case 'rotate': {
+        s.contentType = 'rotate'
+        s.thirdIdOrPackageName = selected.id + ''
+        s.pictureUrl = selected.picture
+        s.title = selected.title
+        s.subTitle = selected.subTitle
+        s.type = 'rotate'
+        break
+      }
+      default:
+        break
+      } 
+    return s
+    },
   },
 
   created() {

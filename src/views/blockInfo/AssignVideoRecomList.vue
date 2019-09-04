@@ -53,12 +53,12 @@ export default {
         header: [
           {
             label: '指定影片推荐流ID',
-            prop: 'id',
+            prop: 'mediaAutomationId',
             sortable: true
           },
           {
             label: '指定影片推荐流名称',
-            prop: 'videoName'
+            prop: 'mediaAutomationName'
           },
           {
             label: '内容源',
@@ -69,16 +69,26 @@ export default {
           },
           {
             label: '源状态',
-            prop: 'status',
+            prop: 'openStatus',
             render: (h, { row }) => {
-              return ['关闭', '开启'][row.status]
+              return ['关闭', '开启'][row.openStatus]
             }
           },
           {
-            label: '影片数量'
+            label: '影片数量',
+            prop: 'videoNum'
+          },
+          {
+            label: "已屏蔽影片数量",
+            prop: 'disableVideoNum'
+          },
+          {
+            label: '图片海报尺寸',
+            prop: 'picSize'
           },
           {
             label: '最后一次推荐计算完成时间',
+            prop: 'lastCalDate'
           },
           {
             label: '操作',
@@ -106,13 +116,15 @@ export default {
   methods: {
     handleOpenContentAuthManager(row) {
       this.$refs.contentCard.handleShowContentAuthManager({
-        id: row.id,
+        mediaAutomationId: row.mediaAutomationId,
         type: 'block',
         menuElId: 'broadcastBlock'
       })
     },
     genDefaultFilter() {
       return {
+        page: 1,
+        rows: 10
       }
     },
     handleFilterChange(type, filter) {
@@ -141,35 +153,20 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter()
-      this.$service.broadcastBlockPageList(filter).then(data => {
+      this.$service.getMediaAutomationList(filter).then(data => {
+        console.log('data', data);
         this.pagination.total = data.total
         this.table.data = data.rows
       })
-    },
-    toPercent: decimal => {
-      return (Math.round(decimal * 10000) / 100.00 + "%")
-    },
-    getSimpleBrowseData(id) {
-      let dataShow = {}
-      this.$service.getBlockSimpleBrowseData({id}).then(data => {
-        const uvctr = data.rows[0].data[0].uvctr
-        dataShow = {
-          value: this.toPercent(uvctr.value),
-          dailyGrowth: this.toPercent(uvctr.dailyGrowth),
-          weeklyGrowth: this.toPercent(uvctr.weeklyGrowth) 
-        }
-        console.log('data2',dataShow );
-      })
-      return dataShow
     }
   },
   created() {
     let filterSchema = _.map({
-      id: _.o.oneOf([_.number, _.value('')]).$msg('请输入数字').other('form', {
+      mediaAutomationId: _.o.oneOf([_.number, _.value('')]).$msg('请输入数字').other('form', {
         component: 'Input',
         placeholder: '影片流ID'
       }),
-      videoName: _.o.string.other('form', {
+      mediaAutomationName: _.o.string.other('form', {
         component: 'Input',
         placeholder: '影片流名称'
       }),
@@ -177,7 +174,7 @@ export default {
         component: 'Select',
         placeholder: '内容源'
       }),
-      status: _.o.enum({'开启': 1, '关闭': 0}).other('form', {
+      openStatus: _.o.enum({'开启': 1, '关闭': 0}).other('form', {
         component: 'Select',
         placeholder: '源状态'
       })
@@ -200,7 +197,7 @@ export default {
       }
     })
     this.filterSchema = filterSchema
-    // this.fetchData()
+    this.fetchData()
   }
 }
 </script>
