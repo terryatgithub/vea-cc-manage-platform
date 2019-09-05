@@ -59,7 +59,7 @@
           <ResourceSelector
             ref="resourceSelector"
             :is-live="false"
-            :selectors="['video']"
+            :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
             selection-type="multiple"
             :source="createForm.source"
             @select-end="handleSelectResourcesEnd"
@@ -135,7 +135,8 @@ export default {
         name: undefined,
         source: 'o_tencent',
         flag: undefined,
-        currentVersion: undefined
+        currentVersion: undefined,
+        flagAllVideoPoster: 0
       },
       isCollapseBase: false,
       isCollapseVideo: false,
@@ -217,15 +218,38 @@ export default {
       this.$message.success("删除成功")
     },
     handleSelectResourcesEnd(resources) {
+      console.log('resources', resources);
       const source = this.basicForm.source
+      ;['video', 'edu', 'pptv', 'live', 'topic', 'rotate'].forEach(name => {
+        const nameRS = resources[name]
+        this.handleDiffResources(nameRS, name, source)
+      })
+    },
+    handleDiffResources(resourceArr, resourceName, source) {
+      let anotherName = resourceName
+      switch(resourceName){
+        case 'video': 
+          anotherName = 'movie'
+          break
+        case 'live':
+          anotherName = 'txLive'
+          break
+      }
       let videoTabs = this.videoTabs
-      const videoResources = resources['video']
-      videoResources.map(item => {
-        const data = this.callbackParam('video', item, source)
+      resourceArr.map(item => {
+        const data = this.callbackParam(resourceName, item, source)
+        let selected = Object.assign({}, data)
+        selected.vid = item.vid
+        selected.sid = item.sid
+        const clickParams = JSON.stringify(this.paramIdFun(selected))
         videoTabs.push({
           title: data.title,
           subTitle: data.subTitle,
-          mediaResourceId: data.thirdIdOrPackageName
+          mediaResourceId: data.thirdIdOrPackageName,
+          clickParams,
+          coverType: 'media',
+          clickTemplateType: anotherName,
+          videoContentType: anotherName
         })
       })
     },
@@ -236,14 +260,19 @@ export default {
     },
     handleSubmit(status) {
       const { basicForm, videoTabs, id } = this
-      
+      let videoList = videoTabs.filter(item => {
+        return typeof(item.mediaResourceId) !== 'undefined'
+      })
+      let isAll = videoList.every(item => {
+        return typeof(item.videoId) !== 'undefined'
+      })
+      if(isAll) {
+        basicForm.flagAllVideoPoster = 1
+      }
       let basicParam = {
         ...basicForm,
         status
       }
-      let videoList = videoTabs.filter(item => {
-        return typeof(item.mediaResourceId) !== 'undefined'
-      })
       this.checkParams(basicParam, videoList, function() {
         let data = Object.assign({}, basicParam)
         data.videoList = videoTabs.length === 0 ? undefined : videoTabs
@@ -422,6 +451,43 @@ export default {
         break
       } 
     return s
+    },
+    paramIdFun: function(selected) {
+      // 封装保存的id
+      if (selected.contentType === 'movie') {
+        var param = {
+          id: selected.thirdIdOrPackageName
+        }
+        if (selected.vid) {
+          param.vid = selected.vid
+        } 
+        if (selected.sid) {
+          param.sid = selected.sid
+        }
+      } else if (
+        selected.contentType === 'app' ||
+        selected.contentType === 'edu' ||
+        selected.contentType === 'txLive'
+      ) {
+        var param = {
+          id: selected.thirdIdOrPackageName
+        }
+      } else if (selected.contentType === 'bigTopic') {
+        var param = {
+          pTopicCode: selected.thirdIdOrPackageName
+        }
+      } else if (selected.contentType === 'topic') {
+        // this.smallTopics = true;
+        var param = {
+          topicCode: selected.thirdIdOrPackageName
+        }
+      } else if (selected.contentType === 'rotate') {
+        var param = {
+          rotateId: selected.thirdIdOrPackageName
+        }
+      }
+
+      return param
     },
   },
 

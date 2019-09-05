@@ -12,22 +12,17 @@
     </el-row>
     <div class="container">
       <el-form label-width="150px">
-        <el-form-item label="内容资源" :rules="rules.thirdIdOrPackageName">
-            <ResourceSelector
-              ref="resourceSelector"
-              :is-live="false"
-              :selectors="['video']"
-              selection-type="single"
-              :source="source"
-              @select-end="handleSelectResourcesEnd"
-            >
-              <el-button type="primary" plain>选择资源</el-button>
-            </ResourceSelector>
-            <el-tag
-              type="success"
-              class="marginL"
-              v-show="thirdIdOrPackageName"
-            >已选择：{{thirdIdOrPackageName}}</el-tag>
+        <el-form-item label="视频海报">
+          <GlobalPictureSelector 
+            title="选择资源" 
+            @select-end="handleSelectPostEnd"
+          >
+          </GlobalPictureSelector>
+          <el-tag
+            type="success"
+            class="marginL"
+            v-show="videoId"
+          >已选择：{{videoId}}</el-tag>
         </el-form-item>
         <el-form-item label="主标题" :rules="rules.title">
           <el-input v-model="value.title" class="title-input"/>
@@ -59,18 +54,30 @@
             <el-checkbox v-model="notShowScore">不展示评分</el-checkbox>
           </div>
         </el-form-item>
-        <el-form-item label="视频海报">
-          <GlobalPictureSelector 
-            title="选择资源" 
-            @select-end="handleSelectPostEnd"
+        <el-form-item label="点击类型" :rules="rules.required">
+          <el-radio-group v-model="clickType">
+            <el-radio label="detail">点击进详情页</el-radio>
+            <el-radio label="play-fullscreen">点击全屏播放</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="内容资源" :rules="rules.thirdIdOrPackageName">
+          <ResourceSelector
+            ref="resourceSelector"
+            :is-live="false"
+            :selectors="resourceOptions"
+            selection-type="single"
+            :source="source"
+            @select-end="handleSelectResourcesEnd"
           >
-          </GlobalPictureSelector>
+            <el-button type="primary" plain>选择资源</el-button>
+          </ResourceSelector>
           <el-tag
             type="success"
             class="marginL"
-            v-show="videoId"
-          >已选择：{{videoId}}</el-tag>
+            v-show="thirdIdOrPackageName"
+            >已选择：{{thirdIdOrPackageName}}</el-tag>
         </el-form-item>
+        
       </el-form>
     </div>
 
@@ -97,7 +104,7 @@ import DialogPicture from '@/components/DialogPicture'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import { cloneDeep } from 'lodash'
 
-const resourceOptions = ['video', 'edu', 'live', 'rotate', 'app']
+const resourceOptions = ['video', 'edu', 'pptv', 'live', 'topic', 'rotate']
 export default {
   components: {
     InputPositiveInt,
@@ -108,6 +115,7 @@ export default {
   data() {
     return {
       picPosters: [],
+      clickType: 'detail',
       isVisiablePosterSelector: false,
       currentSelectPic: undefined,  // 当前选择的图片海报
       currentPicIndex: undefined,
@@ -123,6 +131,9 @@ export default {
           { required: true, message: '请输入主标题', trigger: 'blur' }
         ],
         picList: [
+          { required: true }
+        ],
+        required: [
           { required: true }
         ]
       },
@@ -141,7 +152,9 @@ export default {
           subTitle: undefined,
           priority: undefined,
           picInfoList: undefined,
-          flagRec: false
+          flagRec: undefined,
+          coverType: 'media',
+          clickType: 'detail'
         }
       }
     },
@@ -165,8 +178,15 @@ export default {
     },
     flagRec: {
       handler: function(val) {
-        this.value.flagRec = val
-      }
+        this.value.flagRec = val ? 1 : 0
+      },
+      immediate: true
+    },
+    clickType: {
+      handler: function(val) {
+        this.value.clickType = val
+      },
+      immediate: true
     },
     'inputTags.length': {
       handler: function(val, old) {
@@ -210,16 +230,33 @@ export default {
       console.log('selectedResources', selectedResources);
       const { resourceOptions, source } = this
       const tabName = resourceOptions.map(item=> {
-        if(selectedResources[item]) {
+        if(selectedResources[item].length === 1) {
           return item
         }
       }).join("")
       let data = this.callbackParam(tabName, selectedResources[tabName][0], source)
       this.thirdIdOrPackageName = data.thirdIdOrPackageName
+      let selected = Object.assign({}, data)
+      selected.vid = data.vid
+      selected.sid = data.sid
+      const clickParams = JSON.stringify(this.paramIdFun(selected))
       const { thirdIdOrPackageName, title, subTitle } = data
       this.value.mediaResourceId = thirdIdOrPackageName
       this.value.title = title
       this.value.subTitle = subTitle
+      this.value.clickParams = clickParams
+      this.value.coverType = 'media'
+      let anotherName = tabName
+      switch(tabName){
+        case 'video': 
+          anotherName = 'movie'
+          break
+        case 'live':
+          anotherName = 'txLive'
+          break
+      }
+      this.value.clickTemplateType = anotherName,
+      this.value.videoContentType = anotherName
     },
     handleDelPoster(index) {
       let delUrl = this.picPosters[index].pictureUrl
@@ -351,6 +388,43 @@ export default {
       }
       return s
     },
+    paramIdFun: function(selected) {
+      // 封装保存的id
+      if (selected.contentType === 'movie') {
+        var param = {
+          id: selected.thirdIdOrPackageName
+        }
+        if (selected.vid) {
+          param.vid = selected.vid
+        } 
+        if (selected.sid) {
+          param.sid = selected.sid
+        }
+      } else if (
+        selected.contentType === 'app' ||
+        selected.contentType === 'edu' ||
+        selected.contentType === 'txLive'
+      ) {
+        var param = {
+          id: selected.thirdIdOrPackageName
+        }
+      } else if (selected.contentType === 'bigTopic') {
+        var param = {
+          pTopicCode: selected.thirdIdOrPackageName
+        }
+      } else if (selected.contentType === 'topic') {
+        // this.smallTopics = true;
+        var param = {
+          topicCode: selected.thirdIdOrPackageName
+        }
+      } else if (selected.contentType === 'rotate') {
+        var param = {
+          rotateId: selected.thirdIdOrPackageName
+        }
+      }
+
+      return param
+    },
     handleSelectPostEnd(post) {
       console.log('post', post);
       this.videoId = post.pictureId
@@ -362,12 +436,12 @@ export default {
   },
 
   created() {
-    this.value.flagRec = this.value.flagRec || false
     this.picPosters = cloneDeep(this.inputTags).map(({width, height}) => ({height, width, pictureUrl: undefined}))  // 确定海报位置
     this.value.picList = []
     if(this.value.mediaResourceId) {
       this.thirdIdOrPackageName = this.value.mediaResourceId
     }
+    this.clickType = this.value.clickType || 'detail'
     // if(this.value.picInfoList) {
     //   this.value.picInfoList
     // }
