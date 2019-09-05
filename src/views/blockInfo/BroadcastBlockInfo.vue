@@ -144,7 +144,7 @@
               :disable-partner="!!source"
               :source="source"
               v-if="!isManualSetResource && normalResourceBtn==='轮播资源' && !disabled "
-              :selectors="resourceOptionsNormalForm"
+              :selectors="['rotate']"
               :is-live="false"
               selection-type="single"
               @select-end="handleSelectNormalSingleResourceEnd($event, 'single')"
