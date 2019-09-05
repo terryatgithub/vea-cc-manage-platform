@@ -1198,9 +1198,6 @@ export default {
     resourceConfirm (callbackData, form) {
       this.currentForm = this[form]
       this.resourceVisible = false
-      this.normalVersionContent = this.normalVersionContent.filter(e => {
-        return e.type !== ''
-      })
       if (callbackData instanceof Array) {
         let data = callbackData.reduce((result, current) => {
           result.push(this.packageFormParam(current))
