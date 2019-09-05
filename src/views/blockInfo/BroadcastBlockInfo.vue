@@ -144,7 +144,7 @@
               :disable-partner="!!source"
               :source="source"
               v-if="!isManualSetResource && normalResourceBtn==='轮播资源' && !disabled "
-              :selectors="['rotate']"
+              :selectors="resourceOptionsNormalForm"
               :is-live="false"
               selection-type="single"
               @select-end="handleSelectNormalSingleResourceEnd($event, 'single')"
@@ -156,7 +156,7 @@
               :source="source"
               :disable-partner="!!source"
               v-if="!isManualSetResource && normalResourceBtn==='播放资源' && !disabled "
-              :selectors="resourceOptions"
+              :selectors="resourceOptionsNormalForm"
               :is-live="false"
               selection-type="single"
               @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
@@ -273,7 +273,7 @@
                 v-if="!disabled "
                 :disable-partner="!!source"
                 :source="source"
-                :selectors="resourceOptions"
+                :selectors="resourceOptionsManualResource"
                 :is-live="false"
                 selection-type="single"
                 @select-end="handleSelectNormalSingleOtherResourceEnd($event)"
@@ -522,7 +522,6 @@ export default {
       mode: 'create',
       resourceName: '轮播推荐位',
       pictureResolution: '797*449', // 海报尺寸
-      selectingManualResource: false,
       type: 'block',
       menuElId: 'broadcastBlock',
       disabled: false, // 是否禁用
@@ -700,10 +699,16 @@ export default {
         ? ['app'] 
         : ['video', 'edu', 'live', 'rotate']
     },
-    resourceOptions (){
+    resourceOptionsManualResource (){
+      return ['video', 'edu', 'live', 'rotate']
+    },
+    resourceOptionsNormalForm (){
       return this.currentIndex === 0 && this.basicForm.configModel === 'sign' 
         ? ['rotate'] 
         : ['video', 'edu', 'live', 'rotate']
+    },
+    resourceOptions (){
+      return ['video', 'edu', 'live', 'rotate']
     },
     isManualSetResource () {
       return this.normalForm.type === 'url'
@@ -760,17 +765,7 @@ export default {
       return this.mode === 'replicated' || this.basicForm.duplicateVersion === 'yes'
     }
   },
-
   watch: {
-    'normalForm.sign': {
-      handler: function(newVal, oldVal) {
-        if (newVal === 'manualResource') {
-          this.selectingManualResource = true
-        } else {
-          this.selectingManualResource = false
-        }
-      }
-    }
   },
   methods: {
     handleSourceChange(val) {
@@ -953,7 +948,7 @@ export default {
       if (mode === 'single') {
         data = this.callbackParam('rotate', selectedResources.rotate[0])
       } else {
-        let resourceOptions = this.resourceOptions
+        let resourceOptions = this.resourceOptionsNormalForm
         for (var i = 0; i < resourceOptions.length; i++) {
           const resourceType = resourceOptions[i]
           const resources = selectedResources[resourceType]
@@ -1001,7 +996,7 @@ export default {
     },
     handleSelectNormalSingleOtherResourceEnd(selectedResources) {
       let data
-      let resourceOptions = this.resourceOptions
+      let resourceOptions = this.resourceOptionsManualResource
       for (var i = 0; i < resourceOptions.length; i++) {
         if (selectedResources[resourceOptions[i]].length === 1) {
           data = this.callbackParam(
@@ -1011,7 +1006,9 @@ export default {
           )
         }
       }
-      this.resourceConfirm(data, 'normalForm')
+      this.resourceVisible = false
+      this.normalForm.clickParams = this.paramIdFun(data)
+      this.normalForm.clickTemplateType = data.contentType
     },
     /**
      * 资源转换
@@ -1212,15 +1209,9 @@ export default {
         this.normalVersionContent.splice(this.currentIndex, 1, ...data)
         this[form] = data[0]
       } else {
-        if (this.selectingManualResource) {
-          this[form].clickParams = this.paramIdFun(callbackData)
-          this[form].clickTemplateType = callbackData.contentType
-          this.selectingManualResource = false
-        } else {
-          this[form] = this.packageFormParam(callbackData)
-          if (form === 'normalForm') {
-            this.normalVersionContent.splice(this.currentIndex, 1, this[form])
-          }
+        this[form] = this.packageFormParam(callbackData)
+        if (form === 'normalForm') {
+          this.normalVersionContent.splice(this.currentIndex, 1, this[form])
         }
       }
     },
@@ -1387,15 +1378,15 @@ export default {
                       return this.$message.error('组合模式下，正常版本的配置资源至少4个，才可以进行保存！')
                     }
                   }
-                  // if (configModel === 'sign') {
-                  //   const firstContent = normalVersionContent[0]
-                  //   if (firstContent.contentType !== 'rotate') {
-                  //     return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
-                  //   }
-                  //   if (firstContent.sign === 'manualResource' && !firstContent.clickParams.rotateId) {
-                  //     return this.$message.error('信号源模式下，第一个资源如果设置跳转到其它播放资源，必须是轮播资源')
-                  //   }
-                  // }
+                  if (configModel === 'sign') {
+                    const firstContent = normalVersionContent[0]
+                    if (firstContent.contentType !== 'rotate') {
+                      return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
+                    }
+                    // if (firstContent.sign === 'manualResource' && !firstContent.clickParams.rotateId) {
+                    //   return this.$message.error('信号源模式下，第一个资源如果设置跳转到其它播放资源，必须是轮播资源')
+                    // }
+                  }
                   // 检查海报, 批量填充轮播资源的时候会缺少海报
                   for (let i = 0; i < normalVersionContent.length; i++) {
                     if (!normalVersionContent[i].poster.pictureUrl) {
