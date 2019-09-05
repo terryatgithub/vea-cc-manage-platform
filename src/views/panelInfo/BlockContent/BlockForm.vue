@@ -7,7 +7,7 @@
       :model="contentForm"
       :rules="contentRule"
       ref="contentForm"
-      label-width="120px"
+      label-width="160px"
     >
       <template v-if="contentType === 'specific'">
         <el-form-item label="内容类别" prop="resourceType">
@@ -225,7 +225,15 @@
       </el-form-item>
 
       <template v-if="contentForm.coverType === 'media'">
-        <el-form-item label="背景视频" prop="bgParams.id">
+        <el-form-item label="配置高清背景图和视频">
+          <el-switch
+            v-model="isShowConfigBg"
+            active-color="#13ce66"
+            inactive-color="grey"
+          >
+          </el-switch>
+        </el-form-item>
+        <el-form-item v-if="isShowConfigBg" label="背景视频" prop="bgParams.id">
           <ResourceSelector
             ref="resourceSelector"
             v-if="!isReadonly"
@@ -243,7 +251,7 @@
           </el-tag>
         </el-form-item>
 
-        <el-form-item label="背景图" prop="bgImgUrl">
+        <el-form-item v-if="isShowConfigBg" label="背景图" prop="bgImgUrl">
           <GlobalPictureSelector
             :disabled="isReadonly"
             @select-end="handleSelectBgEnd">
@@ -416,6 +424,32 @@
           <AppParamsRead v-else :value="contentForm.redundantParams" />
         </template>
       </template>
+      <el-form-item label="开启推荐位个性化推荐">
+        <el-switch
+          :value="!!contentForm.flagSetRec" 
+          @input="contentForm.flagSetRec = $event? 1 : 0"
+          active-color="#13ce66"
+          inactive-color="grey"
+        >
+        </el-switch>
+      </el-form-item>
+      <template v-if="!!contentForm.flagSetRec">
+        <el-form-item label="推荐流选择">
+          <el-button type="primary" @click="isVisiableRecom = true">选择推荐流</el-button>
+          <el-tag
+            v-if="contentForm.mediaAutomationBlockRls.mediaAutomationId"
+            type="primary" 
+            closable
+            @close="handleDelStreamTag"
+          >
+            {{contentForm.mediaAutomationBlockRls.mediaAutomationId}}
+          </el-tag>
+        </el-form-item>
+        <el-form-item label="刷新机制">
+          <InputPositiveInt v-model="contentForm.mediaAutomationBlockRls.refreshCal" class="flashCountInput"/>
+          客户端曝光X次之后刷新推荐位
+        </el-form-item>
+      </template>
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
         <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
       </el-form-item>
@@ -442,6 +476,18 @@
       :ids="[currentResourceId]"
       @close="showBlockTagDialog = false">
     </TagFrame>
+
+    <!-- 推荐流弹框  -->
+    <el-dialog title="推荐流" :visible.sync="isVisiableRecom" width="40%" @open="fetchRecomStream">
+      <el-tag 
+      v-for="(tag, index) in recomStreamTags" 
+      size="medium"
+      class="recomTag"
+      :key="index" 
+      @click="contentForm.mediaAutomationBlockRls.mediaAutomationId=tag.id;isVisiableRecom=false"
+      >{{tag.name}}</el-tag>
+    </el-dialog>
+    <!-- 推荐流弹框 end -->
   </div>
 </template>
 
@@ -459,6 +505,7 @@ import TabSelector from '@/components/selectors/TabSelector'
 import ClickEventSelector from '@/components/selectors/ClickEventSelector'
 import TagFrame from '../TagFrame'
 import { getSelectedResource, chopSubTitle, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
   components: {
     Upload,
@@ -472,7 +519,8 @@ export default {
     TabSelector,
     ClickEventSelector,
     AppParamsRead,
-    TagFrame
+    TagFrame,
+    InputPositiveInt
   },
   data() {
     const isReadonly = this.isReadonly
@@ -541,6 +589,10 @@ export default {
       showCrowdSelector: false,
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
+      isShowConfigBg: false,  //配置项隐藏
+      recomStream: undefined,
+      isVisiableRecom: false,
+      recomStreamTags: [],
       contentRule: {
         bgImgUrl: [
           {
@@ -716,6 +768,15 @@ export default {
       }
 
       return enums
+    }
+  },
+
+  watch: {
+    isShowConfigBg(bool) {
+      if(!bool) {
+        this.contentForm.bgParams = {}
+        this.contentForm.bgImgUrl = ''
+      }
     }
   },
   methods: {
@@ -984,6 +1045,14 @@ export default {
           cb('请把表单填写完整')
         }
       })
+    },
+    handleDelStreamTag() {
+      this.contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined
+    },
+    fetchRecomStream() {
+      this.$service.getMediaAutomationDataList({page: 1, rows: 20}).then(data => {
+        this.recomStreamTags = data.rows
+      })
     }
   },
   mounted() {
@@ -1157,6 +1226,15 @@ $width = 100px;
   cursor: pointer;
   top: 0;
   right: 0;
+}
+
+.flashCountInput {
+  width: 100px;
+}
+
+.recomTag {
+  margin-right: 10px;
+  font-size: 14px;
 }
 </style>
 <style lang="stylus">

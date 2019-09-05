@@ -260,6 +260,12 @@ export function genDefaultContentForm(preset) {
     redundantParams: getDefaultParams(),
     // Sprint2.8.2 背景图片和视频
     bgImgUrl: '',
+    flagSetRec: 0,
+    mediaAutomationBlockRls: {
+      refreshCal: 1,
+      mediaAutomationId: undefined,
+      blockType: 'normal'
+    },
     bgParams: {
       id: '',
       title: ''
