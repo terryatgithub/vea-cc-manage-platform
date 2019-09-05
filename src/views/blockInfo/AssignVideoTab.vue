@@ -77,6 +77,7 @@
     <!-- 海报弹框  -->
     <el-dialog :visible.sync="isVisiablePosterSelector" width="1200px">
       <DialogPicture
+        :pictureResolution="computeResolution()"
         v-if="isVisiablePosterSelector"
         v-model="currentSelectPic"
       ></DialogPicture>
@@ -139,6 +140,7 @@ export default {
           title: undefined,
           subTitle: undefined,
           priority: undefined,
+          picInfoList: undefined,
           flagRec: false
         }
       }
@@ -352,6 +354,10 @@ export default {
     handleSelectPostEnd(post) {
       console.log('post', post);
       this.videoId = post.pictureId
+    },
+    computeResolution() {
+      const { currentPicIndex, picPosters } = this
+      return picPosters[currentPicIndex].width + "*" + picPosters[currentPicIndex].height
     }
   },
 
@@ -362,6 +368,9 @@ export default {
     if(this.value.mediaResourceId) {
       this.thirdIdOrPackageName = this.value.mediaResourceId
     }
+    // if(this.value.picInfoList) {
+    //   this.value.picInfoList
+    // }
   }
 }
 </script>

@@ -18,6 +18,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -53,12 +54,12 @@ export default {
         header: [
           {
             label: '指定影片推荐流ID',
-            prop: 'mediaAutomationId',
+            prop: 'id',
             sortable: true
           },
           {
             label: '指定影片推荐流名称',
-            prop: 'mediaAutomationName'
+            prop: 'name'
           },
           {
             label: '内容源',
@@ -72,6 +73,14 @@ export default {
             prop: 'openStatus',
             render: (h, { row }) => {
               return ['关闭', '开启'][row.openStatus]
+            }
+          },
+          {
+            label: '状态',
+            prop: 'status',
+            sortable: true,
+            render: (h, { row }) => {
+              return this.$consts.statusText[row.status]
             }
           },
           {
@@ -109,14 +118,15 @@ export default {
           }
         ],
         data: [],
-        selectionType: 'none'
+        selected: [],
+        selectionType: 'multiple'
       }
     }
   },
   methods: {
     handleOpenContentAuthManager(row) {
       this.$refs.contentCard.handleShowContentAuthManager({
-        mediaAutomationId: row.mediaAutomationId,
+        id: row.id,
         type: 'block',
         menuElId: 'broadcastBlock'
       })
@@ -154,7 +164,6 @@ export default {
     fetchData() {
       const filter = this.parseFilter()
       this.$service.getMediaAutomationList(filter).then(data => {
-        console.log('data', data);
         this.pagination.total = data.total
         this.table.data = data.rows
       })
@@ -162,11 +171,11 @@ export default {
   },
   created() {
     let filterSchema = _.map({
-      mediaAutomationId: _.o.oneOf([_.number, _.value('')]).$msg('请输入数字').other('form', {
+      id: _.o.oneOf([_.number, _.value('')]).$msg('请输入数字').other('form', {
         component: 'Input',
         placeholder: '影片流ID'
       }),
-      mediaAutomationName: _.o.string.other('form', {
+      name: _.o.string.other('form', {
         component: 'Input',
         placeholder: '影片流名称'
       }),

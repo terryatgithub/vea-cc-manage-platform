@@ -1,13 +1,13 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-    <template v-if="mode !== 'create'">
+    <template v-if="mode === 'create'">
       <el-form :model="createForm" label-width="80px" ref="createForm">
         <el-form-item label="流名称" prop="name" :rules="basicFormRules.name">
           <el-input v-model="createForm.name" class="title-input"></el-input>
         </el-form-item>
         <el-form-item label="源" prop="source">
           <el-radio-group v-model="createForm.source">
-            <el-radio v-for="item in $consts.sourceOptions" :label="item.value">{{item.label}}</el-radio>
+            <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -32,17 +32,17 @@
       </div>
       <div :style="{display: isCollapseBase ? 'none' : 'block'}">
         <el-form :model="basicForm" label-width="150px" :rules="basicFormRules">
-          <el-form-item label="推荐流ID">123123</el-form-item>
+          <el-form-item label="推荐流ID">{{basicForm.id}}</el-form-item>
           <el-form-item label="推荐流名称" prop="name">
             <el-input class="title-input" v-model="basicForm.name"/>
           </el-form-item>
           <el-form-item label="源" prop="source">
             <el-radio-group v-model="basicForm.source">
-              <el-radio v-for="item in $consts.sourceOptions" :label="item.value" disabled>{{item.label}}</el-radio>
+              <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value" disabled>{{item.label}}</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="源状态">
-            关闭
+            {{['关闭', '开启'][basicForm.flag]}}
           </el-form-item>
         </el-form>
       </div>
@@ -131,7 +131,11 @@ export default {
         source: 'o_tencent'
       },
       basicForm: {
-        source: 'o_tencent'
+        id: undefined,
+        name: undefined,
+        source: 'o_tencent',
+        flag: undefined,
+        currentVersion: undefined
       },
       isCollapseBase: false,
       isCollapseVideo: false,
@@ -226,21 +230,20 @@ export default {
       })
     },
     handleBlurSort(index) {
-      console.log('index', index);
+      this.videoTabs.sort((a, b) => {
+        return b['priority'] - a['priority']  
+      })
     },
     handleSubmit(status) {
       const { basicForm, videoTabs, id } = this
       
       let basicParam = {
-        name: basicForm.name,
-        source: basicForm.source,
+        ...basicForm,
         status
       }
-      let videoList = videoTabs.map(item => {
-        if(item.mediaResourceId) {
-          return item
-        }
-      }).filter(item => item)
+      let videoList = videoTabs.filter(item => {
+        return typeof(item.mediaResourceId) !== 'undefined'
+      })
       this.checkParams(basicParam, videoList, function() {
         let data = Object.assign({}, basicParam)
         data.videoList = videoTabs.length === 0 ? undefined : videoTabs
@@ -444,6 +447,17 @@ export default {
         this.title = '预览'
         this.disabled = true
         break
+    }
+    if(this.id) {
+      let basicForm = this.basicForm
+      this.$service.getMediaAutomationDetial({id: this.id}).then(data => {
+        basicForm.id = data.id
+        basicForm.name = data.name
+        basicForm.flag = data.flag
+        basicForm.currentVersion = data.currentVersion
+        this.videoTabs = data.videoList || []
+        console.log('data', data);
+      })
     }
   }
 }

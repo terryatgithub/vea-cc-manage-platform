@@ -284,3 +284,10 @@ export function saveMediaAutomation(data) {
     data
   })
 }
+export function getMediaAutomationDetial(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/mediaAutomation/getDetailInfo.html',
+    params
+  })
+}
