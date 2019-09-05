@@ -158,7 +158,7 @@ export default {
     }
   },
 
-  props: ['id', 'initMode'],
+  props: ['id', 'initMode', 'version'],
 
   methods: {
     handleCreate() {
@@ -516,13 +516,23 @@ export default {
     }
     if(this.id) {
       let basicForm = this.basicForm
-      this.$service.getMediaAutomationDetial({id: this.id}).then(data => {
+      this.$service.getMediaAutomationDetial({id: this.id, version: this.version}).then(data => {
         basicForm.id = data.id
         basicForm.name = data.name
         basicForm.flag = data.flag
         basicForm.currentVersion = data.currentVersion
         this.videoTabs = data.videoList || []
-        console.log('data', data);
+        if(data.picSize.length !== 0) {
+          data.picSize.map(item => {
+            this.sizeTags.push(
+              {
+                width: item.split('*')[0],
+                height: item.split('*')[1]
+              }
+            )
+          })
+        }
+        console.log('dataDetail', data);
       })
     }
   }

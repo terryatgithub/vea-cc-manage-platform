@@ -12,6 +12,7 @@
     <AssignVideoRecomInfo
       v-if="!isShowList"
       :id="id"
+      :version="version"
       :init-mode="mode"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
@@ -50,6 +51,7 @@ export default {
     },
     handleEdit(item) {
       this.id = item.id
+      this.version = item.currentVersion
       this.mode = 'edit'
       this.isShowList = false
     },

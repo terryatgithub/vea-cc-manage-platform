@@ -442,9 +442,16 @@ export default {
       this.thirdIdOrPackageName = this.value.mediaResourceId
     }
     this.clickType = this.value.clickType || 'detail'
-    // if(this.value.picInfoList) {
-    //   this.value.picInfoList
-    // }
+    if(this.value.picInfoList && this.value.picInfoList.length !== 0) {
+      this.value.picInfoList.forEach(item => {
+        let picRS = item.pictureResolution.split('*')
+        this.picPosters.map(picContainer => {
+          if(picRS[0] === picContainer.width && picRS[1] === picContainer.height) {
+            picContainer.pictureUrl = item.pictureUrl
+          }
+        })
+      })
+    }
   }
 }
 </script>
