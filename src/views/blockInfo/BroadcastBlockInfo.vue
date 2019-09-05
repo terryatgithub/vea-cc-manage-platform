@@ -156,7 +156,7 @@
               :source="source"
               :disable-partner="!!source"
               v-if="!isManualSetResource && normalResourceBtn==='播放资源' && !disabled "
-              :selectors="currentIndex === 0 && basicForm.configModel === 'sign' ? ['rotate'] : resourceOptions"
+              :selectors="resourceOptions"
               :is-live="false"
               selection-type="single"
               @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
@@ -532,8 +532,6 @@ export default {
       cornerIconTypeOptions: {},
       cornerTypes: [],
       materialTypes: null,
-      resourceOptions: ['video', 'edu', 'live', 'rotate'],
-      resourceOptionsLowerForm: ['video', 'edu', 'live', 'rotate'],
       basicForm: {
         id: undefined,
         containerName: '',
@@ -559,15 +557,15 @@ export default {
         ],
         clickParams: [
           {
-            validator: function(rule, value, cb) {
+            validator: (rule, value, cb) => {
               const normalForm = this.normalForm
               if (normalForm.sign === 'manualResource') {
-                if (!value || value === '{}') {
+                if (!value || JSON.stringify(value) === '{}') {
                   return cb('请选择资源')
                 }
               }
               cb()
-            }.bind(this)
+            }
           }
         ]
       },
@@ -696,8 +694,17 @@ export default {
       pictureOptions: {}
     }
   },
-
   computed: {
+    resourceOptionsLowerForm (){
+      return this.lowerForm.coverType === 'app' 
+        ? ['app'] 
+        : ['video', 'edu', 'live', 'rotate']
+    },
+    resourceOptions (){
+      return this.currentIndex === 0 && this.basicForm.configModel === 'sign' 
+        ? ['rotate'] 
+        : ['video', 'edu', 'live', 'rotate']
+    },
     isManualSetResource () {
       return this.normalForm.type === 'url'
     },
@@ -1355,11 +1362,6 @@ export default {
       this.cleanLowerForm(val)
     },
     cleanLowerForm: function(val) {
-      if (val === 'app') {
-        this.resourceOptionsLowerForm = ['app']
-      } else {
-        this.resourceOptionsLowerForm = ['video', 'edu', 'live', 'rotate']
-      }
       var newForm = Object.assign({}, this.versionForm)
       newForm.type = val
       newForm.coverType = val
@@ -1385,15 +1387,15 @@ export default {
                       return this.$message.error('组合模式下，正常版本的配置资源至少4个，才可以进行保存！')
                     }
                   }
-                  if (configModel === 'sign') {
-                    const firstContent = normalVersionContent[0]
-                    if (firstContent.contentType !== 'rotate') {
-                      return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
-                    }
-                    if (firstContent.sign === 'manualResource' && !firstContent.clickParams.rotateId) {
-                      return this.$message.error('信号源模式下，第一个资源如果设置跳转到其它播放资源，必须是轮播资源')
-                    }
-                  }
+                  // if (configModel === 'sign') {
+                  //   const firstContent = normalVersionContent[0]
+                  //   if (firstContent.contentType !== 'rotate') {
+                  //     return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
+                  //   }
+                  //   if (firstContent.sign === 'manualResource' && !firstContent.clickParams.rotateId) {
+                  //     return this.$message.error('信号源模式下，第一个资源如果设置跳转到其它播放资源，必须是轮播资源')
+                  //   }
+                  // }
                   // 检查海报, 批量填充轮播资源的时候会缺少海报
                   for (let i = 0; i < normalVersionContent.length; i++) {
                     if (!normalVersionContent[i].poster.pictureUrl) {
