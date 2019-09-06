@@ -1,5 +1,5 @@
 <template>
-  <PageWrapper class="tab-info-wrapper">
+  <PageWrapper ref="pageWrapper" class="tab-info-wrapper">
     <PageContentWrapper v-show="activePage === 'tab_info'">
       <ContentCard :title="title" @go-back="$emit('go-back')">
         <CommonContent
@@ -919,6 +919,7 @@ export default {
       uvctrHourChartExtend: Object.assign({}, extend),
       mode: 'create',
       activePage: 'tab_info',
+      scrollTop: 0,
       panelPreview: {
         panel: null,
         id: undefined,

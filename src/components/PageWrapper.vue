@@ -12,5 +12,7 @@ export default {
 
 <style lang="stylus" scoped>
 .page-wrapper
+  height 100%
   position relative
+  overflow-y auto
 </style>
