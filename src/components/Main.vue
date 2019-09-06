@@ -104,7 +104,7 @@ const routerMap = {
   broadcastBlock: 'broadcastBlock',
   multiFunctionBlock: 'multiFunctionBlock',
   sysPlugin: 'sysPlugin',
-  assignVideoRecom: 'assignVideoRecom',
+  mediaAutomation: 'mediaAutomation',
 
   albumPannelInfo: 'albumPannelInfo',
   markPanel: 'markPanel',
@@ -169,7 +169,7 @@ const iconMap = {
   broadcastBlock: 'el-icon-cc-gold',
   multiFunctionBlock: 'el-icon-cc-control',
   sysPlugin: 'el-icon-cc-minus-square',
-  assignVideoRecom: 'el-icon-cc-tag',
+  mediaAutomation: 'el-icon-cc-tag',
 
   blockInfo: 'el-icon-cc-appstore',
   blockManage: 'el-icon-cc-border',

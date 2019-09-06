@@ -361,12 +361,12 @@ const children = [
         }
       },
       {
-        name: 'assignVideoRecom',
-        path: '/assignVideoRecom/view.html',
+        name: 'mediaAutomation',
+        path: '/mediaAutomation/view.html',
         component: AssignVideoRecom,
         meta: {
           title: '指定影片推荐流',
-          tagId: 'assignVideoRecom'
+          tagId: 'mediaAutomation'
         }
       }
     ]
