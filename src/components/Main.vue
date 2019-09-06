@@ -42,7 +42,7 @@
           <i class="el-icon-setting"></i>
         </div> -->
       </el-header>
-      <TagNav ref="tag" default-path="/desktop" :titles="titles" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
+      <TagNav ref="tag" default-path="/desktop" @navigate="handleNavigate" :titles="titles" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
       <!-- safari 兼容性问题 -->
       <el-main style="height: calc(100vh - 93px)" ref="main">
         <keep-alive>
@@ -409,6 +409,14 @@ export default {
         }
         this.menu = parseMenu(menu)
         this.titles = titles
+      })
+    },
+    handleNavigate(route) {
+      this.$sendEvent({
+        type: 'menu_click',
+        payload: {
+          menu_name: this.titles[route.name]
+        }
       })
     }
   },
