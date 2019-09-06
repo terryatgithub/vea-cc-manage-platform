@@ -1,5 +1,6 @@
+import axios from 'axios'
 export function sendEvent (data) {
-  return this.fetch({
+  return axios({
     method: 'post',
     url: 'api/v1/syslog/addLog.html',
     data: {
@@ -7,5 +8,5 @@ export function sendEvent (data) {
       name: data.type,
       data: data.payload
     }
-  })
+  }).catch(() => {})
 }
