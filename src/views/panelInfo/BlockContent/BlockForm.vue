@@ -682,6 +682,7 @@ export default {
     'data',
     'source',
     'pannel',
+    'pannelGroupId',
     'hideTitleOptions',
     'checkCrowd'
   ],
@@ -782,6 +783,12 @@ export default {
   methods: {
     handleAddTagStart() {
       this.showBlockTagDialog = true
+      this.$sendEvent({
+        type: 'video_content_tag',
+        payload: {
+          panel_group_id: this.pannelGroupId || 'new'
+        }
+      })
     },
     genParams(openMode) {
       return {
@@ -861,6 +868,12 @@ export default {
           dmpCrowdId: crowd.value,
           dmpPolicyName: policy.label,
           dmpCrowdName: crowd.label
+        })
+        this.$sendEvent({
+          type: 'create_block_dmp',
+          data: {
+            type: 'common'
+          }
         })
         this.showCrowdSelector = false
       }

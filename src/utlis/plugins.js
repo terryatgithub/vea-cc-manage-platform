@@ -24,6 +24,7 @@ import '@/assets/icon/iconfont.css'
 
 import './auth'
 import './common'
+import './analytics'
 import constants from './consts'
 import ContentCard from './../components/ContentCard.vue'
 Vue.use(ElementUI, { size: 'small', zIndex: 3000 })

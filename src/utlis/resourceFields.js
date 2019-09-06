@@ -41,7 +41,7 @@ export default {
   },
   cornerIcon: {
     id: 'cornerIconId',
-    status: 'cornerIconStatus'
+    status: 'cornerStatus'
   },
   cornerIconType: {
     id: 'typeId',

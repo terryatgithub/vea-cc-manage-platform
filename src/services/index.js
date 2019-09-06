@@ -35,6 +35,7 @@ import * as desktop from './desktop'
 import * as topic from './topic'
 import * as topicConfig from './topicConfig'
 import * as mall from './mall'
+import * as analytics from './analytics'
 
 const service = {
   state: {},
@@ -74,7 +75,8 @@ const service = {
   ...desktop,
   ...topic,
   ...topicConfig,
-  ...mall
+  ...mall,
+  ...analytics
 }
 
 export default function install(Vue) {

@@ -1257,6 +1257,12 @@ export default {
             isCollapse: panelItem.isCollapse
           })
           this.updateDuplicates()
+          this.$sendEvent({
+            type: 'create_panel_dmp',
+            data: {
+              tab_id: this.tabInfo.tabId || 'new'
+            }
+          })
         }
         this.selectCrowdForIndex = index
         this.handleSelectCrowdStart()
@@ -2660,6 +2666,12 @@ export default {
     if (this.id) {
       this.fetchData(this.version)
       this.getSimpleBrowseData()
+      this.$sendEvent({
+        type: 'tab_show',
+        data: {
+          tab_id: this.id
+        }
+      })
     }
     this.getVipButtonSource()
     this.equipChartStyle()

@@ -1581,6 +1581,12 @@ export default {
     }
     if (this.id) {
       this.fetchData(this.version)
+      this.$sendEvent({
+        type: 'broadcast_show',
+        payload: {
+          broadcast_id: this.id
+        }
+      })
     } 
     // 素材类型获取
     this.$service.getDictType({ type: 'materialType' }).then(data => {

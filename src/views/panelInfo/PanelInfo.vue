@@ -377,6 +377,7 @@
         :data="blockContentProps"
         :source="pannel.pannelResource"
         :pannel="pannel.pannelList[+activePannelIndex]"
+        :pannel-group-id="pannel.pannelGroupId"
         :hide-title-options="!!blockContentProps.blockInfo.title_info"
         @cancel="handleSetBlockContentCancle"
         @save="handleSetBlockContentEnd"
@@ -749,12 +750,25 @@ export default {
 
     handleBatchAddTag() {
       this.showAddTagDialog = true
+      this.$sendEvent({
+        type: 'panel_tag',
+        payload: {
+          panel_group_id: this.pannel.pannelGroupId || 'new'
+        }
+      })
     },
     handleBatchAddTagEnd() {
       this.getSharedTags()
       this.showAddTagDialog = false
     },
     handleInputTagWeight(weight, originWeight, tag) {
+      this.$sendEvent({
+        type: 'tag_weight',
+        data: {
+          panel_group_id: this.pannel.pannelGroupId || 'new',
+          type: weight <= originWeight ? 'minus' : 'plus'
+        }
+      })
       this.$service.panelTagUpsert({
         panelId: this.pannel.pannelGroupId,
         tagId: tag.tagId,
@@ -2184,6 +2198,12 @@ export default {
     if (this.id) {
       this.fetchData(this.version).then(() => {
         this.clickBlock()
+      })
+      this.$sendEvent({
+        type: 'panel_show',
+        payload: {
+          panel_group_id: this.id
+        }
       })
     }
   }
