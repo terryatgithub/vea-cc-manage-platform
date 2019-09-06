@@ -85,7 +85,7 @@ export default {
     handleClickMenu(name) {
       this.$sendEvent({
         type: 'menu_click',
-        data: {
+        payload: {
           menu_name: name
         }
       })

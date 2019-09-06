@@ -1259,7 +1259,7 @@ export default {
           this.updateDuplicates()
           this.$sendEvent({
             type: 'create_panel_dmp',
-            data: {
+            payload: {
               tab_id: this.tabInfo.tabId || 'new'
             }
           })
@@ -2668,7 +2668,7 @@ export default {
       this.getSimpleBrowseData()
       this.$sendEvent({
         type: 'tab_show',
-        data: {
+        payload: {
           tab_id: this.id
         }
       })

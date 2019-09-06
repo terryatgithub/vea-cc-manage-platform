@@ -764,7 +764,7 @@ export default {
     handleInputTagWeight(weight, originWeight, tag) {
       this.$sendEvent({
         type: 'tag_weight',
-        data: {
+        payload: {
           panel_group_id: this.pannel.pannelGroupId || 'new',
           type: weight <= originWeight ? 'minus' : 'plus'
         }

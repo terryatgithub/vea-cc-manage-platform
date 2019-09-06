@@ -879,7 +879,7 @@ export default {
         })
         this.$sendEvent({
           type: 'create_block_dmp',
-          data: {
+          payload: {
             type: 'common'
           }
         })
