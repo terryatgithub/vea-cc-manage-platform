@@ -777,6 +777,14 @@ export default {
         this.contentForm.bgParams = {}
         this.contentForm.bgImgUrl = ''
       }
+    },
+    'contentForm.flagSetRec': {
+      handler(val) {
+        if(val === 0) {
+          this.contentForm.mediaAutomationBlockRls = {}
+        }
+      },
+      immediate: true
     }
   },
   methods: {
