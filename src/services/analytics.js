@@ -4,9 +4,11 @@ export function sendEvent (data) {
     method: 'post',
     url: 'api/v1/syslog/addLog.html',
     data: {
-      type: 'click',
-      name: data.type,
-      data: data.payload
+      jsonStr: JSON.stringify({
+        type: 'click',
+        name: data.type,
+        data: data.payload
+      })
     }
   }).catch(() => {})
 }
