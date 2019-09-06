@@ -60,7 +60,7 @@
         >
           <span class="title">高度:</span>
           <el-col :span="9">
-            <el-select v-model="row.height"
+            <el-select v-model.number="row.height"
             allow-create
             clearable
             filterable

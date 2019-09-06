@@ -46,7 +46,7 @@
         @row-selection-remove="handleRowSelectionRemove"
       >
         <div class="img-item" slot="row" slot-scope="{row: item}" @click.stop="handleRead(item)">
-          <img :src="item.imgUrl" />
+          <img :key="item.imgUrl" :src="item.imgUrl" />
           <a class="img-preview" @click.stop="reviewPic(item)">预览</a>
           <div class="img-detail">
             <span>角标id：{{ item.cornerIconId }}</span>

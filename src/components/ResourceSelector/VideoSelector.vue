@@ -15,7 +15,7 @@
 
     <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
-        <el-form :inline="true" :model="filter" class="search-form-inline" label-width="80px">
+        <el-form @keypress.enter.native="handleFilterChange" :inline="true" :model="filter" class="search-form-inline" label-width="80px">
           <el-form-item label="渠道">
             <CommonSelector v-model="filter.partner" :disabled="disablePartner" :options="$consts.partnerOptions" />
           </el-form-item>
@@ -102,6 +102,7 @@
             >{{ isMore ? '收起' : '展开'}}</el-button>
             <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
             <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
+            <el-button size="small" type="primary" @click="handleFilterChangeAndReset">查询并重置</el-button>
           </div>
         </el-form>
       </el-collapse-item>
@@ -277,7 +278,7 @@ export default {
       return this.$refs.baseSelector.selected.slice()
     },
     licenseEnums() {
-      return (this.conditionList.license || [])
+      return (this.conditionList.license || this.conditionList.licensee || [])
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
     categoryEnums() {
@@ -464,6 +465,13 @@ export default {
         filter.rows = pagination.pageSize
       }
       return filter
+    },
+    handleFilterChangeAndReset() {
+      this.handleFilterChange()
+      this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
+      this.$refs.tagLogicFilter.reset()
+      this.onPartnerChange()
     },
     handleFilterChange() {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))

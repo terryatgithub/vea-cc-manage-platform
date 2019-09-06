@@ -27,7 +27,7 @@
           @row-selection-change="handlePresetTableRowSelectionChange">
           <div class="picture-item" slot="row" slot-scope="{row: item}">
             <div class="img-wrapper">
-              <img class="list-img" :src="item.pictureUrl">
+              <img :key="item.pictureUrl" class="list-img" :src="item.pictureUrl">
             </div>
             <div>
               {{ item.pictureResolution }}
@@ -46,7 +46,7 @@
       @row-selection-change="handleRowSelectionChange">
       <div class="picture-item" slot="row" slot-scope="{row: item}">
         <div class="img-wrapper">
-          <img class="list-img" :src="item.pictureUrl">
+          <img :key="item.pictureUrl" class="list-img" :src="item.pictureUrl">
         </div>
         <div>{{item.pictureName}}</div>
         <div>
@@ -63,6 +63,7 @@
 import _ from 'gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 import { Table, CardList, utils } from 'admin-toolkit'
+import { debounce } from 'lodash'
 export default {
   components: {
     Table,
@@ -104,6 +105,12 @@ export default {
       picturePreset: []
     }
   },
+  watch: {
+    filter: {
+      deep: true,
+      handler: 'onFilterChange'
+    }
+  },
   methods: {
     getDefaultFilter() {
       const filter = {
@@ -118,6 +125,9 @@ export default {
       this.selectedCollection = 'normal'
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
+    },
+    onFilterChange() {
+      this.handleFilterChangeDebounce()
     },
     handleFilterChange() {
       this.pagination.currentPage = 1
@@ -225,7 +235,7 @@ export default {
     let filterSchema = _.map({
       pictureId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         label: '',
-        component: 'Input',
+        component: 'InputPositiveInt',
         placeholder: 'ID',
         cols: {
           item: 3,
@@ -294,7 +304,7 @@ export default {
     this.getMaterialTypes().then(() => {
       this.filterSchema = filterSchema
     })
-
+    this.handleFilterChangeDebounce = debounce(this.handleFilterChange, 500)
   }
 }
 </script>

@@ -20,7 +20,7 @@
     >
       <div class="box-list" slot="row" slot-scope="{row: item}">
         <p class="list-p">
-          <img class="list-img" :src="item.globalPicture.pictureUrl">
+          <img :key="item.globalPicture.pictureUrl" class="list-img" :src="item.globalPicture.pictureUrl">
         </p>
         <p class="list-title">{{item.pluginName}}</p>
         <div>{{ item.pluginId }} / {{ item.modifierName }} / {{ item.createdDate }}</div>

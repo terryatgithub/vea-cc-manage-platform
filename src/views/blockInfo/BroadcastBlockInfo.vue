@@ -8,23 +8,17 @@
       @edit="edit"
       @unaudit="$emit('upsert-end')"
       @shelves="fetchData"
-      @submit-audit="submitCheck($event,$consts.status.waiting)"
-      @save-draft="submitCheck($event,$consts.status.draft)"
+      @submit-audit="handleSubmitAudit"
+      @save-draft="handleSaveDraft"
       @audit="$emit('upsert-end')"
       @select-version="fetchData"
       @cancel-timing="fetchData(basicForm.currentVersion)"
       @delete="$emit('upsert-end', $event)"
     >
-      <!-- <div slot="auditAndDraft">
-        <el-button type="primary" @click="submitCheck_1">提交审核</el-button>
-      </div> -->
       <div class="form-legend-header">
         <i class="el-icon-edit">基本信息</i>
       </div>
       <el-form :model="basicForm" ref="basicForm" label-width="100px" class="el-form-add">
-        <!-- <el-form-item label="审核状态" v-if="disabled">
-         {{$numToAuditStatus(status)}}
-        </el-form-item>-->
         <el-form-item
           label="推荐位名称"
           prop="containerName"
@@ -38,17 +32,21 @@
           </el-select>
         </el-form-item>
         <el-form-item label="配置模式">
-          <el-radio-group v-model="basicForm.configModel" @change.native.prevent="modelChange">
+          <el-radio-group :value="basicForm.configModel" @input="handleInputConfigModel">
             <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio>
             <el-radio label="group" :disabled="disabled">组合模式</el-radio>
+            <el-radio label="sign" :disabled="disabled">信号源</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="内容源">
-          <el-radio-group :value="basicForm.source" @input="handleSourceChange">
-            <el-radio label="none" :disabled="disabled">无</el-radio>
-            <el-radio label="o_tencent" :disabled="disabled">腾讯</el-radio>
-            <el-radio label="o_iqiyi" :disabled="disabled">爱奇艺</el-radio>
-            <el-radio label="o_youku" :disabled="disabled">优酷</el-radio>
+          <el-radio-group :disabled="isReplica" :value="basicForm.source" @input="handleSourceChange">
+            <el-radio 
+              v-for="item in $consts.sourceOptionsWithNone" 
+              :key="item.value" 
+              :label="item.value" 
+              :disabled="disabled">
+              {{ item.label }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -57,11 +55,11 @@
         <h4 class="version-title__h">正常版本</h4>
         <el-tag
           class="version-title__tag"
-          v-if="basicForm.configModel === 'group' "
+          v-if="basicForm.configModel === 'group'"
           type="warning"
         >短标题模式需至少运营四个资源，长标题模式至少6个，才能填满布局哦~</el-tag>
         <ResourceSelector
-          v-if="basicForm.configModel === 'group'&&!disabled "
+          v-if="isGroupModel&&!disabled "
           ref="resourceSelector"
           :disable-partner="!!source"
           :source="source"
@@ -73,14 +71,6 @@
         >
           <el-button type="primary" plain>批量选择资源</el-button>
         </ResourceSelector>
-        <!-- <el-button
-        v-if="basicForm.configModel === 'group' "
-        type="primary" plain
-        style="float: right;"
-        :disabled="disabled"
-        @click.native="selectResource('normal', 'normalForm', 'multiSelect')"
-      >批量选择资源
-        </el-button>-->
       </div>
       <!-- {{normalVersionContent正常版本}} -->
       <div class="form-wrap">
@@ -88,7 +78,7 @@
         <el-row
           :gutter="4"
           class="normal-left-list"
-          v-if="basicForm.configModel === 'group'"
+          v-if="isGroupModel"
           :style="classObject"
         >
           <draggable
@@ -103,12 +93,12 @@
               :key="index"
               :class="{ active: index === currentIndex}"
               class="normal-version-wrap"
-              @click.native="switchNormal(index)"
+              @click.native="handleActivateContent(index)"
             >
               <i
                 v-if="normalVersionContent.length > 1 &&!disabled"
                 class="el-icon-close"
-                @click.stop="deleteNormal(index)"
+                @click.stop="handleDeleteNormalContent(index)"
               ></i>
               <img
                 v-if="normal.poster.pictureUrl"
@@ -124,7 +114,7 @@
             :key="index"
             :class="{ active: index === currentIndex}"
             class="normal-version-wrap"
-            @click.native="switchNormal(index)"
+            @click.native="handleActivateContent(index)"
           >
             <img
               v-if="normal.poster.pictureUrl"
@@ -134,7 +124,7 @@
             <span>{{normal.title}}</span>
           </el-card>
           <el-card style="cursor: pointer;" v-if="!disabled">
-            <span class="add-version" @click="addNormal">+添加资源</span>
+            <span class="add-version" @click="handleAddNormalContent">+添加资源</span>
           </el-card>
         </el-row>
 
@@ -146,14 +136,14 @@
           :rules="normalRules"
           label-width="100px"
           style="float: left;width: 75%"
-          :class="{cutLine: basicForm.configModel === 'group'}"
+          :class="{cutLine: isGroupModel}"
         >
           <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName">
             <ResourceSelector
               ref="resourceSelector"
               :disable-partner="!!source"
               :source="source"
-              v-if="autoWrite&&normalResourceBtn==='轮播资源'&&!disabled "
+              v-if="!isManualSetResource && normalResourceBtn==='轮播资源' && !disabled "
               :selectors="['rotate']"
               :is-live="false"
               selection-type="single"
@@ -165,51 +155,51 @@
               ref="resourceSelector"
               :source="source"
               :disable-partner="!!source"
-              v-if="autoWrite&&normalResourceBtn==='播放资源'&&!disabled "
-              :selectors="resourceOptions"
+              v-if="!isManualSetResource && normalResourceBtn==='播放资源' && !disabled "
+              :selectors="resourceOptionsNormalForm"
               :is-live="false"
               selection-type="single"
               @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
             >
               <el-button type="primary" plain>选择资源</el-button>
             </ResourceSelector>
-            <!-- <el-button v-if="autoWrite"  :disabled="disabled" type="primary" plain  @click.native="selectResource('normal', 'normalForm')">选择资源</el-button> -->
             <el-input
-              v-if="!autoWrite"
+              v-if="isManualSetResource"
               v-model="normalForm.thirdIdOrPackageName"
               style="float: left"
-              @blur="getUrlBlur"
               :disabled="disabled"
             ></el-input>
             <el-tag
               type="success"
               class="marginL"
-              v-if="normalForm.thirdIdOrPackageName && autoWrite"
+              v-if="normalForm.thirdIdOrPackageName && !isManualSetResource"
             >已选择：{{normalForm.thirdIdOrPackageName}}</el-tag>
             <a
               class="write-play"
-              v-if="autoWrite && basicForm.configModel === 'group' && !disabled "
+              v-if="!isManualSetResource && isGroupModel && !disabled "
               href="#"
-              @click="autoWriteFun"
+              @click="handleToggleManualSetResource(true)"
             >手动填写播放串</a>
             <a
               class="write-play"
-              v-if="!autoWrite && basicForm.configModel === 'group'&&!disabled "
+              v-if="isManualSetResource && isGroupModel &&!disabled "
               href="#"
-              @click="autoWriteFun"
+              @click="handleToggleManualSetResource(false)"
               style="float: left"
             >自动配置播放资源</a>
+            <div v-if="basicForm.configModel === 'sign' && currentIndex === 0" class="sign-tip">
+              信号源模式的第一个资源必须是轮播资源
+            </div>
           </el-form-item>
-          <div v-if="basicForm.configModel === 'group'">
+          <div v-if="isGroupModel">
             <el-form-item label="指定子频道" prop="subchannelId" v-if="normalForm.subchannelIs">
               <el-input
                 v-model="normalForm.subchannelId"
-                @blur="getSubchannel(normalForm)"
                 :disabled="disabled"
               ></el-input>
             </el-form-item>
             <el-form-item label="标题" prop="title">
-              <el-input v-model="normalForm.title" @blur="getTitleNormal" :disabled="disabled"></el-input>
+              <el-input v-model="normalForm.title" :disabled="disabled"></el-input>
             </el-form-item>
             <el-form-item label="副标题" prop="subTitle">
               <el-input v-model="normalForm.subTitle" :disabled="disabled"></el-input>
@@ -255,7 +245,7 @@
               </span>
             </el-card>
           </el-form-item>
-          <el-form-item label="点击跳转" v-if="basicForm.configModel === 'group'">
+          <el-form-item label="点击跳转" v-if="isGroupModel">
             <el-radio-group v-model="normalForm.clickType">
               <el-radio label="detail" :disabled="disabled">点击进详情页</el-radio>
               <el-radio
@@ -265,17 +255,11 @@
               >点击直接全屏播放</el-radio>
             </el-radio-group>
           </el-form-item>
-          <!-- <el-form-item label="点击事件" prop="sign" v-if="basicForm.configModel === 'group'">
-            <el-radio-group v-model="normalForm.sign" :disabled="signDisabled" @change="signChange">
-              <el-radio label="autoSet" :disabled="disabled">自动生成</el-radio>
-              <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
-            </el-radio-group>
-          </el-form-item>-->
-          <el-form-item label="点击事件" prop="sign" v-if="basicForm.configModel === 'group'">
+          <el-form-item label="点击事件" prop="sign" v-if="isGroupModel">
             <el-radio-group
               :value="normalForm.sign"
               @input="handleChangeSign"
-              :disabled="signDisabled"
+              :disabled="isManualSetResource"
             >
               <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
               <el-radio label="manualResource" :disabled="disabled">跳转其他播放资源</el-radio>
@@ -289,7 +273,7 @@
                 v-if="!disabled "
                 :disable-partner="!!source"
                 :source="source"
-                :selectors="resourceOptions"
+                :selectors="resourceOptionsManualResource"
                 :is-live="false"
                 selection-type="single"
                 @select-end="handleSelectNormalSingleOtherResourceEnd($event)"
@@ -314,10 +298,7 @@
             </el-form-item>
             <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled">
             </AppParams>
-            <AppParamsRead :value="normalForm.onclick" v-if="disabled">
-
-            </AppParamsRead>
-            <!-- <ccAppParamsForm ref="openWayNormal" prop-prefix="onclick." v-model="normalForm.onclick"/> -->
+            <AppParamsRead :value="normalForm.onclick" v-if="disabled"></AppParamsRead>
           </div>
         </el-form>
       </div>
@@ -325,7 +306,7 @@
       <div class="version-title" style="margin-top: 25px;">
         <h4 style="float: left;margin-top: 7px;">兼容低版本</h4>
         <div
-          v-if="basicForm.configModel === 'group'"
+          v-if="isGroupModel"
           style="display: inline-block;margin-left: 14px;"
         >
           <el-button
@@ -348,7 +329,7 @@
           class="el-form-add"
         >
           <el-form-item label="资源类别" prop="coverType">
-            <el-radio-group v-model="lowerForm.coverType">
+            <el-radio-group :value="lowerForm.coverType" @input="handleInputLowerFormCoverType">
               <el-radio label="media" :disabled="disabled">媒体资源</el-radio>
               <el-radio label="app" :disabled="disabled">应用</el-radio>
               <el-radio label="custom" :disabled="disabled">自定义</el-radio>
@@ -364,7 +345,7 @@
               v-if="!disabled "
                :disable-partner="!!source"
               :source="source"
-              :selectors="resourceOptions"
+              :selectors="resourceOptionsLowerForm"
               :is-live="false"
               selection-type="single"
               @select-end="handleSelectLowerSingleResourceEnd"
@@ -382,7 +363,6 @@
             <el-input
               v-model="lowerForm.subchannelId"
               :disabled="disabled"
-              @blur="getSubchannel(lowerForm)"
             ></el-input>
           </el-form-item>
           <el-form-item v-if="lowerForm.smallTopicsIs" label="指定小专题" prop="smallTopicsId">
@@ -508,8 +488,6 @@
         </div>
       </el-dialog>
       <!-- 第三方运用快速填充弹框end -->
-      <!-- 选择资源 -->
-      <!-- <ResourceSelector v-if="resourceVisible" title="选择资源" :pannel-resource="pannelResource" :resource-options="resourceOptions"  @confirm-click="resourceConfirm($event, currentForm)" @select-cancel="selectCancel"></ResourceSelector> -->
     </CommonContent>
   </ContentCard>
 </template>
@@ -525,7 +503,9 @@ import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
 import { cloneDeep } from 'lodash'
 import _ from 'gateschema'
+import titleMixin from '@/mixins/title'
 export default {
+  mixins: [titleMixin],
   components: {
     draggable,
     ResourceSelector,
@@ -539,8 +519,9 @@ export default {
   props: ['id', 'initMode', 'version'],
   data() {
     return {
+      mode: 'create',
+      resourceName: '轮播推荐位',
       pictureResolution: '797*449', // 海报尺寸
-      selectingManualResource: false,
       type: 'block',
       menuElId: 'broadcastBlock',
       disabled: false, // 是否禁用
@@ -550,7 +531,6 @@ export default {
       cornerIconTypeOptions: {},
       cornerTypes: [],
       materialTypes: null,
-      resourceOptions: ['video', 'edu', 'live', 'rotate'],
       basicForm: {
         id: undefined,
         containerName: '',
@@ -576,15 +556,15 @@ export default {
         ],
         clickParams: [
           {
-            validator: function(rule, value, cb) {
+            validator: (rule, value, cb) => {
               const normalForm = this.normalForm
               if (normalForm.sign === 'manualResource') {
-                if (!value || value === '{}') {
+                if (!value || JSON.stringify(value) === '{}') {
                   return cb('请选择资源')
                 }
               }
               cb()
-            }.bind(this)
+            }
           }
         ]
       },
@@ -597,7 +577,6 @@ export default {
           { required: true, message: '请填选择资源', trigger: 'blur' }
         ]
       },
-      normalResourceBtn: '轮播资源',
       currentIndex: 0,
       pictureListOptions: {
         poster: {
@@ -670,9 +649,7 @@ export default {
           ]
         }
       },
-      signDisabled: false,
       // smallTopics: false,
-      modelType: 'broadcast',
       versionForm: {
         title: '',
         subTitle: '',
@@ -683,11 +660,10 @@ export default {
         subchannelIs: '', // 是否显示子频道
         params: {},
         clickType: 'detail',
-        onclick: {
-        },
+        onclick: {},
         sign: 'autoSet',
         contentType: '',
-        clickParams: '',
+        clickParams: {},
         // jumpAdress: '1',
         poster: {},
         cornerIconList: [{}, {}, {}, {}]
@@ -695,11 +671,9 @@ export default {
       pictureType: '',
       currentForm: '',
       pannelResource: '',
-      autoWrite: true, // 是否自动填写播放串
       // lowFill: false,
       normalVersionContent: [],
       openModeArray: [{ name: '第三方应用', value: 'app' }],
-      referenceDataNormal: [],
       referenceData: [],
       noPreview: 'noPreview',
       referenceOptions: {
@@ -719,8 +693,33 @@ export default {
       pictureOptions: {}
     }
   },
-
   computed: {
+    resourceOptionsLowerForm (){
+      return this.lowerForm.coverType === 'app' 
+        ? ['app'] 
+        : ['video', 'edu', 'live', 'rotate']
+    },
+    resourceOptionsManualResource (){
+      return ['video', 'edu', 'live', 'rotate']
+    },
+    resourceOptionsNormalForm (){
+      return this.currentIndex === 0 && this.basicForm.configModel === 'sign' 
+        ? ['rotate'] 
+        : ['video', 'edu', 'live', 'rotate']
+    },
+    resourceOptions (){
+      return ['video', 'edu', 'live', 'rotate']
+    },
+    isManualSetResource () {
+      return this.normalForm.type === 'url'
+    },
+    normalResourceBtn () {
+      return this.isGroupModel ? '播放资源' : '轮播资源'
+    },
+    isGroupModel() {
+      const configModel = this.basicForm.configModel
+      return configModel === 'group' || configModel === 'sign'
+    },
     source() {
       return this.basicForm.source === 'none' ? '' : this.basicForm.source
     },
@@ -753,32 +752,20 @@ export default {
           status: form.status
         }
       }
+    },
+    couldSetReleaseTime() {
+      const mode = this.mode
+      const currentVersion = this.basicForm.currentVersion
+      const isCreatingOrCopying = mode === 'create' || mode === 'copy'
+      const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
+      const isCoocaa = this.$consts.idPrefix == '10'
+      return isCoocaa && !(isCreatingOrCopying || isEditingV1)
+    },
+    isReplica () {
+      return this.mode === 'replicated' || this.basicForm.duplicateVersion === 'yes'
     }
   },
-
   watch: {
-    'basicForm.configModel': {
-      deep: true,
-      handler: function(newVal, oldVal) {
-        if (newVal === 'group') {
-          this.normalResourceBtn = '播放资源'
-        } else if (newVal === 'broadcast') {
-          this.normalResourceBtn = '轮播资源'
-        }
-      }
-    },
-    'normalForm.sign': {
-      deep: true,
-      handler: function(newVal, oldVal) {
-        if (newVal === 'manualResource') {
-          this.selectingManualResource = true
-        } else {
-          this.selectingManualResource = false
-        }
-      }
-    }
-    // autoWrite: function(newVal, oldVal) {
-    // }
   },
   methods: {
     handleSourceChange(val) {
@@ -792,7 +779,7 @@ export default {
             this.normalForm = Object.assign({}, this.versionForm)
             this.normalVersionContent = [this.normalForm]
             this.currentIndex = 0
-            this.cleanLowerForm()
+            this.cleanLowerForm('media')
             this.basicForm.source = val
           }.bind(this)
         )
@@ -800,37 +787,21 @@ export default {
     },
     getThirdId(clickParams) {
       if (clickParams) {
-        const clickParamsObj = JSON.parse(clickParams)
-        const result = (clickParamsObj.id ||
-          clickParamsObj.rotateId ||
-          clickParamsObj.pTopicCode ||
-          clickParamsObj.url
+        const result = (clickParams.id ||
+          clickParams.rotateId ||
+          clickParams.pTopicCode ||
+          clickParams.url
         )
-        console.log(result)
         return result
       }
     },
     replicate() {
       this.mode = 'replicate'
       this.disabled = false
-      this.title = '创建副本'
     },
     edit() {
       this.mode = 'edit'
       this.disabled = false
-      this.title = '编辑'
-    },
-    signChange(value) {
-      if (value === 'manualSet') {
-        // 手动设置
-        this.normalForm.coverType = 'custom'
-        this.normalForm.contentType = 'custom'
-        this.normalForm.onclick = {}
-        if (this.autoWrite === false) {
-          // autoWrite为true时，选择资源  coverType为custom
-          this.normalForm.type = 'url'
-        }
-      }
     },
     clickThirdpartSubmit() {
       const { onclickEventVisibleFlag } = this
@@ -889,121 +860,87 @@ export default {
       this[this.onclickEventVisibleFlag + 'Form']['onclick'] = o
     },
     handleChangeSign(newVal) {
-      // if (newVal === 'manualSet' && this.autoWrite === false) {  // 手动设置
-      //     if (this.autoWrite) { // 影视如果是手动时type为custom，自动为res
-      //         this.normalForm.coverType = 'custom';
-      //         this.normalForm.contentType = 'custom';
-      //         this.normalForm.type = 'url';
-      //     }
-      // } else if (newVal === 'manualSet' && this.autoWrite === true) { // 手动填写（但是选择资源）
-      //     this.normalForm.coverType = 'custom';
-      //     this.normalForm.contentType = 'custom';
-      //     // this.normalForm.type = 'res';
-      // }
       const normalForm = this.normalForm
       if (newVal === 'autoSet') {
         normalForm.onclick = ''
         normalForm.clickParams = normalForm.params
         normalForm.clickTemplateType = normalForm.contentType
-        this.referenceDataNormal = {}
       }
       if (newVal === 'manualResource') {
         normalForm.onclick = ''
-        normalForm.clickParams = ''
+        normalForm.clickParams = {}
         normalForm.clickTemplateType = ''
-        this.referenceDataNormal = {}
       }
       if (newVal === 'manualSet') {
         // 手动设置
         normalForm.clickTemplateType = 'custom'
-        normalForm.clickParams = ''
-        this.referenceDataNormal = {}
-        // if (this.autoWrite === false) { // autoWrite为true时，选择资源  coverType为custom
-        //     this.normalForm.type = 'url';
-        // }
+        normalForm.clickParams = {}
       }
       normalForm.sign = newVal
     },
     // 自动填写表单
-    autoWriteFun: function() {
-      this.autoWrite = !this.autoWrite
-      if (this.autoWrite === false) {
-        this.normalForm = Object.assign({}, this.versionForm)
-        this.normalVersionContent.splice(this.currentIndex, 1, this.normalForm)
-        this.signDisabled = true
-        this.normalForm.type = 'url'
-        this.referenceDataNormal = {}
-        this.normalForm.sign = undefined
-        this.$nextTick(
-          function() {
-            this.handleChangeSign('manualSet')
-          }.bind(this)
-        )
-        var newForm = Object.assign({}, this.normalForm)
-        var newVal = {
-          url: this.normalForm.thirdIdOrPackageName,
+    handleToggleManualSetResource (isManualSetResource) {
+      if (isManualSetResource) {
+        const normalForm = cloneDeep(this.versionForm)
+        normalForm.sign = undefined
+        normalForm.type = 'url'
+        normalForm.params = {
+          url: '',
           source: '',
-          name: this.normalForm.title,
+          name: '',
           needParse: 'false',
           url_type: 'web'
         }
-        newForm.params = JSON.stringify(newVal)
-        this.normalForm = newForm
+        this.$nextTick(() => {
+          this.handleChangeSign('manualSet')
+        })
+        this.normalForm = normalForm
+        this.normalVersionContent.splice(this.currentIndex, 1, normalForm)
       } else {
-        this.normalForm = Object.assign({}, this.versionForm)
-        this.referenceDataNormal = {}
+        this.normalForm = cloneDeep(this.versionForm)
         this.handleChangeSign('autoSet')
-        this.signDisabled = false
         this.normalVersionContent[this.currentIndex] = this.normalForm
       }
     },
     // 删除角标
-    deleteCorner: function(form, index) {
-      var list = form.cornerIconList.slice(0)
+    deleteCorner (form, index) {
+      var list = form.cornerIconList.slice()
       list[index] = {
         cornerIconId: '',
         imgUrl: '',
         position: index
       }
       form.cornerIconList = list
-      console.log(form)
     },
     // 模式切换
-    modelChange: function(val) {
-      this.autoWrite = true
-      var _this = this
+    handleInputConfigModel (val) {
       this.$confirm('切换后配置数据将被清空, 是否确认切换?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
-        .then(function() {
-          _this.$message({
+        .then(() => {
+          this.$message({
             type: 'success',
             message: '模式切换成功!'
           })
-          _this.modelType = _this.basicForm.configModel
-          _this.clearFormAll()
+          this.basicForm.configModel = val
+          this.clearFormAll()
         })
         .catch(function() {
-          _this.$message({
+          this.$message({
             type: 'info',
             message: '已取消切换'
           })
-          var newForm = Object.assign({}, _this.basicForm)
-          newForm.configModel = _this.modelType
-          _this.basicForm = newForm
         })
     },
     clearFormAll: function() {
-      // debugger
       // 清空正常版本和低版本数据
-      this.normalForm = Object.assign({}, this.versionForm)
-      this.normalForm.clickType = 'detail'
-      this.lowerForm = Object.assign({}, this.versionForm)
-      var arr = []
-      arr.push(this.normalForm)
-      this.normalVersionContent = arr
+      const normalForm = cloneDeep(this.versionForm) 
+      const lowerForm = cloneDeep(this.versionForm)
+      this.lowerForm = lowerForm
+      this.normalForm = normalForm
+      this.normalVersionContent = [normalForm]
     },
     /** 轮播模式，正常版本选择资源回掉函数 */
     handleSelectNormalSingleResourceEnd(selectedResources, mode) {
@@ -1011,12 +948,14 @@ export default {
       if (mode === 'single') {
         data = this.callbackParam('rotate', selectedResources.rotate[0])
       } else {
-        let resourceOptions = this.resourceOptions
+        let resourceOptions = this.resourceOptionsNormalForm
         for (var i = 0; i < resourceOptions.length; i++) {
-          if (selectedResources[resourceOptions[i]].length === 1) {
+          const resourceType = resourceOptions[i]
+          const resources = selectedResources[resourceType]
+          if (resources && resources.length === 1) {
             data = this.callbackParam(
               resourceOptions[i],
-              selectedResources[resourceOptions[i]][0],
+              resources[0],
               selectedResources.videoSource
             )
           }
@@ -1025,9 +964,6 @@ export default {
       this.resourceConfirm(data, 'normalForm')
     },
     handleSelectNormalmultipleResourceEnd(selectedResources) {
-      if (!this.autoWrite) {
-        this.autoWriteFun()
-      }
       let dataArr = []
       let resourceOptions = this.resourceOptions
       for (var i = 0; i < resourceOptions.length; i++) {
@@ -1045,12 +981,13 @@ export default {
     },
     handleSelectLowerSingleResourceEnd(selectedResources) {
       let data
-      let resourceOptions = this.resourceOptions
+      let resourceOptions = this.resourceOptionsLowerForm
       for (var i = 0; i < resourceOptions.length; i++) {
-        if (selectedResources[resourceOptions[i]].length === 1) {
+        const resources = selectedResources[resourceOptions[i]]
+        if (resources && resources.length === 1) {
           data = this.callbackParam(
             resourceOptions[i],
-            selectedResources[resourceOptions[i]][0],
+            resources[0],
             selectedResources.videoSource
           )
         }
@@ -1059,7 +996,7 @@ export default {
     },
     handleSelectNormalSingleOtherResourceEnd(selectedResources) {
       let data
-      let resourceOptions = this.resourceOptions
+      let resourceOptions = this.resourceOptionsManualResource
       for (var i = 0; i < resourceOptions.length; i++) {
         if (selectedResources[resourceOptions[i]].length === 1) {
           data = this.callbackParam(
@@ -1069,7 +1006,9 @@ export default {
           )
         }
       }
-      this.resourceConfirm(data, 'normalForm')
+      this.resourceVisible = false
+      this.normalForm.clickParams = this.paramIdFun(data)
+      this.normalForm.clickTemplateType = data.contentType
     },
     /**
      * 资源转换
@@ -1100,7 +1039,7 @@ export default {
               s.thirdIdOrPackageName = prefix + selected.coocaaVId
               s.vid = selectedEpisode.coocaaMId
             }
-            s.thumb = selectedEpisode.thumb
+            s.pictureUrl = selectedEpisode.thumb
             s.title = selectedEpisode.urlTitle
             s.subTitle = selectedEpisode.urlSubTitle
           } else {
@@ -1111,19 +1050,21 @@ export default {
           }
           s.contentType = 'movie'
           s.type = 'res'
+          s.coverType = 'media'
           break
         }
         case 'app': {
           s.contentType = 'app'
-          s.coverType = 'app'
           s.thirdIdOrPackageName = selected.appPackageName
           s.pictureUrl = selected.appImageUrl
           s.title = selected.appName
           s.type = 'app'
+          s.coverType = 'app'
           break
         }
         case 'edu': {
           s.contentType = 'edu'
+          s.coverType = 'media'
           s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
           s.platformId = selected.source
           s.pictureUrl = selected.thumb
@@ -1134,6 +1075,7 @@ export default {
         }
         case 'pptv': {
           s.contentType = 'pptv'
+          s.coverType = 'media'
           s.thirdIdOrPackageName =
             'pptv_tvsports://tvsports_detail?section_id=' +
             selected.pid +
@@ -1144,6 +1086,7 @@ export default {
         }
         case 'live': {
           s.contentType = 'txLive'
+          s.coverType = 'media'
           s.thirdIdOrPackageName = '_otx_' + selected.vId + ''
           s.platformId = selected.source
           s.pictureUrl = selected.thumb
@@ -1161,10 +1104,12 @@ export default {
           s.title = selected.title
           s.subTitle = selected.subTitle
           s.type = 'topic'
+          s.coverType = 'media'
           break
         }
         case 'rotate': {
           s.contentType = 'rotate'
+          s.coverType = 'media'
           s.thirdIdOrPackageName = selected.id + ''
           s.pictureUrl = selected.picture
           s.title = selected.title
@@ -1215,71 +1160,11 @@ export default {
 
       return param
     },
-    paramIdFun_o: function(form, seledted) {
-      // 封装保存的id
-      if (seledted.contentType === 'movie') {
-        if (seledted.singleId) {
-          var param = {
-            id: seledted.thirdIdOrPackageName,
-            vid: seledted.singleId
-          }
-        } else {
-          var param = {
-            id: seledted.thirdIdOrPackageName
-          }
-        }
-      } else if (
-        seledted.contentType === 'app' ||
-        seledted.contentType === 'edu' ||
-        seledted.contentType === 'txLive'
-      ) {
-        var param = {
-          id: seledted.thirdIdOrPackageName
-        }
-      } else if (seledted.contentType === 'bigTopic') {
-        var param = {
-          pTopicCode: seledted.thirdIdOrPackageName
-        }
-      } else if (seledted.contentType === 'topic') {
-        // this.smallTopics = true;
-        var param = {
-          topicCode: seledted.thirdIdOrPackageName
-        }
-      } else if (seledted.contentType === 'rotate') {
-        var param = {
-          rotateId: seledted.thirdIdOrPackageName
-        }
-      }
 
-      return param
-    },
-
-    // 表单格式转换
-    packageFormParam_o: function(item, form) {
-      let tempForm = JSON.parse(JSON.stringify(this.versionForm))
-      tempForm = Object.assign({}, tempForm, item)
-      if (item.contentType === 'rotate') {
-        tempForm.subchannelIs = true
-      } else {
-        tempForm.subchannelIs = false
-      }
-      if (item.contentType === 'bigTopic') {
-        tempForm.smallTopicsIs = true
-      } else {
-        tempForm.smallTopicsIs = false
-      }
-      if (item.pictureUrl) {
-        tempForm.poster.pictureUrl = item.pictureUrl
-        tempForm.poster.pictureId = item.pictureId
-      }
-      var param = this.paramIdFun(tempForm, item)
-      tempForm.clickParams = JSON.stringify(param)
-      tempForm.params = JSON.stringify(param)
-      return tempForm
-    },
-    packageFormParam: function(item, form) {
-      form = JSON.parse(JSON.stringify(form))
+    packageFormParam (item) {
+      const form = cloneDeep(this.versionForm)
       form.type = item.type
+      form.coverType = item.coverType
       if (item.contentType === 'rotate') {
         form.subchannelIs = true
       } else {
@@ -1294,227 +1179,88 @@ export default {
       form.contentType = item.contentType
       form.subTitle = item.subTitle
       form.thirdIdOrPackageName = item.thirdIdOrPackageName
-      debugger
       if (item.pictureUrl) {
-        var newForm = Object.assign({}, form.poster)
-        newForm.pictureUrl = item.pictureUrl
-        form.poster = newForm
+        const poster = Object.assign({}, form.poster)
+        poster.pictureUrl = item.pictureUrl
+        form.poster = poster
+      } else {
+        form.poster = {pictureUrl: ''}
       }
-      var param = this.paramIdFun(item)
-      form.params = JSON.stringify(param)
+      const param = this.paramIdFun(item)
+      form.params = param
       if (form.sign === 'autoSet') {
-        form.clickParams = JSON.stringify(param)
+        form.clickParams = cloneDeep(param)
         form.clickTemplateType = item.contentType
       }
       return form
     },
-    // 指定小专题
-    smallTopicsLower: function() {
-      if (this.lowerForm.smallTopicsId) {
-        var newObj = JSON.parse(this.lowerForm.params)
-        newObj.topicCode = this.lowerForm.smallTopicsId
-        this.lowerForm.params = JSON.stringify(newObj)
-      }
-    },
-    // 手动填写字符串
-    getUrlBlur: function() {
-      if (this.autoWrite === false) {
-        var newForm = Object.assign({}, this.normalForm)
-        var newVal = {
-          url: this.normalForm.thirdIdOrPackageName,
-          source: '',
-          name: this.normalForm.title,
-          needParse: 'false',
-          url_type: 'web'
-        }
-        newForm.params = JSON.stringify(newVal)
-        this.normalForm = newForm
-      }
-    },
-    getTitleNormal: function() {
-      //  debugger
-      if (this.autoWrite === false) {
-        var newForm = Object.assign({}, this.normalForm)
-        var newVal = {
-          url: this.normalForm.thirdIdOrPackageName,
-          source: '',
-          name: this.normalForm.title,
-          needParse: 'false',
-          url_type: 'web'
-        }
-        newForm.params = JSON.stringify(newVal)
-        this.normalForm = newForm
-        this.normalVersionContent.splice(this.currentIndex, 1, this.normalForm)
-      }
-    },
-    getSubchannel: function(form) {
-      if (form.subchannelId) {
-        var newObj = JSON.parse(form.params)
-        newObj.stationId = form.subchannelId
-        form.params = JSON.stringify(newObj)
-      }
-    },
     // ??资源确定
-    resourceConfirm: function(callbackData, form) {
+    resourceConfirm (callbackData, form) {
       this.currentForm = this[form]
       this.resourceVisible = false
-      this.normalVersionContent = this.normalVersionContent.filter(e => {
-        return e.type !== ''
-      })
       if (callbackData instanceof Array) {
-        console.log('array')
         let data = callbackData.reduce((result, current) => {
-          result.push(this.packageFormParam(current, this.currentForm))
+          result.push(this.packageFormParam(current))
           return result
         }, [])
         this.normalVersionContent.splice(this.currentIndex, 1, ...data)
         this[form] = data[0]
       } else {
-        console.log(' no array')
-        if (this.selectingManualResource) {
-          this[form].clickParams = JSON.stringify(this.paramIdFun(callbackData))
-          this[form].clickTemplateType = callbackData.contentType
-          this.selectingManualResource = false
-        } else {
-          this[form] = this.packageFormParam(callbackData, this.currentForm)
-          if (form === 'normalForm') {
-            this.normalVersionContent.splice(this.currentIndex, 1, this[form])
-          }
+        this[form] = this.packageFormParam(callbackData)
+        if (form === 'normalForm') {
+          this.normalVersionContent.splice(this.currentIndex, 1, this[form])
         }
       }
     },
     // 校验normalForm
     checkNormalForm: function(cb) {
-      var _this = this
-      this.$refs.normalForm.validate(function(valid) {
+      this.$refs.normalForm.validate((valid) => {
         if (valid) {
-          if (_this.normalForm.sign === 'manualSet') {
-            if (true) {
-              // _this.normalForm.onclick = _this.$refs.openWayNormal.assembleOnclick().onclick
-              _this.normalVersionContent.splice(
-                _this.currentIndex,
-                1,
-                _this.normalForm
-              )
-              cb()
-            } else {
-              _this.$message('请将表单填写完整')
-              return false
-            }
-          } else {
-            cb()
-          }
+          cb()
         } else {
-          _this.$message('请将表单填写完整')
-          return false
+          this.$message.error('请将表单填写完整')
         }
       })
     },
 
-    // 校验lowerForm
-    checkLowerForm: function(cb) {
-      var _this = this
-      this.$refs.lowerForm.validate(function(valid) {
-        if (valid) {
-          if (_this.lowerForm.coverType === 'custom') {
-            if (true) {
-              // _this.lowerForm.onclick = _this.$refs.openWayLower.assembleOnclick().onclick
-              cb()
-            } else {
-              _this.$message('请将表单填写完整')
-              return false
-            }
-          } else {
-            cb()
-          }
-        } else {
-          _this.$message('请将表单填写完整')
-          return false
-        }
-      })
-    },
-    deepClone(obj) {
-      return JSON.parse(JSON.stringify(obj))
-    },
     // 组合模式->添加normalForm
-    addNormal: function(cb) {
+    handleAddNormalContent () {
       // debugger
-      var _this = this
-      this.checkNormalForm(function() {
-        _this.normalForm = _this.deepClone(_this.versionForm)
-        _this.normalVersionContent.push(_this.normalForm)
-        _this.currentIndex = _this.normalVersionContent.length - 1
-        _this.referenceDataNormal = []
-        _this.autoWrite = true
-        _this.signDisabled = false
+      this.checkNormalForm(() => {
+        this.normalForm = cloneDeep(this.versionForm)
+        this.normalVersionContent.push(this.normalForm)
+        this.currentIndex = this.normalVersionContent.length - 1
       })
     },
     // 组合模式->删除normalForm
-    deleteNormal: function(index) {
+    handleDeleteNormalContent (index) {
       // debugger
-      var _this = this
       this.$confirm('是否删除当前选中项?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
-        .then(function() {
-          _this.$message({
+        .then(() => {
+          this.normalVersionContent.splice(index, 1)
+          this.currentIndex = 0
+          this.normalForm = this.normalVersionContent[0]
+          this.$message({
             type: 'success',
             message: '删除成功!'
           })
-          _this.normalVersionContent.splice(index, 1)
-          _this.currentIndex = 0
-          _this.normalForm = _this.normalVersionContent[0]
-          if (_this.normalForm.type === 'url') {
-            _this.autoWrite = false
-          } else {
-            _this.autoWrite = true
-          }
-          if (_this.normalForm.sign === 'manualSet') {
-            _this.referenceDataNormal = {
-              onclick: _this.normalForm.onclick,
-              params: 'openMode==app'
-            }
-            _this.normalForm.type !== 'url'
-              ? (_this.signDisabled = false)
-              : (_this.signDisabled = true)
-          } else {
-            _this.signDisabled = true
-          }
         })
-        .catch(function() {
-          _this.$message({
+        .catch(() => {
+          this.$message({
             type: 'info',
             message: '已取消删除'
           })
         })
     },
     // 组合模式->normalForm切换
-    switchNormal: function(index) {
-      console.log(this.normalVersionContent)
-      var _this = this
-      this.checkNormalForm(function() {
-        // _this.$message('请填充或修改当前表单的内容！')
-        _this.currentIndex = index
-        _this.normalForm = _this.normalVersionContent[index]
-        if (_this.normalForm.type === 'url') {
-          _this.autoWrite = false
-        } else {
-          _this.autoWrite = true
-        }
-        if (_this.normalForm.sign === 'manualSet') {
-          _this.referenceDataNormal = {
-            onclick: _this.normalForm.onclick,
-            params: 'openMode==app'
-          }
-          _this.normalForm.type === 'url'
-            ? (_this.signDisabled = true)
-            : (_this.signDisabled = false)
-        } else {
-          _this.signDisabled = false
-        }
-        _this.normalVersionContent.splice(index, 1, _this.normalForm)
+    handleActivateContent (index) {
+      this.checkNormalForm(() => {
+        this.currentIndex = index
+        this.normalForm = this.normalVersionContent[index]
       })
     },
 
@@ -1600,244 +1346,242 @@ export default {
         this.lowerForm = newForm
       })
     },
+    handleInputLowerFormCoverType (val) {
+      this.cleanLowerForm(val)
+    },
     cleanLowerForm: function(val) {
-      if (val === 'app') {
-        this.resourceOptions = ['app']
-      } else {
-        this.resourceOptions = ['video', 'edu', 'live', 'rotate']
-      }
       var newForm = Object.assign({}, this.versionForm)
       newForm.type = val
       newForm.coverType = val
       if (val === 'custom') {
         newForm.sign = 'openMode==app'
         newForm.contentType = 'custom'
-        newForm.params = '{}'
+        newForm.params = {}
         newForm.clickTemplateType = 'custom'
       }
       this.lowerForm = newForm
     },
-    saveNormal: function(cb) {
-      // debugger
-      var _this = this
-      this.checkNormalForm(function() {
-        if (_this.basicForm.configModel === 'group') {
-          if (_this.normalVersionContent.length < 4) {
-            _this.$message(
-              '组合模式下，正常版本的配置资源至少4个，才可以进行保存！'
-            )
-            return false
-          } else {
-            cb()
-          }
-        } else {
-          cb()
-        }
-      })
-    },
-    submitCheck: function(timing, status) {
-      // this.basicForm.status = status
-      if ((this.basicForm.currentVersion === 'V1' && this.mode !== 'replicate') || this.basicForm.currentVersion === undefined) {
-        return this.doSave(status)
-      }
-      if (this.$consts.idPrefix == '10') {
-        if (timing) {
-          this.basicForm.isTiming = timing.isTiming
-          this.basicForm.releaseTime = timing.releaseTime
-          this.doSave(status)
-        } else {
-          if (status === 3) {
-            this.$refs.commonContent.showReleaseTimeSetter = true
-          } else {
-            this.doSave(status)
-          }
-        }
-      } else {
-        this.doSave(status)
-      }
-    },
-    doSave(status) {
-      if (this.mode === 'replicate') {
-        this.basicForm.currentVersion = ''
-      }
-      let _this = this
-      this.$refs.basicForm.validate(function(valid) {
+    validate (data, cb) {
+      this.$refs.basicForm.validate((valid) => {
         if (valid) {
-          _this.saveNormal(function() {
-            _this.checkLowerForm(function() {
-              var obj = { normalVersionContent: [], lowerVersionContent: {} }
-              if (_this.basicForm.configModel === 'group') {
-                const normalVersionContent = cloneDeep(_this.normalVersionContent)
-                normalVersionContent.map(function(item) {
-                  item.onclick
-                    ? (item.onclick = JSON.stringify(item.onclick))
-                    : ''
-                  delete item.thirdIdOrPackageName
-                })
-                obj.normalVersionContent = normalVersionContent
-              } else {
-                const normalForm = cloneDeep(_this.normalForm)
-                normalForm.onclick
-                  ? (normalForm.onclick = JSON.stringify(
-                    normalForm.onclick
-                  ))
-                  : ''
-                obj.normalVersionContent.push(normalForm)
-              }
-              const lowerForm = _this.lowerForm
-              delete lowerForm.smallTopicsId
-              obj.lowerVersionContent = lowerForm
-              var resultObj = Object.assign(obj, _this.basicForm)
-
-              resultObj.status = status
-              resultObj.parentType = 'Block'
-              console.log('resultObj', resultObj)
-              _this.$service
-                .saveBlockInfo(
-                  { jsonStr: JSON.stringify(resultObj) },
-                  '提交成功'
-                )
-                .then(() => {
-                  _this.$emit('upsert-end')
-                })
-            })
+          this.$refs.normalForm.validate((valid) => {
+            if (valid) {
+              this.$refs.lowerForm.validate((valid) => {
+                if (valid) {
+                  const configModel = data.configModel
+                  const normalVersionContent = data.normalVersionContent
+                  if (configModel === 'group') {
+                    if (normalVersionContent.length < 4) {
+                      return this.$message.error('组合模式下，正常版本的配置资源至少4个，才可以进行保存！')
+                    }
+                  }
+                  if (configModel === 'sign') {
+                    const firstContent = normalVersionContent[0]
+                    if (firstContent.contentType !== 'rotate') {
+                      return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
+                    }
+                    // if (firstContent.sign === 'manualResource' && !firstContent.clickParams.rotateId) {
+                    //   return this.$message.error('信号源模式下，第一个资源如果设置跳转到其它播放资源，必须是轮播资源')
+                    // }
+                  }
+                  // 检查海报, 批量填充轮播资源的时候会缺少海报
+                  for (let i = 0; i < normalVersionContent.length; i++) {
+                    if (!normalVersionContent[i].poster.pictureUrl) {
+                      return this.$message.error(`请设置第 ${i+1} 个内容的海报`)
+                    }
+                  }
+                  cb()
+                } else {
+                  this.$message.error('请将表单填写完整')
+                }
+              })
+            } else {
+              this.$message.error('请将表单填写完整')
+            }
           })
         } else {
-          _this.$message('请将表单填写完整')
-          return false
+          this.$message.error('请将表单填写完整')
         }
       })
     },
-
-    close: function() {
-      window.parent.$('#add-view').dialog('_close')
+    getFormData () {
+      const data = cloneDeep(this.basicForm)
+      data.normalVersionContent = this.isGroupModel 
+        ? cloneDeep(this.normalVersionContent)
+        : [cloneDeep(this.normalForm)]
+      data.lowerVersionContent = cloneDeep(this.lowerForm)
+      return data
     },
+    handleSaveDraft () {
+      const data = this.getFormData()
+      data.isTiming = undefined
+      data.releaseTime = undefined
+      data.status = this.$consts.status.draft
+      this.validate(data, () => {
+        this.doSave(data)
+      })
+    },
+    handleSubmitAudit (timing) {
+      const data = this.getFormData()
+      data.status = this.$consts.status.waiting
+      this.validate(data, () => {
+        if (this.couldSetReleaseTime) {
+          if (timing) {
+            data.isTiming = timing.isTiming
+            data.releaseTime = timing.releaseTime
+            this.doSave(data)
+          } else {
+            this.$refs.commonContent.showReleaseTimeSetter = true
+          }
+        } else {
+          this.doSave(data)
+        }
+      })
+    },
+    doSave(data) {
+      const parseParams = (onclick) => {
+        const params = onclick.params || []
+        onclick.params = params.reduce((result, item) => {
+          result[item.key] = item.value
+          return result
+        }, {})
+      }
+      const configModel = data.configModel
+      if (this.mode === 'replicate') {
+        data.currentVersion = ''
+      }
+      data.normalVersionContent.forEach((item) => {
+        // 转换数据
+        // type url 时，要转换 params 数据, 具体看 getUrlBlur
+        if (item.type === 'url') {
+          item.params = {
+            url: item.thirdIdOrPackageName,
+            source: '',
+            name: item.title,
+            needParse: 'false',
+            url_type: 'web'
+          }
+        }
+        if (item.onclick) {
+          parseParams(item.onclick)
+          item.onclick = JSON.stringify(item.onclick)
+        }
+        // 转换子频道
+        if (item.subchannelId) {
+          item.params.stationId = item.subchannelId
+          delete item.subchannelId
+        }
+        item.params = JSON.stringify(item.params)
+        item.clickParams = JSON.stringify(item.clickParams)
+        delete item.thirdIdOrPackageName
+      })
+
+      const lowerVersionContent = data.lowerVersionContent
+      if (lowerVersionContent.onclick) {
+        parseParams(lowerVersionContent.onclick)
+      }
+      // 转换小专题
+      if (lowerVersionContent.smallTopicsId) {
+        lowerVersionContent.params.topicCode = lowerVersionContent.smallTopicsId
+        delete lowerVersionContent.smallTopicsId
+      }
+      // 转换子频道
+      if (lowerVersionContent.subchannelId) {
+        lowerVersionContent.params.stationId = lowerVersionContent.subchannelId
+        delete lowerVersionContent.subchannelId
+      }
+      lowerVersionContent.params = JSON.stringify(lowerVersionContent.params)              
+      lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)              
+
+      data.parentType = 'Block'
+      this.$service
+        .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
+        .then(() => {
+          this.$emit('upsert-end')
+        })
+    },
+
     fetchData(version) {
       this.$service
         .getBroadcastBlockEditData({ id: this.id, version })
         .then(data => {
-          let _this = this
-          _this.basicForm.containerName = data.containerName
-          _this.basicForm.containerType = 'REFERENCE_BROADCASTING'
-          _this.basicForm.configModel = data.configModel
-          _this.basicForm.source = data.source
-          _this.basicForm.status = data.status
-          _this.basicForm.id = data.id
-          _this.basicForm.currentVersion = data.currentVersion
-          var newFormNoraml = Object.assign({}, _this.normalForm)
-          data.normalVersionContent.forEach((item, j) => {
-            var corners = [{}, {}, {}, {}]
-            if (!item.cornerIconList || item.cornerIconList.length === 0) {
-              item.cornerIconList = corners
-            } else {
-              var list = item.cornerIconList
-              for (var ii = 0; ii < list.length; ii++) {
-                var l = list[ii]
-                corners[l.position] = l
-              }
-              item.cornerIconList = corners
-            }
-            if (item.sign === 'manualSet') {
-              item.onclick = JSON.parse(item.onclick)
-              // 手动设置
-              item = Object.assign({}, item, {
-                thirdIdOrPackageName: this.getThirdId(item.params)
-              })
-            } else {
-              item.onclick = {}
-              item = Object.assign({}, item, {
-                thirdIdOrPackageName: this.getThirdId(item.params)
+          const basicForm = this.basicForm
+          basicForm.containerName = data.containerName
+          basicForm.containerType = 'REFERENCE_BROADCASTING'
+          basicForm.configModel = data.configModel
+          basicForm.source = data.source
+          basicForm.status = data.status
+          basicForm.id = data.id
+          basicForm.currentVersion = data.currentVersion
+          basicForm.duplicateVersion = data.duplicateVersion
+          const parseParams = (onclick) => {
+            if (onclick) {
+              const params = onclick.params || {}
+              onclick.params = Object.keys(params).map(key => {
+                return {
+                  key,
+                  value: params[key]
+                }
               })
             }
-            data.normalVersionContent.splice(j, 1, item)
+          }
+
+          const parseCornerIconList = (data) => {
+            if (data.cornerIconList.length === 0) {
+              data.cornerIconList = [{}, {}, {}, {}]
+            } else {
+              data.cornerIconList = data.cornerIconList.reduce((result, item) => {
+                result[item.position] = item
+                return result
+              }, [])
+            }
+          }
+          this.normalVersionContent = data.normalVersionContent.map((item) => {
+            item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
+            item.params = JSON.parse(item.params || '{}')
+            item.clickParams = JSON.parse(item.clickParams || '{}')
+            parseCornerIconList(item)
+            parseParams(item.onclick)
+            item.thirdIdOrPackageName = this.getThirdId(item.params)
+            item.subchannelIs = item.contentType === 'rotate'
+            if (item.subchannelIs) {
+              item.subchannelId = item.params.stationId
+            }
+            return item
           })
+          this.normalForm = data.normalVersionContent[0]
 
-          _this.normalVersionContent = data.normalVersionContent
-
-          newFormNoraml = data.normalVersionContent[0]
-          newFormNoraml.poster = data.normalVersionContent[0].poster
-          if (newFormNoraml.sign === 'manualSet') {
-            _this.referenceDataNormal = {
-              onclick: newFormNoraml.onclick,
-              params: 'openMode==app'
-            }
+          // lower data
+          const lowerData = cloneDeep(data.lowerVersionContent)
+          lowerData.onclick = JSON.parse(lowerData.onclick)
+          lowerData.params = JSON.parse(lowerData.params || '{}')
+          lowerData.thirdIdOrPackageName = this.getThirdId(lowerData.params)
+          lowerData.smallTopicsIs = lowerData.contentType === 'bigTopic'
+          if (lowerData.smallTopicsIs ) {
+            lowerData.smallTopicsId = lowerData.params.topicCode
           }
-          _this.normalForm = newFormNoraml
-          if (_this.normalForm.type === 'url') {
-            _this.autoWrite = false
-          } else {
-            _this.autoWrite = true
+          lowerData.subchannelIs = lowerData.contentType === 'rotate'
+          if (lowerData.subchannelIs) {
+            lowerData.subchannelId = lowerData.params.stationId
           }
-          if (_this.normalForm.sign === 'manualSet') {
-            _this.referenceDataNormal = {
-              onclick: _this.normalForm.onclick,
-              params: 'openMode==app'
-            }
-            _this.normalForm.type === 'url'
-              ? (_this.signDisabled = true)
-              : (_this.signDisabled = false)
-          } else {
-            _this.signDisabled = false
-          }
-          var lowerData = data.lowerVersionContent
-
-          _this.lowerForm = lowerData
-          _this.lowerForm.onclick = JSON.parse(_this.lowerForm.onclick)
-          _this.lowerForm.thirdIdOrPackageName = _this.getThirdId(lowerData.params)
-          var corners = [{}, {}, {}, {}]
-          if (lowerData.cornerIconList.length === 0) {
-            lowerData.cornerIconList = corners
-          } else {
-            var list = lowerData.cornerIconList
-            for (var ii = 0; ii < list.length; ii++) {
-              var l = list[ii]
-              corners[l.position] = l
-            }
-            _this.lowerForm.cornerIconList = corners
-          }
-          var corverTypep = lowerData.coverType
-          if (corverTypep === 'app' || corverTypep === 'custom') {
-            _this.referenceDataLower = {
-              onclick: lowerData.onclick,
-              params: 'openMode==app'
-            }
-          }
-          _this.modelType = data.configModel
-          _this.$watch('lowerForm.coverType', _this.cleanLowerForm)
+          parseParams(lowerData.onclick)
+          parseCornerIconList(lowerData)
+          this.lowerForm = lowerData
         })
     }
   },
   created() {
-    var _this = this
     this.normalForm = cloneDeep(this.versionForm)
     this.lowerForm = cloneDeep(this.versionForm)
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
     this.mode = this.initMode || 'create'
-    switch (this.mode) {
-      case 'create':
-        this.title = '新增'
-        this.disabled = false
-        break
-      case 'copy':
-        this.title = '复制'
-        this.disabled = false
-        break
-      case 'edit':
-        this.title = '编辑'
-        this.disabled = false
-        break
-      case 'replica':
-        this.title = '创建副本'
-        this.disabled = false
-      case 'read':
-        this.title = '预览'
-        this.disabled = true
-        break
+    if (this.mode === 'read') {
+      this.disabled = true
     }
     if (this.id) {
       this.fetchData(this.version)
-    }
+    } 
     // 素材类型获取
     this.$service.getDictType({ type: 'materialType' }).then(data => {
       var materialTypeOptions = []
@@ -1847,7 +1591,7 @@ export default {
           value: data[i].dictId
         }
         materialTypeOptions.push(materialTypeOption)
-        _this.pictureListOptions.poster.searchParams.pictureCategory.options = materialTypeOptions
+        this.pictureListOptions.poster.searchParams.pictureCategory.options = materialTypeOptions
       }
     })
     // 角标类型获取
@@ -1984,4 +1728,11 @@ export default {
 .submitCheck
   margin-top: 20px
   margin-left: 110px
+.sign-tip
+  font-size: 11px;
+  color: orange;
+  padding: 0;
+  line-height: 1;
+  margin-top: 10px;
+  clear: both;
 </style>

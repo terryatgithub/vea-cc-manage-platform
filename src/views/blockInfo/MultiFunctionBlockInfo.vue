@@ -194,6 +194,7 @@
                     <img
                       class="poster__img"
                       v-if="item.poster.pictureUrl"
+                      :key="item.poster.pictureUrl"
                       :src="item.poster.pictureUrl"
                     >
                   </div>
@@ -437,6 +438,7 @@
                     <img
                       class="poster__img"
                       v-if="item.poster.pictureUrl"
+                      :key="item.poster.pictureUrl"
                       :src="item.poster.pictureUrl"
                     >
                   </div>

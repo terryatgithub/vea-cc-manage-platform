@@ -154,6 +154,7 @@ export default {
       this.mode = this.preMode = tab.name + 'List'
     },
     handleUpsertEnd() {
+      this.goBack()
       this.$refs[this.preMode].fetchData()
     }
   }

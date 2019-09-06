@@ -21,12 +21,12 @@
       >
         <template slot="row" slot-scope="{row: item}">
           <div class="list-item__img-wrapper">
-            <img class="list-item__img" :src="item.imgUrl">
+            <img :key="item.imgUrl" class="list-item__img" :src="item.imgUrl">
           </div>
           <div class="list-item__info">
             {{ item.cornerIconName }}
             <br />
-            {{ item.pictureStatus == 1 ? '审核通过' : '待审核'}}
+            {{ $consts.statusText[item.cornerStatus] }}
           </div>
         </template>
       </CardList>

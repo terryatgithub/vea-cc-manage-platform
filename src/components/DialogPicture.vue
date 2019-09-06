@@ -16,12 +16,11 @@
       >
         <div class="box-list" slot="row" slot-scope="{row: item}">
           <p class="list-p">
-            <img class="list-img" :src="item.pictureUrl" alt>
+            <img :key="item.pictureUrl"  class="list-img" :src="item.pictureUrl" alt>
           </p>
           <p class="list-title">{{item.pictureName}}</p>
           <p style="margin:0">
-            <span v-if="item.pictureStatus==1">审核通过</span>
-            <span v-else>待审核</span>
+            <span>{{ $consts.statusText[item.pictureStatus] }}</span>
             <span>{{item.pictureResolution}}</span>
           </p>
         </div>

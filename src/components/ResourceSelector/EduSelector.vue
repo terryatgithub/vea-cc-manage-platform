@@ -14,7 +14,7 @@
 
     <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
-        <el-form :inline="true" v-model="filter" label-width="72px">
+        <el-form @keypress.enter.native="handleFilterChange" :inline="true" v-model="filter" label-width="72px">
           <el-form-item label="内容商">
             <CommonSelector v-model="filter.contentProviders" :options="contentProviderEnums" />
           </el-form-item>
