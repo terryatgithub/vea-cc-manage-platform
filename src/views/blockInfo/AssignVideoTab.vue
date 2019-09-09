@@ -2,22 +2,29 @@
   <div>
     <el-row class="header">
       <el-col :span="4" class="video-index">影片{{index+1}}</el-col>
-      <el-col :span="14">置顶值<InputPositiveInt v-model="value.priority" class="num-input" @blur="$emit('blur')"/></el-col>
-      <el-col :span="2">
-        <el-button type="text" @click="flagRec=!flagRec">{{flagRec? '未屏蔽' : '屏蔽'}}</el-button>
+      <el-col :span="14">置顶值
+        <InputPositiveInt v-model="value.priority" class="num-input" @blur="$emit('blur')" :disabled="disabled"/>
       </el-col>
       <el-col :span="2">
-        <el-button type="text" @click="$emit('handle-delTab', index)">删除</el-button>
+        <el-button type="text" :disabled="disabled" @click="flagRec=!flagRec">{{flagRec? '未屏蔽' : '屏蔽'}}</el-button>
+      </el-col>
+      <el-col :span="2">
+        <el-button type="text" :disabled="disabled" @click="$emit('handle-delTab', index)">删除</el-button>
       </el-col>
     </el-row>
     <div class="container">
       <el-form label-width="150px">
-        <el-form-item label="视频海报">
-          <GlobalPictureSelector 
-            title="选择资源" 
-            @select-end="handleSelectPostEnd"
+        <el-form-item label="视频资源">
+          <ResourceSelector
+            :style="{display: disabled ? 'none' : 'block'}"
+            :is-live="false"
+            :selectors="resourceOptions"
+            selection-type="single"
+            :source="source"
+            @select-end="handleSelectResourcesEnd($event, 'source')"
           >
-          </GlobalPictureSelector>
+            <el-button type="primary" plain>选择资源</el-button>
+          </ResourceSelector>
           <el-tag
             type="success"
             class="marginL"
@@ -25,10 +32,10 @@
           >已选择：{{videoId}}</el-tag>
         </el-form-item>
         <el-form-item label="主标题" :rules="rules.title">
-          <el-input v-model="value.title" class="title-input"/>
+          <el-input v-model="value.title" class="title-input" :disabled="disabled"/>
         </el-form-item>
         <el-form-item label="副标题">
-          <el-input v-model="value.subTitle" class="title-input"/>
+          <el-input v-model="value.subTitle" class="title-input" :disabled="disabled"/>
         </el-form-item>
         <el-form-item label="图片海报" :rules="rules.picList">
           <div class="poster--wrapper">
@@ -50,24 +57,25 @@
             </div>
           </div>
           <div v-if="picPosters.length!==0">
-            <el-checkbox v-model="notShowSeries">不展示期数</el-checkbox>
-            <el-checkbox v-model="notShowScore">不展示评分</el-checkbox>
+            <el-checkbox v-model="notShowSeries" :disabled="disabled">不展示期数</el-checkbox>
+            <el-checkbox v-model="notShowScore" :disabled="disabled">不展示评分</el-checkbox>
           </div>
         </el-form-item>
         <el-form-item label="点击类型" :rules="rules.required">
-          <el-radio-group v-model="clickType">
+          <el-radio-group v-model="clickType" :disabled="disabled">
             <el-radio label="detail">点击进详情页</el-radio>
             <el-radio label="play-fullscreen">点击全屏播放</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="内容资源" :rules="rules.thirdIdOrPackageName">
           <ResourceSelector
+            :style="{display: disabled ? 'none' : 'block'}"
             ref="resourceSelector"
             :is-live="false"
             :selectors="resourceOptions"
             selection-type="single"
             :source="source"
-            @select-end="handleSelectResourcesEnd"
+            @select-end="handleSelectResourcesEnd($event, 'clickSource')"
           >
             <el-button type="primary" plain>选择资源</el-button>
           </ResourceSelector>
@@ -165,6 +173,12 @@ export default {
       default() {
         return []
       }
+    },
+    disabled: {
+      type: Boolean,
+      default() {
+        return false
+      }
     }
   },
 
@@ -226,7 +240,7 @@ export default {
     }
   },
   methods: {
-    handleSelectResourcesEnd(selectedResources) {
+    handleSelectResourcesEnd(selectedResources, sourceType) { 
       console.log('selectedResources', selectedResources);
       const { resourceOptions, source } = this
       const tabName = resourceOptions.map(item=> {
@@ -235,17 +249,10 @@ export default {
         }
       }).join("")
       let data = this.callbackParam(tabName, selectedResources[tabName][0], source)
-      this.thirdIdOrPackageName = data.thirdIdOrPackageName
+      const thirdIdOrPackageName = data.thirdIdOrPackageName
       let selected = Object.assign({}, data)
       selected.vid = data.vid
       selected.sid = data.sid
-      const clickParams = JSON.stringify(this.paramIdFun(selected))
-      const { thirdIdOrPackageName, title, subTitle } = data
-      this.value.mediaResourceId = thirdIdOrPackageName
-      this.value.title = title
-      this.value.subTitle = subTitle
-      this.value.clickParams = clickParams
-      this.value.coverType = 'media'
       let anotherName = tabName
       switch(tabName){
         case 'video': 
@@ -255,10 +262,49 @@ export default {
           anotherName = 'txLive'
           break
       }
-      this.value.clickTemplateType = anotherName,
-      this.value.videoContentType = anotherName
+      const { title, subTitle } = data
+      // videoContentType如果播放资源没配，就填跳转资源的
+      if(sourceType === 'source') {
+        const clickParams = JSON.stringify(this.paramIdFun(selected))
+        this.value.clickParams = clickParams
+        this.value.videoContentType = anotherName
+        this.value.videoId = thirdIdOrPackageName
+        this.videoId = thirdIdOrPackageName
+      }
+      // clickSource是必填项
+      if(sourceType === 'clickSource') {
+        if(tabName === 'video') {
+          const entity = selectedResources[tabName][0].ccVideoSourceEntities[0]
+          const score = entity.score
+          const updatedSegment = entity.updatedSegment
+          const publishSegment = entity.publishSegment
+          const isUnknown = publishSegment == 0
+          const publishStatus = isUnknown
+            ? 'unknown'
+            : updatedSegment == publishSegment
+              ? 'ended'
+              : 'updating'
+          this.value.publishStatus = publishStatus
+          this.value.score = score
+          this.value.series = isUnknown ? null : updatedSegment
+          this.value.variety = entity.lastCollection
+        }
+        const params = JSON.stringify(this.paramIdFun(selected))
+        this.value.params = params
+        this.value.clickTemplateType = anotherName
+        this.value.videoContentType = anotherName
+        this.value.title = title
+        this.value.subTitle = subTitle
+        this.value.mediaResourceId = thirdIdOrPackageName
+        this.thirdIdOrPackageName = thirdIdOrPackageName
+        this.value.coverType = 'media'
+        this.value.videoContentType = anotherName
+      }
     },
     handleDelPoster(index) {
+      if(this.disabled) {
+        return
+      }
       let delUrl = this.picPosters[index].pictureUrl
       let delndex = this.value.picList.indexOf(delUrl)
       this.picPosters[index].pictureUrl = undefined
@@ -279,6 +325,9 @@ export default {
       this.isVisiablePosterSelector = false
     },
     handlePicClick(index) {
+      if(this.disabled) {
+        return 
+      }
       this.isVisiablePosterSelector = true
       this.currentPicIndex = index
     },
@@ -448,6 +497,7 @@ export default {
         this.picPosters.map(picContainer => {
           if(picRS[0] === picContainer.width && picRS[1] === picContainer.height) {
             picContainer.pictureUrl = item.pictureUrl
+            this.value.picList.push(picContainer.pictureUrl)
           }
         })
       })

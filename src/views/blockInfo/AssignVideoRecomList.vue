@@ -59,7 +59,23 @@ export default {
           },
           {
             label: '指定影片推荐流名称',
-            prop: 'name'
+            prop: 'name',
+            render: (h, { row }) => {
+              return h(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row)
+                    }
+                  }
+                },
+                row.name
+              )
+            }
           },
           {
             label: '内容源',

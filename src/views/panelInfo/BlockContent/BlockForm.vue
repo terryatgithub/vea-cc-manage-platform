@@ -227,6 +227,7 @@
       <template v-if="contentForm.coverType === 'media'">
         <el-form-item label="配置高清背景图和视频">
           <el-switch
+            :disabled="isReadonly"
             v-model="isShowConfigBg"
             active-color="#13ce66"
             inactive-color="grey"
@@ -426,6 +427,7 @@
       </template>
       <el-form-item label="开启推荐位个性化推荐">
         <el-switch
+          :disabled="isReadonly"
           :value="!!contentForm.flagSetRec" 
           @input="contentForm.flagSetRec = $event? 1 : 0"
           active-color="#13ce66"
