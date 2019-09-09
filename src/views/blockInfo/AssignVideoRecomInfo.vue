@@ -323,7 +323,6 @@ export default {
     handleBlurSort(index) {
       const videoTabs = this.videoTabs
       this.videoTabs = []
-      debugger
       this.$nextTick(() => {
         this.videoTabs = videoTabs.sort((a, b) => {
           return b['priority'] - a['priority']  
