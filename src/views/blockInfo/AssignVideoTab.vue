@@ -37,7 +37,7 @@
         <el-form-item label="副标题">
           <el-input v-model="value.subTitle" class="title-input" :disabled="disabled"/>
         </el-form-item>
-        <el-form-item label="图片海报" :rules="rules.picList">
+        <el-form-item label="图片海报" :rules="rules.required">
           <div class="poster--wrapper">
             <div v-for="(picPoster, index) in picPosters" class="poster--container">
               <div 
@@ -47,8 +47,8 @@
               >
                 <img
                   ref="img"
-                  v-show="picPoster.pictureUrl"
-                  :src="picPoster.pictureUrl"
+                  v-show="value.picList[index]"
+                  :src="value.picList[index]"
                   class="poster-image"
                   referrerpolicy="no-referrer"
                 />
@@ -138,9 +138,6 @@ export default {
       rules: {
         title: [
           { required: true, message: '请输入主标题', trigger: 'blur' }
-        ],
-        picList: [
-          { required: true }
         ],
         required: [
           { required: true }

@@ -14,6 +14,7 @@
       :id="id"
       :version="version"
       :init-mode="mode"
+      :status="status"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </AssignVideoRecomInfo>
@@ -32,7 +33,8 @@ export default {
       isShowList: true,
       id: undefined,
       mode: 'create',
-      version: undefined
+      version: undefined,
+      status: undefined
     }
   },
   methods: {
@@ -59,11 +61,12 @@ export default {
       this.id = item.id
       this.mode = 'read'
       this.version = version ? version : item.currentVersion
+      this.status = item.status
       this.isShowList = false
     },
     handleDelete(selected) {
       this.$service
-        .deleteBroadcastBlock({
+        .deleteMediaAutomation({
           id: selected.map(item => item.id).join(',')
         }, '删除成功')
         .then(data => {

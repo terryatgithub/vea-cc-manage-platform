@@ -22,8 +22,19 @@
 
     <template v-else>
       <CommonContent
+        :mode="mode"
+        :resource-info="resourceInfo"
+        @replicate="mode = 'replicate'"
+        @copy="handleCopy"
+        @edit="mode = 'edit'"
+        @unaudit="$emit('upsert-end')"
+        @shelves="fetchData"
+        @audit="$emit('upsert-end')"
         @submit-audit="handleSubmitAudit"
         @save-draft="handleSaveDraft"
+        @select-version="fetchData"
+        @cancel-timing="fetchData(tabInfo.currentVersion)"
+        @delete="$emit('upsert-end', $event)"
       >
       <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
         <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
@@ -34,10 +45,10 @@
         <el-form :model="basicForm" label-width="150px" :rules="basicFormRules">
           <el-form-item label="推荐流ID">{{basicForm.id}}</el-form-item>
           <el-form-item label="推荐流名称" prop="name">
-            <el-input class="title-input" v-model="basicForm.name" :disabled="disabled"/>
+            <el-input class="title-input" v-model="basicForm.name" :disabled="isRead"/>
           </el-form-item>
           <el-form-item label="源" prop="source">
-            <el-radio-group :value="basicForm.source" :disabled="disabled" @input="handleSourceChange">
+            <el-radio-group :value="basicForm.source" :disabled="isRead" @input="handleSourceChange">
               <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
             </el-radio-group>
           </el-form-item>
@@ -53,7 +64,7 @@
         <span>&nbsp;影片选择</span>
       </div>
       <div :style="{display: isCollapseVideo ? 'none' : 'block'}">
-        <div class="video-select--header" :style="{display: disabled ? 'none' : 'block'}">
+        <div class="video-select--header" :style="{display: isRead ? 'none' : 'block'}">
           <InputPositiveInt v-model="newVideoTabNum" class="num-input"/>
           <el-button type="primary" @click="handleAddVideoTab(newVideoTabNum)">添加</el-button>
           <ResourceSelector
@@ -84,7 +95,7 @@
             :index="index"
             :source="basicForm.source"
             :input-tags="sizeTags"
-            :disabled="disabled"
+            :disabled="isRead"
             @handle-delTab="handleDelTab"
             @select-clicked-source="handleSelectClickedSource($event, index)"
             @select-normal-source="handleSelectNormalSource($event, index)"
@@ -117,9 +128,12 @@ import InputPositiveInt from '@/components/InputPositiveInt'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import AssignVideoTab from './AssignVideoTab'
 import CommonContent from '@/components/CommonContent.vue'
+import titleMixin from '@/mixins/title'
 const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picList']
 const params = ['name', 'source', 'status']
+
 export default {
+  mixins: [titleMixin],
   components: {
     InputPositiveInt,
     ResourceSelector,
@@ -128,11 +142,12 @@ export default {
   },
   data() {
     return {
-      title: '',
+      resourceName: '指定影片推荐流',
       createForm: {
         name: '',
         source: 'o_tencent'
       },
+      mode: 'create',
       basicForm: {
         id: undefined,
         name: undefined,
@@ -157,15 +172,28 @@ export default {
         ]
       },
       videoListParams,  // 必填参数
-      params,
-      disabled: false
+      params
     }
   },
 
-  props: ['id', 'initMode', 'version'],
+  props: ['id', 'initMode', 'version', 'status'],
 
-  watch: {
-    
+  computed: {
+    resourceInfo() {
+      if(this.id) {
+        return {
+          id: this.id,
+          version: this.version,
+          status: this.status,
+          type: 'mediaAutomation',
+          menuElId: 'mediaAutomation'
+        }
+      }
+    },
+    isRead () {
+      const mode = this.mode
+      return mode === 'read'
+    }
   },
 
   methods: {
@@ -293,7 +321,7 @@ export default {
         this.handleDiffResources(nameRS, name, source, resources)
       })
     },
-    computeCommonParams(resources) {
+    dealCommonParams(resources) {
       console.log('resources', resources);
       const source = this.basicForm.source
       const tabName = ['video', 'edu', 'pptv', 'live', 'topic', 'rotate'].filter(name => {
@@ -323,7 +351,7 @@ export default {
       }
     },
     handleSelectClickedSource(resources, index) {
-      const { tabName, anotherName, jsonParams, title, subTitle, thirdIdOrPackageName } = this.computeCommonParams(resources)
+      const { tabName, anotherName, jsonParams, title, subTitle, thirdIdOrPackageName } = this.dealCommonParams(resources)
       Object.assign(this.videoTabs[index], {
         clickParams: jsonParams,
         clickTemplateType: anotherName,
@@ -353,7 +381,7 @@ export default {
       }
     },
     handleSelectNormalSource(resources, index) {
-      const { tabName, anotherName, jsonParams, thirdIdOrPackageName } = this.computeCommonParams(resources)
+      const { tabName, anotherName, jsonParams, thirdIdOrPackageName } = this.dealCommonParams(resources)
       Object.assign(this.videoTabs[index], {
         params: jsonParams,
         videoContentType: anotherName,
@@ -412,7 +440,6 @@ export default {
     handleBlurSort(index) {
       const videoTabs = this.videoTabs
       this.videoTabs = []
-      debugger
       this.$nextTick(() => {
         this.videoTabs = videoTabs.sort((a, b) => {
           return b['priority'] - a['priority']  
@@ -506,6 +533,17 @@ export default {
         }
       })
       return isPass
+    },
+    /**
+     * 审核按钮组
+     */
+    handleCopy(status) {
+      const STATUS = this.$consts.status
+      if (status === STATUS.waiting) {
+        this.handleSubmitAudit()
+      } else {
+        this.handleSaveDraft()
+      }
     },
     /**
      * 资源转换
@@ -650,51 +688,38 @@ export default {
 
       return param
     },
+    fetchData(version) {
+      this.$service.getMediaAutomationDetial({ id: this.id, version }).then(data => {
+        this.setBasicInfo(data)
+      })
+    },
+    setBasicInfo(data) {
+      let basicForm = this.basicForm
+      basicForm.id = data.id
+      basicForm.name = data.name
+      basicForm.openStatus = data.openStatus
+      basicForm.currentVersion = data.currentVersion
+      basicForm.source = data.source
+      this.videoTabs = data.videoList || []
+      if(data.picSize.length !== 0) {
+        data.picSize.map(item => {
+          this.sizeTags.push(
+            {
+              width: item.split('*')[0],
+              height: item.split('*')[1]
+            }
+          )
+        })
+      }
+      console.log('dataDetail', data);
+    }
   },
 
   created() {
     this.mode = this.initMode || 'create'
-    switch (this.mode) {
-      case 'create':
-        this.title = '新增'
-        this.disabled = false
-        break
-      case 'copy':
-        this.title = '复制'
-        this.disabled = false
-        break
-      case 'edit':
-        this.title = '编辑'
-        this.disabled = false
-        break
-      case 'replica':
-        this.title = '创建副本'
-        this.disabled = false
-      case 'read':
-        this.title = '预览'
-        this.disabled = true
-        break
-    }
     if(this.id) {
-      let basicForm = this.basicForm
       this.$service.getMediaAutomationDetial({id: this.id, version: this.version}).then(data => {
-        basicForm.id = data.id
-        basicForm.name = data.name
-        basicForm.openStatus = data.openStatus
-        basicForm.currentVersion = data.currentVersion
-        basicForm.source = data.source
-        this.videoTabs = data.videoList || []
-        if(data.picSize.length !== 0) {
-          data.picSize.map(item => {
-            this.sizeTags.push(
-              {
-                width: item.split('*')[0],
-                height: item.split('*')[1]
-              }
-            )
-          })
-        }
-        console.log('dataDetail', data);
+        this.setBasicInfo(data)
       })
     }
   }

@@ -291,3 +291,10 @@ export function getMediaAutomationDetial(params) {
     params
   })
 }
+export function deleteMediaAutomation(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/mediaAutomation/remove.html',
+    params
+  })
+}
