@@ -42,7 +42,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="源状态">
-            {{['关闭', '开启'][basicForm.flag]}}
+            {{['关闭', '开启'][basicForm.openStatus]}}
           </el-form-item>
         </el-form>
       </div>
@@ -135,7 +135,7 @@ export default {
         id: undefined,
         name: undefined,
         source: 'o_tencent',
-        flag: undefined,
+        openStatus: undefined,
         currentVersion: undefined,
         flagAllVideoPoster: 0
       },
@@ -323,6 +323,7 @@ export default {
     handleBlurSort(index) {
       const videoTabs = this.videoTabs
       this.videoTabs = []
+      debugger
       this.$nextTick(() => {
         this.videoTabs = videoTabs.sort((a, b) => {
           return b['priority'] - a['priority']  
@@ -393,7 +394,6 @@ export default {
       let isPass = true
       videoListParams.forEach(param => {
         if(!video[param]) {
-          debugger
           isPass = false
           return
         }
@@ -591,7 +591,7 @@ export default {
       this.$service.getMediaAutomationDetial({id: this.id, version: this.version}).then(data => {
         basicForm.id = data.id
         basicForm.name = data.name
-        basicForm.flag = data.flag
+        basicForm.openStatus = data.openStatus
         basicForm.currentVersion = data.currentVersion
         basicForm.source = data.source
         this.videoTabs = data.videoList || []
