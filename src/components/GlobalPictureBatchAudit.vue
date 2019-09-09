@@ -1,7 +1,7 @@
 <template>
   <RemoteSelectorWrapper
     ref="selectorWrapper"
-    title="批量审核下面所有素材"
+    title="批量审核下面所有素材(一次最多审核50个)"
     :pagination="pagination"
     @select-start="handleSelectStart">
     <el-button type="primary">一键审核</el-button>
@@ -56,7 +56,7 @@ export default {
       },
       pagination: {
         currentPage: 1,
-        pageSize: 30
+        pageSize: 50
       },
       filter: {
         pictureStatus: 3
@@ -119,7 +119,9 @@ export default {
         this.table.data = data.rows
         if (data.rows.length === 0) {
           this.$message.warning('没有待审核素材')
-          this.handleCancel()
+          setTimeout(() => {
+            this.handleCancel()
+          }, 1000)
         }
       })
     },
