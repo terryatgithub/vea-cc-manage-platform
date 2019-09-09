@@ -227,6 +227,7 @@
       <template v-if="contentForm.coverType === 'media'">
         <el-form-item label="配置高清背景图和视频">
           <el-switch
+            :disabled="isReadonly"
             v-model="isShowConfigBg"
             active-color="#13ce66"
             inactive-color="grey"
@@ -426,8 +427,9 @@
       </template>
       <el-form-item label="开启推荐位个性化推荐">
         <el-switch
+          :disabled="isReadonly"
           :value="!!contentForm.flagSetRec" 
-          @input="contentForm.flagSetRec = $event? 1 : 0"
+          @input="handleInputFlagSetRec"
           active-color="#13ce66"
           inactive-color="grey"
         >
@@ -482,7 +484,7 @@
       <el-tag 
       v-for="(tag, index) in recomStreamTags" 
       size="medium"
-      class="recomTag"
+      class="recomTag cursor-tip"
       :key="index" 
       @click="contentForm.mediaAutomationBlockRls.mediaAutomationId=tag.id;isVisiableRecom=false"
       >{{tag.name}}</el-tag>
@@ -778,14 +780,6 @@ export default {
         this.contentForm.bgParams = {}
         this.contentForm.bgImgUrl = ''
       }
-    },
-    'contentForm.flagSetRec': {
-      handler(val) {
-        if(val === 0) {
-          this.contentForm.mediaAutomationBlockRls = {}
-        }
-      },
-      immediate: true
     }
   },
   methods: {
@@ -797,6 +791,17 @@ export default {
           panel_group_id: this.pannelGroupId || 'new'
         }
       })
+    },
+    handleInputFlagSetRec (val) {
+      const contentForm = this.contentForm
+      contentForm.flagSetRec = val ? 1 : 0
+      if (!val) {
+        contentForm.mediaAutomationBlockRls = {
+          refreshCal: 1,
+          mediaAutomationId: '',
+          blockType: 'normal'
+        }
+      }
     },
     genParams(openMode) {
       return {
@@ -1129,6 +1134,9 @@ export default {
 }
 .post-info .episode {
   left: 0;
+}
+.cursor-tip {
+  cursor: pointer;
 }
 
 .corner-box {

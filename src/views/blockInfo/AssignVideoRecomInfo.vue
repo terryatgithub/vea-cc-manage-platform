@@ -34,11 +34,11 @@
         <el-form :model="basicForm" label-width="150px" :rules="basicFormRules">
           <el-form-item label="推荐流ID">{{basicForm.id}}</el-form-item>
           <el-form-item label="推荐流名称" prop="name">
-            <el-input class="title-input" v-model="basicForm.name"/>
+            <el-input class="title-input" v-model="basicForm.name" :disabled="disabled"/>
           </el-form-item>
           <el-form-item label="源" prop="source">
-            <el-radio-group v-model="basicForm.source">
-              <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value" disabled>{{item.label}}</el-radio>
+            <el-radio-group :value="basicForm.source" :disabled="disabled" @input="handleSourceChange">
+              <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="源状态">
@@ -53,7 +53,7 @@
         <span>&nbsp;影片选择</span>
       </div>
       <div :style="{display: isCollapseVideo ? 'none' : 'block'}">
-        <div class="video-select--header">
+        <div class="video-select--header" :style="{display: disabled ? 'none' : 'block'}">
           <InputPositiveInt v-model="newVideoTabNum" class="num-input"/>
           <el-button type="primary" @click="handleAddVideoTab(newVideoTabNum)">添加</el-button>
           <ResourceSelector
@@ -61,7 +61,7 @@
             :is-live="false"
             :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
             selection-type="multiple"
-            :source="createForm.source"
+            :source="basicForm.source"
             @select-end="handleSelectResourcesEnd"
           >
             <el-button type="primary" class="batch-btn">批量选择资源</el-button>
@@ -84,6 +84,7 @@
             :index="index"
             :source="basicForm.source"
             :input-tags="sizeTags"
+            :disabled="disabled"
             @handle-delTab="handleDelTab"
             @blur="handleBlurSort(index)"
           />
@@ -154,11 +155,16 @@ export default {
         ]
       },
       videoListParams,  // 必填参数
-      params
+      params,
+      disabled: false
     }
   },
 
   props: ['id', 'initMode', 'version'],
+
+  watch: {
+    
+  },
 
   methods: {
     handleCreate() {
@@ -174,8 +180,42 @@ export default {
       })
       
     },
+    messageCancel() {
+      this.$message({
+        type: 'info',
+        message: '已取消切换源'
+      }) 
+    },
+    handleSourceChange(val) {
+      const messageCancel = this.messageCancel
+      let old = this.basicForm.source
+      this.$confirm('修改源，会删除所有影片和素材，确定要修改', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$confirm('第二次警告，确定要修改' , '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$confirm('最后一个警告，删除后素材无法恢复！' , '警告', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.basicForm.source = val
+            this.videoTabs = []
+            this.$message.success("成功切换内容源")
+          }).catch(messageCancel)
+        }).catch(messageCancel)
+      }).catch(messageCancel)
+    },
     handleAddVideoTab(tabNum) {
-      if(!this.newVideoTabNum || this.newVideoTabNum >100 || this.newVideoTabNum <=0){
+      if(!tabNum) {
+        this.videoTabs.push({})
+        this.$message.success("添加成功")
+      }else if(!this.newVideoTabNum || this.newVideoTabNum >100 || this.newVideoTabNum <=0){
         this.$message.error("请输入0~100之间的数字")
       }else {
         for(let i=0; i<tabNum; i++) {
@@ -214,18 +254,24 @@ export default {
       })
     },
     handleDelTab(index) {
-      this.videoTabs.splice(index, 1)
-      this.$message.success("删除成功")
+      const videoTabs = this.videoTabs
+      videoTabs.splice(index, 1)
+      this.videoTabs = []
+      this.$nextTick(() => {
+        this.videoTabs = videoTabs.slice()
+        this.$message.success("删除成功")
+      })
+      
     },
     handleSelectResourcesEnd(resources) {
       console.log('resources', resources);
       const source = this.basicForm.source
       ;['video', 'edu', 'pptv', 'live', 'topic', 'rotate'].forEach(name => {
         const nameRS = resources[name]
-        this.handleDiffResources(nameRS, name, source)
+        this.handleDiffResources(nameRS, name, source, resources)
       })
     },
-    handleDiffResources(resourceArr, resourceName, source) {
+    handleDiffResources(resourceArr, resourceName, source, resources) {
       let anotherName = resourceName
       switch(resourceName){
         case 'video': 
@@ -242,6 +288,22 @@ export default {
         selected.vid = item.vid
         selected.sid = item.sid
         const clickParams = JSON.stringify(this.paramIdFun(selected))
+        if(resourceName === 'video') {
+          const entity = resources['video'][0].ccVideoSourceEntities[0]
+          const score = entity.score
+          const updatedSegment = entity.updatedSegment
+          const publishSegment = entity.publishSegment
+          const isUnknown = publishSegment == 0
+          const publishStatus = isUnknown
+            ? 'unknown'
+            : updatedSegment == publishSegment
+              ? 'ended'
+              : 'updating'
+          data.publishStatus = publishStatus
+          data.score = score
+          data.series = isUnknown ? null : updatedSegment
+          data.variety = entity.lastCollection
+        }
         videoTabs.push({
           title: data.title,
           subTitle: data.subTitle,
@@ -249,13 +311,22 @@ export default {
           clickParams,
           coverType: 'media',
           clickTemplateType: anotherName,
-          videoContentType: anotherName
+          videoContentType: anotherName,
+          clickType: 'detail',
+          publishStatus: data.publishStatus,
+          score: data.score,
+          series: data.series,
+          variety: data.variety
         })
       })
     },
     handleBlurSort(index) {
-      this.videoTabs.sort((a, b) => {
-        return b['priority'] - a['priority']  
+      const videoTabs = this.videoTabs
+      this.videoTabs = []
+      this.$nextTick(() => {
+        this.videoTabs = videoTabs.sort((a, b) => {
+          return b['priority'] - a['priority']  
+        })
       })
     },
     handleSubmit(status) {
@@ -264,7 +335,7 @@ export default {
         return typeof(item.mediaResourceId) !== 'undefined'
       })
       let isAll = videoList.every(item => {
-        return typeof(item.videoId) !== 'undefined'
+        return item.videoId
       })
       if(isAll) {
         basicForm.flagAllVideoPoster = 1
@@ -322,6 +393,7 @@ export default {
       let isPass = true
       videoListParams.forEach(param => {
         if(!video[param]) {
+          debugger
           isPass = false
           return
         }
@@ -521,6 +593,7 @@ export default {
         basicForm.name = data.name
         basicForm.flag = data.flag
         basicForm.currentVersion = data.currentVersion
+        basicForm.source = data.source
         this.videoTabs = data.videoList || []
         if(data.picSize.length !== 0) {
           data.picSize.map(item => {

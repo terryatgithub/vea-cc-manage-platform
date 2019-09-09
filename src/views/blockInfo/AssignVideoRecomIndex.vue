@@ -58,7 +58,7 @@ export default {
     handleRead(item, version) {
       this.id = item.id
       this.mode = 'read'
-      this.version = version
+      this.version = version ? version : item.currentVersion
       this.isShowList = false
     },
     handleDelete(selected) {
