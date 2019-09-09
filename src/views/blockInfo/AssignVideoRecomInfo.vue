@@ -86,6 +86,8 @@
             :input-tags="sizeTags"
             :disabled="disabled"
             @handle-delTab="handleDelTab"
+            @select-clicked-source="handleSelectClickedSource($event, index)"
+            @select-normal-source="handleSelectNormalSource($event, index)"
             @blur="handleBlurSort(index)"
           />
         </div>
@@ -167,6 +169,26 @@ export default {
   },
 
   methods: {
+    getDefaultVideoTab() {
+      return {
+        id: undefined,//  影片自增id
+        clickTemplateType: undefined,// 点击事件模板类型,refer资源类型
+        coverType: 'media',
+        videoContentType: undefined, //refer资源类型
+        params: undefined,//播放参数json, refer资源id
+        clickParams: undefined, // 点击事件中的参数
+        clickType: 'detail',
+        mediaResourceId: undefined,
+        title: '',
+        subTitle: '',
+        showSeries: 1,
+        showScore: 1,
+        videoId: undefined,
+        priority: undefined,
+        flagRec: 0,
+        picList: []
+      }
+    },
     handleCreate() {
       const createForm = this.createForm
       this.$refs.createForm.validate(valid => {
@@ -213,13 +235,13 @@ export default {
     },
     handleAddVideoTab(tabNum) {
       if(!tabNum) {
-        this.videoTabs.push({})
+        this.videoTabs.push(this.getDefaultVideoTab())
         this.$message.success("添加成功")
       }else if(!this.newVideoTabNum || this.newVideoTabNum >100 || this.newVideoTabNum <=0){
         this.$message.error("请输入0~100之间的数字")
       }else {
         for(let i=0; i<tabNum; i++) {
-          this.videoTabs.push({})
+          this.videoTabs.push(this.getDefaultVideoTab())
         }
         this.newVideoTabNum = undefined
         this.$message.success("添加成功")
@@ -269,6 +291,73 @@ export default {
       ;['video', 'edu', 'pptv', 'live', 'topic', 'rotate'].forEach(name => {
         const nameRS = resources[name]
         this.handleDiffResources(nameRS, name, source, resources)
+      })
+    },
+    computeCommonParams(resources) {
+      console.log('resources', resources);
+      const source = this.basicForm.source
+      const tabName = ['video', 'edu', 'pptv', 'live', 'topic', 'rotate'].filter(name => {
+        return resources[name].length !== 0
+      }).join("")
+      let data = this.callbackParam(tabName, resources[tabName][0], source)
+      let selected = Object.assign({}, data)
+      selected.vid = data.vid
+      selected.sid = data.sid
+      let anotherName = tabName
+      switch(tabName){
+        case 'video': 
+          anotherName = 'movie'
+          break
+        case 'live':
+          anotherName = 'txLive'
+          break
+      }
+      const jsonParams = JSON.stringify(this.paramIdFun(selected))
+      return {
+        tabName,
+        anotherName,
+        jsonParams,
+        title: data.title,
+        subTitle: data.subTitle,
+        thirdIdOrPackageName: data.thirdIdOrPackageName
+      }
+    },
+    handleSelectClickedSource(resources, index) {
+      const { tabName, anotherName, jsonParams, title, subTitle, thirdIdOrPackageName } = this.computeCommonParams(resources)
+      Object.assign(this.videoTabs[index], {
+        clickParams: jsonParams,
+        clickTemplateType: anotherName,
+        videoContentType: anotherName,
+        title,
+        subTitle,
+        mediaResourceId: thirdIdOrPackageName,
+        coverType: 'media'
+      })
+      if(tabName === 'video') {
+        const entity = resources[tabName][0].ccVideoSourceEntities[0]
+        const score = entity.score
+        const updatedSegment = entity.updatedSegment
+        const publishSegment = entity.publishSegment
+        const isUnknown = publishSegment == 0
+        const publishStatus = isUnknown
+          ? 'unknown'
+          : updatedSegment == publishSegment
+            ? 'ended'
+            : 'updating'
+        Object.assign(this.videoTabs[index], {
+          publishStatus,
+          score,
+          series: isUnknown ? null : updatedSegment,
+          variety: entity.lastCollection
+        })
+      }
+    },
+    handleSelectNormalSource(resources, index) {
+      const { tabName, anotherName, jsonParams, thirdIdOrPackageName } = this.computeCommonParams(resources)
+      Object.assign(this.videoTabs[index], {
+        params: jsonParams,
+        videoContentType: anotherName,
+        videoId: thirdIdOrPackageName
       })
     },
     handleDiffResources(resourceArr, resourceName, source, resources) {
@@ -323,6 +412,7 @@ export default {
     handleBlurSort(index) {
       const videoTabs = this.videoTabs
       this.videoTabs = []
+      debugger
       this.$nextTick(() => {
         this.videoTabs = videoTabs.sort((a, b) => {
           return b['priority'] - a['priority']  
