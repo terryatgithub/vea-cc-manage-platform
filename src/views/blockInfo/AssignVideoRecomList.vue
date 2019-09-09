@@ -92,11 +92,12 @@ export default {
             }
           },
           {
-            label: '状态',
+            label: '版本/状态',
             prop: 'status',
-            sortable: true,
-            render: (h, { row }) => {
-              return this.$consts.statusText[row.status]
+            formatter: (row) => {
+              const status = row.status
+              const currentVersion = row.currentVersion
+              return currentVersion + '/' + this.$consts.statusText[status]
             }
           },
           {

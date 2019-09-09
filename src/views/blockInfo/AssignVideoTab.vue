@@ -6,7 +6,7 @@
         <InputPositiveInt v-model="value.priority" class="num-input" @blur="$emit('blur')" :disabled="disabled"/>
       </el-col>
       <el-col :span="2">
-        <el-button type="text" :disabled="disabled" @click="flagRec=!flagRec">{{flagRec? '未屏蔽' : '屏蔽'}}</el-button>
+        <el-button type="text" :disabled="disabled" @click="value.flagRec=!value.flagRec">{{value.flagRec? '未屏蔽' : '屏蔽'}}</el-button>
       </el-col>
       <el-col :span="2">
         <el-button type="text" :disabled="disabled" @click="$emit('handle-delTab', index)">删除</el-button>
@@ -21,15 +21,15 @@
             :selectors="resourceOptions"
             selection-type="single"
             :source="source"
-            @select-end="handleSelectResourcesEnd($event, 'source')"
+            @select-end="$emit('select-normal-source', $event)"
           >
             <el-button type="primary" plain>选择资源</el-button>
           </ResourceSelector>
           <el-tag
             type="success"
             class="marginL"
-            v-show="videoId"
-          >已选择：{{videoId}}</el-tag>
+            v-if="value.videoId"
+          >已选择：{{value.videoId}}</el-tag>
         </el-form-item>
         <el-form-item label="主标题" :rules="rules.title">
           <el-input v-model="value.title" class="title-input" :disabled="disabled"/>
@@ -37,7 +37,7 @@
         <el-form-item label="副标题">
           <el-input v-model="value.subTitle" class="title-input" :disabled="disabled"/>
         </el-form-item>
-        <el-form-item label="图片海报" :rules="rules.picList">
+        <el-form-item label="图片海报" :rules="rules.required">
           <div class="poster--wrapper">
             <div v-for="(picPoster, index) in picPosters" class="poster--container">
               <div 
@@ -47,8 +47,8 @@
               >
                 <img
                   ref="img"
-                  v-show="picPoster.pictureUrl"
-                  :src="picPoster.pictureUrl"
+                  v-show="value.picList[index]"
+                  :src="value.picList[index]"
                   class="poster-image"
                   referrerpolicy="no-referrer"
                 />
@@ -57,17 +57,25 @@
             </div>
           </div>
           <div v-if="picPosters.length!==0">
-            <el-checkbox v-model="notShowSeries" :disabled="disabled">不展示期数</el-checkbox>
-            <el-checkbox v-model="notShowScore" :disabled="disabled">不展示评分</el-checkbox>
+            <el-checkbox 
+              :value="!value.showSeries" 
+              @input="value.showSeries = $event ? 0 : 1" 
+              :disabled="disabled"
+            >不展示期数</el-checkbox>
+            <el-checkbox 
+              :value="!value.showScore" 
+              @input="value.showScore = $event ? 0 : 1" 
+              :disabled="disabled"
+            >不展示评分</el-checkbox>
           </div>
         </el-form-item>
         <el-form-item label="点击类型" :rules="rules.required">
-          <el-radio-group v-model="clickType" :disabled="disabled">
+          <el-radio-group v-model="value.clickType" :disabled="disabled">
             <el-radio label="detail">点击进详情页</el-radio>
             <el-radio label="play-fullscreen">点击全屏播放</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="内容资源" :rules="rules.thirdIdOrPackageName">
+        <el-form-item label="内容资源" :rules="rules.required">
           <ResourceSelector
             :style="{display: disabled ? 'none' : 'block'}"
             ref="resourceSelector"
@@ -75,15 +83,15 @@
             :selectors="resourceOptions"
             selection-type="single"
             :source="source"
-            @select-end="handleSelectResourcesEnd($event, 'clickSource')"
+            @select-end="$emit('select-clicked-source', $event)"
           >
             <el-button type="primary" plain>选择资源</el-button>
           </ResourceSelector>
           <el-tag
             type="success"
             class="marginL"
-            v-show="thirdIdOrPackageName"
-            >已选择：{{thirdIdOrPackageName}}</el-tag>
+            v-show="value.mediaResourceId"
+            >已选择：{{value.mediaResourceId}}</el-tag>
         </el-form-item>
         
       </el-form>
@@ -123,30 +131,18 @@ export default {
   data() {
     return {
       picPosters: [],
-      clickType: 'detail',
       isVisiablePosterSelector: false,
       currentSelectPic: undefined,  // 当前选择的图片海报
       currentPicIndex: undefined,
       resourceOptions,
-      thirdIdOrPackageName: undefined,
-      videoId: undefined,
-      flagRec: false,
       rules: {
-        thirdIdOrPackageName: [
-          { required: true }
-        ],
         title: [
           { required: true, message: '请输入主标题', trigger: 'blur' }
-        ],
-        picList: [
-          { required: true }
         ],
         required: [
           { required: true }
         ]
-      },
-      notShowSeries: false,
-      notShowScore: false
+      }
     }
   },
   props: {
@@ -162,7 +158,11 @@ export default {
           picInfoList: undefined,
           flagRec: undefined,
           coverType: 'media',
-          clickType: 'detail'
+          clickType: 'detail',
+          showSeries: 1,
+          showScore: 1,
+          videoId: undefined,
+          picList: []
         }
       }
     },
@@ -190,18 +190,6 @@ export default {
       deep: true,
       immediate: true
     },
-    flagRec: {
-      handler: function(val) {
-        this.value.flagRec = val ? 1 : 0
-      },
-      immediate: true
-    },
-    clickType: {
-      handler: function(val) {
-        this.value.clickType = val
-      },
-      immediate: true
-    },
     'inputTags.length': {
       handler: function(val, old) {
         let inputTags = this.inputTags
@@ -222,85 +210,9 @@ export default {
         }
       },
       immediate: true
-    },
-    notShowSeries: {
-      handler: function(val) {
-        this.value.showSeries = val ? 0 : 1
-      },
-      immediate: true
-    },
-    notShowScore: {
-      handler: function(val) {
-        this.value.showScore = val ? 0 : 1
-      },
-      immediate: true
-    },
-    videoId(val) {
-      this.value.videoId = val
     }
   },
   methods: {
-    handleSelectResourcesEnd(selectedResources, sourceType) { 
-      console.log('selectedResources', selectedResources);
-      const { resourceOptions, source } = this
-      const tabName = resourceOptions.map(item=> {
-        if(selectedResources[item].length === 1) {
-          return item
-        }
-      }).join("")
-      let data = this.callbackParam(tabName, selectedResources[tabName][0], source)
-      const thirdIdOrPackageName = data.thirdIdOrPackageName
-      let selected = Object.assign({}, data)
-      selected.vid = data.vid
-      selected.sid = data.sid
-      let anotherName = tabName
-      switch(tabName){
-        case 'video': 
-          anotherName = 'movie'
-          break
-        case 'live':
-          anotherName = 'txLive'
-          break
-      }
-      const { title, subTitle } = data
-      // videoContentType如果播放资源没配，就填跳转资源的
-      if(sourceType === 'source') {
-        const clickParams = JSON.stringify(this.paramIdFun(selected))
-        this.value.clickParams = clickParams
-        this.value.videoContentType = anotherName
-        this.value.videoId = thirdIdOrPackageName
-        this.videoId = thirdIdOrPackageName
-      }
-      // clickSource是必填项
-      if(sourceType === 'clickSource') {
-        if(tabName === 'video') {
-          const entity = selectedResources[tabName][0].ccVideoSourceEntities[0]
-          const score = entity.score
-          const updatedSegment = entity.updatedSegment
-          const publishSegment = entity.publishSegment
-          const isUnknown = publishSegment == 0
-          const publishStatus = isUnknown
-            ? 'unknown'
-            : updatedSegment == publishSegment
-              ? 'ended'
-              : 'updating'
-          this.value.publishStatus = publishStatus
-          this.value.score = score
-          this.value.series = isUnknown ? null : updatedSegment
-          this.value.variety = entity.lastCollection
-        }
-        const params = JSON.stringify(this.paramIdFun(selected))
-        this.value.params = params
-        this.value.clickTemplateType = anotherName
-        this.value.videoContentType = anotherName
-        this.value.title = title
-        this.value.subTitle = subTitle
-        this.value.mediaResourceId = thirdIdOrPackageName
-        this.thirdIdOrPackageName = thirdIdOrPackageName
-        this.value.coverType = 'media'
-        this.value.videoContentType = anotherName
-      }
-    },
     handleDelPoster(index) {
       if(this.disabled) {
         return
@@ -331,153 +243,6 @@ export default {
       this.isVisiablePosterSelector = true
       this.currentPicIndex = index
     },
-    /**
-     * 资源转换
-     */
-    callbackParam(tabName, selected, sourceType) {
-      let s = {
-        type: '', // 面向客户端
-        contentType: '', // 面向管理后台
-        thirdIdOrPackageName: ''
-      }
-      const prefixMap = {
-        tencent: '_otx_',
-        o_tencent: '_otx_',
-        yinhe: '_oqy_',
-        o_iqiyi: '_oqy_',
-        youku: '_oyk_'
-      }
-      switch (tabName) {
-        case 'video': {
-          const selectedEpisode = selected.selectedEpisodes
-          const prefix = (prefixMap[sourceType] || '')
-          if (selectedEpisode) {
-            if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
-              // 如果是短视频, 并且 thirdVId 存在
-              s.thirdIdOrPackageName = prefix + selectedEpisode.thirdVId
-              s.sid = selectedEpisode.coocaaMId
-            } else {
-              s.thirdIdOrPackageName = prefix + selected.coocaaVId
-              s.vid = selectedEpisode.coocaaMId
-            }
-            s.thumb = selectedEpisode.thumb
-            s.title = selectedEpisode.urlTitle
-            s.subTitle = selectedEpisode.urlSubTitle
-          } else {
-            s.thirdIdOrPackageName = prefix + selected.coocaaVId
-            s.pictureUrl = selected.thumb
-            s.title = selected.title
-            s.subTitle = selected.subTitle
-          }
-          s.contentType = 'movie'
-          s.type = 'res'
-          break
-        }
-        case 'app': {
-          s.contentType = 'app'
-          s.coverType = 'app'
-          s.thirdIdOrPackageName = selected.appPackageName
-          s.pictureUrl = selected.appImageUrl
-          s.title = selected.appName
-          s.type = 'app'
-          break
-        }
-        case 'edu': {
-          s.contentType = 'edu'
-          s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
-          s.platformId = selected.source
-          s.pictureUrl = selected.thumb
-          s.title = selected.title
-          s.subTitle = selected.subTitle
-          s.type = 'res'
-          break
-        }
-        case 'pptv': {
-          s.contentType = 'pptv'
-          s.thirdIdOrPackageName =
-            'pptv_tvsports://tvsports_detail?section_id=' +
-            selected.pid +
-            '&from_internal=1'
-          s.title = selected.pTitle
-          s.type = ''
-          break
-        }
-        case 'live': {
-          s.contentType = 'txLive'
-          s.thirdIdOrPackageName = '_otx_' + selected.vId + ''
-          s.platformId = selected.source
-          s.pictureUrl = selected.thumb
-          s.title = selected.title
-          s.subTitle = selected.subTitle
-          s.type = 'live'
-          break
-        }
-        case 'topic': {
-          selected.dataSign === 'parentTopic'
-            ? (s.contentType = 'bigTopic')
-            : (s.contentType = 'topic')
-          s.thirdIdOrPackageName = selected.id + ''
-          s.pictureUrl = selected.picture
-          s.title = selected.title
-          s.subTitle = selected.subTitle
-          s.type = 'topic'
-          break
-        }
-        case 'rotate': {
-          s.contentType = 'rotate'
-          s.thirdIdOrPackageName = selected.id + ''
-          s.pictureUrl = selected.picture
-          s.title = selected.title
-          s.subTitle = selected.subTitle
-          s.type = 'rotate'
-          break
-        }
-        default:
-          break
-      }
-      return s
-    },
-    paramIdFun: function(selected) {
-      // 封装保存的id
-      if (selected.contentType === 'movie') {
-        var param = {
-          id: selected.thirdIdOrPackageName
-        }
-        if (selected.vid) {
-          param.vid = selected.vid
-        } 
-        if (selected.sid) {
-          param.sid = selected.sid
-        }
-      } else if (
-        selected.contentType === 'app' ||
-        selected.contentType === 'edu' ||
-        selected.contentType === 'txLive'
-      ) {
-        var param = {
-          id: selected.thirdIdOrPackageName
-        }
-      } else if (selected.contentType === 'bigTopic') {
-        var param = {
-          pTopicCode: selected.thirdIdOrPackageName
-        }
-      } else if (selected.contentType === 'topic') {
-        // this.smallTopics = true;
-        var param = {
-          topicCode: selected.thirdIdOrPackageName
-        }
-      } else if (selected.contentType === 'rotate') {
-        var param = {
-          rotateId: selected.thirdIdOrPackageName
-        }
-      }
-
-      return param
-    },
-    handleSelectPostEnd(post) {
-      console.log('post', post);
-      this.videoId = post.pictureId
-    },
     computeResolution() {
       const { currentPicIndex, picPosters } = this
       return picPosters[currentPicIndex].width + "*" + picPosters[currentPicIndex].height
@@ -486,11 +251,9 @@ export default {
 
   created() {
     this.picPosters = cloneDeep(this.inputTags).map(({width, height}) => ({height, width, pictureUrl: undefined}))  // 确定海报位置
-    this.value.picList = []
-    if(this.value.mediaResourceId) {
-      this.thirdIdOrPackageName = this.value.mediaResourceId
+    if(!this.value.picList) {
+      this.$set(this.value, 'picList', [])
     }
-    this.clickType = this.value.clickType || 'detail'
     if(this.value.picInfoList && this.value.picInfoList.length !== 0) {
       this.value.picInfoList.forEach(item => {
         let picRS = item.pictureResolution.split('*')
