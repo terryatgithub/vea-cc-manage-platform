@@ -249,7 +249,7 @@ export default {
               typeId: undefined
             },
             cornerIconName: undefined,
-            attributeCode: undefined, // 角标分类
+            attributeCode: '0', // 角标分类
             imgUrl: undefined,
             pictureType: undefined // 上传图片格式
           }
