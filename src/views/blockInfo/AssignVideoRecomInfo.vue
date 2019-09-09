@@ -37,7 +37,7 @@
             <el-input class="title-input" v-model="basicForm.name" :disabled="disabled"/>
           </el-form-item>
           <el-form-item label="源" prop="source">
-            <el-radio-group v-model="basicForm.source" :disabled="disabled">
+            <el-radio-group :value="basicForm.source" :disabled="disabled" @input="handleSourceChange">
               <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
             </el-radio-group>
           </el-form-item>
@@ -61,7 +61,7 @@
             :is-live="false"
             :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
             selection-type="multiple"
-            :source="createForm.source"
+            :source="basicForm.source"
             @select-end="handleSelectResourcesEnd"
           >
             <el-button type="primary" class="batch-btn">批量选择资源</el-button>
@@ -162,6 +162,10 @@ export default {
 
   props: ['id', 'initMode', 'version'],
 
+  watch: {
+    
+  },
+
   methods: {
     handleCreate() {
       const createForm = this.createForm
@@ -175,6 +179,37 @@ export default {
         }
       })
       
+    },
+    messageCancel() {
+      this.$message({
+        type: 'info',
+        message: '已取消切换源'
+      }) 
+    },
+    handleSourceChange(val) {
+      const messageCancel = this.messageCancel
+      let old = this.basicForm.source
+      this.$confirm('修改源，会删除所有影片和素材，确定要修改', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$confirm('第二次警告，确定要修改' , '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$confirm('最后一个警告，删除后素材无法恢复！' , '警告', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.basicForm.source = val
+            this.videoTabs = []
+            this.$message.success("成功切换内容源")
+          }).catch(messageCancel)
+        }).catch(messageCancel)
+      }).catch(messageCancel)
     },
     handleAddVideoTab(tabNum) {
       if(!tabNum) {
@@ -573,7 +608,6 @@ export default {
         console.log('dataDetail', data);
       })
     }
-    console.log('this.diable', this.disabled);
   }
 }
 </script>
