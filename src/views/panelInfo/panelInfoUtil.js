@@ -263,7 +263,7 @@ export function genDefaultContentForm(preset) {
     flagSetRec: 0,
     mediaAutomationBlockRls: {
       refreshCal: 1,
-      mediaAutomationId: undefined,
+      mediaAutomationId: '',
       blockType: 'normal'
     },
     bgParams: {
