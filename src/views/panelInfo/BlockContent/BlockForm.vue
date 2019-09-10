@@ -591,7 +591,7 @@ export default {
       showCrowdSelector: false,
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
-      isShowConfigBg: false,  //配置项隐藏
+      isShowConfigBg: false,  //高清图配置项是否隐藏
       recomStream: undefined,
       isVisiableRecom: false,
       recomStreamTags: [],
@@ -1060,12 +1060,12 @@ export default {
             }
             if(contentForm.flagSetRec == 1) {
               if(!contentForm.mediaAutomationBlockRls.mediaAutomationId || !contentForm.mediaAutomationBlockRls.refreshCal){
-                return cb('已开启推荐位个性化推荐开关，但配置不完整')
+                return cb('已开启推荐位个性化推荐开关，但配置不完整!')
               }
             }
             if(this.isShowConfigBg) {
-              if(!contentForm.bgParams.id || !contentForm.bgParams.title || !contentForm.bgParams.bgImgUrl){
-                return cb('已开启配置高清背景图和视频开关，但配置不完整')
+              if(!contentForm.bgParams.id || !contentForm.bgParams.title || !contentForm.bgImgUrl){
+                return cb('已开启配置高清背景图和视频开关，但配置不完整!')
               }
             }
           }
@@ -1094,7 +1094,7 @@ export default {
     fetchRecomStream() {
       this.$service.getMediaAutomationDataList({page: 1, rows: 20, source: this.source}).then(data => {
         this.recomStreamTags = data.rows.filter(item => {
-          return item.openStatus != 0
+          return item.openStatus !== 0
         })
       })
     }
@@ -1106,6 +1106,9 @@ export default {
         status: 'success',
         dataUrl: redundantParams.pictureUrl
       }]
+    }
+    if(this.contentForm.bgImgUrl || contentForm.bgParams) {
+      this.isShowConfigBg = true
     }
   }
 }
