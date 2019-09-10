@@ -56,10 +56,7 @@ export default {
       picDialogVisible: false, // 预览图片弹出框
       auditDialogVisible: false, // 审核弹出框
       reviewPicUrl: null,
-      filter: {
-        sort: undefined,
-        order: undefined
-      },
+      filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {
         pageSize: 5
@@ -93,11 +90,13 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
-      this.filter = {
-        sort: undefined,
-        order: undefined
+    genDefaultFilter() {
+      return {
+        pictureStatus: this.$consts.status.accepted
       }
+    },
+    handleFilterReset() {
+      this.filter = this.genDefaultFilter() 
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -130,6 +129,7 @@ export default {
     }
   },
   created() {
+    const $status = this.$consts.status
     let filterSchema = _.map({
       pictureId: _.o.string.other('form', {
         component: 'Input',
@@ -143,7 +143,10 @@ export default {
         component: 'Select',
         placeholder: '素材类别'
       }),
-      pictureStatus: _.o.enum(this.pictureStatus).other('form', {
+      pictureStatus: _.o.enum({
+        '审核通过': $status.accepted,
+        '待审核': $status.waiting
+      }).other('form', {
         component: 'Select',
         placeholder: '审核状态'
       })

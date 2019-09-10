@@ -67,6 +67,7 @@ export default {
     getDefaultFilter() {
       const idPrefix = this.$consts.idPrefix
       return {
+        cornerStatus: this.$consts.status.accepted,
         cornerIconId: undefined,
         cornerIconName: undefined,
         typeId: undefined,
@@ -123,6 +124,7 @@ export default {
 
   },
   created() {
+    const $status = this.$consts.status
     this.$service.getCornerTypes().then((data) => {
       const cornerTypeEnums = data.reduce((result, item) => {
         return (result[item.typeName] = item.typeId) && result
@@ -151,6 +153,19 @@ export default {
           placeholder: '角标类型',
           cols: {
             item: 3,
+            wrapper: 23
+          }
+        }),
+        cornerStatus: _.o.enum({
+          '审核通过': $status.accepted,
+          '待审核': $status.waiting
+        }).other('form', {
+          label: '',
+          component: 'Select',
+          placeholder: '审核状态',
+          cols: {
+            item: 3,
+            label: 0,
             wrapper: 23
           }
         })
