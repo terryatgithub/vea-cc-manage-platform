@@ -113,12 +113,12 @@
                 <el-input
                   style="width: 300px"
                   v-model="pannel.pannelList[0].pannelTitle"
-                  placeholder="请输入版本标题"
+                  placeholder="请输入版块标题"
                 ></el-input>
                 <BinCheckBox label="前端不显示标题" v-model="pannel.showTitle" is-negative />
               </el-form-item>
               <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
-                <el-input v-model="pannel.groupTitle" placeholder="请输入版本标题"></el-input>
+                <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
               </el-form-item>
               <el-form-item label="版块布局" required>
                 <LayoutSelector @select-end="handleSelectLayoutEnd"></LayoutSelector>
@@ -1810,11 +1810,22 @@ export default {
       if (!pannel.pannelName) {
         return cb('请输入版块名称')
       }
+      if (pannel.pannelName.length > 45) {
+        return cb('版块名称长度不能大于 45 个字符')
+      }
+
       if (pannel.parentType === 'normal' && !pannel.pannelList[0].pannelTitle) {
         return cb('请输入版块标题')
       }
+      if (pannel.parentType === 'normal' && pannel.pannelList[0].pannelTitle.length > 45) {
+        return cb('版块标题长度不能大于 45 个字符')
+      }
+
       if (pannel.parentType === 'group' && !pannel.groupTitle) {
         return cb('请输入版块标题')
+      }
+      if (pannel.parentType === 'group' && pannel.groupTitle.length > 45) {
+        return cb('版块标题长度不能大于 45 个字符')
       }
 
       if (!this.selectedLayout) {
