@@ -114,10 +114,10 @@ export default {
             label: '图片海报尺寸',
             prop: 'picSize'
           },
-          {
-            label: '最后一次推荐计算完成时间',
-            prop: 'lastCalDate'
-          },
+          // {
+          //   label: '最后一次推荐计算完成时间',
+          //   prop: 'lastCalDate'
+          // },
           {
             label: '操作',
             fixed: 'right',

@@ -234,7 +234,7 @@
           >
           </el-switch>
         </el-form-item>
-        <el-form-item v-if="isShowConfigBg" label="背景视频" prop="bgParams.id">
+        <el-form-item v-if="isShowConfigBg" label="背景视频" prop="bgParams.id" :rules="requiredRules.required">
           <ResourceSelector
             ref="resourceSelector"
             v-if="!isReadonly"
@@ -252,7 +252,7 @@
           </el-tag>
         </el-form-item>
 
-        <el-form-item v-if="isShowConfigBg" label="背景图" prop="bgImgUrl">
+        <el-form-item v-if="isShowConfigBg" label="背景图" prop="bgImgUrl" :rules="requiredRules.required">
           <GlobalPictureSelector
             :disabled="isReadonly"
             @select-end="handleSelectBgEnd">
@@ -436,7 +436,7 @@
         </el-switch>
       </el-form-item>
       <template v-if="!!contentForm.flagSetRec">
-        <el-form-item label="推荐流选择">
+        <el-form-item label="推荐流选择" :rules="requiredRules.required">
           <el-button type="primary" @click="isVisiableRecom = true">选择推荐流</el-button>
           <el-tag
             v-if="contentForm.mediaAutomationBlockRls.mediaAutomationId"
@@ -447,7 +447,7 @@
             {{contentForm.mediaAutomationBlockRls.mediaAutomationId}}
           </el-tag>
         </el-form-item>
-        <el-form-item label="刷新机制">
+        <el-form-item label="刷新机制" :rules="requiredRules.required">
           <InputPositiveInt v-model="contentForm.mediaAutomationBlockRls.refreshCal" class="flashCountInput"/>
           客户端曝光X次之后刷新推荐位
         </el-form-item>
@@ -486,7 +486,7 @@
       size="medium"
       class="recomTag cursor-tip"
       :key="index" 
-      @click="contentForm.mediaAutomationBlockRls.mediaAutomationId=tag.id;isVisiableRecom=false"
+      @click="handleSelectRecomStream(index)"
       >{{tag.name}}</el-tag>
     </el-dialog>
     <!-- 推荐流弹框 end -->
@@ -674,6 +674,9 @@ export default {
           { required: false, validator: checkSecKill, trigger: 'blur' }
         ],
         dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }]
+      },
+      requiredRules: {
+        required: [{required: true}]
       }
     }
   },
@@ -776,7 +779,10 @@ export default {
   watch: {
     isShowConfigBg(bool) {
       if(!bool) {
-        this.contentForm.bgParams = {}
+        this.contentForm.bgParams = {
+          id: '',
+          title: ''
+        },
         this.contentForm.bgImgUrl = ''
       }
     }
@@ -1052,6 +1058,16 @@ export default {
             if (contentForm.price < contentForm.secKillPrice) {
               return cb('价格小于秒杀价，建议重新填写！')
             }
+            if(contentForm.flagSetRec == 1) {
+              if(!contentForm.mediaAutomationBlockRls.mediaAutomationId || !contentForm.mediaAutomationBlockRls.refreshCal){
+                return cb('已开启推荐位个性化推荐开关，但配置不完整')
+              }
+            }
+            if(this.isShowConfigBg) {
+              if(!contentForm.bgParams.id || !contentForm.bgParams.title || !contentForm.bgParams.bgImgUrl){
+                return cb('已开启配置高清背景图和视频开关，但配置不完整')
+              }
+            }
           }
           cb()
         } else {
@@ -1062,9 +1078,24 @@ export default {
     handleDelStreamTag() {
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined
     },
+    handleSelectRecomStream(index) {
+      let picSize = recomStreamTags[index].picSize
+      let isMatchSize = picSize.some(item => {
+        let resolutionStr = this.resolution[0] + '*' + this.resolution[1]
+        return resolutionStr === item
+      })
+      if(isMatchSize) {
+        this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStreamTags[index].id
+        isVisiableRecom=false
+      }else {
+        this.$message.error("该流无法匹配此推荐位的海报图尺寸")
+      }
+    },
     fetchRecomStream() {
-      this.$service.getMediaAutomationDataList({page: 1, rows: 20}).then(data => {
-        this.recomStreamTags = data.rows
+      this.$service.getMediaAutomationDataList({page: 1, rows: 20, source: this.source}).then(data => {
+        this.recomStreamTags = data.rows.filter(item => {
+          return item.openStatus != 0
+        })
       })
     }
   },
