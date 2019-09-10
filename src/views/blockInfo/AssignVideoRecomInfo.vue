@@ -421,7 +421,8 @@ export default {
           data.series = isUnknown ? null : updatedSegment
           data.variety = entity.lastCollection
         }
-        videoTabs.push({
+        let newTab = this.getDefaultVideoTab()
+        Object.assign(newTab, {
           title: data.title,
           subTitle: data.subTitle,
           mediaResourceId: data.thirdIdOrPackageName,
@@ -435,6 +436,7 @@ export default {
           series: data.series,
           variety: data.variety
         })
+        videoTabs.push(newTab)
       })
     },
     handleBlurSort(index) {
@@ -466,7 +468,7 @@ export default {
         data.videoList = videoTabs.length === 0 ? undefined : videoTabs
         console.log('save', data);
         this.$service.saveMediaAutomation({jsonStr: JSON.stringify(data)}, '保存成功').then(() => {
-          this.$emit('go-back')
+          this.$emit('upsert-end')
         })
       }.bind(this))
     },
@@ -509,7 +511,9 @@ export default {
       const { videoListParams } = this
       let isPass = true
       videoListParams.forEach(param => {
-        if(!video[param]) {
+        if(param === 'picList') {
+          isPass = video[param].length === 0 ? false : true
+        }else if(!video[param]) {
           isPass = false
           return
         }
