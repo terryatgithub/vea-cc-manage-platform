@@ -14,23 +14,31 @@
     </el-row>
     <div class="container">
       <el-form label-width="150px">
-        <el-form-item label="视频资源">
-          <ResourceSelector
-            :style="{display: disabled ? 'none' : 'block'}"
-            :is-live="false"
-            :selectors="resourceOptions"
-            selection-type="single"
-            :source="source"
-            @select-end="$emit('select-normal-source', $event)"
-          >
-            <el-button type="primary" plain>选择资源</el-button>
-          </ResourceSelector>
-          <el-tag
-            type="success"
-            class="marginL"
-            v-if="value.videoId"
-          >已选择：{{value.videoId}}</el-tag>
-        </el-form-item>
+        
+          <el-form-item label="点击类型" :rules="rules.required">
+            <el-radio-group v-model="value.clickType" :disabled="disabled">
+              <el-radio label="detail">点击进详情页</el-radio>
+              <el-radio label="play-fullscreen">点击全屏播放</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="内容资源" :rules="rules.required">
+            <ResourceSelector
+              :style="{display: disabled ? 'none' : 'block'}"
+              ref="resourceSelector"
+              :is-live="false"
+              :selectors="resourceOptions"
+              selection-type="single"
+              :source="source"
+              @select-end="$emit('select-clicked-source', $event)"
+            >
+              <el-button type="primary" plain>选择资源</el-button>
+            </ResourceSelector>
+            <el-tag
+              type="success"
+              class="marginL"
+              v-show="value.mediaResourceId"
+              >已选择：{{value.mediaResourceId}}</el-tag>
+          </el-form-item>
         <el-form-item label="主标题" :rules="rules.title">
           <el-input v-model="value.title" class="title-input" :disabled="disabled"/>
         </el-form-item>
@@ -69,31 +77,24 @@
             >不展示评分</el-checkbox>
           </div>
         </el-form-item>
-        <el-form-item label="点击类型" :rules="rules.required">
-          <el-radio-group v-model="value.clickType" :disabled="disabled">
-            <el-radio label="detail">点击进详情页</el-radio>
-            <el-radio label="play-fullscreen">点击全屏播放</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="内容资源" :rules="rules.required">
+        
+        <el-form-item label="视频资源">
           <ResourceSelector
             :style="{display: disabled ? 'none' : 'block'}"
-            ref="resourceSelector"
             :is-live="false"
             :selectors="resourceOptions"
             selection-type="single"
             :source="source"
-            @select-end="$emit('select-clicked-source', $event)"
+            @select-end="$emit('select-normal-source', $event)"
           >
             <el-button type="primary" plain>选择资源</el-button>
           </ResourceSelector>
           <el-tag
             type="success"
             class="marginL"
-            v-show="value.mediaResourceId"
-            >已选择：{{value.mediaResourceId}}</el-tag>
+            v-if="value.videoId"
+          >已选择：{{value.videoId}}</el-tag>
         </el-form-item>
-        
       </el-form>
     </div>
 
@@ -231,7 +232,11 @@ export default {
     savePicture() {
       const { currentPicIndex, currentSelectPic } = this
       this.picPosters[currentPicIndex].pictureUrl = currentSelectPic.pictureUrl
-      this.value.picList.push(currentSelectPic.pictureUrl)
+      if(this.value.picList[currentPicIndex]){
+        this.value.picList[currentPicIndex] = currentSelectPic.pictureUrl
+      }else{
+        this.value.picList.push(currentSelectPic.pictureUrl)
+      }
       this.currentPicIndex = undefined
       this.currentSelectPic = undefined
       this.isVisiablePosterSelector = false

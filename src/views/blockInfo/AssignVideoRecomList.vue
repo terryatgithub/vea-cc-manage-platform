@@ -47,7 +47,9 @@ export default {
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
       filterSchema: null,
-      pagination: {},
+      pagination: {
+        currentPage: 1
+      },
       selected: [],
       table: {
         props: {},
