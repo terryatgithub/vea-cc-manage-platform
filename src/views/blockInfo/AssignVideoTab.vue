@@ -6,7 +6,7 @@
         <InputPositiveInt v-model="value.priority" class="num-input" @blur="$emit('blur')" :disabled="disabled"/>
       </el-col>
       <el-col :span="2">
-        <el-button type="text" :disabled="disabled" @click="value.flagRec=!value.flagRec">{{value.flagRec? '未屏蔽' : '屏蔽'}}</el-button>
+        <el-button type="text" :disabled="disabled" @click="value.flagRec=!value.flagRec">{{value.flagRec? '取消屏蔽' : '屏蔽'}}</el-button>
       </el-col>
       <el-col :span="2">
         <el-button type="text" :disabled="disabled" @click="$emit('handle-delTab', index)">删除</el-button>
@@ -90,10 +90,13 @@
             <el-button type="primary" plain>选择资源</el-button>
           </ResourceSelector>
           <el-tag
-            type="success"
-            class="marginL"
             v-if="value.videoId"
-          >已选择：{{value.videoId}}</el-tag>
+            type="success" 
+            closable
+            @close="handleDelVideoTag"
+          >
+            {{value.videoId}}
+          </el-tag>
         </el-form-item>
       </el-form>
     </div>
@@ -251,6 +254,9 @@ export default {
     computeResolution() {
       const { currentPicIndex, picPosters } = this
       return picPosters[currentPicIndex].width + "*" + picPosters[currentPicIndex].height
+    },
+    handleDelVideoTag() {
+      this.value.videoId = undefined
     }
   },
 
