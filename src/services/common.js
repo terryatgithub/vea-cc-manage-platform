@@ -84,7 +84,8 @@ const deleteUrlMap = {
   systemPlugin: 'api/v1/sysPlugin/delHistory.html', // 系统插件
   topic: 'api/v1/topic/delHistory.html',
   topicConfig: 'api/v1/topicConfig/delHistory.html',
-  mediaAutomation: 'api/v1/mediaAutomation/delHistory.html'
+  mediaAutomation: 'api/v1/mediaAutomation/delHistory.html',
+  icon: 'api/v1/cornerIcon/remove.html'
 }
 export function deleteVersion (data) {
   return this.fetch({
@@ -104,7 +105,8 @@ const RESOURCE_DELETE_URL_MAP = {
   crowdRel: 'api/v1/dmpMgr/remove.html',
   topic: 'api/v1/topic/remove.html',
   topicConfig: 'api/v1/topicConfig/remove.html',
-  mediaAutomation: '/v1/mediaAutomation/remove.html'
+  mediaAutomation: '/v1/mediaAutomation/remove.html',
+  icon: 'api/v1/cornerIcon/remove.html'
 }
 
 export function deleteResource(data) {
