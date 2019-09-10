@@ -1079,7 +1079,7 @@ export default {
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined
     },
     handleSelectRecomStream(index) {
-      let picSize = recomStreamTags[index].picSize
+      let picSize = this.recomStreamTags[index].picSize
       let isMatchSize = picSize.some(item => {
         let resolutionStr = this.resolution[0] + '*' + this.resolution[1]
         return resolutionStr === item
@@ -1100,14 +1100,15 @@ export default {
     }
   },
   mounted() {
-    const redundantParams = this.contentForm.redundantParams
+    const contentForm = this.contentForm
+    const redundantParams = contentForm.redundantParams
     if (redundantParams.openMode === 'picture' && redundantParams.pictureUrl) {
       this.$refs.upload.fileList = [{
         status: 'success',
         dataUrl: redundantParams.pictureUrl
       }]
     }
-    if(this.contentForm.bgImgUrl || contentForm.bgParams) {
+    if(contentForm.bgImgUrl || contentForm.bgParams) {
       this.isShowConfigBg = true
     }
   }

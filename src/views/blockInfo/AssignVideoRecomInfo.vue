@@ -42,7 +42,7 @@
         <span>&nbsp;流基本设置</span>
       </div>
       <div :style="{display: isCollapseBase ? 'none' : 'block'}">
-        <el-form :model="basicForm" label-width="150px" :rules="basicFormRules">
+        <el-form :model="basicForm" ref="basicForm" label-width="150px" :rules="basicFormRules">
           <el-form-item label="推荐流ID">{{basicForm.id}}</el-form-item>
           <el-form-item label="推荐流名称" prop="name">
             <el-input class="title-input" v-model="basicForm.name" :disabled="isRead"/>
@@ -177,7 +177,7 @@ export default {
     }
   },
 
-  props: ['id', 'initMode', 'version', 'status'],
+  props: ['id', 'initMode', 'version'],
 
   computed: {
     resourceInfo() {
@@ -224,7 +224,7 @@ export default {
       this.$refs.createForm.validate(valid => {
         if(valid) {
           this.$service.saveMediaAutomation({jsonStr: JSON.stringify(createForm)}, '保存成功').then(() => {
-            this.$emit('go-back')
+            this.$emit('upsert-end')
           })
         }else {
           this.$message.error("表单填写不完整")
@@ -381,6 +381,7 @@ export default {
           variety: entity.lastCollection
         })
       }
+      this.videoTabs[index].picList = []
     },
     handleSelectNormalSource(resources, index) {
       const { tabName, anotherName, jsonParams, thirdIdOrPackageName } = this.dealCommonParams(resources)
@@ -451,16 +452,48 @@ export default {
       })
     },
     handleSubmit(status) {
+      let isFormValid = true
+      this.$refs.basicForm.validate((valid) => {
+        if (!valid) {
+          isFormValid = false 
+        }
+      })
+      if(!isFormValid) {
+        return
+      }
+
       const { basicForm, videoTabs, id } = this
+      // 清除空的tab
       let videoList = videoTabs.filter(item => {
         return typeof(item.mediaResourceId) !== 'undefined'
       })
+      // 是否所有都配置了videoId
       let isAll = videoList.every(item => {
         return item.videoId
       })
       if(isAll) {
         basicForm.flagAllVideoPoster = 1
       }
+      // 检查重复的
+      let repeatArr = []
+      for(let i = 0; i < videoTabs.length-1; i++ ) {
+        for(let j=i+1 ; j< videoTabs.length - i ; j++) {
+          if(videoTabs[i].mediaResourceId === videoTabs[j].mediaResourceId) {
+            repeatArr[0] = i
+            repeatArr[1] = j
+            break
+          }
+        }
+      }
+      if(repeatArr.length !== 0) {
+        let tipText = '影片 ' + repeatArr[0] + ' 和影片 ' + repeatArr[1] + ' 资源重复'
+        this.$alert(tipText, '提示', {
+          confirmButtonText: '确定'
+        })
+        return
+      }
+
+
       let basicParam = {
         ...basicForm,
         status
