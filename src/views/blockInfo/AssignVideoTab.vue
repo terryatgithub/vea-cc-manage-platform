@@ -29,6 +29,7 @@
               :selectors="resourceOptions"
               selection-type="single"
               :source="source"
+              :disable-partner="true"
               @select-end="$emit('select-clicked-source', $event)"
             >
               <el-button type="primary" plain>选择资源</el-button>
@@ -85,6 +86,7 @@
             :selectors="resourceOptions"
             selection-type="single"
             :source="source"
+            :disable-partner="true"
             @select-end="$emit('select-normal-source', $event)"
           >
             <el-button type="primary" plain>选择资源</el-button>
