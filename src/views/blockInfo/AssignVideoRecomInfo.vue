@@ -169,6 +169,7 @@ export default {
       basicFormRules: {
         name: [
           { required: true, message: '请输入名称', trigger: 'blur' },
+          { max: 45, message: '推荐流名称不得超出45个字符', trigger: 'blur' }
         ]
       },
       videoListParams,  // 必填参数
@@ -180,11 +181,12 @@ export default {
 
   computed: {
     resourceInfo() {
-      if(this.id) {
+      const basicForm = this.basicForm
+      if(basicForm.id) {
         return {
-          id: this.id,
-          version: this.version,
-          status: this.status,
+          id: basicForm.id,
+          version: basicForm.currentVersion,
+          status: basicForm.status,
           type: 'mediaAutomation',
           menuElId: 'mediaAutomation'
         }
@@ -465,7 +467,7 @@ export default {
       }
       this.checkParams(basicParam, videoList, function() {
         let data = Object.assign({}, basicParam)
-        data.videoList = videoTabs.length === 0 ? undefined : videoTabs
+        data.videoList = videoList.length === 0 ? undefined : videoList
         console.log('save', data);
         this.$service.saveMediaAutomation({jsonStr: JSON.stringify(data)}, '保存成功').then(() => {
           this.$emit('upsert-end')
@@ -703,8 +705,11 @@ export default {
       basicForm.name = data.name
       basicForm.openStatus = data.openStatus
       basicForm.currentVersion = data.currentVersion
+      basicForm.status = data.status
       basicForm.source = data.source
-      this.videoTabs = data.videoList || []
+      this.videoTabs = data.videoList.sort((a, b) => {
+        return b['priority'] - a['priority']  
+      }) || []
       if(data.picSize.length !== 0) {
         data.picSize.map(item => {
           this.sizeTags.push(
