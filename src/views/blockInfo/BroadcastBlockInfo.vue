@@ -1539,7 +1539,7 @@ export default {
           }
 
           const parseCornerIconList = (data) => {
-            if (data.cornerIconList.length === 0) {
+            if (!data.cornerIconList || data.cornerIconList.length === 0) {
               data.cornerIconList = [{}, {}, {}, {}]
             } else {
               data.cornerIconList = data.cornerIconList.reduce((result, item) => {
@@ -1550,7 +1550,6 @@ export default {
           }
 
           const mapContent = (item, isDmpContent) => {
-            item = this.genDefaultContentForm(item, {isDmpContent})
             item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
             item.params = JSON.parse(item.params || '{}')
             item.clickParams = JSON.parse(item.clickParams || '{}')
@@ -1564,9 +1563,10 @@ export default {
             if (item.dmpContentList) {
               item.dmpContentList = item.dmpContentList.map((item) => mapContent(item, true))
             }
+            item = this.genDefaultContentForm({...item, isDmpContent})
             return item
           }
-          this.normalVersionContent = data.normalVersionContent.map(mapContent)
+          this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
           this.normalForm = this.normalVersionContent[0]
 
           // lower data
