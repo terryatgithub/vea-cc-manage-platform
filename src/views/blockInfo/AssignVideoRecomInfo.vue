@@ -48,7 +48,7 @@
             <el-input class="title-input" v-model="basicForm.name" :disabled="isRead"/>
           </el-form-item>
           <el-form-item label="源" prop="source">
-            <el-radio-group :value="basicForm.source" :disabled="isRead" @input="handleSourceChange">
+            <el-radio-group :value="basicForm.source" :disabled="isRead || mode === 'replicate'" @input="handleSourceChange">
               <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
             </el-radio-group>
           </el-form-item>
@@ -462,7 +462,7 @@ export default {
         return
       }
 
-      const { basicForm, videoTabs, id } = this
+      const { basicForm, videoTabs } = this
       // 清除空的tab
       let videoList = videoTabs.filter(item => {
         return typeof(item.mediaResourceId) !== 'undefined'
@@ -501,6 +501,11 @@ export default {
       this.checkParams(basicParam, videoList, function() {
         let data = Object.assign({}, basicParam)
         data.videoList = videoList.length === 0 ? undefined : videoList
+        // parse
+        if (this.mode === 'replicate') {
+          data.currentVersion = undefined
+        } 
+
         console.log('save', data);
         this.$service.saveMediaAutomation({jsonStr: JSON.stringify(data)}, '保存成功').then(() => {
           this.$emit('upsert-end')
@@ -547,7 +552,7 @@ export default {
       let isPass = true
       videoListParams.forEach(param => {
         if(param === 'picList') {
-          isPass = video[param].length === 0 ? false : true
+          isPass = !video[param] || video[param].length === 0 ? false : true
         }else if(!video[param]) {
           isPass = false
           return
@@ -740,9 +745,14 @@ export default {
       basicForm.currentVersion = data.currentVersion
       basicForm.status = data.status
       basicForm.source = data.source
-      this.videoTabs = data.videoList.sort((a, b) => {
-        return b['priority'] - a['priority']  
-      }) || []
+      this.videoTabs = (data.videoList || [])
+      .map(item => {
+        item.picList = item.picList || []
+        return item
+      })
+      .sort((a, b) => {
+        return b.priority - a.priority
+      })
       if(data.picSize.length !== 0) {
         data.picSize.map(item => {
           this.sizeTags.push(

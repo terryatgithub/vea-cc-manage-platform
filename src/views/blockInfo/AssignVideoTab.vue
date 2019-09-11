@@ -56,6 +56,7 @@
               >
                 <img
                   ref="img"
+                  v-if="value.picList"
                   v-show="value.picList[index]"
                   :src="value.picList[index]"
                   class="poster-image"
@@ -258,6 +259,9 @@ export default {
       return picPosters[currentPicIndex].width + "*" + picPosters[currentPicIndex].height
     },
     handleDelVideoTag() {
+      if(this.disabled) {
+        return
+      }
       this.value.videoId = undefined
     }
   },
