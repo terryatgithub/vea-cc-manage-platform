@@ -73,6 +73,7 @@
             :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
             selection-type="multiple"
             :source="basicForm.source"
+            :disable-partner="true"
             @select-end="handleSelectResourcesEnd"
           >
             <el-button type="primary" class="batch-btn">批量选择资源</el-button>
@@ -129,7 +130,8 @@ import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import AssignVideoTab from './AssignVideoTab'
 import CommonContent from '@/components/CommonContent.vue'
 import titleMixin from '@/mixins/title'
-const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picList']
+import { cloneDeep } from 'lodash'
+const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picInfoList']  // picInfoList兼容预览，可转换为picList
 const params = ['name', 'source', 'status']
 
 export default {
@@ -162,6 +164,7 @@ export default {
       videoTabs: [],
       newVideoTabNum: undefined,
       sizeTags: [],
+      delSizeTagIndex: -1,
       newTabSize: {
         width: undefined,
         height: undefined
@@ -216,7 +219,16 @@ export default {
         videoId: undefined,
         priority: undefined,
         flagRec: 0,
-        picList: []
+        picList: [],
+        picInfoList: []
+      }
+    },
+    genPicInfoList() {
+      return {
+        pictureResolution: '',
+        pictureUrl: '',
+        pictureId: undefined,
+        pictureStatus: undefined
       }
     },
     handleCreate() {
@@ -264,14 +276,23 @@ export default {
       }).catch(messageCancel)
     },
     handleAddVideoTab(tabNum) {
+      let sizetagsLen = this.sizeTags.length
       if(!tabNum) {
-        this.videoTabs.push(this.getDefaultVideoTab())
+        let newVideoTab = this.getDefaultVideoTab()
+        for(let count = 0 ; count < sizetagsLen ; count++ ) {
+          newVideoTab.picInfoList.push(this.genPicInfoList())
+        }
+        this.videoTabs.push(newVideoTab)
         this.$message.success("添加成功")
       }else if(!this.newVideoTabNum || this.newVideoTabNum >100 || this.newVideoTabNum <=0){
         this.$message.error("请输入0~100之间的数字")
       }else {
         for(let i=0; i<tabNum; i++) {
-          this.videoTabs.push(this.getDefaultVideoTab())
+          let newVideoTab = this.getDefaultVideoTab()
+          for(let count = 0 ; count< sizetagsLen ; count++ ) {
+            newVideoTab.picInfoList.push(this.genPicInfoList())
+          }
+          this.videoTabs.push(newVideoTab)
         }
         this.newVideoTabNum = undefined
         this.$message.success("添加成功")
@@ -284,6 +305,9 @@ export default {
         return
       }
       this.sizeTags.push(newTabSize)
+      this.videoTabs.forEach(video => {
+        video.picInfoList.push(this.genPicInfoList())
+      })
       this.newTabSize = {}
       this.isVisibleSize = false
     },
@@ -293,7 +317,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.sizeTags.splice(this.sizeTags.indexOf(tag), 1);
+        const delSizeTagIndex = this.sizeTags.indexOf(tag)
+        this.delSizeTagIndex = delSizeTagIndex
+        this.sizeTags.splice(delSizeTagIndex, 1)
+        this.videoTabs.forEach(video => {
+          video.picInfoList.splice(delSizeTagIndex, 1)
+        })
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -479,8 +508,8 @@ export default {
       for(let i = 0; i < videoTabs.length-1; i++ ) {
         for(let j=i+1 ; j< videoTabs.length - i ; j++) {
           if(videoTabs[i].mediaResourceId === videoTabs[j].mediaResourceId) {
-            repeatArr[0] = i
-            repeatArr[1] = j
+            repeatArr[0] = i + 1
+            repeatArr[1] = j + 1
             break
           }
         }
@@ -499,15 +528,24 @@ export default {
         status
       }
       this.checkParams(basicParam, videoList, function() {
-        let data = Object.assign({}, basicParam)
-        data.videoList = videoList.length === 0 ? undefined : videoList
+        let saveForm = Object.assign({}, basicParam)
+        saveForm.videoList = videoList.length === 0 ? undefined : cloneDeep(videoList)
         // parse
         if (this.mode === 'replicate') {
-          data.currentVersion = undefined
+          saveForm.currentVersion = undefined
         } 
+        if(saveForm.videoList && saveForm.videoList.length !== 0) {
+          // parse videoList
+          saveForm.videoList.map(video => {
+            video.picList = video.picInfoList.map(item => {
+              return item.pictureUrl
+            })
+            video.picInfoList = undefined
+          })
+        }
 
-        console.log('save', data);
-        this.$service.saveMediaAutomation({jsonStr: JSON.stringify(data)}, '保存成功').then(() => {
+        console.log('save', saveForm);
+        this.$service.saveMediaAutomation({jsonStr: JSON.stringify(saveForm)}, '保存成功').then(() => {
           this.$emit('upsert-end')
         })
       }.bind(this))
@@ -551,7 +589,7 @@ export default {
       const { videoListParams } = this
       let isPass = true
       videoListParams.forEach(param => {
-        if(param === 'picList') {
+        if(param === 'picInfoList') { // 兼容预览
           isPass = !video[param] || video[param].length === 0 ? false : true
         }else if(!video[param]) {
           isPass = false
@@ -561,7 +599,7 @@ export default {
       if(!isPass) {
         return isPass
       }else {
-        if(video.picList.length === 0 || video.picList.length !== this.sizeTags.length){
+        if(video.picInfoList.length === 0){
           isPass = false
         }
       }
@@ -745,6 +783,7 @@ export default {
       basicForm.currentVersion = data.currentVersion
       basicForm.status = data.status
       basicForm.source = data.source
+      this.videoTabs = []
       this.videoTabs = (data.videoList || [])
       .map(item => {
         item.picList = item.picList || []
@@ -753,6 +792,7 @@ export default {
       .sort((a, b) => {
         return b.priority - a.priority
       })
+      this.sizeTags = []
       if(data.picSize.length !== 0) {
         data.picSize.map(item => {
           this.sizeTags.push(
