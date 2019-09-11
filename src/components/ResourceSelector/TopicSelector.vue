@@ -71,6 +71,7 @@ export default {
             render: (h, { row }) => {
               if (row.picture) {
                 return h('img', {
+                  key: row.picture,
                   attrs: {
                     src: row.picture,
                     width: '110px',

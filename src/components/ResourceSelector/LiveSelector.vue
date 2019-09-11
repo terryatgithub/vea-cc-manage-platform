@@ -112,6 +112,7 @@ export default {
             label: '海报',
             render: (h, { row }) => {
               return h('img', {
+                key: row.thumb,
                 attrs: {
                   src: row.thumb,
                   width: '50px',
