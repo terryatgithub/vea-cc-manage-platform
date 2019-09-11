@@ -437,7 +437,7 @@
       </el-form-item>
       <template v-if="!!contentForm.flagSetRec">
         <el-form-item label="推荐流选择" :rules="requiredRules.required">
-          <el-button type="primary" @click="isVisiableRecom = true">选择推荐流</el-button>
+          <el-button type="primary" @click="isVisiableRecom = true" :disabled="isReadonly">选择推荐流</el-button>
           <el-tag
             v-if="contentForm.mediaAutomationBlockRls.mediaAutomationId"
             type="primary" 
@@ -1093,6 +1093,9 @@ export default {
       })
     },
     handleDelStreamTag() {
+      if(this.isReadonly) {
+        return
+      }
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined
     },
     handleSelectRecomStream(index) {
