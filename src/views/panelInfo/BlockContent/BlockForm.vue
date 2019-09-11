@@ -676,7 +676,7 @@ export default {
         dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }]
       },
       requiredRules: {
-        required: [{required: true}]
+        required: [{required: true, message: '当开关开启时必填'}]
       }
     }
   },
@@ -1108,7 +1108,7 @@ export default {
         dataUrl: redundantParams.pictureUrl
       }]
     }
-    if(contentForm.bgImgUrl || contentForm.bgParams) {
+    if(contentForm.bgImgUrl || contentForm.bgParams.id || contentForm.bgParams.title) {
       this.isShowConfigBg = true
     }
   }
