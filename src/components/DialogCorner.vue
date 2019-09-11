@@ -14,7 +14,17 @@
          :select-on-row-click="true"
         @row-selection-change="handleRowSelectionChange"
       >
-        <div class="box-list" slot="row" slot-scope="{row: item}">
+        <template slot="row" slot-scope="{row: item}">
+          <div class="list-item__img-wrapper">
+            <img :key="item.imgUrl" class="list-item__img" :src="item.imgUrl">
+          </div>
+          <div class="list-item__info">
+            {{ item.cornerIconName }}
+            <br />
+            {{ $consts.statusText[item.cornerStatus] }}
+          </div>
+        </template>
+        <!-- <div class="box-list" slot="row" slot-scope="{row: item}">
           <p class="list-p">
             <img :key="item.imgUrl" class="list-img" :src="item.imgUrl" alt>
           </p>
@@ -22,7 +32,7 @@
           <p style="margin:0">
             <span>{{ $consts.statusText[item.cornerStatus] }}</span>
           </p>
-        </div>
+        </div> -->
       </CardList>
     </ContentWrapper>
   </ContentCard>
@@ -52,11 +62,6 @@ export default {
   },
   data() {
     return {
-      pictureStatus: {
-        // 状态
-        审核通过: 1,
-        待审核: 2
-      },
       cornerIconType: {
         typePosition: this.typePosition,
         typeId: ''
@@ -64,10 +69,7 @@ export default {
       picDialogVisible: false, // 预览图片弹出框
       auditDialogVisible: false, // 审核弹出框
       reviewPicUrl: null,
-      filter: {
-        sort: undefined,
-        order: undefined
-      },
+      filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {
         currentPage: 1,
@@ -102,11 +104,13 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
-      this.filter = {
-        page: 1,
-        rows: 10
+    genDefaultFilter() {
+      return {
+        cornerStatus: this.$consts.status.accepted
       }
+    },
+    handleFilterReset() {
+      this.filter = this.genDefaultFilter() 
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -137,18 +141,47 @@ export default {
     }
   },
   created() {
+    const $status = this.$consts.status
     let filterSchema = _.map({
       cornerIconId: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID'
+        placeholder: 'ID',
+        cols: {
+          item: 3,
+          label: 0,
+          wrapper: 23
+        }
       }),
       cornerIconName: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '角标名称'
+        placeholder: '角标名称',
+        cols: {
+          item: 3,
+          label: 0,
+          wrapper: 23
+        }
       }),
       cornerIconType: _.o.enum(this.cornerIconTypeOptions).other('form', {
         component: 'Select',
-        placeholder: '角标类别'
+        placeholder: '角标类别',
+        cols: {
+          item: 3,
+          label: 0,
+          wrapper: 23
+        }
+      }),
+      cornerStatus: _.o.enum({
+        '审核通过': $status.accepted,
+        '待审核': $status.waiting
+      }).other('form', {
+        label: '',
+        component: 'Select',
+        placeholder: '审核状态',
+        cols: {
+          item: 3,
+          label: 0,
+          wrapper: 23
+        }
       })
     }).other('form', {
       cols: {
@@ -196,4 +229,22 @@ export default {
 p {
   margin: 0;
 }
+</style>
+<style lang="stylus" scoped>
+.card-list >>> .card-item-wrapper
+  pisition relative
+  width 180px
+  height 200px
+  border 1px solid #ccc
+  margin 5px
+  padding 10px
+
+.list-item__img
+  max-height 170px
+  max-width 170px
+  margin 0 auto
+  display block
+.list-item__info
+  position absolute
+  bottom 0
 </style>

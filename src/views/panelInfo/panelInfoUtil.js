@@ -20,7 +20,7 @@ function getMatchingValue (blockSize, imgSize) {
   const ratio = w / h
   const imgRatio = imgW / imgH
 
-  const ratioMatchingValue = 60 - 12 * Math.abs(ratio - imgRatio)
+  const ratioMatchingValue = 70 - 45 * Math.abs(ratio - imgRatio)
 
   let scale
   if (ratio > imgRatio) {
@@ -32,7 +32,7 @@ function getMatchingValue (blockSize, imgSize) {
       ? h / imgH
       : imgH / h
   }
-  const sizeMatchingValue = 48 - 8 * scale
+  const sizeMatchingValue = 38 - 8 * scale
 
   return ratioMatchingValue + sizeMatchingValue
 }

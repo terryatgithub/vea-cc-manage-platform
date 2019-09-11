@@ -114,7 +114,7 @@ export default {
   methods: {
     getDefaultFilter() {
       const filter = {
-        pictureStatus: 1
+        pictureStatus: 4
       }
       if (this.$consts.idPrefix != '10') {
         filter.idPrefix = this.$consts.idPrefix
@@ -232,6 +232,7 @@ export default {
     }
   },
   created() {
+    const $status = this.$consts.status
     let filterSchema = _.map({
       pictureId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         label: '',
@@ -263,7 +264,10 @@ export default {
           wrapper: 23
         }
       }),
-      pictureStatus: _.o.enum(this.pictureStatus).other('form', {
+      pictureStatus: _.o.enum({
+        '审核通过': $status.accepted,
+        '待审核': $status.waiting
+      }).other('form', {
         label: '',
         component: 'Select',
         placeholder: '审核状态',

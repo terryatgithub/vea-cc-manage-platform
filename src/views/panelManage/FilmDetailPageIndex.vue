@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="resource-manager-wrapper">
     <FilmDetailPageList
       v-show="isShowList"
       ref="list"
@@ -74,5 +74,9 @@ export default {
 }
 </script>
 
-<style lang='stylus' scoped>
+
+<style lang="stylus" scoped>
+.resource-manager-wrapper
+  height 100%
+  overflow auto
 </style>

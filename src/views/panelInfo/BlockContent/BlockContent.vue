@@ -66,6 +66,7 @@
                 :source="source"
                 :data="data"
                 :pannel="pannel"
+                :pannel-group-id="pannelGroupId"
                 :content-form="contentForm"
                 :hide-title-options="hideTitleOptions"
               />
@@ -122,6 +123,7 @@
           :check-crowd="checkCrowd"
           :data="data"
           :source="source"
+          :pannel-group-id="pannelGroupId"
           :pannel="pannel"
           :content-form="contentForm"
           :hide-title-options="hideTitleOptions"
@@ -157,7 +159,7 @@ export default {
       specificContentList: []
     }
   },
-  props: ['mode', 'data', 'source', 'pannel', 'hideTitleOptions'],
+  props: ['mode', 'data', 'source', 'pannel', 'hideTitleOptions', 'pannelGroupId'],
   computed: {
     title() {
       if (this.mode === 'read') {

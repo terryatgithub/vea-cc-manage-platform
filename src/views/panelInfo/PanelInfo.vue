@@ -113,12 +113,12 @@
                 <el-input
                   style="width: 300px"
                   v-model="pannel.pannelList[0].pannelTitle"
-                  placeholder="请输入版本标题"
+                  placeholder="请输入版块标题"
                 ></el-input>
                 <BinCheckBox label="前端不显示标题" v-model="pannel.showTitle" is-negative />
               </el-form-item>
               <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
-                <el-input v-model="pannel.groupTitle" placeholder="请输入版本标题"></el-input>
+                <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
               </el-form-item>
               <el-form-item label="版块布局" required>
                 <LayoutSelector @select-end="handleSelectLayoutEnd"></LayoutSelector>
@@ -377,6 +377,7 @@
         :data="blockContentProps"
         :source="pannel.pannelResource"
         :pannel="pannel.pannelList[+activePannelIndex]"
+        :pannel-group-id="pannel.pannelGroupId"
         :hide-title-options="!!blockContentProps.blockInfo.title_info"
         @cancel="handleSetBlockContentCancle"
         @save="handleSetBlockContentEnd"
@@ -749,12 +750,25 @@ export default {
 
     handleBatchAddTag() {
       this.showAddTagDialog = true
+      this.$sendEvent({
+        type: 'panel_tag',
+        payload: {
+          panel_group_id: this.pannel.pannelGroupId || 'new'
+        }
+      })
     },
     handleBatchAddTagEnd() {
       this.getSharedTags()
       this.showAddTagDialog = false
     },
     handleInputTagWeight(weight, originWeight, tag) {
+      this.$sendEvent({
+        type: 'tag_weight',
+        payload: {
+          panel_group_id: this.pannel.pannelGroupId || 'new',
+          type: weight <= originWeight ? 'minus' : 'plus'
+        }
+      })
       this.$service.panelTagUpsert({
         panelId: this.pannel.pannelGroupId,
         tagId: tag.tagId,
@@ -1796,11 +1810,22 @@ export default {
       if (!pannel.pannelName) {
         return cb('请输入版块名称')
       }
+      if (pannel.pannelName.length > 45) {
+        return cb('版块名称长度不能大于 45 个字符')
+      }
+
       if (pannel.parentType === 'normal' && !pannel.pannelList[0].pannelTitle) {
         return cb('请输入版块标题')
       }
+      if (pannel.parentType === 'normal' && pannel.pannelList[0].pannelTitle.length > 45) {
+        return cb('版块标题长度不能大于 45 个字符')
+      }
+
       if (pannel.parentType === 'group' && !pannel.groupTitle) {
         return cb('请输入版块标题')
+      }
+      if (pannel.parentType === 'group' && pannel.groupTitle.length > 45) {
+        return cb('版块标题长度不能大于 45 个字符')
       }
 
       if (!this.selectedLayout) {
@@ -2184,6 +2209,12 @@ export default {
     if (this.id) {
       this.fetchData(this.version).then(() => {
         this.clickBlock()
+      })
+      this.$sendEvent({
+        type: 'panel_show',
+        payload: {
+          panel_group_id: this.id
+        }
       })
     }
   }
