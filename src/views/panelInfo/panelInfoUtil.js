@@ -19,7 +19,8 @@ function getMatchingValue (blockSize, imgSize) {
 
   const ratio = w / h
   const imgRatio = imgW / imgH
-  const baseMatchingValue = w >= h && imgW >= imgH ? 100 : 0
+  const isSameOrient = (w >= h && imgW >= imgH) || (w <= h && imgW <= imgH)
+  const baseMatchingValue = isSameOrient ? 100 : 0
   const ratioMatchingValue = 70 - 45 * Math.abs(ratio - imgRatio)
 
   let scale
