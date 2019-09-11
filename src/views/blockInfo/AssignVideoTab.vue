@@ -48,7 +48,7 @@
         </el-form-item>
         <el-form-item label="图片海报" :rules="rules.required">
           <div class="poster--wrapper">
-            <div v-for="(picPoster, index) in picPosters" class="poster--container">
+            <div v-for="(picPoster, index) in inputTags" class="poster--container">
               <div 
                 :style="computePicStyle(picPoster.width, picPoster.height)" 
                 class="poster--pic"
@@ -56,9 +56,8 @@
               >
                 <img
                   ref="img"
-                  v-if="value.picList"
-                  v-show="value.picList[index]"
-                  :src="value.picList[index]"
+                  v-if="value.picInfoList[index] && value.picInfoList[index].pictureUrl"
+                  :src="value.picInfoList[index].pictureUrl"
                   class="poster-image"
                   referrerpolicy="no-referrer"
                 />
@@ -66,7 +65,7 @@
               </div>
             </div>
           </div>
-          <div v-if="picPosters.length!==0">
+          <div v-if="inputTags.length!==0">
             <el-checkbox 
               :value="!value.showSeries" 
               @input="value.showSeries = $event ? 0 : 1" 
@@ -137,7 +136,6 @@ export default {
   },
   data() {
     return {
-      picPosters: [],
       isVisiablePosterSelector: false,
       currentSelectPic: undefined,  // 当前选择的图片海报
       currentPicIndex: undefined,
@@ -197,37 +195,32 @@ export default {
       deep: true,
       immediate: true
     },
-    'inputTags.length': {
-      handler: function(val, old) {
-        let inputTags = this.inputTags
-        let picPosters = this.picPosters
-        if(val > old) { // 增加尺寸
-          let newPic = {...cloneDeep(inputTags[old]), pictureUrl: undefined}
-          picPosters.push(newPic)
-        }
-        if(val < old) { // 删除尺寸
-          let delIndex = -1
-          picPosters.some((item, index) => {
-            if(item !== inputTags[index]) {
-              delIndex = index
-              return true
-            }
-          })
-          picPosters.splice(delIndex, 1)
-        }
-      },
-      immediate: true
-    }
+    // 'inputTags.length': {
+    //   handler: function(val, old) {
+    //     let inputTags = this.inputTags
+    //     if(val > old) { // 增加尺寸
+    //       this.value.picInfoList.push(this.genPicInfoList())
+    //     }
+    //     if(val < old) { // 删除尺寸
+    //       this.value.picInfoList.splice(this.delInputTagIndex, 1)
+    //     }
+    //   }
+    // }
   },
   methods: {
+    genPicInfoList() {
+      return {
+        pictureResolution: '',
+        pictureUrl: '',
+        pictureId: undefined,
+        pictureStatus: undefined
+      }
+    },
     handleDelPoster(index) {
       if(this.disabled) {
         return
       }
-      let delUrl = this.picPosters[index].pictureUrl
-      let delndex = this.value.picList.indexOf(delUrl)
-      this.picPosters[index].pictureUrl = undefined
-      this.value.picList.splice(delndex, 1)
+      this.value.picInfoList[index].pictureUrl = undefined
     },
     computePicStyle(width, height) {
       return {
@@ -237,12 +230,8 @@ export default {
     },
     savePicture() {
       const { currentPicIndex, currentSelectPic } = this
-      this.picPosters[currentPicIndex].pictureUrl = currentSelectPic.pictureUrl
-      if(this.value.picList[currentPicIndex]){
-        this.value.picList[currentPicIndex] = currentSelectPic.pictureUrl
-      }else{
-        this.value.picList.push(currentSelectPic.pictureUrl)
-      }
+      // 因为picInfoList的index随input-tags动态生成，故可以直接赋值
+      this.value.picInfoList[currentPicIndex].pictureUrl = currentSelectPic.pictureUrl
       this.currentPicIndex = undefined
       this.currentSelectPic = undefined
       this.isVisiablePosterSelector = false
@@ -255,8 +244,8 @@ export default {
       this.currentPicIndex = index
     },
     computeResolution() {
-      const { currentPicIndex, picPosters } = this
-      return picPosters[currentPicIndex].width + "*" + picPosters[currentPicIndex].height
+      const { currentPicIndex, inputTags } = this
+      return inputTags[currentPicIndex].width + "*" + inputTags[currentPicIndex].height
     },
     handleDelVideoTag() {
       if(this.disabled) {
@@ -264,25 +253,9 @@ export default {
       }
       this.value.videoId = undefined
     }
-  },
-
-  created() {
-    this.picPosters = cloneDeep(this.inputTags).map(({width, height}) => ({height, width, pictureUrl: undefined}))  // 确定海报位置
-    if(!this.value.picList) {
-      this.$set(this.value, 'picList', [])
-    }
-    if(this.value.picInfoList && this.value.picInfoList.length !== 0) {
-      this.value.picInfoList.forEach(item => {
-        let picRS = item.pictureResolution.split('*')
-        this.picPosters.map(picContainer => {
-          if(picRS[0] === picContainer.width && picRS[1] === picContainer.height) {
-            picContainer.pictureUrl = item.pictureUrl
-            this.value.picList.push(picContainer.pictureUrl)
-          }
-        })
-      })
-    }
   }
+
+
 }
 </script>
 
