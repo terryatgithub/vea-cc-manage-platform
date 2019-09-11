@@ -1,5 +1,5 @@
 export function getMatchedPictureUrl (blockSize, imgList) {
-  let maxMatchingValue = -1
+  let maxMatchingValue = -99999
   let url
   if (blockSize && imgList) {
     imgList.forEach((item) => {
@@ -19,8 +19,8 @@ function getMatchingValue (blockSize, imgSize) {
 
   const ratio = w / h
   const imgRatio = imgW / imgH
-
-  const ratioMatchingValue = 60 - 12 * Math.abs(ratio - imgRatio)
+  const baseMatchingValue = w >= h && imgW >= imgH ? 100 : 0
+  const ratioMatchingValue = 70 - 45 * Math.abs(ratio - imgRatio)
 
   let scale
   if (ratio > imgRatio) {
@@ -32,9 +32,9 @@ function getMatchingValue (blockSize, imgSize) {
       ? h / imgH
       : imgH / h
   }
-  const sizeMatchingValue = 48 - 8 * scale
+  const sizeMatchingValue = Math.max(38 - 8 * scale, 0)
 
-  return ratioMatchingValue + sizeMatchingValue
+  return baseMatchingValue + ratioMatchingValue + sizeMatchingValue
 }
 
 export function setMediaContent(contentForm, options) {
