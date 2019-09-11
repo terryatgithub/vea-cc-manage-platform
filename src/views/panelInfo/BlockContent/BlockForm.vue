@@ -448,7 +448,11 @@
           </el-tag>
         </el-form-item>
         <el-form-item label="刷新机制" :rules="requiredRules.required">
-          <InputPositiveInt v-model="contentForm.mediaAutomationBlockRls.refreshCal" class="flashCountInput"/>
+          <InputPositiveInt 
+            v-model="contentForm.mediaAutomationBlockRls.refreshCal" 
+            class="flashCountInput"
+            :disabled="isReadonly"
+          />
           客户端曝光X次之后刷新推荐位
         </el-form-item>
       </template>
