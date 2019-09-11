@@ -103,6 +103,27 @@ export default {
             }
           },
           {
+            label: '待审核的版本',
+            prop: 'duplicateVersion',
+            render: (h, { row }) => {
+              return h(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleRead(row, row.duplicateVersion)
+                    }
+                  }
+                },
+                row.duplicateVersion
+              )
+            }
+          },
+          {
             label: '影片数量',
             prop: 'videoNum'
           },

@@ -48,11 +48,11 @@
             <el-input class="title-input" v-model="basicForm.name" :disabled="isRead"/>
           </el-form-item>
           <el-form-item label="源" prop="source">
-            <el-radio-group :value="basicForm.source" :disabled="isRead || mode === 'replicate'" @input="handleSourceChange">
+            <el-radio-group :value="basicForm.source" :disabled="isRead || isReplica" @input="handleSourceChange">
               <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="源状态">
+          <el-form-item label="流状态">
             {{['关闭', '开启'][basicForm.openStatus]}}
           </el-form-item>
         </el-form>
@@ -198,6 +198,9 @@ export default {
     isRead () {
       const mode = this.mode
       return mode === 'read'
+    },
+    isReplica() {
+      return this.mode === 'replicate' || this.basicForm.duplicateVersion === 'yes'
     }
   },
 
@@ -223,7 +226,7 @@ export default {
         picInfoList: []
       }
     },
-    genPicInfoList() {
+    genPicInfo() {
       return {
         pictureResolution: '',
         pictureUrl: '',
@@ -280,7 +283,7 @@ export default {
       if(!tabNum) {
         let newVideoTab = this.getDefaultVideoTab()
         for(let count = 0 ; count < sizetagsLen ; count++ ) {
-          newVideoTab.picInfoList.push(this.genPicInfoList())
+          newVideoTab.picInfoList.push(this.genPicInfo())
         }
         this.videoTabs.push(newVideoTab)
         this.$message.success("添加成功")
@@ -290,7 +293,7 @@ export default {
         for(let i=0; i<tabNum; i++) {
           let newVideoTab = this.getDefaultVideoTab()
           for(let count = 0 ; count< sizetagsLen ; count++ ) {
-            newVideoTab.picInfoList.push(this.genPicInfoList())
+            newVideoTab.picInfoList.push(this.genPicInfo())
           }
           this.videoTabs.push(newVideoTab)
         }
@@ -306,7 +309,7 @@ export default {
       }
       this.sizeTags.push(newTabSize)
       this.videoTabs.forEach(video => {
-        video.picInfoList.push(this.genPicInfoList())
+        video.picInfoList.push(this.genPicInfo())
       })
       this.newTabSize = {}
       this.isVisibleSize = false
@@ -468,6 +471,9 @@ export default {
           series: data.series,
           variety: data.variety
         })
+        for(let count = 0 ; count < this.sizeTags.length ; count++ ) {
+          newTab.picInfoList.push(this.genPicInfo())
+        }
         videoTabs.push(newTab)
       })
     },
@@ -781,6 +787,7 @@ export default {
       basicForm.name = data.name
       basicForm.openStatus = data.openStatus
       basicForm.currentVersion = data.currentVersion
+      basicForm.duplicateVersion = data.duplicateVersion
       basicForm.status = data.status
       basicForm.source = data.source
       this.videoTabs = []

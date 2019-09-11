@@ -1085,14 +1085,19 @@ export default {
         return resolutionStr === item
       })
       if(isMatchSize) {
-        this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStreamTags[index].id
-        isVisiableRecom=false
+        this.contentForm.mediaAutomationBlockRls.mediaAutomationId = this.recomStreamTags[index].id
+        this.isVisiableRecom = false
       }else {
         this.$message.error("该流无法匹配此推荐位的海报图尺寸")
       }
     },
     fetchRecomStream() {
-      this.$service.getMediaAutomationDataList({page: 1, rows: 20, source: this.source}).then(data => {
+      let params = {
+        page: 1, 
+        rows: 20,
+        source: this.source || undefined
+      }
+      this.$service.getMediaAutomationDataList(params).then(data => {
         this.recomStreamTags = data.rows.filter(item => {
           return item.openStatus !== 0
         })
