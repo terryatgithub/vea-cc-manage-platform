@@ -923,6 +923,7 @@ export default {
             message: '模式切换成功!'
           })
           this.basicForm.configModel = val
+          this.currentIndex = 0
           this.clearFormAll()
         })
         .catch(function() {
