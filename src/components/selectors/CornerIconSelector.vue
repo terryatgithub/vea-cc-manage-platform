@@ -1,5 +1,6 @@
 <template>
   <RemoteSelectorWrapper
+    ref="selectorWrapper"
     :title="title || '选择角标'"
     :filter="filter"
     :filterSchema="filterSchema"
@@ -30,6 +31,7 @@
           </div>
         </template>
       </CardList>
+      <div v-if="table.selectionType === 'single'" slot="actions"></div>
       <slot />
   </RemoteSelectorWrapper>
 </template>
@@ -76,6 +78,7 @@ export default {
     },
     handleRowSelectionChange(row, index) {
       this.table.selected = index
+      this.$refs.selectorWrapper.handleSelectEnd()
     },
     handleFilterChange() {
       this.pagination.currentPage = 1
@@ -213,6 +216,11 @@ export default {
   border 1px solid #ccc
   margin 5px
   padding 10px
+  cursor pointer
+  &:hover
+    border 1px solid #444
+.card-list  >>> .card-item__selection 
+  display none
 
 .list-item__img
   max-height 170px
