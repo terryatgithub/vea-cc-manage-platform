@@ -205,6 +205,10 @@ export default {
       const filter = this.parseFilter()
       this.$service.getMediaAutomationList(filter).then(data => {
         this.pagination.total = data.total
+        data.rows = data.rows.map(item => {
+          item.picSize = item.picSize.join(',')
+          return item
+        })
         this.table.data = data.rows
       })
     }
