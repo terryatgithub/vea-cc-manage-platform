@@ -126,8 +126,8 @@
         <div class="content-wrapper" v-if="basicForm.configModel === 'group'">
           <div class="content-type-switcher">
             <el-radio-group :value="normalForm.showContentType" @input="handleSwitchShowContentType">
-              <el-radio label="general">通用推荐位版本</el-radio>
-              <el-radio label="dmp">分人群推荐位</el-radio>
+              <el-radio class="conten-type-switcher__item" label="general">通用推荐位版本</el-radio>
+              <el-radio class="conten-type-switcher__item" label="dmp">分人群推荐位{{ dmpContentList.length > 0 ? `(${dmpContentList.length}个)` : '' }}</el-radio>
             </el-radio-group>
           </div>
           <div v-if="normalForm.showContentType === 'general'">
@@ -412,6 +412,7 @@ import _ from 'gateschema'
 import titleMixin from '@/mixins/title'
 import BroadcastBlockForm from './BroadcastBlockForm'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
+import { getParams } from './broadcastBlockUtil';
 
 export default {
   mixins: [titleMixin],
@@ -1001,22 +1002,6 @@ export default {
       }
       this.resourceConfirm(data, 'lowerForm')
     },
-    handleSelectNormalSingleOtherResourceEnd(selectedResources) {
-      let data
-      let resourceOptions = this.resourceOptionsManualResource
-      for (var i = 0; i < resourceOptions.length; i++) {
-        if (selectedResources[resourceOptions[i]].length === 1) {
-          data = this.callbackParam(
-            resourceOptions[i],
-            selectedResources[resourceOptions[i]][0],
-            selectedResources.videoSource
-          )
-        }
-      }
-      this.resourceVisible = false
-      this.normalForm.clickParams = this.paramIdFun(data)
-      this.normalForm.clickTemplateType = data.contentType
-    },
     /**
      * 资源转换
      */
@@ -1130,44 +1115,6 @@ export default {
       return s
     },
 
-    paramIdFun: function(selected) {
-      // 封装保存的id
-      if (selected.contentType === 'movie') {
-        var param = {
-          id: selected.thirdIdOrPackageName
-        }
-        if (selected.vid) {
-          param.vid = selected.vid
-        } 
-        if (selected.sid) {
-          param.sid = selected.sid
-        }
-      } else if (
-        selected.contentType === 'app' ||
-        selected.contentType === 'edu' ||
-        selected.contentType === 'txLive'
-      ) {
-        var param = {
-          id: selected.thirdIdOrPackageName
-        }
-      } else if (selected.contentType === 'bigTopic') {
-        var param = {
-          pTopicCode: selected.thirdIdOrPackageName
-        }
-      } else if (selected.contentType === 'topic') {
-        // this.smallTopics = true;
-        var param = {
-          topicCode: selected.thirdIdOrPackageName
-        }
-      } else if (selected.contentType === 'rotate') {
-        var param = {
-          rotateId: selected.thirdIdOrPackageName
-        }
-      }
-
-      return param
-    },
-
     packageFormParam (item) {
       const form = cloneDeep(this.versionForm)
       form.type = item.type
@@ -1193,7 +1140,7 @@ export default {
       } else {
         form.poster = {pictureUrl: ''}
       }
-      const param = this.paramIdFun(item)
+      const param = getParams(item)
       form.params = param
       if (form.sign === 'autoSet') {
         form.clickParams = cloneDeep(param)
@@ -1804,8 +1751,18 @@ export default {
   border-left 1px solid #808080
   margin-left 10px
 .content-type-switcher
-  margin-left 120px
   margin-bottom 20px
+  border-bottom 1px solid #ccc
+.conten-type-switcher__item
+  padding 10px
+  margin 0
+  &.is-checked
+    background #409EFF
+    >>> .el-radio__label
+      padding 0
+      color #fff
+  >>> .el-radio__input
+    display none
 </style>
 
 <style lang="stylus" scoped>
