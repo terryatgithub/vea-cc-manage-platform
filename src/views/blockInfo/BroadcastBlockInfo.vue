@@ -79,32 +79,28 @@
           :gutter="4"
           class="normal-left-list"
           v-if="isGroupModel"
-          :style="classObject"
-        >
+          :style="classObject">
           <draggable
             v-model="normalVersionContent"
             :options="{group: 'normalVersion' }"
             @start="onDragStart($event)"
             @end="onDragtEnd($event)"
-            v-if="!disabled"
-          >
+            v-if="!disabled">
             <el-card
               v-for="(normal, index) in normalVersionContent"
               :key="index"
               :class="{ active: index === currentIndex}"
               class="normal-version-wrap"
-              @click.native="handleActivateContent(index)"
-            >
+              @click.native="handleActivateContent(index)">
               <i
                 v-if="normalVersionContent.length > 1 &&!disabled"
                 class="el-icon-close"
-                @click.stop="handleDeleteNormalContent(index)"
-              ></i>
+                @click.stop="handleDeleteNormalContent(index)">
+              </i>
               <img
                 v-if="normal.poster.pictureUrl"
                 :src="normal.poster.pictureUrl"
-                referrerpolicy="no-referrer"
-              >
+                referrerpolicy="no-referrer">
               <span>{{normal.title}}</span>
             </el-card>
           </draggable>
@@ -114,13 +110,11 @@
             :key="index"
             :class="{ active: index === currentIndex}"
             class="normal-version-wrap"
-            @click.native="handleActivateContent(index)"
-          >
+            @click.native="handleActivateContent(index)">
             <img
               v-if="normal.poster.pictureUrl"
               :src="normal.poster.pictureUrl"
-              referrerpolicy="no-referrer"
-            >
+              referrerpolicy="no-referrer"/>
             <span>{{normal.title}}</span>
           </el-card>
           <el-card style="cursor: pointer;" v-if="!disabled">
@@ -129,178 +123,84 @@
         </el-row>
 
         <!-- broadcast -->
-        <el-form
-          :model="normalForm"
-          class="el-form-add"
-          ref="normalForm"
-          :rules="normalRules"
-          label-width="100px"
-          style="float: left;width: 75%"
-          :class="{cutLine: isGroupModel}"
-        >
-          <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName">
-            <ResourceSelector
-              ref="resourceSelector"
-              :disable-partner="!!source"
-              :source="source"
-              v-if="!isManualSetResource && normalResourceBtn==='轮播资源' && !disabled "
-              :selectors="['rotate']"
-              :is-live="false"
-              selection-type="single"
-              @select-end="handleSelectNormalSingleResourceEnd($event, 'single')"
-            >
-              <el-button type="primary" plain>选择资源</el-button>
-            </ResourceSelector>
-            <ResourceSelector
-              ref="resourceSelector"
-              :source="source"
-              :disable-partner="!!source"
-              v-if="!isManualSetResource && normalResourceBtn==='播放资源' && !disabled "
-              :selectors="resourceOptionsNormalForm"
-              :is-live="false"
-              selection-type="single"
-              @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
-            >
-              <el-button type="primary" plain>选择资源</el-button>
-            </ResourceSelector>
-            <el-input
-              v-if="isManualSetResource"
-              v-model="normalForm.thirdIdOrPackageName"
-              style="float: left"
-              :disabled="disabled"
-            ></el-input>
-            <el-tag
-              type="success"
-              class="marginL"
-              v-if="normalForm.thirdIdOrPackageName && !isManualSetResource"
-            >已选择：{{normalForm.thirdIdOrPackageName}}</el-tag>
-            <a
-              class="write-play"
-              v-if="!isManualSetResource && isGroupModel && !disabled "
-              href="#"
-              @click="handleToggleManualSetResource(true)"
-            >手动填写播放串</a>
-            <a
-              class="write-play"
-              v-if="isManualSetResource && isGroupModel &&!disabled "
-              href="#"
-              @click="handleToggleManualSetResource(false)"
-              style="float: left"
-            >自动配置播放资源</a>
-            <div v-if="basicForm.configModel === 'sign' && currentIndex === 0" class="sign-tip">
-              信号源模式的第一个资源必须是轮播资源
-            </div>
-          </el-form-item>
-          <div v-if="isGroupModel">
-            <el-form-item label="指定子频道" prop="subchannelId" v-if="normalForm.subchannelIs">
-              <el-input
-                v-model="normalForm.subchannelId"
-                :disabled="disabled"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="标题" prop="title">
-              <el-input v-model="normalForm.title" :disabled="disabled"></el-input>
-            </el-form-item>
-            <el-form-item label="副标题" prop="subTitle">
-              <el-input v-model="normalForm.subTitle" :disabled="disabled"></el-input>
-            </el-form-item>
+        <div class="content-wrapper" v-if="basicForm.configModel === 'group'">
+          <div class="content-type-switcher">
+            <el-radio-group :value="normalForm.showContentType" @input="handleSwitchShowContentType">
+              <el-radio label="general">通用推荐位版本</el-radio>
+              <el-radio label="dmp">分人群推荐位</el-radio>
+            </el-radio-group>
           </div>
-          <el-form-item label="海报" prop="poster.pictureUrl">
-            <el-card
-              class="post-box"
-              style="height: 180px"
-              @click.native="openPicture('poster', 'normalForm')"
-            >
-              <img
-                v-if="normalForm.poster.pictureUrl"
-                :src="normalForm.poster.pictureUrl"
-                referrerpolicy="no-referrer"
-                style="height: 180px;"
-              >
-            </el-card>
-          </el-form-item>
-          <el-form-item label="角标">
-            <el-card class="corner-box">
-              <span
-                v-for="(corner, index) in normalForm.cornerIconList"
-                :key="index"
-                :class="'corner-' + index "
-                class="corner"
-              >
-                <span
-                  class="corner-img-wrapper"
-                  v-if="corner.imgUrl"
-                  @click="openPicture('corner', 'normalForm', index)"
-                >
-                  <img :src="corner.imgUrl" referrerpolicy="no-referrer">
+          <div v-if="normalForm.showContentType === 'general'">
+            <BroadcastBlockForm 
+              ref="broadcastBlockForm"
+              @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
+              :config-model="basicForm.configModel"
+              :normal-form="normalForm"
+              :normal-rules="normalRules"
+              :is-readonly="disabled"
+              :is-group-model="isGroupModel"
+              :source="source"
+              :show-resource-tip="currentIndex === 0"
+            />
+          </div>
+          <div v-if="normalForm.showContentType === 'dmp'">
+            <div class="added-contents-wrapper" :gutter="8">
+              <component :is="disabled ? 'div': 'draggable'"
+                class="added-contents-list"
+                v-model="normalForm.dmpContentList"
+                @start="handleDragDmpConentStart"
+                @end="handleDragDmpConentEnd">
+                <el-card
+                  v-for="(content, index) in dmpContentList" 
+                  :key="index"
+                  :class="{active: index === activeDmpIndex}"
+                  :body-style="{ padding: '0px' }"
+                  @click.native="handleActivateDmpContent(index)">
+                  <img
+                    v-if="dmpContentList[index].poster.pictureUrl"
+                    :src="dmpContentList[index].poster.pictureUrl"
+                    referrerpolicy="no-referrer">
                   <i
-                    class="el-icon-delete"
                     v-if="!disabled"
-                    @click.stop="deleteCorner(normalForm, index)"
-                  ></i>
-                </span>
-                <el-tag v-else type="success" @click="openPicture('corner', 'normalForm', index)">
-                  <i class="el-icon-plus"></i>
-                </el-tag>
-              </span>
-            </el-card>
-          </el-form-item>
-          <el-form-item label="点击跳转" v-if="isGroupModel">
-            <el-radio-group v-model="normalForm.clickType">
-              <el-radio label="detail" :disabled="disabled">点击进详情页</el-radio>
-              <el-radio
-                v-show="couldFullscreen"
-                label="play-fullscreen"
-                :disabled="disabled"
-              >点击直接全屏播放</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="点击事件" prop="sign" v-if="isGroupModel">
-            <el-radio-group
-              :value="normalForm.sign"
-              @input="handleChangeSign"
-              :disabled="isManualSetResource"
-            >
-              <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
-              <el-radio label="manualResource" :disabled="disabled">跳转其他播放资源</el-radio>
-              <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label prop="clickParams">
-            <div v-if="normalForm.sign === 'manualResource'">
-              <ResourceSelector
-                ref="resourceSelector"
-                v-if="!disabled "
-                :disable-partner="!!source"
-                :source="source"
-                :selectors="resourceOptionsManualResource"
-                :is-live="false"
-                selection-type="single"
-                @select-end="handleSelectNormalSingleOtherResourceEnd($event)"
-              >
-                <el-button type="primary" plain>选择资源</el-button>
-              </ResourceSelector>
-              <span v-show="thirdIdOrPackageNameForClick">已选择: {{ thirdIdOrPackageNameForClick }}</span>
+                    class="remove-handle el-icon-close"
+                    @click.stop.prevent="handleRemoveDmpContent(index)">
+                   </i>
+                  <!-- <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer"> -->
+                </el-card>
+              </component>
+              <el-card v-if="mode !== 'read'" @click.native="handleAddDmpContent">
+                <i class="el-icon-plus">添加资源</i>
+              </el-card>
             </div>
-          </el-form-item>
-          <div v-if="normalForm.sign === 'manualSet'">
-            <el-form-item label="打开方式">
-              <el-select value="第三方应用" :disabled="disabled">
-                <el-option value="app">第三方应用</el-option>
-              </el-select>
-              <el-button
-                type="primary"
-                class="marginL"
-                plain
-                :disabled="disabled"
-                @click="onclickEventVisible=true;onclickEventVisibleFlag='normal'"
-              >快速填充</el-button>
-            </el-form-item>
-            <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled">
-            </AppParams>
-            <AppParamsRead :value="normalForm.onclick" v-if="disabled"></AppParamsRead>
+            <BroadcastBlockForm 
+              ref="broadcastBlockForm"
+              v-if="normalForm.dmpContentList[normalForm.activeIndex]"
+              @toggle-manaulset-resource="handleToggleManualSetResource($event, 'dmp')"
+              :config-model="basicForm.configModel"
+              :normal-form="normalForm.dmpContentList[normalForm.activeIndex]"
+              :normal-rules="normalRules"
+              :is-readonly="disabled"
+              :is-group-model="isGroupModel"
+              :source="source"
+              :checkCrowd="checkCrowd"
+            />
           </div>
-        </el-form>
+        </div>
+        <div 
+          :class="basicForm.configModel === 'sign' ? 'content-wrapper' : ''" 
+          v-if="basicForm.configModel === 'broadcast' || basicForm.configModel === 'sign'">
+          <BroadcastBlockForm 
+            ref="broadcastBlockForm"
+            @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
+            :config-model="basicForm.configModel"
+            :normal-form="normalForm"
+            :normal-rules="normalRules"
+            :is-readonly="disabled"
+            :is-group-model="isGroupModel"
+            :source="source"
+            :show-resource-tip="currentIndex === 0"
+          />
+        </div>
       </div>
       <!-- {{lowerVersionContent兼容低版本}} -->
       <div class="version-title" style="margin-top: 25px;">
@@ -504,6 +404,7 @@ import AppParamsRead from '@/components/AppParamsRead.vue'
 import { cloneDeep } from 'lodash'
 import _ from 'gateschema'
 import titleMixin from '@/mixins/title'
+import BroadcastBlockForm from './BroadcastBlockForm'
 export default {
   mixins: [titleMixin],
   components: {
@@ -514,7 +415,8 @@ export default {
     selectClick,
     AppParams,
     AppParamsRead,
-    CommonContent
+    CommonContent,
+    BroadcastBlockForm
   },
   props: ['id', 'initMode', 'version'],
   data() {
@@ -566,7 +468,8 @@ export default {
               cb()
             }
           }
-        ]
+        ],
+        dmpRegistryInfo: [{ required: true, message: '请选择定向人群' }]
       },
       lowerRules: {
         title: [{ required: true, message: '请填写标题', trigger: 'blur' }],
@@ -666,7 +569,12 @@ export default {
         clickParams: {},
         // jumpAdress: '1',
         poster: {},
-        cornerIconList: [{}, {}, {}, {}]
+        cornerIconList: [{}, {}, {}, {}],
+        // dmp
+        showContentType: 'general',
+        dmpContentList: [],
+        activeIndex: 0,
+        isDmpContent: false
       },
       pictureType: '',
       currentForm: '',
@@ -694,6 +602,12 @@ export default {
     }
   },
   computed: {
+    dmpContentList () {
+      return this.normalForm.dmpContentList || []
+    },
+    activeDmpIndex () {
+      return this.normalForm.activeIndex
+    },
     resourceOptionsLowerForm (){
       return this.lowerForm.coverType === 'app' 
         ? ['app'] 
@@ -768,6 +682,84 @@ export default {
   watch: {
   },
   methods: {
+    handleActivateDmpContent (index) {
+      if (this.dmpContentList[this.activeDmpIndex]) {
+        this.checkNormalForm(() => {
+          this.normalForm.activeIndex = index
+        })
+      } else {
+        // 当前内容被删除
+        this.normalForm.activeIndex = index
+      }
+    },
+    handleRemoveDmpContent (index) {
+      this.$confirm('确认删除该内容', '提示', {
+        callback: (result) => {
+          if (result === 'confirm') {
+            const activeDmpIndex = this.activeDmpIndex
+            const currentContentList = this.dmpContentList
+            currentContentList.splice(index, 1)
+            if (currentContentList.length > 0) {
+              if (currentContentList[activeDmpIndex] === undefined) {
+                this.handleActivateDmpContent(index - 1)
+              }
+            } else {
+              this.handleActivateDmpContent(0)
+            }
+          }
+        }
+      })
+    },
+    handleSwitchShowContentType(val) {
+      if (val === 'general' && this.dmpContentList.length === 0) {
+        this.normalForm.showContentType = val
+      } else {
+        this.checkNormalForm(() => {
+          this.normalForm.showContentType = val
+        })
+      }
+    },
+    handleAddDmpContent() {
+      const normalForm = this.normalForm
+      const dmpContentList = normalForm.dmpContentList
+      if (dmpContentList.length > 0) {
+        this.checkNormalForm(() => {
+          dmpContentList.push(this.genDefaultContentForm({isDmpContent: true})) 
+          normalForm.activeIndex = dmpContentList.length - 1
+        })
+      } else {
+        dmpContentList.push(this.genDefaultContentForm({isDmpContent: true})) 
+        normalForm.activeIndex = dmpContentList.length - 1
+      }
+    },
+    handleDragDmpConentStart(event) {
+    },
+    handleDragDmpConentEnd(event) {
+      const normalForm = this.normalForm
+      const currentIndex = normalForm.activeIndex
+      const { oldIndex, newIndex } = event
+      if (oldIndex === currentIndex) {
+        normalForm.activeIndex = newIndex
+      } else if (oldIndex < currentIndex && newIndex >= currentIndex) {
+        normalForm.activeIndex = currentIndex - 1
+      } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
+        normalForm.activeIndex = currentIndex + 1
+      }
+    },
+    checkCrowd(crowd) {
+      const specificContentList = this.dmpContentList
+      let length = specificContentList.length
+      let existsIndex
+      let dmpRegistryInfo
+      while (--length >= 0) {
+        dmpRegistryInfo = specificContentList[length].dmpRegistryInfo
+        if (dmpRegistryInfo && dmpRegistryInfo.dmpCrowdId === crowd.value) {
+          existsIndex = length
+          break
+        }
+      }
+      return existsIndex
+    },
     handleSourceChange(val) {
       this.$confirm('切换内容源将清空内容, 确定切换?', '提示', {
         confirmButtonText: '确定',
@@ -879,10 +871,10 @@ export default {
       normalForm.sign = newVal
     },
     // 自动填写表单
-    handleToggleManualSetResource (isManualSetResource) {
+    handleToggleManualSetResource (isManualSetResource, type) {
+      const normalForm = this.genDefaultContentForm()
       if (isManualSetResource) {
-        const normalForm = cloneDeep(this.versionForm)
-        normalForm.sign = undefined
+        normalForm.sign = 'manualSet'
         normalForm.type = 'url'
         normalForm.params = {
           url: '',
@@ -891,15 +883,21 @@ export default {
           needParse: 'false',
           url_type: 'web'
         }
-        this.$nextTick(() => {
-          this.handleChangeSign('manualSet')
-        })
-        this.normalForm = normalForm
-        this.normalVersionContent.splice(this.currentIndex, 1, normalForm)
+        normalForm.clickTemplateType = 'custom'
+        normalForm.clickParams = {}
       } else {
-        this.normalForm = cloneDeep(this.versionForm)
-        this.handleChangeSign('autoSet')
-        this.normalVersionContent[this.currentIndex] = this.normalForm
+        normalForm.sign = 'autoSet'
+        normalForm.onclick = ''
+        normalForm.clickParams = normalForm.params
+        normalForm.clickTemplateType = normalForm.contentType
+      }
+      if (type === 'dmp') {
+        normalForm.isDmpContent = true
+        const currentNormalForm = this.normalForm
+        this.$set(currentNormalForm.dmpContentList, currentNormalForm.activeIndex, normalForm)
+      } else {
+        this.$set(this.normalVersionContent, this.currentIndex, normalForm)
+        this.normalForm = normalForm
       }
     },
     // 删除角标
@@ -1214,20 +1212,27 @@ export default {
     },
     // 校验normalForm
     checkNormalForm: function(cb) {
-      this.$refs.normalForm.validate((valid) => {
-        if (valid) {
-          cb()
-        } else {
-          this.$message.error('请将表单填写完整')
-        }
-      })
+      const $broadcastBlockForm = this.$refs.broadcastBlockForm
+      if ($broadcastBlockForm) {
+        $broadcastBlockForm.$refs.normalForm.validate((valid) => {
+          if (valid) {
+            cb()
+          } else {
+            this.$message.error('请将表单填写完整')
+          }
+        })
+      } else {
+        cb()
+      }
     },
-
+    genDefaultContentForm(preset) {
+      return {...cloneDeep(this.versionForm), ...preset}
+    },
     // 组合模式->添加normalForm
     handleAddNormalContent () {
       // debugger
       this.checkNormalForm(() => {
-        this.normalForm = cloneDeep(this.versionForm)
+        this.normalForm = this.genDefaultContentForm()
         this.normalVersionContent.push(this.normalForm)
         this.currentIndex = this.normalVersionContent.length - 1
       })
@@ -1333,6 +1338,7 @@ export default {
     // 快速填充
     lowerFill: function() {
       var newForm = cloneDeep(this.normalVersionContent[0])
+      newForm.dmpContentList = undefined
       // 由于改变 coverType 会触发清除低版本表单，所以先修改 coverType 再赋值 lowerForm
       if (newForm.sign === 'manualSet') {
         this.$message({
@@ -1364,40 +1370,36 @@ export default {
     validate (data, cb) {
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
-          this.$refs.normalForm.validate((valid) => {
-            if (valid) {
-              this.$refs.lowerForm.validate((valid) => {
-                if (valid) {
-                  const configModel = data.configModel
-                  const normalVersionContent = data.normalVersionContent
-                  if (configModel === 'group') {
-                    if (normalVersionContent.length < 4) {
-                      return this.$message.error('组合模式下，正常版本的配置资源至少4个，才可以进行保存！')
-                    }
+          this.checkNormalForm(() => {
+            this.$refs.lowerForm.validate((valid) => {
+              if (valid) {
+                const configModel = data.configModel
+                const normalVersionContent = data.normalVersionContent
+                if (configModel === 'group') {
+                  if (normalVersionContent.length < 4) {
+                    return this.$message.error('组合模式下，正常版本的配置资源至少4个，才可以进行保存！')
                   }
-                  if (configModel === 'sign') {
-                    const firstContent = normalVersionContent[0]
-                    if (firstContent.contentType !== 'rotate') {
-                      return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
-                    }
-                    // if (firstContent.sign === 'manualResource' && !firstContent.clickParams.rotateId) {
-                    //   return this.$message.error('信号源模式下，第一个资源如果设置跳转到其它播放资源，必须是轮播资源')
-                    // }
-                  }
-                  // 检查海报, 批量填充轮播资源的时候会缺少海报
-                  for (let i = 0; i < normalVersionContent.length; i++) {
-                    if (!normalVersionContent[i].poster.pictureUrl) {
-                      return this.$message.error(`请设置第 ${i+1} 个内容的海报`)
-                    }
-                  }
-                  cb()
-                } else {
-                  this.$message.error('请将表单填写完整')
                 }
-              })
-            } else {
-              this.$message.error('请将表单填写完整')
-            }
+                if (configModel === 'sign') {
+                  const firstContent = normalVersionContent[0]
+                  if (firstContent.contentType !== 'rotate') {
+                    return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
+                  }
+                  // if (firstContent.sign === 'manualResource' && !firstContent.clickParams.rotateId) {
+                  //   return this.$message.error('信号源模式下，第一个资源如果设置跳转到其它播放资源，必须是轮播资源')
+                  // }
+                }
+                // 检查海报, 批量填充轮播资源的时候会缺少海报
+                for (let i = 0; i < normalVersionContent.length; i++) {
+                  if (!normalVersionContent[i].poster.pictureUrl) {
+                    return this.$message.error(`请设置第 ${i+1} 个内容的海报`)
+                  }
+                }
+                cb()
+              } else {
+                this.$message.error('请将表单填写完整')
+              }
+            })
           })
         } else {
           this.$message.error('请将表单填写完整')
@@ -1450,7 +1452,7 @@ export default {
       if (this.mode === 'replicate') {
         data.currentVersion = ''
       }
-      data.normalVersionContent.forEach((item) => {
+      const parseContent = (item) => {
         // 转换数据
         // type url 时，要转换 params 数据, 具体看 getUrlBlur
         if (item.type === 'url') {
@@ -1473,8 +1475,18 @@ export default {
         }
         item.params = JSON.stringify(item.params)
         item.clickParams = JSON.stringify(item.clickParams)
+        if (item.dmpContentList.length > 0) {
+          item.dmpContentList = item.dmpContentList.map(parseContent)
+        } else {
+          item.dmpContentList = undefined
+        }
         delete item.thirdIdOrPackageName
-      })
+        delete item.activeIndex
+        delete item.showContentType
+        delete item.isDmpContent
+        return item
+      }
+      data.normalVersionContent = data.normalVersionContent.map(parseContent)
 
       const lowerVersionContent = data.lowerVersionContent
       if (lowerVersionContent.onclick) {
@@ -1527,7 +1539,7 @@ export default {
           }
 
           const parseCornerIconList = (data) => {
-            if (data.cornerIconList.length === 0) {
+            if (!data.cornerIconList || data.cornerIconList.length === 0) {
               data.cornerIconList = [{}, {}, {}, {}]
             } else {
               data.cornerIconList = data.cornerIconList.reduce((result, item) => {
@@ -1536,7 +1548,8 @@ export default {
               }, [])
             }
           }
-          this.normalVersionContent = data.normalVersionContent.map((item) => {
+
+          const mapContent = (item, isDmpContent) => {
             item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
             item.params = JSON.parse(item.params || '{}')
             item.clickParams = JSON.parse(item.clickParams || '{}')
@@ -1547,9 +1560,14 @@ export default {
             if (item.subchannelIs) {
               item.subchannelId = item.params.stationId
             }
+            if (item.dmpContentList) {
+              item.dmpContentList = item.dmpContentList.map((item) => mapContent(item, true))
+            }
+            item = this.genDefaultContentForm({...item, isDmpContent})
             return item
-          })
-          this.normalForm = data.normalVersionContent[0]
+          }
+          this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
+          this.normalForm = this.normalVersionContent[0]
 
           // lower data
           const lowerData = cloneDeep(data.lowerVersionContent)
@@ -1741,4 +1759,58 @@ export default {
   line-height: 1;
   margin-top: 10px;
   clear: both;
+
+.content-wrapper
+  float left
+  width 75%
+  border-left 1px solid #808080
+  margin-left 10px
+.content-type-switcher
+  margin-left 120px
+  margin-bottom 20px
+</style>
+
+<style lang="stylus" scoped>
+.added-contents-wrapper {
+  margin-bottom: 16px;
+  padding: 8px;
+  border-top: 2px dashed #C0CCDA;
+  border-bottom: 2px dashed #C0CCDA;
+  white-space: nowrap;
+  overflow: auto;
+
+  .added-contents-list {
+    display: inline-block;
+  }
+
+  >>> .el-card {
+    position: relative;
+    display: inline-block;
+    width: 190px;
+    height: 120px;
+    margin-right: 5px;
+    text-align: center;
+    cursor: pointer;
+
+    .remove-handle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 4px;
+      color: #FF4949;
+      font-weight: bolder;
+    }
+
+    .audit-handle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 4px;
+    }
+
+    img {
+      height: 120px;
+    }
+  }
+}
 </style>

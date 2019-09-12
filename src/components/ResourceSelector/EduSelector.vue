@@ -177,6 +177,7 @@ export default {
             width: '120',
             render: (h, { row }) => {
               return h('img', {
+                key: row.thumb,
                 attrs: {
                   src: row.thumb,
                   width: '50px',
