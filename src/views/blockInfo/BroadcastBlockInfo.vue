@@ -279,19 +279,21 @@
             <el-input v-model="lowerForm.subTitle" :disabled="disabled"></el-input>
           </el-form-item>
           <el-form-item label="海报" prop="poster.pictureUrl">
-            <el-card
-              class="post-box"
-              style="height: 180px"
-              :disabled="disabled"
-              @click.native="openPicture('poster', 'lowerForm')"
-            >
-              <img
-                v-if="lowerForm.poster.pictureUrl"
-                :src="lowerForm.poster.pictureUrl"
-                referrerpolicy="no-referrer"
+            <GlobalPictureSelector
+              :disabled="isReadonly"
+              picture-resolution='1210*449'
+              @select-end="handleSelectPostEnd">
+              <el-card
+                class="post-box"
                 style="height: 180px"
-              >
-            </el-card>
+                :disabled="disabled">
+                <img
+                  v-if="lowerForm.poster.pictureUrl"
+                  :src="lowerForm.poster.pictureUrl"
+                  referrerpolicy="no-referrer"
+                  style="height: 180px">
+              </el-card>
+            </GlobalPictureSelector>
           </el-form-item>
           <el-form-item label="角标">
             <el-card class="corner-box">
@@ -299,23 +301,25 @@
                 v-for="(corner, index) in lowerForm.cornerIconList"
                 :key="index"
                 :class="'corner-' + index "
-                class="corner"
-              >
-                <span
-                  class="corner-img-wrapper"
-                  v-if="corner.imgUrl"
-                  @click="openPicture('corner', 'lowerForm', index)"
-                >
-                  <img :src="corner.imgUrl" referrerpolicy="no-referrer">
-                  <i
-                    class="el-icon-delete"
-                    v-if="!disabled"
-                    @click.stop="deleteCorner(lowerForm, index)"
-                  ></i>
-                </span>
-                <el-tag v-else type="success" @click="openPicture('corner', 'lowerForm', index)">
-                  <i class="el-icon-plus"></i>
-                </el-tag>
+                class="corner">
+                <CornerSelector
+                  :disabled="isReadonly"
+                  :position="index"
+                  @select-end="handleSelectCornerIconEnd($event, index)">
+                  <span
+                    class="corner-img-wrapper"
+                    v-if="corner.imgUrl">
+                    <img :src="corner.imgUrl" referrerpolicy="no-referrer">
+                    <i
+                      class="el-icon-delete"
+                      v-if="!disabled"
+                      @click.stop="deleteCorner(lowerForm, index)"
+                    ></i>
+                  </span>
+                  <el-tag v-else type="success">
+                    <i class="el-icon-plus"></i>
+                  </el-tag>
+                </CornerSelector>
               </span>
             </el-card>
           </el-form-item>
@@ -349,7 +353,7 @@
         </el-form>
       </div>
       <!-- 海报弹框  -->
-      <el-dialog :visible.sync="customDialogPicture.visible" width="1200px">
+      <!-- <el-dialog :visible.sync="customDialogPicture.visible" width="1200px">
         <DialogPicture
           :title="customDialogPicture.title"
           :pictureResolution="pictureResolution"
@@ -362,10 +366,10 @@
           <el-button @click="customDialogPicture.visible = false">取 消</el-button>
           <el-button type="primary" @click="savePicture">确 定</el-button>
         </div>
-      </el-dialog>
+      </el-dialog> -->
       <!-- 海报弹框 end -->
       <!-- 角标弹框  -->
-      <el-dialog :visible.sync="customDialogCorner.visible" width="1200px">
+      <!-- <el-dialog :visible.sync="customDialogCorner.visible" width="1200px">
         <DialogCorner
           v-model="selectPicture"
           :typePosition="customDialogCorner.index"
@@ -377,7 +381,7 @@
           <el-button @click="customDialogCorner.visible = false">取 消</el-button>
           <el-button type="primary" @click="savePicture">确 定</el-button>
         </div>
-      </el-dialog>
+      </el-dialog> -->
       <!-- 角标弹框 end -->
       <!-- 第三方运用快速填充弹框 -->
       <el-dialog :visible.sync="onclickEventVisible" width="1200px">
@@ -395,6 +399,8 @@
 <script>
 import draggable from 'vuedraggable'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
+import CornerSelector from '@/components/selectors/CornerIconSelector'
+
 import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
@@ -405,11 +411,16 @@ import { cloneDeep } from 'lodash'
 import _ from 'gateschema'
 import titleMixin from '@/mixins/title'
 import BroadcastBlockForm from './BroadcastBlockForm'
+import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
+
 export default {
   mixins: [titleMixin],
   components: {
     draggable,
     ResourceSelector,
+    GlobalPictureSelector,
+    CornerSelector,
+
     DialogPicture,
     DialogCorner,
     selectClick,
@@ -426,7 +437,6 @@ export default {
       pictureResolution: '797*449', // 海报尺寸
       type: 'block',
       menuElId: 'broadcastBlock',
-      disabled: false, // 是否禁用
       onclickEventVisibleFlag: '', // 标识是哪个版本的快速填充弹窗normal/lower
       clickData: undefined, // 自定义快速填充单击选中的数据
       onclickEventVisible: false, // 自定义快速填充弹窗
@@ -596,12 +606,18 @@ export default {
       layoutparam: {},
       layouttypenew: '',
       checkresourceis: true,
-      customDialogPicture: {},
+      // customDialogPicture: {},
       customDialogCorner: {},
       pictureOptions: {}
     }
   },
   computed: {
+    disabled () {
+      return this.mode === 'read'
+    },
+    isReadonly () {
+      return this.disabled
+    },
     dmpContentList () {
       return this.normalForm.dmpContentList || []
     },
@@ -789,11 +805,9 @@ export default {
     },
     replicate() {
       this.mode = 'replicate'
-      this.disabled = false
     },
     edit() {
       this.mode = 'edit'
-      this.disabled = false
     },
     clickThirdpartSubmit() {
       const { onclickEventVisibleFlag } = this
@@ -803,12 +817,6 @@ export default {
       } else {
         const inputValue = this.$refs.openWayNormal.inputValue
         this.parseOnclick(inputValue)
-      }
-    },
-    selectCancel(type) {
-      this.resourceVisible = false
-      if (type === 'savePicture') {
-        this.savePicture()
       }
     },
     parseOnclick(inputValue) {
@@ -1271,56 +1279,71 @@ export default {
     },
 
     // 打开海报和角标弹窗
-    openPicture: function(type, form, index) {
-      if (this.disabled) return
-      form === 'normalForm'
-        ? (this.pictureResolution = '797*449')
-        : (this.pictureResolution = '1210*449')
-      this.pictureType = type
-      this.currentForm = form
-      if (type === 'poster') {
-        this.customDialogPicture = {
-          visible: true,
-          form
-        }
-      } else {
-        this.customDialogCorner = {
-          visible: true,
-          form,
-          index
-        }
+    // openPicture: function(type, form, index) {
+    //   if (this.disabled) return
+    //   form === 'normalForm'
+    //     ? (this.pictureResolution = '797*449')
+    //     : (this.pictureResolution = '1210*449')
+    //   this.pictureType = type
+    //   this.currentForm = form
+    //   if (type === 'poster') {
+    //     this.customDialogPicture = {
+    //       visible: true,
+    //       form
+    //     }
+    //   } else {
+    //     this.customDialogCorner = {
+    //       visible: true,
+    //       form,
+    //       index
+    //     }
+    //   }
+    //   this.pictureOptions = this.pictureListOptions[type]
+    // },
+    handleSelectPostEnd (selected) {
+      this.lowerForm.poster = {
+        pictureUrl: selected.pictureUrl,
+        pictureId: selected.pictureId
       }
-      this.pictureOptions = this.pictureListOptions[type]
     },
-    savePicture: function() {
-      var selectPicture = this.selectPicture
-      if (JSON.stringify(selectPicture) === '{}') {
-        this.$message('请至少选择一项')
-      } else {
-        this.customDialogPicture.visible = false
-        this.customDialogCorner.visible = false
-        if (this.pictureType === 'poster') {
-          this[this.currentForm].poster = {
-            pictureUrl: selectPicture.pictureUrl,
-            pictureId: selectPicture.pictureId
-          }
-        } else if (this.pictureType === 'corner') {
-          var index = selectPicture.cornerIconType.typePosition
-          var cornerObj = {
-            cornerIconId: selectPicture.cornerIconId,
-            position: index,
-            imgUrl: selectPicture.imgUrl
-          }
-          var newForm = this[this.currentForm].cornerIconList.slice(0)
-          // var newForm = Object.assign({}, this.currentForm.cornerIconList);
-          newForm[index] = cornerObj
-          this[this.currentForm].cornerIconList = newForm
-          this.customDialogCorner.visible = false
-        }
-        this.selectPicture = {}
+    handleSelectCornerIconEnd (selectPicture) {
+      const index = selectPicture.cornerIconType.typePosition
+      const corner = {
+        cornerIconId: selectPicture.cornerIconId,
+        position: index,
+        imgUrl: selectPicture.imgUrl
       }
-      this.normalVersionContent[this.currentIndex] = this.normalForm
+      this.$set(this.lowerForm.cornerIconList, index, corner)
     },
+    // savePicture: function() {
+    //   var selectPicture = this.selectPicture
+    //   if (JSON.stringify(selectPicture) === '{}') {
+    //     this.$message('请至少选择一项')
+    //   } else {
+    //     this.customDialogPicture.visible = false
+    //     this.customDialogCorner.visible = false
+    //     if (this.pictureType === 'poster') {
+    //       this[this.currentForm].poster = {
+    //         pictureUrl: selectPicture.pictureUrl,
+    //         pictureId: selectPicture.pictureId
+    //       }
+    //     } else if (this.pictureType === 'corner') {
+    //       var index = selectPicture.cornerIconType.typePosition
+    //       var cornerObj = {
+    //         cornerIconId: selectPicture.cornerIconId,
+    //         position: index,
+    //         imgUrl: selectPicture.imgUrl
+    //       }
+    //       var newForm = this[this.currentForm].cornerIconList.slice(0)
+    //       // var newForm = Object.assign({}, this.currentForm.cornerIconList);
+    //       newForm[index] = cornerObj
+    //       this[this.currentForm].cornerIconList = newForm
+    //       this.customDialogCorner.visible = false
+    //     }
+    //     this.selectPicture = {}
+    //   }
+    //   this.normalVersionContent[this.currentIndex] = this.normalForm
+    // },
     onDragStart: function(event) {
       console.log(event)
     },
@@ -1540,16 +1563,11 @@ export default {
           }
 
           const parseCornerIconList = (data) => {
-            if (!data.cornerIconList || data.cornerIconList.length === 0) {
-              data.cornerIconList = [{}, {}, {}, {}]
-            } else {
-              data.cornerIconList = data.cornerIconList.reduce((result, item) => {
-                result[item.position] = item
-                return result
-              }, [])
-            }
+            data.cornerIconList = (data.cornerIconList || []).reduce((result, item) => {
+              result[item.position] = item
+              return result
+            }, [{}, {}, {}, {}])
           }
-
           const mapContent = (item, isDmpContent) => {
             item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
             item.params = JSON.parse(item.params || '{}')
@@ -1595,9 +1613,6 @@ export default {
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
     this.mode = this.initMode || 'create'
-    if (this.mode === 'read') {
-      this.disabled = true
-    }
     if (this.id) {
       this.fetchData(this.version)
       this.$sendEvent({

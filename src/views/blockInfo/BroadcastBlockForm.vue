@@ -202,6 +202,7 @@
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import CornerSelector from '@/components/selectors/CornerIconSelector'
+
 import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
 import CrowdSelector from '@/components/CrowdSelector.vue'
@@ -209,7 +210,7 @@ import CrowdSelector from '@/components/CrowdSelector.vue'
 import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
-import { getSelectedResource, parseResourceContent, setContentForm } from './broadcastBlockUtil'
+import { getSelectedResource, parseResourceContent, setContentForm, getParams } from './broadcastBlockUtil'
 export default {
   components: {
     ResourceSelector,
@@ -252,8 +253,21 @@ export default {
       const contentType = this.normalForm.contentType
       return ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
     },
+    thirdIdOrPackageNameForClick() {
+      return this.getThirdId(this.normalForm.clickParams)
+    },
   },
   methods: {
+    getThirdId(clickParams) {
+      if (clickParams) {
+        const result = (clickParams.id ||
+          clickParams.rotateId ||
+          clickParams.pTopicCode ||
+          clickParams.url
+        )
+        return result
+      }
+    },
     handleSelectClickEventStart() {
       this.onclickEventVisible = true
     },
@@ -287,6 +301,12 @@ export default {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0], result.partner)
       setContentForm(this.normalForm, resourceContent)
+    },
+    handleSelectNormalSingleOtherResourceEnd(selectedResources) {
+      const result = getSelectedResource(selectedResources)
+      const resourceContent = parseResourceContent(result.selectedType, result.selected[0], result.partner)
+      this.normalForm.clickParams = getParams(resourceContent)
+      this.normalForm.clickTemplateType = resourceContent.contentType
     },
     handleSelectPostEnd (selected) {
       this.normalForm.poster = {
