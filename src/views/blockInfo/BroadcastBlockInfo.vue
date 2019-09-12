@@ -784,7 +784,7 @@ export default {
       })
         .then(
           function() {
-            this.normalForm = Object.assign({}, this.versionForm)
+            this.normalForm = this.genDefaultContentForm()
             this.normalVersionContent = [this.normalForm]
             this.currentIndex = 0
             this.cleanLowerForm('media')
@@ -1235,11 +1235,33 @@ export default {
       }
     },
     genDefaultContentForm(preset) {
-      return {...cloneDeep(this.versionForm), ...preset}
+      return {
+        title: '',
+        subTitle: '',
+        type: '',
+        coverType: 'media',
+        thirdIdOrPackageName: '',
+        subchannelId: '', // 子频道ID
+        subchannelIs: '', // 是否显示子频道
+        params: {},
+        clickType: 'detail',
+        onclick: {},
+        sign: 'autoSet',
+        contentType: '',
+        clickParams: {},
+        // jumpAdress: '1',
+        poster: {},
+        cornerIconList: [{}, {}, {}, {}],
+        // dmp
+        showContentType: 'general',
+        dmpContentList: [],
+        activeIndex: 0,
+        isDmpContent: false,
+        ...preset
+      }
     },
     // 组合模式->添加normalForm
     handleAddNormalContent () {
-      // debugger
       this.checkNormalForm(() => {
         this.normalForm = this.genDefaultContentForm()
         this.normalVersionContent.push(this.normalForm)
