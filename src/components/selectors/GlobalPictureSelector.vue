@@ -54,7 +54,7 @@
         </div>
       </div>
     </CardList>
-    <div slot="actions"></div>
+    <div v-if="table.selectionType === 'single'" slot="actions"></div>
     <slot></slot>
   </RemoteSelectorWrapper>
 </template>
