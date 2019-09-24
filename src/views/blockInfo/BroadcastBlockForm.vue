@@ -73,6 +73,37 @@
             :disabled="disabled"
           ></el-input>
         </el-form-item>
+        <el-form-item label="开启推荐位个性化推荐">
+          <el-switch
+            :disabled="disabled"
+            :value="!!normalForm.flagSetRec" 
+            @input="handleInputFlagSetRec"
+            active-color="#13ce66"
+            inactive-color="grey"
+          >
+          </el-switch>
+        </el-form-item>
+        <template v-if="!!normalForm.flagSetRec">
+          <el-form-item label="推荐流选择" :rules="requiredRules.required">
+            <el-button type="primary" @click="isVisiableRecom = true" :disabled="isReadonly">选择推荐流</el-button>
+            <el-tag
+              v-if="normalForm.mediaAutomationBlockRls.mediaAutomationId"
+              type="primary" 
+              closable
+              @close="handleDelStreamTag"
+            >
+              {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}
+            </el-tag>
+          </el-form-item>
+          <el-form-item label="刷新机制" :rules="requiredRules.required">
+            <InputPositiveInt 
+              v-model="normalForm.mediaAutomationBlockRls.refreshCal" 
+              style="width: 100px"
+              :disabled="disabled"
+            />
+            客户端曝光X次之后刷新推荐位
+          </el-form-item>
+        </template>
         <el-form-item label="标题" prop="title">
           <el-input v-model="normalForm.title" :disabled="disabled"></el-input>
         </el-form-item>
@@ -196,6 +227,18 @@
       </div>
     </el-dialog>
     <!-- 第三方运用快速填充弹框end -->
+
+    <!-- 推荐流弹框  -->
+    <el-dialog title="推荐流" :visible.sync="isVisiableRecom" width="40%" @open="fetchRecomStream">
+      <el-tag 
+      v-for="(tag, index) in recomStreamTags" 
+      size="medium"
+      class="recomTag cursor-tip"
+      :key="index" 
+      @click="handleSelectRecomStream(index)"
+      >{{tag.name}}</el-tag>
+    </el-dialog>
+    <!-- 推荐流弹框 end -->
   </div>
 </template>
 <script>
@@ -210,6 +253,9 @@ import CrowdSelector from '@/components/CrowdSelector.vue'
 import DialogPicture from '@/components/DialogPicture'
 import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
+
+import InputPositiveInt from '@/components/InputPositiveInt'
+
 import { getSelectedResource, parseResourceContent, setContentForm, getParams } from './broadcastBlockUtil'
 export default {
   components: {
@@ -222,12 +268,19 @@ export default {
 
     DialogPicture,
     DialogCorner,
-    selectClick
+    selectClick,
+
+    InputPositiveInt
   },
   data () {
     return {
       onclickEventVisible: false,
-      showCrowdSelector: false
+      showCrowdSelector: false,
+      requiredRules: {
+        required: [{required: true, message: '当开关开启时必填'}]
+      },
+      isVisiableRecom: false,
+      recomStreamTags: []
     }
   },
   props: ['configModel', 'normalForm', 'normalRules', 'isGroupModel', 'isReadonly', 'source', 'checkCrowd', 'showResourceTip'],
@@ -378,7 +431,52 @@ export default {
         })
         this.showCrowdSelector = false
       }
-    }
+    },
+    handleInputFlagSetRec (val) {
+      const normalForm = this.normalForm
+      normalForm.flagSetRec = val ? 1 : 0
+      if (!val) {
+        normalForm.mediaAutomationBlockRls = {
+          refreshCal: 1,
+          mediaAutomationId: '',
+          blockType: 'rotate'
+        }
+      }
+    },
+    handleDelStreamTag() {
+      if(this.disabled) {
+        return
+      }
+      this.normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined
+    },
+    fetchRecomStream () {
+      let params = {
+        page: 1, 
+        rows: 20,
+        source: this.source || undefined
+      }
+      this.$service.getMediaAutomationDataList(params).then(data => {
+        this.recomStreamTags = data.rows.filter(item => {
+          return item.openStatus !== 0
+        })
+        if (this.recomStreamTags.length === 0) {
+          this.$message('流状态关闭，或者暂无该内容源的推荐流');
+        }
+      })
+    },
+    handleSelectRecomStream(index) {
+      let picSize = this.recomStreamTags[index].picSize
+      let isMatchSize = picSize.some(item => {
+        let resolutionStr = this.resolution[0] + '*' + this.resolution[1]
+        return resolutionStr === item
+      })
+      if(isMatchSize) {
+        this.normalForm.mediaAutomationBlockRls.mediaAutomationId = this.recomStreamTags[index].id
+        this.isVisiableRecom = false
+      }else {
+        this.$message.error("该流无法匹配此推荐位的海报图尺寸")
+      }
+    },
   }
 }
 </script>
@@ -507,4 +605,9 @@ export default {
   line-height: 1;
   margin-top: 10px;
   clear: both;
+.recomTag 
+  margin-right 10px
+  font-size 14px
+.cursor-tip
+  cursor pointer
 </style>

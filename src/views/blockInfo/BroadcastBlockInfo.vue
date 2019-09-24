@@ -565,6 +565,12 @@ export default {
       },
       // smallTopics: false,
       versionForm: {
+        flagSetRec: 0,
+        mediaAutomationBlockRls: {
+          refreshCal: 1,
+          mediaAutomationId: '',
+          blockType: 'rotate'
+        },
         title: '',
         subTitle: '',
         type: '',
@@ -1183,6 +1189,12 @@ export default {
     },
     genDefaultContentForm(preset) {
       return {
+        flagSetRec: 0,
+        mediaAutomationBlockRls: {
+          refreshCal: 1,
+          mediaAutomationId: '',
+          blockType: 'rotate'
+        },
         title: '',
         subTitle: '',
         type: '',
