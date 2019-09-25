@@ -108,12 +108,11 @@
                   <cc-global-picture-selector
                     title="选择素材"
                     @select-end="handleSelectTitleIcon('imgOnBlur', $event)"
-                    picture-resolution="178*80"
-                  >
+                    picture-resolution="178*80">
                     <el-form-item class="tab-title-icon-wrapper" prop="imgOnBlur">
                       <template v-if="tabInfo.imgOnBlur">
                         <img :src="tabInfo.imgOnBlur">
-                        <i @click.native="tabInfo.imgOnBlur = ''" class="el-icon el-icon-close tab-title-icon__remove"></i>
+                        <i @click.stop="tabInfo.imgOnBlur = ''" class="el-icon el-icon-close tab-title-icon__remove"></i>
                       </template>
                       <div class="tab-title-icon__title">非落焦</div>
                     </el-form-item>

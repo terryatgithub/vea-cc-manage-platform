@@ -329,7 +329,7 @@
                       selectionType="single"
                       :selected-close="true"
                       :source="source"
-                      @select-single="handleSelectTabEnd($event, item)"
+                      @select-end="handleSelectTabEnd($event, item)"
                     />
                     <!-- <el-button type="primary" @click="handleSelectTabStart(index)">选择版面</el-button> -->
                     <el-tag type="primary" v-if="item.onclick.tab">已选择: {{ item.onclick.tab.tabId }}</el-tag>

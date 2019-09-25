@@ -123,6 +123,10 @@ export default {
         {
           label: '专题版面',
           value: '2'
+        },
+        {
+          label: '标记版面',
+          value: '12'
         }
       ],
       tabTypeIndexed: {
@@ -236,7 +240,7 @@ export default {
       // 单行选择
       this.$refs.dialog.showDialog = false
       this.table.selected = index
-      this.$emit('select-single', row)
+      this.$emit('select-end', row)
     },
     setSelected() {
       this.selected = this.initSelected || []

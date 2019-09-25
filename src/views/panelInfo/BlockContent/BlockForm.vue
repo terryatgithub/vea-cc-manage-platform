@@ -406,7 +406,7 @@
               selection-type="single"
               :source="source"
               :selected-close="true"
-              @select-single="handleSelectTabEnd"/>
+              @select-end="handleSelectTabEnd"/>
             <el-tag type="primary" v-if="contentForm.redundantParams.tabId">
               已选择: {{
               contentForm.redundantParams.tabId }}

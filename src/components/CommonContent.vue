@@ -40,6 +40,7 @@
             该版块为定时任务，审核通过后将于 {{ releaseTime }} 上线
           </div>
           <VersionList
+            v-if="resourceInfo.type"
             type="resourceInfo.type"
             :status="resourceInfo.status"
             :version="resourceInfo.version"
