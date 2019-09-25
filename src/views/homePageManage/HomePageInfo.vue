@@ -238,15 +238,14 @@ export default {
               return row.tabIsForeverLast ? '是' : ''
             }
             return h(
-              'el-radio',
+              'el-checkbox',
               {
                 props: {
-                  value: row.tabIsForeverLast,
-                  label: 1
+                  value: !!row.tabIsForeverLast,
                 },
                 on: {
                   input: val => {
-                    this.handleSetTabAlwaysLast($index)
+                    this.handleSetTabAlwaysLast($index, val)
                   }
                 }
               },
@@ -378,11 +377,15 @@ export default {
         item.tabIsFocus = index === defaultFocusIndex ? 1 : 0
       })
     },
-    handleSetTabAlwaysLast (theIndex) {
+    handleSetTabAlwaysLast (theIndex, flag) {
       const tabInfos = this.homepage.tabInfos
-      tabInfos.forEach((item, index) => {
-        item.tabIsForeverLast = index === theIndex ? 1 : 0
-      })
+      flag = flag ? 1 : 0
+      if (flag) {
+        tabInfos.forEach((item, index) => {
+          item.tabIsForeverLast = 0
+        })
+      }
+      tabInfos[theIndex].tabIsForeverLast = flag
     },
     handleShowTabGroup(index) {
       this.activeTabGroupIndex = index

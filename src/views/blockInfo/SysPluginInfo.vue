@@ -132,7 +132,7 @@
                     @activate="handleActivatePluginVersion">
                     <div slot="item" slot-scope="{item, index}">
                       <span v-if="item.dmpRegistryInfo">
-                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
+                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}({{ item.dmpRegistryInfo.dmpPolicyId }})/{{ item.dmpRegistryInfo.dmpCrowdName }}({{ item.dmpRegistryInfo.dmpCrowdId }})
                       </span>
                       <span v-else>
                         {{ item.label }}
@@ -213,7 +213,7 @@
                     @activate="handleActivatePluginVersion">
                     <div slot="item" slot-scope="{item}">
                       <span v-if="item.dmpRegistryInfo">
-                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
+                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}({{ item.dmpRegistryInfo.dmpPolicyId }})/{{ item.dmpRegistryInfo.dmpCrowdName }}({{ item.dmpRegistryInfo.dmpCrowdId }})
                       </span>
                       <span v-else>
                         {{ item.label }}

@@ -21,7 +21,7 @@
           <el-tag
             type="primary"
             v-if="contentForm.dmpRegistryInfo"
-          >已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}} / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}</el-tag>
+          >已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}}({{ contentForm.dmpRegistryInfo.dmpPolicyId }}) / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}({{ contentForm.dmpRegistryInfo.dmpCrowdId }})</el-tag>
         </el-form-item>
       </template>
       <el-form-item label="资源类别" prop="coverType">
