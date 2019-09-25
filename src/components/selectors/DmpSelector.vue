@@ -1,56 +1,62 @@
 <template>
-    <div class="crowd-selector">
-        <el-dialog
-                title="选择策略"
-                :visible="showPolicySelector"
-                append-to-body
-                :before-close="handleClose">
-            <div class="name-list">
-                <div
-                    v-for="item in policy.items"
-                    class="name-list__item"
-                    @click="handleSelectPolicy(item)"
-                    :title="item.label"
-                    :key="item.value"
-                >
-                    {{ item.label }}
-                </div>
-            </div>
-
-        </el-dialog>
-
-        <el-dialog
-                title="选择人群"
-                append-to-body
-                :visible="showCrowdSelector"
-                :before-close="handleSelectCrowdCancel">
-            <div v-if="!hasCascadeTag" class="name-list">
-                <div
-                    v-for="item in crowd.items"
-                    class="name-list__item"
-                    @click="handleSelectCrowd(item)"
-                    :title="item.label"
-                    :key="item.value"
-                >
-                    {{ item.label }}
-                </div>
-            </div>
-            <div v-else>
-                <el-cascader
-                  :options="crowd.cascadeItems"
-                  filterable
-                  :expandTrigger="'hover'"
-                  v-model="selectedCascaderCrowd"
-                  :disabled="crowd.cascadeItems.length === 0"
-                  :placeholder="crowd.cascadeItems.length > 0 ? '请选择' : '无人群数据'"
-                  change-on-select
-                ></el-cascader>
-                <el-button :disabled="!selectedCascaderCrowd" type="primary" @click="handleSelectCascadeCrowd">
-                    确定
-                </el-button>
-            </div>
-        </el-dialog>
+  <div class="remote-selector-wrapper">
+    <div @click="handleSelectStart">
+      <slot>
+         <el-button type="primary" :disabled="disabled" plain > {{ title || '选择人群' }}</el-button>
+      </slot>
     </div>
+    <div class="crowd-selector">
+      <el-dialog
+        title="选择策略"
+        :visible="showPolicySelector"
+        append-to-body
+        :before-close="handleClose"
+      >
+        <div class="name-list">
+          <div
+            v-for="item in policy.items"
+            class="name-list__item"
+            @click="handleSelectPolicy(item)"
+            :title="item.label"
+            :key="item.value"
+          >{{ item.label }}</div>
+        </div>
+      </el-dialog>
+
+      <el-dialog
+        title="选择人群"
+        append-to-body
+        :visible="showCrowdSelector"
+        :before-close="handleSelectCrowdCancel"
+      >
+        <div v-if="!hasCascadeTag" class="name-list">
+          <div
+            v-for="item in crowd.items"
+            class="name-list__item"
+            @click="handleSelectCrowd(item)"
+            :title="item.label"
+            :key="item.value"
+          >{{ item.label }}</div>
+        </div>
+        <div v-else>
+          <el-cascader
+            :options="crowd.cascadeItems"
+            filterable
+            :expandTrigger="'hover'"
+            v-model="selectedCascaderCrowd"
+            :disabled="crowd.cascadeItems.length === 0"
+            :placeholder="crowd.cascadeItems.length > 0 ? '请选择' : '无人群数据'"
+            change-on-select
+          ></el-cascader>
+          <el-button
+            :disabled="!selectedCascaderCrowd"
+            type="primary"
+            @click="handleSelectCascadeCrowd"
+          >确定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -58,7 +64,7 @@ export default {
   data () {
     return {
       hasCascadeTag: false,
-      showPolicySelector: true,
+      showPolicySelector: false,
       showCrowdSelector: false,
       selectedPolicy: undefined,
       selectedCrowd: undefined,
@@ -74,8 +80,15 @@ export default {
       }
     }
   },
-  props: ['selectedPolicyId', 'selectedCrowdId'],
+  props: ['selectedPolicyId', 'selectedCrowdId', 'title', 'disabled', 'isLive'],
   methods: {
+    handleSelectStart() {
+      this.$emit('select-start')
+      this.showPolicySelector = true
+      this.$service.getCrowdPolicy().then((result) => {
+        this.policy.items = result
+      })
+    },
     handleClose () {
       this.showCrowdSelector = false
       this.showPolicySelector = false
@@ -116,6 +129,8 @@ export default {
     },
     selectEnd () {
       this.$emit('select-end', this.selectedPolicy, this.selectedCrowd)
+      this.showCrowdSelector = false
+      this.showPolicySelector = false
     },
     listToTree(data, options) {
       data = JSON.parse(JSON.stringify(data))
@@ -155,12 +170,6 @@ export default {
 
       return tree
     }
-  },
-  created () {
-    this.$service.getCrowdPolicy().then(function (result) {
-      this.policy.items = result
-      console.log(result)
-    }.bind(this))
   }
 }
 </script>

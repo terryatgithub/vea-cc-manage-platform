@@ -12,19 +12,20 @@
           @select="handleOpenMenu"
           :default-active="$route.name"
           :items="menu"
-          :isCollapse="isCollapseMenu">
-        </Menu>
+          :isCollapse="isCollapseMenu"
+        ></Menu>
       </div>
     </div>
     <el-container direction="vertical">
       <el-header class="header">
         <div class="logo" direction="vertical">
           <div class="logo__img">
-            <i class="el-icon-location"></i> {{ companyMap[$consts.idPrefix] }}内容运营平台
+            <i class="el-icon-location"></i>
+            {{ companyMap[$consts.idPrefix] }}内容运营平台
           </div>
         </div>
         <span role="presentation" class="el-breadcrumb__separator">/</span>
-        <Breadcrumb class="breadcrumb" :items="breadcrumb"/>
+        <Breadcrumb class="breadcrumb" :items="breadcrumb" />
         <div class="user-info">
           <el-dropdown :hide-on-click="false" @command="handleDropdownCommand">
             <span class="el-dropdown-link">
@@ -40,15 +41,23 @@
         </div>
         <!-- <div class="system-setting" @click="isShowSetting = !isShowSetting">
           <i class="el-icon-setting"></i>
-        </div> -->
+        </div>-->
       </el-header>
-      <TagNav ref="tag" default-path="/desktop" @navigate="handleNavigate" :titles="titles" :init-tags="initTags" v-show="isShowTagNav" class="tagNav"/>
+      <TagNav
+        ref="tag"
+        default-path="/desktop"
+        @navigate="handleNavigate"
+        :titles="titles"
+        :init-tags="initTags"
+        v-show="isShowTagNav"
+        class="tagNav"
+      />
       <!-- safari 兼容性问题 -->
-      <el-main style="height: calc(100vh - 93px)" ref="main">
+      <el-main class="main-content" ref="main">
         <keep-alive>
-          <router-view v-if="isKeepAlive"/>
+          <router-view v-if="isKeepAlive" />
         </keep-alive>
-        <router-view v-if="!isKeepAlive"/>
+        <router-view v-if="!isKeepAlive" />
       </el-main>
     </el-container>
     <!-- <transition name="el-zoom-in-right">
@@ -60,7 +69,7 @@
           <el-button type="primary" class="modifyPwd" @click="modifyPwd">修改密码</el-button>
         </div>
       </div>
-    </transition> -->
+    </transition>-->
     <!-- 修改密码-->
     <el-dialog title="修改密码" :visible.sync="modifyDialogVisible">
       <span>
@@ -150,6 +159,9 @@ const routerMap = {
 
   // 版块推荐
   panelRecommend: 'panelRecommend',
+
+  // 版面强插
+  tabForceInsert: 'tabForceInsert'
 }
 
 const iconMap = {
@@ -225,7 +237,6 @@ const iconMap = {
   themeManage: 'el-icon-cc-font-colors',
   themeInfo: 'el-icon-cc-font-size',
 
-
   msn: 'el-icon-cc-database',
   todoTask: 'el-icon-cc-edit-square',
   myDrafts: 'el-icon-cc-database',
@@ -244,6 +255,9 @@ const iconMap = {
 
   // 版块推荐
   panelRecommend: 'el-icon-cc-border-outer',
+
+  // 版面强插
+  tabForceInsert: 'el-icon-sell'
 }
 
 export default {
@@ -289,7 +303,8 @@ export default {
       return meta && meta.isCache !== false
     },
     initTags() {
-      const tags = this.$appState.$get('tags' + '_' + this.$appState.user.name) || []
+      const tags =
+        this.$appState.$get('tags' + '_' + this.$appState.user.name) || []
       if (tags.length === 0) {
         tags.push({
           fullPath: '/desktop',
@@ -358,7 +373,7 @@ export default {
     validatePass2(rule, value, callback) {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value != this.form.newpwd) {
+      } else if (value !== this.form.newpwd) {
         callback(new Error('两次输入密码不一致！'))
       } else {
         callback()
@@ -381,9 +396,9 @@ export default {
       this.$appState.$set('tags' + '_' + this.$appState.user.name, tags)
     },
     getMenu() {
-      this.$service.getMenu().then((menu) => {
+      this.$service.getMenu().then(menu => {
         const titles = {}
-        const parseMenu = (menu) => {
+        const parseMenu = menu => {
           if (Array.isArray(menu)) {
             return menu.map(parseMenu)
           }
@@ -408,6 +423,7 @@ export default {
           return item
         }
         this.menu = parseMenu(menu)
+        console.log(this.menu)
         this.titles = titles
       })
     },
@@ -443,71 +459,127 @@ export default {
 </script>
 
 <style lang="stylus">
-.collpase-btn
-  &, &:hover, &:focus
-    color: #606266
-.collpase-btn
-  width: 100%
-  background: #fc4c02
-  border-radius: 0
-  padding: 14px 20px
-.collpase-btn i
-  font-size: 20px
-  color: #fff
-.collpase-btn:hover, .collpase-btn:focus
-  color: #fff
-  background: #e44907
-.user-info
-  margin-left: auto
-  margin-right 15px
-  cursor: pointer
-.menu:not(.el-menu--collapse)
-  min-width: 200px
-  background: #333
-.el-submenu__title
-  color: #fff
-.el-menu-item.is-active
-  color: #fff
-  background: #000
-.el-menu-item
-  color: #fff
-.el-menu-item, .el-submenu__title
-  height: 45px
-  line-height: 45px
-.el-submenu .el-menu-item
-  height: 40px
-  line-height: 40px
-.el-menu
-  background: #333
-.el-submenu__title:hover, .el-menu-item:hover
-  background: #4c4c4c
-.el-submenu.is-opened .el-submenu__title
-  background: #2d2d2d
-.el-menu-item.is-active
-  border-left: 3px solid #fc4c02
-.el-submenu .el-menu
-  background: #1e1e1e
-body, html, #app, section.el-container, .aside__menu
-  height: 100%
-.left-aside
-  height: 100%
-  overflow-y: auto
-  overflow-x: hidden
-.modifyPwd
-  margin-top: 10px
+.collpase-btn {
+  &, &:hover, &:focus {
+    color: #606266;
+  }
+}
+
+.collpase-btn {
+  width: 100%;
+  background: #fc4c02;
+  border-radius: 0;
+  padding: 14px 20px;
+}
+
+.collpase-btn i {
+  font-size: 20px;
+  color: #fff;
+}
+
+.collpase-btn:hover, .collpase-btn:focus {
+  color: #fff;
+  background: #e44907;
+}
+
+.user-info {
+  margin-left: auto;
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+.menu:not(.el-menu--collapse) {
+  min-width: 200px;
+  background: #333;
+}
+
+.el-submenu__title {
+  color: #fff;
+}
+
+.el-menu-item.is-active {
+  color: #fff;
+  background: #000;
+}
+
+.el-menu-item {
+  color: #fff;
+}
+
+.el-menu-item, .el-submenu__title {
+  height: 45px;
+  line-height: 45px;
+}
+
+.el-submenu .el-menu-item {
+  height: 40px;
+  line-height: 40px;
+}
+
+.el-menu {
+  background: #333;
+}
+
+.el-submenu__title:hover, .el-menu-item:hover {
+  background: #4c4c4c;
+}
+
+.el-submenu.is-opened .el-submenu__title {
+  background: #2d2d2d;
+}
+
+.el-menu-item.is-active {
+  border-left: 3px solid #fc4c02;
+}
+
+.el-submenu .el-menu {
+  background: #1e1e1e;
+}
+
+body, html, #app, section.el-container, .aside__menu {
+  height: 100%;
+}
+
+.left-aside {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.modifyPwd {
+  margin-top: 10px;
+}
+
 /* width */
-.left-aside::-webkit-scrollbar
-  width: 2px
-  height: 2px
+.left-aside::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
 /* Track */
-.left-aside::-webkit-scrollbar-track
-  background: #f1f1f1
+.left-aside::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
 /* Handle */
-.left-aside::-webkit-scrollbar-thumb
-  background: #888
+.left-aside::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
 /* Handle on hover */
-.left-aside::-webkit-scrollbar-thumb:hover
-  background #555
+.left-aside::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 </style>
 <style lang="stylus" scoped>
+.main-content {
+  height: calc(100vh - 93px);
+  position: relative;
+
+  >>> .tab-page {
+    padding: 14px;
+    background: none;
+    box-sizing: border-box;
+  }
+}
 </style>
