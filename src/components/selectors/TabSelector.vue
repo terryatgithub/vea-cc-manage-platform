@@ -123,6 +123,10 @@ export default {
         {
           label: '专题版面',
           value: '2'
+        },
+        {
+          label: '标记版面',
+          value: '12'
         }
       ],
       tabTypeIndexed: {

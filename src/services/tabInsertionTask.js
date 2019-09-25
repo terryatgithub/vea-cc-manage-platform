@@ -19,3 +19,11 @@ export function tabInsertionTaskUpsert (data) {
     data: { jsonStr: JSON.stringify(data) }
   })
 }
+
+export function tabInsertionTaskStatusUpsert (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/tabForceInsert/enableTask.html',
+    data: { jsonStr: JSON.stringify(data) }
+  })
+}

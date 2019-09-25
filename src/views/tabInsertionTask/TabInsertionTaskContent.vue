@@ -6,7 +6,7 @@
           保存
         </el-button>
       </div>
-      <DataForm ref="form" :model="form" label-width="120px">
+      <DataForm ref="form" :readonly="mode === 'read'" :model="form" label-width="120px">
         <DataEnum
           label="内容源"
           :rules="rules.source"
@@ -26,12 +26,13 @@
             {{ form.tabId }}
           </div>
         </DataAny>
-        <DataString
+        <DataAny
           label="强插位置"
           :rules="rules.insertIndex"
-          prop="insertIndex"
-          v-model="form.insertIndex"
-        />
+          prop="insertIndex">
+          <InputPositiveInt slot="edit" v-model="form.insertIndex" />
+          <span slot="read"> {{ form.insertIndex }}</span>
+        </DataAny>
         <DataAny
           label="定向人群"
           :rules="rules.dmpRegistryInfo"
@@ -44,7 +45,7 @@
             </span>
           </div>
           <div slot="read">
-            {{ `${form.dmpRegistryInfo.dmpPolicyName}/${form.dmpRegistryInfo.dmpCrowdName}`}}
+            {{ `${form.dmpRegistryInfo.dmpPolicyName} / ${form.dmpRegistryInfo.dmpCrowdName}`}}
           </div>
         </DataAny>
       </DataForm>
@@ -56,12 +57,15 @@ import { components } from 'admin-base'
 import TabSelector from '@/components/selectors/TabSelector'
 import DmpSelector from '@/components/selectors/DmpSelector'
 import CommonContent from '@/components/CommonContent'
+import InputPositiveInt from '@/components/InputPositiveInt'
+import { cloneDeep } from 'lodash'
 export default {
   extends: components.ResourceBaseContent,
   components: {
     TabSelector,
     DmpSelector,
-    CommonContent
+    CommonContent,
+    InputPositiveInt
   },
   data() {
     return {
@@ -71,14 +75,13 @@ export default {
         taskName: undefined,
         tabId: undefined,
         insertIndex: undefined,
-        dmpRegistryInfo: {
-
-        }
+        dmpRegistryInfo: { }
       },
       rules: {
         source: [{ required: true, message: '请输入内容源', trigger: 'blur' }],
         taskName: [
-          { required: true, message: '请输入任务名称', trigger: 'blur' }
+          { required: true, message: '请输入任务名称', trigger: 'blur' },
+          { max: 45, message: '长度不能超过 45 个字符', trigger: 'blur' }
         ],
         tabId: [{ required: true, message: '请输入版面', trigger: 'blur' }],
         insertIndex: [
@@ -121,6 +124,20 @@ export default {
           this.$emit('upsert-end')
         })
       })
+    },
+    setTabInsertionTask (data) {
+      this.form = cloneDeep(data)
+    },
+    fetchData () {
+      this.$service.tabInsertionTaskGetDetail({id: this.id}).then(data => {
+        this.setTabInsertionTask(data)
+      })
+    }
+  },
+  created () {
+    this.mode = this.initMode
+    if (this.id) {
+      this.fetchData(this.version)
     }
   }
 }
