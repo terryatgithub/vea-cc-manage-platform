@@ -466,9 +466,9 @@ export default {
     },
     handleSelectRecomStream(index) {
       let picSize = this.recomStreamTags[index].picSize
+      let currentSize = '797*449'
       let isMatchSize = picSize.some(item => {
-        let resolutionStr = this.resolution[0] + '*' + this.resolution[1]
-        return resolutionStr === item
+        return currentSize === item
       })
       if(isMatchSize) {
         this.normalForm.mediaAutomationBlockRls.mediaAutomationId = this.recomStreamTags[index].id
