@@ -86,7 +86,7 @@
     <PageContentWrapper v-if="activePage === 'tab_group_setter'">
       <HomePageTabGroupSetter
         :title-prefix="title"
-        :tabs="homepage.tabInfos[activeTabGroupIndex]"
+        :tab-info="homepage.tabInfos[activeTabGroupIndex]"
         :readonly="mode === 'read'"
         @set-end="handleSetTabGroupEnd"
         @go-back="activePage = 'homepage'"
@@ -116,6 +116,7 @@ import titleMixin from '@/mixins/title'
 import HomePageTabGroupSetter from './HomePageTabGroupSetter'
 import OrderableTable from '@/components/OrderableTable'
 import TabInfo from '@/views/tabInfo/TabInfo'
+import { cloneDeep } from 'lodash'
 export default {
   mixins: [titleMixin],
   components: {
@@ -144,12 +145,6 @@ export default {
       auditForm: {
         auditFlag: 4,
         auditDesc: ''
-      },
-      urls: {
-        preview: '/homepageInfo/preview.html',
-        edit: '/homepageInfo/edit.html',
-        tools: '/buttonManage/getAuditDetailButton.html',
-        edit_history_view: '/homepageInfo/editHistory.html'
       },
       versionList: [],
       homepage: {
@@ -190,53 +185,75 @@ export default {
     tabGroupList: {
       get() {
         const homepage = this.homepage
-        const defaultFocusIndex = homepage.defaultFocusIndex
         const tabInfos = homepage.tabInfos || []
         const tabGroupList = []
-        tabInfos.forEach(function(tabList) {
-          const defaultTabIndex = tabList.findIndex(function(item) {
-            return item.isDefaultTab
-          })
-          const tabItem = {
-            tabCount: tabList.length,
-            canBeDefaultFocusTab: false,
-            tabList
-          }
-          const tabItemToShow =
-            tabList[defaultTabIndex > -1 ? defaultTabIndex : 0]
+        tabInfos.forEach(function(tabInfoItem) {
+          const tabList = tabInfoItem.tabList
+          const defaultTabIndex = tabList.findIndex(item => item.isDefaultTab)
+          const tabItemToShow = tabList[defaultTabIndex > -1 ? defaultTabIndex : 0]
+          const hasDefaultTab = defaultTabIndex > -1
+          const isNormalTab = tabList.length === 1 && tabItemToShow.dmpInfo === undefined
           // 只有普通版面和已经设了默认版面的版面组可以默认落焦
-          if (
-            defaultTabIndex > -1 ||
-            (tabItem.tabCount === 1 && tabItemToShow.dmpInfo === undefined)
-          ) {
-            tabItem.canBeDefaultFocusTab = true
+          const canBeDefaultFocusTab = hasDefaultTab || isNormalTab
+
+          // 如果当前默认落焦不能被设为默认落焦, 则取消当前默认落焦
+          if (tabInfoItem.tabIsFocus && !canBeDefaultFocusTab) {
+            tabInfoItem.tabIsFocus = 0
           }
-          Object.assign(tabItem, tabItemToShow)
+
+          const tabItem = {
+            tabIsFocus: tabInfoItem.tabIsFocus,
+            tabIsFix: tabInfoItem.tabIsFix,
+            tabIsForeverLast: tabInfoItem.tabIsForeverLast,
+            tabIsInitInCategory: tabInfoItem.tabIsInitInCategory,
+            tabList,
+            canBeDefaultFocusTab,
+            tabCount: tabList.length,
+            ...tabItemToShow
+          }
           tabGroupList.push(tabItem)
         })
-        if (
-          defaultFocusIndex !== undefined &&
-          !tabGroupList[defaultFocusIndex].canBeDefaultFocusTab
-        ) {
-          // 如果当前默认落焦不能被设为默认落焦, 则取消当前默认落焦
-          homepage.defaultFocusIndex = undefined
-        }
         return tabGroupList
       },
       set(val) {
-        const homepage = this.homepage
-        const originTabInfos = homepage.tabInfos
-        const defaultFocusTabInfo = originTabInfos[homepage.defaultFocusIndex]
-        const tabInfos = val.map(item => item.tabList)
-        if (defaultFocusTabInfo) {
-          const defaultFocusIndex = tabInfos.findIndex(item => item === defaultFocusTabInfo)
-          homepage.defaultFocusIndex = defaultFocusIndex > -1 ? defaultFocusIndex : undefined
-        }
+        const tabInfos = val.map(item => {
+          return {
+            tabIsFix: item.tabIsFix,
+            tabIsInitInCategory: item.tabIsInitInCategory,
+            tabIsForeverLast: item.tabIsForeverLast,
+            tabIsFocus: item.tabIsFocus,
+            tabList: item.tabList
+          }
+        })
         this.homepage.tabInfos = tabInfos
       }
     },
     tabGroupTableHeader() {
       const header = [
+        {
+          label: '置底',
+          align: 'center',
+          render: (h, { $index, row }) => {
+            if (this.mode === 'read') {
+              return row.tabIsForeverLast ? '是' : ''
+            }
+            return h(
+              'el-radio',
+              {
+                props: {
+                  value: row.tabIsForeverLast,
+                  label: 1
+                },
+                on: {
+                  input: val => {
+                    this.handleSetTabAlwaysLast($index)
+                  }
+                }
+              },
+              ''
+            )
+          }
+        },
         {
           label: '版面ID',
           prop: 'tabId'
@@ -272,31 +289,47 @@ export default {
           label: '默认落焦',
           align: 'center',
           render: (h, { $index, row }) => {
-            const defaultFocusIndex = this.homepage.defaultFocusIndex
             if (this.mode === 'read') {
-              return $index === defaultFocusIndex ? '是' : '否'
+              return row.tabIsFocus ? '是' : ''
             }
+            const canBeDefaultFocusTab = row.canBeDefaultFocusTab
             return h(
               'el-radio',
               {
                 attrs: {
-                  title: row.canBeDefaultFocusTab
+                  title: canBeDefaultFocusTab
                     ? ''
                     : '只有普通版面或设了默认版面的定向版面组才能设为默认落焦'
                 },
                 props: {
-                  disabled: !row.canBeDefaultFocusTab,
-                  value: defaultFocusIndex,
-                  label: $index
+                  disabled: !canBeDefaultFocusTab,
+                  value: row.tabIsFocus,
+                  label: 1
                 },
                 on: {
                   input: val => {
-                    this.homepage.defaultFocusIndex = val
+                    this.handleSetDefaultFocusTab($index)
                   }
                 }
               },
               ''
             )
+          }
+        },
+        {
+          label: '固定位置',
+          align: 'center',
+          render: (h, { $index, row }) => {
+            const val = row.tabIsFix
+            return val ? '是' : ''
+          }
+        },
+        {
+          label: '初始化在首页分类',
+          align: 'center',
+          render: (h, { $index, row }) => {
+            const val = row.tabIsInitInCategory
+            return val ? '是' : ''
           }
         },
         {
@@ -307,7 +340,7 @@ export default {
         {
           label: '默认版面',
           render: (h, { $index, row }) => {
-            return row.isDefaultTab ? '有' : '否'
+            return row.isDefaultTab ? '有' : ''
           }
         }
       ]
@@ -339,13 +372,31 @@ export default {
   },
   props: ['id', 'initMode', 'version'],
   methods: {
+    handleSetDefaultFocusTab (defaultFocusIndex) {
+      const tabInfos = this.homepage.tabInfos
+      tabInfos.forEach((item, index) => {
+        item.tabIsFocus = index === defaultFocusIndex ? 1 : 0
+      })
+    },
+    handleSetTabAlwaysLast (theIndex) {
+      const tabInfos = this.homepage.tabInfos
+      tabInfos.forEach((item, index) => {
+        item.tabIsForeverLast = index === theIndex ? 1 : 0
+      })
+    },
     handleShowTabGroup(index) {
       this.activeTabGroupIndex = index
       this.activePage = 'tab_group_setter'
     },
-    handleSetTabGroupEnd(tabList) {
+    handleSetTabGroupEnd(tabInfo) {
       this.activePage = 'homepage'
-      this.$set(this.homepage.tabInfos, this.activeTabGroupIndex, tabList)
+      const activeTabGroupIndex = this.activeTabGroupIndex
+      const homepage = this.homepage
+      const tabInfos = homepage.tabInfos 
+      this.$set(tabInfos, activeTabGroupIndex, {
+        ...tabInfos[activeTabGroupIndex],
+        ...tabInfo
+      })
     },
     handleSaveDraft() {
       const data = JSON.parse(JSON.stringify(this.homepage))
@@ -385,7 +436,7 @@ export default {
             const specTabListIndexed = {}
             // 普通版面重复检查
             for (let i = 0, length = tabInfos.length; i < length; i++) {
-              const tabGroup = tabInfos[i]
+              const tabGroup = tabInfos[i].tabList
               let tab
               let isNormalTab
               if (tabGroup.length === 1 && tabGroup[0].dmpInfo === undefined) {
@@ -420,7 +471,7 @@ export default {
               i < length;
               i++
             ) {
-              const tabGroup = tabInfos[i]
+              const tabGroup = tabInfos[i].tabList
               // 定向版面之间不能重复
               // 也不能与其他的默认版面和普通版面重复
               if (tabGroup.length === 1 && tabGroup[0].dmpInfo === undefined) {
@@ -482,18 +533,12 @@ export default {
       )
     },
     parseApiToData(data) {
-      const finalData = JSON.parse(JSON.stringify(data))
-      const defaultFocusIndex = finalData.tabInfos.findIndex(function(item) {
-        return item.tabIsFocus === 1
-      })
-      finalData.defaultFocusIndex =
-        defaultFocusIndex > -1 ? defaultFocusIndex : undefined
-      const tabInfos = []
-      ;(finalData.tabInfos || []).forEach(function(item, index) {
-        const tabInfoItem = []
+      const finalData = cloneDeep(data)
+      finalData.tabInfos = (finalData.tabInfos || []).map(function(item, index) {
+        let tabList = []
         if (item.tabId) {
           // 那是一个普通的版面
-          tabInfoItem.push({
+          tabList.push({
             tabId: item.tabId,
             tabName: item.tabName,
             tabCnTitle: item.tabCnTitle,
@@ -523,13 +568,18 @@ export default {
                 dmpCrowdId: dItem.dmpCrowdId
               }
             }
-            tabInfoItem.push(currentItem)
+            tabList.push(currentItem)
           })
         }
 
-        tabInfos.push(tabInfoItem)
+        return {
+          tabIsFocus: item.tabIsFocus,
+          tabIsFix: item.tabIsFix || 0,
+          tabIsForeverLast: item.tabIsForeverLast || 0,
+          tabIsInitInCategory: item.tabIsInitInCategory || 0,
+          tabList,
+        }
       })
-      finalData.tabInfos = tabInfos
       return finalData
     },
     parseDataToApi(data) {
@@ -539,12 +589,14 @@ export default {
       finalData.tabInfos.forEach(function(item, index) {
         const tabInfoItem = {
           isDmpTab: 0,
-          tabIsFocus: index === defaultFocusIndex ? 1 : 0
+          tabIsFix: item.tabIsFix,
+          tabIsInitInCategory: item.tabIsInitInCategory,
+          tabIsForeverLast: item.tabIsForeverLast,
+          tabIsFocus: item.tabIsFocus
         }
         const dmpTabList = []
         let tabSequence = 0
-        const itemLength = item.length
-        item.forEach(function(tItem) {
+        item.tabList.forEach(function(tItem) {
           // 如果只有一个版面，并且版面没有设人群，那它是一个普通的版面
           if (tItem.dmpInfo === undefined && item.length === 1) {
             tabInfoItem.tabId = tItem.tabId
@@ -588,7 +640,6 @@ export default {
       })
 
       finalData.tabInfos = tabInfos
-      delete finalData.defaultFocusIndex
       return finalData
     },
     setHomepage(data) {
@@ -604,9 +655,15 @@ export default {
     },
     handleSelectTabEnd(data) {
       const tabInfos = this.homepage.tabInfos
-      data.forEach(function(item) {
-        tabInfos.push([Object.assign({}, item)])
-      })
+      this.homepage.tabInfos = tabInfos.concat(data.map(item => {
+        return {
+          tabIsFix: 0,
+          tabIsInitInCategory: 0,
+          tabIsForeverLast: 0,
+          tabIsFocus: 0,
+          tabList: [cloneDeep(item)]
+        }
+      }))
     },
     handleTabEmbedBack() {
       this.activePage = 'homepage'

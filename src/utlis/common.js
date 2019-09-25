@@ -1,5 +1,10 @@
 import Vue from 'vue'
 import _ from 'lodash'
+
+const utils = {}
+Vue.prototype.$utils = utils
+utils.cloneDeep = _.cloneDeep
+
 /*
  *提示语
  *列表页选择数据进行--编辑查看
@@ -278,3 +283,4 @@ Vue.prototype.$validateId = function (id) {
     return true
   }
 }
+

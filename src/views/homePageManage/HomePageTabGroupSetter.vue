@@ -5,17 +5,25 @@
         class="cc-homepage-tab-group-setter"
         :title="title"
         @go-back="$emit('go-back')">
-          <div v-show="!readonly" class="actions" >
+        <div v-if="!readonly">
+          <div class="actions">
             <TabSelector
               ref="tabSelector"
               title="添加定向版面"
               @select-start="handleSelectTabStart"
-              @select-end="handleSelectTabEnd"
-            />
-            <el-button type="primary" @click="handleSave">
-              保存
-            </el-button>
+              @select-end="handleSelectTabEnd"/>
+            <el-button type="primary" @click="handleSave">保存</el-button>
           </div>
+          <el-form>
+            <el-form-item label="是否固定位置">
+              <el-switch :value="!!tabIsFix" @input="tabIsFix = $event ? 1 : 0"></el-switch>
+            </el-form-item>
+            <el-form-item label="是否初始化在首页分类">
+              <el-switch :value="!!tabIsInitInCategory" @input="tabIsInitInCategory = $event ? 1 : 0"></el-switch>
+            </el-form-item>
+          </el-form>
+        </div>
+
           <OrderableTable
             ref="tabTable"
             v-model="tabList"
@@ -23,13 +31,10 @@
             :hide-action="true"
             :readonly="readonly"
           />
-
-        <CrowdSelector
-            v-if="showCrowdSelector"
-            @select-cancel="handleSelectCrowdCancel"
-            @select-end="handleSelectCrowdEnd"
-        />
-
+          <CrowdSelector
+              v-if="showCrowdSelector"
+              @select-cancel="handleSelectCrowdCancel"
+              @select-end="handleSelectCrowdEnd"/>
       </ContentCard>
     </PageContentWrapper>
 
@@ -69,6 +74,8 @@ export default {
       activePage: 'tab_group_setter',
       resourceName: '版面管理',
       showCrowdSelector: false,
+      tabIsFix: 0,
+      tabIsInitInCategory: 0,
       tabList: [],
       embedTab: undefined,
       activeTabIndex: undefined
@@ -197,10 +204,9 @@ export default {
     }
   },
   props: {
-    tabs: {
-      type: Array,
+    tabInfo: {
       default() {
-        return []
+        return {}
       }
     },
     readonly: {
@@ -213,7 +219,11 @@ export default {
   methods: {
     handleSave() {
       if (this.tabList.length > 0) {
-        this.$emit('set-end', this.tabList)
+        this.$emit('set-end', {
+          tabIsFix: this.tabIsFix,
+          tabIsInitInCategory: this.tabIsInitInCategory,
+          tabList: this.tabList
+        })
       } else {
         this.$message({
           type: 'error',
@@ -296,9 +306,14 @@ export default {
     }
   },
   created() {
-    this.tabList = cloneDeep(this.tabs)
+    const tabInfo = this.tabInfo
+    this.tabIsFix = tabInfo.tabIsFix || 0
+    this.tabIsInitInCategory = tabInfo.tabIsInitInCategory || 0
+    this.tabList = cloneDeep(this.tabInfo.tabList)
   }
 }
 </script>
-<style>
+<style lang="stylus" scoped>
+.actions
+  margin-bottom 20px
 </style>

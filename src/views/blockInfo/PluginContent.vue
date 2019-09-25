@@ -194,7 +194,7 @@
             prop="onclick.tab"
             :rules="rules.tab"
           >
-          <TabSelector @select-single="handleSelectTabEnd($event, form)"    :source="source" selectionType="single"/>
+          <TabSelector @select-end="handleSelectTabEnd($event, form)"    :source="source" selectionType="single"/>
             <el-tag type="primary" v-if="form.onclick.tab">已选择: {{ form.onclick.tab.tabId }}</el-tag>
           </el-form-item>
         </template>
