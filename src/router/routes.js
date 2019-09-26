@@ -53,6 +53,9 @@ const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTas
 const Topic = () => import('../views/topic/Index')
 const TopicConfig = () => import('../views/topicConfig/Index')
 
+const PanelRecommendStat = () => import('../views/panelRecommend/PanelRecommendStat.vue')
+const PanelRecommendFeedback = () => import('../views/panelRecommend/PanelRecommendFeedback.vue')
+
 /** */
 const children = [
   {
@@ -226,6 +229,24 @@ const children = [
         meta: {
           title: '版块推荐流管理',
           tagId: 'panelRecommend'
+        }
+      },
+      {
+        name: 'panelRecommendCoreData',
+        path: '/panelRecommendCoreData',
+        component: PanelRecommendStat,
+        meta: {
+          title: '个性化推荐核心指标',
+          tagId: 'panelRecommendCoreData'
+        }
+      },
+      {
+        name: 'panelRecommendFeedback',
+        path: '/panelRecommendFeedback',
+        component: PanelRecommendFeedback,
+        meta: {
+          title: '个性化推荐反馈',
+          tagId: 'panelRecommendFeedback'
         }
       }
     ]
