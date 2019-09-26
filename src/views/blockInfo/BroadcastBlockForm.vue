@@ -5,7 +5,7 @@
       :model="normalForm"
       class="el-form-add"
       :rules="normalRules"
-      label-width="120px"
+      label-width="140px"
       style="float: left;width: 75%">
       <el-form-item v-if="normalForm.isDmpContent" label="关联定向人群" prop="dmpRegistryInfo">
         <el-button type="primary" @click="handleSelectCrowdStart" :disabled="isReadonly">添加人群</el-button>
@@ -73,7 +73,7 @@
             :disabled="disabled"
           ></el-input>
         </el-form-item>
-        <el-form-item label="开启推荐位个性化推荐">
+        <el-form-item label="开启个性化推荐">
           <el-switch
             :disabled="disabled"
             :value="!!normalForm.flagSetRec" 
@@ -84,7 +84,7 @@
           </el-switch>
         </el-form-item>
         <template v-if="!!normalForm.flagSetRec">
-          <el-form-item label="推荐流选择" :rules="requiredRules.required">
+          <el-form-item label="推荐流选择" prop="mediaAutomationBlockRls.mediaAutomationId" :rules="requiredRules.required">
             <el-button type="primary" @click="isVisiableRecom = true" :disabled="isReadonly">选择推荐流</el-button>
             <el-tag
               v-if="normalForm.mediaAutomationBlockRls.mediaAutomationId"
