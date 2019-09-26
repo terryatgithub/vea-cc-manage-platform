@@ -427,14 +427,11 @@ export default {
               return cb('请至少选择一个版面')
             }
 
-            if (data.defaultFocusIndex === undefined) {
-              return cb('请选择默认落焦版面')
-            }
-
             // 检查重复版面
             // 默认版面与普通版面之间不能重复
             // 定向版面不能与默认版面和普通版面重复
             // 定向版面之间不能重复
+            let defaultFocusIndex
             const normalTabListIndexed = {}
             const specTabListIndexed = {}
             // 普通版面重复检查
@@ -442,6 +439,9 @@ export default {
               const tabGroup = tabInfos[i].tabList
               let tab
               let isNormalTab
+              if (tabInfos[i].tabIsFocus) {
+                defaultFocusIndex = i
+              }
               if (tabGroup.length === 1 && tabGroup[0].dmpInfo === undefined) {
                 // 普通版面
                 isNormalTab = true
@@ -467,6 +467,10 @@ export default {
                   normalTabListIndexed[tab.tabId] = i
                 }
               }
+            }
+
+            if (defaultFocusIndex === undefined) {
+              return cb('请选择默认落焦版面')
             }
 
             checkDmp: for (
