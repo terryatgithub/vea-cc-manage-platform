@@ -1,4 +1,5 @@
 const ENV = process.env.NODE_ENV
+// dev地址172.20.155.101:8090,bate的地址是172.20.155.91:8090
 const BACKEND = process.env.BACKEND || '172.20.155.91:8090' // 172.20.155.91:8090 localhost:9090
 // const path = require('path')
 // const dist = path.resolve('./dist')

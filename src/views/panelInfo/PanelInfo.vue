@@ -341,7 +341,10 @@
                         </span>
                         <VirtualPanel
                           :blocks="item.contentList"
+                          :mode="mode"
                           @click-block="handleClickBlock"
+                          @analyze-simple-data="handleAnalyzeSimpleData($event, index)"
+                          @analyze-dmp-data="handleAnalyzeDmpData"
                         ></VirtualPanel>
                       </el-tab-pane>
                     </el-tabs>
@@ -349,8 +352,11 @@
 
                   <VirtualPanel
                     v-else
+                    :mode="mode"
                     :blocks="pannel.pannelList[0].contentList"
                     @click-block="handleClickBlock"
+                    @analyze-simple-data="handleAnalyzeSimpleData"
+                    @analyze-dmp-data="handleAnalyzeDmpData"
                   ></VirtualPanel>
                 </div>
               </el-form-item>
@@ -384,6 +390,7 @@
       />
     </PageContentWrapper>
 
+    <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData"/>
   </PageWrapper>
 </template>
 <script>
@@ -406,6 +413,9 @@ import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 import TagFrame from './TagFrame'
 import VeLine from 'v-charts/lib/line.common'
 
+import AnalyzeSimpleDataDialog from './AnalyzeSimpleDataDialog'
+import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
+
 import { genResourceContentList, getMatchedPictureUrl } from './panelInfoUtil'
 
 export default {
@@ -425,7 +435,9 @@ export default {
     ResourceSelector,
     PanelGroupInfoSetter,
     TagFrame,
-    VeLine
+    VeLine,
+    AnalyzeSimpleDataDialog,
+    AnalyzeDmpDataDialog
   },
   data() {
     var checkNum = function(rule, value, callback) {
@@ -489,6 +501,8 @@ export default {
       color: ['#1E90FF ','#2f4554'],
     }
     return {
+      isVisiAnalyzeSimpleData: false,
+      isVisiAnalyzeDmpData: false,
       // 数据展现
       extend: extend,
       settings: {
@@ -2188,6 +2202,21 @@ export default {
       this.$service.getPanelChartData({id: this.id}).then(data => {
         this.panelChartDataArr = data.rows
       })
+    },
+    // 点击看数据、dmp按钮
+    handleAnalyzeSimpleData (index, pannelListIndex) {  // pannelListIndex对group有效
+      const { pannel } = this
+      const pannelList = pannel.pannelList
+      if (pannel.parentType === 'group') {
+        let contentList = pannelList[pannelListIndex].contentList
+      } else {
+        let contentList = pannelList[0].contentList
+        console.log('contentList', contentList);
+      }
+      this.isVisiAnalyzeSimpleData = true
+    },
+    handleAnalyzeDmpData (index) {
+      this.isVisiAnalyzeDmpData = true
     }
   },
   created() {

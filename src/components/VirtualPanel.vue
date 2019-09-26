@@ -47,6 +47,16 @@
             class="cc-virtual-pannel__block-remove"
             @click.stop="handleRemoveBlock(index)"
           >x</span>
+          <!-- 新增时不显示看数据按钮 -->
+          <div class="analyze-data--container" v-if="mode==='read'">
+            <el-button type="success" class="analyze-data--simpleBtn margin-bottom-6" @click.stop="handleAnalyzeSimpleData(index)">看数据</el-button><br/>
+            <el-button 
+              type="success" 
+              v-if="block.specificContentList && block.specificContentList.length !== 0" 
+              class="analyze-data--dmpBtn"  
+              @click.stop="handleAnalyzeDmpData(index)"
+            >DMP</el-button>
+          </div>
           <template v-if="block.content">
             <div
               v-if="block.content.secKillPrice > 0"
@@ -92,7 +102,7 @@ export default {
     }
   },
 
-  props: ['blocks', 'ratio', 'draggable', 'showTitle'],
+  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode'],
   watch: {
     blocks: 'computeBlockItems'
   },
@@ -115,6 +125,12 @@ export default {
     handleRemoveBlock(index) {
       this.$emit('remove-block', index)
     },
+    handleAnalyzeSimpleData (index) {
+      this.$emit('analyze-simple-data', index)
+    },
+    handleAnalyzeDmpData (index) {
+      this.$emit('analyze-dmp-data', index)
+    },
     handleClickBlock(index) {
       this.$emit('click-block', index)
     },
@@ -135,7 +151,8 @@ export default {
         const block = {
           title: item.title,
           isExtra: item.isExtra,
-          duplicated: item.duplicated
+          duplicated: item.duplicated,
+          specificContentList: item.specificContentList
         }
         const position = item.contentPosition
         const resize = item.resize || {}
@@ -269,7 +286,10 @@ export default {
   width: 100%;
   height: 100%;
 }
-.cc-virtual-pannel__block:hover .cc-virtual-pannel__block-remove {
+.cc-virtual-pannel__block:hover .cc-virtual-pannel__block-remove{
+  display: block;
+}
+.cc-virtual-pannel__block:hover .analyze-data--container {
   display: block;
 }
 .cc-virtual-pannel__block--duplicated {
@@ -315,5 +335,21 @@ export default {
   position: relative;
   top: 28px;
   padding: 0;
+}
+
+.analyze-data--container {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 0;
+}
+
+.analyze-data--simpleBtn, 
+.analyze-data--dmpBtn{
+  width: 75px;
+}
+
+.margin-bottom-6 {
+  margin-bottom: 6px;
 }
 </style>
