@@ -23,7 +23,7 @@
           </el-form-item>
           <el-form-item label="内容资源" :rules="rules.required">
             <ResourceSelector
-              :style="{display: disabled ? 'none' : 'block'}"
+              :style="{display: disabled ? 'none' : 'inline-block'}"
               ref="resourceSelector"
               :is-live="false"
               :selectors="resourceOptions"
@@ -81,7 +81,7 @@
         
         <el-form-item label="视频资源">
           <ResourceSelector
-            :style="{display: disabled ? 'none' : 'block'}"
+            :style="{display: disabled ? 'none' : 'inline-block'}"
             :is-live="false"
             :selectors="resourceOptions"
             selection-type="single"
@@ -93,9 +93,10 @@
           </ResourceSelector>
           <el-tag
             v-if="value.videoId"
-            type="success" 
+            type="success"
+            class="video-tag"
             closable
-            @close="handleDelVideoTag"
+            @close="$emit('del-normal-source')"
           >
             {{value.videoId}}
           </el-tag>
@@ -224,8 +225,8 @@ export default {
     },
     computePicStyle(width, height) {
       return {
-        width: width + 'px',
-        height: height +'px'
+        width: width/2 + 'px',
+        height: height/2 +'px'
       }
     },
     savePicture() {
@@ -246,12 +247,6 @@ export default {
     computeResolution() {
       const { currentPicIndex, inputTags } = this
       return inputTags[currentPicIndex].width + "*" + inputTags[currentPicIndex].height
-    },
-    handleDelVideoTag() {
-      if(this.disabled) {
-        return
-      }
-      this.value.videoId = undefined
     }
   }
 
@@ -301,5 +296,8 @@ export default {
 }
 .title-input {
   width: 357px;
+}
+.video-tag {
+  margin: 0 5px;
 }
 </style>
