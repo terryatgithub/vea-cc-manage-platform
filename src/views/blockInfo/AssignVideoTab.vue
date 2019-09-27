@@ -264,6 +264,7 @@ export default {
   padding: 10px 0;
   border: 1px dashed gray;
   border-radius: 20px;
+  overflow: auto;
 }
 .video-index {
   color:	#00BBFF;

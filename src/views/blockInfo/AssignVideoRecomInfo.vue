@@ -887,7 +887,7 @@ export default {
   margin-left: 10px;
 }
 .videoTab--wrapper {
-  width: 75%;
+  width: 80%;
   margin: 20px;
 }
 .batch-btn {
