@@ -425,7 +425,7 @@
           <AppParamsRead v-else :value="contentForm.redundantParams" />
         </template>
       </template>
-      <el-form-item label="开启推荐位个性化推荐">
+      <el-form-item label="开启推荐位个性化推荐" v-if="contentForm.coverType !== 'block'">
         <el-switch
           :disabled="isReadonly"
           :value="!!contentForm.flagSetRec" 
