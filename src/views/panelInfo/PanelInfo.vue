@@ -97,7 +97,7 @@
               周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
             </div>
             <div v-if="!isCollapseData">
-              <div v-for="panelChartData in panelChartDataArr" class="chart-box">
+              <div v-for="(panelChartData, index) in panelChartDataArr" class="chart-box" :key="index">
                 <div class="chart-box--title">{{panelChartData.title}}</div>
                 <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
               </div>
@@ -390,7 +390,8 @@
       />
     </PageContentWrapper>
 
-    <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData"/>
+    <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
+    <AnalyzeDmpDataDialog :show.sync="isVisiAnalyzeDmpData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
   </PageWrapper>
 </template>
 <script>
@@ -501,6 +502,7 @@ export default {
       color: ['#1E90FF ','#2f4554'],
     }
     return {
+      analyzeBtnCurrentIndex: undefined,
       isVisiAnalyzeSimpleData: false,
       isVisiAnalyzeDmpData: false,
       // 数据展现
@@ -2205,13 +2207,15 @@ export default {
     },
     // 点击看数据、dmp按钮
     handleAnalyzeSimpleData (index, pannelListIndex) {  // pannelListIndex对group有效
+      this.analyzeBtnCurrentIndex = undefined
       const { pannel } = this
       const pannelList = pannel.pannelList
       if (pannel.parentType === 'group') {
-        let contentList = pannelList[pannelListIndex].contentList
+        // let contentList = pannelList[pannelListIndex].contentList
+        this.analyzeBtnCurrentIndex = pannelListIndex + '-' + index
       } else {
-        let contentList = pannelList[0].contentList
-        console.log('contentList', contentList);
+        // let contentList = pannelList[0].contentList
+        this.analyzeBtnCurrentIndex = index
       }
       this.isVisiAnalyzeSimpleData = true
     },
