@@ -491,15 +491,39 @@
               <div v-if="!isCollapseData">
                 <div class="chart-box">
                   <div class="chart-box--title">{{clickUvChartData.title}}</div>
-                  <VeLine :data="clickUvChartData" :legend-visible="false" :extend="clickUvChartExtend" :settings="clickUvChartSettings"></VeLine>
+                  <VeLine
+                    :data="clickUvChartData"
+                    :legend-visible="false"
+                    :extend="clickUvChartExtend"
+                    :settings="clickUvChartSettings"
+                    :mark-line="markLine"
+                    :mark-point="markPoint"
+                    >
+                  </VeLine>
                 </div>
                 <div class="chart-box">
                   <div class="chart-box--title">{{uvctrChartData.title}}</div>
-                  <VeLine :data="uvctrChartData" :legend-visible="false" :extend="uvctrChartExtend" :settings="uvctrChartSettings"></VeLine>
+                  <VeLine
+                    :data="uvctrChartData"
+                    :legend-visible="false"
+                    :extend="uvctrChartExtend"
+                    :settings="uvctrChartSettings"
+                    :mark-line="markLine"
+                    :mark-point="markPoint"
+                    >
+                  </VeLine>
                 </div>
                 <div class="chart-box">
                   <div class="chart-box--title">{{uvctrHourChartData.title}}</div>
-                  <VeLine :data="uvctrHourChartData" :legend-visible="false" :extend="uvctrHourChartExtend":settings="uvctrHourChartSettings"></VeLine>
+                  <VeLine
+                    :data="uvctrHourChartData"
+                    :legend-visible="false"
+                    :extend="uvctrHourChartExtend"
+                    :settings="uvctrHourChartSettings"
+                    :mark-line="markLine"
+                    :mark-point="markPoint"
+                    >
+                  </VeLine>
                 </div>
               </div>
               
@@ -779,6 +803,8 @@ import RecommendStreamSignSelector from '@/components/selectors/RecommendStreamS
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendPanelSelector from '@/components/selectors/RecommendPanelSelector'
 import VeLine from 'v-charts/lib/line.common'
+import "echarts/lib/component/markLine"
+import "echarts/lib/component/markPoint"
 
 export default {
   name: 'TabInfo',
@@ -815,6 +841,26 @@ export default {
     VeLine
   },
   data() {
+    this.markLine = {
+      data: [
+        {
+          name: "平均线",
+          type: "average",
+        },
+      ],
+    }
+    this.markPoint = {
+      data: [
+        {
+          name: "最大值",
+          type: "max",
+        },
+        {
+          name: "最小值",
+          type: "min",
+        },
+      ],
+    }
     const STATUS = {
       draft: 2,
       waiting: 3,

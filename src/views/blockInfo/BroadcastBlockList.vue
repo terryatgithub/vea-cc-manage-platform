@@ -26,6 +26,7 @@
       />
     </ContentWrapper>
 
+    <BroadcastSimpleData :show.sync="isVisibleDialog" :id="currentId"/>
   </ContentCard>
 </template>
 <script>
@@ -45,6 +46,10 @@ export default {
   },
   data() {
     return {
+      // 看数据
+      isVisibleDialog: false,
+      currentId: undefined,
+
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
       filterSchema: null,
@@ -82,18 +87,16 @@ export default {
           },
           {
             label: '数据表现',
-            width: 300,
+            width: 100,
             render: (h, {row}) => {
-              const id = row.id
-              if( id === 10101 || id === 10107 || id ===10109 ) 
-              {
-                return h(
-                  BroadcastSimpleData,
-                  {
-                    props: { id }
-                  }
-                )
-              }
+              return h(
+                'el-button',
+                {
+                  props: { type: 'text' },
+                  on: { click: () => { this.currentId = row.id; this.isVisibleDialog = true } }
+                },
+                '看数据'
+              )
             }
           },
           {

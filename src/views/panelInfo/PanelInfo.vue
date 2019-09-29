@@ -99,7 +99,15 @@
             <div v-if="!isCollapseData">
               <div v-for="(panelChartData, index) in panelChartDataArr" class="chart-box" :key="index">
                 <div class="chart-box--title">{{panelChartData.title}}</div>
-                <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
+                <VeLine
+                  :data="handleChartData(panelChartData)"
+                  :legend-visible="false"
+                  :extend="handleChartExtend(panelChartData)"
+                  :settings="handleChartSettings(panelChartData)"
+                  :mark-line="markLine"
+                  :mark-point="markPoint"
+                  >
+                </VeLine>
               </div>
             </div>
             </div>
@@ -289,7 +297,15 @@
             <div v-if="!isCollapseData">
               <div v-for="panelChartData in panelChartDataArr" class="chart-box">
                 <div class="chart-box--title">{{panelChartData.title}}</div>
-                <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
+                <VeLine
+                  :data="handleChartData(panelChartData)"
+                  :legend-visible="false"
+                  :extend="handleChartExtend(panelChartData)"
+                  :settings="handleChartSettings(panelChartData)"
+                  :mark-line="markLine"
+                  :mark-point="markPoint"
+                >
+                </VeLine>
               </div>
             </div>
             </div>
@@ -413,6 +429,8 @@ import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 
 import TagFrame from './TagFrame'
 import VeLine from 'v-charts/lib/line.common'
+import "echarts/lib/component/markLine"
+import "echarts/lib/component/markPoint"
 
 import AnalyzeSimpleDataDialog from './AnalyzeSimpleDataDialog'
 import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
@@ -441,6 +459,26 @@ export default {
     AnalyzeDmpDataDialog
   },
   data() {
+    this.markLine = {
+      data: [
+        {
+          name: "平均线",
+          type: "average",
+        },
+      ],
+    }
+    this.markPoint = {
+      data: [
+        {
+          name: "最大值",
+          type: "max",
+        },
+        {
+          name: "最小值",
+          type: "min",
+        },
+      ],
+    }
     var checkNum = function(rule, value, callback) {
       var reg = /^[1-9]\d*$/
       if (!reg.test(value)) {
@@ -500,6 +538,26 @@ export default {
         }
       },
       color: ['#1E90FF ','#2f4554'],
+    }
+    this.markLine = {
+      data: [
+        {
+          name: "平均线",
+          type: "average",
+        },
+      ],
+    }
+    this.markPoint = {
+      data: [
+        {
+          name: "最大值",
+          type: "max",
+        },
+        {
+          name: "最小值",
+          type: "min",
+        },
+      ],
     }
     return {
       analyzeBtnCurrentIndex: undefined,
