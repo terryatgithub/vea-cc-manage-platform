@@ -57,9 +57,9 @@
                 <img
                   ref="img"
                   v-if="value.picInfoList[index] && value.picInfoList[index].pictureUrl"
-                  :src="value.picInfoList[index].pictureUrl"
                   class="poster-image"
                   referrerpolicy="no-referrer"
+                  :src="value.picInfoList[index].pictureUrl"
                 />
                 <i class="el-icon-close poster--del" @click.stop="handleDelPoster(index)"/>
               </div>

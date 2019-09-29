@@ -99,8 +99,9 @@
               </i>
               <img
                 v-if="normal.poster.pictureUrl"
+                referrerpolicy="no-referrer"
                 :src="normal.poster.pictureUrl"
-                referrerpolicy="no-referrer">
+                />
               <span>{{normal.title}}</span>
             </el-card>
           </draggable>
@@ -113,8 +114,8 @@
             @click.native="handleActivateContent(index)">
             <img
               v-if="normal.poster.pictureUrl"
-              :src="normal.poster.pictureUrl"
-              referrerpolicy="no-referrer"/>
+              referrerpolicy="no-referrer"
+              :src="normal.poster.pictureUrl"/>
             <span>{{normal.title}}</span>
           </el-card>
           <el-card style="cursor: pointer;" v-if="!disabled">
@@ -158,14 +159,13 @@
                   @click.native="handleActivateDmpContent(index)">
                   <img
                     v-if="dmpContentList[index].poster.pictureUrl"
-                    :src="dmpContentList[index].poster.pictureUrl"
-                    referrerpolicy="no-referrer">
+                    referrerpolicy="no-referrer"
+                    :src="dmpContentList[index].poster.pictureUrl" />
                   <i
                     v-if="!disabled"
                     class="remove-handle el-icon-close"
                     @click.stop.prevent="handleRemoveDmpContent(index)">
                    </i>
-                  <!-- <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer"> -->
                 </el-card>
               </component>
               <el-card v-if="mode !== 'read'" @click.native="handleAddDmpContent">
@@ -289,8 +289,8 @@
                 :disabled="disabled">
                 <img
                   v-if="lowerForm.poster.pictureUrl"
-                  :src="lowerForm.poster.pictureUrl"
                   referrerpolicy="no-referrer"
+                  :src="lowerForm.poster.pictureUrl"
                   style="height: 180px">
               </el-card>
             </GlobalPictureSelector>
@@ -309,7 +309,7 @@
                   <span
                     class="corner-img-wrapper"
                     v-if="corner.imgUrl">
-                    <img :src="corner.imgUrl" referrerpolicy="no-referrer">
+                    <img referrerpolicy="no-referrer" :src="corner.imgUrl" >
                     <i
                       class="el-icon-delete"
                       v-if="!disabled"

@@ -47,7 +47,7 @@
                       class="remove-handle el-icon-close"
                       @click.stop.prevent="handleRemoveContent(index, 'normal')"
                     ></i>
-                    <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
+                    <img referrerpolicy="no-referrer" :src="getPictureUrl(content.pictureUrl)" >
                   </el-card>
                 </component>
 
@@ -105,7 +105,7 @@
                 class="remove-handle el-icon-close"
                 @click.stop.prevent="handleRemoveContent(index, 'specific')"
               ></i>
-              <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
+              <img referrerpolicy="no-referrer" :src="getPictureUrl(content.pictureUrl)" >
               <span class="content-id" v-if="content.vContentId"> {{ content.vContentId }} </span>
             </el-card>
           </component>

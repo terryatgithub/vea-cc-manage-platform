@@ -48,7 +48,7 @@
         @row-selection-remove="handleRowSelectionRemove"
       >
         <div class="img-item" slot="row" slot-scope="{row: item}" @click.stop="handleRead(item)">
-          <img :key="item.imgUrl" :src="item.imgUrl" />
+          <img referrerpolicy="no-referrer"  :key="item.imgUrl" :src="item.imgUrl" />
           <a class="img-preview" @click.stop="reviewPic(item)">预览</a>
           <div class="img-detail">
             <span>角标id：{{ item.cornerIconId }}</span>
@@ -67,7 +67,7 @@
     <!-- 预览图片 -->
     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
       <span class="pics">
-        <img :src="reviewPicUrl" alt="图片" style="width:400px">
+        <img referrerpolicy="no-referrer"  :src="reviewPicUrl" alt="图片" style="width:400px">
       </span>
     </el-dialog>
     <!--批量审核-->

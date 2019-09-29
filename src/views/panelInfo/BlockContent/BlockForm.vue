@@ -127,7 +127,7 @@
               cursor: 'pointer'
             }"
           >
-            <img :src="contentForm.pictureUrl" referrerpolicy="no-referrer">
+            <img referrerpolicy="no-referrer" :src="contentForm.pictureUrl" >
             <div class="post-info">
               <div class="post-episode" v-if="[1, 4, 5].indexOf(contentForm.categoryId) > -1">
                 <span v-if="contentForm.showSeries"  class="episode">
@@ -178,7 +178,7 @@
                   @select-end="handleSelectCornerIconEnd($event, cIndex)"
                 >
                   <span class="corner-img-wrapper" v-if="corner.imgUrl">
-                    <img :src="corner.imgUrl" referrerpolicy="no-referrer">
+                    <img referrerpolicy="no-referrer" :src="corner.imgUrl">
                     <i
                       v-show="!isReadonly"
                       title="删除角标"
@@ -219,7 +219,7 @@
             class="post-box"
             :style="{ height: postSize.height + 'px', width: postSize.width + 'px', cursor: 'pointer' }"
           >
-            <img :src="contentForm.alternativePictureUrl" referrerpolicy="no-referrer">
+            <img referrerpolicy="no-referrer" :src="contentForm.alternativePictureUrl" >
           </div>
         </GlobalPictureSelector>
       </el-form-item>
@@ -259,8 +259,8 @@
             <div v-if="contentForm.bgImgUrl"  class="bg-img-wrapper">
               <img
                 class="bg-img"
-                :src="contentForm.bgImgUrl"
-                referrerpolicy="no-referrer">
+                referrerpolicy="no-referrer"
+                :src="contentForm.bgImgUrl">
               <i
                   v-show="!isReadonly && contentForm.bgImgUrl"
                   title="删除背景"

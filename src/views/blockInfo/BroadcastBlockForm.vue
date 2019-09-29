@@ -121,8 +121,8 @@
             style="height: 180px">
             <img
               v-if="normalForm.poster.pictureUrl"
-              :src="normalForm.poster.pictureUrl"
               referrerpolicy="no-referrer"
+              :src="normalForm.poster.pictureUrl"
               style="height: 180px;">
           </el-card>
         </GlobalPictureSelector>
@@ -142,7 +142,7 @@
               <span
                 class="corner-img-wrapper"
                 v-if="corner.imgUrl">
-                <img :src="corner.imgUrl" referrerpolicy="no-referrer">
+                <img referrerpolicy="no-referrer" :src="corner.imgUrl">
                 <i
                   class="el-icon-delete"
                   v-if="!disabled"
