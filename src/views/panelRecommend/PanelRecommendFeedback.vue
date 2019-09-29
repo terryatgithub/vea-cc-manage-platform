@@ -11,24 +11,81 @@
         </el-form-item>
         <el-button type="primary" @click="fetchData">查询</el-button>
       </el-form>
-      <div class="chart-wrapper" v-if="chartData">
-        <div class="tip-empty">
+      <div>
+        <div class="tip-empty" v-if="table.isNoData === 0">
           <p>版面在 {{ parseTime(filter.time) }} 没有版块个性化数据</p>
           <p class="tip-how">至少一天之内起始位置不变才能有数据</p>
+        </div>
+        <div v-else>
+          <p>爱奇艺精选版面<el-button type="primary">导出</el-button></p>
+          <Table
+            :props="table.props"
+            :header="table.header"
+            :data="table.data"
+            :selected="table.selected"
+            :selection-type="table.selectionType"
+          />
         </div>
       </div>
     </div>
   </ContentCard>
 </template>
 <script>
+import { Table } from 'admin-toolkit'
 export default {
+  components: {
+    Table
+  },
   data () {
     return {
       filter: {
         tabId: undefined,
         time: new Date().toISOString()
       },
-      chartData: null
+      pagination: {
+        currentPage: 1
+      },
+      table: {
+        props: {},
+        data: [],
+        isNoData: false,
+        header: [
+          {
+            label: '版块ID',
+            prop: 'pannelId'
+          },
+          {
+            label: '版块名称',
+            prop: 'panelName'
+          },
+          {
+            label: '曝光人数',
+            prop: ''
+          },
+          {
+            label: '点击人数',
+            prop: ''
+          },
+          {
+            label: '人均点击人数',
+            prop: ''
+          },
+          {
+            label: 'PVCTR',
+            prop: ''
+          },
+          {
+            label: '曝光人数排名',
+            prop: ''
+          },
+          {
+            label: 'PVCTR排名',
+            prop: ''
+          }
+        ],
+        selectionType: 'none',
+        selected: []
+      }
     }
   },
   methods: {
@@ -41,11 +98,13 @@ export default {
       return timeFormated
     },
     fetchData () {
-      console.log('fetchData')
       const filter = this.filter
-      this.chartData = null
-      this.$service
-      this.chartData = {}
+      this.$service.getPanelRecommandFeedback(filter).then(result => {
+        const {total, rows} = result
+        this.pagination.total = total
+        this.table.data = rows
+        this.table.isNoData = rows.length === 0
+      })
     }
   }
 }
