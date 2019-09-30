@@ -93,7 +93,7 @@ export default {
                 'el-button',
                 {
                   props: { type: 'text' },
-                  on: { click: () => { this.currentId = row.id; this.isVisibleDialog = true } }
+                  on: { click: this.handleClickDataShow(row) }
                 },
                 '看数据'
               )
@@ -166,18 +166,18 @@ export default {
     }
   },
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.id,
         type: 'block',
         menuElId: 'broadcastBlock'
       })
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
       }
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) {
         this.filter = filter
       }
@@ -188,12 +188,12 @@ export default {
       }
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -201,7 +201,7 @@ export default {
       }
       return filter
     },
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.broadcastBlockPageList(filter).then(data => {
         this.pagination.total = data.total
@@ -211,7 +211,7 @@ export default {
     toPercent: decimal => {
       return (Math.round(decimal * 10000) / 100.00 + "%")
     },
-    getSimpleBrowseData(id) {
+    getSimpleBrowseData (id) {
       let dataShow = {}
       this.$service.getBlockSimpleBrowseData({id}).then(data => {
         const uvctr = data.rows[0].data[0].uvctr
@@ -223,6 +223,15 @@ export default {
         console.log('data2',dataShow );
       })
       return dataShow
+    },
+    handleClickDataShow (row) {
+      return () => {
+        this.currentId = row.id
+        this.isVisibleDialog = true 
+        this.$sendEvent({
+          type: 'broadcast_data_search'
+        })
+      }
     }
   },
   created() {
