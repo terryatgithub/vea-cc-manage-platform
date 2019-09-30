@@ -480,7 +480,13 @@ export default {
             }
           }
         ],
-        dmpRegistryInfo: [{ required: true, message: '请选择定向人群' }]
+        dmpRegistryInfo: [{ required: true, message: '请选择定向人群' }],
+        'mediaAutomationBlockRls.mediaAutomationId': [
+          { required: true, message: '当开关开启时必填' }
+        ],
+        'mediaAutomationBlockRls.refreshCal': [
+          { required: true, message: '当开关开启时必填', trigger: 'blur' }
+        ]
       },
       lowerRules: {
         title: [{ required: true, message: '请填写标题', trigger: 'blur' }],

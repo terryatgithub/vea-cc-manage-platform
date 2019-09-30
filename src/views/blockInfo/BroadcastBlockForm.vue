@@ -84,20 +84,21 @@
           </el-switch>
         </el-form-item>
         <template v-if="!!normalForm.flagSetRec">
-          <el-form-item label="推荐流选择" prop="mediaAutomationBlockRls.mediaAutomationId" :rules="requiredRules.required">
+          <el-form-item label="推荐流选择" prop="mediaAutomationBlockRls.mediaAutomationId">
             <el-button type="primary" @click="isVisiableRecom = true" :disabled="isReadonly">选择推荐流</el-button>
             <el-tag
               v-if="normalForm.mediaAutomationBlockRls.mediaAutomationId"
-              type="primary" 
-              closable
+              type="primary"
+              class="mediaAutomationId-tag"
+              :closable="!disabled"
               @close="handleDelStreamTag"
             >
               {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}
             </el-tag>
           </el-form-item>
-          <el-form-item label="刷新机制" :rules="requiredRules.required">
-            <InputPositiveInt 
-              v-model="normalForm.mediaAutomationBlockRls.refreshCal" 
+          <el-form-item label="刷新机制" prop="mediaAutomationBlockRls.refreshCal">
+            <InputPositiveInt
+              v-model="normalForm.mediaAutomationBlockRls.refreshCal"
               style="width: 100px"
               :disabled="disabled"
             />
@@ -276,9 +277,6 @@ export default {
     return {
       onclickEventVisible: false,
       showCrowdSelector: false,
-      requiredRules: {
-        required: [{required: true, message: '当开关开启时必填'}]
-      },
       isVisiableRecom: false,
       recomStreamTags: []
     }
@@ -444,9 +442,6 @@ export default {
       }
     },
     handleDelStreamTag() {
-      if(this.disabled) {
-        return
-      }
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined
     },
     fetchRecomStream () {
@@ -610,4 +605,6 @@ export default {
   font-size 14px
 .cursor-tip
   cursor pointer
+.mediaAutomationId-tag
+  margin-left 10px
 </style>
