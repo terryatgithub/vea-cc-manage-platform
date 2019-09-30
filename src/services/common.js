@@ -7,11 +7,13 @@ export function getVersionList(params) {
   }).then((data) => {
     const rows = data.rows || []
     return rows.map((item) => {
-      const { version, lastUpdateDate, modifierName, status } = item
+      const { version, createdDate, launchDate, modifierName, status } = item
+      const createdDateFormat = createdDate ? '创建：' + createdDate.subStr(createdDate.indexOf('-') + 1) : '创建：'
+      const onlineTime = launchDate ? '上线：' + launchDate.subStr(launchDate.indexOf('-') + 1) : '未上线'
       return {
         row: item,
         value: item.version,
-        label: `${version}/${lastUpdateDate}/${modifierName}/${consts.statusText[status]}`
+        label: `${version}/${createdDateFormat}/${onlineTime}/${modifierName}/${consts.statusText[status]}`
       }
     })
   })
