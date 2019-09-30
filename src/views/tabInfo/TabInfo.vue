@@ -878,7 +878,7 @@ export default {
     }
     const extend = {
       grid: {
-        top: "2%",
+        top: "10%",
         left: "5%",
         right: "5%",
         bottom: "10%",

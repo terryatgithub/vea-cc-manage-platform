@@ -41,14 +41,37 @@
 </template>
 <script>
 import VeLine from 'v-charts/lib/line.common'
+import "echarts/lib/component/markLine"
+import "echarts/lib/component/markPoint"
+
 export default {
   components: {
     VeLine
   },
   data() {
+    this.markLine = {
+      data: [
+        {
+          name: "平均线",
+          type: "average",
+        },
+      ],
+    }
+    this.markPoint = {
+      data: [
+        {
+          name: "最大值",
+          type: "max",
+        },
+        {
+          name: "最小值",
+          type: "min",
+        },
+      ],
+    }
     const extend = {
       grid: {
-        top: "2%",
+        top: "10%",
         left: "5%",
         right: "5%",
         bottom: "10%",
@@ -117,7 +140,7 @@ export default {
     },
     handleDialogOpen () {
       this.$service.getBroadcastDataTitles({ id: this.id }).then(data => {
-        console.log('data', data);
+        this.allTitles = data.rows
       })
     },
     handleChartData(chartData) {
