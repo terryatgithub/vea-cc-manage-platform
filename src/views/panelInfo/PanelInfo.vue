@@ -104,6 +104,7 @@
                   :legend-visible="false"
                   :extend="handleChartExtend(panelChartData)"
                   :settings="handleChartSettings(panelChartData)"
+                  :events="handleChartEvents(index, 'edit')"
                   :mark-line="markLine"
                   :mark-point="markPoint"
                   >
@@ -459,26 +460,6 @@ export default {
     AnalyzeDmpDataDialog
   },
   data() {
-    this.markLine = {
-      data: [
-        {
-          name: "平均线",
-          type: "average",
-        },
-      ],
-    }
-    this.markPoint = {
-      data: [
-        {
-          name: "最大值",
-          type: "max",
-        },
-        {
-          name: "最小值",
-          type: "min",
-        },
-      ],
-    }
     var checkNum = function(rule, value, callback) {
       var reg = /^[1-9]\d*$/
       if (!reg.test(value)) {
@@ -519,6 +500,7 @@ export default {
         return v
       },
       xAxis: {
+        triggerEvent: true,
         axisLabel: {
           rotate: 45,
           formatter: function(val) {
@@ -537,7 +519,7 @@ export default {
           }
         }
       },
-      color: ['#1E90FF ','#2f4554'],
+      color: ['#1E90FF ','#2f4554']
     }
     this.markLine = {
       data: [
@@ -821,7 +803,15 @@ export default {
       })
       : extend
     },
-
+    handleChartEvents (index, mode) {
+      return {
+        mousemove: function(e) {
+          if (e.componentType =='xAxis' && mode === 'edit') {
+            // console.log('1', e);
+          }
+        }
+      }
+    },
     handleBatchAddTag() {
       this.showAddTagDialog = true
       this.$sendEvent({
@@ -2276,9 +2266,21 @@ export default {
         this.analyzeBtnCurrentIndex = index
       }
       this.isVisiAnalyzeSimpleData = true
+      this.$sendEvent({
+        type: 'block_data_show',
+        payload: {
+          type: 'position'
+        }
+      })
     },
     handleAnalyzeDmpData (index) {
       this.isVisiAnalyzeDmpData = true
+      this.$sendEvent({
+        type: 'block_data_show',
+        payload: {
+          type: 'dmp'
+        }
+      })
     }
   },
   created() {
