@@ -97,9 +97,17 @@
               周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
             </div>
             <div v-if="!isCollapseData">
-              <div v-for="panelChartData in panelChartDataArr" class="chart-box">
+              <div v-for="(panelChartData, index) in panelChartDataArr" class="chart-box" :key="index">
                 <div class="chart-box--title">{{panelChartData.title}}</div>
-                <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
+                <VeLine
+                  :data="handleChartData(panelChartData)"
+                  :legend-visible="false"
+                  :extend="handleChartExtend(panelChartData)"
+                  :settings="handleChartSettings(panelChartData)"
+                  :mark-line="markLine"
+                  :mark-point="markPoint"
+                  >
+                </VeLine>
               </div>
             </div>
             </div>
@@ -289,7 +297,15 @@
             <div v-if="!isCollapseData">
               <div v-for="panelChartData in panelChartDataArr" class="chart-box">
                 <div class="chart-box--title">{{panelChartData.title}}</div>
-                <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
+                <VeLine
+                  :data="handleChartData(panelChartData)"
+                  :legend-visible="false"
+                  :extend="handleChartExtend(panelChartData)"
+                  :settings="handleChartSettings(panelChartData)"
+                  :mark-line="markLine"
+                  :mark-point="markPoint"
+                >
+                </VeLine>
               </div>
             </div>
             </div>
@@ -390,7 +406,8 @@
       />
     </PageContentWrapper>
 
-    <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData"/>
+    <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
+    <AnalyzeDmpDataDialog :show.sync="isVisiAnalyzeDmpData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
   </PageWrapper>
 </template>
 <script>
@@ -412,6 +429,8 @@ import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 
 import TagFrame from './TagFrame'
 import VeLine from 'v-charts/lib/line.common'
+import "echarts/lib/component/markLine"
+import "echarts/lib/component/markPoint"
 
 import AnalyzeSimpleDataDialog from './AnalyzeSimpleDataDialog'
 import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
@@ -440,6 +459,26 @@ export default {
     AnalyzeDmpDataDialog
   },
   data() {
+    this.markLine = {
+      data: [
+        {
+          name: "平均线",
+          type: "average",
+        },
+      ],
+    }
+    this.markPoint = {
+      data: [
+        {
+          name: "最大值",
+          type: "max",
+        },
+        {
+          name: "最小值",
+          type: "min",
+        },
+      ],
+    }
     var checkNum = function(rule, value, callback) {
       var reg = /^[1-9]\d*$/
       if (!reg.test(value)) {
@@ -500,7 +539,28 @@ export default {
       },
       color: ['#1E90FF ','#2f4554'],
     }
+    this.markLine = {
+      data: [
+        {
+          name: "平均线",
+          type: "average",
+        },
+      ],
+    }
+    this.markPoint = {
+      data: [
+        {
+          name: "最大值",
+          type: "max",
+        },
+        {
+          name: "最小值",
+          type: "min",
+        },
+      ],
+    }
     return {
+      analyzeBtnCurrentIndex: undefined,
       isVisiAnalyzeSimpleData: false,
       isVisiAnalyzeDmpData: false,
       // 数据展现
@@ -2205,13 +2265,15 @@ export default {
     },
     // 点击看数据、dmp按钮
     handleAnalyzeSimpleData (index, pannelListIndex) {  // pannelListIndex对group有效
+      this.analyzeBtnCurrentIndex = undefined
       const { pannel } = this
       const pannelList = pannel.pannelList
       if (pannel.parentType === 'group') {
-        let contentList = pannelList[pannelListIndex].contentList
+        // let contentList = pannelList[pannelListIndex].contentList
+        this.analyzeBtnCurrentIndex = pannelListIndex + '-' + index
       } else {
-        let contentList = pannelList[0].contentList
-        console.log('contentList', contentList);
+        // let contentList = pannelList[0].contentList
+        this.analyzeBtnCurrentIndex = index
       }
       this.isVisiAnalyzeSimpleData = true
     },

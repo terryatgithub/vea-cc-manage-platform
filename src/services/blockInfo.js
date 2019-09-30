@@ -298,3 +298,12 @@ export function deleteMediaAutomation(params) {
     params
   })
 }
+
+// 轮播推荐位看数据
+export function getBroadcastDataTitles(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/block/getAllTitles.html',
+    params
+  })
+}
