@@ -66,7 +66,7 @@
               选择人群
             </el-button>
             <span v-if="form.dmpRegistryInfo">
-              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}/{{ form.dmpRegistryInfo.dmpCrowdName }}
+              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}({{ form.dmpRegistryInfo.dmpPolicyId }})/{{ form.dmpRegistryInfo.dmpCrowdName }}({{ form.dmpRegistryInfo.dmpCrowdId }})
             </span>
           </el-form-item>
         </template>
@@ -241,7 +241,7 @@
         <template v-if="form.dataType === 7">
           <el-form-item label="人群" prop="dmpRegistryInfo">
             <span v-if="form.dmpRegistryInfo">
-              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}/{{ form.dmpRegistryInfo.dmpCrowdName }}
+              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}({{ form.dmpRegistryInfo.dmpPolicyId }})/{{ form.dmpRegistryInfo.dmpCrowdName }}({{ form.dmpRegistryInfo.dmpCrowdId }})
             </span>
           </el-form-item>
         </template>

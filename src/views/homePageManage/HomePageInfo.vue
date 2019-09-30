@@ -238,15 +238,14 @@ export default {
               return row.tabIsForeverLast ? '是' : ''
             }
             return h(
-              'el-radio',
+              'el-checkbox',
               {
                 props: {
-                  value: row.tabIsForeverLast,
-                  label: 1
+                  value: !!row.tabIsForeverLast,
                 },
                 on: {
                   input: val => {
-                    this.handleSetTabAlwaysLast($index)
+                    this.handleSetTabAlwaysLast($index, val)
                   }
                 }
               },
@@ -378,11 +377,15 @@ export default {
         item.tabIsFocus = index === defaultFocusIndex ? 1 : 0
       })
     },
-    handleSetTabAlwaysLast (theIndex) {
+    handleSetTabAlwaysLast (theIndex, flag) {
       const tabInfos = this.homepage.tabInfos
-      tabInfos.forEach((item, index) => {
-        item.tabIsForeverLast = index === theIndex ? 1 : 0
-      })
+      flag = flag ? 1 : 0
+      if (flag) {
+        tabInfos.forEach((item, index) => {
+          item.tabIsForeverLast = 0
+        })
+      }
+      tabInfos[theIndex].tabIsForeverLast = flag
     },
     handleShowTabGroup(index) {
       this.activeTabGroupIndex = index
@@ -424,14 +427,11 @@ export default {
               return cb('请至少选择一个版面')
             }
 
-            if (data.defaultFocusIndex === undefined) {
-              return cb('请选择默认落焦版面')
-            }
-
             // 检查重复版面
             // 默认版面与普通版面之间不能重复
             // 定向版面不能与默认版面和普通版面重复
             // 定向版面之间不能重复
+            let defaultFocusIndex
             const normalTabListIndexed = {}
             const specTabListIndexed = {}
             // 普通版面重复检查
@@ -439,6 +439,9 @@ export default {
               const tabGroup = tabInfos[i].tabList
               let tab
               let isNormalTab
+              if (tabInfos[i].tabIsFocus) {
+                defaultFocusIndex = i
+              }
               if (tabGroup.length === 1 && tabGroup[0].dmpInfo === undefined) {
                 // 普通版面
                 isNormalTab = true
@@ -464,6 +467,10 @@ export default {
                   normalTabListIndexed[tab.tabId] = i
                 }
               }
+            }
+
+            if (defaultFocusIndex === undefined) {
+              return cb('请选择默认落焦版面')
             }
 
             checkDmp: for (

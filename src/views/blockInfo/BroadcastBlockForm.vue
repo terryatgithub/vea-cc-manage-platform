@@ -12,7 +12,7 @@
         <el-tag
           type="primary"
           v-if="normalForm.dmpRegistryInfo"
-        >已选择: {{ normalForm.dmpRegistryInfo.dmpPolicyName}} / {{ normalForm.dmpRegistryInfo.dmpCrowdName}}</el-tag>
+        >已选择: {{ normalForm.dmpRegistryInfo.dmpPolicyName }}({{ normalForm.dmpRegistryInfo.dmpPolicyId }}) / {{ normalForm.dmpRegistryInfo.dmpCrowdName}}({{ normalForm.dmpRegistryInfo.dmpCrowdId }})</el-tag>
       </el-form-item>
       <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName">
         <ResourceSelector

@@ -161,7 +161,9 @@ const routerMap = {
   panelRecommend: 'panelRecommend',
 
   // 版面强插
-  tabForceInsert: 'tabForceInsert'
+  tabForceInsert: 'tabForceInsert',
+  panelRecommendCoreData: 'panelRecommendCoreData',
+  panelRecommendFeedback: 'panelRecommendFeedback'
 }
 
 const iconMap = {
@@ -257,7 +259,12 @@ const iconMap = {
   panelRecommend: 'el-icon-cc-border-outer',
 
   // 版面强插
-  tabForceInsert: 'el-icon-sell'
+  tabForceInsert: 'el-icon-sell',
+
+  // 版面个性化推荐核心指标
+  panelRecommendCoreData: 'el-icon-data-line',
+  // 版块个性化推荐反馈
+  panelRecommendFeedback: 'el-icon-message'
 }
 
 export default {

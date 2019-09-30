@@ -41,11 +41,11 @@
           <div slot="edit">
             <DmpSelector @select-end="handleSelectCrowdEnd"></DmpSelector>
             <span v-if="form.dmpRegistryInfo.dmpCrowdId">
-              已选择: {{ `${form.dmpRegistryInfo.dmpPolicyName}/${form.dmpRegistryInfo.dmpCrowdName}`}}
+              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}({{ form.dmpRegistryInfo.dmpPolicyId }})/{{ form.dmpRegistryInfo.dmpCrowdName }}({{ form.dmpRegistryInfo.dmpCrowdId }})
             </span>
           </div>
           <div slot="read">
-            {{ `${form.dmpRegistryInfo.dmpPolicyName} / ${form.dmpRegistryInfo.dmpCrowdName}`}}
+            {{ form.dmpRegistryInfo.dmpPolicyName }}({{ form.dmpRegistryInfo.dmpPolicyId }})/{{ form.dmpRegistryInfo.dmpCrowdName }}({{ form.dmpRegistryInfo.dmpCrowdId }})
           </div>
         </DataAny>
       </DataForm>
