@@ -4,7 +4,7 @@
     <div>
       <el-form :inline="true" @keypress.enter.native.prevent="fetchData" class="filter">
         <el-form-item>
-          <el-date-picker type="date" :clearable="false" v-model="filter.time" placeholder="日期" />
+          <el-date-picker type="date" :clearable="false" v-model="filter.dayTime" placeholder="日期" />
         </el-form-item>
         <el-form-item>
           <el-input v-model="filter.tabId" clearable placeholder="版面 ID" />
@@ -12,11 +12,11 @@
         <el-button type="primary" @click="fetchData">查询</el-button>
       </el-form>
       <div>
-        <div class="tip-empty" v-if="table.isNoData === 0">
-          <p>版面在 {{ parseTime(filter.time) }} 没有版块个性化数据</p>
+        <div class="tip-empty" v-if="table.isNoData === true">
+          <p>版面在 {{ parseTime(filter.dayTime) }} 没有版块个性化数据</p>
           <p class="tip-how">至少一天之内起始位置不变才能有数据</p>
         </div>
-        <div v-else>
+        <div v-else-if="table.isNoData === false">
           <p>爱奇艺精选版面<el-button type="primary">导出</el-button></p>
           <Table
             :props="table.props"
@@ -32,6 +32,7 @@
 </template>
 <script>
 import { Table } from 'admin-toolkit'
+import { cloneDeep } from 'lodash'
 export default {
   components: {
     Table
@@ -40,7 +41,7 @@ export default {
     return {
       filter: {
         tabId: undefined,
-        time: new Date().toISOString()
+        dayTime: new Date().toISOString()
       },
       pagination: {
         currentPage: 1
@@ -48,11 +49,11 @@ export default {
       table: {
         props: {},
         data: [],
-        isNoData: false,
+        isNoData: undefined,
         header: [
           {
             label: '版块ID',
-            prop: 'pannelId'
+            prop: 'panelId'
           },
           {
             label: '版块名称',
@@ -60,27 +61,27 @@ export default {
           },
           {
             label: '曝光人数',
-            prop: ''
+            prop: 'CVNum'
           },
           {
             label: '点击人数',
-            prop: ''
+            prop: 'clickNum'
           },
           {
             label: '人均点击人数',
-            prop: ''
+            prop: 'CVClickNum'
           },
           {
             label: 'PVCTR',
-            prop: ''
+            prop: 'PVCTR'
           },
           {
             label: '曝光人数排名',
-            prop: ''
+            prop: 'CVRank'
           },
           {
             label: 'PVCTR排名',
-            prop: ''
+            prop: 'PVCTRRank'
           }
         ],
         selectionType: 'none',
@@ -98,7 +99,8 @@ export default {
       return timeFormated
     },
     fetchData () {
-      const filter = this.filter
+      const filter = cloneDeep(this.filter)
+      filter.dayTime = this.parseTime(filter.dayTime)
       this.$service.getPanelRecommandFeedback(filter).then(result => {
         const {total, rows} = result
         this.pagination.total = total
