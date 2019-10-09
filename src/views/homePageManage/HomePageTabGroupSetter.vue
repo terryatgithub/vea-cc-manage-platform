@@ -15,8 +15,8 @@
             <el-button type="primary" @click="handleSave">保存</el-button>
           </div>
           <DataForm>
-            <DataBoolean type="switch" label="是否固定位置" v-model="tabIsFix" />
-            <DataBoolean type="switch" label="是否初始化在首页分类" :value="tabIsInitInCategory" @input="handleInputTabIsInitInCategory" />
+            <DataBoolean type="switch" label="是否固定位置" :value="tabIsFix" @input="handleInputTabIsFix"  />
+            <DataBoolean type="switch" label="是否初始化在首页分类" v-model="tabIsInitInCategory" />
           </DataForm>
         </div>
 
@@ -214,15 +214,15 @@ export default {
     }
   },
   methods: {
-    handleInputTabIsInitInCategory (val) {
+    handleInputTabIsFix (val) {
       if (val) {
         this.$confirm('不让用户移除是非常损伤用户体验的功能，过频使用可能会导致客诉，请尊重用户慎用此功能', '提示')
           .then(() => {
-            this.tabIsInitInCategory = val
+            this.tabIsFix = val
           })
           .catch(() => {})
       } else {
-        this.tabIsInitInCategory = val
+        this.tabIsFix = val
       }
     },
     handleSave() {
