@@ -14,14 +14,10 @@
               @select-end="handleSelectTabEnd"/>
             <el-button type="primary" @click="handleSave">保存</el-button>
           </div>
-          <el-form>
-            <el-form-item label="是否固定位置">
-              <el-switch :value="!!tabIsFix" @input="tabIsFix = $event ? 1 : 0"></el-switch>
-            </el-form-item>
-            <el-form-item label="是否初始化在首页分类">
-              <el-switch :value="!!tabIsInitInCategory" @input="tabIsInitInCategory = $event ? 1 : 0"></el-switch>
-            </el-form-item>
-          </el-form>
+          <DataForm>
+            <DataBoolean type="switch" label="是否固定位置" v-model="tabIsFix" />
+            <DataBoolean type="switch" label="是否初始化在首页分类" :value="tabIsInitInCategory" @input="handleInputTabIsInitInCategory" />
+          </DataForm>
         </div>
 
           <OrderableTable
@@ -30,6 +26,7 @@
             :header="tabTableHeader"
             :hide-action="true"
             :readonly="readonly"
+            order-text="人群优先级"
           />
           <CrowdSelector
               v-if="showCrowdSelector"
@@ -72,7 +69,7 @@ export default {
   data() {
     return {
       activePage: 'tab_group_setter',
-      resourceName: '版面管理',
+      resourceName: '位置设置',
       showCrowdSelector: false,
       tabIsFix: 0,
       tabIsInitInCategory: 0,
@@ -217,6 +214,17 @@ export default {
     }
   },
   methods: {
+    handleInputTabIsInitInCategory (val) {
+      if (val) {
+        this.$confirm('不让用户移除是非常损伤用户体验的功能，过频使用可能会导致客诉，请尊重用户慎用此功能', '提示')
+          .then(() => {
+            this.tabIsInitInCategory = val
+          })
+          .catch(() => {})
+      } else {
+        this.tabIsInitInCategory = val
+      }
+    },
     handleSave() {
       if (this.tabList.length > 0) {
         this.$emit('set-end', {
