@@ -360,8 +360,8 @@
                           :blocks="item.contentList"
                           :mode="mode"
                           @click-block="handleClickBlock"
-                          @analyze-simple-data="handleAnalyzeSimpleData($event, index)"
-                          @analyze-dmp-data="handleAnalyzeDmpData"
+                          @analyze-simple-data="handleAnalyzeData('simple', $event, index)"
+                          @analyze-dmp-data="handleAnalyzeData('dmp', $event, index)"
                         ></VirtualPanel>
                       </el-tab-pane>
                     </el-tabs>
@@ -372,8 +372,8 @@
                     :mode="mode"
                     :blocks="pannel.pannelList[0].contentList"
                     @click-block="handleClickBlock"
-                    @analyze-simple-data="handleAnalyzeSimpleData"
-                    @analyze-dmp-data="handleAnalyzeDmpData"
+                    @analyze-simple-data="handleAnalyzeData('simple', $event)"
+                    @analyze-dmp-data="handleAnalyzeData('dmp', $event)"
                   ></VirtualPanel>
                 </div>
               </el-form-item>
@@ -804,10 +804,30 @@ export default {
       : extend
     },
     handleChartEvents (index, mode) {
+      let _this = this
       return {
-        mousemove: function(e) {
+        click: function(e) {
+          const h = _this.$createElement
           if (e.componentType =='xAxis' && mode === 'edit') {
-            // console.log('1', e);
+            let xIndex = _this.panelChartDataArr[index].data.findIndex(item => {
+              return item.x === e.value
+            })
+            const extra = _this.panelChartDataArr[index].data.extra
+            if (extra && extra.length !== 0) {
+              // 埋点
+              this.$sendEvent({
+                type: 'album_version_show'
+              })
+              // 展示
+              let extraNodeArr = extra.map(item => {
+                return h('p', null, item)
+              })
+              _this.$msgbox({
+                title: '推荐位标题变化',
+                message: h('div', null, extraNodeArr),
+                confirmButtonText: '确定'
+              })
+            }
           }
         }
       }
@@ -2267,7 +2287,7 @@ export default {
       })
     },
     // 点击看数据、dmp按钮
-    handleAnalyzeSimpleData (index, pannelListIndex) {  // pannelListIndex对group有效
+    handleAnalyzeData (type, index, pannelListIndex) {  // pannelListIndex对group有效
       this.analyzeBtnCurrentIndex = undefined
       const { pannel } = this
       const pannelList = pannel.pannelList
@@ -2278,22 +2298,23 @@ export default {
         // let contentList = pannelList[0].contentList
         this.analyzeBtnCurrentIndex = index
       }
-      this.isVisiAnalyzeSimpleData = true
-      this.$sendEvent({
-        type: 'block_data_show',
-        payload: {
-          type: 'position'
-        }
-      })
-    },
-    handleAnalyzeDmpData (index) {
-      this.isVisiAnalyzeDmpData = true
-      this.$sendEvent({
-        type: 'block_data_show',
-        payload: {
-          type: 'dmp'
-        }
-      })
+      if (type === 'dmp') {
+        this.isVisiAnalyzeDmpData = true
+        this.$sendEvent({
+          type: 'block_data_show',
+          payload: {
+            type: 'dmp'
+          }
+        })
+      } else { // type === 'simple'
+        this.isVisiAnalyzeSimpleData = true
+        this.$sendEvent({
+          type: 'block_data_show',
+          payload: {
+            type: 'position'
+          }
+        })
+      }
     }
   },
   created() {
