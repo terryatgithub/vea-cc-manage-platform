@@ -8,8 +8,8 @@ export function getVersionList(params) {
     const rows = data.rows || []
     return rows.map((item) => {
       const { version, createdDate, launchDate, modifierName, status } = item
-      const createdDateFormat = createdDate ? '创建：' + createdDate.subStr(createdDate.indexOf('-') + 1) : '创建：'
-      const onlineTime = launchDate ? '上线：' + launchDate.subStr(launchDate.indexOf('-') + 1) : '未上线'
+      const createdDateFormat = typeof (createdDate) === 'string' ? '创建：' + createdDate.slice(createdDate.indexOf('-') + 1) : '创建：'
+      const onlineTime = typeof (launchDate) === 'string' ? '上线：' + launchDate.slice(launchDate.indexOf('-') + 1) : '未上线'
       return {
         row: item,
         value: item.version,
