@@ -77,7 +77,7 @@ export function panelTagUpsert(data) {
 export function panelRecommendList(data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/panelRecommend/dataList.html',
+    url: 'api/v1/panelRecommend/pageList.html',
     data
   })
 }
