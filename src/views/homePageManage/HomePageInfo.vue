@@ -675,7 +675,7 @@ export default {
         let tabSequence = 0
         item.tabList.forEach(function(tItem) {
           // 如果只有一个版面，并且版面没有设人群，那它是一个普通的版面
-          if (tItem.dmpInfo === undefined && item.length === 1) {
+          if (tItem.dmpInfo === undefined && item.tabList.length === 1) {
             tabInfoItem.tabId = tItem.tabId
             tabInfoItem.tabSequence = index
           } else {
