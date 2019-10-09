@@ -5,12 +5,14 @@
         :before-close="handleClose">
         <div class="icon-selector__wrapper">
             <img
-                v-for="(item, i) in options"
-                :class="selected && selected.pictureId === item.pictureId ? 'active' : ''"
-                @click="selected = item"
-                :src="item.pictureUrl"
-                alt="图标"
-                :title="item.iconTypeName"
+              v-for="(item, i) in options"
+              :class="selected && selected.pictureId === item.pictureId ? 'active' : ''"
+              @click="selected = item"
+              referrerpolicy="no-referrer"
+              :key="item.pictureUrl"
+              :src="item.pictureUrl"
+              alt="图标"
+              :title="item.iconTypeName"
             />
         </div>
         <span slot="footer" class="dialog-footer">

@@ -64,9 +64,9 @@
         <span>&nbsp;影片选择</span>
       </div>
       <div :style="{display: isCollapseVideo ? 'none' : 'block'}">
-        <div class="video-select--header" :style="{display: isRead ? 'none' : 'block'}">
-          <InputPositiveInt v-model="newVideoTabNum" class="num-input"/>
-          <el-button type="primary" @click="handleAddVideoTab(newVideoTabNum)">添加</el-button>
+        <div class="video-select--header">
+          <InputPositiveInt v-model="newVideoTabNum" class="num-input" :disabled="isRead"/>
+          <el-button type="primary" @click="handleAddVideoTab(newVideoTabNum)" :disabled="isRead">添加</el-button>
           <ResourceSelector
             ref="resourceSelector"
             :is-live="false"
@@ -74,16 +74,17 @@
             selection-type="multiple"
             :source="basicForm.source"
             :disable-partner="true"
+            :disabled="isRead"
             @select-end="handleSelectResourcesEnd"
           >
-            <el-button type="primary" class="batch-btn">批量选择资源</el-button>
+            <el-button type="primary" class="batch-btn" :disabled="isRead">批量选择资源</el-button>
           </ResourceSelector>
-          <el-button type="primary" @click="isVisibleSize = !isVisibleSize">添加尺寸</el-button>
+          <el-button type="primary" @click="isVisibleSize = !isVisibleSize" :disabled="isRead">添加尺寸</el-button>
           <el-tag 
             v-for="(sizeTag, index) in sizeTags"
             :key="index"
             type="primary" 
-            closable 
+            :closable="!isRead"
             class="size-tag"
             @close="handleTagClose(sizeTag)"
           >
@@ -101,6 +102,7 @@
             @select-clicked-source="handleSelectClickedSource($event, index)"
             @select-normal-source="handleSelectNormalSource($event, index)"
             @blur="handleBlurSort(index)"
+            @del-normal-source="handleDelNormalSource(index)"
           />
         </div>
       </div>
@@ -358,6 +360,7 @@ export default {
     dealCommonParams(resources) {
       console.log('resources', resources);
       const source = this.basicForm.source
+      // sigle, length === 1
       const tabName = ['video', 'edu', 'pptv', 'live', 'topic', 'rotate'].filter(name => {
         return resources[name].length !== 0
       }).join("")
@@ -365,6 +368,9 @@ export default {
       let selected = Object.assign({}, data)
       selected.vid = data.vid
       selected.sid = data.sid
+
+      const categoryId = resources[tabName][0].categoryId
+
       let anotherName = tabName
       switch(tabName){
         case 'video': 
@@ -381,19 +387,21 @@ export default {
         jsonParams,
         title: data.title,
         subTitle: data.subTitle,
-        thirdIdOrPackageName: data.thirdIdOrPackageName
+        thirdIdOrPackageName: data.thirdIdOrPackageName,
+        categoryId
       }
     },
     handleSelectClickedSource(resources, index) {
-      const { tabName, anotherName, jsonParams, title, subTitle, thirdIdOrPackageName } = this.dealCommonParams(resources)
+      const { tabName, anotherName, jsonParams, title, subTitle, thirdIdOrPackageName, categoryId } = this.dealCommonParams(resources)
       Object.assign(this.videoTabs[index], {
         clickParams: jsonParams,
         clickTemplateType: anotherName,
-        videoContentType: anotherName,
+        videoContentType_click: anotherName,
         title,
         subTitle,
         mediaResourceId: thirdIdOrPackageName,
-        coverType: 'media'
+        coverType: 'media',
+        categoryId
       })
       if(tabName === 'video') {
         const entity = resources[tabName][0].ccVideoSourceEntities[0]
@@ -423,6 +431,13 @@ export default {
         videoId: thirdIdOrPackageName
       })
     },
+    handleDelNormalSource(index) {
+      if(this.isRead) {
+        return
+      }
+      this.videoTabs[index].videoId = undefined
+      this.videoTabs[index].params = undefined
+    },
     handleDiffResources(resourceArr, resourceName, source, resources) {
       let anotherName = resourceName
       switch(resourceName){
@@ -434,14 +449,15 @@ export default {
           break
       }
       let videoTabs = this.videoTabs
-      resourceArr.map(item => {
+      resourceArr.map((item, index) => {
+        const categoryId = item.categoryId
         const data = this.callbackParam(resourceName, item, source)
         let selected = Object.assign({}, data)
         selected.vid = item.vid
         selected.sid = item.sid
         const clickParams = JSON.stringify(this.paramIdFun(selected))
         if(resourceName === 'video') {
-          const entity = resources['video'][0].ccVideoSourceEntities[0]
+          const entity = resources['video'][index].ccVideoSourceEntities[0]
           const score = entity.score
           const updatedSegment = entity.updatedSegment
           const publishSegment = entity.publishSegment
@@ -464,12 +480,13 @@ export default {
           clickParams,
           coverType: 'media',
           clickTemplateType: anotherName,
-          videoContentType: anotherName,
+          videoContentType_click: anotherName,
           clickType: 'detail',
           publishStatus: data.publishStatus,
           score: data.score,
           series: data.series,
-          variety: data.variety
+          variety: data.variety,
+          categoryId
         })
         for(let count = 0 ; count < this.sizeTags.length ; count++ ) {
           newTab.picInfoList.push(this.genPicInfo())
@@ -541,16 +558,24 @@ export default {
           saveForm.currentVersion = undefined
         } 
         if(saveForm.videoList && saveForm.videoList.length !== 0) {
-          // parse videoList
           saveForm.videoList.map(video => {
+            // parse videoList
             video.picList = video.picInfoList.map(item => {
               return item.pictureUrl
             })
             video.picInfoList = undefined
+            // 推荐流若没有配置视频海报，则用点击资源代替视频海报
+            if (!video.params) {
+              video.params = video.clickParams
+            }
+            if (!video.videoContentType) {
+              video.videoContentType = video.videoContentType_click
+            }
+            video.videoContentType_click = undefined
           })
         }
 
-        console.log('save', saveForm);
+        console.log('save', JSON.stringify(saveForm));
         this.$service.saveMediaAutomation({jsonStr: JSON.stringify(saveForm)}, '保存成功').then(() => {
           this.$emit('upsert-end')
         })
@@ -862,7 +887,7 @@ export default {
   margin-left: 10px;
 }
 .videoTab--wrapper {
-  width: 75%;
+  width: 80%;
   margin: 20px;
 }
 .batch-btn {
