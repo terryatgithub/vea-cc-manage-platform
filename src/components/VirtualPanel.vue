@@ -19,12 +19,14 @@
                  }"
           :style="block.style"
         >
-          <img class="cc-virtual-pannel__block-post" v-if="block.img" :src="block.img">
+          <img referrerpolicy="no-referrer" loading="lazy" class="cc-virtual-pannel__block-post" v-if="block.img" :src="block.img">
 
           <template v-for="(corner, index) in block.cornerList">
             <img
               class="corner-img"
               v-if="corner.imgUrl"
+              referrerpolicy="no-referrer" 
+              loading="lazy"
               :src="corner.imgUrl"
               :key="index"
               :style="{

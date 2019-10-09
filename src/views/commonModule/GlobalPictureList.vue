@@ -29,7 +29,7 @@
         @row-selection-remove="handleRowSelectionRemove"
       >
         <div class="img-item" slot="row" slot-scope="{row: item}" @click.stop="handleRead(item)">
-          <img :key="item.pictureUrl" :src="item.pictureUrl" />
+          <img referrerpolicy="no-referrer" :key="item.pictureUrl" :src="item.pictureUrl" />
           <a class="img-preview" @click.stop="reviewPic(item)">预览</a>
           <div class="img-detail">
             <span>素材id：{{ item.pictureId }}</span>
@@ -47,7 +47,7 @@
     <!-- 预览图片 -->
     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
       <span class="pics">
-        <img :src="reviewPicUrl" alt="图片" max-width="500">
+        <img referrerpolicy="no-referrer" :src="reviewPicUrl" alt="图片" max-width="500">
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="picDialogVisible = false">取 消</el-button>
@@ -144,11 +144,11 @@ export default {
             render: (createElement, { row }) => {
               return createElement('img', {
                 attrs: {
-                  src: row.pictureUrl,
                   width: '50px',
                   height: '50px',
                   class: 'imgs',
-                  'referrerpolicy': 'no-referrer'
+                  'referrerpolicy': 'no-referrer',
+                  src: row.pictureUrl
                 },
                 on: {
                   click: () => {

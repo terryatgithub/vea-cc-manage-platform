@@ -92,8 +92,8 @@ export default {
                   'max-width': '120px'
                 },
                 attrs: {
-                  src: imgSrc,
-                  'referrerpolicy': 'no-referrer'
+                  referrerpolicy: 'no-referrer',
+                  src: imgSrc
                 }
               })
             }

@@ -938,6 +938,19 @@ export default {
           }
         })
       }
+      // 关闭推荐流按钮
+      this.pannel.pannelList.forEach(pannelList => {
+        pannelList.contentList.forEach(contentList => {
+          contentList.videoContentList.forEach(videoContent => {
+            videoContent.flagSetRec = 0
+            videoContent.mediaAutomationBlockRls = {
+              refreshCal: 1,
+              mediaAutomationId: '',
+              blockType: 'normal'
+            }
+          })
+        })
+      })
       // 如果选择的是不含价格的布局，要删除所有价格信息
       if (layout.layoutJsonParsed.contents[0].type !== 'Mall') {
         this.pannel.pannelList.forEach(function(item) {

@@ -22,7 +22,7 @@
       >
         <template slot="row" slot-scope="{row: item}">
           <div class="list-item__img-wrapper">
-            <img :key="item.imgUrl" class="list-item__img" :src="item.imgUrl">
+            <img referrerpolicy="no-referrer" :key="item.imgUrl" class="list-item__img" :src="item.imgUrl">
           </div>
           <div class="list-item__info">
             {{ item.cornerIconName }}

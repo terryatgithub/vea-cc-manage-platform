@@ -185,10 +185,10 @@ export default {
               return h('img', {
                 key: row.thumb,
                 attrs: {
-                  src: row.thumb,
                   width: '50px',
                   height: '50px',
-                  'referrerpolicy': 'no-referrer'
+                  referrerpolicy: 'no-referrer',
+                  src: row.thumb
                 }
               })
             }
