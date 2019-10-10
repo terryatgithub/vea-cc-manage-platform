@@ -10,7 +10,7 @@
           <el-input name="tabName" autocomplete="on" v-model="filter.tabName" placeholder="版面标题"/>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.tabType" placeholder="版面属性">
+          <el-select v-model="filter.tabType" placeholder="版面属性" clearable>
             <el-option
               v-for="(item, index) in tabTypeOption"
               :key="index"
@@ -26,7 +26,7 @@
           </el-select>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.tabCategory" placeholder="业务分类">
+          <el-select v-model="filter.tabCategory" placeholder="业务分类" clearable>
             <el-option value>请选择</el-option>
             <el-option
               v-for="(item, index) in businessType"
@@ -37,7 +37,7 @@
           </el-select>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.tabAppid" placeholder="AppId">
+          <el-select v-model="filter.tabAppid" placeholder="AppId" clearable>
             <el-option
               v-for="item in appIdType"
               :key="item.dictEnName"
@@ -47,7 +47,7 @@
           </el-select>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.tabStatus" placeholder="状态">
+          <el-select v-model="filter.tabStatus" placeholder="状态" clearable>
             <el-option
               v-for="item in tabStatusOption"
               :key="item.label"
