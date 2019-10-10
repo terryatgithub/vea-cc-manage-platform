@@ -246,11 +246,13 @@ export default {
       }),
       status: _.o.enum(this.$consts.statusEnums).other('form', {
         component: 'Select',
-        placeholder: '审核状态'
+        placeholder: '审核状态',
+        clearable: true
       }),
       source: _.o.enum(this.$consts.sourceOptionsWithNoneEnums).other('form', {
         component: 'Select',
-        placeholder: '内容源'
+        placeholder: '内容源',
+        clearable: true
       })
     }).other('form', {
       layout: 'inline',

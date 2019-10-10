@@ -139,6 +139,8 @@ export default {
       })
     },
     handleDialogOpen () {
+      this.selectTitle = ''
+      this.broadcastChartDataArr = []
       this.$service.getBroadcastDataTitles({ id: this.id }).then(data => {
         this.allTitles = data.rows
       })

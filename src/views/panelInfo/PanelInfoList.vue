@@ -298,7 +298,8 @@ export default {
     const filterSchema = _.map({
       pannelCategory: _.o.enum(this.businessType).other('form', {
         placeholder: '业务分类',
-        component: 'Select'
+        component: 'Select',
+        clearable: true
       }),
       pannelId: _.o.string.other('form', {
         placeholder: 'ID',
@@ -326,15 +327,18 @@ export default {
       }),
       pannelResource: _.o.enum(this.$consts.sourceEnums).other('form', {
         placeholder: '内容源',
-        component: 'Select'
+        component: 'Select',
+        clearable: true
       }),
       pannelStatus: _.o.enum(this.$consts.statusEnums).other('form', {
         placeholder: '状态',
-        component: 'Select'
+        component: 'Select',
+        clearable: true
       }),
       pannelType: _.o.enum({ '影视推荐版块': 6, '定向版块': 7, '常规版块': 1 }).other('form', {
         placeholder: '版块类别',
-        component: 'Select'
+        component: 'Select',
+        clearable: true
       })
     })
       .other('form', {
