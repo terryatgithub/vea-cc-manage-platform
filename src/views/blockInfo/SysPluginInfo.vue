@@ -35,11 +35,11 @@
                 >
                   <el-input v-model.trim="block.pluginInfo.pluginName"></el-input>
                 </el-form-item>
-                <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
+                <div v-if="block.pluginInfo.pluginParentType === 'builtIn'">
                   <el-form-item label="固定刷新时间" prop="pluginInfo.refreshTime">
                     <InputMinute :min="5" :max="60 * 24 - 1" v-model="block.pluginInfo.refreshTime" />
                   </el-form-item>
-                </template>
+                </div>
                 <el-form-item
                   v-show="block.pluginInfo.pluginParentType !== 'builtIn'"
                   label="类型"
@@ -80,7 +80,7 @@
                   </el-radio-group>
                 </el-form-item>
                 <!--类型位标记推荐位-->
-                <template v-if="pluginParentType === 'sign'">
+                <div v-if="pluginParentType === 'sign'">
                   <el-form-item
                     label="标记推荐位类型"
                     prop="pluginInfo.pluginType"
@@ -88,7 +88,7 @@
                   >
                     <el-input v-model.trim="block.pluginInfo.pluginType"></el-input>
                   </el-form-item>
-                </template>
+                </div>
                 <!--end-->
                 <el-form-item
                   v-if="pluginParentType !== 'sign' && pluginTypes.length > 0"
@@ -111,18 +111,18 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <template v-if="baseHasTitle">
+                <div v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title" :rules="rules.title">
                     <el-input v-model.trim="block.helper.title"></el-input>
                   </el-form-item>
                   <el-form-item label="副标题" prop="helper.subTitle" :rules="rules.subTitle">
                     <el-input v-model.trim="block.helper.subTitle"></el-input>
                   </el-form-item>
-                </template>
+                </div>
                 
                 <div v-if="pluginParentType === 'sign'">
                   <!-- 扩展参数  -->
-                  <el-form-item label="扩展参数">
+                  <el-form-item key="edit-params" label="扩展参数">
                     <div class="app-extend-params" v-for="(param, index) in block.helper.onclick.params" :key="index">
                       <el-form-item
                         label="key:"
@@ -150,7 +150,7 @@
                   </el-form-item>
                 </div>
 
-                <template v-if="pluginParentType && pluginParentType !== 'sign'">
+                <div v-if="pluginParentType && pluginParentType !== 'sign'">
                   <div class="form-legend-header">
                     <span>多版本信息</span>
                   </div>
@@ -191,7 +191,7 @@
                       :plugin-list="block.rlsInfo"
                       :parent-type="block.pluginInfo.pluginParentType" />
                   </Gallery>
-                </template>
+                </div>
               </el-form>
             </div>
             <div v-if="mode=== 'read'">
@@ -236,7 +236,7 @@
 
                 <div v-if="pluginParentType === 'sign'">
                   <!-- 扩展参数  -->
-                  <el-form-item label="扩展参数">
+                  <el-form-item key="read-params" label="扩展参数">
                     <div class="app-extend-params" v-for="(param, index) in block.helper.onclick.params" :key="index">
 
                       <el-form-item label label-width="0px">
@@ -323,7 +323,18 @@ export default {
   props: ['id', 'initMode', 'version', 'contentProps'],
   data() {
 
-    function validateKV(rule, value, cb) {
+    const validateKey = (rule, value, cb) => {
+      if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
+        return cb(new Error('请勿输入特殊或空白字符'))
+      } 
+      // 找到两个 key 是那个值，表明重复
+      const duplicated = this.block.helper.onclick.params.filter(({key}) => key === value).length > 1
+      if (duplicated) {
+        return cb(new Error('key 不能重复'))
+      }
+      cb()
+    }
+    const validateValue = (rule, value, cb) => {
       if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
         cb(new Error('请勿输入特殊或空白字符'))
       } else {
@@ -409,11 +420,11 @@ export default {
         params: {
           key: [
             { required: true, message: '不能为空', trigger: 'blur' },
-            { validator: validateKV, trigger: 'blur' }
+            { validator: validateKey, trigger: 'blur' }
           ],
           value: [
             { required: true, message: '不能为空', trigger: 'blur' },
-            { validator: validateKV, trigger: 'blur' }
+            { validator: validateValue, trigger: 'blur' }
           ]
         }
       }
@@ -908,7 +919,7 @@ export default {
           helper.onclick = firstRls.onclick
         }
       }
-      this.block = Object.assign(this.block, block)
+      this.block = {...this.block, ...block}
     },
     parseData(data) {
       const helper = data.helper
