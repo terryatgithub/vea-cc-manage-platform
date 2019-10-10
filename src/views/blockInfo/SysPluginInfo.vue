@@ -127,7 +127,7 @@
                       <el-form-item
                         label="key:"
                         label-width="60px"
-                        :prop="'helper.params.' + index + '.key'"
+                        :prop="'helper.onclick.params.' + index + '.key'"
                         :rules="rules.params.key"
                       >
                         <el-input v-model.trim="param.key"></el-input>
@@ -135,7 +135,7 @@
                       <el-form-item
                         label="value:"
                         label-width="60px"
-                        :prop="'helper.params.' + index + '.value'"
+                        :prop="'helper.onclick.params.' + index + '.value'"
                         :rules="rules.params.value"
                       >
                         <el-input v-model.trim="param.value"></el-input>
@@ -921,6 +921,7 @@ export default {
           title: undefined,
           subTitle: undefined,
         }
+        data.rlsInfo[0].onclick = helper.onclick
       }
       data.rlsInfo.forEach(function(item) {
         const originOnclick = item.onclick
