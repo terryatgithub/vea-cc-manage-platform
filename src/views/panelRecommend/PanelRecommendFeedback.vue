@@ -60,24 +60,20 @@ export default {
             prop: 'panelName'
           },
           {
-            label: '曝光人数',
+            label: '曝光次数',
             prop: 'CVNum'
           },
           {
-            label: '点击人数',
+            label: '点击次数',
             prop: 'clickNum'
-          },
-          {
-            label: '人均点击人数',
-            prop: 'CVClickNum'
           },
           {
             label: 'PVCTR',
             prop: 'PVCTR'
           },
           {
-            label: '曝光人数排名',
-            prop: 'CVRank'
+            label: '曝光次数排名',
+            prop: 'PVRank'
           },
           {
             label: 'PVCTR排名',
