@@ -41,7 +41,7 @@
               <el-form-item label="首页版面">
                 <TabSelector @select-end="handleSelectTabEnd"/>
                 <el-button type="primary" plain @click="handleCreateTab">新建版面</el-button>
-                <span class="cc-form-annotation marginL remarks">至少选择1个版面</span>
+                <span class="cc-form-annotation marginL remarks margin-right-20">至少选择1个版面</span>
                 <el-form :inline="true" class="tab-group-filter">
                   <el-form-item label="是否固定位置">
                     <el-select v-model="tabGroupFilter.tabIsFix" placeholder="请选择">
@@ -787,7 +787,6 @@ export default {
 .el-form-add .orderableTable >>>.el-input
    width 100%
 .tab-group-filter
-  float right
   display inline-block
   >>> .el-form-item
     margin-bottom 0
