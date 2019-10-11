@@ -19,7 +19,8 @@
               <p class="tip-how">至少一天之内起始位置不变才能有数据</p>
             </div>
             <div v-else-if="table.isNoData === false">
-              <p class="tab-info"> {{ tabInfo.tabName }} ({{ tabInfo.tabId }}) : {{ parseTime(filter.dayTime) }}  推荐流从第 {{ tabInfo.recommendIndex }} 开始<el-button type="primary">导出</el-button></p>
+              <p class="tab-info"> {{ tabInfo.tabName }} ({{ tabInfo.tabId }}) : {{ parseTime(filter.dayTime) }}  推荐流从第 {{ tabInfo.recommendIndex }} 开始
+              <el-button type="primary" @click="handleExport">导出</el-button></p>
               <Table
                 :props="table.props"
                 :header="table.header"
@@ -135,6 +136,9 @@ export default {
       panelPreview.id = undefined
       panelPreview.version = undefined
       this.activePage = 'default'
+    },
+    handleExport () {
+      this.$message.error('导出接口还没做好')
     },
     parseTime (time) {
       const datetime = new Date(time)
