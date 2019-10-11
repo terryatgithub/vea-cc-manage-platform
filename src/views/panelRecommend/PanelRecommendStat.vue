@@ -84,7 +84,8 @@ export default {
         const data = {
           tabId: filter.tabId,
           startDate: chartInfo.startDate,
-          endDate: chartInfo.endDate
+          endDate: chartInfo.endDate,
+          recommendIndex: chartInfo.recommendIndex
         }
         this.$service.getPanelRecommandChart(data).then((result) => {
           this.chartDataList = this.parseChartDataList(result.rows)
