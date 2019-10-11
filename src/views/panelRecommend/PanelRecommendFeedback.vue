@@ -15,7 +15,7 @@
           </el-form>
           <div>
             <div class="tip-empty" v-if="table.isNoData === true">
-              <p>版面在 {{ parseTime(filter.dayTime) }} 没有版块个性化数据</p>
+              <p>该版面在那天没有版块个性化数据</p>
               <p class="tip-how">至少一天之内起始位置不变才能有数据</p>
             </div>
             <div v-else-if="table.isNoData === false">
@@ -94,7 +94,7 @@ export default {
           },
           {
             label: '曝光次数',
-            prop: 'PVNum'
+            prop: 'pvNum'
           },
           {
             label: '点击次数',
@@ -102,15 +102,15 @@ export default {
           },
           {
             label: 'PVCTR',
-            prop: 'PVCTR'
+            prop: 'pvctr'
           },
           {
             label: '曝光次数排名',
-            prop: 'PVRank'
+            prop: 'pvRank'
           },
           {
             label: 'PVCTR排名',
-            prop: 'PVCTRRank'
+            prop: 'pvctrRank'
           }
         ],
         selectionType: 'none',

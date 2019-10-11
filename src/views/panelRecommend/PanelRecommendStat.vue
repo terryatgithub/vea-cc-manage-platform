@@ -58,10 +58,18 @@ export default {
     fetchData () {
       const filter = this.filter
       this.currentChart = undefined
+      this.chartList = null
+      this.chartDataList = null
+      if (!filter.tabId) {
+        return this.$message.error('请输入版面id')
+      }
       this.$service.getPanelRecommandStat(filter)
         .then((result) => {
           const chartList = result.rows
           if (chartList.length > 0) {
+            chartList.forEach(item => {
+              item.id = `${item.tabName}(${item.tabId}) / ${item.startDate} - ${item.endDate} / 从第 ${item.recommendIndex} 个开始` 
+            })
             this.currentChart = chartList[0].id
           }
           this.chartList =  chartList
@@ -76,8 +84,7 @@ export default {
         const data = {
           tabId: filter.tabId,
           startDate: chartInfo.startDate,
-          endDate: chartInfo.endDate,
-          recommendType: chartInfo.recommendType
+          endDate: chartInfo.endDate
         }
         this.$service.getPanelRecommandChart(data).then((result) => {
           this.chartDataList = this.parseChartDataList(result.rows)
