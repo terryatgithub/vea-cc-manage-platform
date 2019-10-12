@@ -223,6 +223,7 @@
           prop-prefix="onclick."
           v-model="form.onclick"
         ></AppParams>
+        <Params v-if="form.appParams" :params="form.appParams" prop-prefix="appParams." />
       </template>
       <template v-else>
         <template v-if="versionHasTitle">
@@ -292,6 +293,7 @@
           v-model="form.onclick"
           label-width="140px"
         />
+        <Params v-if="form.appParams" :params="form.appParams" :readonly="true" />
       </template>
     </el-form>
     <!--海报-->
@@ -324,6 +326,7 @@
 <script>
 import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
+import Params from './Params'
 import PostSelector from './selectResource'
 import ClickSelector from './selectClick'
 import TabSelector from '@/components/selectors/TabSelector'
@@ -352,6 +355,7 @@ export default {
   components: {
     AppParams,
     AppParamsRead,
+    Params,
     PostSelector,
     ClickSelector,
     TabSelector,

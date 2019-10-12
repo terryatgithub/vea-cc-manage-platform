@@ -86,7 +86,7 @@
                     prop="pluginInfo.pluginType"
                     :rules="rules.pluginInfo.pluginType"
                   >
-                    <el-input v-model.trim="block.pluginInfo.pluginType"></el-input>
+                    <el-input :disabled="isReplica" v-model.trim="block.pluginInfo.pluginType"></el-input>
                   </el-form-item>
                 </div>
                 <!--end-->
@@ -122,32 +122,7 @@
                 
                 <div v-if="pluginParentType === 'sign'">
                   <!-- 扩展参数  -->
-                  <el-form-item key="edit-params" label="扩展参数">
-                    <div class="app-extend-params" v-for="(param, index) in block.helper.onclick.params" :key="index">
-                      <el-form-item
-                        label="key:"
-                        label-width="60px"
-                        :prop="'helper.onclick.params.' + index + '.key'"
-                        :rules="rules.params.key"
-                      >
-                        <el-input v-model.trim="param.key"></el-input>
-                      </el-form-item>
-                      <el-form-item
-                        label="value:"
-                        label-width="60px"
-                        :prop="'helper.onclick.params.' + index + '.value'"
-                        :rules="rules.params.value"
-                      >
-                        <el-input v-model.trim="param.value"></el-input>
-                      </el-form-item>
-                      <a class="app-params__remove-param" @click="handleRemoveHelperParam(index)">
-                        <i class="el-icon-minus"></i>
-                      </a>
-                    </div>
-                    <el-button type="primary" plain @click="handleAddHelperParam">
-                      <i class="el-icon-plus"></i>&nbsp;添加
-                    </el-button>
-                  </el-form-item>
+                  <Params prop-prefix="helper.appParams." :params="block.helper.appParams" />
                 </div>
 
                 <div v-if="pluginParentType && pluginParentType !== 'sign'">
@@ -235,25 +210,7 @@
                 </template>
 
                 <div v-if="pluginParentType === 'sign'">
-                  <!-- 扩展参数  -->
-                  <el-form-item key="read-params" label="扩展参数">
-                    <div class="app-extend-params" v-for="(param, index) in block.helper.onclick.params" :key="index">
-
-                      <el-form-item label label-width="0px">
-                        <el-tag>key</el-tag>&nbsp;
-                        <el-tooltip class="item" effect="dark" :content="param.key" placement="top">
-                          <span>{{ param.key }}</span>
-                        </el-tooltip>
-                      </el-form-item>
-                      <el-form-item label label-width="0px">
-                        <el-tag>value</el-tag>&nbsp;
-                        <el-tooltip class="item" effect="dark" :content="param.value" placement="top">
-                          <span>{{ param.value }}</span>
-                        </el-tooltip>
-                      </el-form-item>
-
-                    </div>
-                  </el-form-item>
+                  <Params :params="block.helper.appParams" :readonly="true" />
                 </div>
 
                 <template v-if="pluginParentType !== 'sign'">
@@ -303,6 +260,7 @@ import Gallery from '@/components/Gallery'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import InputMinute from '@/components/InputMinute'
+import Params from './Params'
 const PARENT_TYPES = {
   sign: 'sign', // 标记推荐位
   multi: 'multi',
@@ -318,29 +276,11 @@ export default {
     Gallery,
     PageWrapper,
     PageContentWrapper,
-    InputMinute
+    InputMinute,
+    Params
   },
   props: ['id', 'initMode', 'version', 'contentProps'],
   data() {
-
-    const validateKey = (rule, value, cb) => {
-      if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
-        return cb(new Error('请勿输入特殊或空白字符'))
-      } 
-      // 找到两个 key 是那个值，表明重复
-      const duplicated = this.block.helper.onclick.params.filter(({key}) => key === value).length > 1
-      if (duplicated) {
-        return cb(new Error('key 不能重复'))
-      }
-      cb()
-    }
-    const validateValue = (rule, value, cb) => {
-      if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
-        cb(new Error('请勿输入特殊或空白字符'))
-      } else {
-        cb()
-      }
-    }
 
     return {
       currentIndex: 0,
@@ -372,11 +312,7 @@ export default {
           title: undefined,
           subTitle: undefined,
           // 标记推荐位需要扩展参数
-          onclick: {
-            params: [
-
-            ]
-          },
+          appParams: [],
           webpageUrl: undefined,
           webpageType: '1',
           webpageAppVersion: undefined
@@ -417,16 +353,6 @@ export default {
           { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
         subTitle: [{ max: 100, message: '不超过 100 个字符', trigger: 'blur' }],
-        params: {
-          key: [
-            { required: true, message: '不能为空', trigger: 'blur' },
-            { validator: validateKey, trigger: 'blur' }
-          ],
-          value: [
-            { required: true, message: '不能为空', trigger: 'blur' },
-            { validator: validateValue, trigger: 'blur' }
-          ]
-        }
       }
     }
   },
@@ -518,19 +444,13 @@ export default {
         pluginParentType !== 'builtIn' &&
         (pluginType && pluginType !== 'REFERENCE_MOVIE_VIP')
       )
-    }
+    },
+    isReplica() {
+      return this.mode === 'replicate' || this.block.duplicateVersion === 'yes'
+    },
   },
   watch: {},
   methods: {
-    handleRemoveHelperParam (index) {
-      this.block.helper.onclick.params.splice(index, 1)
-    },
-    handleAddHelperParam () {
-      this.block.helper.onclick.params.push({
-        key: undefined,
-        value: undefined
-      })
-    },
     handleActivatePluginVersion(index) {
       if (this.currentIndex !== index) {
         if (this.mode === 'read') {
@@ -703,9 +623,7 @@ export default {
       pluginInfo.pluginParentType = val
       helper.title = ''
       helper.subTitle = ''
-      helper.onclick = {
-        params: []
-      }
+      helper.appParams = []
     },
     /** 多功能推荐位类型 */
     handleChangePluginType(val) {
@@ -760,12 +678,17 @@ export default {
           clickCount: 5
         }
       }
+      let appParams
+      if (this.pluginParentType === PARENT_TYPES.multi) {
+        appParams = []
+      }
       return Object.assign(
         {
           openMode: 'app',
           pluginDataId: undefined,
           dataType: 5,
           onclick: {},
+          appParams,
           params: 0,
           title: '',
           subTitle: '',
@@ -852,11 +775,11 @@ export default {
       block.rlsInfo.forEach(
         function(item) {
           item.openMode = item.params.split(',')[0].split('==')[1]
+          if (item.appParams) {
+            const appParams = JSON.parse(item.appParams) 
+            item.appParams = Object.keys(appParams).map(key => ({key, value: appParams[key]}))
+          }
           if (item.onclick) {
-            // 标记推荐位的 onclick 数据结构有所不同
-            if (pluginParentType === PARENT_TYPES.sign) {
-              item.onclick = `{"params":${item.onclick}}`
-            }
             item.onclick = this.parseOnclick(JSON.parse(item.onclick))
             const originOnclick = item.onclick
             const paramsIndexed = originOnclick.params.reduce((result, item) => {
@@ -915,8 +838,8 @@ export default {
       }
       // 标记推荐位
       if (pluginParentType === PARENT_TYPES.sign) {
-        if (firstRls.onclick) {
-          helper.onclick = firstRls.onclick
+        if (firstRls.appParams) {
+          helper.appParams = firstRls.appParams
         }
       }
       this.block = {...this.block, ...block}
@@ -932,7 +855,7 @@ export default {
           title: undefined,
           subTitle: undefined,
         }
-        data.rlsInfo[0].onclick = helper.onclick
+        data.rlsInfo[0].appParams = helper.appParams
       }
       data.rlsInfo.forEach(function(item) {
         const originOnclick = item.onclick
@@ -1072,11 +995,14 @@ export default {
             result[p.key] = p.value
             return result
           }, {})
-          if (pluginParentType === PARENT_TYPES.sign) {
-            item.onclick = JSON.stringify(item.onclick.params)
-          } else {
-            item.onclick = JSON.stringify(item.onclick)
-          }
+          item.onclick = JSON.stringify(item.onclick)
+        }
+        if (item.appParams) {
+          item.appParams = item.appParams.reduce(function(result, p) {
+            result[p.key] = p.value
+            return result
+          }, {})
+          item.appParams = JSON.stringify(item.appParams)
         }
         delete item.openMode
       })
@@ -1152,28 +1078,4 @@ export default {
 .gallery-add
   text-align center
   padding-top 20px
-</style>
-
-<style scoped>
-.app-extend-params .el-form-item,
-.app-extend-params .el-form-item__label,
-.app-extend-params .el-form-item__content,
-.app-extend-params .app-params__remove-param {
-  display: inline-block;
-}
-.app-extend-params .el-form-item {
-  margin-bottom: 24px;
-  margin-right: 15px;
-}
-.app-params__remove-param {
-  cursor: pointer;
-  border: 1px solid #999;
-  border-radius: 13px;
-  width: 26px;
-  height: 26px;
-  line-height: 26px;
-  text-align: center;
-  color: #999;
-  margin-left: 5px;
-}
 </style>
