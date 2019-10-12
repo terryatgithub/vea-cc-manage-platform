@@ -50,8 +50,10 @@
             @click.stop="handleRemoveBlock(index)"
           >x</span>
           <!-- 新增时不显示看数据按钮 -->
-          <div class="analyze-data--container" v-if="mode==='read'">
-            <el-button type="success" class="analyze-data--simpleBtn margin-bottom-6" @click.stop="handleAnalyzeSimpleData(index)">看数据</el-button><br/>
+          <div :class="isOverFlow(block.style) ? 'analyze-data--container' : 'analyze-data--container-row'" v-if="mode==='read'">
+            <el-button type="success"
+            class="analyze-data--simpleBtn margin-bottom-6"
+            @click.stop="handleAnalyzeSimpleData(index)">看数据</el-button><br/>
             <el-button 
               type="success" 
               v-if="block.specificContentList && block.specificContentList.length !== 0" 
@@ -220,6 +222,10 @@ export default {
       this.pannelStyle = { height: pannelHeight }
 
       this.blockItems = blockItems
+    },
+    isOverFlow (style) {
+      let height = parseFloat(style.height.slice(0, -2))
+      return height > 96
     }
   },
   created() {
@@ -294,6 +300,9 @@ export default {
 .cc-virtual-pannel__block:hover .analyze-data--container {
   display: block;
 }
+.cc-virtual-pannel__block:hover .analyze-data--container-row {
+  display: flex;
+}
 .cc-virtual-pannel__block--duplicated {
   border: 5px solid red;
 }
@@ -346,9 +355,18 @@ export default {
   left: 0;
 }
 
+.analyze-data--container-row {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 0;
+}
+
 .analyze-data--simpleBtn, 
 .analyze-data--dmpBtn{
   width: 75px;
+  height: 32px;
+  margin-right: 10px;
 }
 
 .margin-bottom-6 {
