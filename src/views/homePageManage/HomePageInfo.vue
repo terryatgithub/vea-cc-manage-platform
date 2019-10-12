@@ -257,8 +257,9 @@ export default {
           const tabItemToShow = tabList[defaultTabIndex > -1 ? defaultTabIndex : 0]
           const hasDefaultTab = defaultTabIndex > -1
           const isNormalTab = tabList.length === 1 && tabItemToShow.dmpInfo === undefined
+          const tabIsFix = tabInfoItem.tabIsFix
           // 只有普通版面和已经设了默认版面的版面组可以默认落焦
-          const canBeDefaultFocusTab = hasDefaultTab || isNormalTab
+          const canBeDefaultFocusTab = tabIsFix && (hasDefaultTab || isNormalTab)
 
           // 如果当前默认落焦不能被设为默认落焦, 则取消当前默认落焦
           if (tabInfoItem.tabIsFocus && !canBeDefaultFocusTab) {
@@ -362,7 +363,7 @@ export default {
                 attrs: {
                   title: canBeDefaultFocusTab
                     ? ''
-                    : '只有普通版面或设了默认版面的定向版面组才能设为默认落焦'
+                    : '只有固定位置，并且是普通版面或设了默认版面的定向版面组才能设为默认落焦'
                 },
                 props: {
                   disabled: !canBeDefaultFocusTab,
@@ -466,10 +467,11 @@ export default {
       const activeTabGroupIndex = this.activeTabGroupIndex
       const homepage = this.homepage
       const tabInfos = homepage.tabInfos 
-      this.$set(tabInfos, activeTabGroupIndex, {
+      const newTabInfoItem = {
         ...tabInfos[activeTabGroupIndex],
-        ...tabInfo
-      })
+        ...tabInfo,
+      }
+      this.$set(tabInfos, activeTabGroupIndex, newTabInfoItem)
     },
     handleSaveDraft() {
       const data = JSON.parse(JSON.stringify(this.homepage))

@@ -227,11 +227,15 @@ export default {
     },
     handleSave() {
       if (this.tabList.length > 0) {
-        this.$emit('set-end', {
+        const tabInfo = {
           tabIsFix: this.tabIsFix,
           tabIsInitInCategory: this.tabIsInitInCategory,
           tabList: this.tabList
-        })
+        }
+        if (this.tabIsFix) {
+          tabInfo.tabIsFocus = 0
+        }
+        this.$emit('set-end', tabInfo)
       } else {
         this.$message({
           type: 'error',
