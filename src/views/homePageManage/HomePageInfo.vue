@@ -41,10 +41,33 @@
               <el-form-item label="首页版面">
                 <TabSelector @select-end="handleSelectTabEnd"/>
                 <el-button type="primary" plain @click="handleCreateTab">新建版面</el-button>
-                <span class="cc-form-annotation marginL remarks">至少选择1个版面</span>
+                <span class="cc-form-annotation marginL remarks margin-right-20">至少选择1个版面</span>
+                <el-form :inline="true" class="tab-group-filter">
+                  <el-form-item label="是否固定位置">
+                    <el-select v-model="tabGroupFilter.tabIsFix" placeholder="请选择">
+                      <el-option
+                        v-for="item in tabGroupFilterOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="初始化是否在首页分类">
+                    <el-select v-model="tabGroupFilter.tabIsInitInCategory" placeholder="请选择">
+                      <el-option
+                        v-for="item in tabGroupFilterOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-form>
                 <OrderableTable
                   v-model="tabGroupList"
                   :header="tabGroupTableHeader"
+                  :filter-fn="tabGroupFilterFn"
                   :hide-action="true"
                   class="orderableTable"
                 />
@@ -69,9 +92,32 @@
                 <span>数据列表配置</span>
               </div>
               <el-form-item label="首页版面">
+                <el-form :inline="true" class="tab-group-filter">
+                  <el-form-item label="是否固定位置">
+                    <el-select v-model="tabGroupFilter.tabIsFix" placeholder="请选择">
+                      <el-option
+                        v-for="item in tabGroupFilterOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="初始化是否在首页分类">
+                    <el-select v-model="tabGroupFilter.tabIsInitInCategory" placeholder="请选择">
+                      <el-option
+                        v-for="item in tabGroupFilterOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-form>
                 <OrderableTable
                   v-model="tabGroupList"
                   :header="tabGroupTableHeader"
+                  :filter-fn="tabGroupFilterFn"
                   :readonly="true"
                   :hide-action="true"
                   class="orderableTable"
@@ -166,7 +212,25 @@ export default {
         homepageName: [{ required: true, message: '请输入首页名称' }],
         homepageModel: [{ required: true, message: '请选择首页模式' }],
         homepageVersion: [{ required: true, message: '请输入首页版本号' }]
-      }
+      },
+      tabGroupFilter: {
+        tabIsFix: -1,
+        tabIsInitInCategory: -1
+      },
+      tabGroupFilterOptions: [
+        {
+          label: '全部',
+          value: -1
+        },
+        {
+          label: '是',
+          value: 1
+        },
+        {
+          label: '否',
+          value: 0
+        }
+      ]
     }
   },
   computed: {
@@ -371,6 +435,12 @@ export default {
   },
   props: ['id', 'initMode', 'version'],
   methods: {
+    tabGroupFilterFn(item) {
+      const { tabIsFix, tabIsInitInCategory } = this.tabGroupFilter 
+      const isMatchTabIsFix = tabIsFix === -1 ? true : (item.tabIsFix === tabIsFix)
+      const isMatchTabIsInitCategory = tabIsInitInCategory === -1 ? true : (item.tabIsInitInCategory === tabIsInitInCategory)
+      return isMatchTabIsFix && isMatchTabIsInitCategory
+    },
     handleSetDefaultFocusTab (defaultFocusIndex) {
       const tabInfos = this.homepage.tabInfos
       tabInfos.forEach((item, index) => {
@@ -605,7 +675,7 @@ export default {
         let tabSequence = 0
         item.tabList.forEach(function(tItem) {
           // 如果只有一个版面，并且版面没有设人群，那它是一个普通的版面
-          if (tItem.dmpInfo === undefined && item.length === 1) {
+          if (tItem.dmpInfo === undefined && item.tabList.length === 1) {
             tabInfoItem.tabId = tItem.tabId
             tabInfoItem.tabSequence = index
           } else {
@@ -716,4 +786,11 @@ export default {
 <style lang='stylus' scoped>
 .el-form-add .orderableTable >>>.el-input
    width 100%
+.tab-group-filter
+  display inline-block
+  >>> .el-form-item
+    margin-bottom 0
+  >>> .el-select
+  >>> .el-input
+    width 200px
 </style>

@@ -101,6 +101,21 @@ export default {
               return row.flag ? '是' : '否'
             }
           },
+          {
+            label: '分类',
+            prop: 'videoCategory',
+          },
+          {
+            label: '不可推荐原因',
+            prop: 'reasonDescribe',
+            render: (h, {row}) => {
+              return (
+                <el-tooltip class="item" effect="dark" content={row.flagReason} placement="top-start">
+                  <span>{row.reasonDescribe}</span>
+                </el-tooltip>
+              )
+            }
+          },
           // {
           //   label: '待审核副本',
           //   width: '100',

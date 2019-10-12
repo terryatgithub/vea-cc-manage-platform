@@ -136,8 +136,12 @@
       </MySubmitTasksList>
       <MultiFunctionBlockInfo
         v-if="mode ==='sysPluginPreview'"
+        class="el-tab-preview"
         init-mode="read"
         :id="previewData.resourceId"
+        :content-props="{
+          menuElId: 'multiFunctionBlock'
+        }"
         @upsert-end="handleUpsertEnd"
         @go-back="goBack">
       </MultiFunctionBlockInfo>
@@ -154,7 +158,7 @@ import HomePageInfo from './../homePageManage/HomePageInfo.vue'
 import PolicyManageInfo from './../homePageManage/PolicyManageInfo'
 import ThemeInfoAdd from './../themeManage/ThemeInfoAdd'
 import GlobalCornerIcon from './../commonModule/GlobalCornerIcon'
-import MultiFunctionBlockInfo from './../blockInfo/MultiFunctionBlockInfo'
+import MultiFunctionBlockInfo from './../blockInfo/SysPluginInfo'
 export default {
   components: {
     MySubmitTasksList: MyReviewTasksList,

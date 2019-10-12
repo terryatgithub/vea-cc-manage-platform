@@ -4,12 +4,12 @@
     <div>
       <el-form :inline="true" @keypress.enter.native.prevent="fetchData" class="filter">
         <el-form-item>
-          <el-input v-model="filter.tabId" clearable placeholder="版面 ID" />
+          <InputPositiveInt v-model="filter.tabId" clearable placeholder="版面 ID" />
         </el-form-item>
         <el-button type="primary" @click="fetchData">查询</el-button>
       </el-form>
       <div v-if="chartList">
-        <el-select v-model="currentChart" style="width: 100%">
+        <el-select v-show="!!chartList.length" v-model="currentChart" style="width: 100%">
           <el-option 
             v-for="item in chartList"
             :key="item.id"
@@ -37,9 +37,11 @@
 </template>
 <script>
 import VeLine from 'v-charts/lib/line.common'
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
   components: {
-    VeLine
+    VeLine,
+    InputPositiveInt
   },
   data () {
     return {
@@ -58,10 +60,18 @@ export default {
     fetchData () {
       const filter = this.filter
       this.currentChart = undefined
+      this.chartList = null
+      this.chartDataList = null
+      if (!filter.tabId) {
+        return this.$message.error('请输入版面id')
+      }
       this.$service.getPanelRecommandStat(filter)
         .then((result) => {
           const chartList = result.rows
           if (chartList.length > 0) {
+            chartList.forEach(item => {
+              item.id = `${item.tabName}(${item.tabId}) / ${item.startDate} - ${item.endDate} / 从第 ${item.recommendIndex} 个开始` 
+            })
             this.currentChart = chartList[0].id
           }
           this.chartList =  chartList
@@ -77,7 +87,7 @@ export default {
           tabId: filter.tabId,
           startDate: chartInfo.startDate,
           endDate: chartInfo.endDate,
-          recommendType: chartInfo.recommendType
+          recommendIndex: chartInfo.recommendIndex
         }
         this.$service.getPanelRecommandChart(data).then((result) => {
           this.chartDataList = this.parseChartDataList(result.rows)

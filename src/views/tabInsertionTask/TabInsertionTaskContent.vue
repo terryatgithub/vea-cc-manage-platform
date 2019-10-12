@@ -120,9 +120,13 @@ export default {
     handleSave () {
       const data = this.$utils.cloneDeep(this.form)
       this.validate(data, () => {
-        this.$service.tabInsertionTaskUpsert(data, '保存成功').then(() => {
-          this.$emit('upsert-end')
-        })
+        this.$confirm('保存后不可修改，确定要保存?', '提示')
+          .then(() => {
+            this.$service.tabInsertionTaskUpsert(data, '保存成功').then(() => {
+              this.$emit('upsert-end')
+            })
+          })
+          .catch(() => {})
       })
     },
     setTabInsertionTask (data) {

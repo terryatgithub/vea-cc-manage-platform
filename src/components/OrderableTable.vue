@@ -1,7 +1,7 @@
 <template>
   <Table
     style="margin-top: 10px"
-    :data="value"
+    :data="tableData"
     :header="tableHeader"
     :props="{border: true}"
     selectionType="none"
@@ -28,20 +28,22 @@ export default {
     tableHeader() {
       const header = (this.header || []).slice()
       const orderHeader = {
-        label: '排序',
+        label: this.orderText || '排序',
         width: 100,
-        render: (h, { $index }) => {
+        render: (h, { row, $index }) => {
+          const realIndex = row._realIndex
+          const index = realIndex === undefined ? $index : realIndex 
           if (this.readonly) {
-            return $index + 1
+            return index + 1
           }
           return h(InputOrder, {
-            key: $index + Math.random().toString(),
+            key: index + Math.random().toString(),
             props: {
-              value: $index + 1
+              value: index + 1
             },
             on: {
               input: (order) => {
-                this.handleChangeOrder($index, order)
+                this.handleChangeOrder(index, order)
               }
             }
           })
@@ -68,9 +70,26 @@ export default {
         header.push(actionHeader)
       }
       return header
+    },
+    tableData () {
+      const filterFn = this.filterFn
+      let rows = this.value || []
+      if (filterFn) {
+        // 如果有过滤函数，对数据进行过滤，并且把索引号暂存起来
+        rows = rows.reduce((result, item, index) => {
+          if (filterFn(item)) {
+            result.push({
+              ...item,
+              _realIndex: index
+            })
+          }
+          return result
+        }, [])
+      }
+      return rows
     }
   },
-  props: ['value', 'header', 'hideAction', 'readonly'],
+  props: ['value', 'header', 'hideAction', 'readonly', 'filterFn', 'orderText'],
   methods: {
     handleChangeOrder(index, order) {
       const dataList = this.value
