@@ -9,7 +9,7 @@
               <el-date-picker type="date" :clearable="false" v-model="filter.dayTime" placeholder="日期" />
             </el-form-item>
             <el-form-item>
-              <el-input v-model="filter.tabId" clearable placeholder="版面 ID" />
+              <InputPositiveInt v-model="filter.tabId" clearable placeholder="版面 ID" />
             </el-form-item>
             <el-button type="primary" @click="fetchData">查询</el-button>
           </el-form>
@@ -50,10 +50,12 @@
 import { Table } from 'admin-toolkit'
 import { cloneDeep } from 'lodash'
 import PanelInfo from '../panelInfo/PanelInfo'
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
   components: {
     Table,
-    PanelInfo
+    PanelInfo,
+    InputPositiveInt
   },
   data () {
     return {
@@ -152,34 +154,9 @@ export default {
       const filter = cloneDeep(this.filter)
       filter.dayTime = this.parseTime(filter.dayTime)
 
-      // const result = {
-      //   total: 1,
-      //   extra: {
-      //     tabId: 123,
-      //     tabName: 'test',
-      //     recommendIndex: 6
-      //   },
-      //   rows: [
-      //     {
-      //       panelId: 1016993,
-      //       panelName: 'test',
-      //       panelVersion: 'V1',
-      //       PVNum: 2,
-      //       clickNum: 3,
-      //       PVCTR: 4,
-      //       PVRank: 5,
-      //       PVCTRRank: 6
-      //   }
-      //   ]
-      // }
-      // const {total, rows, extra} = result
-      // this.pagination.total = total
-      // this.tabInfo = {
-      //   ...this.tabInfo,
-      //   ...extra
-      // }
-      // this.table.data = rows
-      // this.table.isNoData = rows.length === 0
+      if (!filter.tabId) {
+        return this.$message.error('请输入版面 id')
+      }
 
       this.$service.getPanelRecommandFeedback(filter).then(result => {
         const {total, rows, extra} = result
