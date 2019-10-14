@@ -357,14 +357,9 @@ export default {
               return row.tabIsFocus ? '是' : ''
             }
             const canBeDefaultFocusTab = row.canBeDefaultFocusTab
-            return h(
+            let radio = h(
               'el-radio',
               {
-                attrs: {
-                  title: canBeDefaultFocusTab
-                    ? ''
-                    : '只有固定位置，并且是普通版面或设了默认版面的定向版面组才能设为默认落焦'
-                },
                 props: {
                   disabled: !canBeDefaultFocusTab,
                   value: row.tabIsFocus,
@@ -378,6 +373,15 @@ export default {
               },
               ''
             )
+            if (!canBeDefaultFocusTab) {
+              radio = h('el-tooltip', {
+                attrs: {
+                  content: '只有固定位置，并且是普通版面或设了默认版面的定向版面组才能设为默认落焦'
+                }
+              }, [radio])
+            }
+
+            return radio
           }
         },
         {
