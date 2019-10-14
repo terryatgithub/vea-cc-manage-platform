@@ -1,6 +1,10 @@
 <template>
   <div>  
-    <el-form-item label="应用参数">
+    <el-form-item>
+      <div slot="label">
+        应用参数
+        <!-- <el-tooltip content="text"><i class="el-icon-question"></i></el-tooltip> -->
+      </div>
       <div key="edit-params"  v-if="!readonly">
         <div class="app-extend-params" v-for="(param, index) in params" :key="index">
           <el-form-item
@@ -44,6 +48,7 @@
           </el-form-item>
         </div>
       </div>
+      <div class="tips">应用参数与点击事件无关，用于特殊推荐位，例如 话题PK</div>
     </el-form-item>
   </div>
 </template>
@@ -102,6 +107,11 @@ export default {
 }
 </script>
 <style scoped>
+.tips {
+  color: #333;
+  font-size: 12px;
+  font-style: italic;
+}
 .app-extend-params .el-form-item,
 .app-extend-params .el-form-item__label,
 .app-extend-params .el-form-item__content,
