@@ -22,10 +22,20 @@
           :legend-visible="false"
           :extend="handleChartExtend(dmpChartData)"
           :settings="handleChartSettings(dmpChartData)"
+          :events="handleChartEvents(index)"
           :mark-line="markLine"
           :mark-point="markPoint"
         ></VeLine>
       </div>
+    </el-dialog>
+
+    <el-dialog
+      title="推荐位标题变化"
+      :visible.sync="extraVisible"
+      width="30%"
+      class="extra-dia"
+    >
+      <p v-for="(extra, index) in extraArr" :key="index">{{extra}}</p>
     </el-dialog>
   </div>
 </template>
@@ -53,6 +63,7 @@
           return v
         },
         xAxis: {
+          // triggerEvent: true,
           axisLabel: {
             rotate: 45,
             formatter: function(val) {
@@ -95,7 +106,9 @@
       return {
         visible: this.show,
         chartDataArr: [],
-        uvClickTab: 'dailyClickUv'
+        uvClickTab: 'dailyClickUv',
+        extraVisible: false,
+        extraArr: []  // Array< string > 信息细节
       }
     },
 
@@ -154,6 +167,32 @@
           },
         }
       },
+      // 暂时没有extra, e.componentType !== 'xAxis', xAxis: {triggerEvent: false}
+      // 故下面的函数暂时不执行
+      handleChartEvents (index) {
+        let _this = this
+        return {
+          click: function(e) {
+            if (e.componentType === 'xAxis') {
+              let xIndex = _this.chartDataArr[index].data.findIndex(item => {
+                return item.x === e.value
+              })
+              const extra = _this.chartDataArr[index].data[xIndex].extra
+              if (extra && extra.length !== 0) {
+                // 埋点
+                _this.$sendEvent({
+                  type: 'album_version_show'
+                })
+                // 展示
+                _this.extraArr = extra
+                _this.extraVisible = true
+              }
+            }
+          }
+        }
+      }
+
+
     },
 
     created() {},
@@ -181,4 +220,6 @@
   line-height: 44px
   text-align: center
   font-size: 25px
+.extra-dia >>> .el-dialog__body
+  padding 0px 20px 20px
 </style>
