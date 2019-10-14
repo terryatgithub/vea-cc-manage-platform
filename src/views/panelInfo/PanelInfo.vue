@@ -500,7 +500,7 @@ export default {
         return v
       },
       xAxis: {
-        triggerEvent: true,
+        // triggerEvent: true,
         axisLabel: {
           rotate: 45,
           formatter: function(val) {
@@ -803,19 +803,21 @@ export default {
       })
       : extend
     },
+    // 暂时没有extra, e.componentType !== 'xAxis', xAxis: {triggerEvent: false}
+    // 故下面的函数暂时不执行
     handleChartEvents (index, mode) {
       let _this = this
       return {
         click: function(e) {
           const h = _this.$createElement
-          if (e.componentType =='xAxis' && mode === 'edit') {
+          if (e.componentType === 'xAxis' && mode === 'edit') {
             let xIndex = _this.panelChartDataArr[index].data.findIndex(item => {
               return item.x === e.value
             })
-            const extra = _this.panelChartDataArr[index].data.extra
+            const extra = _this.panelChartDataArr[index].data[xIndex].extra
             if (extra && extra.length !== 0) {
               // 埋点
-              this.$sendEvent({
+              _this.$sendEvent({
                 type: 'album_version_show'
               })
               // 展示
