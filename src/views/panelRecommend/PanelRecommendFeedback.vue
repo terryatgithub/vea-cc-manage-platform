@@ -4,14 +4,14 @@
       <ContentCard title="版块个性化推荐反馈" @go-back="$emit('go-back')">
         <span slot="actions"></span>
         <div>
-          <el-form :inline="true" @keypress.enter.native.prevent="fetchData" class="filter">
+          <el-form :inline="true" @submit.native.prevent="" @keypress.enter.native.prevent="$refs.submit.$el.click()" class="filter">
             <el-form-item>
               <el-date-picker type="date" :clearable="false" v-model="filter.dayTime" placeholder="日期" />
             </el-form-item>
             <el-form-item>
-              <InputPositiveInt v-model="filter.tabId" clearable placeholder="版面 ID" />
+              <InputPositiveInt name="tabId" autocomplete="on" v-model="filter.tabId" clearable placeholder="版面 ID" />
             </el-form-item>
-            <el-button type="primary" @click="fetchData">查询</el-button>
+            <el-button ref="submit" type="primary" native-type="submit" @click="fetchData">查询</el-button>
           </el-form>
           <div>
             <div class="tip-empty" v-if="table.isNoData === true">

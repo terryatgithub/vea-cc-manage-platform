@@ -2,11 +2,11 @@
   <ContentCard title="版块个性化推荐核心指标" @go-back="$emit('go-back')">
     <span slot="actions"></span>
     <div>
-      <el-form :inline="true" @keypress.enter.native.prevent="fetchData" class="filter">
+      <el-form :inline="true" @submit.native.prevent="" @keypress.enter.native.prevent="$refs.submit.$el.click()" class="filter">
         <el-form-item>
-          <InputPositiveInt v-model="filter.tabId" clearable placeholder="版面 ID" />
+          <InputPositiveInt name="tabId" autocomplete="on" v-model="filter.tabId" clearable placeholder="版面 ID" />
         </el-form-item>
-        <el-button type="primary" @click="fetchData">查询</el-button>
+        <el-button ref="submit" type="primary" native-type="submit" @click="fetchData">查询</el-button>
       </el-form>
       <div v-if="chartList">
         <el-select v-show="!!chartList.length" v-model="currentChart" style="width: 100%">
@@ -38,10 +38,12 @@
 <script>
 import VeLine from 'v-charts/lib/line.common'
 import InputPositiveInt from '@/components/InputPositiveInt'
+import TabIdSelect from '@/components/TabIdSelect'
 export default {
   components: {
     VeLine,
-    InputPositiveInt
+    InputPositiveInt,
+    TabIdSelect
   },
   data () {
     return {
