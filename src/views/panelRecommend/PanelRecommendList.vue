@@ -107,14 +107,11 @@ export default {
           },
           {
             label: '不可推荐原因',
-            prop: 'reasonDescribe',
-            render: (h, {row}) => {
-              return (
-                <el-tooltip class="item" effect="dark" content={'原因描述: ' + row.reasonDescribe} placement="top-start">
-                  <span>{row.flagReason}</span>
-                </el-tooltip>
-              )
-            }
+            prop: 'flagReason'
+          },
+          {
+            label: '原因描述',
+            prop: 'reasonDescribe'
           },
           // {
           //   label: '待审核副本',
