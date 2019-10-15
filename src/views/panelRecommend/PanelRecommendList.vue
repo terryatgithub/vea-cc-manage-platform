@@ -110,8 +110,8 @@ export default {
             prop: 'reasonDescribe',
             render: (h, {row}) => {
               return (
-                <el-tooltip class="item" effect="dark" content={row.flagReason} placement="top-start">
-                  <span>{row.reasonDescribe}</span>
+                <el-tooltip class="item" effect="dark" content={'原因描述: ' + row.reasonDescribe} placement="top-start">
+                  <span>{row.flagReason}</span>
                 </el-tooltip>
               )
             }
