@@ -171,7 +171,7 @@
               if (extra && extra.length !== 0) {
                 // 埋点
                 _this.$sendEvent({
-                  type: 'album_version_show'
+                  type: 'panel_chart_version_show'
                 })
                 // 展示
                 _this.extraArr = extra
