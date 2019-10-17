@@ -149,3 +149,46 @@ export function getTabChartData(params) {
     params
   })
 }
+
+export function getThirdpartTabInfoDetail(params) {
+  const id = params.id
+  const [from, type] = id.split('-')
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/third/getV6BoardInfo.html',
+    params: {
+      from,
+      type
+    }
+  })
+}
+
+export function updateThirdPartTabAuditType(params) {
+  const id = params.id
+  const [from] = id.split('-')
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/third/switchAuditMode.html',
+    params: {
+      from,
+      enableAuto: params.enableAuto
+    }
+  })
+}
+
+export function updateThirdPartTabAudit(params) {
+  const id = params.id
+  const [from] = id.split('-')
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/third/execAudit.html',
+    params: {
+      from
+    }
+  })
+}
+
+export function getThirdpartTabLayout () {
+  const result = {"data":"{\"contents\":[{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":0,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":0,\"y\":0},{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":550,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":550,\"y\":0},{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":1100,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":1100,\"y\":0},{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":1650,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":1650,\"y\":0},{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":2200,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":2200,\"y\":0}],\"parents\":\"\",\"type\":\"Panel\"}","code":"0","msg":"SUCCESS","timestamp":"1571216178008"}
+  return Promise.resolve(JSON.parse(result.data))
+}
