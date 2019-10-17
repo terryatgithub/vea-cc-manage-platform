@@ -95,16 +95,18 @@ export default {
         })
     },
     fetchData () {
-      this.$service.getThirdpartTabInfoDetail({id: this.id}).then(tabData => {
-        // 当版本相同时，表示已审核
-        tabData.rows.forEach(item => {
-          const layout = JSON.parse(item.layout)
-          // if (layout.type === 'Expander') {
-          //   layout.contents = expanderLayout.contents
-          // }
-          item.layout = layout
+      this.$service.getThirdpartTabLayout().then(expanderLayout => {
+        this.$service.getThirdpartTabInfoDetail({id: this.id}).then(tabData => {
+          // 当版本相同时，表示已审核
+          tabData.rows.forEach(item => {
+            const layout = JSON.parse(item.layout)
+            if (layout.type === 'Expander') {
+              layout.contents = expanderLayout.contents
+            }
+            item.layout = layout
+          })
+          this.tabData = tabData
         })
-        this.tabData = tabData
       })
     }
   },

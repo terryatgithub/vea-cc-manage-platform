@@ -189,6 +189,10 @@ export function updateThirdPartTabAudit(params) {
 }
 
 export function getThirdpartTabLayout () {
-  const result = {"data":"{\"contents\":[{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":0,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":0,\"y\":0},{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":550,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":550,\"y\":0},{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":1100,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":1100,\"y\":0},{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":1650,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":1650,\"y\":0},{\"height\":295,\"parents\":\"\",\"resize\":{\"height\":353,\"width\":522,\"x\":2200,\"y\":0},\"title_align\":0,\"title_info\":{\"height\":58,\"size\":32,\"width\":522},\"type\":\"Block\",\"width\":522,\"x\":2200,\"y\":0}],\"parents\":\"\",\"type\":\"Panel\"}","code":"0","msg":"SUCCESS","timestamp":"1571216178008"}
-  return Promise.resolve(JSON.parse(result.data))
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/third/getLayout.html?layoutModel=Expander&width=522&height=295'
+  }).then(result => {
+    return JSON.parse(result)
+  })
 }
