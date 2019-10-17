@@ -87,6 +87,7 @@ export default {
           this.$service.updateThirdPartTabAudit({id: this.id}, '审核成功').then(() => {
             const tabData = this.tabData
             tabData.currentClientUsedVersion = tabData.currentUpdateVersion
+            this.$emit('upsert-end')
           })
         })
         .catch(() => {

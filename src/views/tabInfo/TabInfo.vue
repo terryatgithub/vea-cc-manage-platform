@@ -708,7 +708,17 @@
     </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'tab'">
+      <JDTabInfo
+        v-if="embedTab.tabType === 4"
+        :title-prefix="title"
+        :id="embedTab.id"
+        :version="embedTab.version"
+        :init-mode="embedTab.mode"
+        @upsert-end="handleTabEmbedBack"
+        @go-back="activePage = 'tab_info'"
+      />
       <TabInfo
+        v-else
         :title-prefix="title"
         :id="embedTab.id"
         :version="embedTab.version"
@@ -777,6 +787,7 @@
 import { getAppIDByTabCategory } from '../../utlis/bizUtil'
 import { Table } from 'admin-toolkit'
 import Var from '@/components/Var'
+import JDTabInfo from './JDTabInfo'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import SourceRadioSelector from '@/components/SourceRadioSelector'
@@ -822,6 +833,7 @@ export default {
     'cc-time-spinner': TimeSpinner,
     'cc-virtual-tab': VirtualTab,
     'cc-crowd-selector': CrowdSelector,
+    JDTabInfo,
     InputPositiveInt,
     Table,
     CommonContent,
@@ -2145,11 +2157,14 @@ export default {
       this.embedTab = undefined
     },
     handlePreviewTab(row, version, index) {
+      const tabType = row.tabType
       this.activePage = 'tab'
       this.embedTab = {
         index: index,
-        id: row.tabId,
+        // 第三方版面
+        id: tabType === 4 ? row.tabRemark : row.tabId,
         version: version,
+        tabType: tabType,
         mode: 'read'
       }
     },
