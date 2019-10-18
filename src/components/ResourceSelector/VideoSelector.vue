@@ -15,7 +15,7 @@
 
     <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
-        <el-form @keypress.enter.native="handleFilterChange" :inline="true" :model="filter" class="search-form-inline" label-width="80px">
+        <el-form @keypress.enter.native="handleFilterChange" :inline="true" :model="filter" class="search-form" label-width="80px">
           <el-form-item label="渠道">
             <CommonSelector v-model="filter.partner" :disabled="disablePartner" :options="$consts.partnerOptions" />
           </el-form-item>
@@ -228,7 +228,7 @@ export default {
             prop: 'segment',
             label: '已选集数',
             type: 'specialBut',
-            width: '100',
+            width: '105',
             mouseStyle: 'hover',
             fixed: 'right',
             render: (h, { row }) => {
@@ -248,7 +248,7 @@ export default {
           {
             prop: 'but',
             label: '操作',
-            width: '100',
+            width: '105',
             fixed: 'right',
             render: (h, { row }) => {
               const ccVideoSourceEntities = row.ccVideoSourceEntities || []
@@ -530,7 +530,9 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.search-form-inline
-  >>> .el-form-item__content
+.search-form >>> 
+  .el-form-item__content
     width 174px
+  .el-form-item
+    margin-bottom 5px
 </style>

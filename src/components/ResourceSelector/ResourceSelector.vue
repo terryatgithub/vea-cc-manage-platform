@@ -111,7 +111,8 @@
 </template>
 
 <script>
-import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
+import RemoteSelectorWrapper from '../SelectorWrapper'
+// import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
 import TopicSelector from './TopicSelector'
 import AppSelector from './AppSelector'
 import BroadcastSelector from './BroadcastSelector'

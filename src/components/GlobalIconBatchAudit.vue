@@ -6,7 +6,7 @@
     @select-start="handleSelectStart">
     <el-button type="primary">一键审核</el-button>
     <div slot="filter">
-      <el-form ref="auditForm" @keypress.enter.native="handleAudit" :inline="true" :model="auditForm" :rules="auditFormRules" label-width="80px">
+      <el-form ref="auditForm" @keypress.enter.native.prevent="handleAudit" :inline="true" :model="auditForm" :rules="auditFormRules" label-width="80px">
         <el-form-item label="审核意见" prop="auditFlag">
           <el-radio v-model="auditForm.auditFlag" label="4">通过</el-radio>
           <el-radio v-model="auditForm.auditFlag" label="5">打回</el-radio>

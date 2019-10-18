@@ -52,12 +52,12 @@
       <el-dialog title="请输入预置推荐位个数" :visible.sync="showBlockCountDialog" :append-to-body="true">
         <el-form
           ref="blockCountForm"
-          @submit.native="emitSelectEnd"
+          @keypress.native.enter.prevent="emitSelectEnd"
           :model="formBlock"
           :rules="formBlockRules"
         >
           <el-form-item label="推荐位个数" prop="count">
-            <el-input @keypress.prevent.stop v-model.number="formBlock.count" :placeholder="blockCountPlaceholder"></el-input>
+            <el-input ref="blockCount" @keypress.prevent.stop v-model.number="formBlock.count" :placeholder="blockCountPlaceholder"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -261,6 +261,9 @@ export default {
         this.selectedLayout = selected
         if (type === 'Expander' || type === 'Lengthwise') {
           this.showBlockCountDialog = true
+          this.$nextTick(() => {
+            this.$refs.blockCount.focus()
+          })
         } else {
           this.emitSelectEnd()
         }
