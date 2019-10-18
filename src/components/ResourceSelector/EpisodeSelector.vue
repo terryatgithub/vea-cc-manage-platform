@@ -11,6 +11,7 @@
       :selection-type="selectionType"
       :table="table"
       :pagination="pagination"
+      :select-end-on-dbl-click="true"
       @pagination-change="fetchData"
       @filter-reset="handleFilterReset"
       @select-cancel="handleSelectCancel"
@@ -148,7 +149,17 @@ export default {
       selected: []
     }
   },
-  props: ['selectionType', 'source', 'id'],
+  props: {
+    selectionType: {
+      type: String,
+      default () {
+        return 'single'
+      },
+    },
+    source: String,
+    id: [String, Number],
+  },
+  // props: ['selectionType', 'source', 'id'],
   methods: {
     secondToTimeStr(seconds) {
       if (seconds) {
