@@ -36,7 +36,16 @@
     </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'tab'">
+      <JDTabInfo
+        v-if="embedTab.tabType === 4"
+        :title-prefix="title"
+        :id="embedTab.id"
+        :version="embedTab.version"
+        :init-mode="embedTab.mode"
+        @upsert-end="handleTabEmbedBack"
+        @go-back="handleTabEmbedBack" />
       <TabInfo
+        v-else
         :title-prefix="title"
         :id="embedTab.id"
         :version="embedTab.version"
@@ -53,6 +62,7 @@ import PageContentWrapper from '@/components/PageContentWrapper'
 import TabSelector from '@/components/selectors/TabSelector.vue'
 import OrderableTable from '@/components/OrderableTable.vue'
 import TabInfo from '@/views/tabInfo/TabInfo'
+import JDTabInfo from '@/views/tabInfo/JDTabInfo'
 import CrowdSelector from '@/components/CrowdSelector.vue'
 import titleMixin from '@/mixins/title'
 import { cloneDeep } from 'lodash'
@@ -64,6 +74,7 @@ export default {
     TabSelector,
     OrderableTable,
     TabInfo,
+    JDTabInfo,
     CrowdSelector
   },
   data() {
@@ -244,10 +255,12 @@ export default {
       }
     },
     handlePreviewTab(row, index) {
+      const tabType = row.tabType
       this.activePage = 'tab'
       this.embedTab = {
         index: index,
-        id: row.tabId,
+        id: tabType === 4 ? row.tabRemark : row.tabId,
+        tabType: row.tabType,
         version: row.currentVersion,
         mode: 'read'
       }

@@ -80,6 +80,10 @@ export function tabIconList() {
 }
 
 export function tabInfoGet(params) {
+  const id = params.id
+  if (!/^\d+$/.test(id)) {
+    return this.getThirdpartTabInfoDetail(params)
+  }
   return this.fetch({
     method: 'post',
     url: 'api/v1/tab/getDetailInfo.html',

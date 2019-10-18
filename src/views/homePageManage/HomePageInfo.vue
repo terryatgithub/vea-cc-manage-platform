@@ -140,7 +140,17 @@
     </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'tab'">
+      <JDTabInfo
+        v-if="embedTab.tabType === 4"
+        :title-prefix="title"
+        :id="embedTab.id"
+        :version="embedTab.version"
+        :init-mode="embedTab.mode"
+        @upsert-end="handleTabEmbedBack"
+        @go-back="activePage = 'tab_info'"
+      />
       <TabInfo
+        v-else
         :title-prefix="title"
         :id="embedTab.id"
         :version="embedTab.version"
