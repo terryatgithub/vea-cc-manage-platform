@@ -2157,16 +2157,20 @@ export default {
       this.embedTab = undefined
     },
     handlePreviewTab(row, version, index) {
-      const tabType = row.tabType
-      this.activePage = 'tab'
-      this.embedTab = {
-        index: index,
-        // 第三方版面
-        id: tabType === 4 ? row.tabRemark : row.tabId,
-        version: version,
-        tabType: tabType,
-        mode: 'read'
-      }
+      const tabId = row.tabId
+      this.$service.tabInfoGetBase({id: tabId}).then(baseInfo => {
+        const tabType = baseInfo.tabType
+        const tabRemark = baseInfo.tabRemark
+        this.activePage = 'tab'
+        this.embedTab = {
+          index: index,
+          // 第三方版面
+          id: tabType === 4 ? tabRemark : tabId,
+          version: version,
+          tabType: tabType,
+          mode: 'read'
+        }
+      })
     },
     handleShowTimeShelf() {
       const data = this.getFormData()

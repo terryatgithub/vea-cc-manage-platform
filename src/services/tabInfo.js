@@ -91,6 +91,14 @@ export function tabInfoGet(params) {
   })
 }
 
+export function tabInfoGetBase(params) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/tab/getSimpleInfo.html',
+    params
+  })
+}
+
 export function tabInfoUpsert(data) {
   return this.fetch({
     method: 'post',

@@ -255,15 +255,19 @@ export default {
       }
     },
     handlePreviewTab(row, index) {
-      const tabType = row.tabType
-      this.activePage = 'tab'
-      this.embedTab = {
-        index: index,
-        id: tabType === 4 ? row.tabRemark : row.tabId,
-        tabType: row.tabType,
-        version: row.currentVersion,
-        mode: 'read'
-      }
+      const tabId = row.tabId
+      this.$service.tabInfoGetBase({id: tabId}).then(baseInfo => {
+        const tabType = baseInfo.tabType
+        const tabRemark = baseInfo.tabRemark
+        this.activePage = 'tab'
+        this.embedTab = {
+          index: index,
+          id: tabType === 4 ? tabRemark : tabId,
+          tabType: tabType,
+          version: row.currentVersion,
+          mode: 'read'
+        }
+      })
     },
     handleTabEmbedBack() {
       const { index, id } = this.embedTab
