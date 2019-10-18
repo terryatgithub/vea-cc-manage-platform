@@ -17,10 +17,8 @@
       <el-form-item label="内容搜索">
         <el-input v-model="filter.pTitle"/>
       </el-form-item>
-      <div style="text-align: center">
-        <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
-        <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
-      </div>
+      <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
+      <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
     </el-form>
   </BaseSelector>
 </template>

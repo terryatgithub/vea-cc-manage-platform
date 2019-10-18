@@ -1,5 +1,5 @@
 <template>
-  <div class="resource-manager-wrapper">
+  <TabPage>
     <ResourceList
       v-show="isShowList"
       ref="list"
@@ -19,11 +19,13 @@
       @upsert-end="handleUpsertEnd"
       @go-back="goBack"
     />
-  </div>
+  </TabPage>
 </template>
 <script>
+import TabPage from '@/components/TabPage'
 export default {
   components: {
+    TabPage,
     ResourceList: () => {},
     ResourceContent: () => {}
   },

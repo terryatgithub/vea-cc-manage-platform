@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <TabPage>
     <BroadcastBlockList
      v-show="isShowList"
      ref="list"
@@ -17,13 +17,15 @@
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </BroadcastBlockInfo>
-  </div>
+  </TabPage>
 </template>
 <script>
+import TabPage from '@/components/TabPage'
 import BroadcastBlockList from './BroadcastBlockList'
 import BroadcastBlockInfo from './BroadcastBlockInfo'
 export default {
   components: {
+    TabPage,
     BroadcastBlockInfo,
     BroadcastBlockList
   },

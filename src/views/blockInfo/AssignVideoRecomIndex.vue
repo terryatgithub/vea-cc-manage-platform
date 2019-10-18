@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <TabPage>
     <AssignVideoRecomList
       v-show="isShowList"
       ref="list"
@@ -18,13 +18,15 @@
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </AssignVideoRecomInfo>
-  </div>
+  </TabPage>
 </template>
 <script>
+import TabPage from '@/components/TabPage'
 import AssignVideoRecomList from './AssignVideoRecomList'
 import AssignVideoRecomInfo from './AssignVideoRecomInfo'
 export default {
   components: {
+    TabPage,
     AssignVideoRecomInfo,
     AssignVideoRecomList
   },

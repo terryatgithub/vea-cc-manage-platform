@@ -30,7 +30,7 @@ export default {
         this.$el.scroll({top: 0})
       } else {
         this.modals = modals.filter(item => item !== id)
-        if (modals.length <= 0 && this.originScrollTop !== undefined) {
+        if (this.modals.length <= 0 && this.originScrollTop !== undefined) {
           this.$el.scroll({top: this.originScrollTop})
         }
       }
