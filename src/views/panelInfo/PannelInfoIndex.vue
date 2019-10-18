@@ -1,5 +1,5 @@
 <template>
-  <div class="resource-manager-wrapper">
+  <TabPage>
     <PanelInfoList
       v-show='isShowList'
       ref="list"
@@ -18,14 +18,16 @@
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </PanelInfo>
-  </div>
+  </TabPage>
 </template>
 <script>
+import TabPage from '@/components/TabPage'
 import PanelInfo from './PanelInfo'
 import PanelInfoList from './PanelInfoList'
 const idField = 'pannelGroupId'
 export default {
   components: {
+    TabPage,
     PanelInfo,
     PanelInfoList
   },

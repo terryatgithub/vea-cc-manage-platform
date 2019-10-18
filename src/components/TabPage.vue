@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'tab-page': true, 'tab-page--lock-scroll': modals.length > 0 }">
+  <div :class="{'tab-page-local': true, 'tab-page--lock-scroll': modals.length > 0 }">
     <slot></slot>
   </div>
 </template>
@@ -30,7 +30,7 @@ export default {
         this.$el.scroll({top: 0})
       } else {
         this.modals = modals.filter(item => item !== id)
-        if (modals.length <= 0 && this.originScrollTop !== undefined) {
+        if (this.modals.length <= 0 && this.originScrollTop !== undefined) {
           this.$el.scroll({top: this.originScrollTop})
         }
       }
@@ -40,7 +40,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.tab-page
+.tab-page-local
   position relative
   height 100%
   overflow auto

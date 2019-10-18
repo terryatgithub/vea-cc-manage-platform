@@ -86,11 +86,11 @@
                 <el-button
                   :disabled="mode === 'edit' && fileInfo.length >=1"
                   type="primary"
-                  plain
                   class="upload-pic-list__add"
                   @click="$refs.upload.handleSelectFile()">
                   点击选择图片
                 </el-button>
+                <el-button @click="showPicTypeSelector=true"   type="primary" plain>批量设置分类</el-button>
               </template>
             </Upload>
           </el-form>
@@ -116,6 +116,19 @@
             </el-form-item>
           </el-form>
         </div>
+
+        <el-dialog
+          class="global-pic-type-selector"
+          title="选择素材类型"
+          size="tiny"
+          :visible.sync="showPicTypeSelector">
+          <el-tag
+            v-for="(item, index) in  attributes"
+            :key="index"
+            @click.native="handleBatchSetPicType(item)">
+            {{ item.typeName }}
+          </el-tag>
+        </el-dialog>
       </CommonContent>
     </ContentCard>
 </template>
@@ -134,6 +147,7 @@ export default {
     return {
       mode: 'create',
       resourceName: '角标',
+      showPicTypeSelector: false,
       fileInfo: [],
       attributes: [], // 角标分类
       attributesIndexed: [],
@@ -288,6 +302,13 @@ export default {
       this.fileInfo = this.fileInfo.filter(function(item, i) {
         return i !== index
       })
+    },
+    handleBatchSetPicType(type) {
+      const typeId = type.typeId
+      this.fileInfo.forEach(function(item) {
+        item.typeRls.typeId = typeId
+      })
+      this.showPicTypeSelector = false
     }
   },
   created() {
