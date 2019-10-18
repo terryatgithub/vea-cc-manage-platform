@@ -49,20 +49,24 @@
         <el-form-item label="图片海报" :rules="rules.required">
           <div class="poster--wrapper">
             <div v-for="(picPoster, index) in inputTags" class="poster--container">
-              <div 
-                :style="computePicStyle(picPoster.width, picPoster.height)" 
-                class="poster--pic"
-                @click="handlePicClick(index)"
-              >
-                <img
-                  ref="img"
-                  v-if="value.picInfoList[index] && value.picInfoList[index].pictureUrl"
-                  class="poster-image"
-                  referrerpolicy="no-referrer"
-                  :src="value.picInfoList[index].pictureUrl"
-                />
-                <i class="el-icon-close poster--del" @click.stop="handleDelPoster(index)"/>
-              </div>
+              <GlobalPictureSelector
+                :disabled="disabled"
+                :picture-resolution="formatPicResolution(picPoster.width, picPoster.height)"
+                @select-end="handleSelectPostEnd($event, index)">
+                <div 
+                  :style="computePicStyle(picPoster.width, picPoster.height)" 
+                  class="poster--pic"
+                >
+                  <img
+                    ref="img"
+                    v-if="value.picInfoList[index] && value.picInfoList[index].pictureUrl"
+                    class="poster-image"
+                    referrerpolicy="no-referrer"
+                    :src="value.picInfoList[index].pictureUrl"
+                  />
+                  <i class="el-icon-close poster--del" @click.stop="handleDelPoster(index)"/>
+                </div>
+              </GlobalPictureSelector>
             </div>
           </div>
           <div v-if="inputTags.length!==0">
@@ -104,19 +108,6 @@
       </el-form>
     </div>
 
-    <!-- 海报弹框  -->
-    <el-dialog :visible.sync="isVisiablePosterSelector" width="1200px">
-      <DialogPicture
-        :pictureResolution="computeResolution()"
-        v-if="isVisiablePosterSelector"
-        v-model="currentSelectPic"
-      ></DialogPicture>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="isVisiablePosterSelector = false">取 消</el-button>
-        <el-button type="primary" @click="savePicture">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!-- 海报弹框 end -->
   </div>
 </template>
   
@@ -229,13 +220,11 @@ export default {
         height: height/2 +'px'
       }
     },
-    savePicture() {
-      const { currentPicIndex, currentSelectPic } = this
-      // 因为picInfoList的index随input-tags动态生成，故可以直接赋值
-      this.value.picInfoList[currentPicIndex].pictureUrl = currentSelectPic.pictureUrl
-      this.currentPicIndex = undefined
-      this.currentSelectPic = undefined
-      this.isVisiablePosterSelector = false
+    formatPicResolution (width, height) {
+      return width + '*' + height
+    },
+    handleSelectPostEnd (selected, index) {
+      this.value.picInfoList[index].pictureUrl = selected.pictureUrl
     },
     handlePicClick(index) {
       if(this.disabled) {
