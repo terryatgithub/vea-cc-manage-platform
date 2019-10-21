@@ -6,6 +6,7 @@
     :selection-type="selectionType"
     :table="table"
     :pagination="pagination"
+    :select-end-on-dbl-click="true"
     @pagination-change="fetchData"
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
