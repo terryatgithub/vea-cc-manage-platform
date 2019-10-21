@@ -34,6 +34,10 @@ import { ContentWrapper, Table, utils } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 import BroadcastSimpleData from './BroadcastSimpleData'
 
+const typeOption = {
+  normal: '普通', child: '少儿', movie: '电影', series: '电视剧'
+}
+
 export default {
   extends: BaseList,
   components: {
@@ -57,11 +61,14 @@ export default {
           {
             label: '指定影片推荐流ID',
             prop: 'id',
-            sortable: true
+            sortable: true,
+            width: '100px',
+            fixed: 'left'
           },
           {
             label: '指定影片推荐流名称',
             prop: 'name',
+            fixed: 'left',
             render: (h, { row }) => {
               return h(
                 'el-button',
@@ -91,6 +98,13 @@ export default {
             prop: 'openStatus',
             render: (h, { row }) => {
               return ['关闭', '开启'][row.openStatus]
+            }
+          },
+          {
+            label: '流类型',
+            prop: 'type',
+            formatter: row => {
+              return typeOption[row.type] || '普通'
             }
           },
           {
@@ -211,6 +225,12 @@ export default {
         })
         this.table.data = data.rows
       })
+    },
+    keyAndValueExchage (obj) {
+      return Object.keys(obj).reduce((result, key) => {
+        result[obj[key]] = key
+        return result
+      }, {})
     }
   },
   created() {
@@ -225,16 +245,28 @@ export default {
       }),
       source: _.o.enum(this.$consts.sourceOptionsWithNoneEnums).other('form', {
         component: 'Select',
-        placeholder: '内容源'
+        placeholder: '内容源',
+        clearable: true
       }),
       openStatus: _.o.enum({'开启': 1, '关闭': 0}).other('form', {
         component: 'Select',
-        placeholder: '源状态'
+        placeholder: '源状态',
+        clearable: true
+      }),
+      status: _.o.enum(this.$consts.statusEnums).other('form', {
+        component: 'Select',
+        placeholder: '审核状态',
+        clearable: true
+      }),
+      type: _.o.enum(this.keyAndValueExchage(typeOption)).other('form', {
+        component: 'Select',
+        placeholder: '流类型',
+        clearable: true
       })
     }).other('form', {
       layout: 'inline',
       cols: {
-        item: 5,
+        item: 6,
         label: 0,
         wrapper: 20
       },

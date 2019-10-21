@@ -10,6 +10,23 @@
             <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
+        
+        <el-form-item label="流类型">
+          <el-select v-model="createForm.type" placeholder="请选择">
+            <el-option-group
+              v-for="group in streamTypeGroup"
+              :key="group.label"
+              :label="group.label">
+              <el-option
+                v-for="item in group.options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-option-group>
+          </el-select>
+          <div v-if="createForm.type !== 'normal'" class="type-tip">Tip：基本流仅适用于标准尺寸的推荐位 (标准尺寸：260*364，498*280)</div>
+        </el-form-item>
       </el-form>
       <div class="base-info">
         创建流后，默认是关闭状态的。填充完内容后，找产品或开发去开启状态;
@@ -51,6 +68,9 @@
             <el-radio-group :value="basicForm.source" :disabled="isRead || isReplica" @input="handleSourceChange">
               <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
             </el-radio-group>
+          </el-form-item>
+          <el-form-item label="流类型">
+            {{basicForm.type}}
           </el-form-item>
           <el-form-item label="流状态">
             {{['关闭', '开启'][basicForm.openStatus]}}
@@ -135,6 +155,34 @@ import titleMixin from '@/mixins/title'
 import { cloneDeep } from 'lodash'
 const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picInfoList']  // picInfoList兼容预览，可转换为picList
 const params = ['name', 'source', 'status']
+const streamTypeGroupOption = [
+  {
+    label: '普通流',
+    options: [
+      {
+        label: '普通',
+        value: 'normal'
+      }
+    ]
+  },
+  {
+    label: '基本流',
+    options: [
+      {
+        label: '电影',
+        value: 'movie'
+      },
+      {
+        label: '电视剧',
+        value: 'series'
+      },
+      {
+        label: '少儿',
+        value: 'child'
+      },
+    ]
+  }
+]
 
 export default {
   mixins: [titleMixin],
@@ -149,7 +197,8 @@ export default {
       resourceName: '指定影片推荐流',
       createForm: {
         name: '',
-        source: 'o_tencent'
+        source: 'o_tencent',
+        type: 'normal'
       },
       mode: 'create',
       basicForm: {
@@ -178,7 +227,8 @@ export default {
         ]
       },
       videoListParams,  // 必填参数
-      params
+      params,
+      streamTypeGroup: streamTypeGroupOption
     }
   },
 
@@ -811,6 +861,7 @@ export default {
       basicForm.id = data.id
       basicForm.name = data.name
       basicForm.openStatus = data.openStatus
+      basicForm.type = data.type
       basicForm.currentVersion = data.currentVersion
       basicForm.duplicateVersion = data.duplicateVersion
       basicForm.status = data.status
@@ -850,47 +901,54 @@ export default {
 }
 </script>
 
-<style  type="stylus" scoped>
-.base-info {
-  margin: 10px 0;
-  padding: 10px;
-  font-size: 13px;
-  border: 1px solid #e7e4c2;
-  background: #fef8b8;
-}
-.el-row .el-button {
-  width: 85px;
-}
-.createBtn-container {
-  margin: 27px 0 0 27px;
-}
-.video-select--header {
-  margin: 20px 0;
-}
-.num-input {
-  width: 100px;
-  margin: 0 20px;
-}
-.title-input {
-  width: 357px;
-}
-.text-center-align {
-  text-align: center;
-}
-.size-btn-group {
-  margin-top: 20px;
-}
-.size-btn-group .el-button{
-  width: 85px;
-}
-.size-tag {
-  margin-left: 10px;
-}
-.videoTab--wrapper {
-  width: 80%;
-  margin: 20px;
-}
-.batch-btn {
-  margin: 0 10px;
-}
+<style lang="stylus" scoped>
+.base-info 
+  margin 10px 0
+  padding 10px
+  font-size 13px
+  border 1px solid #e7e4c2
+  background #fef8b8
+
+.el-row .el-button 
+  width 85px
+
+.createBtn-container 
+  margin 27px 0 0 27px
+
+.video-select--header 
+  margin 20px 0
+
+.num-input 
+  width 100px
+  margin 0 20px
+
+.title-input 
+  width 357px
+
+.text-center-align 
+  text-align center
+
+.size-btn-group 
+  margin-top 20px
+
+.size-btn-group .el-button
+  width 85px
+
+.size-tag 
+  margin-left 10px
+
+.videoTab--wrapper 
+  width 80%
+  margin 20px
+
+.batch-btn 
+  margin 0 10px
+
+.type-tip
+  display inline-block
+  margin 0 5px
+  border 1px solid #e7e4c2
+  background #fef8b8
+  padding 0 5px
+  font-size 10px
 </style>
