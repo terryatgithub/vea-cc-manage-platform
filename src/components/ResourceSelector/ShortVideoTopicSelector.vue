@@ -8,6 +8,7 @@
     :pagination="pagination"
     :filter="filter"
     :filter-schema="filterSchema"
+    :select-end-on-dbl-click="true"
     @pagination-change="fetchData"
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
