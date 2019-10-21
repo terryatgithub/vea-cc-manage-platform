@@ -234,7 +234,7 @@
           >
           </el-switch>
         </el-form-item>
-        <el-form-item v-if="isShowConfigBg" label="背景视频" prop="bgParams.id" :rules="requiredRules.required">
+        <el-form-item v-if="isShowConfigBg" label="背景视频" prop="bgParams.id">
           <ResourceSelector
             ref="resourceSelector"
             v-if="!isReadonly"
@@ -252,7 +252,7 @@
           </el-tag>
         </el-form-item>
 
-        <el-form-item v-if="isShowConfigBg" label="背景图" prop="bgImgUrl" :rules="requiredRules.required">
+        <el-form-item v-if="isShowConfigBg" label="背景图" prop="bgImgUrl">
           <GlobalPictureSelector
             :disabled="isReadonly"
             @select-end="handleSelectBgEnd">
@@ -425,37 +425,15 @@
           <AppParamsRead v-else :value="contentForm.redundantParams" />
         </template>
       </template>
-      <el-form-item label="开启推荐位个性化推荐" v-if="contentForm.coverType !== 'block'">
-        <el-switch
-          :disabled="isReadonly"
-          :value="!!contentForm.flagSetRec" 
-          @input="handleInputFlagSetRec"
-          active-color="#13ce66"
-          inactive-color="grey"
-        >
-        </el-switch>
-      </el-form-item>
-      <template v-if="!!contentForm.flagSetRec">
-        <el-form-item label="推荐流选择" :rules="requiredRules.required">
-          <el-button type="primary" @click="isVisiableRecom = true" :disabled="isReadonly">选择推荐流</el-button>
-          <el-tag
-            v-if="contentForm.mediaAutomationBlockRls.mediaAutomationId"
-            type="primary" 
-            closable
-            @close="handleDelStreamTag"
-          >
-            {{contentForm.mediaAutomationBlockRls.mediaAutomationId}}
-          </el-tag>
-        </el-form-item>
-        <el-form-item label="刷新机制" :rules="requiredRules.required">
-          <InputPositiveInt 
-            v-model="contentForm.mediaAutomationBlockRls.refreshCal" 
-            class="flashCountInput"
-            :disabled="isReadonly"
-          />
-          客户端曝光X次之后刷新推荐位
-        </el-form-item>
-      </template>
+      <PersonalRecommend
+        ref="personalRecommend"
+        :value="contentForm"
+        :disabled="isReadonly"
+        :recom-stream-tags="recomStreamTags"
+        @open-dialog="handleFetchRecomStream"
+        @select-end="handleSelectRecomStream"
+        @flag-set-change="handleInputFlagSetRec"
+      />
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
         <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
       </el-form-item>
@@ -483,17 +461,6 @@
       @close="showBlockTagDialog = false">
     </TagFrame>
 
-    <!-- 推荐流弹框  -->
-    <el-dialog title="推荐流" :visible.sync="isVisiableRecom" width="40%" @open="fetchRecomStream">
-      <el-tag 
-      v-for="(tag, index) in recomStreamTags" 
-      size="medium"
-      class="recomTag cursor-tip"
-      :key="index" 
-      @click="handleSelectRecomStream(index)"
-      >{{tag.name}}</el-tag>
-    </el-dialog>
-    <!-- 推荐流弹框 end -->
   </div>
 </template>
 
@@ -512,6 +479,7 @@ import ClickEventSelector from '@/components/selectors/ClickEventSelector'
 import TagFrame from '../TagFrame'
 import { getSelectedResource, chopSubTitle, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
 import InputPositiveInt from '@/components/InputPositiveInt'
+import PersonalRecommend from '@/components/PersonalRecommend'
 export default {
   components: {
     Upload,
@@ -526,7 +494,8 @@ export default {
     ClickEventSelector,
     AppParamsRead,
     TagFrame,
-    InputPositiveInt
+    InputPositiveInt,
+    PersonalRecommend
   },
   data() {
     const isReadonly = this.isReadonly
@@ -597,7 +566,6 @@ export default {
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
       isShowConfigBg: false,  //高清图配置项是否隐藏
       recomStream: undefined,
-      isVisiableRecom: false,
       recomStreamTags: [],
       contentRule: {
         bgImgUrl: [
@@ -610,7 +578,8 @@ export default {
                 cb()
               }
             }
-          }
+          },
+          { required: true, message: '当开关开启时必填' }
         ],
         webpageUrl: [
           { required: true, validator: checkWebpageUrl, trigger: 'blur' }
@@ -677,10 +646,14 @@ export default {
         secKillPrice: [
           { required: false, validator: checkSecKill, trigger: 'blur' }
         ],
-        dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }]
-      },
-      requiredRules: {
-        required: [{required: true, message: '当开关开启时必填'}]
+        dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }],
+        'mediaAutomationBlockRls.mediaAutomationId': [
+          { required: true, message: '当开关开启时必填' }
+        ],
+        'mediaAutomationBlockRls.refreshCal': [
+          { required: true, message: '当开关开启时必填', trigger: 'blur' }
+        ],
+        'bgParams.id': [{ required: true, message: '当开关开启时必填' }]
       }
     }
   },
@@ -803,10 +776,8 @@ export default {
       })
     },
     handleInputFlagSetRec (val) {
-      const contentForm = this.contentForm
-      contentForm.flagSetRec = val ? 1 : 0
       if (!val) {
-        contentForm.mediaAutomationBlockRls = {
+        this.contentForm.mediaAutomationBlockRls = {
           refreshCal: 1,
           mediaAutomationId: '',
           blockType: 'normal'
@@ -1099,28 +1070,29 @@ export default {
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined
     },
     handleSelectRecomStream(index) {
-      let picSize = this.recomStreamTags[index].picSize
-      let isMatchSize = picSize.some(item => {
-        let resolutionStr = this.resolution[0] + '*' + this.resolution[1]
-        return resolutionStr === item
-      })
-      if(isMatchSize) {
-        this.contentForm.mediaAutomationBlockRls.mediaAutomationId = this.recomStreamTags[index].id
-        this.isVisiableRecom = false
-      }else {
-        this.$message.error("该流无法匹配此推荐位的海报图尺寸")
-      }
+      this.contentForm.mediaAutomationBlockRls.mediaAutomationId = this.recomStreamTags[index].id
+      this.$refs.personalRecommend.isVisiableRecom = false
     },
-    fetchRecomStream() {
+    handleFetchRecomStream() {
       let params = {
         page: 1, 
-        rows: 20,
+        rows: 100,
         source: this.source || undefined
       }
+      const currentSize = this.resolution[0] + '*' + this.resolution[1]
       this.$service.getMediaAutomationDataList(params).then(data => {
         this.recomStreamTags = data.rows.filter(item => {
-          return item.openStatus !== 0
+          if (item.openStatus === 0) { // 流状态关闭
+            return false
+          } else {
+            return item.picSize.some(size => {
+              return currentSize === size
+            })
+          }
         })
+        if (this.recomStreamTags.length === 0) {
+          this.$message('流状态关闭，尺寸不匹配，或者暂无该内容源的推荐流');
+        }
       })
     }
   },
@@ -1140,109 +1112,80 @@ export default {
 }
 </script>
 
-<style scoped>
-.block-content-form >>> .el-input {
-  max-width: 280px;
-}
-.post-box {
-  border: 1px solid #ccc;
-  overflow: hidden;
-}
-.post-box img {
-  width: 100%;
-}
-.post-info {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 5px;
-  line-height: 20px;
-  font-size: 12px;
-  background: #000;
-  opacity: 0.8;
-  color: #fff;
-}
+<style lang="stylus" scoped>
+.block-content-form >>> .el-input
+  max-width 280px
+.post-box
+  border 1px solid #ccc
+  overflow hidden
+.post-box img
+  width 100%
+.post-info
+  position absolute
+  bottom 0
+  width 100%
+  box-sizing border-box
+  padding 0 5px
+  line-height 20px
+  font-size 12px
+  background #000
+  opacity 0.8
+  color #fff
 .post-info .post-title,
-.post-info .post-sub-title {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
+.post-info .post-sub-title
+  white-space nowrap
+  text-overflow ellipsis
+  overflow hidden
 .post-info .episode,
-.post-info .score {
-  position: absolute;
-  top: -20px;
-  background: #000;
-  padding: 0 5px;
-}
-.post-info .score {
-  right: 0;
-}
-.post-info .episode {
-  left: 0;
-}
-.cursor-tip {
-  cursor: pointer;
-}
-
-.corner-box {
-  position: relative;
-}
-
-.corner-box span.corner {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.corner-box span.corner img {
-  width: 100%;
-  height: 100%;
-}
-
-.corner-box span.corner-0 {
-  top: 0;
-  left: 0;
-}
-
-.corner-box span.corner-1 {
-  top: 0;
-  right: 0;
-}
-
-.corner-box span.corner-2 {
-  bottom: 0;
-  right: 0;
-}
-
-.corner-box span.corner-3 {
-  bottom: 0;
-  left: 0;
-}
-
-.corner-add-icon-wrapper {
-  height: 24px;
-  padding: 0 8px;
-  line-height: 22px;
-  color: #12ce66;
-  border: 1px solid #12ce66;
-  background: #fff;
-}
-
-.corner-img-wrapper {
-  position: relative;
-}
-
-.corner-img-wrapper i {
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #ff4949;
-  font-size: 20px;
-}
+.post-info .score
+  position absolute
+  top -20px
+  background #000
+  padding 0 5px
+.post-info .score
+  right 0
+.post-info .episode
+  left 0
+.cursor-tip
+  cursor pointer
+.corner-box
+  position relative
+.corner-box span.corner
+  position absolute
+  width 50px
+  height 50px
+  text-align center
+  cursor pointer
+.corner-box span.corner img
+  width 100%
+  height 100%
+.corner-box span.corner-0
+  top 0
+  left 0
+.corner-box span.corner-1
+  top 0
+  right 0
+.corner-box span.corner-2
+  bottom 0
+  right 0
+.corner-box span.corner-3
+  bottom 0
+  left 0
+.corner-add-icon-wrapper
+  height 24px
+  padding 0 8px
+  line-height 22px
+  color #12ce66
+  border 1px solid #12ce66
+  background #fff
+.corner-img-wrapper
+  position relative
+.corner-img-wrapper i
+  position: absolute
+  top 0
+  right 0
+  color #ff4949
+  font-size 20px
 </style>
 
 <style lang="stylus" scoped>

@@ -48,6 +48,8 @@
           type="success"
           class="marginL"
           v-if="normalForm.thirdIdOrPackageName && !isManualSetResource"
+          :closable="!disabled"
+          @close="normalForm.thirdIdOrPackageName = undefined"
         >已选择：{{normalForm.thirdIdOrPackageName}}</el-tag>
         <a
           class="write-play"
@@ -73,38 +75,15 @@
             :disabled="disabled"
           ></el-input>
         </el-form-item>
-        <el-form-item label="开启个性化推荐">
-          <el-switch
-            :disabled="disabled"
-            :value="!!normalForm.flagSetRec" 
-            @input="handleInputFlagSetRec"
-            active-color="#13ce66"
-            inactive-color="grey"
-          >
-          </el-switch>
-        </el-form-item>
-        <template v-if="!!normalForm.flagSetRec">
-          <el-form-item label="推荐流选择" prop="mediaAutomationBlockRls.mediaAutomationId">
-            <el-button type="primary" @click="isVisiableRecom = true" :disabled="isReadonly">选择推荐流</el-button>
-            <el-tag
-              v-if="normalForm.mediaAutomationBlockRls.mediaAutomationId"
-              type="primary"
-              class="mediaAutomationId-tag"
-              :closable="!disabled"
-              @close="handleDelStreamTag"
-            >
-              {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}
-            </el-tag>
-          </el-form-item>
-          <el-form-item label="刷新机制" prop="mediaAutomationBlockRls.refreshCal">
-            <InputPositiveInt
-              v-model="normalForm.mediaAutomationBlockRls.refreshCal"
-              style="width: 100px"
-              :disabled="disabled"
-            />
-            客户端曝光X次之后刷新推荐位
-          </el-form-item>
-        </template>
+        <PersonalRecommend
+          ref="personalRecommend"
+          :value="normalForm"
+          :disabled="isReadonly"
+          :recom-stream-tags="recomStreamTags"
+          @open-dialog="handleFetchRecomStream"
+          @select-end="handleSelectRecomStream"
+          @flag-set-change="handleInputFlagSetRec"
+        />
         <el-form-item label="标题" prop="title">
           <el-input v-model="normalForm.title" :disabled="disabled"></el-input>
         </el-form-item>
@@ -228,18 +207,6 @@
       </div>
     </el-dialog>
     <!-- 第三方运用快速填充弹框end -->
-
-    <!-- 推荐流弹框  -->
-    <el-dialog title="推荐流" :visible.sync="isVisiableRecom" width="40%" @open="fetchRecomStream">
-      <el-tag 
-      v-for="(tag, index) in recomStreamTags" 
-      size="medium"
-      class="recomTag cursor-tip"
-      :key="index" 
-      @click="handleSelectRecomStream(index)"
-      >{{tag.name}}</el-tag>
-    </el-dialog>
-    <!-- 推荐流弹框 end -->
   </div>
 </template>
 <script>
@@ -256,6 +223,7 @@ import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
 
 import InputPositiveInt from '@/components/InputPositiveInt'
+import PersonalRecommend from '@/components/PersonalRecommend'
 
 import { getSelectedResource, parseResourceContent, setContentForm, getParams } from './broadcastBlockUtil'
 export default {
@@ -271,7 +239,8 @@ export default {
     DialogCorner,
     selectClick,
 
-    InputPositiveInt
+    InputPositiveInt,
+    PersonalRecommend
   },
   data () {
     return {
@@ -431,10 +400,8 @@ export default {
       }
     },
     handleInputFlagSetRec (val) {
-      const normalForm = this.normalForm
-      normalForm.flagSetRec = val ? 1 : 0
       if (!val) {
-        normalForm.mediaAutomationBlockRls = {
+        this.normalForm.mediaAutomationBlockRls = {
           refreshCal: 1,
           mediaAutomationId: '',
           blockType: 'rotate'
@@ -444,15 +411,22 @@ export default {
     handleDelStreamTag() {
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined
     },
-    fetchRecomStream () {
+    handleFetchRecomStream () {
       let params = {
         page: 1, 
-        rows: 20,
+        rows: 100,
         source: this.source || undefined
       }
       this.$service.getMediaAutomationDataList(params).then(data => {
+        const currentSize = '797*449'
         this.recomStreamTags = data.rows.filter(item => {
-          return item.openStatus !== 0
+          if (item.openStatus === 0) { // 流状态关闭
+            return false
+          } else {
+            return item.picSize.some(size => {
+              return currentSize === size
+            })
+          }
         })
         if (this.recomStreamTags.length === 0) {
           this.$message('流状态关闭，或者暂无该内容源的推荐流');
@@ -460,151 +434,135 @@ export default {
       })
     },
     handleSelectRecomStream(index) {
-      let picSize = this.recomStreamTags[index].picSize
-      let currentSize = '797*449'
-      let isMatchSize = picSize.some(item => {
-        return currentSize === item
-      })
-      if(isMatchSize) {
-        this.normalForm.mediaAutomationBlockRls.mediaAutomationId = this.recomStreamTags[index].id
-        this.isVisiableRecom = false
-      }else {
-        this.$message.error("该流无法匹配此推荐位的海报图尺寸")
-      }
+      this.normalForm.mediaAutomationBlockRls.mediaAutomationId = this.recomStreamTags[index].id
+      this.$refs.personalRecommend.isVisiableRecom = false
     },
   }
 }
 </script>
 <style lang='stylus' scoped>
 .split-bar
-  width: 96%
-  height: 36px
-  margin: 8px 0px
-  padding: 0px 6px
-  font-size: 17px
-  line-height: 36px
-  background: #e5e9f2
-  border-radius: 4px
+  width 96%
+  height 36px
+  margin 8px 0px
+  padding 0px 6px
+  font-size 17px
+  line-height 36px
+  background #e5e9f2
+  border-radius 4px
 .form-wrap
-  width: 95%
-  height: auto
-  padding: 10px
-  border: 2px dotted darkgray
-  overflow: auto
+  width 95%
+  height auto
+  padding 10px
+  border 2px dotted darkgray
+  overflow auto
 .version-title
-  height: 40px !important
-  width: 97% !important
+  height 40px !important
+  width 97% !important
 .version-title__h
-  float: left
-  margin-top: 7px
+  float left
+  margin-top 7px
 .version-title__tag
-  margin-top: 6px
-  margin-left: 10px
+  margin-top 6px
+  margin-left 10px
 .demo-ruleForm, .key-span
-  width: 100px
-  display: inline-block
-  text-align: center
-  background: #f1f1f1
-  border: 1px solid #ddd
-  margin-right: 10px
-  border-radius: 6px
+  width 100px
+  display inline-block
+  text-align center
+  background #f1f1f1
+  border 1px solid #ddd
+  margin-right 10px
+  border-radius 6px
 .button-wraprer
-  padding: 8px 0px
-  border-bottom: 1px solid #ccc
+  padding 8px 0px
+  border-bottom 1px solid #ccc
 .el-card__body
-  padding: 7px
+  padding 7px
 .el-card__body img
-  width: 100%
+  width 100%
 .normal-left-list
-  width: 190px
-  /* height: 400px; */
-  /* border-right: 1px solid gray; */
-  float: left
-  padding: 8px
-  margin-right: 8px
-  /* max-height: 617px; */
-  overflow: auto
+  width 190px
+  /* height 400px */
+  /* border-right 1px solid gray */
+  float left
+  padding 8px
+  margin-right 8px
+  /* max-height 617px */
+  overflow auto
 .write-play
-  color: #20a0ff
-  margin-left: 10px
+  color #20a0ff
+  margin-left 10px
 .el-icon-close
-  font-size: 14px
-  position: absolute
-  right: 2px
-  top: 4px
-  color: red
+  font-size 14px
+  position absolute
+  right 2px
+  top 4px
+  color red
 .active
-  border: 2px dashed #f58b2fd6
+  border 2px dashed #f58b2fd6
 .add-version
-  font-size: 17px
-  height: 100px
-  line-height: 100px
-  display: block
-  text-align: center
+  font-size 17px
+  height 100px
+  line-height 100px
+  display block
+  text-align center
 .normal-version-wrap
-  width: 160px
-  min-height: 120px
-  position: relative
-  margin-bottom: 10px
-  text-align: center
-  cursor: pointer
+  width 160px
+  min-height 120px
+  position relative
+  margin-bottom 10px
+  text-align center
+  cursor pointer
 .normal-version-wrap span
-  font-size: 16px
+  font-size 16px
 .normal-version-wrap img
-  width: 95%
-  height: 90px
-  border-radius: 8px
+  width 95%
+  height 90px
+  border-radius 8px
 /* 角标 */
 .corner-box
-  position: relative
-  width: 150px
-  height: 150px
+  position relative
+  width 150px
+  height 150px
 .corner-box span.corner
-  position: absolute
-  width: 50px
-  height: 50px
-  text-align: center
-  cursor: pointer
-.corner-box span.corner img
-  width: 100%
-  height: 100%
-.corner-box span.corner-0
-  top: 0
-  left: 0
-.corner-box span.corner-1
-  top: 0
-  right: 0
-.corner-box span.corner-2
-  bottom: 0
-  right: 0
-.corner-box span.corner-3
-  bottom: 0
-  left: 0
-.corner-img-wrapper
-  position: relative
-  height: 100%
-  display: block
-.corner-img-wrapper i
-  position: absolute
-  bottom: 0px
-  right: 0
-  color: #FF4949
-  font-size: 20px
-.submitCheck
-  margin-top: 20px
-  margin-left: 110px
-.sign-tip
-  font-size: 11px;
-  color: orange;
-  padding: 0;
-  line-height: 1;
-  margin-top: 10px;
-  clear: both;
-.recomTag 
-  margin-right 10px
-  font-size 14px
-.cursor-tip
+  position absolute
+  width 50px
+  height 50px
+  text-align center
   cursor pointer
-.mediaAutomationId-tag
-  margin-left 10px
+.corner-box span.corner img
+  width 100%
+  height 100%
+.corner-box span.corner-0
+  top 0
+  left 0
+.corner-box span.corner-1
+  top 0
+  right 0
+.corner-box span.corner-2
+  bottom 0
+  right 0
+.corner-box span.corner-3
+  bottom 0
+  left 0
+.corner-img-wrapper
+  position relative
+  height 100%
+  display block
+.corner-img-wrapper i
+  position absolute
+  bottom 0px
+  right 0
+  color #FF4949
+  font-size 20px
+.submitCheck
+  margin-top 20px
+  margin-left 110px
+.sign-tip
+  font-size 11px
+  color orange
+  padding 0
+  line-height 1
+  margin-top 10px
+  clear both
 </style>
