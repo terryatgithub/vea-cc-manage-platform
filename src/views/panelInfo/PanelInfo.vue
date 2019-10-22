@@ -184,17 +184,21 @@
                 <span v-show="!selectedLayout">
                   请先选择布局
                 </span>
-                <ResourceSelector
-                  ref="resourceSelector"
-                  v-show="selectedLayout"
-                  :selectors="['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate', 'good']"
-                  :is-live="false"
-                  :disable-partner="!!pannel.pannelResource"
-                  selection-type="multiple"
-                  :source="pannel.pannelResource"
-                  @select-end="handleSelectResourceEnd">
-                  <el-button type="primary" plain>选择资源</el-button>
-                </ResourceSelector>
+                <div v-show="selectedLayout">
+                  <ResourceSelector
+                    ref="resourceSelector"
+                    :selectors="mediaResourceSelectors"
+                    :is-live="false"
+                    :disable-partner="!!pannel.pannelResource"
+                    :selection-type="mediaResourceSelectionType"
+                    :source="pannel.pannelResource"
+                    @select-end="handleSelectResourceEnd">
+                    <el-button type="primary" plain>选择资源</el-button>
+                  </ResourceSelector>
+                  <div class="fill-width-ranking">
+                    使用排行榜填充 <el-switch :value="isFillWithRanking" @input="handleToggleFillWithRanking"></el-switch>
+                  </div>
+                </div>
                 <template v-if="pannel.parentType === 'group'">
                   <el-button
                     style="float:right"
@@ -358,7 +362,7 @@
                         </span>
                         <VirtualPanel
                           :blocks="item.contentList"
-                          :mode="mode"
+                          :mode="isFillWithRanking ? 'read' : mode"
                           @click-block="handleClickBlock"
                           @analyze-simple-data="handleAnalyzeData('simple', $event, index)"
                           @analyze-dmp-data="handleAnalyzeData('dmp', $event, index)"
@@ -369,7 +373,7 @@
 
                   <VirtualPanel
                     v-else
-                    :mode="mode"
+                    :mode="isFillWithRanking ? 'read' : mode"
                     :blocks="pannel.pannelList[0].contentList"
                     @click-block="handleClickBlock"
                     @analyze-simple-data="handleAnalyzeData('simple', $event)"
@@ -591,6 +595,7 @@ export default {
       // 版块类型，1-常规版块，2-排行榜，3-业务专辑，4-智能推荐版块，5-专属影院版块，6-影片详情页，7-定向版块等
       pannelType: 1,
 
+
       // ----
       pannel: {
         pannelGroupId: undefined,
@@ -610,6 +615,10 @@ export default {
 
         focusConfig: '', // '', week
         currentVersion: '',
+
+        // 用排行榜填充
+        rankIsOpen: 0,
+        rankChildId: undefined,
 
         pannelList: [
           {
@@ -654,6 +663,18 @@ export default {
           menuElId: 'pannelInfo'
         }
       }
+    },
+    mediaResourceSelectors () {
+      if (this.isFillWithRanking) {
+        return ['ranking']
+      }
+      return ['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate', 'good' ]
+    },
+    mediaResourceSelectionType () {
+      if (this.isFillWithRanking) {
+        return 'single'
+      }
+      return 'multiple'
     },
     currentPanelDataType() {
       const panel = this.pannel
@@ -747,6 +768,9 @@ export default {
       const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
       const isCoocaa = this.$consts.idPrefix == '10'
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
+    },
+    isFillWithRanking () {
+      return !!this.pannel.rankIsOpen
     }
   },
   watch: {
@@ -768,6 +792,33 @@ export default {
     'pannel.focusConfig': 'handleFocusConfigChange'
   },
   methods: {
+    handleToggleFillWithRanking (val) {
+      if (val) {
+        // 检查布局
+        // 采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个
+        const selectedLayout = this.selectedLayout
+        const layoutJsonParsed = selectedLayout.layoutJsonParsed
+        const hasTitle = selectedLayout.layoutIsTitle
+        const hasOnlyOneRowAndMatchSize = layoutJsonParsed.contents.every(item => {
+          return item.y === 0 && item.width === 247 && item.height === 346
+        })
+        const blockCount = layoutJsonParsed.contents.length
+        const hasSuitableBlocks = 6 <= blockCount && blockCount <= 11
+        if (!(hasTitle && hasOnlyOneRowAndMatchSize && hasSuitableBlocks)) {
+          return this.$message({
+            type: 'error',
+            duration: 8000,
+            message: '采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个'
+          })
+        }
+        this.pannel.rankIsOpen = 1
+        this.clearBlocks()
+      } else {
+        // 清空内容
+        this.pannel.rankIsOpen = 0
+        this.clearBlocks()
+      }
+    },
     toPercent: decimal => {
       return (Math.round(decimal * 10000) / 100.00 + "%")
     },
@@ -1005,6 +1056,9 @@ export default {
     // 设置版块内容
     handleClickBlock(index) {
       const pannel = this.pannel
+      if (this.isFillWithRanking) {
+        return this.$message.error('使用排行榜填充的版块里的推荐位不能查看或编辑')
+      }
       const selectedLayout = this.selectedLayout
       const activePannelIndex = +this.activePannelIndex
       const selectedResources =
@@ -1070,255 +1124,88 @@ export default {
         }
       })
 
-      this.$prompt('请确认从第几个内容框开始填充', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputPlaceholder:
-          '当前已填充 ' + blockNotEmptyCount + ' 个， 默认为从第1位开始填充',
-        inputValidator: function(value) {
-          if (value !== null && !RegExp(/^[0-9]*[1-9][0-9]*$/).test(value)) {
-            return '请正确填写位置'
+      const insertResources = (insertAfter = 1) => {
+        const selectedLayout = this.selectedLayout
+        const resourcesToInsert = genResourceContentList(selectedResources, {
+          // 把一些值置为为定义，
+          // 因为 gen 出来的默认数据结构只适用于推荐位详情里面，在外面没必要用
+          bgParams: undefined, 
+          cornerList: undefined,
+          redundantParams: undefined,
+          // 定义一个标识，在填充的时候，填充最合适尺寸的图片
+          shouldFindFitestPicture: true
+        })
+          .map(function(item) {
+            return {
+              contentPosition: null,
+              blockMallPosition: null,
+              focusImgUrl: '',
+              lucenyFlag: 0,
+              resize: null,
+              titleInfo: null,
+              videoContentList: [item],
+              specificContentList: []
+            }
+          })
+        const newResourcesLength = Math.max(
+          insertAfter - 1 + resourcesToInsert.length,
+          activePannel.selectedResources.length
+        )
+        const newResources = Array.apply(null, {
+          length: newResourcesLength
+        })
+        for (
+          let i = 0,
+            start = insertAfter - 1,
+            end = start + resourcesToInsert.length - 1,
+            length = newResourcesLength;
+          i < length;
+          i++
+        ) {
+          if (i >= start && i <= end) {
+            // 覆盖原来的
+            newResources[i] =  resourcesToInsert[i - start]
+            // 只覆盖第一个，后面的补上
+            const videoContentList = newResources[i].videoContentList
+            const originSelectedResources = activePannel.selectedResources[i] || {}
+            const originVideoContentList = originSelectedResources.videoContentList
+            if (originVideoContentList && originVideoContentList.length > 1) {
+              newResources[i].videoContentList = videoContentList.concat(originVideoContentList.slice(1))
+            }
+          } else {
+            // 新资源填充完毕，后面的还是原来的
+            newResources[i] = activePannel.selectedResources[i]
           }
         }
-      })
-        .then(
-          function(result) {
-            const insertAfter = result.value || 1
-            const selectedLayout = this.selectedLayout
-            /** 
-            const selectedViedos = selectedResources.video.map(function(item) {
-              const episode = selectedEpisodes[item.coocaaVId]
-              let finalItem
-              if (episode) {
-                const fieldMap = {
-                  0: 'extraValue5',
-                  1: 'extraValue5',
-                  6: 'extraValue4'
-                }
-                const extraIdField = fieldMap[episode.urlIsTrailer] || 'extraValue5'
-                finalItem = {
-                  contentType: 0, // ??
-                  coverType: 'media',
-                  videoContentType: 'movie',
-                  extraValue1: getExtravue1(item.coocaaVId),
-                  [extraIdField]: episode.coocaaMId,
-                  pictureUrl: episode.thumb,
-                  title: episode.urlTitle,
-                  subTitle: episode.urlSubTitle,
-                  blockResourceType: 1
-                }
-              } else {
-                finalItem = {
-                  contentType: 0, // ??
-                  coverType: 'media',
-                  videoContentType: 'movie',
-                  extraValue1: getExtravue1(item.coocaaVId),
-                  extraValue5: undefined,
-                  pictureUrl: item.thumb,
-                  // 候选图片列表，用于选出最合适尺寸第图片  
-                  picturePreset: item.imageInfoList,
-                  title: item.title,
-                  subTitle: item.urlSubTitle,
-                  blockResourceType: 1
-                }
-              }
-              const entity = item.ccVideoSourceEntities[0]
-              const score = entity.score
-              const updatedSegment = entity.updatedSegment
-              const publishSegment = entity.publishSegment
-              const isUnknown = publishSegment == 0
-              const publishStatus = isUnknown
-                ? 'unknown'
-                : updatedSegment == publishSegment
-                  ? 'ended'
-                  : 'updating'
-              finalItem.publishStatus = publishStatus
-              finalItem.score = score
-              finalItem.categoryId = item.categoryId
-              finalItem.series = isUnknown ? null : updatedSegment
-              finalItem.variety = entity.lastCollection
-              return finalItem
-            })
 
-            const selectedApps = selectedResources.app.map(function(item) {
-              return {
-                contentType: 2,
-
-                coverType: 'app',
-                videoContentType: 'app',
-                extraValue1: item.appPackageName,
-                pictureUrl: item.appImageUrl,
-                title: item.appName,
-                blockResourceType: 3
-              }
-            })
-
-            const selectedEdus = selectedResources.edu.map(function(item) {
-              const ccVideoSourceEntities = item.ccVideoSourceEntities
-              const ret = {
-                contentType: 3,
-
-                coverType: 'media',
-                videoContentType: 'edu',
-                extraValue1: '_otx_' + item.coocaaVId,
-                pictureUrl: item.thumb,
-                picturePreset: item.imageInfoList,
-                title: item.title,
-                subTitle: item.subTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-              if (
-                ccVideoSourceEntities &&
-                ccVideoSourceEntities[0] &&
-                ccVideoSourceEntities[0].isTvod === 1
-              ) {
-                // Sprint2.2 教育中心单点付费预置版本号
-                ret.versionCode = 3420000
-              }
-              return ret
-            })
-
-            const selectedPPTVs = selectedResources.pptv.map(function(item) {
-              return {
-                contentType: 4,
-
-                coverType: 'media',
-                videoContentType: 'pptv',
-                extraValue1:
-                  'pptv_tvsports://tvsports_detail?section_id=' +
-                  item.pid +
-                  '&from_internal=1',
-                title: item.pTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-            })
-
-            const selectedLives = selectedResources.live.map(function(item) {
-              return {
-                contentType: 4,
-
-                coverType: 'media',
-                contentType: 6,
-                videoContentType: 'txLive',
-                extraValue1: '_otx_' + item.vId,
-                pictureUrl: item.thumb,
-                title: item.title,
-                subTitle: item.subTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-            })
-
-            const selectedTopics = selectedResources.topic.map(function(item) {
-              return {
-                coverType: 'media',
-
-                contentType: item.dataSign === 'parentTopic' ? 8 : 7,
-                videoContentType:
-                  item.dataSign === 'parentTopic' ? 'bigTopic' : 'topic',
-                extraValue1: item.id + '',
-                pictureUrl: item.picture,
-                title: item.title,
-                subTitle: item.subTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-            })
-
-            const selectedBroadcast = selectedResources.rotate.map(function(
-              item
-            ) {
-              return {
-                coverType: 'media',
-                contentType: 9,
-                videoContentType: 'rotate',
-                extraValue1: item.id + '',
-                pictureUrl: item.picture,
-                title: item.title,
-                subTitle: item.subTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-            })
-
-            const selectedGood = selectedResources.good.map((item) => {
-              return {
-                coverType: 'mall',
-                contentType: 13,
-                videoContentType: 'mall',
-                extraValue1: item.resourceId + '',
-                pictureUrl: item.resourceImgUrl,
-                title: item.resourceName,
-                blockResourceType: -1
-              }
-            })
-            */
-
-            const resourcesToInsert = genResourceContentList(selectedResources, {
-              // 把一些值置为为定义，
-              // 因为 gen 出来的默认数据结构只适用于推荐位详情里面，在外面没必要用
-              bgParams: undefined, 
-              cornerList: undefined,
-              redundantParams: undefined,
-              // 定义一个标识，在填充的时候，填充最合适尺寸的图片
-              shouldFindFitestPicture: true
-            })
-              .map(function(item) {
-                return {
-                  contentPosition: null,
-                  blockMallPosition: null,
-                  focusImgUrl: '',
-                  lucenyFlag: 0,
-                  resize: null,
-                  titleInfo: null,
-                  videoContentList: [item],
-                  specificContentList: []
-                }
-              })
-            const newResourcesLength = Math.max(
-              insertAfter - 1 + resourcesToInsert.length,
-              activePannel.selectedResources.length
-            )
-            const newResources = Array.apply(null, {
-              length: newResourcesLength
-            })
-            for (
-              let i = 0,
-                start = insertAfter - 1,
-                end = start + resourcesToInsert.length - 1,
-                length = newResourcesLength;
-              i < length;
-              i++
-            ) {
-              if (i >= start && i <= end) {
-                // 覆盖原来的
-                newResources[i] =  resourcesToInsert[i - start]
-                // 只覆盖第一个，后面的补上
-                const videoContentList = newResources[i].videoContentList
-                const originSelectedResources = activePannel.selectedResources[i] || {}
-                const originVideoContentList = originSelectedResources.videoContentList
-                if (originVideoContentList && originVideoContentList.length > 1) {
-                  newResources[i].videoContentList = videoContentList.concat(originVideoContentList.slice(1))
-                }
-              } else {
-                // 新资源填充完毕，后面的还是原来的
-                newResources[i] = activePannel.selectedResources[i]
-              }
+        activePannel.selectedResources = newResources
+        resourceSelector.clearSelected()
+        // 计算每个 block 的位置
+        this.updatePosition()
+        this.getSharedTags()
+      }
+      if (!this.isFillWithRanking) {
+        this.$prompt('请确认从第几个内容框开始填充', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputPlaceholder:
+            '当前已填充 ' + blockNotEmptyCount + ' 个， 默认为从第1位开始填充',
+          inputValidator: function(value) {
+            if (value !== null && !RegExp(/^[0-9]*[1-9][0-9]*$/).test(value)) {
+              return '请正确填写位置'
             }
-
-            activePannel.selectedResources = newResources
-            resourceSelector.clearSelected()
-            // 计算每个 block 的位置
-            this.updatePosition()
-            this.getSharedTags()
-          }.bind(this)
-        )
-        .catch((e) => {
-          console.log(e)
-          resourceSelector.$refs.wrapper.handleSelectStart()
+          }
         })
+          .then(result => {
+            return insertResources(result.value || 1)
+          })
+          .catch((e) => {
+            console.log(e)
+            resourceSelector.$refs.wrapper.handleSelectStart()
+          })
+      } else {
+        // 填充资源
+      }
     },
 
     handleRemoveTab(indexString) {
@@ -2401,4 +2288,7 @@ export default {
   line-height: 44px
   text-align: center
   font-size: 25px
+.fill-width-ranking
+  margin-left 10px
+  display inline-block
 </style>
