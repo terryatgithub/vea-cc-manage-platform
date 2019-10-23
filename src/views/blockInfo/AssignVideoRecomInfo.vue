@@ -10,6 +10,23 @@
             <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
+        
+        <el-form-item label="流类型">
+          <el-select v-model="createForm.type" placeholder="请选择">
+            <el-option-group
+              v-for="group in streamTypeGroup"
+              :key="group.label"
+              :label="group.label">
+              <el-option
+                v-for="item in group.options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-option-group>
+          </el-select>
+          <div v-if="createForm.type !== 'normal'" class="type-tip">Tip：基本流仅适用于标准尺寸的推荐位 (标准尺寸：260*364，498*280)</div>
+        </el-form-item>
       </el-form>
       <div class="base-info">
         创建流后，默认是关闭状态的。填充完内容后，找产品或开发去开启状态;
@@ -52,6 +69,9 @@
               <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
             </el-radio-group>
           </el-form-item>
+          <el-form-item label="流类型">
+            {{streamType}}
+          </el-form-item>
           <el-form-item label="流状态">
             {{['关闭', '开启'][basicForm.openStatus]}}
           </el-form-item>
@@ -77,14 +97,16 @@
             :disabled="isRead"
             @select-end="handleSelectResourcesEnd"
           >
-            <el-button type="primary" class="batch-btn" :disabled="isRead">批量选择资源</el-button>
+            <el-button type="primary" class="batch-btn" :disabled="isRead" title="若260*364或498*280的尺寸存在，选择资源后自动填充默认图">批量选择资源</el-button>
           </ResourceSelector>
-          <el-button type="primary" @click="isVisibleSize = !isVisibleSize" :disabled="isRead">添加尺寸</el-button>
+          <el-button type="primary" @click="isVisibleSize = !isVisibleSize" title="若260*364或498*280的尺寸存在，选择资源后自动填充默认图" :disabled="isRead">添加尺寸</el-button>
+          <el-button type="text" :disabled="isRead" @click="handleAddTabSize($event, 260, 364)">添加260*364</el-button>
+          <el-button type="text" :disabled="isRead" @click="handleAddTabSize($event, 498, 280)">添加498*280</el-button>
           <el-tag 
             v-for="(sizeTag, index) in sizeTags"
             :key="index"
             type="primary" 
-            :closable="!isRead"
+            :closable="sizeTag.closable"
             class="size-tag"
             @close="handleTagClose(sizeTag)"
           >
@@ -135,6 +157,34 @@ import titleMixin from '@/mixins/title'
 import { cloneDeep } from 'lodash'
 const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picInfoList']  // picInfoList兼容预览，可转换为picList
 const params = ['name', 'source', 'status']
+const streamTypeGroupOption = [
+  {
+    label: '普通流',
+    options: [
+      {
+        label: '普通',
+        value: 'normal'
+      }
+    ]
+  },
+  {
+    label: '基本流',
+    options: [
+      {
+        label: '电影',
+        value: 'movie'
+      },
+      {
+        label: '电视剧',
+        value: 'series'
+      },
+      {
+        label: '少儿',
+        value: 'child'
+      },
+    ]
+  }
+]
 
 export default {
   mixins: [titleMixin],
@@ -149,7 +199,8 @@ export default {
       resourceName: '指定影片推荐流',
       createForm: {
         name: '',
-        source: 'o_tencent'
+        source: 'o_tencent',
+        type: 'normal'
       },
       mode: 'create',
       basicForm: {
@@ -178,7 +229,8 @@ export default {
         ]
       },
       videoListParams,  // 必填参数
-      params
+      params,
+      streamTypeGroup: streamTypeGroupOption
     }
   },
 
@@ -203,6 +255,12 @@ export default {
     },
     isReplica() {
       return this.mode === 'replicate' || this.basicForm.duplicateVersion === 'yes'
+    },
+    streamType () {
+      const typeIndex = {
+        normal: '普通', child: '少儿', movie: '电影', series: '电视剧'
+      }
+      return typeIndex[this.basicForm.type] || '普通'
     }
   },
 
@@ -231,9 +289,19 @@ export default {
     genPicInfo() {
       return {
         pictureResolution: '',
-        pictureUrl: '',
+        pictureUrl: undefined,
         pictureId: undefined,
         pictureStatus: undefined
+      }
+    },
+    judgeAvailableTag () {
+      if (this.isRead) {
+        return false
+      }
+      if (this.videoTabs.length === 0) {
+        return true
+      } else {
+        return false
       }
     },
     handleCreate() {
@@ -303,17 +371,22 @@ export default {
         this.$message.success("添加成功")
       }
     },
-    handleAddTabSize() {
-      let newTabSize = Object.assign({}, this.newTabSize)
-      if(!newTabSize.width || !newTabSize.height) {
-        this.$message.error("宽或高不能为空")
-        return
+    handleAddTabSize(e, width, height) {
+      if (width) {
+        this.sizeTags.push({ width, height, closable: true })
+      } else {
+        let newTabSize = Object.assign({closable: true}, this.newTabSize)
+        if(!newTabSize.width || !newTabSize.height) {
+          this.$message.error("宽或高不能为空")
+          return
+        }
+        this.sizeTags.push(newTabSize)
+        this.newTabSize = {}
       }
-      this.sizeTags.push(newTabSize)
       this.videoTabs.forEach(video => {
         video.picInfoList.push(this.genPicInfo())
       })
-      this.newTabSize = {}
+      this.dealFillDefaultImg()
       this.isVisibleSize = false
     },
     handleTagClose(tag) {
@@ -356,6 +429,7 @@ export default {
         const nameRS = resources[name]
         this.handleDiffResources(nameRS, name, source, resources)
       })
+      this.dealFillDefaultImg()
     },
     dealCommonParams(resources) {
       console.log('resources', resources);
@@ -403,7 +477,11 @@ export default {
         coverType: 'media',
         categoryId
       })
-      if(tabName === 'video') {
+      const videoTabs = this.videoTabs
+      videoTabs[index].imageInfoList = resources[tabName][0].imageInfoList
+      // 有尺寸填充默认图
+      this.dealFillDefaultImg()
+      if (tabName === 'video') {
         const entity = resources[tabName][0].ccVideoSourceEntities[0]
         const score = entity.score
         const updatedSegment = entity.updatedSegment
@@ -421,7 +499,29 @@ export default {
           variety: entity.lastCollection
         })
       }
-      this.videoTabs[index].picList = []
+      videoTabs[index].picList = []
+    },
+    dealFillDefaultImg () {
+      const { sizeTags, videoTabs } = this
+      if (sizeTags.length !== 0) {
+        sizeTags.forEach((item, index) => {
+          // 寻找标准分辨率
+          const resolution = item.width + '*' + item.height
+          if ( resolution === '260*364' || resolution === '498*280' ) {
+            videoTabs.forEach(videoTab => {
+              // 有url就不填充
+              if (!videoTab.picInfoList[index].pictureUrl) {
+                // 不存在imageInfoList时访问媒资
+                // this.$refs.resourceSelector.searchSourceById(11, 'video')
+                const currentImageInfo = (videoTab.imageInfoList || []).find(imageInfoList => {
+                  return imageInfoList.size === resolution
+                })
+                videoTab.picInfoList[index].pictureUrl = currentImageInfo ? currentImageInfo.url : undefined
+              }
+            })
+          }
+        })
+      }
     },
     handleSelectNormalSource(resources, index) {
       const { tabName, anotherName, jsonParams, thirdIdOrPackageName } = this.dealCommonParams(resources)
@@ -491,6 +591,7 @@ export default {
         for(let count = 0 ; count < this.sizeTags.length ; count++ ) {
           newTab.picInfoList.push(this.genPicInfo())
         }
+        newTab.imageInfoList = item.imageInfoList
         videoTabs.push(newTab)
       })
     },
@@ -564,6 +665,7 @@ export default {
               return item.pictureUrl
             })
             video.picInfoList = undefined
+            video.imageInfoList = undefined
             // 推荐流若没有配置视频海报，则用点击资源代替视频海报
             if (!video.params) {
               video.params = video.clickParams
@@ -575,7 +677,7 @@ export default {
           })
         }
 
-        console.log('save', JSON.stringify(saveForm));
+        console.log('save', saveForm);
         this.$service.saveMediaAutomation({jsonStr: JSON.stringify(saveForm)}, '保存成功').then(() => {
           this.$emit('upsert-end')
         })
@@ -811,6 +913,7 @@ export default {
       basicForm.id = data.id
       basicForm.name = data.name
       basicForm.openStatus = data.openStatus
+      basicForm.type = data.type
       basicForm.currentVersion = data.currentVersion
       basicForm.duplicateVersion = data.duplicateVersion
       basicForm.status = data.status
@@ -841,7 +944,7 @@ export default {
 
   created() {
     this.mode = this.initMode || 'create'
-    if(this.id) {
+    if (this.id) {
       this.$service.getMediaAutomationDetial({id: this.id, version: this.version}).then(data => {
         this.setBasicInfo(data)
       })
@@ -850,47 +953,54 @@ export default {
 }
 </script>
 
-<style  type="stylus" scoped>
-.base-info {
-  margin: 10px 0;
-  padding: 10px;
-  font-size: 13px;
-  border: 1px solid #e7e4c2;
-  background: #fef8b8;
-}
-.el-row .el-button {
-  width: 85px;
-}
-.createBtn-container {
-  margin: 27px 0 0 27px;
-}
-.video-select--header {
-  margin: 20px 0;
-}
-.num-input {
-  width: 100px;
-  margin: 0 20px;
-}
-.title-input {
-  width: 357px;
-}
-.text-center-align {
-  text-align: center;
-}
-.size-btn-group {
-  margin-top: 20px;
-}
-.size-btn-group .el-button{
-  width: 85px;
-}
-.size-tag {
-  margin-left: 10px;
-}
-.videoTab--wrapper {
-  width: 80%;
-  margin: 20px;
-}
-.batch-btn {
-  margin: 0 10px;
-}
+<style lang="stylus" scoped>
+.base-info 
+  margin 10px 0
+  padding 10px
+  font-size 13px
+  border 1px solid #e7e4c2
+  background #fef8b8
+
+.el-row .el-button 
+  width 85px
+
+.createBtn-container 
+  margin 27px 0 0 27px
+
+.video-select--header 
+  margin 20px 0
+
+.num-input 
+  width 100px
+  margin 0 20px
+
+.title-input 
+  width 357px
+
+.text-center-align 
+  text-align center
+
+.size-btn-group 
+  margin-top 20px
+
+.size-btn-group .el-button
+  width 85px
+
+.size-tag 
+  margin-left 10px
+
+.videoTab--wrapper 
+  width 80%
+  margin 20px
+
+.batch-btn 
+  margin 0 10px
+
+.type-tip
+  display inline-block
+  margin 0 5px
+  border 1px solid #e7e4c2
+  background #fef8b8
+  padding 0 5px
+  font-size 10px
 </style>

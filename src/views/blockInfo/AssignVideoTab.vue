@@ -32,7 +32,7 @@
               :disable-partner="true"
               @select-end="$emit('select-clicked-source', $event)"
             >
-              <el-button type="primary" plain>选择资源</el-button>
+              <el-button type="primary" plain title="若260*364或498*280的尺寸存在，选择资源后自动填充默认图">选择资源</el-button>
             </ResourceSelector>
             <el-tag
               type="success"
