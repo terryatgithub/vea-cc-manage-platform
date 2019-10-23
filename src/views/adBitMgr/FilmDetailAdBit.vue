@@ -244,11 +244,11 @@
                     <div class="video-ad-wrapper">
                         <p class="ad-title">主页小窗口inline广告</p>
                         <el-form :inline="true" label-width="150px" label-position="left">
-                            <cc-var v-if="adSwitches.screen" :ad="adSwitches.screen">
+                            <cc-var v-if="adSwitches.broadcast_inline" :ad="adSwitches.broadcast_inline">
                                 <template slot-scope="{ad: ad}">
                                     <el-form-item
                                         :label="ad.label"
-                                    >
+                                        label-width="220px">
                                         <el-switch
                                             on-text="开"
                                             off-text="关"
