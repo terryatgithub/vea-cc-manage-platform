@@ -228,7 +228,7 @@
                         :name="index.toString()"
                       >
                         <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
-                          {{ item.pannelTitle || "双击修改" }}
+                          {{ (item.pannelTitle || '').trim() || "双击修改" }}
                           {{
                           item.panelIsFocus && pannel.focusConfig === ""
                           ? "(默认落焦)"
@@ -585,7 +585,6 @@ export default {
       // 包含选中内容
       selectedResources: [],
       selectedFocusImgUrl: undefined,
-      selectedBlocksAndResources: [],
 
       // 复制到
       copyToPanelDataType: this.panelDataType,
@@ -1392,16 +1391,34 @@ export default {
         return
       }
       const pannel = this.pannel
-      const layoutJson = JSON.parse(selectedLayout.layoutJson)
-      const type = layoutJson.type
-      const blocks = layoutJson.contents
+      const blockList = this.blockList
+      const currentPannelIndex = index === undefined
+        ? +this.activePannelIndex
+        : index
+      const currentPannel = pannel.pannelList[currentPannelIndex]
+
+      const {blocks, selectedBlocksAndResources} = this.getBlocksAndResources(currentPannelIndex)
+      blockList[currentPannelIndex] = blocks
+      currentPannel.contentList = selectedBlocksAndResources
+    },
+    getBlocksAndResources (currentPannelIndex, layoutVersion) {
+      // 可以使用外部传过来的 pannel 数据, 
+      // 在保存的时候需要使用6.0的布局来计算
+      // 而展示的时候用8.0的布局
+      const pannel = this.pannel
+      const blockList = this.blockList
+      const blockCountList = this.blockCountList
+      const selectedLayout = this.selectedLayout
+      // 用 JSON.parse，因为需要一个新的对象
+      const layoutStr = layoutVersion === 'v6' ? selectedLayout.layoutJson : selectedLayout.layoutJson8
+      const layoutJsonParsed = JSON.parse(layoutStr)
+      const type = layoutJsonParsed.type
+      const blocks = layoutJsonParsed.contents
       const originBlockCount = blocks.length
 
-      const currentPannelIndex =
-        index === undefined ? +this.activePannelIndex : index
       const currentPannel = pannel.pannelList[currentPannelIndex]
       const selectedResources = currentPannel.selectedResources || []
-      const blockCount = this.blockCountList[currentPannelIndex]
+      const blockCount = blockCountList[currentPannelIndex]
 
       const lastBlock = blocks[originBlockCount - 1]
       const layoutWidth = lastBlock.x + lastBlock.width
@@ -1411,7 +1428,7 @@ export default {
 
       const calculateFactory = function() {
         if (type === 'Expander' && originBlockCount === 2) {
-          const space = layoutJson.extra.space
+          const space = layoutJsonParsed.extra.space
           return function(n) {
             const index = n % originBlockCount
             // 复制第 2 个推荐位
@@ -1445,7 +1462,7 @@ export default {
             return result
           }
         } else if (type === 'Expander') {
-          const space = layoutJson.extra.space
+          const space = layoutJsonParsed.extra.space
           return function(n) {
             const times = Math.floor(n / originBlockCount) - 1
             const index = n % originBlockCount
@@ -1532,10 +1549,9 @@ export default {
         }
       }
 
-      this.blockList[currentPannelIndex] = blocks
       // 检查重复
       const resourceIndexed = {}
-      this.selectedBlocksAndResources = blocks.map(function(item, index) {
+      const selectedBlocksAndResources = blocks.map(function(item, index) {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
@@ -1621,7 +1637,10 @@ export default {
         return resource
       })
 
-      currentPannel.contentList = this.selectedBlocksAndResources
+      return {
+        blocks,
+        selectedBlocksAndResources
+      }
     },
 
     handleDragBlock(oldIndex, newIndex) {
@@ -1651,6 +1670,8 @@ export default {
     },
     getFormData() {
       const data = JSON.parse(JSON.stringify(this.pannel))
+      // 使用 v6 布局重新计算 contentPosition
+      this.makeCompatibleV6(data)
       const mode = this.mode
       if (mode === 'replicate') {
         data.currentVersion = ''
@@ -1660,6 +1681,15 @@ export default {
         data.currentVersion = ''
       }
       return data
+    },
+    makeCompatibleV6 (panel) {
+      // 使用 v6 的布局重新计算位置信息，为来兼容旧的数据同步到江苏有线等
+      const panelList = panel.pannelList
+      let i = panelList.length
+      while (--i >= 0) {
+        const {blocks, selectedBlocksAndResources} = this.getBlocksAndResources(i, 'v6')
+        panelList[i].contentList = selectedBlocksAndResources
+      }
     },
     parseDataToApi(data) {
       const mode = this.mode
@@ -2133,7 +2163,7 @@ export default {
           pannel.pannelStatus = firstPannel.pannelStatus
 
           const layout = firstPannel.layoutInfo
-          layout.layoutJsonParsed = JSON.parse(layout.layoutJson)
+          layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
           this.selectedLayout = layout
 
           const firstBlock = firstPannel.contentList[0]

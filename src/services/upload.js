@@ -22,6 +22,9 @@ export function uploadLayoutFile ({ file, onUploadProgress }) {
     data: formData,
     onUploadProgress
   }).then(({ data }) => {
+    if (data.code !== undefined && data.code != '0') {
+      throw new Error(data.msg)
+    }
     return data
   })
 }

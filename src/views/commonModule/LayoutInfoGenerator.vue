@@ -243,7 +243,8 @@ export default {
         content: {
           type: lengthwiseIs ? 'Lengthwise' : 'Panel',
           contents,
-          parents: ''
+          parents: '',
+          version: 'v8'
         }
       }
       return layout
