@@ -97,14 +97,16 @@
             :disabled="isRead"
             @select-end="handleSelectResourcesEnd"
           >
-            <el-button type="primary" class="batch-btn" :disabled="isRead">批量选择资源</el-button>
+            <el-button type="primary" class="batch-btn" :disabled="isRead" title="若260*364或498*280的尺寸存在，选择资源后自动填充默认图">批量选择资源</el-button>
           </ResourceSelector>
-          <el-button type="primary" @click="isVisibleSize = !isVisibleSize" :disabled="isRead">添加尺寸</el-button>
+          <el-button type="primary" @click="isVisibleSize = !isVisibleSize" title="若260*364或498*280的尺寸存在，选择资源后自动填充默认图" :disabled="isRead">添加尺寸</el-button>
+          <el-button type="text" :disabled="isRead" @click="handleAddTabSize($event, 260, 364)">添加260*364</el-button>
+          <el-button type="text" :disabled="isRead" @click="handleAddTabSize($event, 498, 280)">添加498*280</el-button>
           <el-tag 
             v-for="(sizeTag, index) in sizeTags"
             :key="index"
             type="primary" 
-            :closable="!isRead"
+            :closable="judgeAvailableTag()"
             class="size-tag"
             @close="handleTagClose(sizeTag)"
           >
@@ -281,9 +283,19 @@ export default {
     genPicInfo() {
       return {
         pictureResolution: '',
-        pictureUrl: '',
+        pictureUrl: undefined,
         pictureId: undefined,
         pictureStatus: undefined
+      }
+    },
+    judgeAvailableTag () {
+      if (this.isRead) {
+        return false
+      }
+      if (this.videoTabs.length === 0) {
+        return true
+      } else {
+        return false
       }
     },
     handleCreate() {
@@ -353,17 +365,22 @@ export default {
         this.$message.success("添加成功")
       }
     },
-    handleAddTabSize() {
-      let newTabSize = Object.assign({}, this.newTabSize)
-      if(!newTabSize.width || !newTabSize.height) {
-        this.$message.error("宽或高不能为空")
-        return
+    handleAddTabSize(e, width, height) {
+      if (width) {
+        this.sizeTags.push({ width, height, closable: true })
+      } else {
+        let newTabSize = Object.assign({closable: true}, this.newTabSize)
+        if(!newTabSize.width || !newTabSize.height) {
+          this.$message.error("宽或高不能为空")
+          return
+        }
+        this.sizeTags.push(newTabSize)
+        this.newTabSize = {}
       }
-      this.sizeTags.push(newTabSize)
       this.videoTabs.forEach(video => {
         video.picInfoList.push(this.genPicInfo())
       })
-      this.newTabSize = {}
+      this.dealFillDefaultImg()
       this.isVisibleSize = false
     },
     handleTagClose(tag) {
@@ -406,6 +423,7 @@ export default {
         const nameRS = resources[name]
         this.handleDiffResources(nameRS, name, source, resources)
       })
+      this.dealFillDefaultImg()
     },
     dealCommonParams(resources) {
       console.log('resources', resources);
@@ -453,7 +471,11 @@ export default {
         coverType: 'media',
         categoryId
       })
-      if(tabName === 'video') {
+      const videoTabs = this.videoTabs
+      videoTabs[index].imageInfoList = resources[tabName][0].imageInfoList
+      // 有尺寸填充默认图
+      this.dealFillDefaultImg()
+      if (tabName === 'video') {
         const entity = resources[tabName][0].ccVideoSourceEntities[0]
         const score = entity.score
         const updatedSegment = entity.updatedSegment
@@ -471,7 +493,25 @@ export default {
           variety: entity.lastCollection
         })
       }
-      this.videoTabs[index].picList = []
+      videoTabs[index].picList = []
+    },
+    dealFillDefaultImg () {
+      const { sizeTags, videoTabs } = this
+      if (sizeTags.length !== 0) {
+        sizeTags.forEach((item, index) => {
+          const resolution = item.width + '*' + item.height
+          if ( resolution === '260*364' || resolution === '498*280' ) {
+            videoTabs.forEach(videoTab => {
+              if (!videoTab.picInfoList[index].pictureUrl) {
+                const currentImageInfo = (videoTab.imageInfoList || []).find(imageInfoList => {
+                  return imageInfoList.size === resolution
+                })
+                videoTab.picInfoList[index].pictureUrl = currentImageInfo ? currentImageInfo.url : undefined
+              }
+            })
+          }
+        })
+      }
     },
     handleSelectNormalSource(resources, index) {
       const { tabName, anotherName, jsonParams, thirdIdOrPackageName } = this.dealCommonParams(resources)
@@ -541,6 +581,7 @@ export default {
         for(let count = 0 ; count < this.sizeTags.length ; count++ ) {
           newTab.picInfoList.push(this.genPicInfo())
         }
+        newTab.imageInfoList = item.imageInfoList
         videoTabs.push(newTab)
       })
     },
@@ -614,6 +655,7 @@ export default {
               return item.pictureUrl
             })
             video.picInfoList = undefined
+            video.imageInfoList = undefined
             // 推荐流若没有配置视频海报，则用点击资源代替视频海报
             if (!video.params) {
               video.params = video.clickParams
@@ -625,7 +667,7 @@ export default {
           })
         }
 
-        console.log('save', JSON.stringify(saveForm));
+        console.log('save', saveForm);
         this.$service.saveMediaAutomation({jsonStr: JSON.stringify(saveForm)}, '保存成功').then(() => {
           this.$emit('upsert-end')
         })
@@ -892,7 +934,7 @@ export default {
 
   created() {
     this.mode = this.initMode || 'create'
-    if(this.id) {
+    if (this.id) {
       this.$service.getMediaAutomationDetial({id: this.id, version: this.version}).then(data => {
         this.setBasicInfo(data)
       })
