@@ -70,7 +70,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="流类型">
-            {{basicForm.type}}
+            {{streamType}}
           </el-form-item>
           <el-form-item label="流状态">
             {{['关闭', '开启'][basicForm.openStatus]}}
@@ -106,7 +106,7 @@
             v-for="(sizeTag, index) in sizeTags"
             :key="index"
             type="primary" 
-            :closable="judgeAvailableTag()"
+            :closable="sizeTag.closable"
             class="size-tag"
             @close="handleTagClose(sizeTag)"
           >
@@ -255,6 +255,12 @@ export default {
     },
     isReplica() {
       return this.mode === 'replicate' || this.basicForm.duplicateVersion === 'yes'
+    },
+    streamType () {
+      const typeIndex = {
+        normal: '普通', child: '少儿', movie: '电影', series: '电视剧'
+      }
+      return typeIndex[this.basicForm.type] || '普通'
     }
   },
 
@@ -499,10 +505,14 @@ export default {
       const { sizeTags, videoTabs } = this
       if (sizeTags.length !== 0) {
         sizeTags.forEach((item, index) => {
+          // 寻找标准分辨率
           const resolution = item.width + '*' + item.height
           if ( resolution === '260*364' || resolution === '498*280' ) {
             videoTabs.forEach(videoTab => {
+              // 有url就不填充
               if (!videoTab.picInfoList[index].pictureUrl) {
+                // 不存在imageInfoList时访问媒资
+                // this.$refs.resourceSelector.searchSourceById(11, 'video')
                 const currentImageInfo = (videoTab.imageInfoList || []).find(imageInfoList => {
                   return imageInfoList.size === resolution
                 })
