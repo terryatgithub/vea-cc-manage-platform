@@ -495,53 +495,40 @@ export default {
   cursor: pointer;
 }
 
-.menu:not(.el-menu--collapse) {
-  min-width: 200px;
-  background: #333;
-}
-
-.el-submenu__title {
-  color: #fff;
-}
-
-.el-menu-item.is-active {
-  color: #fff;
-  background: #000;
-}
-
-.el-menu-item {
-  color: #fff;
-}
-
-.el-menu-item, .el-submenu__title {
-  height: 45px;
-  line-height: 45px;
-}
-
-.el-submenu .el-menu-item {
-  height: 40px;
-  line-height: 40px;
-}
-
-.el-menu {
-  background: #333;
-}
-
-.el-submenu__title:hover, .el-menu-item:hover {
-  background: #4c4c4c;
-}
-
-.el-submenu.is-opened .el-submenu__title {
-  background: #2d2d2d;
-}
-
-.el-menu-item.is-active {
-  border-left: 3px solid #fc4c02;
-}
-
-.el-submenu .el-menu {
-  background: #1e1e1e;
-}
+.menu:not(.el-menu--collapse)
+    width 180px
+    background #333
+.el-submenu__title
+    color #fff
+.el-menu-item.is-active
+    color #fff
+    background #000
+.el-menu-item
+    color #fff
+.el-menu-item, .el-submenu__title
+    height 45px
+    line-height 45px
+.el-submenu .el-menu-item
+    height 40px
+    line-height 40px
+.el-menu
+    background #333
+.el-submenu__title:hover,.el-menu-item:hover
+    background:#4c4c4c
+.el-submenu.is-opened .el-submenu__title
+    background #2d2d2d
+.el-menu-item.is-active
+    border-left 3px solid #eb603a
+.el-submenu .el-menu
+    background #1e1e1e
+.aside__menu_collapse .el-submenu.is-active
+  border-left 3px solid #eb603a
+  background #1e1e1e
+  transition border-left 1s
+.el-submenu.is-active:not(.is-opened)
+  border-left 3px solid #eb603a
+  background #1e1e1e
+  transition border-left 1s
 
 body, html, #app, section.el-container, .aside__menu {
   height: 100%;
