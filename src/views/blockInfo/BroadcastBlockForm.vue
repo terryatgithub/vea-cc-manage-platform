@@ -75,15 +75,33 @@
             :disabled="disabled"
           ></el-input>
         </el-form-item>
-        <PersonalRecommend
-          ref="personalRecommend"
-          :value="normalForm"
+        <el-form-item label="开启个性化推荐">
+          <el-switch
+            :disabled="isReadonly"
+            :value="!!normalForm.flagSetRec" 
+            @input="handleInputFlagSetRec"
+            active-color="#13ce66"
+            inactive-color="grey"
+          >
+          </el-switch>
+        </el-form-item>
+        <RecommendStreamSelector
+          v-if="!!normalForm.flagSetRec"
+          :value="normalForm.mediaAutomationBlockRls.mediaAutomationId"
           :disabled="isReadonly"
-          :recom-stream-tags="recomStreamTags"
-          @open-dialog="handleFetchRecomStream"
+          :source="source"
+          resolution="797*449"
           @select-end="handleSelectRecomStream"
-          @flag-set-change="handleInputFlagSetRec"
+          @del-select="normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
         />
+        <el-form-item label="刷新机制" v-if="!!normalForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
+          <InputPositiveInt 
+            v-model="normalForm.mediaAutomationBlockRls.refreshCal"
+            class="flash-count-input"
+            :disabled="isReadonly"
+          />
+          客户端曝光X次之后刷新推荐位
+        </el-form-item>
         <el-form-item label="标题" prop="title">
           <el-input v-model="normalForm.title" :disabled="disabled"></el-input>
         </el-form-item>
@@ -223,7 +241,7 @@ import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
 
 import InputPositiveInt from '@/components/InputPositiveInt'
-import PersonalRecommend from '@/components/PersonalRecommend'
+import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
 
 import { getSelectedResource, parseResourceContent, setContentForm, getParams } from './broadcastBlockUtil'
 export default {
@@ -240,14 +258,13 @@ export default {
     selectClick,
 
     InputPositiveInt,
-    PersonalRecommend
+    RecommendStreamSelector
   },
   data () {
     return {
       onclickEventVisible: false,
       showCrowdSelector: false,
-      isVisiableRecom: false,
-      recomStreamTags: []
+      isVisiableRecom: false
     }
   },
   props: ['configModel', 'normalForm', 'normalRules', 'isGroupModel', 'isReadonly', 'source', 'checkCrowd', 'showResourceTip'],
@@ -400,6 +417,7 @@ export default {
       }
     },
     handleInputFlagSetRec (val) {
+      this.normalForm.flagSetRec = val ? 1 : 0
       if (!val) {
         this.normalForm.mediaAutomationBlockRls = {
           refreshCal: 1,
@@ -408,34 +426,8 @@ export default {
         }
       }
     },
-    handleDelStreamTag() {
-      this.normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined
-    },
-    handleFetchRecomStream () {
-      let params = {
-        page: 1, 
-        rows: 100,
-        source: this.source || undefined
-      }
-      this.$service.getMediaAutomationDataList(params).then(data => {
-        const currentSize = '797*449'
-        this.recomStreamTags = data.rows.filter(item => {
-          if (item.openStatus === 0) { // 流状态关闭
-            return false
-          } else {
-            return item.picSize.some(size => {
-              return currentSize === size
-            })
-          }
-        })
-        if (this.recomStreamTags.length === 0) {
-          this.$message('流状态关闭，或者暂无该内容源的推荐流');
-        }
-      })
-    },
-    handleSelectRecomStream(index) {
-      this.normalForm.mediaAutomationBlockRls.mediaAutomationId = this.recomStreamTags[index].id
-      this.$refs.personalRecommend.isVisiableRecom = false
+    handleSelectRecomStream(recomStream) {
+      this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
     },
   }
 }
@@ -565,4 +557,6 @@ export default {
   line-height 1
   margin-top 10px
   clear both
+.flash-count-input
+  width 100px !important
 </style>

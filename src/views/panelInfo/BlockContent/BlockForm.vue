@@ -425,15 +425,33 @@
           <AppParamsRead v-else :value="contentForm.redundantParams" />
         </template>
       </template>
-      <PersonalRecommend
-        ref="personalRecommend"
-        :value="contentForm"
+      <el-form-item label="开启个性化推荐">
+        <el-switch
+          :disabled="isReadonly"
+          :value="!!contentForm.flagSetRec" 
+          @input="handleInputFlagSetRec"
+          active-color="#13ce66"
+          inactive-color="grey"
+        >
+        </el-switch>
+      </el-form-item>
+      <RecommendStreamSelector
+        v-if="!!contentForm.flagSetRec"
+        :value="contentForm.mediaAutomationBlockRls.mediaAutomationId"
         :disabled="isReadonly"
-        :recom-stream-tags="recomStreamTags"
-        @open-dialog="handleFetchRecomStream"
+        :source="source"
+        :resolution="resolution[0] + '*' + resolution[1]"
         @select-end="handleSelectRecomStream"
-        @flag-set-change="handleInputFlagSetRec"
+        @del-select="contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
       />
+      <el-form-item label="刷新机制" v-if="!!contentForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
+        <InputPositiveInt 
+          v-model="contentForm.mediaAutomationBlockRls.refreshCal"
+          class="flash-count-input"
+          :disabled="isReadonly"
+        />
+        客户端曝光X次之后刷新推荐位
+      </el-form-item>
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
         <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
       </el-form-item>
@@ -479,7 +497,7 @@ import ClickEventSelector from '@/components/selectors/ClickEventSelector'
 import TagFrame from '../TagFrame'
 import { getSelectedResource, chopSubTitle, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
 import InputPositiveInt from '@/components/InputPositiveInt'
-import PersonalRecommend from '@/components/PersonalRecommend'
+import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
 export default {
   components: {
     Upload,
@@ -495,7 +513,7 @@ export default {
     AppParamsRead,
     TagFrame,
     InputPositiveInt,
-    PersonalRecommend
+    RecommendStreamSelector
   },
   data() {
     const isReadonly = this.isReadonly
@@ -776,6 +794,7 @@ export default {
       })
     },
     handleInputFlagSetRec (val) {
+      this.contentForm.flagSetRec = val ? 1 : 0
       if (!val) {
         this.contentForm.mediaAutomationBlockRls = {
           refreshCal: 1,
@@ -1063,37 +1082,8 @@ export default {
         }
       })
     },
-    handleDelStreamTag() {
-      if(this.isReadonly) {
-        return
-      }
-      this.contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined
-    },
-    handleSelectRecomStream(index) {
-      this.contentForm.mediaAutomationBlockRls.mediaAutomationId = this.recomStreamTags[index].id
-      this.$refs.personalRecommend.isVisiableRecom = false
-    },
-    handleFetchRecomStream() {
-      let params = {
-        page: 1, 
-        rows: 100,
-        source: this.source || undefined
-      }
-      const currentSize = this.resolution[0] + '*' + this.resolution[1]
-      this.$service.getMediaAutomationDataList(params).then(data => {
-        this.recomStreamTags = data.rows.filter(item => {
-          if (item.openStatus === 0) { // 流状态关闭
-            return false
-          } else {
-            return item.picSize.some(size => {
-              return currentSize === size
-            })
-          }
-        })
-        if (this.recomStreamTags.length === 0) {
-          this.$message('流状态关闭，尺寸不匹配，或者暂无该内容源的推荐流');
-        }
-      })
+    handleSelectRecomStream (recomStream) {
+      this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
     }
   },
   mounted() {
@@ -1274,4 +1264,6 @@ $width = 100px;
     position absolute
     top 0px
     right -12px
+.flash-count-input
+  width 100px !important
 </style>
