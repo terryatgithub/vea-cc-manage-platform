@@ -69,18 +69,18 @@ export default {
             minWidth: '180',
             'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
-              return row.panelGroupName
-            //   return createElement('el-button', {
-            //     attrs: {
-            //       type: 'text'
-            //     },
-            //     on: {
-            //       click: (event) => {
-            //         event.stopPropagation()
-            //         this.handleRead(row, row.panelGroupVersion)
-            //       }
-            //     }
-            //   }, row.panelGroupName)
+              // return row.panelGroupName
+              return createElement('el-button', {
+                attrs: {
+                  type: 'text'
+                },
+                on: {
+                  click: (event) => {
+                    event.stopPropagation()
+                    this.handleRead(row, row.panelGroupVersion)
+                  }
+                }
+              }, row.panelGroupName)
             }
           },
           {

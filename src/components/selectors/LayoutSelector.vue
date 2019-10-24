@@ -16,10 +16,10 @@
         <el-form-item label="布局分类">
           <el-select v-model="filter.layoutType" clearable>
             <el-option
-              v-for="item in layoutTypeOptoins"
-              :key="item.value"
-              :value="item.value"
-              :label="item.label"
+              v-for="item in layoutTypeOptions"
+              :key="item.dictId"
+              :value="item.dictId"
+              :label="item.dictCnName"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -96,20 +96,6 @@ import { Table } from 'admin-toolkit'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 import LayoutRead from '@/components/LayoutBlock'
 
-const layoutTypeOptoins = [
-  {
-    label: '主页6.0',
-    value: 1
-  },
-  {
-    label: '影视V2',
-    value: 2
-  }
-]
-const layoutTypeLabels = layoutTypeOptoins.reduce(
-  (result, item) => (result[item.value] = item.label) && result,
-  {}
-)
 const ID = 'layoutId'
 
 export default {
@@ -124,8 +110,8 @@ export default {
       showPreviewDialog: false,
       previewContent: [],
       showBlockCountDialog: false,
-      layoutTypeOptoins,
-      layoutTypeLabels,
+      layoutTypeOptions: [],
+      layoutTypeText: {},
       selectedLayout: null,
       formBlock: {
         count: undefined
@@ -158,7 +144,7 @@ export default {
             label: '分类',
             width: 200,
             render: (h, { row }) => {
-              return layoutTypeLabels[row.layoutType]
+              return this.layoutTypeText[row.layoutType]
             }
           },
           {
@@ -334,9 +320,19 @@ export default {
         }
         return result
       }, [])
+    },
+    fetchLayoutTypeOptions () {
+      this.$service.getDictType({type: 'layoutType'}).then(layoutTypeOptions => {
+        this.layoutTypeOptions = layoutTypeOptions
+        this.layoutTypeText = layoutTypeOptions.reduce((result, item) => {
+          result[item.dictId] = item.dictCnName
+          return result
+        }, {})
+      })
     }
   },
   created() {
+    this.fetchLayoutTypeOptions()
     this.$service.getDictType({ type: 'businessType' }).then(data => {
       this.panelCategoryOptions = data
       this.pannelCategoryOptionsIndexed = data.reduce(function(result, item) {
