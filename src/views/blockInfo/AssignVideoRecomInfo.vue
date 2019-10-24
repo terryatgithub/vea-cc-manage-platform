@@ -209,7 +209,8 @@ export default {
         source: 'o_tencent',
         openStatus: undefined,
         currentVersion: undefined,
-        flagAllVideoPoster: 0
+        flagAllVideoPoster: 0,
+        type: 'normal'
       },
       isCollapseBase: false,
       isCollapseVideo: false,
@@ -251,6 +252,9 @@ export default {
     },
     isRead () {
       const mode = this.mode
+      if (this.basicForm.type !== 'normal') {
+        return true
+      }
       return mode === 'read'
     },
     isReplica() {
@@ -260,7 +264,7 @@ export default {
       const typeIndex = {
         normal: '普通', child: '少儿', movie: '电影', series: '电视剧'
       }
-      return typeIndex[this.basicForm.type] || '普通'
+      return typeIndex[this.basicForm.type]
     }
   },
 
@@ -373,11 +377,21 @@ export default {
     },
     handleAddTabSize(e, width, height) {
       if (width) {
+        const isRepeatSize = this.judgeIsRepeatSize({width, height})
+        if (isRepeatSize) {
+          this.$message.error("尺寸不允许重复！")
+          return
+        }
         this.sizeTags.push({ width, height, closable: true })
       } else {
         let newTabSize = Object.assign({closable: true}, this.newTabSize)
         if(!newTabSize.width || !newTabSize.height) {
           this.$message.error("宽或高不能为空")
+          return
+        }
+        const isRepeatSize = this.judgeIsRepeatSize(newTabSize)
+        if (isRepeatSize) {
+          this.$message.error("尺寸不允许重复！")
           return
         }
         this.sizeTags.push(newTabSize)
@@ -388,6 +402,12 @@ export default {
       })
       this.dealFillDefaultImg()
       this.isVisibleSize = false
+    },
+    judgeIsRepeatSize (newTabSize) {
+      return this.sizeTags.some(item => {
+        // 有可能不全等
+        return item.width == newTabSize.width && item.height == newTabSize.height
+      })
     },
     handleTagClose(tag) {
       this.$confirm('删除本尺寸后，本流中配置的本尺寸海报图也会删除，确定要删除吗?', '提示', {
@@ -512,11 +532,37 @@ export default {
               // 有url就不填充
               if (!videoTab.picInfoList[index].pictureUrl) {
                 // 不存在imageInfoList时访问媒资
-                // this.$refs.resourceSelector.searchSourceById(11, 'video')
-                const currentImageInfo = (videoTab.imageInfoList || []).find(imageInfoList => {
-                  return imageInfoList.size === resolution
-                })
-                videoTab.picInfoList[index].pictureUrl = currentImageInfo ? currentImageInfo.url : undefined
+                if (videoTab.clickTemplateType === 'movie') {
+                  const filter = {
+                    resType: 'vod',
+                    callbackparam: 'result',
+                    sources: this.basicForm.source,
+                    id: videoTab.mediaResourceId
+                  }
+                  this.$service.getMediaVideoInfos(filter).then(data => {
+                    videoTab.imageInfoList = data.rows[0] ? data.rows[0].imageInfoList : undefined
+                    const currentImageInfo = (videoTab.imageInfoList || []).find(imageInfoList => {
+                      return imageInfoList.size === resolution
+                    })
+                    videoTab.picInfoList[index].pictureUrl = currentImageInfo ? currentImageInfo.url : undefined
+                  })
+                } else if (videoTab.clickTemplateType === 'edu') {
+                  const filter = {
+                    resType: 'vod',
+                    callbackparam: 'result',
+                    businessType: 1, // 业务线类型:0影视, 1教育
+                    id: videoTab.mediaResourceId
+                  }
+                  this.$service.getMediaVideoInfos(filter).then(data => {
+                    videoTab.imageInfoList = data.rows[0] ? data.rows[0].imageInfoList : undefined
+                  })
+                } else {
+                  // 填充
+                  const currentImageInfo = (videoTab.imageInfoList || []).find(imageInfoList => {
+                    return imageInfoList.size === resolution
+                  })
+                  videoTab.picInfoList[index].pictureUrl = currentImageInfo ? currentImageInfo.url : undefined
+                }
               }
             })
           }
@@ -913,7 +959,7 @@ export default {
       basicForm.id = data.id
       basicForm.name = data.name
       basicForm.openStatus = data.openStatus
-      basicForm.type = data.type
+      basicForm.type = data.type || 'normal'
       basicForm.currentVersion = data.currentVersion
       basicForm.duplicateVersion = data.duplicateVersion
       basicForm.status = data.status
