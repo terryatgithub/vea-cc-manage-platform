@@ -31,11 +31,11 @@
               <el-form-item label="布局类别" prop="layoutType">
                 <el-select v-model="form.layoutType" placeholder="布局类别">
                   <el-option
-                    v-for="item in layoutType"
-                    :key="item.name+''"
-                    :label="item.name"
-                    :value="item.id"
-                  ></el-option>
+                    v-for="item in layoutTypeOptions"
+                    :key="item.id"
+                    :label="item.dictCnName"
+                    :value="item.dictId">
+                  </el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="上传文件">
@@ -48,18 +48,19 @@
                   <template slot="preview" slot-scope="{fileList}" >
                     <div
                       v-if="fileList && fileList.length > 0">
-                      <div class="upload-pic-list__item">
+                      <div 
+                        class="upload-pic-list__item">
                         <div
                           class="upload-pic-list__error"
-                          v-if="fileList[0].status === 'error'">
-                          上传失败: {{ fileList[0].message }}
+                          v-if="getLastFile(fileList).status === 'error'">
+                          上传失败: {{  getLastFile(fileList).message }}
                         </div>
                         <div
-                          v-else-if="fileList[0].status === 'uploading'"
+                          v-else-if="getLastFile(fileList).status === 'uploading'"
                           class="upload-pic-list__progress">
-                          <el-progress style="width: 250px" :percentage="fileList[0].percentage"></el-progress>
+                          <el-progress style="width: 250px" :percentage="getLastFile(fileList).percentage"></el-progress>
                         </div>
-                        <span v-else>{{ fileList[0].filename }}</span>
+                        <span v-else>{{ getLastFile(fileList).filename }}</span>
                       </div>
                     </div>
                   </template>
@@ -125,20 +126,8 @@ export default {
       activePage: 'layout',
       mode: 'create',
       resourceName: '布局',
-      layoutType: [
-        {
-          name: '主页6.0',
-          id: 1
-        },
-        {
-          name: '影视V2',
-          id: 2
-        }
-      ],
-      layoutTypeText: {
-        1: '主页6.0',
-        2: '影视V2'
-      },
+      layoutTypeOptions: [],
+      layoutTypeText: {},
       form: {
         layoutId: undefined,
         layoutName: null,
@@ -206,13 +195,16 @@ export default {
         }
       })
     },
+    getLastFile (fileList) {
+      return fileList[fileList.length - 1]
+    },
     handleUpload(file, fileItem) {
       this.$service
         .uploadLayoutFile({
           file,
           onUploadProgress: evt => {
             if (evt.lengthComputable) {
-              fileItem.percentage = evt.loaded / evt.total
+              fileItem.percentage = evt.loaded / evt.total * 100
             }
           }
         })
@@ -231,6 +223,10 @@ export default {
             fileItem.status = 'error'
             fileItem.message = '选择的文件不对，应该选择布局格式的文件'
           }
+          fileItem.percentage = 0
+        }).catch((e) => {
+          fileItem.status = 'error'
+          fileItem.message = e.message
         })
     },
     generatorLayout(obj) {
@@ -264,6 +260,15 @@ export default {
     },
     productLayout() {
       this.activePage = 'layout-generate'
+    },
+    fetchLayoutTypeOptions () {
+      this.$service.getDictType({type: 'layoutType'}).then(layoutTypeOptions => {
+        this.layoutTypeOptions = layoutTypeOptions
+        this.layoutTypeText = layoutTypeOptions.reduce((result, item) => {
+          result[item.dictId] = item.dictCnName
+          return result
+        }, {})
+      })
     }
   },
   created() {
@@ -271,6 +276,7 @@ export default {
     if (this.id) {
       this.fetchData(this.version)
     }
+    this.fetchLayoutTypeOptions()
   }
 }
 </script>
