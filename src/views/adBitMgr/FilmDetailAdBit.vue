@@ -240,6 +240,28 @@
                         </el-form>
                     </div>
                 </el-tab-pane>
+                <el-tab-pane label="主页小窗口inline广告" name="homepage-window">
+                    <div class="video-ad-wrapper">
+                        <p class="ad-title">主页小窗口inline广告</p>
+                        <el-form :inline="true" label-width="150px" label-position="left">
+                            <cc-var v-if="adSwitches.broadcast_inline" :ad="adSwitches.broadcast_inline">
+                                <template slot-scope="{ad: ad}">
+                                    <el-form-item
+                                        :label="ad.label"
+                                        label-width="220px">
+                                        <el-switch
+                                            on-text="开"
+                                            off-text="关"
+                                            :value="ad.value"
+                                            @input="handleToggleSwitch(ad)"
+                                        >
+                                        </el-switch>
+                                    </el-form-item>
+                                </template>
+                            </cc-var>
+                        </el-form>
+                    </div>
+                </el-tab-pane>
             </el-tabs>
         </div>
     </ContentCard>

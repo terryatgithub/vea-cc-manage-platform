@@ -80,9 +80,21 @@ export function tabIconList() {
 }
 
 export function tabInfoGet(params) {
+  const id = params.id
+  if (!/^\d+$/.test(id)) {
+    return this.getThirdpartTabInfoDetail(params)
+  }
   return this.fetch({
     method: 'post',
     url: 'api/v1/tab/getDetailInfo.html',
+    params
+  })
+}
+
+export function tabInfoGetBase(params) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/tab/getSimpleInfo.html',
     params
   })
 }
@@ -147,5 +159,52 @@ export function getTabChartData(params) {
     method: 'get',
     url: 'api/v1/dataShow/tab/getChartData.html',
     params
+  })
+}
+
+export function getThirdpartTabInfoDetail(params) {
+  const id = params.id
+  const [from, type] = id.split('-')
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/third/getV6BoardInfo.html',
+    params: {
+      from,
+      type
+    }
+  })
+}
+
+export function updateThirdPartTabAuditType(params) {
+  const id = params.id
+  const [from] = id.split('-')
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/third/switchAuditMode.html',
+    params: {
+      from,
+      enableAuto: params.enableAuto
+    }
+  })
+}
+
+export function updateThirdPartTabAudit(params) {
+  const id = params.id
+  const [from] = id.split('-')
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/third/execAudit.html',
+    params: {
+      from
+    }
+  })
+}
+
+export function getThirdpartTabLayout () {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/third/getLayout.html?layoutModel=Expander&width=522&height=295'
+  }).then(result => {
+    return JSON.parse(result)
   })
 }

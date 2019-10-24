@@ -182,7 +182,7 @@ export default {
       this.form = Object.assign({}, data)
       this.getLayoutJson({
         fileName: this.form.layoutName,
-        content: this.form.layoutJson
+        content: this.form.layoutJson8
       })
     },
     handleSave() {
@@ -241,14 +241,14 @@ export default {
       let d = JSON.parse(data.content) // 布局内容
       this.form.layoutModel = d.type
       this.form.layoutName = data.fileName.replace('.txt', '')
-      let layoutjson = {}
+      let layoutjson = {
+        type: d.type,
+        contents: d.contents,
+        version: d.version
+      }
       this.content = d.contents
       if (d.type === 'Expander') {
-        layoutjson = {
-          type: d.type,
-          extra: d.extra,
-          contents: d.contents
-        }
+        layoutjson.extra = d.extra
         if (d.extra.orientation == 0) {
           this.form.layoutRemark = '支持横向扩展'
         }
@@ -259,13 +259,8 @@ export default {
         this.form.layoutFlag = d.extra.orientation
         this.form.width = d.extra.width
         this.form.height = d.extra.height
-      } else {
-        layoutjson = {
-          type: d.type,
-          contents: d.contents
-        }
       }
-      this.form.layoutJson = JSON.stringify(layoutjson)
+      this.form.layoutJson8 = JSON.stringify(layoutjson)
     },
     productLayout() {
       this.activePage = 'layout-generate'

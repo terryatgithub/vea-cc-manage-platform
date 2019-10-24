@@ -238,7 +238,7 @@
                     <Affix
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".el-main"
-                      style="width: 840px; display: inline-block;background: #fff; z-index: 1;"
+                      style="width: 725px; display: inline-block;background: #fff; z-index: 1;"
                       :offset="{ top: 128, bottom: 50 }"
                     >
                       <cc-panel-selector-el
@@ -279,8 +279,8 @@
                     @show-all-panel="handleShowAllPanels"
                     :panels="tabInfo.pannelList"
                     :panel-data="panelListIndexed"
-                    :width="840"
-                    :ratio="0.4"
+                    :width="725"
+                    :ratio="0.315"
                     :show-title="true"
                   />
                 </el-form-item>
@@ -602,15 +602,15 @@
 
                 <el-form-item label="选择版块" v-if="tabInfo.hasSubTab === 0">
                   <div class="tab-info__virtual-tab-menu">
-                    <affix
+                    <Affix
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".el-main"
-                      style="width: 840px; display: inline-block;background: #fff; z-index: 1;"
+                      style="width: 725px; display: inline-block;background: #fff; z-index: 1;"
                       :offset="{ top: 128, bottom: 50 }"
                     >
                       <el-button @click="handleToggleAllPanel(false)">展开所有</el-button>
                       <el-button @click="handleToggleAllPanel(true)">收起所有</el-button>
-                    </affix>
+                    </Affix>
                   </div>
                   <cc-virtual-tab
                     class="tab-info__virtual-tab"
@@ -622,8 +622,8 @@
                     @uncollapse="handleChangeCollapseState"
                     @show-all-panel="handleShowAllPanels"
                     :read-only="true"
-                    :width="840"
-                    :ratio="0.4"
+                    :width="725"
+                    :ratio="0.315"
                     :show-title="true"
                   />
                 </el-form-item>
@@ -708,7 +708,17 @@
     </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'tab'">
+      <JDTabInfo
+        v-if="embedTab.tabType === 4"
+        :title-prefix="title"
+        :id="embedTab.id"
+        :version="embedTab.version"
+        :init-mode="embedTab.mode"
+        @upsert-end="handleTabEmbedBack"
+        @go-back="activePage = 'tab_info'"
+      />
       <TabInfo
+        v-else
         :title-prefix="title"
         :id="embedTab.id"
         :version="embedTab.version"
@@ -777,6 +787,7 @@
 import { getAppIDByTabCategory } from '../../utlis/bizUtil'
 import { Table } from 'admin-toolkit'
 import Var from '@/components/Var'
+import JDTabInfo from './JDTabInfo'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import SourceRadioSelector from '@/components/SourceRadioSelector'
@@ -822,6 +833,7 @@ export default {
     'cc-time-spinner': TimeSpinner,
     'cc-virtual-tab': VirtualTab,
     'cc-crowd-selector': CrowdSelector,
+    JDTabInfo,
     InputPositiveInt,
     Table,
     CommonContent,
@@ -1860,7 +1872,7 @@ export default {
     getPanelBlocks(panel) {
       const parentType = panel.parentType
       const contentList = panel.contentList
-      const layoutJson = JSON.parse(panel.layoutInfo.layoutJson)
+      const layoutJson = JSON.parse(panel.layoutInfo.layoutJson8)
       const type = layoutJson.type
       const blocks = layoutJson.contents
       const originBlockCount = blocks.length
@@ -2145,13 +2157,20 @@ export default {
       this.embedTab = undefined
     },
     handlePreviewTab(row, version, index) {
-      this.activePage = 'tab'
-      this.embedTab = {
-        index: index,
-        id: row.tabId,
-        version: version,
-        mode: 'read'
-      }
+      const tabId = row.tabId
+      this.$service.tabInfoGetBase({id: tabId}).then(baseInfo => {
+        const tabType = baseInfo.tabType
+        const tabRemark = baseInfo.tabRemark
+        this.activePage = 'tab'
+        this.embedTab = {
+          index: index,
+          // 第三方版面
+          id: tabType === 4 ? tabRemark : tabId,
+          version: version,
+          tabType: tabType,
+          mode: 'read'
+        }
+      })
     },
     handleShowTimeShelf() {
       const data = this.getFormData()

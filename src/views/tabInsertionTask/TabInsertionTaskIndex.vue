@@ -2,7 +2,6 @@
 import { components } from 'admin-base'
 import ResourceContent from './TabInsertionTaskContent'
 import ResourceList from './TabInsertionTaskList'
-console.log(components.ResourceBaseIndex)
 export default {
   extends: components.ResourceBaseIndex,
   components: {

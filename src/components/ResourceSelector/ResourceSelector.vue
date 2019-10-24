@@ -96,6 +96,13 @@
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
+          <ranking-selector
+            v-show="activeSelector === 'ranking'"
+            ref="ranking-selector"
+            :source="source"
+            :selection-type="selectionType"
+            @select-cancel="handleSelectCancel"
+            @select-end="handleSelectEnd" />
           <good-selector
             v-show="activeSelector === 'good'"
             ref="good-selector"
@@ -123,6 +130,7 @@ import VideoSelector from './VideoSelector'
 import FuncSelector from './FuncSelector'
 import RotateSelector from './RotateSelector'
 import ShortVideoTopicSelector from './ShortVideoTopicSelector'
+import RankingSelector from './Ranking'
 import GoodSelector from './GoodSelector'
 
 const SELECTORS = [
@@ -171,6 +179,10 @@ const SELECTORS = [
     value: 'shortVideoTopic'
   },
   {
+    label: '排行榜',
+    value: 'ranking'
+  },
+  {
     label: '商品',
     value: 'good'
   }
@@ -189,6 +201,7 @@ export default {
     FuncSelector,
     RotateSelector,
     ShortVideoTopicSelector,
+    RankingSelector,
     GoodSelector
   },
   data() {
@@ -219,7 +232,7 @@ export default {
     autoFetchSelectors: {
       type: Array,
       default() {
-        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'good']
+        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'ranking', 'good']
       }
     }
   },

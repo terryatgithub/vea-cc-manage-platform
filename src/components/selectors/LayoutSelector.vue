@@ -164,14 +164,24 @@ export default {
           {
             label: '预览',
             render: (h, { row }) => {
-              return <el-button
-                type="text"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  this.handlePreview(row)
-                }}>
-                  预览
-              </el-button>
+              return <div>
+                <el-button
+                  type="text"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    this.handlePreview(row, 'v8')
+                  }}>
+                    预览
+                </el-button>
+                <el-button
+                  type="text"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    this.handlePreview(row, 'v6')
+                  }}>
+                    预览6.0
+                </el-button>
+              </div>
             }
           },
           {
@@ -206,9 +216,10 @@ export default {
     }
   },
   methods: {
-    handlePreview(row) {
+    handlePreview(row, version) {
       this.showPreviewDialog = true
-      this.previewContent = JSON.parse(row.layoutJson).contents
+      const layoutJson = version === 'v6' ? row.layoutJson : row.layoutJson8
+      this.previewContent = JSON.parse(layoutJson).contents
     },
     validateNum(rule, value, callback) {
       var reg = /^[1-9]\d*$/
@@ -255,7 +266,7 @@ export default {
     handleSelectEnd() {
       const selected = this.selected[0]
       if (selected) {
-        const layoutJsonParsed = JSON.parse(selected.layoutJson)
+        const layoutJsonParsed = JSON.parse(selected.layoutJson8)
         const type = layoutJsonParsed.type
         selected.layoutJsonParsed = layoutJsonParsed
         this.selectedLayout = selected

@@ -28,7 +28,7 @@
         </el-form-item>
 
         <el-form-item :clearable="true" class="el-col el-col-6">
-          <el-select v-model="filter.tabType" placeholder="版面属性" title="版面属性">
+          <el-select v-model="filter.tabType" placeholder="版面属性" clearable title="版面属性">
             <el-option
               v-for="(item, index) in tabTypeOptions"
               :key="index"
@@ -107,6 +107,30 @@ import { Table } from 'admin-toolkit'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 import SourceSelector from '../SourceSelector'
 const ID = 'tabId'
+const tabTypeOptions = [
+  {
+    label: '普通版面',
+    value: '1'
+  },
+  {
+    label: '专题版面',
+    value: '2'
+  },
+  {
+    label: '标记版面',
+    value: '12'
+  },
+  {
+    label: '第三方版面',
+    value: '4'
+  }
+]
+
+const tabTypeIndexed = tabTypeOptions.reduce((result, item) => {
+  result[item.value] = item.label
+  return result
+}, {})
+
 export default {
   components: {
     Table,
@@ -115,24 +139,8 @@ export default {
   },
   data() {
     return {
-      tabTypeOptions: [
-        {
-          label: '普通版面',
-          value: '1'
-        },
-        {
-          label: '专题版面',
-          value: '2'
-        },
-        {
-          label: '标记版面',
-          value: '12'
-        }
-      ],
-      tabTypeIndexed: {
-        '1': '普通版面',
-        '2': '专题版面'
-      },
+      tabTypeOptions,
+      tabTypeIndexed,
       tabCategoryOptions: [],
       tabCategoryOptionsIndexed: {},
       tabStatusOptions: [

@@ -276,7 +276,22 @@ export default {
           label: 0,
           wrapper: 23
         }
-      })
+      }),
+      resolutionTolerance: _.o.enum({
+        '10%': 10,
+        '30%': 30,
+        '50%': 50
+      }).other('form', {
+        label: '',
+        component: 'Select',
+        placeholder: '尺寸容忍度',
+        clearable: true,
+        cols: {
+          item: 3,
+          label: 0,
+          wrapper: 23
+        }
+      }),
     }).other('form', {
       layout: 'inline',
       footer: {
