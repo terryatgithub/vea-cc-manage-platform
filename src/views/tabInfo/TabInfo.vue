@@ -123,6 +123,31 @@
                   <InputMinute v-model="tabInfo.timeCycle" :min="5" :max="360" />
                   <span class="hint remarks">设置范围:5分钟-6小时</span>
                 </el-form-item>
+
+                <el-form-item label="强制刷新时间点" class="force-refresh-time-list">
+                  <el-form-item label="时间点1" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[0]"
+                      type="datetime"
+                      placeholder="选择日期时间">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="时间点2" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[1]"
+                      type="datetime"
+                      placeholder="选择日期时间">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="时间点3" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[3]"
+                      type="datetime"
+                      placeholder="选择日期时间">
+                    </el-date-picker>
+                  </el-form-item>
+                  <div class="hint remarks">强制刷新时会导致画面闪动，如无必要，请勿使用</div>
+                </el-form-item>
               </div>
 
               <div v-if="mode === 'edit'|| mode ==='replicate'">
@@ -478,6 +503,29 @@
                 </el-form-item>
 
                 <el-form-item label="固定刷新时间" prop="timeCycle">{{ parseMinToStr(tabInfo.timeCycle) }}</el-form-item>
+                <el-form-item label="强制刷新时间点" class="force-refresh-time-list">
+                  <el-form-item label="时间点1" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[0]"
+                      :disabled="true"
+                      type="datetime">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="时间点2" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[1]"
+                      :disabled="true"
+                      type="datetime">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="时间点3" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[3]"
+                      :disabled="true"
+                      type="datetime">
+                    </el-date-picker>
+                  </el-form-item>
+                </el-form-item>
               </div>
               
               <div class="form-legend-header" @click="handleTabDataClick">
@@ -1062,6 +1110,7 @@ export default {
         flagIsRecord: 0,
         isTiming: 0,
         releaseTime: undefined,
+        refreshTimeList: [undefined, undefined, undefined],
         tabExtArr: {},
         pannelList: [],
         tabList: [],
@@ -2346,6 +2395,12 @@ export default {
             ) {
               error = `推荐开始位置不能大于版面的版块数, 当前版块总数 ${panelListLength}`
             }
+            // 时间点是否重复
+            const refreshTimeList = data.refreshTimeList.filter(item => item)
+            const refreshTimeSet = new Set(refreshTimeList)
+            if (refreshTimeList.length > refreshTimeSet.size) {
+              error = '强制刷新时间点不能重复'
+            }
 
             if (error) {
               showError(error)
@@ -2358,6 +2413,9 @@ export default {
     },
 
     parseTabInfo(tabInfo) {
+
+      const refreshTimeList = tabInfo.refreshTimeList.filter(item => item).map(item => +new Date(item))
+
       let panelInfoList = []
       {
         const panelList = tabInfo.pannelList
@@ -2472,6 +2530,7 @@ export default {
         panelInfoList: panelInfoList,
         pictureName: tabInfo.pictureName,
         releaseTime: tabInfo.releaseTime,
+        refreshTimeList: refreshTimeList,
         systemDefault: tabInfo.systemDefault || 0,
         systemPluginList: systemPluginList,
         tabAppid: tabInfo.tabAppid,
@@ -2562,7 +2621,14 @@ export default {
           50
         )
       }
-
+      
+      const originRefreshTimeList = data.refreshTimeList || []
+      const refreshTimeList = Array.apply(null, {length: 3}).map((item, i) => {
+        const originTime = originRefreshTimeList[i]
+        if (originTime) {
+          return new Date(originTime)
+        }
+      })
       const panelRecommendConfig = data.panelRecommendConfig 
         ? data.panelRecommendConfig
         : tabInfo.panelRecommendConfig
@@ -2592,6 +2658,7 @@ export default {
         flagIsRecord: data.flagIsRecord,
         isTiming: data.isTiming,
         releaseTime: data.releaseTime,
+        refreshTimeList,
         pannelList: pannelList,
         tabList: data.tabList,
 
@@ -2816,4 +2883,8 @@ export default {
   color: red
 .data-down
   color: #00AA00
+.force-refresh-time-list
+  >>> .el-form-item
+    margin-bottom 0
+    display inline-block
 </style>
