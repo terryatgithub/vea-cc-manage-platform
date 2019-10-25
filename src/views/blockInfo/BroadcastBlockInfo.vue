@@ -118,7 +118,7 @@
               :src="normal.poster.pictureUrl"/>
             <span>{{normal.title}}</span>
           </el-card>
-          <el-card style="cursor: pointer;" v-if="!disabled">
+          <el-card v-if="!disabled" class="add-version-card">
             <span class="add-version" @click="handleAddNormalContent">+添加资源</span>
           </el-card>
         </el-row>
@@ -242,8 +242,8 @@
           >
             <ResourceSelector
               ref="resourceSelector"
-              v-if="!disabled "
-               :disable-partner="!!source"
+              v-if="!disabled"
+              :disable-partner="!!source"
               :source="source"
               :selectors="resourceOptionsLowerForm"
               :is-live="false"
@@ -256,8 +256,15 @@
             <el-tag
               type="success"
               class="marginL"
+              :closable="!disabled"
               v-if="lowerForm.thirdIdOrPackageName"
+              @close="handleCloseLowerFormTag"
             >已选择：{{lowerForm.thirdIdOrPackageName}}</el-tag>
+            <el-tag
+              type="success"
+              class="marginL"
+              v-if="lowerForm.thirdIdOrPackageName && singleEpisodeNum"
+            >单集：{{singleEpisodeNum}}</el-tag>
           </el-form-item>
           <el-form-item label="指定子频道" prop="subchannelId" v-if="lowerForm.subchannelIs">
             <el-input
@@ -621,7 +628,9 @@ export default {
       checkresourceis: true,
       // customDialogPicture: {},
       customDialogCorner: {},
-      pictureOptions: {}
+      pictureOptions: {},
+      // 单集
+      singleEpisodeNum: undefined,
     }
   },
   computed: {
@@ -947,7 +956,7 @@ export default {
           this.currentIndex = 0
           this.clearFormAll()
         })
-        .catch(function() {
+        .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消切换'
@@ -1043,6 +1052,8 @@ export default {
               s.thirdIdOrPackageName = prefix + selected.coocaaVId
               s.vid = selectedEpisode.coocaaMId
             }
+            // 集数
+            this.singleEpisodeNum = selectedEpisode.urlCollection
             s.pictureUrl = selectedEpisode.thumb
             s.title = selectedEpisode.urlTitle
             s.subTitle = selectedEpisode.urlSubTitle
@@ -1592,6 +1603,11 @@ export default {
           parseCornerIconList(lowerData)
           this.lowerForm = lowerData
         })
+    },
+    // 选择资源拓展项
+    handleCloseLowerFormTag () {
+      this.lowerForm.thirdIdOrPackageName = undefined;
+      this.singleEpisodeNum = undefined
     }
   },
   created() {
@@ -1636,97 +1652,97 @@ export default {
 </script>
 <style lang='stylus' scoped>
 .split-bar
-  width: 96%
-  height: 36px
-  margin: 8px 0px
-  padding: 0px 6px
-  font-size: 17px
-  line-height: 36px
-  background: #e5e9f2
-  border-radius: 4px
+  width 96%
+  height 36px
+  margin 8px 0px
+  padding 0px 6px
+  font-size 17px
+  line-height 36px
+  background #e5e9f2
+  border-radius 4px
 .form-wrap
-  width: 95%
-  height: auto
-  padding: 10px
-  border: 2px dotted darkgray
-  overflow: auto
+  width 95%
+  height auto
+  padding 10px
+  border 2px dotted darkgray
+  overflow auto
 .version-title
-  height: 40px !important
-  width: 97% !important
+  height 40px !important
+  width 97% !important
 .version-title__h
-  float: left
-  margin-top: 7px
+  float left
+  margin-top 7px
 .version-title__tag
-  margin-top: 6px
-  margin-left: 10px
+  margin-top 6px
+  margin-left 10px
 .demo-ruleForm, .key-span
-  width: 100px
-  display: inline-block
-  text-align: center
-  background: #f1f1f1
-  border: 1px solid #ddd
-  margin-right: 10px
-  border-radius: 6px
+  width 100px
+  display inline-block
+  text-align center
+  background #f1f1f1
+  border 1px solid #ddd
+  margin-right 10px
+  border-radius 6px
 .button-wraprer
-  padding: 8px 0px
-  border-bottom: 1px solid #ccc
+  padding 8px 0px
+  border-bottom 1px solid #ccc
 .el-card__body
-  padding: 7px
+  padding 7px
 .el-card__body img
-  width: 100%
+  width 100%
 .normal-left-list
-  width: 190px
-  /* height: 400px; */
-  /* border-right: 1px solid gray; */
-  float: left
-  padding: 8px
-  margin-right: 8px
-  /* max-height: 617px; */
-  overflow: auto
+  width 190px
+  /* height 400px */
+  /* border-right 1px solid gray */
+  float left
+  padding 8px
+  margin-right 8px
+  /* max-height 617px */
+  overflow auto
 .write-play
-  color: #20a0ff
-  margin-left: 10px
+  color #20a0ff
+  margin-left 10px
 .el-icon-close
-  font-size: 14px
-  position: absolute
-  right: 2px
-  top: 4px
-  color: red
+  font-size 14px
+  position absolute
+  right 2px
+  top 4px
+  color red
 .active
-  border: 2px dashed #f58b2fd6
+  border 2px dashed #f58b2fd6
 .cutLine
-  border-left: 1px solid gray
-  margin-left: 10px
+  border-left 1px solid gray
+  margin-left 10px
 .add-version
-  font-size: 17px
-  height: 100px
-  line-height: 100px
-  display: block
-  text-align: center
+  font-size 17px
+  height 100px
+  line-height 100px
+  display block
+  text-align center
 .normal-version-wrap
-  width: 160px
-  min-height: 120px
-  position: relative
-  margin-bottom: 10px
-  text-align: center
-  cursor: pointer
+  width 160px !important
+  min-height 120px
+  position relative
+  margin-bottom 10px
+  text-align center
+  cursor pointer
 .normal-version-wrap span
-  font-size: 16px
+  font-size 16px
 .normal-version-wrap img
-  width: 95%
-  height: 90px
-  border-radius: 8px
+  width 95%
+  height 90px
+  border-radius 8px
 /* 角标 */
 .corner-box
-  position: relative
-  width: 150px
-  height: 150px
+  position relative
+  width 150px
+  height 150px
 .corner-box span.corner
-  position: absolute
-  width: 50px
-  height: 50px
-  text-align: center
-  cursor: pointer
+  position absolute
+  width 50px
+  height 50px
+  text-align center
+  cursor pointer
 .corner-box span.corner img
   width: 100%
   height: 100%
@@ -1753,16 +1769,15 @@ export default {
   color: #FF4949
   font-size: 20px
 .submitCheck
-  margin-top: 20px
-  margin-left: 110px
+  margin-top 20px
+  margin-left 110px
 .sign-tip
-  font-size: 11px;
-  color: orange;
-  padding: 0;
-  line-height: 1;
-  margin-top: 10px;
-  clear: both;
-
+  font-size 11px
+  color orange
+  padding 0
+  line-height 1
+  margin-top 10px
+  clear both
 .content-wrapper
   float left
   width 75%
@@ -1781,49 +1796,46 @@ export default {
       color #fff
   >>> .el-radio__input
     display none
-</style>
-
-<style lang="stylus" scoped>
-.added-contents-wrapper {
-  margin-bottom: 16px;
-  padding: 8px;
-  border-top: 2px dashed #C0CCDA;
-  border-bottom: 2px dashed #C0CCDA;
-  white-space: nowrap;
-  overflow: auto;
-
-  .added-contents-list {
-    display: inline-block;
-  }
-
-  >>> .el-card {
-    position: relative;
-    display: inline-block;
-    width: 190px;
-    height: 120px;
-    margin-right: 5px;
-    text-align: center;
-    cursor: pointer;
-
-    .remove-handle {
-      position: absolute;
-      top: 0;
-      right: 0;
-      padding: 4px;
-      color: #FF4949;
-      font-weight: bolder;
-    }
-
-    .audit-handle {
-      position: absolute;
-      top: 0;
-      right: 0;
-      padding: 4px;
-    }
-
-    img {
-      height: 120px;
-    }
-  }
-}
+.short-video--container
+  display inline-block
+  margin 0 20px
+.short-video--title
+  color #606266
+  margin-right 7px
+.margin-left-85
+  margin-left 85px
+.added-contents-wrapper
+  margin-bottom 16px
+  padding 8px
+  border-top 2px dashed #C0CCDA
+  border-bottom 2px dashed #C0CCDA
+  white-space nowrap
+  overflow auto
+.added-contents-list
+    display inline-block
+  >>> .el-card
+    position relative
+    display inline-block
+    width 190px
+    height 120px
+    margin-right 5px
+    text-align center
+    cursor pointer
+.remove-handle
+  position absolute
+  top 0
+  right 0
+  padding 4px
+  color #FF4949
+  font-weight bolder
+.audit-handle
+  position absolute
+  top 0
+  right 0
+  padding 4px
+img
+  height 120px
+.add-version-card
+  cursor pointer
+  width 160px
 </style>
