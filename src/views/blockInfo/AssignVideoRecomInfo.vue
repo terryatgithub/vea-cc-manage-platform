@@ -106,7 +106,7 @@
             v-for="(sizeTag, index) in sizeTags"
             :key="index"
             type="primary" 
-            :closable="sizeTag.closable"
+            :closable="!isRead && sizeTag.closable"
             class="size-tag"
             @close="handleTagClose(sizeTag)"
           >
@@ -976,10 +976,14 @@ export default {
       this.sizeTags = []
       if(data.picSize.length !== 0) {
         data.picSize.map(item => {
+          const picInfo = data.picInfoList.find(picInfo => {
+            return item === picInfo.picSize
+          })
           this.sizeTags.push(
             {
               width: item.split('*')[0],
-              height: item.split('*')[1]
+              height: item.split('*')[1],
+              closable: picInfo.canDelete
             }
           )
         })
@@ -1006,42 +1010,30 @@ export default {
   font-size 13px
   border 1px solid #e7e4c2
   background #fef8b8
-
 .el-row .el-button 
   width 85px
-
 .createBtn-container 
   margin 27px 0 0 27px
-
 .video-select--header 
   margin 20px 0
-
 .num-input 
   width 100px
   margin 0 20px
-
 .title-input 
   width 357px
-
 .text-center-align 
   text-align center
-
 .size-btn-group 
   margin-top 20px
-
 .size-btn-group .el-button
   width 85px
-
 .size-tag 
   margin-left 10px
-
 .videoTab--wrapper 
   width 80%
   margin 20px
-
 .batch-btn 
   margin 0 10px
-
 .type-tip
   display inline-block
   margin 0 5px
