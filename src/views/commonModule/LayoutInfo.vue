@@ -38,39 +38,63 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="上传文件">
+              <el-form-item label="布局" prop="layoutJson8">
                 <el-button type="primary" plain @click="$refs.upload.handleSelectFile()">上传布局文件</el-button>
+                <el-button type="primary" plain @click="activePage = 'layout-generate'">生成布局</el-button>
                 <Upload
-                  :multiple="true"
                   ref="upload"
-                  @upload="handleUpload"
-                >
+                  @upload="handleUpload(arguments[0], arguments[1], 'v8')">
                   <template slot="preview" slot-scope="{fileList}" >
                     <div
                       v-if="fileList && fileList.length > 0">
                       <div 
                         class="upload-pic-list__item">
                         <div
-                          class="upload-pic-list__error"
-                          v-if="getLastFile(fileList).status === 'error'">
-                          上传失败: {{  getLastFile(fileList).message }}
-                        </div>
-                        <div
-                          v-else-if="getLastFile(fileList).status === 'uploading'"
+                          v-if="getLastFile(fileList).status === 'uploading'"
                           class="upload-pic-list__progress">
                           <el-progress style="width: 250px" :percentage="getLastFile(fileList).percentage"></el-progress>
                         </div>
-                        <span v-else>{{ getLastFile(fileList).filename }}</span>
                       </div>
                     </div>
                   </template>
                 </Upload>
+                <LayoutPreview
+                  v-if="form.layoutJson8"
+                  class="layout-preview"
+                  :content="form.layoutJson8.contents">
+                </LayoutPreview>
               </el-form-item>
-              <el-form-item label="布局">
-                <el-button type="primary" plain @click="productLayout">生成布局</el-button>
+              <el-form-item label="6.0布局生成方式" prop="layout6GenMode">
+                <el-radio-group :value="form.layout6GenMode" @input="handleInputLayout6GenMode">
+                  <el-radio label="auto">自动</el-radio>
+                  <el-radio label="manual">手动</el-radio>
+                </el-radio-group>
               </el-form-item>
-              <el-form-item>
-                <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>
+              <el-form-item label="布局6.0" prop="layoutJson">
+                <el-button type="primary" :disabled="form.layout6GenMode === 'auto'" plain @click="$refs.uploadV6.handleSelectFile()">上传布局文件</el-button>
+                <el-button type="primary" :disabled="form.layout6GenMode === 'auto'" plain @click="activePage = 'layout-generate-v6'">生成布局</el-button>
+                <Upload
+                  ref="uploadV6"
+                  @upload="handleUpload(arguments[0], arguments[1], 'v6')">
+                  <template slot="preview" slot-scope="{fileList}" >
+                    <div
+                      v-if="fileList && fileList.length > 0">
+                      <div 
+                        class="upload-pic-list__item">
+                        <div
+                          v-if="getLastFile(fileList).status === 'uploading'"
+                          class="upload-pic-list__progress">
+                          <el-progress style="width: 250px" :percentage="getLastFile(fileList).percentage"></el-progress>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </Upload>
+                <LayoutPreview
+                  v-if="form.layoutJson"
+                  class="layout-preview"
+                  :content="form.layoutJson.contents">
+                </LayoutPreview>
               </el-form-item>
             </el-form>
           </div>
@@ -86,7 +110,17 @@
                 <div>{{ layoutTypeText[form.layoutType] }}</div>
               </el-form-item>
               <el-form-item label="布局">
-                <LayoutBloack :content="content" class="layoutBloack"></LayoutBloack>
+                <LayoutPreview v-if="form.layoutJson8" :content="form.layoutJson8.contents" class="layoutBloack"></LayoutPreview>
+              </el-form-item>
+              <el-form-item label="6.0布局生成方式" prop="layout6GenMode">
+                {{ form.layout6GenMode === 'manual' ? '手动' : '自动' }}
+              </el-form-item>
+              <el-form-item label="布局6.0" prop="layoutJson">
+                <LayoutPreview
+                  v-if="form.layoutJson"
+                  class="layout-preview"
+                  :content="form.layoutJson.contents">
+                </LayoutPreview>
               </el-form-item>
             </el-form>
           </div>
@@ -96,8 +130,20 @@
 
     <PageContentWrapper v-if="activePage === 'layout-generate'">
       <LayoutInfoGenerator
+        layout-version="v8"
+        :layout-spacing="40"
+        :layout-width="1760"
         @go-back="activePage = 'layout'"
-        @generator-layout="generatorLayout">
+        @gen-end="handleGenLayoutEnd($event, 'v8')">
+      </LayoutInfoGenerator>
+    </PageContentWrapper>
+    <PageContentWrapper v-if="activePage === 'layout-generate-v6'">
+      <LayoutInfoGenerator
+        layout-version="v6"
+        :layout-spacing="10"
+        :layout-width="1622"
+        @go-back="activePage = 'layout'"
+        @gen-end="handleGenLayoutEnd($event, 'v6')">
       </LayoutInfoGenerator>
     </PageContentWrapper>
   </PageWrapper>
@@ -108,9 +154,10 @@ import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import CommonContent from '@/components/CommonContent.vue'
 import { Upload } from 'admin-toolkit'
-import LayoutBloack from './../../components/LayoutBlock'
+import LayoutPreview from './../../components/LayoutBlock'
 import LayoutInfoGenerator from './LayoutInfoGenerator'
 import titleMixin from '@/mixins/title'
+import { cloneDeep } from 'lodash'
 export default {
   mixins: [titleMixin],
   components: {
@@ -118,7 +165,7 @@ export default {
     PageContentWrapper,
     CommonContent,
     Upload,
-    LayoutBloack,
+    LayoutPreview,
     LayoutInfoGenerator
   },
   data() {
@@ -132,7 +179,9 @@ export default {
         layoutId: undefined,
         layoutName: null,
         layoutType: null,
-        layoutJson: {},
+        layout6GenMode: 'auto',
+        layoutJson: null,
+        layoutJson8: null,
         layoutModel: null, // 布局类型
         layoutStatus: 2 // 默认为草稿
       },
@@ -143,6 +192,12 @@ export default {
         ],
         layoutType: [
           { required: true, message: '请输入布局类别', trigger: 'blur' }
+        ],
+        layoutJson8: [
+          { required: true, message: '请设置布局', trigger: 'blur' }
+        ],
+        layoutJson: [
+          { required: true, message: '请设置布局6.0', trigger: 'blur' }
         ]
       },
       content: []
@@ -164,29 +219,63 @@ export default {
     }
   },
   methods: {
+    handleInputLayout6GenMode (val) {
+      const form = this.form
+      if (val === 'manual') {
+        form.layoutJson = null
+      } else {
+        this.setLayout6()
+      }
+      form.layout6GenMode = val
+    },
     fetchData(version) {
       this.$service.getLayoutInforById({ id: this.id }).then(this.setLayoutInfo)
     },
     setLayoutInfo(data) {
-      this.form = Object.assign({}, data)
-      this.getLayoutJson({
-        fileName: this.form.layoutName,
-        content: this.form.layoutJson8
+      this.form = Object.assign({}, data, {
+        layoutJson: JSON.parse(data.layoutJson),
+        layoutJson8: JSON.parse(data.layoutJson8),
       })
     },
     handleSave() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          if (this.content.length === 0) {
-            this.$message({
-              type: 'error',
-              message: '请上传布局文件或者生成布局'
+          const data = cloneDeep(this.form)
+          // 校验
+          const layoutJson = data.layoutJson
+          const layoutJson8 = data.layoutJson8
+          const isAutoGenV6 = data.layout6GenMode === 'auto'
+          if (!isAutoGenV6) {
+            // 验证 6.0 和 8.0 布局的推荐位数量和比例是否一致
+            const v6Contents = layoutJson.contents
+            const v8Contents = layoutJson8.contents
+            const isValidRatio = v6Contents.every((v6Block, index) => {
+              const v8Block = v8Contents[index]
+              const v8Ratio = v8Block.width/v8Block.height
+              const v6Ratio = v6Block.width/v6Block.height
+              const ratioDiff = Math.abs(v8Ratio - v6Ratio)
+              const rationDiffRatio = ratioDiff/v8Ratio
+              return rationDiffRatio < 0.005
             })
-            return
+            const isValidCount = v6Contents.length === v8Contents.length
+            if (!isValidRatio || !isValidCount) {
+              return this.$message({
+                type: 'error',
+                message: '6.0布局和8.0布局推荐位数量必须相同，相同位置的推荐位长宽比例必须相同',
+                duration: 5000
+              })
+            }
           }
+
+          // 转换数据结构
+          data.layoutModel = layoutJson.type
+          data.layoutJson = JSON.stringify(layoutJson)
+          data.layoutJson8 = JSON.stringify(layoutJson8)
+
+          // 发送请求
           this.$service
             .getLayoutInforSave(
-              { jsonStr: JSON.stringify(this.form) },
+              { jsonStr: JSON.stringify(data) },
               '保存成功'
             )
             .then(data => {
@@ -198,7 +287,7 @@ export default {
     getLastFile (fileList) {
       return fileList[fileList.length - 1]
     },
-    handleUpload(file, fileItem) {
+    handleUpload(file, fileItem, version) {
       this.$service
         .uploadLayoutFile({
           file,
@@ -209,57 +298,47 @@ export default {
           }
         })
         .then(data => {
-          let d = JSON.parse(data.data.content) // 布局内容
-          if (
-            typeof d.type !== 'undefined' &&
-            (d.type === 'Panel' ||
-              d.type === 'Lengthwise' ||
-              d.type === 'Expander')
-          ) {
-            this.getLayoutJson(data.data)
-            fileItem.status = 'success'
-            fileItem.fileName = data.data.fileName
-          } else {
-            fileItem.status = 'error'
-            fileItem.message = '选择的文件不对，应该选择布局格式的文件'
-          }
+          this.handleUploadEnd(data, version)
+          fileItem.status = 'success'
           fileItem.percentage = 0
         }).catch((e) => {
           fileItem.status = 'error'
           fileItem.message = e.message
         })
     },
-    generatorLayout(obj) {
+    handleGenLayoutEnd(layoutInfo, version) {
+      const form = this.form
+      let { fileName, content } = layoutInfo
+      content = JSON.parse(content) // 布局内容
+      if (version === 'v8') {
+        form.layoutName = fileName.replace('.txt', '')
+        this.form.layoutJson8 = content
+        this.setLayout6()
+      }
+      if (version === 'v6') {
+        this.form.layoutJson = content
+      }
       this.activePage = 'layout'
-      this.getLayoutJson(obj)
     },
-    getLayoutJson(data) {
-      let d = JSON.parse(data.content) // 布局内容
-      this.form.layoutModel = d.type
-      this.form.layoutName = data.fileName.replace('.txt', '')
-      let layoutjson = {
-        type: d.type,
-        contents: d.contents,
-        version: d.version
+    handleUploadEnd (data, version) {
+      const fileName = data.fileName
+      const layoutJson = data.content
+      const form = this.form
+      if (version === 'v6') {
+        form.layoutJson = layoutJson
+      } else {
+        form.layoutName = fileName
+        form.layoutJson8 = layoutJson
+        this.setLayout6()
       }
-      this.content = d.contents
-      if (d.type === 'Expander') {
-        layoutjson.extra = d.extra
-        if (d.extra.orientation == 0) {
-          this.form.layoutRemark = '支持横向扩展'
-        }
-        if (d.extra.orientation == 1) {
-          this.form.layoutRemark = '支持纵向扩展'
-        }
-        this.form.space = d.extra.space
-        this.form.layoutFlag = d.extra.orientation
-        this.form.width = d.extra.width
-        this.form.height = d.extra.height
-      }
-      this.form.layoutJson8 = JSON.stringify(layoutjson)
     },
-    productLayout() {
-      this.activePage = 'layout-generate'
+    setLayout6 () {
+      const form = this.form
+      return this.$service.getLayoutVersion6({
+        layoutJson8: JSON.stringify(form.layoutJson8)
+      }).then(layoutJson => {
+        form.layoutJson = layoutJson
+      })
     },
     fetchLayoutTypeOptions () {
       this.$service.getDictType({type: 'layoutType'}).then(layoutTypeOptions => {
@@ -281,6 +360,7 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="stylus" scoped>
+.layout-preview
+  margin-top 10px
 </style>

@@ -112,37 +112,30 @@ export default {
   components: {
     LayoutBlock
   },
+  props: ['layoutVersion', 'layoutSpacing', 'layoutWidth'],
   data() {
-    const validateInt = (rule, value, cb) => {
-      console.log(arguments)
-    }
     return {
       dynamicValidateForm: {
         rows: [this.genRow()],
-        spacing: 40,
+        spacing: this.layoutSpacing || 40,
         hasPrice: false,
         lengthwiseIs: false // 是否纵向扩展布局
       },
       blockCount: 6, // 块数
-      totalWidth: 1760,
+      totalWidth: this.layoutWidth || 1760,
       titleHeight: 58, // 标题占用的高度
       priceHeight: 52, // 价格占用的高度
       titleSize: 32, // 标题字体大小
       x: 0, // x坐标初始值
       y: 0, // y坐标初始值
       heightInit: [130, 150, 200, 247, 300, 346, 360, 365, 398, 423, 448],
-      layoutForPreview: this.genDefaultLayout(),
-      rules: {
-        int: [
-          { message: '请输入正整数', validator: validateInt}
-        ]
-      }
+      layoutForPreview: this.genDefaultLayout()
     }
   },
   methods: {
     handleGenLayoutEnd () {
       this.validateAndGenLayout(layout => {
-        this.$emit('generator-layout', {
+        this.$emit('gen-end', {
           fileName: layout.fileName,
           content: JSON.stringify(layout.content)
         })
@@ -168,6 +161,7 @@ export default {
       })
     },
     genLayout() {
+      const layoutVersion = this.layoutVersion || 'v8'
       const rowNames = ['A', 'B', 'C', 'D']
       const { rows, hasPrice, spacing, lengthwiseIs } = this.dynamicValidateForm
       const lastRowIndex = rows.length - 1
@@ -244,7 +238,7 @@ export default {
           type: lengthwiseIs ? 'Lengthwise' : 'Panel',
           contents,
           parents: '',
-          version: 'v8'
+          version: layoutVersion
         }
       }
       return layout

@@ -31,6 +31,17 @@ export function getLayoutInforById (params) {
     params
   })
 }
+
+export function getLayoutVersion6 (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/layout/getUI8ToUI6.html',
+    data
+  }).then(data => {
+    return JSON.parse(data)
+  })
+}
+
 export function getAuditDetailButton (data) {
   return this.fetch({
     method: 'post',
