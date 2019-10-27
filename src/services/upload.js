@@ -22,8 +22,15 @@ export function uploadLayoutFile ({ file, onUploadProgress }) {
     data: formData,
     onUploadProgress
   }).then(({ data }) => {
+    // eslint-disable-next-line
     if (data.code !== undefined && data.code != '0') {
       throw new Error(data.msg)
+    }
+    data = data.data
+    data.content = JSON.parse(data.content)
+    const layoutType = data.content.type
+    if (!['Panel', 'Lengthwise', 'Expander'].includes(layoutType)) {
+      throw new Error('选择的文件不对，应该选择布局格式的文件')
     }
     return data
   })

@@ -102,8 +102,13 @@ export default {
             }
           },
           {
-            label: '分类',
+            label: '版块分类',
+            prop: 'panelGroupCategory',
+          },
+          {
+            label: '版块相关媒资的类型',
             prop: 'videoCategory',
+            width: 130
           },
           {
             label: '不可推荐原因',
