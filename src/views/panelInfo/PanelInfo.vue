@@ -52,8 +52,7 @@
 
               <el-form-item
                 label="内容源"
-                v-if="isPanelCommonOrVideo"
-              >
+                v-if="isPanelCommonOrVideo">
                 <SourceRadioSelector
                   :value="pannel.pannelResource"
                   @input="handlePannelResourceChange"
@@ -130,10 +129,8 @@
                 <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
               </el-form-item>
               <el-form-item label="版块布局" required>
-                <LayoutSelector 
-                  :disabled="isFillWithRanking"
-                  :title="isFillWithRanking ? '关闭排行榜填充后可换布局' : '选择布局'"
-                  @select-end="handleSelectLayoutEnd">
+                <LayoutSelector ref="layoutSelector" @select-end="handleSelectLayoutEnd">
+                  <el-button @click.stop="handleSelectLayoutStart" type="primary" plain >选择布局</el-button>
                 </LayoutSelector>
                 <span
                   class="marginL"
@@ -447,6 +444,7 @@ import AnalyzeSimpleDataDialog from './AnalyzeSimpleDataDialog'
 import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
 
 import { genResourceContentList, getMatchedPictureUrl } from './panelInfoUtil'
+import { cloneDeep } from 'lodash'
 
 export default {
   mixins: [titleMixin],
@@ -621,12 +619,10 @@ export default {
         focusConfig: '', // '', week
         currentVersion: '',
 
-        // 用排行榜填充
-        rankIsOpen: 0,
-        rankChildId: undefined,
-
         pannelList: [
           {
+            rankIsOpen: 0,
+            rankChildId: undefined,
             pannelTitle: '',
             panelIsFocus: 0,
             contentList: [],
@@ -775,7 +771,13 @@ export default {
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
     },
     isFillWithRanking () {
-      return !!this.pannel.rankIsOpen
+      const activePannelIndex = +this.activePannelIndex
+      const pannelList = this.pannel.pannelList
+      return !!pannelList[activePannelIndex].rankIsOpen
+    },
+    hasRankingPanel () {
+      const pannelList = this.pannel.pannelList
+      return pannelList.some(item => !!item.rankIsOpen)
     }
   },
   watch: {
@@ -798,6 +800,7 @@ export default {
   },
   methods: {
     handleToggleFillWithRanking (val) {
+      const activePannelIndex = +this.activePannelIndex
       if (val) {
         // 检查布局
         // 采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个
@@ -816,11 +819,11 @@ export default {
             message: '采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个'
           })
         }
-        this.pannel.rankIsOpen = 1
+        this.pannel.pannelList[activePannelIndex].rankIsOpen = 1
         this.clearBlocks()
       } else {
         // 清空内容
-        this.pannel.rankIsOpen = 0
+        this.pannel.pannelList[activePannelIndex].rankIsOpen = 0
         this.clearBlocks()
       }
     },
@@ -1000,16 +1003,38 @@ export default {
         this.handleSaveDraft()
       }
     },
+    closeRanking () {
+      // 自动关闭所有排行榜填充, 并且清空内容
+      if (this.hasRankingPanel) {
+        // 关闭使用排行榜填充
+        this.pannel.pannelList.forEach(item => {
+          item.rankChildId = undefined
+          item.rankIsOpen = 0
+        })
+        // 清空版块内容
+        this.clearBlocks()
+      }
+    },
     // 布局
+    handleSelectLayoutStart () {
+      if (this.hasRankingPanel) {
+        this.$confirm('当前有版块开启了使用排行榜填充，切换布局后将清空所有版块内容并关闭所有使用排行榜填充的开关，确定要换布局？', '提示')
+        .then(() => {
+          this.$refs.layoutSelector.$refs.wrapper.handleSelectStart()
+        })
+        .catch(() => {})
+      } else {
+        this.$refs.layoutSelector.$refs.wrapper.handleSelectStart()
+      }
+    },
     handleSelectLayoutEnd(layout, blockCount) {
+      this.closeRanking()
       this.selectedLayout = layout
       this.blockCount = blockCount
-      this.blockCountList = this.blockCountList.map(function() {
-        return blockCount
-      })
+      this.blockCountList = this.blockCountList.map(_ => blockCount)
       // 如果选择的是拓展布局，按照设置的数量删除多余的资源
       if (blockCount !== undefined) {
-        this.pannel.pannelList.forEach(function(item) {
+        this.pannel.pannelList.forEach(item => {
           const selectedResources = item.selectedResources
           if (selectedResources) {
             item.selectedResources = selectedResources.slice(0, blockCount)
@@ -1210,10 +1235,12 @@ export default {
           })
       } else {
         // 获取排行榜资源
+        const ranking = selectedResources.ranking[0]
         this.$service.mediaGetRankingInfoVideoList({
-          code: selectedResources.ranking[0].code,
+          code: ranking.code,
           partner: this.$consts.sourceToPartner[pannel.pannelResource]
         }).then(result => {
+          activePannel.rankChildId = ranking.id
           selectedResources.ranking = result.rankingVideoInfoEntities || []
           insertResources()
         })
@@ -1268,6 +1295,8 @@ export default {
     addPannel(title) {
       const pannelList = this.pannel.pannelList
       const pannel = {
+        rankIsOpen: 0,
+        rankChildId: undefined,
         pannelTitle: title,
         panelIsFocus: 0,
         selectedResources: [],
@@ -2166,6 +2195,7 @@ export default {
               item.startTime = new Date(timeSlot[0])
               item.endTime = new Date(timeSlot[1])
             }
+            item.rankIsOpen = item.rankIsOpen || 0
             item.selectedResources = item.contentList
             return item
           })
@@ -2186,7 +2216,7 @@ export default {
             this.isShowfocusImgUrl = firstBlock.focusImgUrl
           }
         }
-        this.pannel = { ...pannel }
+        this.pannel = cloneDeep(pannel)
         this.updateAllPosition()
         this.getSharedTags()
       })
