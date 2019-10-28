@@ -29,3 +29,14 @@ export function mediaGetTagList(params) {
     params
   }).then(({ data }) => data)
 }
+
+export function mediaGetRankingInfoVideoList (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tvos/getRankInfoVideoList.html',
+    params: {
+      code: params.code,
+      partner: params.partner
+    }
+  }).then(({ data }) => data)
+}

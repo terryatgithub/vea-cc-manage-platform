@@ -2,7 +2,8 @@
   <remote-selector-wrapper
     ref="wrapper"
     class="layout-selector"
-    title="选择布局"
+    :disabled="disabled"
+    :title="title || '选择布局'"
     @select-start="handleSelectStart"
   >
     <div slot="filter">
@@ -186,7 +187,7 @@ export default {
       selected: []
     }
   },
-  props: ['selectionType'],
+  props: ['title', 'selectionType', 'disabled'],
   watch: {
     'pagination.page': 'fetchData',
     'pagination.rows': 'fetchData'

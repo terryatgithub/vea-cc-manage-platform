@@ -130,7 +130,11 @@
                 <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
               </el-form-item>
               <el-form-item label="版块布局" required>
-                <LayoutSelector @select-end="handleSelectLayoutEnd"></LayoutSelector>
+                <LayoutSelector 
+                  :disabled="isFillWithRanking"
+                  :title="isFillWithRanking ? '关闭排行榜填充后可换布局' : '选择布局'"
+                  @select-end="handleSelectLayoutEnd">
+                </LayoutSelector>
                 <span
                   class="marginL"
                   v-if="selectedLayout"
@@ -193,7 +197,9 @@
                     :selection-type="mediaResourceSelectionType"
                     :source="pannel.pannelResource"
                     @select-end="handleSelectResourceEnd">
-                    <el-button type="primary" plain>选择资源</el-button>
+                    <el-button type="primary" plain>
+                      {{ isFillWithRanking ? '选择排行榜' : '选择资源' }}
+                    </el-button>
                   </ResourceSelector>
                   <div class="fill-width-ranking">
                     使用排行榜填充 <el-switch :value="isFillWithRanking" @input="handleToggleFillWithRanking"></el-switch>
@@ -1203,7 +1209,14 @@ export default {
             resourceSelector.$refs.wrapper.handleSelectStart()
           })
       } else {
-        // 填充资源
+        // 获取排行榜资源
+        this.$service.mediaGetRankingInfoVideoList({
+          code: selectedResources.ranking[0].code,
+          partner: this.$consts.sourceToPartner[pannel.pannelResource]
+        }).then(result => {
+          selectedResources.ranking = result.rankingVideoInfoEntities || []
+          insertResources()
+        })
       }
     },
 
@@ -1670,8 +1683,6 @@ export default {
     },
     getFormData() {
       const data = JSON.parse(JSON.stringify(this.pannel))
-      // 使用 v6 布局重新计算 contentPosition
-      this.makeCompatibleV6(data)
       const mode = this.mode
       if (mode === 'replicate') {
         data.currentVersion = ''
@@ -2101,6 +2112,8 @@ export default {
       })
     },
     upsertPanelInfo(data) {
+      // 使用 v6 布局重新计算 contentPosition
+      this.makeCompatibleV6(data)
       this.$service
         .panelUpsert(this.parseDataToApi(data), '保存成功')
         .then(result => {
