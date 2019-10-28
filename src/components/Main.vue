@@ -1,13 +1,13 @@
 <template>
   <el-container class="layout">
     <div :class="isCollapseMenu? 'aside__menu aside__menu_collapse' : 'aside__menu'">
+      <el-button
+        class="collpase-btn"
+        type="text"
+        :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
+        @click="toggleMenu"
+      ></el-button>
       <div class="left-aside">
-        <el-button
-          class="collpase-btn"
-          type="text"
-          :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
-          @click="toggleMenu"
-        ></el-button>
         <Menu
           @select="handleOpenMenu"
           :default-active="$route.name"
@@ -496,46 +496,80 @@ export default {
 }
 
 .menu:not(.el-menu--collapse)
-    width 180px
-    background #333
+  width 200px
+  background #333
+.menu li
+  position relative
 .el-submenu__title
-    color #fff
+  color #fff
 .el-menu-item.is-active
-    color #fff
-    background #000
+  color #fff
+  background #000
+  &:before
+    width 3px
+    background #eb603a
+    content ' '
+    display block
+    position absolute
+    left 0
+    top 0
+    height 100%
+    transition background-color 1s ease
 .el-menu-item
-    color #fff
+  color #fff
 .el-menu-item, .el-submenu__title
-    height 45px
-    line-height 45px
+  height 45px
+  line-height 45px
 .el-submenu .el-menu-item
-    height 40px
-    line-height 40px
+  height 40px
+  line-height 40px
 .el-menu
-    background #333
+  background #333
 .el-submenu__title:hover,.el-menu-item:hover
-    background:#4c4c4c
+  background:#4c4c4c
 .el-submenu.is-opened .el-submenu__title
-    background #2d2d2d
-.el-menu-item.is-active
-    border-left 3px solid #eb603a
+  background #2d2d2d
 .el-submenu .el-menu
-    background #1e1e1e
+  background #1e1e1e
 .aside__menu_collapse .el-submenu.is-active
-  border-left 3px solid #eb603a
   background #1e1e1e
-  transition border-left 1s
+.aside__menu_collapse .el-submenu.is-active:before
+  width 3px
+  background #eb603a
+  content ' '
+  display block
+  position absolute
+  left 0
+  top 0
+  height 100%
+  transition background-color 1s ease
+  z-index 100
 .el-submenu.is-active:not(.is-opened)
-  border-left 3px solid #eb603a
   background #1e1e1e
-  transition border-left 1s
+.el-submenu.is-active:not(.is-opened):before
+  width 3px
+  background #eb603a
+  content ' '
+  display block
+  position absolute
+  left 0
+  top 0
+  height 100%
+  z-index 100
+  transition background-color 1s ease
+.el-menu--popup a
+  color hsla(0,0%,100%,.7)
+  text-decoration none
+  outline none
+.el-menu-item.is-active a
+  color #fff
 
 body, html, #app, section.el-container, .aside__menu {
   height: 100%;
 }
 
 .left-aside {
-  height: 100%;
+  height: calc(100vh - 50px);
   overflow-y: auto;
   overflow-x: hidden;
 }
