@@ -198,24 +198,24 @@
                       {{ isFillWithRanking ? '选择排行榜' : '选择资源' }}
                     </el-button>
                   </ResourceSelector>
-                  <div class="fill-width-ranking">
+                  <div class="fill-width-ranking" v-show="pannel.parentType === 'normal'">
                     使用排行榜填充 <el-switch :value="isFillWithRanking" @input="handleToggleFillWithRanking"></el-switch>
                   </div>
                 </div>
-                <template v-if="pannel.parentType === 'group'">
+                <div v-if="pannel.parentType === 'group'" style="float:right">
                   <el-button
-                    style="float:right"
-                    type="primary"
-                    @click="handleAddTab"
-                    :disabled="pannel.pannelList.length >= 10"
-                  >添加分组</el-button>
-                  <el-button
-                    style="float:right"
                     type="primary"
                     @click="handleSetDefaultActiveTab"
-                    :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''"
-                  >设置默认落焦</el-button>
-                </template>
+                    :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''">
+                    设置默认落焦
+                  </el-button>
+                  <el-button
+                    type="primary"
+                    @click="handleAddTab"
+                    :disabled="pannel.pannelList.length >= 10">
+                    添加分组
+                  </el-button>
+                </div>
                 <div class="pannel-blocks">
                   <template v-if="pannel.parentType === 'group'">
                     <el-tabs
@@ -394,6 +394,7 @@
             :mode="mode"
             :panel-list="pannel.pannelList"
             :focus-config="pannel.focusConfig"
+            :layout="selectedLayout"
             @set-end="handleSetPanelGroupInfoEnd"
             @set-cancel="handleSetPanelGroupInfoCancel">
           </PanelGroupInfoSetter>
@@ -443,7 +444,7 @@ import "echarts/lib/component/markPoint"
 import AnalyzeSimpleDataDialog from './AnalyzeSimpleDataDialog'
 import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
 
-import { genResourceContentList, getMatchedPictureUrl } from './panelInfoUtil'
+import { genResourceContentList, getMatchedPictureUrl, isValidLayoutForRanking } from './panelInfoUtil'
 import { cloneDeep } from 'lodash'
 
 export default {
@@ -800,30 +801,21 @@ export default {
   },
   methods: {
     handleToggleFillWithRanking (val) {
+      const panelList = this.pannel.pannelList
       const activePannelIndex = +this.activePannelIndex
       if (val) {
-        // 检查布局
-        // 采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个
-        const selectedLayout = this.selectedLayout
-        const layoutJsonParsed = selectedLayout.layoutJsonParsed
-        const hasTitle = selectedLayout.layoutIsTitle
-        const hasOnlyOneRowAndMatchSize = layoutJsonParsed.contents.every(item => {
-          return item.y === 0 && item.width === 247 && item.height === 346
-        })
-        const blockCount = layoutJsonParsed.contents.length
-        const hasSuitableBlocks = 6 <= blockCount && blockCount <= 11
-        if (!(hasTitle && hasOnlyOneRowAndMatchSize && hasSuitableBlocks)) {
+        if (!isValidLayoutForRanking(this.selectedLayout)) {
           return this.$message({
             type: 'error',
             duration: 8000,
             message: '采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个'
           })
         }
-        this.pannel.pannelList[activePannelIndex].rankIsOpen = 1
+        panelList[activePannelIndex].rankIsOpen = 1
         this.clearBlocks()
       } else {
         // 清空内容
-        this.pannel.pannelList[activePannelIndex].rankIsOpen = 0
+        panelList[activePannelIndex].rankIsOpen = 0
         this.clearBlocks()
       }
     },
@@ -1287,17 +1279,18 @@ export default {
       this.activePanelGroup = {
         index: this.pannel.pannelList.length,
         title: '',
+        rankIsOpen: 0,
         startTime: undefined,
         endTime: undefined,
         panelIsFocus: 0
       }
     },
-    addPannel(title) {
+    addPannel() {
       const pannelList = this.pannel.pannelList
       const pannel = {
         rankIsOpen: 0,
         rankChildId: undefined,
-        pannelTitle: title,
+        pannelTitle: undefined,
         panelIsFocus: 0,
         selectedResources: [],
         contentList: []
@@ -1377,6 +1370,7 @@ export default {
       this.activePanelGroup = {
         index: index,
         title: panel.pannelTitle,
+        rankIsOpen: panel.rankIsOpen,
         startTime: panel.startTime,
         endTime: panel.endTime,
         panelIsFocus: panel.panelIsFocus
@@ -1392,8 +1386,7 @@ export default {
       let panel = panelList[index]
       if (!panel) {
         // 是新添加的
-        this.addPannel(groupInfo)
-        this.updateAllPosition()
+        this.addPannel()
         panel = panelList[index]
       }
       panel.pannelTitle = groupInfo.title
@@ -1402,9 +1395,17 @@ export default {
       } else {
         panel.panelIsFocus = groupInfo.panelIsFocus
       }
+      const originRankIsOpen = panel.rankIsOpen
+      const rankIsOpen = groupInfo.rankIsOpen
+      if (rankIsOpen !== originRankIsOpen) {
+        // 清空内容
+        panel.selectedResources = []
+      }
+      panel.rankIsOpen = rankIsOpen
       panel.startTime = groupInfo.startTime
       panel.endTime = groupInfo.endTime
       this.activePanelGroup = undefined
+      this.updateAllPosition()
     },
     setPanelDefaultFocus(index) {
       const panelList = this.pannel.pannelList

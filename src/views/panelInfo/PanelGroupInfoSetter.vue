@@ -9,6 +9,9 @@
           <el-form-item label="标题" prop="title">
             <el-input :disabled="mode === 'read'"  v-model="info.title" />
           </el-form-item>
+          <el-form-item label="使用排行榜填充" prop="title">
+            <el-switch :value="!!info.rankIsOpen" @input="handleToggleFillWithRanking"></el-switch>
+          </el-form-item>
           <template v-if="focusConfig === 'timeSlot'">
             <el-form-item label="时间段" class="time-slot" prop="startTime">
               <el-form-item label="">
@@ -43,6 +46,7 @@
 </template>
 
 <script>
+import { isValidLayoutForRanking } from './panelInfoUtil'
 export default {
   data() {
     return {
@@ -63,13 +67,13 @@ export default {
       }
     }
   },
-  props: ['mode', 'info', 'panelList', 'focusConfig'],
+  props: ['mode', 'info', 'panelList', 'focusConfig', 'layout'],
   methods: {
     handleSetCancel() {
       this.$emit('set-cancel')
     },
     handleSetEnd() {
-      this.$refs.form.validate(function(valid) {
+      this.$refs.form.validate(valid => {
         if (valid) {
           this.$emit('set-end')
         } else {
@@ -78,7 +82,7 @@ export default {
             message: '请把表单填写完整'
           })
         }
-      }.bind(this))
+      })
     },
     timeSlotValidator(rule, _, cb) {
       const panelList = this.panelList
@@ -125,7 +129,23 @@ export default {
       } else {
         cb()
       }
-    }
+    },
+    handleToggleFillWithRanking (val) {
+      const info = this.info
+      if (val) {
+        if (!isValidLayoutForRanking(this.layout)) {
+          return this.$message({
+            type: 'error',
+            duration: 8000,
+            message: '采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个'
+          })
+        }
+        info.rankIsOpen = 1
+      } else {
+        // 清空内容
+        info.rankIsOpen = 0
+      }
+    },
   }
 }
 </script>
