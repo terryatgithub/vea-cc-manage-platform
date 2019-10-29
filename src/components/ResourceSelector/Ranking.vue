@@ -62,9 +62,7 @@ export default {
         dataType: 'coocaaRanking',
         levelType: 'childRanking',
         partner: this.$consts.sourceToPartner[this.source],
-        callback: 'result',
-        levelType: undefined, // 专题类别
-        title: undefined // 专题名称
+        callback: 'result'
       }
     },
     getFilter() {
