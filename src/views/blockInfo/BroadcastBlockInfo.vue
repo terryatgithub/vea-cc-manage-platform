@@ -1177,12 +1177,12 @@ export default {
         dmpContentList: [],
         activeIndex: 0,
         isDmpContent: false,
-        ...preset,
         shortVideoParams: {
           topicId: undefined,
           shortVideoId: undefined
         },
-        shortVideoSwitch: false
+        shortVideoSwitch: false,
+        ...preset
       }
     },
     // 组合模式->添加normalForm
@@ -1447,6 +1447,7 @@ export default {
       this.$service
         .getBroadcastBlockEditData({ id: this.id, version })
         .then(data => {
+          console.log('detail', data);
           const basicForm = this.basicForm
           basicForm.containerName = data.containerName
           basicForm.containerType = 'REFERENCE_BROADCASTING'
@@ -1480,6 +1481,13 @@ export default {
             item.clickParams = JSON.parse(item.clickParams || '{}')
             parseCornerIconList(item)
             parseParams(item.onclick)
+            // 短视频
+            if (item.params.topicId) {
+              item.shortVideoSwitch = true
+              item.shortVideoParams = {
+                ...item.params
+              }
+            }
             item.thirdIdOrPackageName = this.getThirdId(item.params)
             item.subchannelIs = item.contentType === 'rotate'
             if (item.subchannelIs) {
