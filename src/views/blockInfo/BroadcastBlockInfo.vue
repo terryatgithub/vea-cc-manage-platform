@@ -118,7 +118,7 @@
               :src="normal.poster.pictureUrl"/>
             <span>{{normal.title}}</span>
           </el-card>
-          <el-card style="cursor: pointer;" v-if="!disabled">
+          <el-card v-if="!disabled" class="add-version-card">
             <span class="add-version" @click="handleAddNormalContent">+添加资源</span>
           </el-card>
         </el-row>
@@ -242,8 +242,8 @@
           >
             <ResourceSelector
               ref="resourceSelector"
-              v-if="!disabled "
-               :disable-partner="!!source"
+              v-if="!disabled"
+              :disable-partner="!!source"
               :source="source"
               :selectors="resourceOptionsLowerForm"
               :is-live="false"
@@ -256,8 +256,15 @@
             <el-tag
               type="success"
               class="marginL"
+              :closable="!disabled"
               v-if="lowerForm.thirdIdOrPackageName"
+              @close="handleCloseLowerFormTag"
             >已选择：{{lowerForm.thirdIdOrPackageName}}</el-tag>
+            <el-tag
+              type="success"
+              class="marginL"
+              v-if="lowerForm.thirdIdOrPackageName && singleEpisodeNum"
+            >单集：{{singleEpisodeNum}}</el-tag>
           </el-form-item>
           <el-form-item label="指定子频道" prop="subchannelId" v-if="lowerForm.subchannelIs">
             <el-input
@@ -352,37 +359,6 @@
           </div>
         </el-form>
       </div>
-      <!-- 海报弹框  -->
-      <!-- <el-dialog :visible.sync="customDialogPicture.visible" width="1200px">
-        <DialogPicture
-          :title="customDialogPicture.title"
-          :pictureResolution="pictureResolution"
-          :form="customDialogPicture.form"
-          v-model="selectPicture"
-          v-if="customDialogPicture.visible"
-          @close-dialog="savePicture"
-        ></DialogPicture>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="customDialogPicture.visible = false">取 消</el-button>
-          <el-button type="primary" @click="savePicture">确 定</el-button>
-        </div>
-      </el-dialog> -->
-      <!-- 海报弹框 end -->
-      <!-- 角标弹框  -->
-      <!-- <el-dialog :visible.sync="customDialogCorner.visible" width="1200px">
-        <DialogCorner
-          v-model="selectPicture"
-          :typePosition="customDialogCorner.index"
-          :cornerIconTypeOptions="cornerIconTypeOptions"
-          v-if="customDialogCorner.visible"
-          @close-dialog="savePicture"
-        ></DialogCorner>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="customDialogCorner.visible = false">取 消</el-button>
-          <el-button type="primary" @click="savePicture">确 定</el-button>
-        </div>
-      </el-dialog> -->
-      <!-- 角标弹框 end -->
       <!-- 第三方运用快速填充弹框 -->
       <el-dialog :visible.sync="onclickEventVisible" width="1200px">
         <selectClick @row-click="getClickData"></selectClick>
@@ -486,6 +462,9 @@ export default {
         ],
         'mediaAutomationBlockRls.refreshCal': [
           { required: true, message: '当开关开启时必填', trigger: 'blur' }
+        ],
+        'shortVideoParams.topicId': [
+          { required: true, message: '请选择跳转话题' }
         ]
       },
       lowerRules: {
@@ -570,35 +549,7 @@ export default {
         }
       },
       // smallTopics: false,
-      versionForm: {
-        flagSetRec: 0,
-        mediaAutomationBlockRls: {
-          refreshCal: 1,
-          mediaAutomationId: '',
-          blockType: 'rotate'
-        },
-        title: '',
-        subTitle: '',
-        type: '',
-        coverType: 'media',
-        thirdIdOrPackageName: '',
-        subchannelId: '', // 子频道ID
-        subchannelIs: '', // 是否显示子频道
-        params: {},
-        clickType: 'detail',
-        onclick: {},
-        sign: 'autoSet',
-        contentType: '',
-        clickParams: {},
-        // jumpAdress: '1',
-        poster: {},
-        cornerIconList: [{}, {}, {}, {}],
-        // dmp
-        showContentType: 'general',
-        dmpContentList: [],
-        activeIndex: 0,
-        isDmpContent: false
-      },
+      versionForm: this.genDefaultContentForm(),
       pictureType: '',
       currentForm: '',
       pannelResource: '',
@@ -621,7 +572,9 @@ export default {
       checkresourceis: true,
       // customDialogPicture: {},
       customDialogCorner: {},
-      pictureOptions: {}
+      pictureOptions: {},
+      // 单集
+      singleEpisodeNum: undefined,
     }
   },
   computed: {
@@ -947,7 +900,7 @@ export default {
           this.currentIndex = 0
           this.clearFormAll()
         })
-        .catch(function() {
+        .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消切换'
@@ -1043,6 +996,8 @@ export default {
               s.thirdIdOrPackageName = prefix + selected.coocaaVId
               s.vid = selectedEpisode.coocaaMId
             }
+            // 集数
+            this.singleEpisodeNum = selectedEpisode.urlCollection
             s.pictureUrl = selectedEpisode.thumb
             s.title = selectedEpisode.urlTitle
             s.subTitle = selectedEpisode.urlSubTitle
@@ -1222,7 +1177,12 @@ export default {
         dmpContentList: [],
         activeIndex: 0,
         isDmpContent: false,
-        ...preset
+        ...preset,
+        shortVideoParams: {
+          topicId: undefined,
+          shortVideoId: undefined
+        },
+        shortVideoSwitch: false
       }
     },
     // 组合模式->添加normalForm
@@ -1264,29 +1224,6 @@ export default {
         this.normalForm = this.normalVersionContent[index]
       })
     },
-
-    // 打开海报和角标弹窗
-    // openPicture: function(type, form, index) {
-    //   if (this.disabled) return
-    //   form === 'normalForm'
-    //     ? (this.pictureResolution = '797*449')
-    //     : (this.pictureResolution = '1210*449')
-    //   this.pictureType = type
-    //   this.currentForm = form
-    //   if (type === 'poster') {
-    //     this.customDialogPicture = {
-    //       visible: true,
-    //       form
-    //     }
-    //   } else {
-    //     this.customDialogCorner = {
-    //       visible: true,
-    //       form,
-    //       index
-    //     }
-    //   }
-    //   this.pictureOptions = this.pictureListOptions[type]
-    // },
     handleSelectPostEnd (selected) {
       this.lowerForm.poster = {
         pictureUrl: selected.pictureUrl,
@@ -1302,35 +1239,6 @@ export default {
       }
       this.$set(this.lowerForm.cornerIconList, index, corner)
     },
-    // savePicture: function() {
-    //   var selectPicture = this.selectPicture
-    //   if (JSON.stringify(selectPicture) === '{}') {
-    //     this.$message('请至少选择一项')
-    //   } else {
-    //     this.customDialogPicture.visible = false
-    //     this.customDialogCorner.visible = false
-    //     if (this.pictureType === 'poster') {
-    //       this[this.currentForm].poster = {
-    //         pictureUrl: selectPicture.pictureUrl,
-    //         pictureId: selectPicture.pictureId
-    //       }
-    //     } else if (this.pictureType === 'corner') {
-    //       var index = selectPicture.cornerIconType.typePosition
-    //       var cornerObj = {
-    //         cornerIconId: selectPicture.cornerIconId,
-    //         position: index,
-    //         imgUrl: selectPicture.imgUrl
-    //       }
-    //       var newForm = this[this.currentForm].cornerIconList.slice(0)
-    //       // var newForm = Object.assign({}, this.currentForm.cornerIconList);
-    //       newForm[index] = cornerObj
-    //       this[this.currentForm].cornerIconList = newForm
-    //       this.customDialogCorner.visible = false
-    //     }
-    //     this.selectPicture = {}
-    //   }
-    //   this.normalVersionContent[this.currentIndex] = this.normalForm
-    // },
     onDragStart: function(event) {
       console.log(event)
     },
@@ -1396,9 +1304,6 @@ export default {
                   if (firstContent.contentType !== 'rotate') {
                     return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
                   }
-                  // if (firstContent.sign === 'manualResource' && !firstContent.clickParams.rotateId) {
-                  //   return this.$message.error('信号源模式下，第一个资源如果设置跳转到其它播放资源，必须是轮播资源')
-                  // }
                 }
                 // 检查海报, 批量填充轮播资源的时候会缺少海报
                 for (let i = 0; i < normalVersionContent.length; i++) {
@@ -1465,6 +1370,17 @@ export default {
       }
       const parseContent = (item) => {
         // 转换数据
+        // 短视频流
+        if (item.shortVideoSwitch === true) {
+          item.type = 'shortVideo'
+          item.params = {
+            ...item.shortVideoParams
+          }
+          item.clickParams = {}// 目前先置空，待后续客户端开发
+          item.coverType = 'shortVideo'
+          item.contentType = 'shortVideo'
+          item.clickTemplateType = 'shortVideo'
+        }
         // type url 时，要转换 params 数据, 具体看 getUrlBlur
         if (item.type === 'url') {
           item.params = {
@@ -1491,6 +1407,8 @@ export default {
         } else {
           item.dmpContentList = undefined
         }
+        delete item.shortVideoSwitch
+        delete item.shortVideoParams
         delete item.thirdIdOrPackageName
         delete item.activeIndex
         delete item.showContentType
@@ -1517,6 +1435,7 @@ export default {
       lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)              
 
       data.parentType = 'Block'
+      console.log('save', data);
       this.$service
         .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
         .then(() => {
@@ -1592,6 +1511,11 @@ export default {
           parseCornerIconList(lowerData)
           this.lowerForm = lowerData
         })
+    },
+    // 选择资源拓展项
+    handleCloseLowerFormTag () {
+      this.lowerForm.thirdIdOrPackageName = undefined;
+      this.singleEpisodeNum = undefined
     }
   },
   created() {
@@ -1636,97 +1560,97 @@ export default {
 </script>
 <style lang='stylus' scoped>
 .split-bar
-  width: 96%
-  height: 36px
-  margin: 8px 0px
-  padding: 0px 6px
-  font-size: 17px
-  line-height: 36px
-  background: #e5e9f2
-  border-radius: 4px
+  width 96%
+  height 36px
+  margin 8px 0px
+  padding 0px 6px
+  font-size 17px
+  line-height 36px
+  background #e5e9f2
+  border-radius 4px
 .form-wrap
-  width: 95%
-  height: auto
-  padding: 10px
-  border: 2px dotted darkgray
-  overflow: auto
+  width 95%
+  height auto
+  padding 10px
+  border 2px dotted darkgray
+  overflow auto
 .version-title
-  height: 40px !important
-  width: 97% !important
+  height 40px !important
+  width 97% !important
 .version-title__h
-  float: left
-  margin-top: 7px
+  float left
+  margin-top 7px
 .version-title__tag
-  margin-top: 6px
-  margin-left: 10px
+  margin-top 6px
+  margin-left 10px
 .demo-ruleForm, .key-span
-  width: 100px
-  display: inline-block
-  text-align: center
-  background: #f1f1f1
-  border: 1px solid #ddd
-  margin-right: 10px
-  border-radius: 6px
+  width 100px
+  display inline-block
+  text-align center
+  background #f1f1f1
+  border 1px solid #ddd
+  margin-right 10px
+  border-radius 6px
 .button-wraprer
-  padding: 8px 0px
-  border-bottom: 1px solid #ccc
+  padding 8px 0px
+  border-bottom 1px solid #ccc
 .el-card__body
-  padding: 7px
+  padding 7px
 .el-card__body img
-  width: 100%
+  width 100%
 .normal-left-list
-  width: 190px
-  /* height: 400px; */
-  /* border-right: 1px solid gray; */
-  float: left
-  padding: 8px
-  margin-right: 8px
-  /* max-height: 617px; */
-  overflow: auto
+  width 190px
+  /* height 400px */
+  /* border-right 1px solid gray */
+  float left
+  padding 8px
+  margin-right 8px
+  /* max-height 617px */
+  overflow auto
 .write-play
-  color: #20a0ff
-  margin-left: 10px
+  color #20a0ff
+  margin-left 10px
 .el-icon-close
-  font-size: 14px
-  position: absolute
-  right: 2px
-  top: 4px
-  color: red
+  font-size 14px
+  position absolute
+  right 2px
+  top 4px
+  color red
 .active
-  border: 2px dashed #f58b2fd6
+  border 2px dashed #f58b2fd6
 .cutLine
-  border-left: 1px solid gray
-  margin-left: 10px
+  border-left 1px solid gray
+  margin-left 10px
 .add-version
-  font-size: 17px
-  height: 100px
-  line-height: 100px
-  display: block
-  text-align: center
+  font-size 17px
+  height 100px
+  line-height 100px
+  display block
+  text-align center
 .normal-version-wrap
-  width: 160px
-  min-height: 120px
-  position: relative
-  margin-bottom: 10px
-  text-align: center
-  cursor: pointer
+  width 160px !important
+  min-height 120px
+  position relative
+  margin-bottom 10px
+  text-align center
+  cursor pointer
 .normal-version-wrap span
-  font-size: 16px
+  font-size 16px
 .normal-version-wrap img
-  width: 95%
-  height: 90px
-  border-radius: 8px
+  width 95%
+  height 90px
+  border-radius 8px
 /* 角标 */
 .corner-box
-  position: relative
-  width: 150px
-  height: 150px
+  position relative
+  width 150px
+  height 150px
 .corner-box span.corner
-  position: absolute
-  width: 50px
-  height: 50px
-  text-align: center
-  cursor: pointer
+  position absolute
+  width 50px
+  height 50px
+  text-align center
+  cursor pointer
 .corner-box span.corner img
   width: 100%
   height: 100%
@@ -1753,16 +1677,15 @@ export default {
   color: #FF4949
   font-size: 20px
 .submitCheck
-  margin-top: 20px
-  margin-left: 110px
+  margin-top 20px
+  margin-left 110px
 .sign-tip
-  font-size: 11px;
-  color: orange;
-  padding: 0;
-  line-height: 1;
-  margin-top: 10px;
-  clear: both;
-
+  font-size 11px
+  color orange
+  padding 0
+  line-height 1
+  margin-top 10px
+  clear both
 .content-wrapper
   float left
   width 75%
@@ -1781,49 +1704,46 @@ export default {
       color #fff
   >>> .el-radio__input
     display none
-</style>
-
-<style lang="stylus" scoped>
-.added-contents-wrapper {
-  margin-bottom: 16px;
-  padding: 8px;
-  border-top: 2px dashed #C0CCDA;
-  border-bottom: 2px dashed #C0CCDA;
-  white-space: nowrap;
-  overflow: auto;
-
-  .added-contents-list {
-    display: inline-block;
-  }
-
-  >>> .el-card {
-    position: relative;
-    display: inline-block;
-    width: 190px;
-    height: 120px;
-    margin-right: 5px;
-    text-align: center;
-    cursor: pointer;
-
-    .remove-handle {
-      position: absolute;
-      top: 0;
-      right: 0;
-      padding: 4px;
-      color: #FF4949;
-      font-weight: bolder;
-    }
-
-    .audit-handle {
-      position: absolute;
-      top: 0;
-      right: 0;
-      padding: 4px;
-    }
-
-    img {
-      height: 120px;
-    }
-  }
-}
+.short-video--container
+  display inline-block
+  margin 0 20px
+.short-video--title
+  color #606266
+  margin-right 7px
+.margin-left-85
+  margin-left 85px
+.added-contents-wrapper
+  margin-bottom 16px
+  padding 8px
+  border-top 2px dashed #C0CCDA
+  border-bottom 2px dashed #C0CCDA
+  white-space nowrap
+  overflow auto
+.added-contents-list
+    display inline-block
+  >>> .el-card
+    position relative
+    display inline-block
+    width 190px
+    height 120px
+    margin-right 5px
+    text-align center
+    cursor pointer
+.remove-handle
+  position absolute
+  top 0
+  right 0
+  padding 4px
+  color #FF4949
+  font-weight bolder
+.audit-handle
+  position absolute
+  top 0
+  right 0
+  padding 4px
+img
+  height 120px
+.add-version-card
+  cursor pointer
+  width 160px
 </style>
