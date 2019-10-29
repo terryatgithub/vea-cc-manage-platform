@@ -217,6 +217,20 @@ export function setGoodContent(contentForm, selected) {
   }
 }
 
+export function setRankingContent(contentForm, selected) {
+  if (selected) {
+    contentForm.coverType = 'mall'
+    contentForm.contentType = 13
+    contentForm.videoContentType = 'mall'
+    contentForm.extraValue1 = selected.id
+    contentForm.pictureUrl = selected.images
+    contentForm.title = selected.title
+    contentForm.subTitle = chopSubTitle(selected.title)
+    contentForm.singleSubTitle = ''
+    contentForm.blockResourceType = -1
+  }
+}
+
 export function getSelectedResource(resources, selectedType) {
   const selectType = Object.keys(resources).find(key => resources[key].length > 0)
   return getSelectedResourceByType(resources, selectType)
@@ -303,7 +317,8 @@ export function genResourceContentList(resources, contentPreset) {
     genMediaContentList(resources, contentPreset, 'live'),
     genMediaContentList(resources, contentPreset, 'topic'),
     genMediaContentList(resources, contentPreset, 'rotate'),
-    genGoodContentList(resources, contentPreset)
+    genGoodContentList(resources, contentPreset),
+    genRankingContentList(resources, contentPreset)
   )
   return contentList
 }
@@ -311,7 +326,7 @@ export function genResourceContentList(resources, contentPreset) {
 export function genMediaContentList (resources, contentPreset, selectType) {
   const selectedResult = getSelectedResourceByType(resources, selectType)
   const selectedType = selectedResult.selectedType
-  const selected = selectedResult.selected
+  const selected = selectedResult.selected || []
   const selectedEpisode = selectedResult.selectedEpisode
   const contentList = selected.map(item => {
     const content = genDefaultContentForm(contentPreset)
@@ -326,7 +341,7 @@ export function genMediaContentList (resources, contentPreset, selectType) {
   return contentList
 }
 export function genAppContentList (resources, contentPreset) {
-  const selected = resources.app
+  const selected = resources.app || []
   const contentList = selected.map((item) => {
     const content = genDefaultContentForm(contentPreset)
     setAppContent(content, item)
@@ -336,11 +351,35 @@ export function genAppContentList (resources, contentPreset) {
 }
 
 export function genGoodContentList (resources, contentPreset) {
-  const selected = resources.good
+  const selected = resources.good || []
   const contentList = selected.map((item) => {
     const content = genDefaultContentForm(contentPreset)
     setGoodContent(content, item)
     return content
   })
   return contentList
+}
+
+export function genRankingContentList(resources, contentPreset) {
+  const selected = resources.ranking || []
+  const contentList = selected.map(item => {
+    const content = genDefaultContentForm(contentPreset)
+    setRankingContent(content, item)
+    return content
+  })
+  return contentList
+}
+
+export function isValidLayoutForRanking (selectedLayout) {
+  // 检查布局
+  // 采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个
+  const layoutJsonParsed = selectedLayout.layoutJsonParsed
+  const hasTitle = selectedLayout.layoutIsTitle
+  const hasOnlyOneRowAndMatchSize = layoutJsonParsed.contents.every(item => {
+    return item.y === 0 && item.width === 247 && item.height === 346
+  })
+  const blockCount = layoutJsonParsed.contents.length
+  const hasSuitableBlocks = blockCount >= 6 && blockCount <= 11
+
+  return hasTitle && hasOnlyOneRowAndMatchSize && hasSuitableBlocks
 }

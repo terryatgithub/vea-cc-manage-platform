@@ -49,7 +49,7 @@ export default {
       }
     }
   },
-  props: ['isLive', 'selectionType'],
+  props: ['isLive', 'selectionType', 'source'],
   computed: {
     selected() {
       return this.$refs.baseSelector.selected.slice()
@@ -60,6 +60,8 @@ export default {
       return {
         resType: 'operation',
         dataType: 'coocaaRanking',
+        levelType: 'childRanking',
+        partner: this.$consts.sourceToPartner[this.source],
         callback: 'result',
         levelType: undefined, // 专题类别
         title: undefined // 专题名称

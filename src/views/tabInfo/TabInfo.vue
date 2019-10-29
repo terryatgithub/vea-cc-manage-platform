@@ -141,7 +141,7 @@
                   </el-form-item>
                   <el-form-item label="时间点3" label-width="80px">
                     <el-date-picker
-                      v-model="tabInfo.refreshTimeList[3]"
+                      v-model="tabInfo.refreshTimeList[2]"
                       type="datetime"
                       placeholder="选择日期时间">
                     </el-date-picker>
@@ -520,7 +520,7 @@
                   </el-form-item>
                   <el-form-item label="时间点3" label-width="80px">
                     <el-date-picker
-                      v-model="tabInfo.refreshTimeList[3]"
+                      v-model="tabInfo.refreshTimeList[2]"
                       :disabled="true"
                       type="datetime">
                     </el-date-picker>
