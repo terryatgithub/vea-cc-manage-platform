@@ -225,9 +225,9 @@ export function setGoodContent (contentForm, selected) {
 
 export function setRankingContent (contentForm, selected) {
   if (selected) {
-    contentForm.coverType = 'mall'
-    contentForm.contentType = 13
-    contentForm.videoContentType = 'mall'
+    contentForm.coverType = 'media'
+    contentForm.contentType = 0
+    contentForm.videoContentType = 'movie'
     contentForm.extraValue1 = selected.id
     contentForm.pictureUrl = selected.images
     contentForm.title = selected.title
@@ -325,8 +325,7 @@ export function genResourceContentList (resources, contentPreset) {
     genMediaContentList(resources, contentPreset, 'live'),
     genMediaContentList(resources, contentPreset, 'topic'),
     genMediaContentList(resources, contentPreset, 'rotate'),
-    genGoodContentList(resources, contentPreset),
-    genRankingContentList(resources, contentPreset)
+    genGoodContentList(resources, contentPreset)
   )
   return contentList
 }
@@ -380,10 +379,10 @@ const rankingCorners = [
   'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131545215_46*50.png',
   'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131525588_46*50.png'
 ]
-export function genRankingContentList (resources, contentPreset) {
+export function genRankingContentList (resources) {
   const selected = resources.ranking || []
   const contentList = selected.map((item, index) => {
-    const content = genDefaultContentForm(contentPreset)
+    const content = genDefaultContentForm()
     content.cornerList = [
       {
         position: 0,
@@ -396,6 +395,7 @@ export function genRankingContentList (resources, contentPreset) {
   // 最后一个为查看更多
   const readMore = genDefaultContentForm({
     title: '查看更多',
+    coverType: 'custom',
     pictureUrl:
       'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110257831374_260*364.jpg',
     onclick: JSON.stringify({

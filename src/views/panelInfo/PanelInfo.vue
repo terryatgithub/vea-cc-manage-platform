@@ -444,7 +444,7 @@ import "echarts/lib/component/markPoint"
 import AnalyzeSimpleDataDialog from './AnalyzeSimpleDataDialog'
 import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
 
-import { genResourceContentList, getMatchedPictureUrl, isValidLayoutForRanking } from './panelInfoUtil'
+import { genResourceContentList, genRankingContentList, getMatchedPictureUrl, isValidLayoutForRanking } from './panelInfoUtil'
 import { cloneDeep } from 'lodash'
 
 export default {
@@ -1122,6 +1122,7 @@ export default {
       const selectedEpisodes = selectedResources.episode || {}
       const pannel = this.pannel
       const activePannel = this.pannel.pannelList[+this.activePannelIndex]
+      const isFillWithRanking = this.isFillWithRanking
       const partnerMap = {
         tencent: 'o_tencent',
         yinhe: 'o_iqiyi',
@@ -1148,10 +1149,11 @@ export default {
 
       const insertResources = (insertAfter = 1) => {
         const selectedLayout = this.selectedLayout
-        const resourcesToInsert = genResourceContentList(selectedResources, {
+        const genMethod = isFillWithRanking ? genRankingContentList : genResourceContentList
+        const resourcesToInsert = genMethod(selectedResources, {
           // 把一些值置为为定义，
           // 因为 gen 出来的默认数据结构只适用于推荐位详情里面，在外面没必要用
-          bgParams: undefined, 
+          bgParams: undefined,
           cornerList: undefined,
           redundantParams: undefined,
           // 定义一个标识，在填充的时候，填充最合适尺寸的图片
@@ -1206,7 +1208,7 @@ export default {
         this.updatePosition()
         this.getSharedTags()
       }
-      if (!this.isFillWithRanking) {
+      if (!isFillWithRanking) {
         this.$prompt('请确认从第几个内容框开始填充', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1830,7 +1832,9 @@ export default {
           panelIsFocus: item.panelIsFocus,
           timeSlot: timeSlot,
           focusShape: pannel.focusShape,
-          contentList: itemContentList
+          contentList: itemContentList,
+          rankIsOpen: item.rankIsOpen,
+          rankChildId: item.rankChildId
         }
       })
       delete pannel.pannelName
