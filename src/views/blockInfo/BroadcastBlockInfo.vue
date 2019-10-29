@@ -359,37 +359,6 @@
           </div>
         </el-form>
       </div>
-      <!-- 海报弹框  -->
-      <!-- <el-dialog :visible.sync="customDialogPicture.visible" width="1200px">
-        <DialogPicture
-          :title="customDialogPicture.title"
-          :pictureResolution="pictureResolution"
-          :form="customDialogPicture.form"
-          v-model="selectPicture"
-          v-if="customDialogPicture.visible"
-          @close-dialog="savePicture"
-        ></DialogPicture>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="customDialogPicture.visible = false">取 消</el-button>
-          <el-button type="primary" @click="savePicture">确 定</el-button>
-        </div>
-      </el-dialog> -->
-      <!-- 海报弹框 end -->
-      <!-- 角标弹框  -->
-      <!-- <el-dialog :visible.sync="customDialogCorner.visible" width="1200px">
-        <DialogCorner
-          v-model="selectPicture"
-          :typePosition="customDialogCorner.index"
-          :cornerIconTypeOptions="cornerIconTypeOptions"
-          v-if="customDialogCorner.visible"
-          @close-dialog="savePicture"
-        ></DialogCorner>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="customDialogCorner.visible = false">取 消</el-button>
-          <el-button type="primary" @click="savePicture">确 定</el-button>
-        </div>
-      </el-dialog> -->
-      <!-- 角标弹框 end -->
       <!-- 第三方运用快速填充弹框 -->
       <el-dialog :visible.sync="onclickEventVisible" width="1200px">
         <selectClick @row-click="getClickData"></selectClick>
@@ -493,6 +462,9 @@ export default {
         ],
         'mediaAutomationBlockRls.refreshCal': [
           { required: true, message: '当开关开启时必填', trigger: 'blur' }
+        ],
+        'shortVideoParams.topicId': [
+          { required: true, message: '请选择跳转话题' }
         ]
       },
       lowerRules: {
@@ -577,35 +549,7 @@ export default {
         }
       },
       // smallTopics: false,
-      versionForm: {
-        flagSetRec: 0,
-        mediaAutomationBlockRls: {
-          refreshCal: 1,
-          mediaAutomationId: '',
-          blockType: 'rotate'
-        },
-        title: '',
-        subTitle: '',
-        type: '',
-        coverType: 'media',
-        thirdIdOrPackageName: '',
-        subchannelId: '', // 子频道ID
-        subchannelIs: '', // 是否显示子频道
-        params: {},
-        clickType: 'detail',
-        onclick: {},
-        sign: 'autoSet',
-        contentType: '',
-        clickParams: {},
-        // jumpAdress: '1',
-        poster: {},
-        cornerIconList: [{}, {}, {}, {}],
-        // dmp
-        showContentType: 'general',
-        dmpContentList: [],
-        activeIndex: 0,
-        isDmpContent: false
-      },
+      versionForm: this.genDefaultContentForm(),
       pictureType: '',
       currentForm: '',
       pannelResource: '',
@@ -1233,7 +1177,12 @@ export default {
         dmpContentList: [],
         activeIndex: 0,
         isDmpContent: false,
-        ...preset
+        ...preset,
+        shortVideoParams: {
+          topicId: undefined,
+          shortVideoId: undefined
+        },
+        shortVideoSwitch: false
       }
     },
     // 组合模式->添加normalForm
@@ -1275,29 +1224,6 @@ export default {
         this.normalForm = this.normalVersionContent[index]
       })
     },
-
-    // 打开海报和角标弹窗
-    // openPicture: function(type, form, index) {
-    //   if (this.disabled) return
-    //   form === 'normalForm'
-    //     ? (this.pictureResolution = '797*449')
-    //     : (this.pictureResolution = '1210*449')
-    //   this.pictureType = type
-    //   this.currentForm = form
-    //   if (type === 'poster') {
-    //     this.customDialogPicture = {
-    //       visible: true,
-    //       form
-    //     }
-    //   } else {
-    //     this.customDialogCorner = {
-    //       visible: true,
-    //       form,
-    //       index
-    //     }
-    //   }
-    //   this.pictureOptions = this.pictureListOptions[type]
-    // },
     handleSelectPostEnd (selected) {
       this.lowerForm.poster = {
         pictureUrl: selected.pictureUrl,
@@ -1313,35 +1239,6 @@ export default {
       }
       this.$set(this.lowerForm.cornerIconList, index, corner)
     },
-    // savePicture: function() {
-    //   var selectPicture = this.selectPicture
-    //   if (JSON.stringify(selectPicture) === '{}') {
-    //     this.$message('请至少选择一项')
-    //   } else {
-    //     this.customDialogPicture.visible = false
-    //     this.customDialogCorner.visible = false
-    //     if (this.pictureType === 'poster') {
-    //       this[this.currentForm].poster = {
-    //         pictureUrl: selectPicture.pictureUrl,
-    //         pictureId: selectPicture.pictureId
-    //       }
-    //     } else if (this.pictureType === 'corner') {
-    //       var index = selectPicture.cornerIconType.typePosition
-    //       var cornerObj = {
-    //         cornerIconId: selectPicture.cornerIconId,
-    //         position: index,
-    //         imgUrl: selectPicture.imgUrl
-    //       }
-    //       var newForm = this[this.currentForm].cornerIconList.slice(0)
-    //       // var newForm = Object.assign({}, this.currentForm.cornerIconList);
-    //       newForm[index] = cornerObj
-    //       this[this.currentForm].cornerIconList = newForm
-    //       this.customDialogCorner.visible = false
-    //     }
-    //     this.selectPicture = {}
-    //   }
-    //   this.normalVersionContent[this.currentIndex] = this.normalForm
-    // },
     onDragStart: function(event) {
       console.log(event)
     },
@@ -1407,9 +1304,6 @@ export default {
                   if (firstContent.contentType !== 'rotate') {
                     return this.$message.error('信号源模式下，第一个资源必须是轮播资源')
                   }
-                  // if (firstContent.sign === 'manualResource' && !firstContent.clickParams.rotateId) {
-                  //   return this.$message.error('信号源模式下，第一个资源如果设置跳转到其它播放资源，必须是轮播资源')
-                  // }
                 }
                 // 检查海报, 批量填充轮播资源的时候会缺少海报
                 for (let i = 0; i < normalVersionContent.length; i++) {
@@ -1476,6 +1370,17 @@ export default {
       }
       const parseContent = (item) => {
         // 转换数据
+        // 短视频流
+        if (item.shortVideoSwitch === true) {
+          item.type = 'shortVideo'
+          item.params = {
+            ...item.shortVideoParams
+          }
+          item.clickParams = {}// 目前先置空，待后续客户端开发
+          item.coverType = 'shortVideo'
+          item.contentType = 'shortVideo'
+          item.clickTemplateType = 'shortVideo'
+        }
         // type url 时，要转换 params 数据, 具体看 getUrlBlur
         if (item.type === 'url') {
           item.params = {
@@ -1502,6 +1407,8 @@ export default {
         } else {
           item.dmpContentList = undefined
         }
+        delete item.shortVideoSwitch
+        delete item.shortVideoParams
         delete item.thirdIdOrPackageName
         delete item.activeIndex
         delete item.showContentType
@@ -1528,6 +1435,7 @@ export default {
       lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)              
 
       data.parentType = 'Block'
+      console.log('save', data);
       this.$service
         .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
         .then(() => {

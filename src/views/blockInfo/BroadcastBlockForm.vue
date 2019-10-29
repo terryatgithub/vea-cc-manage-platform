@@ -14,7 +14,16 @@
           v-if="normalForm.dmpRegistryInfo"
         >已选择: {{ normalForm.dmpRegistryInfo.dmpPolicyName }}({{ normalForm.dmpRegistryInfo.dmpPolicyId }}) / {{ normalForm.dmpRegistryInfo.dmpCrowdName}}({{ normalForm.dmpRegistryInfo.dmpCrowdId }})</el-tag>
       </el-form-item>
-      <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName">
+      <el-form-item v-if="isGroupModel" label="使用短视频流">
+        <el-switch
+          v-model="normalForm.shortVideoSwitch"
+          @change="hanleSwitchShortVideo"
+          :disabled="judegeRotateDisabled()"
+          active-color="#13ce66"
+          inactive-color="grey"
+        ></el-switch>
+      </el-form-item>
+      <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName" v-if="!normalForm.shortVideoSwitch">
         <ResourceSelector
           ref="resourceSelector"
           :disable-partner="!!source"
@@ -51,6 +60,11 @@
           :closable="!disabled"
           @close="normalForm.thirdIdOrPackageName = undefined"
         >已选择：{{normalForm.thirdIdOrPackageName}}</el-tag>
+        <el-tag
+          type="success"
+          class="marginL"
+          v-if="normalForm.thirdIdOrPackageName && singleEpisodeNum"
+        >单集：{{singleEpisodeNum}}</el-tag>
         <a
           class="write-play"
           v-if="!isManualSetResource && isGroupModel && !disabled "
@@ -68,6 +82,45 @@
           信号源模式的第一个资源必须是轮播资源
         </div>
       </el-form-item>
+      <el-form-item label="跳转话题" v-if="normalForm.shortVideoSwitch" prop="shortVideoParams.topicId">
+        <ResourceSelector
+          :disable-partner="!!source"
+          :source="source"
+          :selectors="['shortVideoTopic']"
+          selection-type="single"
+          @select-end="handleSelectVideoTopicEnd">
+          <el-button type="primary" plain>
+            选择话题
+          </el-button>
+        </ResourceSelector>
+        <el-tag
+          type="success"
+          class="marginL"
+          v-if="normalForm.shortVideoParams.topicId"
+          :closable="!disabled"
+          @close="normalForm.shortVideoParams.topicId = undefined"
+        >已选择：{{normalForm.shortVideoParams.topicId}}</el-tag>
+      </el-form-item>
+      <el-form-item label="开头短视频" v-if="normalForm.shortVideoSwitch">
+        <ResourceSelector
+          :source="source"
+          :selectors="['shortVideo']"
+          :disable-partner="!!source"
+          :auto-fetch-selectors="['shortVideo']"
+          selection-type="single"
+          @select-end="handleSelectVideoEnd">
+          <el-button type="primary" plain>
+            选择短视频
+          </el-button>
+        </ResourceSelector>
+        <el-tag
+          type="success"
+          class="marginL"
+          v-if="normalForm.shortVideoParams.shortVideoId"
+          :closable="!disabled"
+          @close="normalForm.shortVideoParams.shortVideoId = undefined"
+        >已选择：{{normalForm.shortVideoParams.shortVideoId}}</el-tag>
+      </el-form-item>
       <div v-if="isGroupModel">
         <el-form-item label="指定子频道" prop="subchannelId" v-if="normalForm.subchannelIs">
           <el-input
@@ -77,7 +130,7 @@
         </el-form-item>
         <el-form-item label="开启个性化推荐">
           <el-switch
-            :disabled="isReadonly"
+            :disabled="judegeRotateDisabled()"
             :value="!!normalForm.flagSetRec" 
             @input="handleInputFlagSetRec"
             active-color="#13ce66"
@@ -263,8 +316,7 @@ export default {
   data () {
     return {
       onclickEventVisible: false,
-      showCrowdSelector: false,
-      isVisiableRecom: false
+      showCrowdSelector: false
     }
   },
   props: ['configModel', 'normalForm', 'normalRules', 'isGroupModel', 'isReadonly', 'source', 'checkCrowd', 'showResourceTip'],
@@ -293,6 +345,10 @@ export default {
     thirdIdOrPackageNameForClick() {
       return this.getThirdId(this.normalForm.clickParams)
     },
+    singleEpisodeNum () {
+      const clickParams = this.normalForm.clickParams
+      return clickParams.vid || clickParams.sid
+    }
   },
   methods: {
     getThirdId(clickParams) {
@@ -304,6 +360,12 @@ export default {
         )
         return result
       }
+    },
+    judegeRotateDisabled () {
+      if (this.isReadonly === false && this.normalForm.clickTemplateType === 'rotate') {
+        return true
+      }
+      return this.isReadonly
     },
     handleSelectClickEventStart() {
       this.onclickEventVisible = true
@@ -338,6 +400,12 @@ export default {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0], result.partner)
       setContentForm(this.normalForm, resourceContent)
+      // 轮播资源关闭推荐流
+      if (this.normalForm.clickTemplateType === 'rotate') {
+        this.handleInputFlagSetRec(false)
+        this.hanleSwitchShortVideo()
+      }
+      this.normalForm.shortVideoSwitch = false
     },
     handleSelectNormalSingleOtherResourceEnd(selectedResources) {
       const result = getSelectedResource(selectedResources)
@@ -429,6 +497,25 @@ export default {
     handleSelectRecomStream(recomStream) {
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
     },
+    // 选择资源拓展项
+    hanleSwitchShortVideo (bool) {
+      if (bool) {
+        this.normalForm.thirdIdOrPackageName = undefined
+      } else {
+        this.normalForm.shortVideoParams = {
+          topicId: undefined,
+          shortVideoId: undefined
+        }
+      }
+      this.normalForm.shortVideoSwitch = bool
+    },
+    handleSelectVideoTopicEnd ({ shortVideoTopic }) {
+      this.normalForm.shortVideoParams.topicId = shortVideoTopic[0].id
+    },
+    handleSelectVideoEnd ({ shortVideo }) {
+      const prefix = this.$consts.sourcePrefix[this.source] || ''
+      this.normalForm.shortVideoParams.shortVideoId = prefix + shortVideo[0].sCoocaaMId
+    }
   }
 }
 </script>
