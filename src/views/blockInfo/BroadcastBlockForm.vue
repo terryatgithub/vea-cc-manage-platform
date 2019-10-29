@@ -89,7 +89,7 @@
           :selectors="['shortVideoTopic']"
           selection-type="single"
           @select-end="handleSelectVideoTopicEnd">
-          <el-button type="primary" plain>
+          <el-button type="primary" plain :disabled="disabled">
             选择话题
           </el-button>
         </ResourceSelector>
@@ -109,7 +109,7 @@
           :auto-fetch-selectors="['shortVideo']"
           selection-type="single"
           @select-end="handleSelectVideoEnd">
-          <el-button type="primary" plain>
+          <el-button type="primary" plain :disabled="disabled">
             选择短视频
           </el-button>
         </ResourceSelector>
