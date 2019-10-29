@@ -1233,7 +1233,10 @@ export default {
           partner: this.$consts.sourceToPartner[pannel.pannelResource]
         }).then(result => {
           activePannel.rankChildId = ranking.id
-          selectedResources.ranking = result.rankingVideoInfoEntities || []
+          // 根据推荐位个数 n, 截取 n-1 个资源
+          const rankingResources = result.rankingVideoInfoEntities || []
+          const blockCount = this.selectedLayout.layoutJsonParsed.contents.length
+          selectedResources.ranking = rankingResources.slice(0, blockCount-1)
           insertResources()
         })
       }
