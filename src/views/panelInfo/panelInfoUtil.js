@@ -368,25 +368,67 @@ export function genGoodContentList (resources, contentPreset) {
 }
 
 const rankingCorners = [
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110042310136_46*50.png',
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130504587_46*50.png',
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130914436_46*50.png',
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130735921_46*50.png',
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130455987_46*50.png',
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131328570_46*50.png',
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131373933_46*50.png',
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131101494_46*50.png',
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131545215_46*50.png',
-  'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131525588_46*50.png'
+  {
+    cornerIconId: 10334,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110042310136_46*50.png'
+  },
+  {
+    cornerIconId: 10335,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130504587_46*50.png',
+  },
+  {
+    cornerIconId: 10336,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130914436_46*50.png',
+  },
+  {
+    cornerIconId: 10337,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130735921_46*50.png',
+  },
+  {
+    cornerIconId: 10338,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130455987_46*50.png',
+  },
+  {
+    cornerIconId: 10339,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131328570_46*50.png',
+  },
+  {
+    cornerIconId: 10340,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131373933_46*50.png',
+  },
+  {
+    cornerIconId: 10341,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131101494_46*50.png',
+  },
+  {
+    cornerIconId: 10342,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131545215_46*50.png',
+  },
+  {
+    cornerIconId: 10343,
+    position: 0,
+    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131525588_46*50.png'
+  }
 ]
 export function genRankingContentList (resources) {
   const selected = resources.ranking || []
   const contentList = selected.map((item, index) => {
     const content = genDefaultContentForm()
+    const rankingCorner = rankingCorners[index]
     content.cornerList = [
       {
-        position: 0,
-        imgUrl: rankingCorners[index]
+        ...rankingCorner
+      },
+      {
       }
     ]
     setRankingContent(content, item)
