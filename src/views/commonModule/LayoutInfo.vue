@@ -334,11 +334,14 @@ export default {
     },
     setLayout6 () {
       const form = this.form
-      return this.$service.getLayoutVersion6({
-        layoutJson8: JSON.stringify(form.layoutJson8)
-      }).then(layoutJson => {
-        form.layoutJson = layoutJson
-      })
+      const layoutJson8 = form.layoutJson8
+      if (layoutJson8) {
+        return this.$service.getLayoutVersion6({
+          layoutJson8: JSON.stringify(layoutJson8)
+        }).then(layoutJson => {
+          form.layoutJson = layoutJson
+        })
+      }
     },
     fetchLayoutTypeOptions () {
       this.$service.getDictType({type: 'layoutType'}).then(layoutTypeOptions => {

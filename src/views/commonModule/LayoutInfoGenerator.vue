@@ -54,11 +54,10 @@
             { required: true, message: '请输入高度', trigger: 'blur' },
             { type: 'number', min: 0, message: '请输入不小于 0 的数字', trigger: 'blur'}
           ]">
-          <span class="title">高度:</span>
+          <span class="title">高度</span>
           <el-col :span="9">
             <el-select v-model.number="row.height"
             allow-create
-            clearable
             filterable
             default-first-option
             placeholder="请选择">
@@ -66,14 +65,11 @@
             </el-select>
           </el-col>
         </el-form-item>
-        <el-form-item>
-          <span class="title" style="margin-left:10px;">标题:</span>
-          <el-col :span="1">
-            <el-checkbox v-model="row.hasTitle"></el-checkbox>
-          </el-col>
+        <el-form-item style="margin-right: 10px">
+          <el-checkbox v-model="row.hasTitle">标题</el-checkbox>
         </el-form-item>
         <el-form-item class="el-form-item__block-width" v-if="row.blockWidth.length>0">
-          <span>宽度:</span>
+          <span>&nbsp;宽度</span>
           <el-form-item 
             v-for="(item,i) in row.blockWidth" 
             :prop="'rows.' + index + '.blockWidth.' + i"
@@ -101,7 +97,12 @@
       </el-form-item>
     </el-form>
     <section>
-      <LayoutBlock :content="layoutForPreview.content.contents"  @change-width="changeWidth" class="layoutBloack"></LayoutBlock>
+      <LayoutBlock 
+        v-if="layoutForPreview.content.contents.length > 0"
+        :content="layoutForPreview.content.contents"
+        @change-width="changeWidth"
+        class="layoutBloack">
+      </LayoutBlock>
     </section>
   </ContentCard>
 </template>
