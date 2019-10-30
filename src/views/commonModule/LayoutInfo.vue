@@ -221,12 +221,12 @@ export default {
   methods: {
     handleInputLayout6GenMode (val) {
       const form = this.form
+      form.layout6GenMode = val
       if (val === 'manual') {
         form.layoutJson = null
       } else {
         this.setLayout6()
       }
-      form.layout6GenMode = val
     },
     fetchData(version) {
       this.$service.getLayoutInforById({ id: this.id }).then(this.setLayoutInfo)
@@ -335,7 +335,7 @@ export default {
     setLayout6 () {
       const form = this.form
       const layoutJson8 = form.layoutJson8
-      if (layoutJson8) {
+      if (layoutJson8 && form.layout6GenMode === 'auto') {
         return this.$service.getLayoutVersion6({
           layoutJson8: JSON.stringify(layoutJson8)
         }).then(layoutJson => {
