@@ -371,52 +371,62 @@ const rankingCorners = [
   {
     cornerIconId: 10334,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110042310136_46*50.png'
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110042310136_46*50.png'
   },
   {
     cornerIconId: 10335,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130504587_46*50.png',
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130504587_46*50.png'
   },
   {
     cornerIconId: 10336,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130914436_46*50.png',
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130914436_46*50.png'
   },
   {
     cornerIconId: 10337,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130735921_46*50.png',
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130735921_46*50.png'
   },
   {
     cornerIconId: 10338,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130455987_46*50.png',
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130455987_46*50.png'
   },
   {
     cornerIconId: 10339,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131328570_46*50.png',
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131328570_46*50.png'
   },
   {
     cornerIconId: 10340,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131373933_46*50.png',
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131373933_46*50.png'
   },
   {
     cornerIconId: 10341,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131101494_46*50.png',
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131101494_46*50.png'
   },
   {
     cornerIconId: 10342,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131545215_46*50.png',
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131545215_46*50.png'
   },
   {
     cornerIconId: 10343,
     position: 0,
-    imgUrl: 'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131525588_46*50.png'
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131525588_46*50.png'
   }
 ]
 export function genRankingContentList (resources) {
@@ -428,8 +438,7 @@ export function genRankingContentList (resources) {
       {
         ...rankingCorner
       },
-      {
-      }
+      {}
     ]
     setRankingContent(content, item)
     return content
@@ -456,15 +465,14 @@ export function genRankingContentList (resources) {
   return contentList.concat(readMore)
 }
 
-export function isValidLayoutForRanking (selectedLayout) {
+export function isValidLayoutForRanking (selectedLayout, blockCount) {
   // 检查布局
   // 采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个
   const layoutJsonParsed = selectedLayout.layoutJsonParsed
   const hasTitle = selectedLayout.layoutIsTitle
   const hasOnlyOneRowAndMatchSize = layoutJsonParsed.contents.every(item => {
-    return item.y === 0 && item.width === 247 && item.height === 346
+    return item.y === 0 && item.width === 260 && item.height === 364
   })
-  const blockCount = layoutJsonParsed.contents.length
   const hasSuitableBlocks = blockCount >= 6 && blockCount <= 11
 
   return hasTitle && hasOnlyOneRowAndMatchSize && hasSuitableBlocks

@@ -357,8 +357,7 @@
                       <el-tab-pane
                         v-for="(item, index) in pannel.pannelList"
                         :key="index"
-                        :name="index.toString()"
-                      >
+                        :name="index.toString()">
 
                         <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
                           {{ item.pannelTitle }} {{ item.panelIsFocus && pannel.focusConfig === '' ? '(默认落焦)' : '' }}
@@ -395,6 +394,7 @@
             :panel-list="pannel.pannelList"
             :focus-config="pannel.focusConfig"
             :layout="selectedLayout"
+            :block-count="blockCountList[+activePannelIndex]"
             @set-end="handleSetPanelGroupInfoEnd"
             @set-cancel="handleSetPanelGroupInfoCancel">
           </PanelGroupInfoSetter>
@@ -803,12 +803,13 @@ export default {
     handleToggleFillWithRanking (val) {
       const panelList = this.pannel.pannelList
       const activePannelIndex = +this.activePannelIndex
+      const blockCount = this.blockCountList[activePannelIndex]
       if (val) {
-        if (!isValidLayoutForRanking(this.selectedLayout)) {
+        if (!isValidLayoutForRanking(this.selectedLayout, blockCount)) {
           return this.$message({
             type: 'error',
             duration: 8000,
-            message: '采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个'
+            message: '采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是260*364、推荐位数量6~11个'
           })
         }
         panelList[activePannelIndex].rankIsOpen = 1
@@ -1022,6 +1023,8 @@ export default {
     handleSelectLayoutEnd(layout, blockCount) {
       this.closeRanking()
       this.selectedLayout = layout
+      // 如果是横向拓展布局
+      blockCount = blockCount || layout.layoutJsonParsed.contents.length
       this.blockCount = blockCount
       this.blockCountList = this.blockCountList.map(_ => blockCount)
       // 如果选择的是拓展布局，按照设置的数量删除多余的资源
@@ -1121,7 +1124,9 @@ export default {
       const partner = selectedResources.videoSource
       const selectedEpisodes = selectedResources.episode || {}
       const pannel = this.pannel
-      const activePannel = this.pannel.pannelList[+this.activePannelIndex]
+      const activePannelIndex = +this.activePannelIndex
+      const activePannel = this.pannel.pannelList[activePannelIndex]
+      const blockCount = this.blockCountList[activePannelIndex]
       const isFillWithRanking = this.isFillWithRanking
       const partnerMap = {
         tencent: 'o_tencent',
@@ -1237,7 +1242,6 @@ export default {
           activePannel.rankChildId = ranking.id
           // 根据推荐位个数 n, 截取 n-1 个资源
           const rankingResources = result.rankingVideoInfoEntities || []
-          const blockCount = this.selectedLayout.layoutJsonParsed.contents.length
           selectedResources.ranking = rankingResources.slice(0, blockCount-1)
           insertResources()
         })
@@ -1707,8 +1711,11 @@ export default {
     handleRemoveBlock(index) {
       // 重新计算 block
       const activePannelIndex = +this.activePannelIndex
-      this.blockCountList[activePannelIndex]--
       const activePannel = this.pannel.pannelList[activePannelIndex]
+      if (activePannel.rankIsOpen) {
+        return this.$message.error('使用排行榜填充的版块里的推荐位不能删除')
+      }
+      this.blockCountList[activePannelIndex]--
       const selectedResources = activePannel.selectedResources
       // 移除对应的资源
       selectedResources.splice(index, 1)
@@ -2323,7 +2330,7 @@ export default {
   max-width: 100%;
   overflow: auto;
 }
-.pannel-blocks .el-tabs__content {
+.pannel-blocks >>> .el-tabs__content {
   overflow-x: visible;
   overflow-y: auto;
 }

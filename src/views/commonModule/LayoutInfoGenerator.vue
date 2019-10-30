@@ -232,8 +232,6 @@ export default {
         return result
       }, {height: 0, contents: []}).contents
 
-      debugger
-
       const layout = {
         fileName,
         content: {
