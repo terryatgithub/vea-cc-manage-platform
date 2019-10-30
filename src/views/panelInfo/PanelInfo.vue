@@ -239,6 +239,7 @@
                         </span>
                         <VirtualPanel
                           :blocks="item.contentList"
+                          :mode="isFillWithRanking ? 'read' : mode"
                           @drag="handleDragBlock"
                           @remove-block="handleRemoveBlock"
                           @click-block="handleClickBlock"
@@ -250,6 +251,7 @@
                   <VirtualPanel
                     v-else
                     :blocks="pannel.pannelList[0].contentList"
+                    :mode="isFillWithRanking ? 'read' : mode"
                     @drag="handleDragBlock"
                     @remove-block="handleRemoveBlock"
                     @click-block="handleClickBlock"
@@ -1593,7 +1595,8 @@ export default {
           pannel.parentType === 'group' && type === 'Lengthwise'
             ? blockCount
             : Math.max(blockCount, selectedResources.length)
-
+        // 把最新的推荐位个数存下来
+        blockCountList[currentPannelIndex] = count
         let i = blocks.length
         while (i++ < count) {
           blocks.push(calculate(i))
@@ -1695,6 +1698,9 @@ export default {
     },
 
     handleDragBlock(oldIndex, newIndex) {
+      if (this.isFillWithRanking) {
+        return
+      }
       // 改变资源
       const activePannel = this.pannel.pannelList[+this.activePannelIndex]
       const selectedResources = activePannel.selectedResources
