@@ -372,9 +372,6 @@ export default {
 .el-form-item__height
   >>> .el-form-item__error
     left: 60px
-.layoutBloack
-  >>> .size-mark
-    display: none
 .el-form-item__block-width >>> 
   input
     width: 60px

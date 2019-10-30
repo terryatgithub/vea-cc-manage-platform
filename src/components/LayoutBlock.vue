@@ -1,5 +1,5 @@
 <template>
-  <div id="layout" class="pannel-wrap" :style="{ height:maxY * ratio+'px',width:contentWidth+'px'}">
+  <div id="layout" class="pannel-wrap" :style="{ height: boundary.y * ratio + 'px', width: contentWidth+'px'}">
     <div v-for="(v,index) in content" :key="index">
       <div
         v-if="v.resize"
@@ -10,8 +10,7 @@
         width: v.resize.width * ratio+'px',
         height: v.resize.height * ratio+'px',
         position: 'absolute'
-      }"
-      >
+      }">
         <div
           class="single-blcok pannel-content"
           :style="{
@@ -19,8 +18,7 @@
           left: v.x * ratio+'px',
           width: v.width * ratio+'px',
           height: v.height * ratio+'px'
-       }"
-        >
+       }">
           <span class="seq-num">{{index+1}}</span>
           <span class="size-mark">{{v.width}}*{{v.height}}</span>
           <!-- <span class="changeWidth">
@@ -32,8 +30,7 @@
           <div
             name="bottomRight"
             class="corner-img"
-            style="position: absolute;bottom: 30px;right: 0"
-          ></div>
+            style="position: absolute;bottom: 30px;right: 0"></div>
           <!-- <span class="close-block">×</span> -->
           <div v-if="v.type === 'Mall'" name="smallPrice" class="specialSamll">
             <div v-if="v.resize.width * ratio < 150">
@@ -127,41 +124,34 @@ export default {
   },
   data() {
     return {
-      maxX: 0,
-      maxY: 0,
-      ratio: 0
+    }
+  },
+  computed: {
+    wrapperStyle () {
+
+    },
+    boundary () {
+      let x = 0, y = 0
+      this.content.forEach(val => {
+        val = val.resize ? val.resize : val
+        x = Math.max(x, val.x + val.width)
+        y = Math.max(y, val.y + val.height)
+      })
+      return { x, y }
+    },
+    ratio () {
+      const defaultRatio = 1
+      const contentWidth = this.contentWidth
+      const { x, y } = this.boundary
+      if (x > contentWidth) {
+        return contentWidth/x
+      }
+      return defaultRatio
     }
   },
   methods: {
-    init() {
-      this.maxY = 0
-      this.maxX = 0
-      this.content.forEach(val => {
-        val = val.resize ? val.resize : val
-        this.maxX = Math.max(this.maxX, val.x + val.width)
-        this.maxY = Math.max(this.maxY, val.y + val.height)
-      })
-    }
-    // changeWidth(e,v,index){
-    //   this.$emit("change-width",e.target.value,v.whichRow,v.whichBlock,index)
-    // }
-  },
-
-  mounted() {
-    // this.ratio = document.querySelector('#layout').clientWidth / this.maxX
-    // debugger
-    this.ratio = this.contentWidth / this.maxX
-    // this.ratio=document.querySelector('#layout').clientWidth/this.maxX
-  },
-  watch: {
-    content: function(newV, oldV) {
-      this.init()
-      this.ratio = this.contentWidth / this.maxX
-      // this.ratio = document.querySelector('#layout').clientWidth / this.maxX
-    }
   },
   created() {
-    this.init()
   }
 }
 </script>
