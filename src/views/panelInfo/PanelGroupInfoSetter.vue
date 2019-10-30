@@ -9,7 +9,7 @@
           <el-form-item label="标题" prop="title">
             <el-input :disabled="mode === 'read'"  v-model="info.title" />
           </el-form-item>
-          <el-form-item label="使用排行榜填充" prop="title">
+          <el-form-item label="使用排行榜填充" prop="rankIsOpen">
             <el-switch :value="!!info.rankIsOpen" @input="handleToggleFillWithRanking"></el-switch>
           </el-form-item>
           <template v-if="focusConfig === 'timeSlot'">
