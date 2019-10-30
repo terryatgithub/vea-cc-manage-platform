@@ -140,7 +140,7 @@
     <PageContentWrapper v-if="activePage === 'layout-generate-v6'">
       <LayoutInfoGenerator
         layout-version="v6"
-        :layout-spacing="10"
+        :layout-spacing="28"
         :layout-width="1622"
         @go-back="activePage = 'layout'"
         @gen-end="handleGenLayoutEnd($event, 'v6')">
