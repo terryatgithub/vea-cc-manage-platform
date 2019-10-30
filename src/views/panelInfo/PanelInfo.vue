@@ -15,8 +15,7 @@
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
           @delete="$emit('upsert-end', $event)"
-          @cancel-timing="fetchData(pannel.currentVersion)"
-        >
+          @cancel-timing="fetchData(pannel.currentVersion)">
           <div slot="copy-confirm">
             复制到
             <el-select v-model="copyToPanelDataType">
