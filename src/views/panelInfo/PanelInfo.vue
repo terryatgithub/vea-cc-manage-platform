@@ -804,9 +804,9 @@ export default {
     handleToggleFillWithRanking (val) {
       const panelList = this.pannel.pannelList
       const activePannelIndex = +this.activePannelIndex
-      const blockCount = this.blockCountList[activePannelIndex]
+      const activePannel = panelList[activePannelIndex]
       if (val) {
-        if (!isValidLayoutForRanking(this.selectedLayout, blockCount)) {
+        if (!isValidLayoutForRanking(activePannel.contentList)) {
           return this.$message({
             type: 'error',
             duration: 8000,

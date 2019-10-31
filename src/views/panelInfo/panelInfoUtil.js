@@ -464,15 +464,17 @@ export function genRankingContentList (resources) {
   return contentList.concat(readMore)
 }
 
-export function isValidLayoutForRanking (selectedLayout, blockCount) {
+export function isValidLayoutForRanking (contentList = []) {
   // 检查布局
   // 采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个
-  const layoutJsonParsed = selectedLayout.layoutJsonParsed
-  const hasTitle = selectedLayout.layoutIsTitle
-  const hasOnlyOneRowAndMatchSize = layoutJsonParsed.contents.every(item => {
-    return item.y === 0 && item.width === 260 && item.height === 364
+  const blockCount = contentList.length
+  const hasTitleAndOnlyOneRowAndMatchSize = contentList.every(item => {
+    // eslint-disable-next-line
+    const { width, height, y, title_info, mall_resize } = item.contentPosition
+    // eslint-disable-next-line
+    return y === 0 && width === 260 && height === 364 && title_info && !mall_resize
   })
   const hasSuitableBlocks = blockCount >= 6 && blockCount <= 11
 
-  return hasTitle && hasOnlyOneRowAndMatchSize && hasSuitableBlocks
+  return hasTitleAndOnlyOneRowAndMatchSize && hasSuitableBlocks
 }
