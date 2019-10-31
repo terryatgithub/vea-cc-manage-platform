@@ -393,9 +393,8 @@
             :info="activePanelGroup"
             :mode="mode"
             :panel-list="pannel.pannelList"
+            :panel="pannel.pannelList[+activePannelIndex]"
             :focus-config="pannel.focusConfig"
-            :layout="selectedLayout"
-            :block-count="blockCountList[+activePannelIndex]"
             @set-end="handleSetPanelGroupInfoEnd"
             @set-cancel="handleSetPanelGroupInfoCancel">
           </PanelGroupInfoSetter>
@@ -810,7 +809,7 @@ export default {
           return this.$message({
             type: 'error',
             duration: 8000,
-            message: '采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是260*364、推荐位数量6~11个'
+            message: '采用排行榜，布局必须满足：标题布局、不带价格、只有一行、每个推荐位都是260*364、推荐位数量6~11个'
           })
         }
         panelList[activePannelIndex].rankIsOpen = 1

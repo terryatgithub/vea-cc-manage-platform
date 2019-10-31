@@ -67,7 +67,7 @@ export default {
       }
     }
   },
-  props: ['mode', 'info', 'panelList', 'focusConfig', 'layout', 'blockCount'],
+  props: ['mode', 'info', 'panelList', 'focusConfig', 'panel'],
   methods: {
     handleSetCancel() {
       this.$emit('set-cancel')
@@ -133,11 +133,11 @@ export default {
     handleToggleFillWithRanking (val) {
       const info = this.info
       if (val) {
-        if (!isValidLayoutForRanking(this.layout, this.blockCount)) {
+        if (!isValidLayoutForRanking(this.panel.contentList)) {
           return this.$message({
             type: 'error',
             duration: 8000,
-            message: '采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是260*364、推荐位数量6~11个'
+            message: '采用排行榜，布局必须满足：标题布局、不带布局、只有一行、每个推荐位都是260*364、推荐位数量6~11个'
           })
         }
         info.rankIsOpen = 1
