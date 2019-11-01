@@ -176,9 +176,9 @@ export default {
             label: '业务分类',
             sortable: true,
             formatter: row => {
-              return row.tabCategory == 0 || row.tabCategory == 67
+              return row.tabCategory === 0 || row.tabCategory === 67
                 ? '影视'
-                : row.tabCategory == 1
+                : row.tabCategory === 1
                   ? '教育'
                   : ''
             }
@@ -210,9 +210,7 @@ export default {
               return (
                 row.currentVersion +
                 '/' +
-                ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过'][
-                  row.tabStatus
-                ]
+                ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过'][row.tabStatus]
               )
             }
           },
@@ -263,7 +261,7 @@ export default {
           {
             validator(rule, value, cb) {
               if (value && !/^\d+$/.test(value)) {
-                return cb('请输入数字')
+                return cb(Error('请输入数字'))
               }
               cb()
             }

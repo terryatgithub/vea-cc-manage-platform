@@ -14,7 +14,7 @@
         <el-radio-button label="hourlyClickUv" class="tab--item">点击UV(小时)对比</el-radio-button>
         <el-radio-button label="hourlyUvctr" class="tab--item">点击UVCTR(小时)对比</el-radio-button>
       </el-radio-group>
-      
+
       <div class="chart--wrapper" v-for="(dmpChartData, index) in chartDataArr" :key="index">
         <div class="chart-box--title">{{dmpChartData.title}}</div>
         <VeLine
@@ -41,162 +41,161 @@
 </template>
 
 <script>
-  import "echarts/lib/component/markLine"
-  import "echarts/lib/component/markPoint"
-  import VeLine from "v-charts/lib/line.common"
+import 'echarts/lib/component/markLine'
+import 'echarts/lib/component/markPoint'
+import VeLine from 'v-charts/lib/line.common'
 
-  export default {
-    components: {
-      VeLine,
-    },
-    data() {
-      this.extend = {
-        grid: {
-          top: "10%",
-          left: "5%",
-          right: "5%",
-          bottom: "10%",
-          containLabel: true,
-        },
-        series: v => {
-          v[0].smooth = false
-          return v
-        },
-        xAxis: {
-          // triggerEvent: true,
-          axisLabel: {
-            rotate: 45,
-            formatter: function(val) {
-              let mark = val.indexOf("(")
-              if (mark === -1) {
-                return val
-              } else {
-                let version = val.slice(mark - val.length)
-                let date = val.slice(0, mark)
-                return [`{a|${version}}`, date].join("")
-              }
-            },
-            rich: {
-              a: { color: "red" },
-            },
-          },
-        },
-        color: ["#1E90FF ", "#2f4554"],
-      }
-      this.markLine = {
-        data: [
-          {
-            name: "平均线",
-            type: "average",
-          },
-        ],
-      }
-      this.markPoint = {
-        data: [
-          {
-            name: "最大值",
-            type: "max",
-          },
-          {
-            name: "最小值",
-            type: "min",
-          },
-        ],
-      }
-      return {
-        visible: this.show,
-        chartDataArr: [],
-        uvClickTab: 'dailyClickUv',
-        extraVisible: false,
-        extraArr: []  // Array< string > 信息细节
-      }
-    },
-
-    watch: {
-      show() {
-        this.visible = this.show
+export default {
+  components: {
+    VeLine
+  },
+  data() {
+    this.extend = {
+      grid: {
+        top: '10%',
+        left: '5%',
+        right: '5%',
+        bottom: '10%',
+        containLabel: true
       },
-    },
-
-    props: {
-      show: {
-        type: Boolean,
-        default() {
-          return false
-        },
+      series: v => {
+        v[0].smooth = false
+        return v
       },
-      parentId: Number,
-      position: [String, Number],
-    },
-
-    methods: {
-      fetchData() {
-        const { parentId, position, uvClickTab } = this
-        this.$service.getVideoDmpChartData({ parentId, position, type: uvClickTab }).then(data => {
-          this.chartDataArr = data.rows
-          if (this.chartDataArr.length === 0) {
-            this.$message("暂无数据")
+      xAxis: {
+        // triggerEvent: true,
+        axisLabel: {
+          rotate: 45,
+          formatter: function(val) {
+            let mark = val.indexOf('(')
+            if (mark === -1) {
+              return val
+            } else {
+              let version = val.slice(mark - val.length)
+              let date = val.slice(0, mark)
+              return [`{a|${version}}`, date].join('')
+            }
+          },
+          rich: {
+            a: { color: 'red' }
           }
+        }
+      },
+      color: ['#1E90FF ', '#2f4554']
+    }
+    this.markLine = {
+      data: [
+        {
+          name: '平均线',
+          type: 'average'
+        }
+      ]
+    }
+    this.markPoint = {
+      data: [
+        {
+          name: '最大值',
+          type: 'max'
+        },
+        {
+          name: '最小值',
+          type: 'min'
+        }
+      ]
+    }
+    return {
+      visible: this.show,
+      chartDataArr: [],
+      uvClickTab: 'dailyClickUv',
+      extraVisible: false,
+      extraArr: [] // Array< string > 信息细节
+    }
+  },
+
+  watch: {
+    show() {
+      this.visible = this.show
+    }
+  },
+
+  props: {
+    show: {
+      type: Boolean,
+      default() {
+        return false
+      }
+    },
+    parentId: Number,
+    position: [String, Number]
+  },
+
+  methods: {
+    fetchData() {
+      const { parentId, position, uvClickTab } = this
+      this.$service.getVideoDmpChartData({ parentId, position, type: uvClickTab }).then(data => {
+        this.chartDataArr = data.rows
+        if (this.chartDataArr.length === 0) {
+          this.$message('暂无数据')
+        }
+      })
+    },
+    handleChartData(chartData) {
+      return {
+        title: chartData.title,
+        unit: chartData.unit,
+        columns: ['x', 'y'],
+        rows: chartData.data
+      }
+    },
+    handleChartExtend(chartData) {
+      const yAxis = {
+        axisLabel: {
+          formatter: '{value}%'
+        }
+      }
+      const extend = Object.assign({}, this.extend)
+      return chartData.unit === '%'
+        ? Object.assign(extend, {
+          yAxis
         })
-      },
-      handleChartData(chartData) {
-        return {
-          title: chartData.title,
-          unit: chartData.unit,
-          columns: ["x", "y"],
-          rows: chartData.data,
+        : extend
+    },
+    handleChartSettings(chartData) {
+      return {
+        labelMap: {
+          y: chartData.title
         }
-      },
-      handleChartExtend(chartData) {
-        const yAxis = {
-          axisLabel: {
-            formatter: "{value}%",
-          },
-        }
-        const extend = Object.assign({}, this.extend)
-        return chartData.unit === "%"
-          ? Object.assign(extend, {
-              yAxis,
+      }
+    },
+    // 暂时没有extra, e.componentType !== 'xAxis', xAxis: {triggerEvent: false}
+    // 故下面的函数暂时不执行
+    handleChartEvents (index) {
+      let _this = this
+      return {
+        click: function(e) {
+          if (e.componentType === 'xAxis') {
+            let xIndex = _this.chartDataArr[index].data.findIndex(item => {
+              return item.x === e.value
             })
-          : extend
-      },
-      handleChartSettings(chartData) {
-        return {
-          labelMap: {
-            y: chartData.title,
-          },
-        }
-      },
-      // 暂时没有extra, e.componentType !== 'xAxis', xAxis: {triggerEvent: false}
-      // 故下面的函数暂时不执行
-      handleChartEvents (index) {
-        let _this = this
-        return {
-          click: function(e) {
-            if (e.componentType === 'xAxis') {
-              let xIndex = _this.chartDataArr[index].data.findIndex(item => {
-                return item.x === e.value
+            const extra = _this.chartDataArr[index].data[xIndex].extra
+            if (extra && extra.length !== 0) {
+              // 埋点
+              _this.$sendEvent({
+                type: 'album_version_show'
               })
-              const extra = _this.chartDataArr[index].data[xIndex].extra
-              if (extra && extra.length !== 0) {
-                // 埋点
-                _this.$sendEvent({
-                  type: 'album_version_show'
-                })
-                // 展示
-                _this.extraArr = extra
-                _this.extraVisible = true
-              }
+              // 展示
+              _this.extraArr = extra
+              _this.extraVisible = true
             }
           }
         }
       }
+    }
 
+  },
 
-    },
-
-    created() {},
-  }
+  created() {}
+}
 </script>
 
 <style lang="stylus" scoped>

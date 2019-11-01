@@ -10,7 +10,7 @@
             <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
-        
+
         <el-form-item label="流类型">
           <el-select v-model="createForm.type" placeholder="请选择">
             <el-option-group
@@ -102,10 +102,10 @@
           <el-button type="primary" @click="isVisibleSize = !isVisibleSize" title="若260*364或498*280的尺寸存在，选择资源后自动填充默认图" :disabled="isRead">添加尺寸</el-button>
           <el-button type="text" :disabled="isRead" @click="handleAddTabSize($event, 260, 364)">添加260*364</el-button>
           <el-button type="text" :disabled="isRead" @click="handleAddTabSize($event, 498, 280)">添加498*280</el-button>
-          <el-tag 
+          <el-tag
             v-for="(sizeTag, index) in sizeTags"
             :key="index"
-            type="primary" 
+            type="primary"
             :closable="!isRead && sizeTag.closable"
             class="size-tag"
             @close="handleTagClose(sizeTag)"
@@ -131,7 +131,6 @@
       </CommonContent>
     </template>
 
-
     <!-- 添加尺寸dialog -->
     <el-dialog title="添加尺寸" :visible.sync="isVisibleSize" width="30%">
       <el-row :gutter="10"><el-col :span="12" class="text-center-align">宽</el-col><el-col :span="12" class="text-center-align">高</el-col></el-row>
@@ -155,7 +154,7 @@ import AssignVideoTab from './AssignVideoTab'
 import CommonContent from '@/components/CommonContent.vue'
 import titleMixin from '@/mixins/title'
 import { cloneDeep } from 'lodash'
-const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picInfoList']  // picInfoList兼容预览，可转换为picList
+const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picInfoList'] // picInfoList兼容预览，可转换为picList
 const params = ['name', 'source', 'status']
 const streamTypeGroupOption = [
   {
@@ -181,7 +180,7 @@ const streamTypeGroupOption = [
       {
         label: '少儿',
         value: 'child'
-      },
+      }
     ]
   }
 ]
@@ -229,7 +228,7 @@ export default {
           { max: 45, message: '推荐流名称不得超出45个字符', trigger: 'blur' }
         ]
       },
-      videoListParams,  // 必填参数
+      videoListParams, // 必填参数
       params,
       streamTypeGroup: streamTypeGroupOption
     }
@@ -238,9 +237,10 @@ export default {
   props: ['id', 'initMode', 'version'],
 
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const basicForm = this.basicForm
-      if(basicForm.id) {
+      if (basicForm.id) {
         return {
           id: basicForm.id,
           version: basicForm.currentVersion,
@@ -271,11 +271,11 @@ export default {
   methods: {
     getDefaultVideoTab() {
       return {
-        id: undefined,//  影片自增id
-        clickTemplateType: undefined,// 点击事件模板类型,refer资源类型
+        id: undefined, //  影片自增id
+        clickTemplateType: undefined, // 点击事件模板类型,refer资源类型
         coverType: 'media',
-        videoContentType: undefined, //refer资源类型
-        params: undefined,//播放参数json, refer资源id
+        videoContentType: undefined, // refer资源类型
+        params: undefined, // 播放参数json, refer资源id
         clickParams: undefined, // 点击事件中的参数
         clickType: 'detail',
         mediaResourceId: undefined,
@@ -311,87 +311,85 @@ export default {
     handleCreate() {
       const createForm = this.createForm
       this.$refs.createForm.validate(valid => {
-        if(valid) {
-          this.$service.saveMediaAutomation({jsonStr: JSON.stringify(createForm)}, '保存成功').then(() => {
+        if (valid) {
+          this.$service.saveMediaAutomation({ jsonStr: JSON.stringify(createForm) }, '保存成功').then(() => {
             this.$emit('upsert-end')
           })
-        }else {
-          this.$message.error("表单填写不完整")
+        } else {
+          this.$message.error('表单填写不完整')
         }
       })
-      
     },
     messageCancel() {
       this.$message({
         type: 'info',
         message: '已取消切换源'
-      }) 
+      })
     },
     handleSourceChange(val) {
       const messageCancel = this.messageCancel
-      let old = this.basicForm.source
       this.$confirm('修改源，会删除所有影片和素材，确定要修改', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$confirm('第二次警告，确定要修改' , '警告', {
+        this.$confirm('第二次警告，确定要修改', '警告', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$confirm('最后一个警告，删除后素材无法恢复！' , '警告', {
+          this.$confirm('最后一个警告，删除后素材无法恢复！', '警告', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
             this.basicForm.source = val
             this.videoTabs = []
-            this.$message.success("成功切换内容源")
+            this.$message.success('成功切换内容源')
           }).catch(messageCancel)
         }).catch(messageCancel)
       }).catch(messageCancel)
     },
     handleAddVideoTab(tabNum) {
       let sizetagsLen = this.sizeTags.length
-      if(!tabNum) {
+      if (!tabNum) {
         let newVideoTab = this.getDefaultVideoTab()
-        for(let count = 0 ; count < sizetagsLen ; count++ ) {
+        for (let count = 0; count < sizetagsLen; count++) {
           newVideoTab.picInfoList.push(this.genPicInfo())
         }
         this.videoTabs.push(newVideoTab)
-        this.$message.success("添加成功")
-      }else if(!this.newVideoTabNum || this.newVideoTabNum >100 || this.newVideoTabNum <=0){
-        this.$message.error("请输入0~100之间的数字")
-      }else {
-        for(let i=0; i<tabNum; i++) {
+        this.$message.success('添加成功')
+      } else if (!this.newVideoTabNum || this.newVideoTabNum > 100 || this.newVideoTabNum <= 0) {
+        this.$message.error('请输入0~100之间的数字')
+      } else {
+        for (let i = 0; i < tabNum; i++) {
           let newVideoTab = this.getDefaultVideoTab()
-          for(let count = 0 ; count< sizetagsLen ; count++ ) {
+          for (let count = 0; count < sizetagsLen; count++) {
             newVideoTab.picInfoList.push(this.genPicInfo())
           }
           this.videoTabs.push(newVideoTab)
         }
         this.newVideoTabNum = undefined
-        this.$message.success("添加成功")
+        this.$message.success('添加成功')
       }
     },
     handleAddTabSize(e, width, height) {
       if (width) {
-        const isRepeatSize = this.judgeIsRepeatSize({width, height})
+        const isRepeatSize = this.judgeIsRepeatSize({ width, height })
         if (isRepeatSize) {
-          this.$message.error("尺寸不允许重复！")
+          this.$message.error('尺寸不允许重复！')
           return
         }
         this.sizeTags.push({ width, height, closable: true })
       } else {
-        let newTabSize = Object.assign({closable: true}, this.newTabSize)
-        if(!newTabSize.width || !newTabSize.height) {
-          this.$message.error("宽或高不能为空")
+        let newTabSize = Object.assign({ closable: true }, this.newTabSize)
+        if (!newTabSize.width || !newTabSize.height) {
+          this.$message.error('宽或高不能为空')
           return
         }
         const isRepeatSize = this.judgeIsRepeatSize(newTabSize)
         if (isRepeatSize) {
-          this.$message.error("尺寸不允许重复！")
+          this.$message.error('尺寸不允许重复！')
           return
         }
         this.sizeTags.push(newTabSize)
@@ -406,7 +404,7 @@ export default {
     judgeIsRepeatSize (newTabSize) {
       return this.sizeTags.some(item => {
         // 有可能不全等
-        return item.width == newTabSize.width && item.height == newTabSize.height
+        return item.width === newTabSize.width && item.height === newTabSize.height
       })
     },
     handleTagClose(tag) {
@@ -429,7 +427,7 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        })         
+        })
       })
     },
     handleDelTab(index) {
@@ -438,12 +436,11 @@ export default {
       this.videoTabs = []
       this.$nextTick(() => {
         this.videoTabs = videoTabs.slice()
-        this.$message.success("删除成功")
+        this.$message.success('删除成功')
       })
-      
     },
     handleSelectResourcesEnd(resources) {
-      console.log('resources', resources);
+      console.log('resources', resources)
       const source = this.basicForm.source
       ;['video', 'edu', 'pptv', 'live', 'topic', 'rotate'].forEach(name => {
         const nameRS = resources[name]
@@ -452,12 +449,12 @@ export default {
       this.dealFillDefaultImg()
     },
     dealCommonParams(resources) {
-      console.log('resources', resources);
+      console.log('resources', resources)
       const source = this.basicForm.source
       // sigle, length === 1
       const tabName = ['video', 'edu', 'pptv', 'live', 'topic', 'rotate'].filter(name => {
         return resources[name].length !== 0
-      }).join("")
+      }).join('')
       let data = this.callbackParam(tabName, resources[tabName][0], source)
       let selected = Object.assign({}, data)
       selected.vid = data.vid
@@ -466,8 +463,8 @@ export default {
       const categoryId = resources[tabName][0].categoryId
 
       let anotherName = tabName
-      switch(tabName){
-        case 'video': 
+      switch (tabName) {
+        case 'video':
           anotherName = 'movie'
           break
         case 'live':
@@ -506,10 +503,11 @@ export default {
         const score = entity.score
         const updatedSegment = entity.updatedSegment
         const publishSegment = entity.publishSegment
+        // eslint-disable-next-line
         const isUnknown = publishSegment == 0
         const publishStatus = isUnknown
           ? 'unknown'
-          : updatedSegment == publishSegment
+          : updatedSegment === publishSegment
             ? 'ended'
             : 'updating'
         Object.assign(this.videoTabs[index], {
@@ -527,7 +525,7 @@ export default {
         sizeTags.forEach((item, index) => {
           // 寻找标准分辨率
           const resolution = item.width + '*' + item.height
-          if ( resolution === '260*364' || resolution === '498*280' ) {
+          if (resolution === '260*364' || resolution === '498*280') {
             videoTabs.forEach(videoTab => {
               // 有url就不填充
               if (!videoTab.picInfoList[index].pictureUrl) {
@@ -570,7 +568,7 @@ export default {
       }
     },
     handleSelectNormalSource(resources, index) {
-      const { tabName, anotherName, jsonParams, thirdIdOrPackageName } = this.dealCommonParams(resources)
+      const { anotherName, jsonParams, thirdIdOrPackageName } = this.dealCommonParams(resources)
       Object.assign(this.videoTabs[index], {
         params: jsonParams,
         videoContentType: anotherName,
@@ -578,7 +576,7 @@ export default {
       })
     },
     handleDelNormalSource(index) {
-      if(this.isRead) {
+      if (this.isRead) {
         return
       }
       this.videoTabs[index].videoId = undefined
@@ -586,8 +584,8 @@ export default {
     },
     handleDiffResources(resourceArr, resourceName, source, resources) {
       let anotherName = resourceName
-      switch(resourceName){
-        case 'video': 
+      switch (resourceName) {
+        case 'video':
           anotherName = 'movie'
           break
         case 'live':
@@ -602,15 +600,16 @@ export default {
         selected.vid = item.vid
         selected.sid = item.sid
         const clickParams = JSON.stringify(this.paramIdFun(selected))
-        if(resourceName === 'video') {
+        if (resourceName === 'video') {
           const entity = resources['video'][index].ccVideoSourceEntities[0]
           const score = entity.score
           const updatedSegment = entity.updatedSegment
           const publishSegment = entity.publishSegment
+          // eslint-disable-next-line
           const isUnknown = publishSegment == 0
           const publishStatus = isUnknown
             ? 'unknown'
-            : updatedSegment == publishSegment
+            : updatedSegment === publishSegment
               ? 'ended'
               : 'updating'
           data.publishStatus = publishStatus
@@ -634,7 +633,7 @@ export default {
           variety: data.variety,
           categoryId
         })
-        for(let count = 0 ; count < this.sizeTags.length ; count++ ) {
+        for (let count = 0; count < this.sizeTags.length; count++) {
           newTab.picInfoList.push(this.genPicInfo())
         }
         newTab.imageInfoList = item.imageInfoList
@@ -646,7 +645,7 @@ export default {
       this.videoTabs = []
       this.$nextTick(() => {
         this.videoTabs = videoTabs.sort((a, b) => {
-          return b['priority'] - a['priority']  
+          return b['priority'] - a['priority']
         })
       })
     },
@@ -654,44 +653,43 @@ export default {
       let isFormValid = true
       this.$refs.basicForm.validate((valid) => {
         if (!valid) {
-          isFormValid = false 
+          isFormValid = false
         }
       })
-      if(!isFormValid) {
+      if (!isFormValid) {
         return
       }
 
       const { basicForm, videoTabs } = this
       // 清除空的tab
       let videoList = videoTabs.filter(item => {
-        return typeof(item.mediaResourceId) !== 'undefined'
+        return typeof (item.mediaResourceId) !== 'undefined'
       })
       // 是否所有都配置了videoId
       let isAll = videoList.every(item => {
         return item.videoId
       })
-      if(isAll) {
+      if (isAll) {
         basicForm.flagAllVideoPoster = 1
       }
       // 检查重复的
       let repeatArr = []
-      for(let i = 0; i < videoTabs.length-1; i++ ) {
-        for(let j=i+1 ; j< videoTabs.length - i ; j++) {
-          if(videoTabs[i].mediaResourceId === videoTabs[j].mediaResourceId) {
+      for (let i = 0; i < videoTabs.length - 1; i++) {
+        for (let j = i + 1; j < videoTabs.length - i; j++) {
+          if (videoTabs[i].mediaResourceId === videoTabs[j].mediaResourceId) {
             repeatArr[0] = i + 1
             repeatArr[1] = j + 1
             break
           }
         }
       }
-      if(repeatArr.length !== 0) {
+      if (repeatArr.length !== 0) {
         let tipText = '影片 ' + repeatArr[0] + ' 和影片 ' + repeatArr[1] + ' 资源重复'
         this.$alert(tipText, '提示', {
           confirmButtonText: '确定'
         })
         return
       }
-
 
       let basicParam = {
         ...basicForm,
@@ -703,8 +701,8 @@ export default {
         // parse
         if (this.mode === 'replicate') {
           saveForm.currentVersion = undefined
-        } 
-        if(saveForm.videoList && saveForm.videoList.length !== 0) {
+        }
+        if (saveForm.videoList && saveForm.videoList.length !== 0) {
           saveForm.videoList.map(video => {
             // parse videoList
             video.picList = video.picInfoList.map(item => {
@@ -723,8 +721,8 @@ export default {
           })
         }
 
-        console.log('save', saveForm);
-        this.$service.saveMediaAutomation({jsonStr: JSON.stringify(saveForm)}, '保存成功').then(() => {
+        console.log('save', saveForm)
+        this.$service.saveMediaAutomation({ jsonStr: JSON.stringify(saveForm) }, '保存成功').then(() => {
           this.$emit('upsert-end')
         })
       }.bind(this))
@@ -736,20 +734,20 @@ export default {
       this.handleSubmit(2)
     },
     checkParams(basicParam, videos, cb) {
-      if(!this.checkBasicParam(basicParam)) {
-        this.$message.error("流基本设置，信息不完整")
-      }else {
-        if(videos.length === 0) {
+      if (!this.checkBasicParam(basicParam)) {
+        this.$message.error('流基本设置，信息不完整')
+      } else {
+        if (videos.length === 0) {
           cb()
-        }else {
+        } else {
           const sizeTags = this.sizeTags
           const picSize = sizeTags.map(item => {
-            return item.width + "*" + item.height
+            return item.width + '*' + item.height
           })
           basicParam.picSize = picSize
           let isAll = true
           videos.some((item, index) => {
-            if(!this.checkVideoList(item)) {
+            if (!this.checkVideoList(item)) {
               const msg = '影片 ' + (index + 1) + '  配置不完整，无法保存'
               this.$alert(msg, {
                 confirmButtonText: '确定'
@@ -758,7 +756,7 @@ export default {
               return true
             }
           })
-          if(isAll) {
+          if (isAll) {
             cb()
           }
         }
@@ -768,17 +766,16 @@ export default {
       const { videoListParams } = this
       let isPass = true
       videoListParams.forEach(param => {
-        if(param === 'picInfoList') { // 兼容预览
-          isPass = !video[param] || video[param].length === 0 ? false : true
-        }else if(!video[param]) {
+        if (param === 'picInfoList') { // 兼容预览
+          isPass = !(!video[param] || video[param].length === 0)
+        } else if (!video[param]) {
           isPass = false
-          return
         }
       })
-      if(!isPass) {
+      if (!isPass) {
         return isPass
-      }else {
-        if(video.picInfoList.length === 0){
+      } else {
+        if (video.picInfoList.length === 0) {
           isPass = false
         }
       }
@@ -788,9 +785,8 @@ export default {
       const params = this.params
       let isPass = true
       params.forEach(item => {
-        if(!basicParams[item]){
+        if (!basicParams[item]) {
           isPass = false
-          return 
         }
       })
       return isPass
@@ -810,117 +806,118 @@ export default {
      * 资源转换
      */
     callbackParam(tabName, selected, sourceType) {
-    let s = {
-      type: '', // 面向客户端
-      contentType: '', // 面向管理后台
-      thirdIdOrPackageName: ''
-    }
-    const prefixMap = {
-      tencent: '_otx_',
-      o_tencent: '_otx_',
-      yinhe: '_oqy_',
-      o_iqiyi: '_oqy_',
-      youku: '_oyk_'
-    }
-    switch (tabName) {
-      case 'video': {
-        const selectedEpisode = selected.selectedEpisodes
-        const prefix = (prefixMap[sourceType] || '')
-        if (selectedEpisode) {
-          if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
+      let s = {
+        type: '', // 面向客户端
+        contentType: '', // 面向管理后台
+        thirdIdOrPackageName: ''
+      }
+      const prefixMap = {
+        tencent: '_otx_',
+        o_tencent: '_otx_',
+        yinhe: '_oqy_',
+        o_iqiyi: '_oqy_',
+        youku: '_oyk_'
+      }
+      switch (tabName) {
+        case 'video': {
+          const selectedEpisode = selected.selectedEpisodes
+          const prefix = (prefixMap[sourceType] || '')
+          if (selectedEpisode) {
+            if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
             // 如果是短视频, 并且 thirdVId 存在
-            s.thirdIdOrPackageName = prefix + selectedEpisode.thirdVId
-            s.sid = selectedEpisode.coocaaMId
+              s.thirdIdOrPackageName = prefix + selectedEpisode.thirdVId
+              s.sid = selectedEpisode.coocaaMId
+            } else {
+              s.thirdIdOrPackageName = prefix + selected.coocaaVId
+              s.vid = selectedEpisode.coocaaMId
+            }
+            s.thumb = selectedEpisode.thumb
+            s.title = selectedEpisode.urlTitle
+            s.subTitle = selectedEpisode.urlSubTitle
           } else {
             s.thirdIdOrPackageName = prefix + selected.coocaaVId
-            s.vid = selectedEpisode.coocaaMId
+            s.pictureUrl = selected.thumb
+            s.title = selected.title
+            s.subTitle = selected.subTitle
           }
-          s.thumb = selectedEpisode.thumb
-          s.title = selectedEpisode.urlTitle
-          s.subTitle = selectedEpisode.urlSubTitle
-        } else {
-          s.thirdIdOrPackageName = prefix + selected.coocaaVId
+          s.contentType = 'movie'
+          s.type = 'res'
+          break
+        }
+        case 'app': {
+          s.contentType = 'app'
+          s.coverType = 'app'
+          s.thirdIdOrPackageName = selected.appPackageName
+          s.pictureUrl = selected.appImageUrl
+          s.title = selected.appName
+          s.type = 'app'
+          break
+        }
+        case 'edu': {
+          s.contentType = 'edu'
+          s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
+          s.platformId = selected.source
           s.pictureUrl = selected.thumb
           s.title = selected.title
           s.subTitle = selected.subTitle
+          s.type = 'res'
+          break
         }
-        s.contentType = 'movie'
-        s.type = 'res'
-        break
-      }
-      case 'app': {
-        s.contentType = 'app'
-        s.coverType = 'app'
-        s.thirdIdOrPackageName = selected.appPackageName
-        s.pictureUrl = selected.appImageUrl
-        s.title = selected.appName
-        s.type = 'app'
-        break
-      }
-      case 'edu': {
-        s.contentType = 'edu'
-        s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
-        s.platformId = selected.source
-        s.pictureUrl = selected.thumb
-        s.title = selected.title
-        s.subTitle = selected.subTitle
-        s.type = 'res'
-        break
-      }
-      case 'pptv': {
-        s.contentType = 'pptv'
-        s.thirdIdOrPackageName =
+        case 'pptv': {
+          s.contentType = 'pptv'
+          s.thirdIdOrPackageName =
           'pptv_tvsports://tvsports_detail?section_id=' +
           selected.pid +
           '&from_internal=1'
-        s.title = selected.pTitle
-        s.type = ''
-        break
+          s.title = selected.pTitle
+          s.type = ''
+          break
+        }
+        case 'live': {
+          s.contentType = 'txLive'
+          s.thirdIdOrPackageName = '_otx_' + selected.vId + ''
+          s.platformId = selected.source
+          s.pictureUrl = selected.thumb
+          s.title = selected.title
+          s.subTitle = selected.subTitle
+          s.type = 'live'
+          break
+        }
+        case 'topic': {
+          selected.dataSign === 'parentTopic'
+            ? (s.contentType = 'bigTopic')
+            : (s.contentType = 'topic')
+          s.thirdIdOrPackageName = selected.id + ''
+          s.pictureUrl = selected.picture
+          s.title = selected.title
+          s.subTitle = selected.subTitle
+          s.type = 'topic'
+          break
+        }
+        case 'rotate': {
+          s.contentType = 'rotate'
+          s.thirdIdOrPackageName = selected.id + ''
+          s.pictureUrl = selected.picture
+          s.title = selected.title
+          s.subTitle = selected.subTitle
+          s.type = 'rotate'
+          break
+        }
+        default:
+          break
       }
-      case 'live': {
-        s.contentType = 'txLive'
-        s.thirdIdOrPackageName = '_otx_' + selected.vId + ''
-        s.platformId = selected.source
-        s.pictureUrl = selected.thumb
-        s.title = selected.title
-        s.subTitle = selected.subTitle
-        s.type = 'live'
-        break
-      }
-      case 'topic': {
-        selected.dataSign === 'parentTopic'
-          ? (s.contentType = 'bigTopic')
-          : (s.contentType = 'topic')
-        s.thirdIdOrPackageName = selected.id + ''
-        s.pictureUrl = selected.picture
-        s.title = selected.title
-        s.subTitle = selected.subTitle
-        s.type = 'topic'
-        break
-      }
-      case 'rotate': {
-        s.contentType = 'rotate'
-        s.thirdIdOrPackageName = selected.id + ''
-        s.pictureUrl = selected.picture
-        s.title = selected.title
-        s.subTitle = selected.subTitle
-        s.type = 'rotate'
-        break
-      }
-      default:
-        break
-      } 
-    return s
+      return s
     },
-    paramIdFun: function(selected) {
+    paramIdFun(selected) {
       // 封装保存的id
+      let param
       if (selected.contentType === 'movie') {
-        var param = {
+        param = {
           id: selected.thirdIdOrPackageName
         }
         if (selected.vid) {
           param.vid = selected.vid
-        } 
+        }
         if (selected.sid) {
           param.sid = selected.sid
         }
@@ -929,20 +926,20 @@ export default {
         selected.contentType === 'edu' ||
         selected.contentType === 'txLive'
       ) {
-        var param = {
+        param = {
           id: selected.thirdIdOrPackageName
         }
       } else if (selected.contentType === 'bigTopic') {
-        var param = {
+        param = {
           pTopicCode: selected.thirdIdOrPackageName
         }
       } else if (selected.contentType === 'topic') {
         // this.smallTopics = true;
-        var param = {
+        param = {
           topicCode: selected.thirdIdOrPackageName
         }
       } else if (selected.contentType === 'rotate') {
-        var param = {
+        param = {
           rotateId: selected.thirdIdOrPackageName
         }
       }
@@ -966,15 +963,15 @@ export default {
       basicForm.source = data.source
       this.videoTabs = []
       this.videoTabs = (data.videoList || [])
-      .map(item => {
-        item.picList = item.picList || []
-        return item
-      })
-      .sort((a, b) => {
-        return b.priority - a.priority
-      })
+        .map(item => {
+          item.picList = item.picList || []
+          return item
+        })
+        .sort((a, b) => {
+          return b.priority - a.priority
+        })
       this.sizeTags = []
-      if(data.picSize.length !== 0) {
+      if (data.picSize.length !== 0) {
         data.picSize.map(item => {
           const picInfo = data.picInfoList.find(picInfo => {
             return item === picInfo.picSize
@@ -988,14 +985,14 @@ export default {
           )
         })
       }
-      console.log('dataDetail', data);
+      console.log('dataDetail', data)
     }
   },
 
   created() {
     this.mode = this.initMode || 'create'
     if (this.id) {
-      this.$service.getMediaAutomationDetial({id: this.id, version: this.version}).then(data => {
+      this.$service.getMediaAutomationDetial({ id: this.id, version: this.version }).then(data => {
         this.setBasicInfo(data)
       })
     }
@@ -1004,35 +1001,35 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.base-info 
+.base-info
   margin 10px 0
   padding 10px
   font-size 13px
   border 1px solid #e7e4c2
   background #fef8b8
-.el-row .el-button 
+.el-row .el-button
   width 85px
-.createBtn-container 
+.createBtn-container
   margin 27px 0 0 27px
-.video-select--header 
+.video-select--header
   margin 20px 0
-.num-input 
+.num-input
   width 100px
   margin 0 20px
-.title-input 
+.title-input
   width 357px
-.text-center-align 
+.text-center-align
   text-align center
-.size-btn-group 
+.size-btn-group
   margin-top 20px
 .size-btn-group .el-button
   width 85px
-.size-tag 
+.size-tag
   margin-left 10px
-.videoTab--wrapper 
+.videoTab--wrapper
   width 80%
   margin 20px
-.batch-btn 
+.batch-btn
   margin 0 10px
 .type-tip
   display inline-block

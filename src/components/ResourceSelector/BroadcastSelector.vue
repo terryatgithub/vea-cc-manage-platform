@@ -20,12 +20,6 @@
 <script>
 import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
-const sourceValueMap = {
-  '': '0',
-  'o_tencent': '1',
-  'o_iqiyi': '2',
-  'o_youku': '3'
-}
 export default {
   components: {
     BaseSelector

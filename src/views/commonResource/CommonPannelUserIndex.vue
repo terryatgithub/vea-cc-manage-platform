@@ -23,7 +23,6 @@
 import TabPage from '@/components/TabPage'
 import PanelInfo from './../panelInfo/PanelInfo'
 import CommonPannelUserList from './CommonPannelUserList'
-const idField = 'pannelGroupId'
 export default {
   components: {
     TabPage,

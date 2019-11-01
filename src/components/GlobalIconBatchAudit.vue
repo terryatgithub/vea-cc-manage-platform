@@ -88,7 +88,7 @@ export default {
         策划类: '104',
         素材播出属性: '102'
       }, // 角标分类
-      typePositionText: ['左上', '右上', '左下', '右下'],
+      typePositionText: ['左上', '右上', '左下', '右下']
     }
   },
   methods: {
@@ -139,7 +139,7 @@ export default {
           }, 1000)
         }
       })
-    },
+    }
   }
 }
 </script>

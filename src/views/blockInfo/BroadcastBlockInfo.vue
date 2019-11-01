@@ -40,10 +40,10 @@
         </el-form-item>
         <el-form-item label="内容源">
           <el-radio-group :disabled="isReplica" :value="basicForm.source" @input="handleSourceChange">
-            <el-radio 
-              v-for="item in $consts.sourceOptionsWithNone" 
-              :key="item.value" 
-              :label="item.value" 
+            <el-radio
+              v-for="item in $consts.sourceOptionsWithNone"
+              :key="item.value"
+              :label="item.value"
               :disabled="disabled">
               {{ item.label }}
             </el-radio>
@@ -132,7 +132,7 @@
             </el-radio-group>
           </div>
           <div v-if="normalForm.showContentType === 'general'">
-            <BroadcastBlockForm 
+            <BroadcastBlockForm
               ref="broadcastBlockForm"
               @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
               :config-model="basicForm.configModel"
@@ -152,7 +152,7 @@
                 @start="handleDragDmpConentStart"
                 @end="handleDragDmpConentEnd">
                 <el-card
-                  v-for="(content, index) in dmpContentList" 
+                  v-for="(content, index) in dmpContentList"
                   :key="index"
                   :class="{active: index === activeDmpIndex}"
                   :body-style="{ padding: '0px' }"
@@ -172,7 +172,7 @@
                 <i class="el-icon-plus">添加资源</i>
               </el-card>
             </div>
-            <BroadcastBlockForm 
+            <BroadcastBlockForm
               ref="broadcastBlockForm"
               v-if="normalForm.dmpContentList[normalForm.activeIndex]"
               @toggle-manaulset-resource="handleToggleManualSetResource($event, 'dmp')"
@@ -186,10 +186,10 @@
             />
           </div>
         </div>
-        <div 
-          :class="basicForm.configModel === 'sign' ? 'content-wrapper' : ''" 
+        <div
+          :class="basicForm.configModel === 'sign' ? 'content-wrapper' : ''"
           v-if="basicForm.configModel === 'broadcast' || basicForm.configModel === 'sign'">
-          <BroadcastBlockForm 
+          <BroadcastBlockForm
             ref="broadcastBlockForm"
             @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
             :config-model="basicForm.configModel"
@@ -377,18 +377,15 @@ import draggable from 'vuedraggable'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import CornerSelector from '@/components/selectors/CornerIconSelector'
 
-import DialogPicture from '@/components/DialogPicture'
-import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
 import CommonContent from '@/components/CommonContent.vue'
 import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
 import { cloneDeep } from 'lodash'
-import _ from 'gateschema'
 import titleMixin from '@/mixins/title'
 import BroadcastBlockForm from './BroadcastBlockForm'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
-import { getParams } from './broadcastBlockUtil';
+import { getParams } from './broadcastBlockUtil'
 
 export default {
   mixins: [titleMixin],
@@ -398,8 +395,6 @@ export default {
     GlobalPictureSelector,
     CornerSelector,
 
-    DialogPicture,
-    DialogCorner,
     selectClick,
     AppParams,
     AppParamsRead,
@@ -449,7 +444,7 @@ export default {
               const normalForm = this.normalForm
               if (normalForm.sign === 'manualResource') {
                 if (!value || JSON.stringify(value) === '{}') {
-                  return cb('请选择资源')
+                  return cb(Error('请选择资源'))
                 }
               }
               cb()
@@ -570,11 +565,8 @@ export default {
       layoutparam: {},
       layouttypenew: '',
       checkresourceis: true,
-      // customDialogPicture: {},
-      customDialogCorner: {},
-      pictureOptions: {},
       // 单集
-      singleEpisodeNum: undefined,
+      singleEpisodeNum: undefined
     }
   },
   computed: {
@@ -590,20 +582,20 @@ export default {
     activeDmpIndex () {
       return this.normalForm.activeIndex
     },
-    resourceOptionsLowerForm (){
-      return this.lowerForm.coverType === 'app' 
-        ? ['app'] 
+    resourceOptionsLowerForm () {
+      return this.lowerForm.coverType === 'app'
+        ? ['app']
         : ['video', 'edu', 'live', 'rotate']
     },
-    resourceOptionsManualResource (){
+    resourceOptionsManualResource () {
       return ['video', 'edu', 'live', 'rotate']
     },
-    resourceOptionsNormalForm (){
-      return this.currentIndex === 0 && this.basicForm.configModel === 'sign' 
-        ? ['rotate'] 
+    resourceOptionsNormalForm () {
+      return this.currentIndex === 0 && this.basicForm.configModel === 'sign'
+        ? ['rotate']
         : ['video', 'edu', 'live', 'rotate']
     },
-    resourceOptions (){
+    resourceOptions () {
       return ['video', 'edu', 'live', 'rotate']
     },
     isManualSetResource () {
@@ -637,6 +629,7 @@ export default {
         }
       }
     },
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.basicForm
       if (form.id) {
@@ -654,7 +647,7 @@ export default {
       const currentVersion = this.basicForm.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
       const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
-      const isCoocaa = this.$consts.idPrefix == '10'
+      const isCoocaa = this.$consts.idPrefix === '10'
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
     },
     isReplica () {
@@ -706,11 +699,11 @@ export default {
       const dmpContentList = normalForm.dmpContentList
       if (dmpContentList.length > 0) {
         this.checkNormalForm(() => {
-          dmpContentList.push(this.genDefaultContentForm({isDmpContent: true})) 
+          dmpContentList.push(this.genDefaultContentForm({ isDmpContent: true }))
           normalForm.activeIndex = dmpContentList.length - 1
         })
       } else {
-        dmpContentList.push(this.genDefaultContentForm({isDmpContent: true})) 
+        dmpContentList.push(this.genDefaultContentForm({ isDmpContent: true }))
         normalForm.activeIndex = dmpContentList.length - 1
       }
     },
@@ -909,7 +902,7 @@ export default {
     },
     clearFormAll: function() {
       // 清空正常版本和低版本数据
-      const normalForm = cloneDeep(this.versionForm) 
+      const normalForm = cloneDeep(this.versionForm)
       const lowerForm = cloneDeep(this.versionForm)
       this.lowerForm = lowerForm
       this.normalForm = normalForm
@@ -1105,7 +1098,7 @@ export default {
         poster.pictureUrl = item.pictureUrl
         form.poster = poster
       } else {
-        form.poster = {pictureUrl: ''}
+        form.poster = { pictureUrl: '' }
       }
       const param = getParams(item)
       form.params = param
@@ -1308,7 +1301,7 @@ export default {
                 // 检查海报, 批量填充轮播资源的时候会缺少海报
                 for (let i = 0; i < normalVersionContent.length; i++) {
                   if (!normalVersionContent[i].poster.pictureUrl) {
-                    return this.$message.error(`请设置第 ${i+1} 个内容的海报`)
+                    return this.$message.error(`请设置第 ${i + 1} 个内容的海报`)
                   }
                 }
                 cb()
@@ -1324,7 +1317,7 @@ export default {
     },
     getFormData () {
       const data = cloneDeep(this.basicForm)
-      data.normalVersionContent = this.isGroupModel 
+      data.normalVersionContent = this.isGroupModel
         ? cloneDeep(this.normalVersionContent)
         : [cloneDeep(this.normalForm)]
       data.lowerVersionContent = cloneDeep(this.lowerForm)
@@ -1364,7 +1357,6 @@ export default {
           return result
         }, {})
       }
-      const configModel = data.configModel
       if (this.mode === 'replicate') {
         data.currentVersion = ''
       }
@@ -1431,11 +1423,11 @@ export default {
         lowerVersionContent.params.stationId = lowerVersionContent.subchannelId
         delete lowerVersionContent.subchannelId
       }
-      lowerVersionContent.params = JSON.stringify(lowerVersionContent.params)              
-      lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)              
+      lowerVersionContent.params = JSON.stringify(lowerVersionContent.params)
+      lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
 
       data.parentType = 'Block'
-      console.log('save', data);
+      console.log('save', data)
       this.$service
         .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
         .then(() => {
@@ -1447,7 +1439,7 @@ export default {
       this.$service
         .getBroadcastBlockEditData({ id: this.id, version })
         .then(data => {
-          console.log('detail', data);
+          console.log('detail', data)
           const basicForm = this.basicForm
           basicForm.containerName = data.containerName
           basicForm.containerType = 'REFERENCE_BROADCASTING'
@@ -1496,7 +1488,7 @@ export default {
             if (item.dmpContentList) {
               item.dmpContentList = item.dmpContentList.map((item) => mapContent(item, true))
             }
-            item = this.genDefaultContentForm({...item, isDmpContent})
+            item = this.genDefaultContentForm({ ...item, isDmpContent })
             return item
           }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
@@ -1508,7 +1500,7 @@ export default {
           lowerData.params = JSON.parse(lowerData.params || '{}')
           lowerData.thirdIdOrPackageName = this.getThirdId(lowerData.params)
           lowerData.smallTopicsIs = lowerData.contentType === 'bigTopic'
-          if (lowerData.smallTopicsIs ) {
+          if (lowerData.smallTopicsIs) {
             lowerData.smallTopicsId = lowerData.params.topicCode
           }
           lowerData.subchannelIs = lowerData.contentType === 'rotate'
@@ -1522,7 +1514,7 @@ export default {
     },
     // 选择资源拓展项
     handleCloseLowerFormTag () {
-      this.lowerForm.thirdIdOrPackageName = undefined;
+      this.lowerForm.thirdIdOrPackageName = undefined
       this.singleEpisodeNum = undefined
     }
   },
@@ -1540,7 +1532,7 @@ export default {
           broadcast_id: this.id
         }
       })
-    } 
+    }
     // 素材类型获取
     this.$service.getDictType({ type: 'materialType' }).then(data => {
       var materialTypeOptions = []

@@ -29,7 +29,7 @@
           <div class="panels-wrapper" v-for="(item,index) in tabData.rows" :key="index">
             <span class="title" v-if="item.groupTitle">{{item.groupTitle}}</span>
             <JDPanel
-              :layoutData="item.layout.contents" 
+              :layoutData="item.layout.contents"
               :imgData="item.items">
             </JDPanel>
           </div>
@@ -73,18 +73,18 @@ export default {
       const msg = val ? '确定切换为自动审核' : '确定切换为手动审核'
       this.$confirm(msg, '提示').then(() => {
         tabData.enableAutoAudited = val
-        this.$service.updateThirdPartTabAuditType({ id: this.id, enableAuto: val})
-        .catch(() => {
+        this.$service.updateThirdPartTabAuditType({ id: this.id, enableAuto: val })
+          .catch(() => {
           // 请求失败，改回原来的
-          tabData.enableAutoAudited = !val
-        })
+            tabData.enableAutoAudited = !val
+          })
       }).catch(() => {})
     },
     handleAudit () {
       this.$confirm('是否审核通过?', '京东版面审核')
         .then(() => {
           // 请求接口
-          this.$service.updateThirdPartTabAudit({id: this.id}, '审核成功').then(() => {
+          this.$service.updateThirdPartTabAudit({ id: this.id }, '审核成功').then(() => {
             const tabData = this.tabData
             tabData.currentClientUsedVersion = tabData.currentUpdateVersion
             this.$emit('upsert-end')
@@ -96,7 +96,7 @@ export default {
     },
     fetchData () {
       this.$service.getThirdpartTabLayout().then(expanderLayout => {
-        this.$service.getThirdpartTabInfoDetail({id: this.id}).then(tabData => {
+        this.$service.getThirdpartTabInfoDetail({ id: this.id }).then(tabData => {
           // 当版本相同时，表示已审核
           tabData.rows.forEach(item => {
             const layout = JSON.parse(item.layout)
@@ -112,23 +112,23 @@ export default {
   },
   created() {
     this.fetchData()
-  },
+  }
 }
 </script>
 
 <style lang="stylus" scoped>
-.tab-info 
+.tab-info
   position relative
   left 10%
-  .auditway 
+  .auditway
     margin-top 25px
     display inline-block
-  .panels-wrapper 
+  .panels-wrapper
     margin-top 28px
     text-align left
     padding 0px 10px
     box-sizing border-box
-    .title 
+    .title
       margin-left 20px
       font-size 28px
       font-weight 800

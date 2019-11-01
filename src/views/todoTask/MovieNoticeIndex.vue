@@ -36,19 +36,17 @@
 </template>
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import PanelInfo from '../panelInfo/PanelInfo'
-import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
 export default {
   components: {
     Table,
     ContentWrapper,
     PageWrapper,
     PageContentWrapper,
-    PanelInfo,
-    PrivatePanelInfo
+    PanelInfo
   },
   data() {
     return {

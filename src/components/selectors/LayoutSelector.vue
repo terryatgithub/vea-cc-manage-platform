@@ -97,7 +97,7 @@ import { Table } from 'admin-toolkit'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 import LayoutRead from '@/components/LayoutBlock'
 
-const ID = 'layoutId'
+const idField = 'layoutId'
 
 export default {
   components: {
@@ -193,6 +193,7 @@ export default {
     'pagination.rows': 'fetchData'
   },
   computed: {
+    // eslint-disable-next-line
     blockCountPlaceholder() {
       const selectedLayout = this.selectedLayout || {}
       const layoutJsonParsed = selectedLayout.layoutJsonParsed
@@ -323,7 +324,7 @@ export default {
       }, [])
     },
     fetchLayoutTypeOptions () {
-      this.$service.getDictType({type: 'layoutType'}).then(layoutTypeOptions => {
+      this.$service.getDictType({ type: 'layoutType' }).then(layoutTypeOptions => {
         this.layoutTypeOptions = layoutTypeOptions
         this.layoutTypeText = layoutTypeOptions.reduce((result, item) => {
           result[item.dictId] = item.dictCnName

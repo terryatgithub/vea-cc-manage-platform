@@ -25,7 +25,7 @@
             <img
               class="corner-img"
               v-if="corner.imgUrl"
-              referrerpolicy="no-referrer" 
+              referrerpolicy="no-referrer"
               loading="lazy"
               :src="corner.imgUrl"
               :key="index"
@@ -54,10 +54,10 @@
             <el-button type="success"
             class="analyze-data--simpleBtn margin-bottom-6"
             @click.stop="handleAnalyzeSimpleData(index)">看数据</el-button><br/>
-            <el-button 
-              type="success" 
-              v-if="block.specificContentList && block.specificContentList.length !== 0" 
-              class="analyze-data--dmpBtn"  
+            <el-button
+              type="success"
+              v-if="block.specificContentList && block.specificContentList.length !== 0"
+              class="analyze-data--dmpBtn"
               @click.stop="handleAnalyzeDmpData(index)"
             >DMP</el-button>
           </div>
@@ -362,7 +362,7 @@ export default {
   left: 0;
 }
 
-.analyze-data--simpleBtn, 
+.analyze-data--simpleBtn,
 .analyze-data--dmpBtn{
   width: 75px;
   height: 32px;

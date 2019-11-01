@@ -55,14 +55,14 @@ export default {
     },
     handleEdit(item) {
       this.id = item.id
-      this.version = item.currentVersion  // 加了
+      this.version = item.currentVersion // 加了
       this.mode = 'edit'
       this.isShowList = false
     },
     handleRead(item, version) {
       this.id = item.id
       this.mode = 'read'
-      this.version = version ? version : item.currentVersion  // 稍稍改动
+      this.version = version || item.currentVersion // 稍稍改动
       this.isShowList = false
     },
     handleDelete(selected) {

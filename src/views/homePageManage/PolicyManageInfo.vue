@@ -81,7 +81,6 @@
                   </el-col>
                 </el-form-item>
 
-
                 <el-form-item label="策略优先级" prop="priority">
                   <el-input-number v-model="form.priority" placeholder="策略优先级" :min="1" :max="9999"></el-input-number>
                   <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
@@ -100,8 +99,8 @@
                   <HomepageSelector title="选择首页方案" homepageModel="child"  @select-end="handleSelectChildHomepageEnd" />
                   <!-- <el-button type="primary" plain @click="selectHomePageModel('child')">选择儿童模式首页</el-button> -->
                   <div class="child-homepage-list">
-                    <div 
-                      v-for="(item, index) in form.childHpList" 
+                    <div
+                      v-for="(item, index) in form.childHpList"
                       :key="index"
                       class="child-homepage-item">
                       <el-form-item label="首页方案" label-width="80px">
@@ -221,8 +220,8 @@
                 </el-form-item>
                 <el-form-item label="关联首页方案(儿童)">
                   <div class="child-homepage-list">
-                    <div 
-                      v-for="(item, index) in form.childHpList" 
+                    <div
+                      v-for="(item, index) in form.childHpList"
                       :key="index"
                       class="child-homepage-item">
                       <el-form-item label="首页方案" label-width="80px">
@@ -326,7 +325,7 @@ export default {
     HomePageInfo,
     PageWrapper,
     PageContentWrapper,
-    
+
     HomepageSelector
   },
   props: ['id', 'initMode', 'version', 'isTestPolicy'],
@@ -342,7 +341,7 @@ export default {
         callback()
       } else {
         callback(new Error('请请输入12位以字母数字组成的MAC地址'))
-      } 
+      }
     }
     return {
       homePageId: undefined,
@@ -355,7 +354,6 @@ export default {
       // title: null,
       selectionType: 'multiple',
       dialogTitle: null,
-      mode: 'normal',
       dialogVisible: false,
       selectHomePageDialogVisible: false,
       addHomePageDialogVisible: false, // 是否显示addHomePage组件
@@ -429,6 +427,7 @@ export default {
     }
   },
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.form
       const isTestPolicy = this.isTestPolicy
@@ -476,7 +475,7 @@ export default {
       this.form.childHpList = this.mergeSelected({
         idField: 'homepageId',
         parse: (item) => {
-          return this.getHomepageInfo(item, {age: 0})
+          return this.getHomepageInfo(item, { age: 0 })
         },
         selectedList: selected,
         originSelectedList: this.form.childHpList
@@ -746,8 +745,8 @@ export default {
       const data = this.getFormData()
       data.policyStatus = status
       this.validateFormData(data, () => {
-        const options = { 
-          jsonStr: JSON.stringify(this.parseDataToApi(data)) 
+        const options = {
+          jsonStr: JSON.stringify(this.parseDataToApi(data))
         }
         if (this.isTestPolicy) {
           this.$service.testPolicyConfSave(options, '保存成功').then(data => {

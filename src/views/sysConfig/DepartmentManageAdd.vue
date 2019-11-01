@@ -47,8 +47,6 @@
 </template>
 
 <script>
-import _ from '../../utlis/gateschema'
-
 export default {
   props: {
     editId: Number,

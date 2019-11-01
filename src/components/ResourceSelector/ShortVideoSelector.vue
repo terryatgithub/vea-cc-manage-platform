@@ -39,7 +39,6 @@
 </template>
 
 <script>
-import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
 import ResourceSelector from './ResourceSelector'

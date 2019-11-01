@@ -29,7 +29,7 @@
 import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   extends: BaseList,
   components: {
@@ -125,16 +125,12 @@ export default {
               switch (row.channel) {
                 case 'movie':
                   return '影视'
-                  break
                 case 'child':
                   return '少儿'
-                  break
                 case 'sport':
                   return '体育'
-                  break
                 case 'edu':
                   return '教育'
-                  break
               }
             }
           },
@@ -212,7 +208,6 @@ export default {
         filter.rows = pagination.pageSize
       }
       return filter
-      console.log(filter)
     }
   },
   created() {

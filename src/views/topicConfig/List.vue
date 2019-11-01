@@ -33,9 +33,7 @@
 </template>
 
 <script>
-import _ from 'gateschema'
-import { Button } from 'element-ui'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
@@ -51,7 +49,6 @@ export default {
     ButtonGroupForListPage
   },
   data() {
-    let _this = this
     return {
       resourceType: 'topicConfig',
       activePage: 'topic_config_list',

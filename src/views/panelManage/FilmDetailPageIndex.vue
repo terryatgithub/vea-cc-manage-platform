@@ -74,7 +74,6 @@ export default {
 }
 </script>
 
-
 <style lang="stylus" scoped>
 .resource-manager-wrapper
   height 100%

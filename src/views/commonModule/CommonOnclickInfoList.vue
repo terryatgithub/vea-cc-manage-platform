@@ -30,13 +30,11 @@
 <script>
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import ButtonList from './../../components/ButtonLIst'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
 export default {
   extends: BaseList,
   components: {
-    ActionList,
     Table,
     ContentWrapper,
     ButtonGroupForListPage
@@ -143,7 +141,6 @@ export default {
         filter.rows = pagination.pageSize
       }
       return filter
-      console.log(filter)
     },
     /**
      * 获取数据

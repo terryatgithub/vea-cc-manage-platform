@@ -113,10 +113,11 @@ export function setMediaContent (contentForm, options) {
     const score = entity.score
     const updatedSegment = entity.updatedSegment
     const publishSegment = entity.publishSegment
+    // eslint-disable-next-line
     const isUnknown = publishSegment == 0
     const publishStatus = isUnknown
       ? 'unknown'
-      : updatedSegment == publishSegment
+      : updatedSegment === publishSegment
         ? 'ended'
         : 'updating'
     contentForm.publishStatus = publishStatus

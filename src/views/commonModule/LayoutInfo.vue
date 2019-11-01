@@ -47,7 +47,7 @@
                   <template slot="preview" slot-scope="{fileList}" >
                     <div
                       v-if="fileList && fileList.length > 0">
-                      <div 
+                      <div
                         class="upload-pic-list__item">
                         <div
                           v-if="getLastFile(fileList).status === 'uploading'"
@@ -79,7 +79,7 @@
                   <template slot="preview" slot-scope="{fileList}" >
                     <div
                       v-if="fileList && fileList.length > 0">
-                      <div 
+                      <div
                         class="upload-pic-list__item">
                         <div
                           v-if="getLastFile(fileList).status === 'uploading'"
@@ -205,6 +205,7 @@ export default {
   },
   props: ['initMode', 'id'],
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.form
       if (form.layoutId) {
@@ -234,7 +235,7 @@ export default {
     setLayoutInfo(data) {
       this.form = Object.assign({}, data, {
         layoutJson: JSON.parse(data.layoutJson),
-        layoutJson8: JSON.parse(data.layoutJson8),
+        layoutJson8: JSON.parse(data.layoutJson8)
       })
     },
     handleSave() {
@@ -251,10 +252,10 @@ export default {
             const v8Contents = layoutJson8.contents
             const isValidRatio = v6Contents.every((v6Block, index) => {
               const v8Block = v8Contents[index]
-              const v8Ratio = v8Block.width/v8Block.height
-              const v6Ratio = v6Block.width/v6Block.height
+              const v8Ratio = v8Block.width / v8Block.height
+              const v6Ratio = v6Block.width / v6Block.height
               const ratioDiff = Math.abs(v8Ratio - v6Ratio)
-              const rationDiffRatio = ratioDiff/v8Ratio
+              const rationDiffRatio = ratioDiff / v8Ratio
               return rationDiffRatio < 0.005
             })
             const isValidCount = v6Contents.length === v8Contents.length
@@ -344,7 +345,7 @@ export default {
       }
     },
     fetchLayoutTypeOptions () {
-      this.$service.getDictType({type: 'layoutType'}).then(layoutTypeOptions => {
+      this.$service.getDictType({ type: 'layoutType' }).then(layoutTypeOptions => {
         this.layoutTypeOptions = layoutTypeOptions
         this.layoutTypeText = layoutTypeOptions.reduce((result, item) => {
           result[item.dictId] = item.dictCnName

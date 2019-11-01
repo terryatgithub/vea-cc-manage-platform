@@ -214,11 +214,8 @@
 import SelectHourAndMinute from './../../components/SelectHourAndMinute'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
-import { Table } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
 import OrderableTable from '@/components/OrderableTable'
-import ReleaseTimeSetter from './../../components/ReleaseTimeSetter'
-import PrivatePannelInfo from './../blockManage/PrivatePannelInfo'
 import PanelSelector from '@/components/selectors/PanelSelector'
 import PanelInfo from '../panelInfo/PanelInfo'
 import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
@@ -231,11 +228,7 @@ export default {
     PanelInfo,
     PrivatePanelInfo,
     'cc-panel-selector-el': PanelSelector,
-    Table,
-    PrivatePannelInfo,
-    PanelInfo,
     OrderableTable,
-    ReleaseTimeSetter,
     SelectHourAndMinute,
     CommonContent
   },
@@ -321,6 +314,7 @@ export default {
     }
   },
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const tab = this.tab
       if (tab.tabId) {
@@ -414,7 +408,7 @@ export default {
       const currentVersion = this.tab.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
       const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
-      const isCoocaa = this.$consts.idPrefix == '10'
+      const isCoocaa = this.$consts.idPrefix === '10'
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
     }
   },
@@ -629,7 +623,6 @@ export default {
             e.pannelGroupRemark = e.pannelName
             return e
           })
-          this.status ? data.currentVersion : this.status
           data.tabType = data.tabType.toString()
           this.initSumTime = data.timeCycle
           this.tab = Object.assign({}, this.tab, data)

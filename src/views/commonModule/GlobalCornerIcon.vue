@@ -164,6 +164,7 @@ export default {
   },
   props: ['initMode', 'id'],
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.fileInfo[0]
       if (form && form.cornerIconId) {
@@ -192,7 +193,6 @@ export default {
       })
     },
     getFormData() {
-      const attributesIndexed = this.attributesIndexed
       const data = this.getUploadedFiles().map(item => {
         return {
           cornerIconId: this.id,
@@ -228,7 +228,7 @@ export default {
                 type: 'error',
                 message: '最少要上传一个角标素材，才能保存'
               })
-              cb(true)
+              cb(Error())
             } else {
               cb()
             }
@@ -237,7 +237,7 @@ export default {
               type: 'error',
               message: '请把表单填写完整'
             })
-            cb(true)
+            cb(Error())
           }
         }.bind(this)
       )
@@ -279,6 +279,7 @@ export default {
               }
             })
             .then(data => {
+              // eslint-disable-next-line
               if (data.code == 0) {
                 const uploadResult = data.data[0]
                 fileInfo.cornerIconName = uploadResult.originFileName

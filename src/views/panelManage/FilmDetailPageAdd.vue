@@ -205,8 +205,6 @@
 <script>
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
-import SelectHourAndMinute from './../../components/SelectHourAndMinute'
-import { Table } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
 import OrderableTable from '@/components/OrderableTable'
 import PanelSelector from '@/components/selectors/PanelSelector'
@@ -219,11 +217,9 @@ export default {
     PageWrapper,
     PageContentWrapper,
     'cc-panel-selector-el': PanelSelector,
-    Table,
     PrivatePanelInfo,
     PanelInfo,
     OrderableTable,
-    SelectHourAndMinute,
     CommonContent
   },
   props: {
@@ -311,6 +307,7 @@ export default {
     }
   },
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.form
       if (form.tabId) {

@@ -208,13 +208,13 @@ export default {
     // },
     rowClick(row) {
       if (this.useABTestHomePage !== undefined) {
-        this.useABTestHomePage.homepageId = row.homepageId,
-        this.useABTestHomePage.homepageStatus = row.homepageStatus,
+        this.useABTestHomePage.homepageId = row.homepageId
+        this.useABTestHomePage.homepageStatus = row.homepageStatus
         this.useABTestHomePage.homepageName = row.homepageName
       } else {
-        this.form.homepageId = row.homepageId,
-        this.form.homepageVersion = row.homepageVersion,
-        this.form.homepageStatus = row.homepageStatus,
+        this.form.homepageId = row.homepageId
+        this.form.homepageVersion = row.homepageVersion
+        this.form.homepageStatus = row.homepageStatus
         this.form.homepageName = row.homepageName
       }
       this.showHomePageDialogVisible = false

@@ -12,9 +12,9 @@
     @select-start="handleSelectStart"
     :disabled="disabled"
   >
-    <el-collapse 
+    <el-collapse
       v-if="presetTable.data.length > 0"
-      slot="prepend" 
+      slot="prepend"
       class="rel-picture-wrapper"
       v-model="collapseActiveItems">
       <el-collapse-item title="关联图片" name="relPicture">
@@ -62,11 +62,10 @@
 <script>
 import _ from 'gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
-import { Table, CardList, utils } from 'admin-toolkit'
+import { CardList } from 'admin-toolkit'
 import { debounce } from 'lodash'
 export default {
   components: {
-    Table,
     CardList,
     RemoteSelectorWrapper
   },
@@ -116,7 +115,7 @@ export default {
       const filter = {
         pictureStatus: 4
       }
-      if (this.$consts.idPrefix != '10') {
+      if (this.$consts.idPrefix !== '10') {
         filter.idPrefix = this.$consts.idPrefix
       }
       return filter
@@ -208,7 +207,7 @@ export default {
         if (resource.picturePreset) {
           this.presetTable.data = filterPictures(mapPictures(resource.picturePreset))
           return
-        } 
+        }
 
         const resourceId = resource.extraValue1
         if (resourceId) {
@@ -291,7 +290,7 @@ export default {
           label: 0,
           wrapper: 23
         }
-      }),
+      })
     }).other('form', {
       layout: 'inline',
       footer: {
@@ -306,7 +305,7 @@ export default {
         resetText: '重置'
       }
     })
-    if (this.$consts.idPrefix != '10') {
+    if (this.$consts.idPrefix !== '10') {
       filterSchema.map({
         idPrefix: _.o.enum(this.$consts.idPrefixEnums).other('form', {
           label: ' ',
@@ -329,18 +328,18 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.content-list >>> .card-list 
+.content-list >>> .card-list
   display flex
   flex-direction row
   flex-wrap wrap
 
-.card-list  >>> .card-item__selection 
+.card-list  >>> .card-item__selection
   display none
 
-.card-list >>> .card-item-wrapper:hover 
+.card-list >>> .card-item-wrapper:hover
   border 1px solid #444
 
-.card-list >>> .card-item-wrapper 
+.card-list >>> .card-item-wrapper
   width 17%
   height 256px
   border 1px solid #ccc
@@ -348,7 +347,7 @@ export default {
   padding 10px
   cursor pointer
 
-.img-wrapper img 
+.img-wrapper img
   width 100%
   height 200px
   object-fit cover
@@ -370,4 +369,3 @@ export default {
     max-width 100%
     max-height 200px
 </style>
-

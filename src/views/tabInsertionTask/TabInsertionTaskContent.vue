@@ -133,7 +133,7 @@ export default {
       this.form = cloneDeep(data)
     },
     fetchData () {
-      this.$service.tabInsertionTaskGetDetail({id: this.id}).then(data => {
+      this.$service.tabInsertionTaskGetDetail({ id: this.id }).then(data => {
         this.setTabInsertionTask(data)
       })
     }

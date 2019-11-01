@@ -16,7 +16,7 @@
       :label="item.tabCnTitle"
       :value="item.tabId">
     </el-option>
-  </el-select>  
+  </el-select>
 </template>
 <script>
 export default {

@@ -68,12 +68,11 @@
   </div>
 </template>
 <script>
-import { Button, Tag, Dialog } from 'element-ui'
+import { Button, Dialog } from 'element-ui'
 export default {
   components: {
     Button,
-    Dialog,
-    Tag
+    Dialog
   },
   props: {
     title: {

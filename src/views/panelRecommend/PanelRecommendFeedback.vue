@@ -149,7 +149,7 @@ export default {
       const fullYear = datetime.getFullYear()
       const month = datetime.getMonth() + 1
       const date = datetime.getDate()
-      const timeFormated = fullYear + '-' +  (month < 10 ? `0${month}` : month) + '-' + (date < 10 ? `0${date}` : date)
+      const timeFormated = fullYear + '-' + (month < 10 ? `0${month}` : month) + '-' + (date < 10 ? `0${date}` : date)
       return timeFormated
     },
     fetchData () {
@@ -161,7 +161,7 @@ export default {
       }
 
       this.$service.getPanelRecommandFeedback(filter).then(result => {
-        const {total, rows, extra} = result
+        const { total, rows, extra } = result
         this.pagination.total = total
         this.tabInfo = {
           ...this.tabInfo,

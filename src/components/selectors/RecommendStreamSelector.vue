@@ -12,7 +12,7 @@
           {{value}}
         </el-tag>
       </el-form-item>
-  
+
       <!-- 推荐流弹框  -->
       <el-dialog title="推荐流" :visible.sync="isVisiableRecom" width="40%" @open="fetchData" class="dia-log">
         <h4>运营指定影片流</h4>
@@ -35,69 +35,67 @@
       <!-- 推荐流弹框 end -->
     </div>
   </template>
-  
-  <script>
-  import { cloneDeep } from 'lodash'
-  import InputPositiveInt from '@/components/InputPositiveInt'
-  export default {
-    components: {
-      InputPositiveInt
+
+<script>
+import { cloneDeep } from 'lodash'
+export default {
+  components: {
+  },
+  data() {
+    return {
+      isVisiableRecom: false,
+      recomStreamTags: [],
+      mediaAutomationId: undefined,
+      normalStreamTags: [],
+      standardStreamTags: []
+    }
+  },
+  props: ['value', 'disabled', 'source', 'resolution'],
+  methods: {
+    handleDelStreamTag () {
+      this.$emit('del-select')
     },
-    data() {
-      return {
-        isVisiableRecom: false,
-        recomStreamTags: [],
-        mediaAutomationId: undefined,
-        normalStreamTags: [],
-        standardStreamTags: []
+    fetchData () {
+      const resolution = this.resolution
+      let params = {
+        page: 1,
+        rows: 100,
+        source: this.source || undefined,
+        resolution
       }
-    },
-    props: ['value', 'disabled', 'source', 'resolution'],
-    methods: {
-      handleDelStreamTag () {
-        this.$emit('del-select')
-      },
-      fetchData () {
-        const resolution = this.resolution
-        let params = {
-          page: 1, 
-          rows: 100,
-          source: this.source || undefined,
-          resolution
-        }
-        this.$service.getMediaAutomationDataList(params).then(data => {
-          this.recomStreamTags = data.rows.filter(item => {
-            return item.openStatus === 0 // 流状态关闭
-          })
-          // 分类显示
-          let normal = []
-          let standard = []
-          this.recomStreamTags.forEach(streamTag => {
-            const copyTag = cloneDeep(streamTag)
-            if (streamTag.type === 'normal') {
-              normal.push(copyTag)
-            } else {
-              standard.push(copyTag)
-            }
-          })
-          this.normalStreamTags = normal
-          this.standardStreamTags = standard
-          // 无匹配
-          if (this.recomStreamTags.length === 0) {
-            this.$message('流状态关闭，尺寸不匹配，或者暂无该内容源的推荐流');
+      this.$service.getMediaAutomationDataList(params).then(data => {
+        this.recomStreamTags = data.rows.filter(item => {
+          return item.openStatus === 0 // 流状态关闭
+        })
+        // 分类显示
+        let normal = []
+        let standard = []
+        this.recomStreamTags.forEach(streamTag => {
+          const copyTag = cloneDeep(streamTag)
+          if (streamTag.type === 'normal') {
+            normal.push(copyTag)
+          } else {
+            standard.push(copyTag)
           }
         })
-      },
-      handleSelectTag (tag) {
-        this.$emit('select-end', tag)
-        this.isVisiableRecom = false
-      }
+        this.normalStreamTags = normal
+        this.standardStreamTags = standard
+        // 无匹配
+        if (this.recomStreamTags.length === 0) {
+          this.$message('流状态关闭，尺寸不匹配，或者暂无该内容源的推荐流')
+        }
+      })
     },
-    created() {
+    handleSelectTag (tag) {
+      this.$emit('select-end', tag)
+      this.isVisiableRecom = false
     }
+  },
+  created() {
   }
-  </script>
-  
+}
+</script>
+
   <style lang="stylus" scoped>
   .recom-tag
     margin-right 10px

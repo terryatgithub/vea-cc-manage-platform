@@ -32,13 +32,10 @@
 </template>
 <script>
 import _ from 'gateschema'
-import ButtonList from './../../components/ButtonLIst'
 import OrderInput from './OrderInput'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import { ContentWrapper } from 'admin-toolkit'
 export default {
   components: {
-    ActionList,
-    Table,
     OrderInput,
     ContentWrapper
   },

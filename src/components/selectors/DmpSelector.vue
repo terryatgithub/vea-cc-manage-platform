@@ -150,6 +150,7 @@ export default {
         childrenOf[id] = childrenOf[id] || []
         // init its children
         item[CHILDREN_KEY] = childrenOf[id]
+        // eslint-disable-next-line
         if (parentId != 0) {
           // init its parent's children object
           childrenOf[parentId] = childrenOf[parentId] || []

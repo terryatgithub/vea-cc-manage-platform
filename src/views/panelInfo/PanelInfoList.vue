@@ -31,10 +31,9 @@
 
 <script>
 import BaseList from '@/components/BaseList'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-const ID = 'pannelGroupId'
 export default {
   extends: BaseList,
   components: {
@@ -359,7 +358,7 @@ export default {
           resetText: '重置'
         }
       })
-    if (this.$consts.idPrefix != '10') {
+    if (this.$consts.idPrefix !== '10') {
       filterSchema.map({
         idPrefix: _.o.enum({
           '酷开': '10',

@@ -77,7 +77,7 @@ export default {
     submitTask() {
       const submitForm = this.submitForm
       this.$emit('submit', {
-        isTiming: submitForm.isTiming, 
+        isTiming: submitForm.isTiming,
         releaseTime: submitForm.releaseTime
       })
     }

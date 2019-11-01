@@ -343,6 +343,7 @@ export default {
       const panel = this.panel
       return this.mode === 'replicate' || (panel.currentVersion !== undefined && panel.pannelList[0].pannelStatus !== 2)
     },
+    // eslint-disable-next-line
     panelGroupCategoryValue() {
       const options = this.panelGroupCategoryOptions
       const panelGroupCategory = this.panel.panelGroupCategory
@@ -353,6 +354,7 @@ export default {
         return target && target.dictEnName
       }
     },
+    // eslint-disable-next-line
     resourceInfo() {
       const panel = this.panel
       if (panel.pannelGroupId) {
@@ -441,10 +443,10 @@ export default {
           const panelGroupType = data.panelGroupType
           if (panelGroupType === 9 || panelGroupType === 10) {
             if (firstPanel.vipContentAmount < firstPanel.firstPageVipContentAmount) {
-              return cb('首屏付费内容数量不能大于总付费内容数量')
+              return cb(Error('首屏付费内容数量不能大于总付费内容数量'))
             }
             if (firstPanel.vipContentAmount > firstPanel.firstPageVipContentAmount + 9) {
-              return cb('总付费内容数应小于等于(首屏付费内容数 + 9)')
+              return cb(Error('总付费内容数应小于等于(首屏付费内容数 + 9)'))
             }
           }
           cb()
@@ -512,13 +514,13 @@ export default {
       const panel = data
       const firstPanel = data.pannelList[0]
       panel.pannelResource = firstPanel.pannelResource
-      panel.showTitle = firstPanel.showTitle == 1
+      panel.showTitle = firstPanel.showTitle === 1
       panel.pannelStatus = firstPanel.pannelStatus
       panel.layoutId = firstPanel.layoutId
 
       if (firstPanel.contentList && firstPanel.contentList.length > 0) {
         const firstContent = firstPanel.contentList[0]
-        panel.lucenyFlag = firstContent.lucenyFlag == 1
+        panel.lucenyFlag = firstContent.lucenyFlag === 1
       }
       return panel
     },

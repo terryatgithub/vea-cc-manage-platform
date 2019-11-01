@@ -5,7 +5,7 @@
       <el-form :inline="true"  slot="filter">
         <el-form-item >
           <el-select v-model="filter.enableTask" clearable placeholder="开启状态">
-            <el-option 
+            <el-option
               v-for="item in taskStatusOptions"
               :label="item.label"
               :value="item.value"
@@ -15,7 +15,7 @@
         </el-form-item>
         <el-form-item >
           <el-select v-model="filter.source" clearable placeholder="内容源">
-            <el-option 
+            <el-option
               v-for="item in $consts.sourceOptions"
               :label="item.label"
               :value="item.value"
@@ -26,8 +26,8 @@
         <el-button type="primary" @click="handleFilter">查询</el-button>
         <el-button type="primary" @click="handleResetFilter">重置</el-button>
       </el-form>
-      <ActionList 
-        slot="actions" 
+      <ActionList
+        slot="actions"
         :actions="[
         {
           label: '新建',
@@ -50,7 +50,7 @@
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange" />
     </ListLayout>
-    <el-dialog 
+    <el-dialog
       :visible.sync="showEnableTaskDialog"
       :append-to-body="true"
       width="400px">
@@ -96,7 +96,7 @@ export default {
         }
       ],
       filter: this.genDefaultFilter(),
-      effictientFilter : this.genDefaultFilter(),
+      effictientFilter: this.genDefaultFilter(),
       selected: [],
       table: {
         props: {},
@@ -105,7 +105,7 @@ export default {
         header: [
           {
             prop: 'taskId',
-            label: '任务ID',
+            label: '任务ID'
           },
           {
             prop: 'taskName',
@@ -180,7 +180,7 @@ export default {
       taskInfo: {},
       taskInfoRules: {
         aliveTime: [
-          {required: true, message: '请填入任务持续时间'}
+          { required: true, message: '请填入任务持续时间' }
         ]
       }
     }
@@ -227,7 +227,7 @@ export default {
     },
     handleToggleTask (row, enableTask) {
       enableTask = enableTask ? 1 : 0
-      this.taskInfo = this.genTaskInfo({taskId: row.taskId, aliveTime: row.aliveTime, enableTask})
+      this.taskInfo = this.genTaskInfo({ taskId: row.taskId, aliveTime: row.aliveTime, enableTask })
       if (enableTask) {
         this.showEnableTaskDialog = true
       } else {
@@ -238,7 +238,7 @@ export default {
       const taskInfo = this.taskInfo
       const enableTask = taskInfo.enableTask
       const doUpsert = () => {
-        const task = this.table.data.find(({taskId}) => taskId === taskInfo.taskId)
+        const task = this.table.data.find(({ taskId }) => taskId === taskInfo.taskId)
         task.enableTask = enableTask
         if (enableTask) {
           task.aliveTime = taskInfo.aliveTime

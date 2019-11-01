@@ -5,7 +5,7 @@
         :before-close="handleClose">
         <div class="icon-selector__wrapper">
             <img
-              v-for="(item, i) in options"
+              v-for="(item) in options"
               :class="selected && selected.pictureId === item.pictureId ? 'active' : ''"
               @click="selected = item"
               referrerpolicy="no-referrer"

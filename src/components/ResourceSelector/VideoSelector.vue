@@ -172,9 +172,7 @@ export default {
             label: '状态',
             width: '50',
             formatter: function(row) {
-              return ['失效', '有效', '待审核', '审核不通过', '草稿'][
-                row.videoStatus
-              ]
+              return ['失效', '有效', '待审核', '审核不通过', '草稿'][row.videoStatus]
             }
           },
           {
@@ -377,6 +375,7 @@ export default {
           const sourceEnums = data.rows.reduce(function(result, item) {
             if (item.source_List) {
               result = result.concat(item.source_List
+                // eslint-disable-next-line
                 .map(({ source_code, source_title }) => ({ label: source_title, value: source_code })))
             }
             return result
@@ -530,7 +529,7 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.search-form >>> 
+.search-form >>>
   .el-form-item__content
     width 174px
   .el-form-item

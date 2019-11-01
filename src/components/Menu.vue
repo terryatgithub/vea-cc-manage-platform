@@ -18,7 +18,7 @@
         <template v-for="(child, idx) in item.children">
           <el-menu-item
             v-if="typeof(child.children)=== 'undefined'"
-            @click="handleClickMenu(child.title)" 
+            @click="handleClickMenu(child.title)"
             :key="idx"
             :index="child.route"
           >
