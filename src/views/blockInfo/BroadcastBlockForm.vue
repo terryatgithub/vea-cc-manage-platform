@@ -130,7 +130,7 @@
         </el-form-item>
         <el-form-item label="开启个性化推荐">
           <el-switch
-            :disabled="judegeRotateDisabled()"
+            :disabled="judegeRecomStreamDisabled()"
             :value="!!normalForm.flagSetRec" 
             @input="handleInputFlagSetRec"
             active-color="#13ce66"
@@ -363,6 +363,12 @@ export default {
     },
     judegeRotateDisabled () {
       if (this.isReadonly === false && this.normalForm.clickTemplateType === 'rotate') {
+        return true
+      }
+      return this.isReadonly
+    },
+    judegeRecomStreamDisabled () {
+      if (this.isReadonly === false && (this.normalForm.clickTemplateType === 'rotate' || this.normalForm.shortVideoSwitch === true)) {
         return true
       }
       return this.isReadonly

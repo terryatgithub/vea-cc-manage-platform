@@ -52,6 +52,7 @@
           <!-- 新增时不显示看数据按钮 -->
           <div :class="isOverFlow(block.style) ? 'analyze-data--container' : 'analyze-data--container-row'" v-if="mode==='read'">
             <el-button type="success"
+            v-if="blocks[index].vcId != -101"
             class="analyze-data--simpleBtn margin-bottom-6"
             @click.stop="handleAnalyzeSimpleData(index)">看数据</el-button><br/>
             <el-button 
