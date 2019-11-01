@@ -49,7 +49,7 @@ export default {
       }
     }
   },
-  props: ['isLive', 'selectionType', 'source'],
+  props: ['isLive', 'selectionType', 'source', 'businessType'],
   computed: {
     selected() {
       return this.$refs.baseSelector.selected.slice()
@@ -61,7 +61,6 @@ export default {
         resType: 'operation',
         dataType: 'coocaaRanking',
         levelType: 'childRanking',
-        partner: this.$consts.sourceToPartner[this.source],
         callback: 'result'
       }
     },
@@ -71,6 +70,17 @@ export default {
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
+      }
+      const businessType = this.businessType
+      if ([60, 61, 32].includes(businessType)) {
+        const businessTypeMap = {
+          60: 1,
+          61: 2,
+          32: 3
+        }
+        filter.businessType = businessTypeMap[businessType]
+      } else {
+        filter.partner = this.$consts.sourceToPartner[this.source]
       }
       return filter
     },

@@ -431,6 +431,7 @@ const rankingCorners = [
   }
 ]
 export function genRankingContentList (resources) {
+  const rankingCode = resources.rankingCode
   const selected = resources.ranking || []
   const contentList = selected.map((item, index) => {
     const content = genDefaultContentForm()
@@ -457,7 +458,7 @@ export function genRankingContentList (resources) {
       bywhat: 'action',
       byvalue: 'coocaa.intent.movie.ranking',
       params: {
-        rankingCode: 7
+        rankingCode: rankingCode
       },
       exception: {}
     })

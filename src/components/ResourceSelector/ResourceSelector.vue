@@ -112,6 +112,7 @@
             v-show="activeSelector === 'ranking'"
             ref="ranking-selector"
             :source="source"
+            :business-type="businessType"
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
@@ -227,6 +228,7 @@ export default {
   },
   props: {
     source: String,
+    businessType: Number,
     disablePartner: Boolean,
     selectors: {
       type: Array,
