@@ -192,12 +192,13 @@
                     :disable-partner="!!pannel.pannelResource"
                     :selection-type="mediaResourceSelectionType"
                     :source="pannel.pannelResource"
+                    :business-type="pannel.panelGroupCategory"
                     @select-end="handleSelectResourceEnd">
                     <el-button type="primary" plain>
                       {{ isFillWithRanking ? '选择排行榜' : '选择资源' }}
                     </el-button>
                   </ResourceSelector>
-                  <div class="fill-width-ranking" v-show="pannel.parentType === 'normal'">
+                  <div class="fill-width-ranking" v-show="allowRankBusinessTypes.includes(pannel.panelGroupCategory)">
                     使用排行榜填充 <el-switch :value="isFillWithRanking" @input="handleToggleFillWithRanking"></el-switch>
                   </div>
                 </div>
@@ -393,7 +394,6 @@
             :info="activePanelGroup"
             :mode="mode"
             :panel-list="pannel.pannelList"
-            :panel="pannel.pannelList[+activePannelIndex]"
             :focus-config="pannel.focusConfig"
             @set-end="handleSetPanelGroupInfoEnd"
             @set-cancel="handleSetPanelGroupInfoCancel">
@@ -617,7 +617,10 @@ export default {
       sharedTags: [],
 
       // 用在 watcher 中，设置一个标识表示是否人为更新数据，避免 watcher 逻辑执行
-      isResetingData: false
+      isResetingData: false,
+      // 允许开排行榜的业务类型
+      // 教育，不限，影视 支持排行榜
+      allowRankBusinessTypes: [60, 67, 31]
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -1183,13 +1186,22 @@ export default {
       } else {
         // 获取排行榜资源
         const ranking = selectedResources.ranking[0]
-        this.$service.mediaGetRankingInfoVideoList({
+        const businessType = this.pannel.panelGroupCategory
+        const partner = this.$consts.sourceToPartner[pannel.pannelResource]
+        const reqData = {
           code: ranking.code,
-          partner: this.$consts.sourceToPartner[pannel.pannelResource]
-        }).then(result => {
+          businessType,
+          partner
+        }
+        // 如果是业务分类是教育，则使用腾讯源
+        if (businessType === 60) {
+          reqData.partner = 'tencent'
+        }
+        this.$service.mediaGetRankingInfoVideoList(reqData).then(result => {
           activePannel.rankChildId = ranking.id
           // 根据推荐位个数 n, 截取 n-1 个资源
           const rankingResources = result.rankingVideoInfoEntities || []
+          selectedResources.rankingCode = ranking.code
           selectedResources.ranking = rankingResources.slice(0, blockCount - 1)
           insertResources()
         })
@@ -1236,7 +1248,6 @@ export default {
       this.activePanelGroup = {
         index: this.pannel.pannelList.length,
         title: '',
-        rankIsOpen: 0,
         startTime: undefined,
         endTime: undefined,
         panelIsFocus: 0
@@ -1281,6 +1292,10 @@ export default {
             panel.pannelResource = 'o_tencent'
           } else {
             panel.pannelResource = ''
+          }
+          // 如果选了不能开排行榜的，清除排行榜开关
+          if (!this.allowRankBusinessTypes.includes(val)) {
+            this.clearRankFlag()
           }
           this.clearBlocks()
         }
@@ -1378,6 +1393,12 @@ export default {
         item.selectedResources = []
       })
       this.updateAllPosition()
+    },
+    clearRankFlag () {
+      this.pannel.pannelList.forEach(function(item) {
+        item.rankIsOpen = 0
+        item.rankChildId = undefined
+      })
     },
     updateAllPosition() {
       let i = this.pannel.pannelList.length

@@ -137,13 +137,13 @@
                     @active-index-change="currentIndex = $event"
                     @activate="handleActivatePluginVersion">
                     <div slot="item" slot-scope="{item, index}">
-                      <span v-if="item.dmpRegistryInfo">
+                      <p class="ellipsis" v-if="item.dmpRegistryInfo">
                         人群: {{ item.dmpRegistryInfo.dmpPolicyName }}({{ item.dmpRegistryInfo.dmpPolicyId }})/{{ item.dmpRegistryInfo.dmpCrowdName }}({{ item.dmpRegistryInfo.dmpCrowdId }})
-                      </span>
-                      <span v-else>
+                      </p>
+                      <p v-else>
                         {{ item.label }}
-                      </span>
-                      <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
+                      </p>
+                      <p class="ellipsis" :title="getVersionTitle(item)">{{ getVersionTitle(item) }}</p>
                       <i
                         v-show="item.dataType === 7 || item.dataType === 4"
                         @click.stop="handleRemovePluginVersion(index)"
@@ -345,7 +345,7 @@ export default {
           { required: true, message: '请输入标题', trigger: 'blur' },
           { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
-        subTitle: [{ max: 100, message: '不超过 100 个字符', trigger: 'blur' }]
+        subTitle: [{ max: 45, message: '不超过 45 个字符', trigger: 'blur' }]
       }
     }
   },
@@ -433,6 +433,9 @@ export default {
   },
   watch: {},
   methods: {
+    getVersionTitle(item) {
+      return `${item.title}${item.subTitle ? (' | ' + item.subTitle) : ''}`
+    },
     handleActivatePluginVersion(index) {
       if (this.currentIndex !== index) {
         if (this.mode === 'read') {
@@ -1060,4 +1063,9 @@ export default {
 .gallery-add
   text-align center
   padding-top 20px
+.ellipsis
+  width 100%
+  text-overflow ellipsis
+  white-space nowrap
+  overflow hidden
 </style>

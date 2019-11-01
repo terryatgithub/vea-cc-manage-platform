@@ -21,11 +21,9 @@
 
 <script>
 import _ from 'gateschema'
-import ButtonList from './../../components/ButtonLIst'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   components: {
-    ActionList,
     Table,
     ContentWrapper
   },
@@ -162,7 +160,6 @@ export default {
         filter.source = 'tencent'
       }
       return filter
-      console.log(filter)
     }
   },
   created() {
