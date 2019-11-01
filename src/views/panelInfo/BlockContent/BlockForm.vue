@@ -428,7 +428,7 @@
       <el-form-item label="开启个性化推荐">
         <el-switch
           :disabled="isReadonly"
-          :value="!!contentForm.flagSetRec" 
+          :value="!!contentForm.flagSetRec"
           @input="handleInputFlagSetRec"
           active-color="#13ce66"
           inactive-color="grey"
@@ -445,7 +445,7 @@
         @del-select="contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
       />
       <el-form-item label="刷新机制" v-if="!!contentForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
-        <InputPositiveInt 
+        <InputPositiveInt
           v-model="contentForm.mediaAutomationBlockRls.refreshCal"
           class="flash-count-input"
           :disabled="isReadonly"
@@ -495,7 +495,7 @@ import CrowdSelector from '@/components/CrowdSelector.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 import ClickEventSelector from '@/components/selectors/ClickEventSelector'
 import TagFrame from '../TagFrame'
-import { getSelectedResource, chopSubTitle, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
+import { getSelectedResource, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
 export default {
@@ -540,11 +540,11 @@ export default {
         callback()
       }
     }
-    const checkAttributeInfo = function(rule, value, callback) {
+    const checkAttributeInfo = (rule, value, callback) => {
       if (
-        _this.contentFormType === 'specific' &&
-        !_this.contentForm.attributeInfo &&
-        !_this.isReadonly
+        this.contentFormType === 'specific' &&
+        !this.contentForm.attributeInfo &&
+        !this.isReadonly
       ) {
         callback(new Error('请选择人群'))
       } else {
@@ -582,7 +582,7 @@ export default {
       showCrowdSelector: false,
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
-      isShowConfigBg: false,  //高清图配置项是否隐藏
+      isShowConfigBg: false, // 高清图配置项是否隐藏
       recomStream: undefined,
       recomStreamTags: [],
       contentRule: {
@@ -774,11 +774,11 @@ export default {
 
   watch: {
     isShowConfigBg(bool) {
-      if(!bool) {
+      if (!bool) {
         this.contentForm.bgParams = {
           id: '',
           title: ''
-        },
+        }
         this.contentForm.bgImgUrl = ''
       }
     }
@@ -895,8 +895,10 @@ export default {
       this.contentForm.redundantParams = this.genParams(val)
     },
     handleWebPageTypeChange(val) {
-      this.contentForm.redundantParams.versioncode =
-        val == '1' ? '1' : '102007'
+      // eslint-disable-next-line
+      this.contentForm.redundantParams.versioncode = val == '1'
+        ? '1'
+        : '102007'
     },
     handleSelectMediaEnd(resources) {
       const selectedResult = getSelectedResource(resources)
@@ -905,7 +907,7 @@ export default {
       const selected = selectedResult.selected[0]
       const selectedEpisode = selectedResult.selectedEpisode[selected.coocaaVId]
       const blockSize = this.resolution
-      setMediaContent(this.contentForm, {partner, selectedType, selected, selectedEpisode, blockSize})
+      setMediaContent(this.contentForm, { partner, selectedType, selected, selectedEpisode, blockSize })
       this.$refs.resourceSelector.clearSelected()
     },
     handleSelectAppEnd(resources) {
@@ -974,19 +976,15 @@ export default {
       const contentForm = this.contentForm
       let mediaId
       let mediaTitle
-      let episodeId
       if (selectedType === 'video') {
         // 影视中心
         if (selectedEpisode) {
           if (partner === 'tencent') {
             mediaId = '_otx_' + selected.coocaaVId
-            episodeId = selectedEpisode.coocaaMId
           } else if (partner === 'yinhe') {
             mediaId = '_oqy_' + selected.coocaaVId
-            episodeId = selectedEpisode.coocaaMId
           } else if (partner === 'youku') {
             mediaId = '_oyk_' + selected.coocaaVId
-            episodeId = selectedEpisode.coocaaMId
           }
         } else {
           if (partner === 'tencent') {
@@ -1063,22 +1061,22 @@ export default {
         if (valid) {
           if (contentForm.coverType === 'custom') {
             if (contentForm.price < contentForm.secKillPrice) {
-              return cb('价格小于秒杀价，建议重新填写！')
+              return cb(Error('价格小于秒杀价，建议重新填写！'))
             }
-            if(contentForm.flagSetRec == 1) {
-              if(!contentForm.mediaAutomationBlockRls.mediaAutomationId || !contentForm.mediaAutomationBlockRls.refreshCal){
-                return cb('已开启推荐位个性化推荐开关，但配置不完整!')
+            if (contentForm.flagSetRec === 1) {
+              if (!contentForm.mediaAutomationBlockRls.mediaAutomationId || !contentForm.mediaAutomationBlockRls.refreshCal) {
+                return cb(Error('已开启推荐位个性化推荐开关，但配置不完整!'))
               }
             }
-            if(this.isShowConfigBg) {
-              if(!contentForm.bgParams.id || !contentForm.bgParams.title || !contentForm.bgImgUrl){
-                return cb('已开启配置高清背景图和视频开关，但配置不完整!')
+            if (this.isShowConfigBg) {
+              if (!contentForm.bgParams.id || !contentForm.bgParams.title || !contentForm.bgImgUrl) {
+                return cb(Error('已开启配置高清背景图和视频开关，但配置不完整!'))
               }
             }
           }
           cb()
         } else {
-          cb('请把表单填写完整')
+          cb(Error('请把表单填写完整'))
         }
       })
     },
@@ -1095,7 +1093,7 @@ export default {
         dataUrl: redundantParams.pictureUrl
       }]
     }
-    if(contentForm.bgImgUrl || contentForm.bgParams.id || contentForm.bgParams.title) {
+    if (contentForm.bgImgUrl || contentForm.bgParams.id || contentForm.bgParams.title) {
       this.isShowConfigBg = true
     }
   }

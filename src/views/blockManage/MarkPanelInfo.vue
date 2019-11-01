@@ -139,8 +139,7 @@ export default {
             pannelStatus: undefined,
             pannelCategory: 67
           }
-        ],
-        currentVersion: undefined
+        ]
       },
       rules: {
         // 表单规则
@@ -157,6 +156,7 @@ export default {
     }
   },
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.form
       if (form.pannelGroupId) {
@@ -174,7 +174,7 @@ export default {
       const currentVersion = this.form.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
       const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
-      const isCoocaa = this.$consts.idPrefix == '10'
+      const isCoocaa = this.$consts.idPrefix === '10'
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
     }
   },

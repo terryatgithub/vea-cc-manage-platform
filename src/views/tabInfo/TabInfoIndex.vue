@@ -47,7 +47,7 @@ export default {
       const id = this.id
       return id
         ? id.toString().indexOf('JD') === 0
-          ? 'JDTabInfo' 
+          ? 'JDTabInfo'
           : 'TabInfo'
         : 'TabInfo'
     }

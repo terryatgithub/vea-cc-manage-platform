@@ -119,7 +119,7 @@
                     <el-input v-model.trim="block.helper.subTitle"></el-input>
                   </el-form-item>
                 </div>
-                
+
                 <div v-if="pluginParentType === 'sign'">
                   <!-- 扩展参数  -->
                   <Params prop-prefix="helper.appParams." :params="block.helper.appParams" />
@@ -251,9 +251,6 @@
   </PageWrapper>
 </template>
 <script>
-// import ccAppParamsForm from './ccAppParamsForm'
-import ccTimeSpinner from './ccTimeSpinner'
-// import { AppParams, AppParamsRead } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
 import PluginContent from './PluginContent'
 import Gallery from '@/components/Gallery'
@@ -267,10 +264,8 @@ const PARENT_TYPES = {
   builtIn: 'builtIn',
   secKill: 'secKill'
 }
-window.basicFn = {}
 export default {
   components: {
-    ccTimeSpinner,
     CommonContent,
     PluginContent,
     Gallery,
@@ -281,7 +276,6 @@ export default {
   },
   props: ['id', 'initMode', 'version', 'contentProps'],
   data() {
-
     return {
       currentIndex: 0,
       title: null,
@@ -289,7 +283,6 @@ export default {
       dialogClickTableVisible: false,
       showFocusImgSelectorVisible: false, // 异形弹框
       clickData: {}, // 点击事件
-      selectResource: {},
       selectImgData: {},
       urls: {
         uploadImg: 'api/v1/upload/image.html' // 上传图片接口
@@ -321,7 +314,7 @@ export default {
           pluginId: undefined,
           pluginName: '',
           pluginParentType: undefined,
-          // 0，1，2	否	Integer	内容源，0-默认, 1-腾讯，2-爱奇艺
+          // 0，1，2 否 Integer 内容源，0-默认, 1-腾讯，2-爱奇艺
           source: 0,
           // sport-体育， edu-教育，movie-影视
           channel: '',
@@ -352,7 +345,7 @@ export default {
           { required: true, message: '请输入标题', trigger: 'blur' },
           { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
-        subTitle: [{ max: 100, message: '不超过 100 个字符', trigger: 'blur' }],
+        subTitle: [{ max: 100, message: '不超过 100 个字符', trigger: 'blur' }]
       }
     }
   },
@@ -362,21 +355,10 @@ export default {
     },
     source() {
       // 内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
-      switch (this.block.pluginInfo.source) {
-        case 0:
-          return ''
-          break
-        case 1:
-          return 'o_tencent'
-          break
-        case 2:
-          return 'o_iqiyi'
-          break
-        case 3:
-          return 'o_youku'
-          break
-      }
+      const sources = ['', 'o_tencent', 'o_iqiyi', 'o_youku']
+      return sources[this.block.pluginInfo.source]
     },
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.block.pluginInfo
       if (form.pluginId) {
@@ -389,16 +371,16 @@ export default {
         }
       }
     },
+    // eslint-disable-next-line
     canAddActivity() {
       if (this.contentProps.menuElId === 'sysPlugin') {
         return !this.block.rlsInfo.find(({ dataType }) => dataType === 4)
       }
     },
+    // eslint-disable-next-line
     pluginTypeText() {
       const pluginType = this.pluginType
       const pluginTypes = this.pluginTypes
-      console.log(pluginType)
-      console.log(pluginTypes)
       if (pluginTypes.length > 0) {
         const target = pluginTypes.find(function(item) {
           return item.dictEnName === pluginType
@@ -408,6 +390,7 @@ export default {
         }
       }
     },
+    // eslint-disable-next-line
     pluginParentTypeText() {
       const pluginParentType = this.pluginParentType
       const pluginParentTypes = this.pluginParentTypes
@@ -431,7 +414,6 @@ export default {
     },
     versionHasTitle() {
       // 版本信息里是否有 title 字段
-      const pluginParentType = this.pluginParentType
       const pluginType = this.pluginType
       return pluginType === 'REFERENCE_MOVIE_VIP'
     },
@@ -447,7 +429,7 @@ export default {
     },
     isReplica() {
       return this.mode === 'replicate' || this.block.duplicateVersion === 'yes'
-    },
+    }
   },
   watch: {},
   methods: {
@@ -613,7 +595,6 @@ export default {
       }
     },
     setPluginParentType(val) {
-      const PARENT_TYPES = this.PARENT_TYPES
       const block = this.block
       const pluginInfo = block.pluginInfo
       const helper = block.helper
@@ -776,8 +757,8 @@ export default {
         function(item) {
           item.openMode = item.params.split(',')[0].split('==')[1]
           if (item.appParams) {
-            const appParams = JSON.parse(item.appParams) 
-            item.appParams = Object.keys(appParams).map(key => ({key, value: appParams[key]}))
+            const appParams = JSON.parse(item.appParams)
+            item.appParams = Object.keys(appParams).map(key => ({ key, value: appParams[key] }))
           }
           if (item.onclick) {
             item.onclick = this.parseOnclick(JSON.parse(item.onclick))
@@ -842,7 +823,7 @@ export default {
           helper.appParams = firstRls.appParams
         }
       }
-      this.block = {...this.block, ...block}
+      this.block = { ...this.block, ...block }
     },
     parseData(data) {
       const helper = data.helper
@@ -853,7 +834,7 @@ export default {
         data.rlsInfo[0] = data.rlsInfo[0] || {
           dataType: 5,
           title: undefined,
-          subTitle: undefined,
+          subTitle: undefined
         }
         data.rlsInfo[0].appParams = helper.appParams
       }
@@ -954,6 +935,7 @@ export default {
               dowhat: 'startActivity',
               bywhat: 'action',
               byvalue:
+                // eslint-disable-next-line
                 originOnclick.tab.tabType == 1
                   ? 'coocaa.intent.action.HOME_COMMON_LIST'
                   : 'coocaa.intent.action.HOME_SPECIAL_TOPIC',
@@ -1034,7 +1016,6 @@ export default {
     }
   },
   created() {
-    this.basicFn = basicFn
     this.getPluginParentTypes()
     this.mode = this.initMode || 'create'
     switch (this.mode) {
@@ -1049,6 +1030,7 @@ export default {
         break
       case 'replica':
         this.title = '创建副本'
+        break
       case 'read':
         this.title = '预览'
         break

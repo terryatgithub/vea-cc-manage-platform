@@ -63,7 +63,7 @@
 import _ from 'gateschema'
 import { Button } from 'element-ui'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import Policy from './PolicyManageInfo'
@@ -72,7 +72,6 @@ import BaseList from '@/components/BaseList'
 export default {
   extends: BaseList,
   components: {
-    ActionList,
     Table,
     ContentWrapper,
     ButtonGroupForListPage,
@@ -81,7 +80,6 @@ export default {
     PageContentWrapper
   },
   data() {
-    let _this = this
     return {
       resourceType: 'homepage',
       activePage: 'homepage_list',

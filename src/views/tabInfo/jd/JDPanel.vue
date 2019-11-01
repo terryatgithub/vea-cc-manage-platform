@@ -52,8 +52,8 @@ export default {
       }
     },
     styleLi: function () {
-      let liArr = [];
-      let _this = this;
+      let liArr = []
+      let _this = this
       for (let item of this.layoutData) {
         if (item.resize) {
           liArr.push({
@@ -61,8 +61,8 @@ export default {
             height: (item.resize.height) / this.multiple + 'px',
             left: (item.resize.x) / this.multiple + 'px',
             top: (item.resize.y) / this.multiple + 'px'
-          });
-          _this.isActive = true;
+          })
+          _this.isActive = true
         } else {
           liArr.push({
             width: (item.width) / this.multiple + 'px',

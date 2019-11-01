@@ -34,16 +34,13 @@
 
 <script>
 import BaseList from '@/components/BaseList'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
-import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-const ID = 'pannelGroupId'
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
-    Table,
-    ButtonGroupForListPage
+    Table
   },
   props: {
   },
@@ -103,7 +100,7 @@ export default {
           },
           {
             label: '版块分类',
-            prop: 'panelGroupCategory',
+            prop: 'panelGroupCategory'
           },
           {
             label: '版块相关媒资的类型',
@@ -170,7 +167,7 @@ export default {
                     this.handleToggleRecommendFlag(row)
                   }
                 }
-              },  '不可推荐')
+              }, '不可推荐')
             }
           }
         ],
@@ -218,13 +215,13 @@ export default {
     },
     handleToggleRecommendFlag(row) {
       this.$confirm('设置为“不可推荐”后，该版块将不会出现在任何流中，但是，若要将该版块恢复成“可推荐”，则非常困难，需要联系开发处理', '提示')
-      .then(() => {
-        const flag = row.flag ? 0 : 1
-        this.$service.panelRecommendFlagUpsert({panelGroupId: row.panelGroupId, flag}, '设置成功').then(() => {
-          row.flag = flag
+        .then(() => {
+          const flag = row.flag ? 0 : 1
+          this.$service.panelRecommendFlagUpsert({ panelGroupId: row.panelGroupId, flag }, '设置成功').then(() => {
+            row.flag = flag
+          })
         })
-      })
-      .catch(() => {})
+        .catch(() => {})
     },
     fetchData() {
       const filter = this.parseFilter()
@@ -266,7 +263,7 @@ export default {
   },
   created() {
     this.$service.getDictType({ type: 'recommendStreamSign' }).then(data => {
-      const panelGroupCategoryEnums = data.reduce((result, {dictCnName}) => {
+      const panelGroupCategoryEnums = data.reduce((result, { dictCnName }) => {
         result[dictCnName] = dictCnName
         return result
       }, {})
@@ -292,24 +289,24 @@ export default {
           component: 'Select'
         })
       })
-      .other('form', {
-        cols: {
-          item: 6,
-          label: 0,
-          wrapper: 20
-        },
-        layout: 'inline',
-        footer: {
+        .other('form', {
           cols: {
+            item: 6,
             label: 0,
-            wrapper: 24
+            wrapper: 20
           },
-          showSubmit: true,
-          submitText: '查询',
-          showReset: true,
-          resetText: '重置'
-        }
-      })
+          layout: 'inline',
+          footer: {
+            cols: {
+              label: 0,
+              wrapper: 24
+            },
+            showSubmit: true,
+            submitText: '查询',
+            showReset: true,
+            resetText: '重置'
+          }
+        })
 
       this.filterSchema = filterSchema
     })

@@ -32,7 +32,7 @@ export default {
         width: 100,
         render: (h, { row, $index }) => {
           const realIndex = row._realIndex
-          const index = realIndex === undefined ? $index : realIndex 
+          const index = realIndex === undefined ? $index : realIndex
           if (this.readonly) {
             return index + 1
           }

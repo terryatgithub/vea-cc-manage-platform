@@ -256,7 +256,7 @@ export default {
     },
     handlePreviewTab(row, index) {
       const tabId = row.tabId
-      this.$service.tabInfoGetBase({id: tabId}).then(baseInfo => {
+      this.$service.tabInfoGetBase({ id: tabId }).then(baseInfo => {
         const tabType = baseInfo.tabType
         const tabRemark = baseInfo.tabRemark
         this.activePage = 'tab'

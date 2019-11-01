@@ -77,7 +77,6 @@ export default {
     getDictCategoryList() {
       this.$service.getDictCategoryList().then(data => {
         // 去重
-        var obj = {}
         this.dictCategoryStr = data
       })
     },

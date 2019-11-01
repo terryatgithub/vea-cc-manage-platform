@@ -39,10 +39,9 @@
 <script>
 import _ from 'gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
-import { Table, CardList, utils } from 'admin-toolkit'
+import { CardList } from 'admin-toolkit'
 export default {
   components: {
-    Table,
     CardList,
     RemoteSelectorWrapper
   },
@@ -73,7 +72,7 @@ export default {
         cornerIconId: undefined,
         cornerIconName: undefined,
         typeId: undefined,
-        idPrefix: idPrefix != '10' ? idPrefix : undefined
+        idPrefix: idPrefix !== '10' ? idPrefix : undefined
       }
     },
     handleRowSelectionChange(row, index) {
@@ -187,7 +186,7 @@ export default {
       })
 
       const idPrefix = this.$consts.idPrefix
-      if (idPrefix != '10') {
+      if (idPrefix !== '10') {
         filterSchema.map({
           idPrefix: _.o.enum(this.$consts.idPrefixEnums).other('form', {
             label: ' ',
@@ -219,7 +218,7 @@ export default {
   cursor pointer
   &:hover
     border 1px solid #444
-.card-list  >>> .card-item__selection 
+.card-list  >>> .card-item__selection
   display none
 
 .list-item__img

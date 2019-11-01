@@ -54,7 +54,7 @@ export default {
             prop: 'appImageUrl',
             render: (createElement, { row }) => {
               return createElement('img', {
-                key: app.appImageUrl,
+                key: row.appImageUrl,
                 attrs: {
                   src: row.appImageUrl,
                   width: '50px',

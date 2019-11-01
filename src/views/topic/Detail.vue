@@ -148,12 +148,12 @@ export default {
           }
         },
         {
-            label: '平均播放时长',
-            prop: 'avgPerplayTimeSec',
-            render: (h, { row }) => {
-              return this.secondToTimeStr(row.avgPerplayTimeSec)
-            }
+          label: '平均播放时长',
+          prop: 'avgPerplayTimeSec',
+          render: (h, { row }) => {
+            return this.secondToTimeStr(row.avgPerplayTimeSec)
           }
+        }
       ],
       topic: {
         id: undefined,
@@ -185,6 +185,7 @@ export default {
   },
   props: ['initMode', 'id', 'version'],
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const topic = this.topic
       if (topic.id) {

@@ -269,7 +269,7 @@ export default {
     getDefaultFilter() {
       const { idPrefix } = this.$consts
       return {
-        idPrefix: idPrefix != '10' ? idPrefix : undefined,
+        idPrefix: idPrefix !== '10' ? idPrefix : undefined,
         tabId: undefined,
         tabName: undefined,
         tabCategory: undefined,

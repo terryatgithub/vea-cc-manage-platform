@@ -155,9 +155,8 @@
 </template>
 
 <script>
-import _ from 'gateschema'
 import AuditDetailButton from './../../components/AuditDetailButton'
-import { ContentWrapper, Table, utils, AppParamsRead } from 'admin-toolkit'
+import { AppParamsRead } from 'admin-toolkit'
 const SOURCE_TEXT = {
   '0': '无',
   '1': '腾讯',
@@ -215,7 +214,7 @@ export default {
           pluginId: undefined,
           pluginName: '',
           pluginParentType: undefined,
-          // 0，1，2	否	Integer	内容源，0-默认, 1-腾讯，2-爱奇艺
+          // 0，1，2 否 Integer 内容源，0-默认, 1-腾讯，2-爱奇艺
           source: 0,
           // sport-体育， edu-教育，movie-影视
           channel: '',
@@ -238,6 +237,7 @@ export default {
     pluginType() {
       return this.block.pluginInfo.pluginType
     },
+    // eslint-disable-next-line
     pluginParentTypeText() {
       const pluginParentType = this.pluginParentType
       const pluginParentTypes = this.pluginParentTypes
@@ -250,6 +250,7 @@ export default {
         }
       }
     },
+    // eslint-disable-next-line
     pluginTypeText() {
       const pluginType = this.pluginType
       const pluginTypes = this.pluginTypes
@@ -266,7 +267,6 @@ export default {
     },
     versionHasTitle() {
       // 版本信息里是否有 title 字段
-      const pluginParentType = this.pluginParentType
       const pluginType = this.pluginType
       return pluginType === 'REFERENCE_MOVIE_VIP'
     },
@@ -342,13 +342,10 @@ export default {
         })
     },
     getPluginVersions(type) {
-      const urls = this.urls
-      var that = this
-      const FastDevTool = this.FastDevTool
       const pluginVersions = this.pluginVersions
-      return new Promise(function(resolve, reject) {
+      return new Promise((resolve, reject) => {
         if (!pluginVersions[type]) {
-          that.$service.getPluginVersions(type).then(data => {
+          this.$service.getPluginVersions(type).then(data => {
             if (data) {
               pluginVersions[type] = data
               resolve(pluginVersions[type])
@@ -477,7 +474,6 @@ export default {
     }
   },
   created() {
-    this.basicFn = basicFn
     this.getPluginParentTypes()
     window.mode = 'read'
     if (window.mode) {

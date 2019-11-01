@@ -31,16 +31,6 @@ import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
 import BaseSelector from '../BaseSelector'
 export default {
   data() {
-    const panelStatusOptions = this.$consts.statusOptions.filter(item => {
-      return [3, 4, 7].indexOf(item.value) > -1
-    })
-    const panelStatusOptionsIndexed = panelStatusOptions.reduce(
-      (result, item) => {
-        result[item.value] = item.label
-        return result
-      },
-      {}
-    )
     return {
       pagination: {
         currentPage: 1,

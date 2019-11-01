@@ -27,17 +27,13 @@
   </ContentCard>
 </template>
 <script>
-import _ from 'gateschema'
-import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import ButtonList from './../../components/ButtonLIst'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
 export default {
   extends: BaseList,
   components: {
     Table,
-    ContentWrapper,
-    ButtonGroupForListPage
+    ContentWrapper
   },
   data() {
     return {

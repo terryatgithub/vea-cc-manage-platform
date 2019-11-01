@@ -283,4 +283,3 @@ Vue.prototype.$validateId = function (id) {
     return true
   }
 }
-

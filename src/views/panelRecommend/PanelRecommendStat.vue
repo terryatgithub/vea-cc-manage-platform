@@ -10,7 +10,7 @@
       </el-form>
       <div v-if="chartList">
         <el-select v-show="!!chartList.length" v-model="currentChart" style="width: 100%">
-          <el-option 
+          <el-option
             v-for="item in chartList"
             :key="item.id"
             :label="item.id"
@@ -23,7 +23,7 @@
         <div v-else>
           <div v-for="(chart, index) in chartDataList" class="chart-box" :key="index">
             <p class="chart-box__title">{{ chart.title }}</p>
-            <VeLine 
+            <VeLine
               :data="chart.data"
               :legend-visible="false"
               :extend="chart.extend"
@@ -38,12 +38,10 @@
 <script>
 import VeLine from 'v-charts/lib/line.common'
 import InputPositiveInt from '@/components/InputPositiveInt'
-import TabIdSelect from '@/components/TabIdSelect'
 export default {
   components: {
     VeLine,
-    InputPositiveInt,
-    TabIdSelect
+    InputPositiveInt
   },
   data () {
     return {
@@ -72,11 +70,11 @@ export default {
           const chartList = result.rows
           if (chartList.length > 0) {
             chartList.forEach(item => {
-              item.id = `${item.tabName}(${item.tabId}) / ${item.startDate} - ${item.endDate} / 从第 ${item.recommendIndex} 个开始` 
+              item.id = `${item.tabName}(${item.tabId}) / ${item.startDate} - ${item.endDate} / 从第 ${item.recommendIndex} 个开始`
             })
             this.currentChart = chartList[0].id
           }
-          this.chartList =  chartList
+          this.chartList = chartList
         })
     },
     fetchChart () {
@@ -84,7 +82,7 @@ export default {
       const currentChart = this.currentChart
       if (currentChart) {
         const filter = this.filter
-        const chartInfo = this.chartList.find(({id}) => id === currentChart)
+        const chartInfo = this.chartList.find(({ id }) => id === currentChart)
         const data = {
           tabId: filter.tabId,
           startDate: chartInfo.startDate,
@@ -113,10 +111,10 @@ export default {
         }
         const extend = {
           grid: {
-            top: "2%",
-            left: "5%",
-            right: "5%",
-            bottom: "10%",
+            top: '2%',
+            left: '5%',
+            right: '5%',
+            bottom: '10%',
             containLabel: true
           },
           series: v => {
@@ -128,11 +126,10 @@ export default {
               rotate: 45,
               formatter: function(val) {
                 let mark = val.indexOf('(')
-                if(mark === -1)
-                {
+                if (mark === -1) {
                   return val
-                }else {
-                  let version = val.slice(mark-val.length)
+                } else {
+                  let version = val.slice(mark - val.length)
                   let date = val.slice(0, mark)
                   return [`{a|${version}}`, date].join('')
                 }
@@ -142,7 +139,7 @@ export default {
               }
             }
           },
-          color: ['#1E90FF ','#2f4554'],
+          color: ['#1E90FF ', '#2f4554']
         }
 
         if (data.unit === '%') {

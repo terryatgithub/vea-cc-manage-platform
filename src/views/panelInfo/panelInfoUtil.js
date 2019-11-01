@@ -113,10 +113,11 @@ export function setMediaContent (contentForm, options) {
     const score = entity.score
     const updatedSegment = entity.updatedSegment
     const publishSegment = entity.publishSegment
+    // eslint-disable-next-line
     const isUnknown = publishSegment == 0
     const publishStatus = isUnknown
       ? 'unknown'
-      : updatedSegment == publishSegment
+      : updatedSegment === publishSegment
         ? 'ended'
         : 'updating'
     contentForm.publishStatus = publishStatus
@@ -451,7 +452,7 @@ export function genRankingContentList (resources) {
       'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110257831374_260*364.jpg',
     onclick: JSON.stringify({
       packagename: 'com.tianci.movieplatform',
-      versioncode: '7.10',
+      versioncode: 7100001,
       dowhat: 'startActivity',
       bywhat: 'action',
       byvalue: 'coocaa.intent.movie.ranking',

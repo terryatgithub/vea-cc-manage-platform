@@ -1,8 +1,8 @@
 <template>
   <transition>
-    <div 
+    <div
       v-show="visible"
-      class="page-dialog__wrapper"> 
+      class="page-dialog__wrapper">
       <!-- backdrop  -->
       <div class="backdrop"></div>
       <div :class="{'page-dialog': true, fullscreen: fullscreen}">

@@ -87,20 +87,16 @@
 </template>
 <script>
 import _ from 'gateschema'
-import ButtonList from './../../components/ButtonLIst'
 import GlobalIconAudit from './GlobalIconAudit'
 import GlobelIconLevel from './GlobelIconLevel'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import GlobalIconBatchAudit from '@/components/GlobalIconBatchAudit'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import { ContentWrapper, CardList } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
-import { CardList } from 'admin-toolkit'
 export default {
   extends: BaseList,
   components: {
     CardList,
-    ActionList,
-    Table,
     ContentWrapper,
     GlobalIconAudit,
     GlobelIconLevel,
@@ -242,7 +238,7 @@ export default {
       const waiting = this.$consts.status.waiting
       data.idStr = this.selected
         .filter(item => item.cornerStatus === waiting)
-        .map(({ cornerIconId }) => cornerIconId )
+        .map(({ cornerIconId }) => cornerIconId)
         .join(',')
       this.$service
         .batchAudit(data, '审核成功')
@@ -348,7 +344,7 @@ export default {
       }
     })
 
-    if (this.$consts.idPrefix != '10') {
+    if (this.$consts.idPrefix !== '10') {
       filterSchema.map({
         idPrefix: _.o.enum({
           '酷开': '10',

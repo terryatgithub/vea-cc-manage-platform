@@ -1,7 +1,7 @@
 <template>
-  <div> 
-    <el-button 
-      v-for="(item, index) in actions || defaultAction" 
+  <div>
+    <el-button
+      v-for="(item, index) in actions || defaultAction"
       :key="index"
       :type="item.type"
       @click="$emit(item.value, $event)">

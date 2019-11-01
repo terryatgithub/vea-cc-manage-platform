@@ -70,8 +70,8 @@
         </el-form-item>
         <el-form-item class="el-form-item__block-width" v-if="row.blockWidth.length>0">
           <span>&nbsp;宽度</span>
-          <el-form-item 
-            v-for="(item,i) in row.blockWidth" 
+          <el-form-item
+            v-for="(item,i) in row.blockWidth"
             :prop="'rows.' + index + '.blockWidth.' + i"
             :rules="[
               { required: true, message: '请输入宽度', trigger: 'blur' },
@@ -97,7 +97,7 @@
       </el-form-item>
     </el-form>
     <section>
-      <LayoutBlock 
+      <LayoutBlock
         v-if="layoutForPreview.content.contents.length > 0"
         :content="layoutForPreview.content.contents"
         @change-width="changeWidth"
@@ -210,7 +210,7 @@ export default {
               width: width,
               height: row.height + this.titleHeight
             }
-            blockItem.title_info  = {
+            blockItem.title_info = {
               width,
               height: this.titleHeight,
               size: this.titleSize
@@ -230,7 +230,7 @@ export default {
         result.height = parseInt(result.height) + currentRowHeight + spacing
         result.contents = result.contents.concat(blocks)
         return result
-      }, {height: 0, contents: []}).contents
+      }, { height: 0, contents: [] }).contents
 
       const layout = {
         fileName,
@@ -276,13 +276,12 @@ export default {
     changeLayout() {
       const dynamicValidateForm = this.dynamicValidateForm
       const rows = dynamicValidateForm.rows || []
-      dynamicValidateForm.rows = rows.slice(0,1)
+      dynamicValidateForm.rows = rows.slice(0, 1)
     },
     /**
      * width 改变后的宽度，whichRow 所在第几行，whichBlock所在哪一行的第几块，contentsIndex为data.contents中所在的索引值
      */
     changeWidth(width, whichRow, whichBlock, contentsIndex) {
-      let row = this.dynamicValidateForm.rows[whichRow]
     },
     /*
     预览布局
@@ -372,7 +371,7 @@ export default {
 .el-form-item__height
   >>> .el-form-item__error
     left: 60px
-.el-form-item__block-width >>> 
+.el-form-item__block-width >>>
   input
     width: 60px
     margin-right: 5px

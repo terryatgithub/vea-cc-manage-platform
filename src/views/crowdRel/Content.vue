@@ -204,10 +204,8 @@ export default {
         return result
       }, {})
 
-      let removeCount = 0
       // 记录需要删除的 value
       const mark = function(value) {
-        removeCount++
         removeList[value] = true
         items.forEach(function(item) {
           if (item.parentValue === value) {
@@ -289,8 +287,8 @@ export default {
     validate(data, cb) {
       const levels = data.levels
       for (let i = 0, length = levels.length; i < length; i++) {
-        if (levels[i].label == '') {
-          return cb('请填写第' + (i + 1) + '个层级的标题')
+        if (!levels[i].label) {
+          return cb(Error('请填写第' + (i + 1) + '个层级的标题'))
         }
       }
       cb()

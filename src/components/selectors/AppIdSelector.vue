@@ -9,7 +9,7 @@
         @input="$emit('input', $event)"
     >
         <el-option
-            v-for="(item, index) in options"
+            v-for="(item) in options"
             :key="item.value"
             :value="item.value"
             :label="item.label"
@@ -26,6 +26,7 @@ export default {
     }
   },
   computed: {
+    // eslint-disable-next-line
     valueLabel() {
       const value = this.value
       const options = this.options

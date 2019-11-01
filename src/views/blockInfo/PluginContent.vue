@@ -296,14 +296,6 @@
         <Params v-if="form.appParams" :params="form.appParams" :readonly="true" />
       </template>
     </el-form>
-    <!--海报-->
-    <el-dialog :visible.sync="showPosterSelector" width="1200px">
-      <PostSelector v-if="showPosterSelector" @selected="handleSelectPosterEnd"></PostSelector>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="showPosterSelector = false">取 消</el-button>
-        <!-- <el-button type="primary" @click="dialogTableVisible = false;selectSubmit()">确 定</el-button> -->
-      </div>
-    </el-dialog>
 
     <!--点击事件弹框-->
     <el-dialog :visible.sync="showClickSelector" width="1200px">
@@ -327,12 +319,9 @@
 import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
 import Params from './Params'
-import PostSelector from './selectResource'
 import ClickSelector from './selectClick'
 import TabSelector from '@/components/selectors/TabSelector'
-import { cloneDeep } from 'lodash'
 import CrowdSelector from '@/components/CrowdSelector'
-import selectImg from './selectImg'
 import InputMinute from '@/components/InputMinute'
 
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
@@ -356,11 +345,9 @@ export default {
     AppParams,
     AppParamsRead,
     Params,
-    PostSelector,
     ClickSelector,
     TabSelector,
     CrowdSelector,
-    selectImg,
     InputMinute,
 
     GlobalPictureSelector
@@ -369,7 +356,6 @@ export default {
     return {
       form: null,
       showCrowdSelector: false,
-      showPosterSelector: false,
       showClickSelector: false,
       showFocusImgSelectorVisible: false,
       PARENT_TYPES,
@@ -491,10 +477,6 @@ export default {
       if ($form) {
         $form.clearValidate()
       }
-    },
-    /** 弹框选择素材 */
-    handleSelectPosterStart() {
-      this.showPosterSelector = true
     },
     /** 弹框选择素材 */
     handleSelectPosterEnd(data) {

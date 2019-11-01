@@ -30,7 +30,7 @@
 </template>
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import BaseList from '@/components/BaseList'
 export default {
@@ -363,7 +363,7 @@ export default {
         resetText: '重置'
       }
     })
-    if (this.$consts.idPrefix != '10') {
+    if (this.$consts.idPrefix !== '10') {
       filterSchema.map({
         idPrefix: _.o.enum({
           '酷开': '10',

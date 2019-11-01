@@ -69,9 +69,9 @@ export default {
     const validateKey = (rule, value, cb) => {
       if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
         return cb(new Error('请勿输入特殊或空白字符'))
-      } 
+      }
       // 找到两个 key 是那个值，表明重复
-      const duplicated = this.inputValue.params.filter(({key}) => key === value).length > 1
+      const duplicated = this.inputValue.params.filter(({ key }) => key === value).length > 1
       if (duplicated) {
         return cb(new Error('key 不能重复'))
       }

@@ -145,7 +145,6 @@ export default {
             width: '200'
           }
         ],
-        selected: [],
         selectionType: 'single'
       }
     }

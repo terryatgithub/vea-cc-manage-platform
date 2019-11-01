@@ -131,7 +131,7 @@ export default {
 
     },
     boundary () {
-      let x = 0, y = 0
+      let x = 0; let y = 0
       this.content.forEach(val => {
         val = val.resize ? val.resize : val
         x = Math.max(x, val.x + val.width)
@@ -144,7 +144,7 @@ export default {
       const contentWidth = this.contentWidth
       const { x, y } = this.boundary
       if (x > contentWidth) {
-        return contentWidth/x
+        return contentWidth / x
       }
       return defaultRatio
     }

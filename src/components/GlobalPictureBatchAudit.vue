@@ -73,7 +73,7 @@ export default {
         auditFlag: [
           { required: true, message: '请输入审核意见', trigger: 'blur' }
         ]
-      },
+      }
     }
   },
   methods: {
@@ -124,23 +124,23 @@ export default {
           }, 1000)
         }
       })
-    },
+    }
   }
 }
 </script>
 <style lang="stylus" scoped>
-.content-list >>> .card-list 
+.content-list >>> .card-list
   display flex
   flex-direction row
   flex-wrap wrap
 
-.card-list  >>> .card-item__selection 
+.card-list  >>> .card-item__selection
   display none
 
-.card-list >>> .card-item-wrapper:hover 
+.card-list >>> .card-item-wrapper:hover
   border 1px solid #444
 
-.card-list >>> .card-item-wrapper 
+.card-list >>> .card-item-wrapper
   width 17%
   height 256px
   border 1px solid #ccc
@@ -148,7 +148,7 @@ export default {
   padding 10px
   cursor pointer
 
-.img-wrapper img 
+.img-wrapper img
   width 100%
   height 200px
 </style>

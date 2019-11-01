@@ -48,7 +48,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.list-layout-actions 
+.list-layout-actions
   margin-bottom 20px
 .list-layout-pagination
   margin-top 20px

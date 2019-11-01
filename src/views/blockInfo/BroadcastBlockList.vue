@@ -32,7 +32,7 @@
 <script>
 import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 import BroadcastSimpleData from './BroadcastSimpleData'
 
@@ -88,7 +88,7 @@ export default {
           {
             label: '数据表现',
             width: 100,
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return h(
                 'el-button',
                 {
@@ -209,25 +209,25 @@ export default {
       })
     },
     toPercent: decimal => {
-      return (Math.round(decimal * 10000) / 100.00 + "%")
+      return (Math.round(decimal * 10000) / 100.00 + '%')
     },
     getSimpleBrowseData (id) {
       let dataShow = {}
-      this.$service.getBlockSimpleBrowseData({id}).then(data => {
+      this.$service.getBlockSimpleBrowseData({ id }).then(data => {
         const uvctr = data.rows[0].data[0].uvctr
         dataShow = {
           value: this.toPercent(uvctr.value),
           dailyGrowth: this.toPercent(uvctr.dailyGrowth),
-          weeklyGrowth: this.toPercent(uvctr.weeklyGrowth) 
+          weeklyGrowth: this.toPercent(uvctr.weeklyGrowth)
         }
-        console.log('data2',dataShow );
+        console.log('data2', dataShow)
       })
       return dataShow
     },
     handleClickDataShow (row) {
       return () => {
         this.currentId = row.id
-        this.isVisibleDialog = true 
+        this.isVisibleDialog = true
         this.$sendEvent({
           type: 'broadcast_data_search'
         })

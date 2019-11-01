@@ -29,9 +29,9 @@
       ></PanelPreview>
     </el-tab-pane>
     <el-tab-pane label="素材" name="material">
-      <MySubmitTasksList 
-        resourceType="material" 
-        v-show="mode==='materialList'" 
+      <MySubmitTasksList
+        resourceType="material"
+        v-show="mode==='materialList'"
         ref="materialList"
         @read="handleRead">
       </MySubmitTasksList>
@@ -44,9 +44,9 @@
       />
     </el-tab-pane>
     <el-tab-pane label="布局" name="layout">
-      <MySubmitTasksList 
-        resourceType="layout" 
-        v-show="mode==='layoutList'" 
+      <MySubmitTasksList
+        resourceType="layout"
+        v-show="mode==='layoutList'"
         ref="layoutList"
         @read="handleRead">
       </MySubmitTasksList>
@@ -61,9 +61,9 @@
       </LayoutInfo>
     </el-tab-pane>
     <el-tab-pane label="首页" name="homepage">
-      <MySubmitTasksList 
-        resourceType="homepage" 
-        v-show="mode==='homepageList'" 
+      <MySubmitTasksList
+        resourceType="homepage"
+        v-show="mode==='homepageList'"
         ref="homepageList"
         @read="handleRead">
       </MySubmitTasksList>
@@ -78,9 +78,9 @@
       ></HomePageInfo>
     </el-tab-pane>
     <el-tab-pane label="策略" name="policy">
-      <MySubmitTasksList 
-        resourceType="policy" 
-        v-show="mode==='policyList'" 
+      <MySubmitTasksList
+        resourceType="policy"
+        v-show="mode==='policyList'"
         ref="policyList"
         @read="handleRead">
       </MySubmitTasksList>
@@ -96,9 +96,9 @@
     </PolicyManageInfo>
     </el-tab-pane>
     <el-tab-pane label="主题" name="theme">
-      <MySubmitTasksList 
-        resourceType="theme" 
-        v-show="mode==='themeList'" 
+      <MySubmitTasksList
+        resourceType="theme"
+        v-show="mode==='themeList'"
         ref="themeList"
         @read="handleRead">
       </MySubmitTasksList>
@@ -112,9 +112,9 @@
       />
     </el-tab-pane>
     <el-tab-pane label="角标" name="icon">
-      <MySubmitTasksList 
-        resourceType="icon" 
-        v-show="mode==='iconList'" 
+      <MySubmitTasksList
+        resourceType="icon"
+        v-show="mode==='iconList'"
         ref="iconList"
         @read="handleRead">
       </MySubmitTasksList>
@@ -128,9 +128,9 @@
       </GlobalCornerIcon>
     </el-tab-pane>
     <el-tab-pane label="系统功能" name="sysPlugin">
-      <MySubmitTasksList 
-        resourceType="sysPlugin" 
-        v-show="mode==='sysPluginList'" 
+      <MySubmitTasksList
+        resourceType="sysPlugin"
+        v-show="mode==='sysPluginList'"
         ref="sysPluginList"
         @read="handleRead">
       </MySubmitTasksList>

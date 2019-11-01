@@ -30,9 +30,8 @@
 <script>
 import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
-import BroadcastSimpleData from './BroadcastSimpleData'
 
 const typeOption = {
   normal: '普通', child: '少儿', movie: '电影', series: '电视剧'
@@ -43,8 +42,7 @@ export default {
   components: {
     Table,
     ContentWrapper,
-    ButtonGroupForListPage,
-    BroadcastSimpleData
+    ButtonGroupForListPage
   },
   data() {
     return {
@@ -142,7 +140,7 @@ export default {
             prop: 'videoNum'
           },
           {
-            label: "已屏蔽影片数量",
+            label: '已屏蔽影片数量',
             prop: 'disableVideoNum'
           },
           {
@@ -248,7 +246,7 @@ export default {
         placeholder: '内容源',
         clearable: true
       }),
-      openStatus: _.o.enum({'开启': 1, '关闭': 0}).other('form', {
+      openStatus: _.o.enum({ '开启': 1, '关闭': 0 }).other('form', {
         component: 'Select',
         placeholder: '源状态',
         clearable: true

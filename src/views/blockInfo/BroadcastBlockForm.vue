@@ -131,7 +131,7 @@
         <el-form-item label="开启个性化推荐">
           <el-switch
             :disabled="judegeRecomStreamDisabled()"
-            :value="!!normalForm.flagSetRec" 
+            :value="!!normalForm.flagSetRec"
             @input="handleInputFlagSetRec"
             active-color="#13ce66"
             inactive-color="grey"
@@ -148,7 +148,7 @@
           @del-select="normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
         />
         <el-form-item label="刷新机制" v-if="!!normalForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
-          <InputPositiveInt 
+          <InputPositiveInt
             v-model="normalForm.mediaAutomationBlockRls.refreshCal"
             class="flash-count-input"
             :disabled="isReadonly"
@@ -289,8 +289,6 @@ import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
 import CrowdSelector from '@/components/CrowdSelector.vue'
 
-import DialogPicture from '@/components/DialogPicture'
-import DialogCorner from '@/components/DialogCorner'
 import selectClick from '@/views/blockInfo/selectClick'
 
 import InputPositiveInt from '@/components/InputPositiveInt'
@@ -306,8 +304,6 @@ export default {
     AppParamsRead,
     CrowdSelector,
 
-    DialogPicture,
-    DialogCorner,
     selectClick,
 
     InputPositiveInt,
@@ -330,12 +326,12 @@ export default {
     disabled () {
       return this.isReadonly
     },
-    resourceOptionsManualResource (){
+    resourceOptionsManualResource () {
       return ['video', 'edu', 'live', 'rotate']
     },
-    resourceOptionsNormalForm (){
-      return this.showResourceTip && this.configModel === 'sign' 
-        ? ['rotate'] 
+    resourceOptionsNormalForm () {
+      return this.showResourceTip && this.configModel === 'sign'
+        ? ['rotate']
         : ['video', 'edu', 'live', 'rotate']
     },
     couldFullscreen() {

@@ -67,7 +67,7 @@ export default {
       }
     }
   },
-  props: ['mode', 'info', 'panelList', 'focusConfig', 'layout', 'blockCount'],
+  props: ['mode', 'info', 'panelList', 'focusConfig', 'panel'],
   methods: {
     handleSetCancel() {
       this.$emit('set-cancel')
@@ -95,7 +95,7 @@ export default {
       const currentEnd = info.endTime
       if (currentStart && currentEnd) {
         if (currentStart >= currentEnd) {
-          return cb('开始时间必须小于结束时间')
+          return cb(Error('开始时间必须小于结束时间'))
         }
         while (--length >= 0) {
           if (length !== currentIndex) {
@@ -114,18 +114,18 @@ export default {
         }
       } else {
         if (currentStart && !currentEnd) {
-          return cb('请设置结束时间')
+          return cb(Error('请设置结束时间'))
         }
         if (currentEnd && !currentStart) {
-          return cb('请设置开始时间')
+          return cb(Error('请设置开始时间'))
         }
         if (info.panelIsFocus !== 1) {
-          return cb('时间段和空时间段默认落焦至少设置一个')
+          return cb(Error('时间段和空时间段默认落焦至少设置一个'))
         }
       }
 
       if (duplicatedIndex !== undefined) {
-        cb('与第 ' + (duplicatedIndex + 1) + ' 个分组的时间段 ' + duplicatedSlot + ' 重合')
+        cb(Error('与第 ' + (duplicatedIndex + 1) + ' 个分组的时间段 ' + duplicatedSlot + ' 重合'))
       } else {
         cb()
       }
@@ -133,11 +133,11 @@ export default {
     handleToggleFillWithRanking (val) {
       const info = this.info
       if (val) {
-        if (!isValidLayoutForRanking(this.layout, this.blockCount)) {
+        if (!isValidLayoutForRanking(this.panel.contentList)) {
           return this.$message({
             type: 'error',
             duration: 8000,
-            message: '采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是260*364、推荐位数量6~11个'
+            message: '采用排行榜，布局必须满足：标题布局、不带布局、只有一行、每个推荐位都是260*364、推荐位数量6~11个'
           })
         }
         info.rankIsOpen = 1
@@ -145,7 +145,7 @@ export default {
         // 清空内容
         info.rankIsOpen = 0
       }
-    },
+    }
   }
 }
 </script>

@@ -44,11 +44,11 @@ export default {
         idField: 'id'
       }
     },
+    // eslint-disable-next-line
     listProps() {
-
     },
+    // eslint-disable-next-line
     contentProps() {
-
     }
   },
   methods: {

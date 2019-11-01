@@ -14,7 +14,7 @@
     </el-row>
     <div class="container">
       <el-form label-width="150px">
-        
+
           <el-form-item label="点击类型" :rules="rules.required">
             <el-radio-group v-model="value.clickType" :disabled="disabled">
               <el-radio label="detail">点击进详情页</el-radio>
@@ -48,13 +48,13 @@
         </el-form-item>
         <el-form-item label="图片海报" :rules="rules.required">
           <div class="poster--wrapper">
-            <div v-for="(picPoster, index) in inputTags" class="poster--container">
+            <div v-for="(picPoster, index) in inputTags" :key="index" class="poster--container">
               <GlobalPictureSelector
                 :disabled="disabled"
                 :picture-resolution="formatPicResolution(picPoster.width, picPoster.height)"
                 @select-end="handleSelectPostEnd($event, index)">
-                <div 
-                  :style="computePicStyle(picPoster.width, picPoster.height)" 
+                <div
+                  :style="computePicStyle(picPoster.width, picPoster.height)"
                   class="poster--pic"
                 >
                   <img
@@ -70,19 +70,19 @@
             </div>
           </div>
           <div v-if="inputTags.length!==0">
-            <el-checkbox 
-              :value="!value.showSeries" 
-              @input="value.showSeries = $event ? 0 : 1" 
+            <el-checkbox
+              :value="!value.showSeries"
+              @input="value.showSeries = $event ? 0 : 1"
               :disabled="disabled"
             >不展示期数</el-checkbox>
-            <el-checkbox 
-              :value="!value.showScore" 
-              @input="value.showScore = $event ? 0 : 1" 
+            <el-checkbox
+              :value="!value.showScore"
+              @input="value.showScore = $event ? 0 : 1"
               :disabled="disabled"
             >不展示评分</el-checkbox>
           </div>
         </el-form-item>
-        
+
         <el-form-item label="视频资源">
           <ResourceSelector
             :style="{display: disabled ? 'none' : 'inline-block'}"
@@ -110,26 +110,23 @@
 
   </div>
 </template>
-  
+
 <script>
 import InputPositiveInt from '@/components/InputPositiveInt'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
-import DialogPicture from '@/components/DialogPicture'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
-import { cloneDeep } from 'lodash'
 
 const resourceOptions = ['video', 'edu', 'pptv', 'live', 'topic', 'rotate']
 export default {
   components: {
     InputPositiveInt,
     ResourceSelector,
-    DialogPicture,
     GlobalPictureSelector
   },
   data() {
     return {
       isVisiablePosterSelector: false,
-      currentSelectPic: undefined,  // 当前选择的图片海报
+      currentSelectPic: undefined, // 当前选择的图片海报
       currentPicIndex: undefined,
       resourceOptions,
       rules: {
@@ -186,7 +183,7 @@ export default {
       },
       deep: true,
       immediate: true
-    },
+    }
     // 'inputTags.length': {
     //   handler: function(val, old) {
     //     let inputTags = this.inputTags
@@ -209,15 +206,15 @@ export default {
       }
     },
     handleDelPoster(index) {
-      if(this.disabled) {
+      if (this.disabled) {
         return
       }
       this.value.picInfoList[index].pictureUrl = undefined
     },
     computePicStyle(width, height) {
       return {
-        width: width/2 + 'px',
-        height: height/2 +'px'
+        width: width / 2 + 'px',
+        height: height / 2 + 'px'
       }
     },
     formatPicResolution (width, height) {
@@ -227,18 +224,17 @@ export default {
       this.value.picInfoList[index].pictureUrl = selected.pictureUrl
     },
     handlePicClick(index) {
-      if(this.disabled) {
-        return 
+      if (this.disabled) {
+        return
       }
       this.isVisiablePosterSelector = true
       this.currentPicIndex = index
     },
     computeResolution() {
       const { currentPicIndex, inputTags } = this
-      return inputTags[currentPicIndex].width + "*" + inputTags[currentPicIndex].height
+      return inputTags[currentPicIndex].width + '*' + inputTags[currentPicIndex].height
     }
   }
-
 
 }
 </script>
@@ -256,7 +252,7 @@ export default {
   overflow: auto;
 }
 .video-index {
-  color:	#00BBFF;
+  color: #00BBFF;
   font-size: 23px;
 }
 .num-input {

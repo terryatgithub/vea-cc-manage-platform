@@ -41,8 +41,8 @@
 </template>
 <script>
 import VeLine from 'v-charts/lib/line.common'
-import "echarts/lib/component/markLine"
-import "echarts/lib/component/markPoint"
+import 'echarts/lib/component/markLine'
+import 'echarts/lib/component/markPoint'
 
 export default {
   components: {
@@ -52,29 +52,29 @@ export default {
     this.markLine = {
       data: [
         {
-          name: "平均线",
-          type: "average",
-        },
-      ],
+          name: '平均线',
+          type: 'average'
+        }
+      ]
     }
     this.markPoint = {
       data: [
         {
-          name: "最大值",
-          type: "max",
+          name: '最大值',
+          type: 'max'
         },
         {
-          name: "最小值",
-          type: "min",
-        },
-      ],
+          name: '最小值',
+          type: 'min'
+        }
+      ]
     }
     const extend = {
       grid: {
-        top: "10%",
-        left: "5%",
-        right: "5%",
-        bottom: "10%",
+        top: '10%',
+        left: '5%',
+        right: '5%',
+        bottom: '10%',
         containLabel: true
       },
       series: v => {
@@ -86,11 +86,10 @@ export default {
           rotate: 45,
           formatter: function(val) {
             let mark = val.indexOf('(')
-            if(mark === -1)
-            {
+            if (mark === -1) {
               return val
-            }else {
-              let version = val.slice(mark-val.length)
+            } else {
+              let version = val.slice(mark - val.length)
               let date = val.slice(0, mark)
               return [`{a|${version}}`, date].join('')
             }
@@ -100,17 +99,17 @@ export default {
           }
         }
       },
-      color: ['#1E90FF ','#2f4554'],
+      color: ['#1E90FF ', '#2f4554']
     }
 
     return {
-      selectTitle: '',  // 标题筛选
+      selectTitle: '', // 标题筛选
       allTitles: [],
 
       visible: this.show,
       broadcastChartDataArr: [],
       extend: extend
-    };
+    }
   },
   props: {
     id: Number,
@@ -129,7 +128,7 @@ export default {
   watch: {
     show() {
       this.visible = this.show
-    },
+    }
   },
 
   methods: {
@@ -167,17 +166,17 @@ export default {
         }
       }
       const extend = Object.assign({}, this.extend)
-      return chartData.unit === '%' ? 
-      Object.assign(extend, {
-        yAxis
-      })
-      : extend
-    },
+      return chartData.unit === '%'
+        ? Object.assign(extend, {
+          yAxis
+        })
+        : extend
+    }
   },
   mounted() {
 
   }
-};
+}
 </script>
 
 <style lang="stylus" scoped>

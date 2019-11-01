@@ -181,13 +181,8 @@ export default {
           {
             label: '内容源',
             prop: 'tabResource',
-            formatter: function(row) {
-              const v = row.tabResource
-              return (
-                { o_tencent: '腾讯', o_iqiyi: '爱奇艺', o_voole: '优朋' }[
-                  v + ''
-                ] || ''
-              )
+            formatter: (row) => {
+              return this.$consts.sourceText[row.tabResource] || ''
             }
           },
           {
