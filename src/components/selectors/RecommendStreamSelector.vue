@@ -65,7 +65,7 @@ export default {
       }
       this.$service.getMediaAutomationDataList(params).then(data => {
         this.recomStreamTags = data.rows.filter(item => {
-          return item.openStatus === 0 // 流状态关闭
+          return item.openStatus === 1 // 流状态关闭
         })
         // 分类显示
         let normal = []
