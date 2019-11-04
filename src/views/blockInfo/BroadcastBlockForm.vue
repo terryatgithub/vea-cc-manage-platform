@@ -18,7 +18,7 @@
         <el-switch
           v-model="normalForm.shortVideoSwitch"
           @change="hanleSwitchShortVideo"
-          :disabled="judegeRotateDisabled()"
+          :disabled="judegeShortVideoDisabled()"
           active-color="#13ce66"
           inactive-color="grey"
         ></el-switch>
@@ -209,7 +209,7 @@
       </el-form-item>
       <el-form-item label="点击跳转" v-if="isGroupModel">
         <el-radio-group v-model="normalForm.clickType">
-          <el-radio label="detail" :disabled="disabled">点击进详情页</el-radio>
+          <el-radio label="detail" :disabled="disabled" v-show="!normalForm.shortVideoSwitch">点击进详情页</el-radio>
           <el-radio
             v-show="couldFullscreen"
             label="play-fullscreen"
@@ -336,7 +336,7 @@ export default {
     },
     couldFullscreen() {
       const contentType = this.normalForm.contentType
-      return ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
+      return this.normalForm.shortVideoSwitch || ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
     },
     thirdIdOrPackageNameForClick() {
       return this.getThirdId(this.normalForm.clickParams)
@@ -357,17 +357,31 @@ export default {
         return result
       }
     },
-    judegeRotateDisabled () {
-      if (this.isReadonly === false && this.normalForm.clickTemplateType === 'rotate') {
-        return true
+    judegeShortVideoDisabled () {
+      const { normalForm, isReadonly } = this
+      if (isReadonly === false) {
+        if (!normalForm.thirdIdOrPackageName) {
+          return false
+        } else if (normalForm.clickTemplateType === 'rotate') {
+          return true
+        }
       }
-      return this.isReadonly
+      return isReadonly
     },
     judegeRecomStreamDisabled () {
-      if (this.isReadonly === false && (this.normalForm.clickTemplateType === 'rotate' || this.normalForm.shortVideoSwitch === true)) {
-        return true
+      const { normalForm, isReadonly } = this
+      if (isReadonly === false) {
+        if (normalForm.shortVideoSwitch) {
+          return true
+        } else {
+          if (!normalForm.thirdIdOrPackageName) {
+            return false
+          } else if (normalForm.clickTemplateType === 'rotate') {
+            return true
+          }
+        }
       }
-      return this.isReadonly
+      return isReadonly
     },
     handleSelectClickEventStart() {
       this.onclickEventVisible = true
@@ -501,13 +515,22 @@ export default {
     },
     // 选择资源拓展项
     hanleSwitchShortVideo (bool) {
+      this.normalForm.thirdIdOrPackageName = undefined
+      this.normalForm.title = undefined
+      this.normalForm.subTitle = undefined
+      this.normalForm.poster.pictureUrl = undefined
+      this.normalForm.cornerIconList.forEach((item, index) => {
+        this.handleRemoveCorner(index)
+      })
       if (bool) {
-        this.normalForm.thirdIdOrPackageName = undefined
+        this.handleInputFlagSetRec(false)
+        this.normalForm.clickType = 'play-fullscreen'
       } else {
         this.normalForm.shortVideoParams = {
           topicId: undefined,
           shortVideoId: undefined
         }
+        this.normalForm.clickType = 'detail'
       }
       this.normalForm.shortVideoSwitch = bool
     },

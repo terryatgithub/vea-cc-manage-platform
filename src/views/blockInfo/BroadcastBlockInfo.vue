@@ -1250,6 +1250,13 @@ export default {
     // 快速填充
     lowerFill: function() {
       var newForm = cloneDeep(this.normalVersionContent[0])
+      if (newForm.shortVideoSwitch === true) {
+        this.$message({
+          type: 'error',
+          message: '第一个资源是短视频资源，无法快速填充。'
+        })
+        return
+      }
       newForm.dmpContentList = undefined
       // 由于改变 coverType 会触发清除低版本表单，所以先修改 coverType 再赋值 lowerForm
       if (newForm.sign === 'manualSet') {
@@ -1368,10 +1375,13 @@ export default {
           item.params = {
             ...item.shortVideoParams
           }
-          item.clickParams = {}// 目前先置空，待后续客户端开发
+          // 选跳转其他播放资源或者手动设置,clickParams/clickTemplateType原来的逻辑不变
+          if (item.sign === 'autoSet') {
+            item.clickParams = {}// 目前先置空，待后续客户端开发
+            item.clickTemplateType = 'shortVideo'
+          }
           item.coverType = 'shortVideo'
           item.contentType = 'shortVideo'
-          item.clickTemplateType = 'shortVideo'
         }
         // type url 时，要转换 params 数据, 具体看 getUrlBlur
         if (item.type === 'url') {
