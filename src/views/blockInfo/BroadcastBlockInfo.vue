@@ -1250,6 +1250,13 @@ export default {
     // 快速填充
     lowerFill: function() {
       var newForm = cloneDeep(this.normalVersionContent[0])
+      if (newForm.shortVideoSwitch === true) {
+        this.$message({
+          type: 'error',
+          message: '第一个资源是短视频资源，无法快速填充。'
+        })
+        return
+      }
       newForm.dmpContentList = undefined
       // 由于改变 coverType 会触发清除低版本表单，所以先修改 coverType 再赋值 lowerForm
       if (newForm.sign === 'manualSet') {

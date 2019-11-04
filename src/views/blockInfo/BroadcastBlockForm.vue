@@ -18,7 +18,7 @@
         <el-switch
           v-model="normalForm.shortVideoSwitch"
           @change="hanleSwitchShortVideo"
-          :disabled="judegeRotateDisabled()"
+          :disabled="judegeShortVideoDisabled()"
           active-color="#13ce66"
           inactive-color="grey"
         ></el-switch>
@@ -357,17 +357,31 @@ export default {
         return result
       }
     },
-    judegeRotateDisabled () {
-      if (this.isReadonly === false && this.normalForm.clickTemplateType === 'rotate') {
-        return true
+    judegeShortVideoDisabled () {
+      const { normalForm, isReadonly } = this
+      if (isReadonly === false) {
+        if (!normalForm.thirdIdOrPackageName) {
+          return false
+        } else if (normalForm.clickTemplateType === 'rotate') {
+          return true
+        }
       }
-      return this.isReadonly
+      return isReadonly
     },
     judegeRecomStreamDisabled () {
-      if (this.isReadonly === false && (this.normalForm.clickTemplateType === 'rotate' || this.normalForm.shortVideoSwitch === true)) {
-        return true
+      const { normalForm, isReadonly } = this
+      if (isReadonly === false) {
+        if (normalForm.shortVideoSwitch) {
+          return true
+        } else {
+          if (!normalForm.thirdIdOrPackageName) {
+            return false
+          } else if (normalForm.clickTemplateType === 'rotate') {
+            return true
+          }
+        }
       }
-      return this.isReadonly
+      return isReadonly
     },
     handleSelectClickEventStart() {
       this.onclickEventVisible = true
@@ -502,7 +516,11 @@ export default {
     // 选择资源拓展项
     hanleSwitchShortVideo (bool) {
       if (bool) {
+        this.handleInputFlagSetRec(false)
         this.normalForm.thirdIdOrPackageName = undefined
+        this.normalForm.title = undefined
+        this.normalForm.subTitle = undefined
+        this.normalForm.poster.pictureUrl = undefined
       } else {
         this.normalForm.shortVideoParams = {
           topicId: undefined,
