@@ -209,7 +209,7 @@
       </el-form-item>
       <el-form-item label="点击跳转" v-if="isGroupModel">
         <el-radio-group v-model="normalForm.clickType">
-          <el-radio label="detail" :disabled="disabled">点击进详情页</el-radio>
+          <el-radio label="detail" :disabled="disabled" v-show="!normalForm.shortVideoSwitch">点击进详情页</el-radio>
           <el-radio
             v-show="couldFullscreen"
             label="play-fullscreen"
@@ -336,7 +336,7 @@ export default {
     },
     couldFullscreen() {
       const contentType = this.normalForm.contentType
-      return ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
+      return this.normalForm.shortVideoSwitch || ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
     },
     thirdIdOrPackageNameForClick() {
       return this.getThirdId(this.normalForm.clickParams)
@@ -524,11 +524,13 @@ export default {
       })
       if (bool) {
         this.handleInputFlagSetRec(false)
+        this.normalForm.clickType = 'play-fullscreen'
       } else {
         this.normalForm.shortVideoParams = {
           topicId: undefined,
           shortVideoId: undefined
         }
+        this.normalForm.clickType = 'detail'
       }
       this.normalForm.shortVideoSwitch = bool
     },
