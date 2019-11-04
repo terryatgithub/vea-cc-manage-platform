@@ -1375,10 +1375,13 @@ export default {
           item.params = {
             ...item.shortVideoParams
           }
-          item.clickParams = {}// 目前先置空，待后续客户端开发
+          // 选跳转其他播放资源或者手动设置,clickParams/clickTemplateType原来的逻辑不变
+          if (item.sign === 'autoSet') {
+            item.clickParams = {}// 目前先置空，待后续客户端开发
+            item.clickTemplateType = 'shortVideo'
+          }
           item.coverType = 'shortVideo'
           item.contentType = 'shortVideo'
-          item.clickTemplateType = 'shortVideo'
         }
         // type url 时，要转换 params 数据, 具体看 getUrlBlur
         if (item.type === 'url') {
