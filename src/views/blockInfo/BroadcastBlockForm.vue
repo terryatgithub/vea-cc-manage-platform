@@ -515,12 +515,15 @@ export default {
     },
     // 选择资源拓展项
     hanleSwitchShortVideo (bool) {
+      this.normalForm.thirdIdOrPackageName = undefined
+      this.normalForm.title = undefined
+      this.normalForm.subTitle = undefined
+      this.normalForm.poster.pictureUrl = undefined
+      this.normalForm.cornerIconList.forEach((item, index) => {
+        this.handleRemoveCorner(index)
+      })
       if (bool) {
         this.handleInputFlagSetRec(false)
-        this.normalForm.thirdIdOrPackageName = undefined
-        this.normalForm.title = undefined
-        this.normalForm.subTitle = undefined
-        this.normalForm.poster.pictureUrl = undefined
       } else {
         this.normalForm.shortVideoParams = {
           topicId: undefined,
