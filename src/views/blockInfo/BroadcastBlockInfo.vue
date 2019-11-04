@@ -1487,8 +1487,10 @@ export default {
             if (item.params.topicId) {
               item.shortVideoSwitch = true
               item.shortVideoParams = {
-                ...item.params
+                topicId: undefined,
+                shortVideoId: undefined
               }
+              Object.assign(item.shortVideoParams, item.params)
             }
             item.thirdIdOrPackageName = this.getThirdId(item.params)
             item.subchannelIs = item.contentType === 'rotate'
