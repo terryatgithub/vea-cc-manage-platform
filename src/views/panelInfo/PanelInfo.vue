@@ -197,7 +197,7 @@
                     <el-button type="primary" plain @click.stop="handleSelectResourceStart">选择资源</el-button>
                   </ResourceSelector>
                   <ResourceSelector
-                    class="margin-left-20"
+                    class="margin-left-10"
                     v-if="canFillWithRanking"
                     ref="rankingSelector"
                     :selectors="['ranking']"
@@ -226,6 +226,9 @@
                       选择排行榜
                     </el-button>
                   </el-tooltip>
+                  <el-button class="btn-clear-current-blocks" @click="handleClearCurrentBlocks" type="primary" plain>
+                    清空当前版块推荐位
+                  </el-button>
                 </div>
                 <div v-if="pannel.parentType === 'group'" style="float:right">
                   <el-button
@@ -1457,6 +1460,15 @@ export default {
       })
       panel.panelIsFocus = 1
     },
+    handleClearCurrentBlocks () {
+      this.$confirm('确定清空当前版块推荐位？', '提示')
+        .then(() => {
+          const activePannelIndex = +this.activePannelIndex
+          this.clearBlocks(activePannelIndex)
+          this.updatePosition(activePannelIndex)
+        })
+        .catch(() => {})
+    },
     clearBlocks(index) {
       const pannel = this.pannel
       const pannelList = pannel.pannelList
@@ -2428,7 +2440,8 @@ export default {
   line-height: 44px
   text-align: center
   font-size: 25px
-.fill-width-ranking
-  margin-left 10px
-  display inline-block
+.btn-clear-current-blocks:focus
+  color #409EFF
+  background #ecf5ff
+  border-color #b3d8ff
 </style>
