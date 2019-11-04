@@ -367,9 +367,10 @@
                         <VirtualPanel
                           :blocks="item.contentList"
                           :mode="isFillWithRanking ? 'read' : mode"
+                          :show-chart-btn="true"
                           @click-block="handleClickBlock"
-                          @analyze-simple-data="handleAnalyzeData('simple', $event, index)"
-                          @analyze-dmp-data="handleAnalyzeData('dmp', $event, index)"
+                          @show-simple-chart="handleAnalyzeData('simple', $event, index)"
+                          @show-dmp-chart="handleAnalyzeData('dmp', $event, index)"
                         ></VirtualPanel>
                       </el-tab-pane>
                     </el-tabs>
@@ -380,8 +381,9 @@
                     :mode="isFillWithRanking ? 'read' : mode"
                     :blocks="pannel.pannelList[0].contentList"
                     @click-block="handleClickBlock"
-                    @analyze-simple-data="handleAnalyzeData('simple', $event)"
-                    @analyze-dmp-data="handleAnalyzeData('dmp', $event)"
+                    :show-chart-btn="true"
+                    @show-simple-chart="handleAnalyzeData('simple', $event)"
+                    @show-dmp-chart="handleAnalyzeData('dmp', $event)"
                   ></VirtualPanel>
                 </div>
               </el-form-item>

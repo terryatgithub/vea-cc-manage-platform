@@ -50,7 +50,7 @@
             @click.stop="handleRemoveBlock(index)"
           >x</span>
           <!-- 新增时不显示看数据按钮 -->
-          <div :class="isOverFlow(block.style) ? 'analyze-data--container' : 'analyze-data--container-row'" v-if="mode==='read'">
+          <div :class="isOverFlow(block.style) ? 'analyze-data--container' : 'analyze-data--container-row'" v-if="showChartBtn === true">
             <el-button type="success"
             v-if="blocks[index].vcId != -101"
             class="analyze-data--simpleBtn margin-bottom-6"
@@ -107,7 +107,7 @@ export default {
     }
   },
 
-  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode'],
+  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn'],
   watch: {
     blocks: 'computeBlockItems'
   },
@@ -131,10 +131,10 @@ export default {
       this.$emit('remove-block', index)
     },
     handleAnalyzeSimpleData (index) {
-      this.$emit('analyze-simple-data', index)
+      this.$emit('show-simple-chart', index)
     },
     handleAnalyzeDmpData (index) {
-      this.$emit('analyze-dmp-data', index)
+      this.$emit('show-dmp-chart', index)
     },
     handleClickBlock(index) {
       this.$emit('click-block', index)
