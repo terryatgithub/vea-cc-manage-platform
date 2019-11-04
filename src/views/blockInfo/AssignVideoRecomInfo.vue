@@ -734,13 +734,18 @@ export default {
       this.handleSubmit(2)
     },
     checkParams(basicParam, videos, cb) {
+      const sizeTags = this.sizeTags
       if (!this.checkBasicParam(basicParam)) {
         this.$message.error('流基本设置，信息不完整')
       } else {
         if (videos.length === 0) {
-          cb()
+          if (sizeTags.length !== 0) {
+            this.$message.error('若未配置影片，请删除尺寸')
+            return false
+          } else {
+            cb()
+          }
         } else {
-          const sizeTags = this.sizeTags
           const picSize = sizeTags.map(item => {
             return item.width + '*' + item.height
           })
