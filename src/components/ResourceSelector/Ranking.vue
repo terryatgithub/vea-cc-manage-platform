@@ -71,17 +71,8 @@ export default {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
-      const businessType = this.businessType
-      if ([60, 61, 32].includes(businessType)) {
-        const businessTypeMap = {
-          60: 1,
-          61: 2,
-          32: 3
-        }
-        filter.businessType = businessTypeMap[businessType]
-      } else {
-        filter.partner = this.$consts.sourceToPartner[this.source]
-      }
+      filter.businessType = this.businessType
+      filter.partner = this.$consts.sourceToPartner[this.source]
       return filter
     },
     handleFilterChange() {

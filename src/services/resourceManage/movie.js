@@ -6,6 +6,30 @@ export function getMediaVideoInfos(params) {
     delete params.tagCodes
     tagCodeParam = tagCodes.map(item => `tagCodes=${item}`).join('&')
   }
+
+  // 如果是获取排行榜
+  if (params.dataType === 'coocaaRanking') {
+    // 对业务类型进行映射
+    const businessType = params.businessType
+    const businessTypeMap = {
+      60: 1,
+      61: 2,
+      32: 3
+    }
+    if ([60, 61, 32].includes(businessType)) {
+      params.businessType = businessTypeMap[businessType]
+    }
+
+    // 教育的，既要传 业务类型，又要传 渠道
+    // 其他的，只需要传渠道
+    if (params.businessType === 1) {
+      // 如果业务类型是 教育, 固定渠道为 腾讯
+      params.partner = 'tencent'
+    } else {
+      // 否则, 不需要传业务类型
+      delete params.businessType
+    }
+  }
   return this.fetch({
     methods: 'get',
     url: `api/tvos/getMediaVideoInfos.html${tagCodeParam ? ('?' + tagCodeParam) : ''}`,

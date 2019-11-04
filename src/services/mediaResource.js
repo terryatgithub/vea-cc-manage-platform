@@ -31,6 +31,10 @@ export function mediaGetTagList(params) {
 }
 
 export function mediaGetRankingInfoVideoList (params) {
+  // 如果是业务分类是教育，则使用腾讯源
+  if (params.businessType === 60) {
+    params.partner = 'tencent'
+  }
   return this.fetch({
     method: 'get',
     url: 'api/tvos/getRankInfoVideoList.html',
