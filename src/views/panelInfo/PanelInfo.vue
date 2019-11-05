@@ -396,7 +396,7 @@
                         <VirtualPanel
                           :blocks="item.contentList"
                           :mode="mode"
-                          :show-chart-btn="true"
+                          :show-chart-btn="pannel.pannelStatus !== this.$consts.status.draft"
                           @click-block="handleClickBlock"
                           @show-simple-chart="handleAnalyzeData('simple', $event, index)"
                           @show-dmp-chart="handleAnalyzeData('dmp', $event, index)"
@@ -410,7 +410,7 @@
                     :mode="mode"
                     :blocks="pannel.pannelList[0].contentList"
                     @click-block="handleClickBlock"
-                    :show-chart-btn="true"
+                    :show-chart-btn="pannel.pannelStatus !== this.$consts.status.draft"
                     @show-simple-chart="handleAnalyzeData('simple', $event)"
                     @show-dmp-chart="handleAnalyzeData('dmp', $event)"
                   ></VirtualPanel>

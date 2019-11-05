@@ -286,13 +286,13 @@ export default {
 </script>
 <style lang = 'stylus' scoped>
 .pics img
-  max-width: 350px
-  max-height: 500px
+  max-width 350px
+  max-height 500px
 .content
   >>> table .imgs
-    cursor: pointer
+    cursor pointer
 .btns
-  margin-bottom: 10px
+  margin-bottom 10px
 .checkItemStyle
-  margin: 10px
+  margin 10px
 </style>
