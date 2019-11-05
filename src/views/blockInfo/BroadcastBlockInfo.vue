@@ -176,6 +176,7 @@
             <BroadcastBlockForm
               ref="broadcastBlockForm"
               v-if="normalForm.dmpContentList[normalForm.activeIndex]"
+              @toggle-use-short-video="handleToggleUseShortVideo"
               @toggle-manaulset-resource="handleToggleManualSetResource($event, 'dmp')"
               :config-model="basicForm.configModel"
               :normal-form="normalForm.dmpContentList[normalForm.activeIndex]"
@@ -192,6 +193,7 @@
           v-if="basicForm.configModel === 'broadcast' || basicForm.configModel === 'sign'">
           <BroadcastBlockForm
             ref="broadcastBlockForm"
+            @toggle-use-short-video="handleToggleUseShortVideo"
             @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
             :config-model="basicForm.configModel"
             :normal-form="normalForm"
@@ -868,11 +870,15 @@ export default {
         this.normalForm = normalForm
       }
     },
-    handleToggleUseShortVideo(val) {
-      debugger
-      this.handleToggleManualSetResource(false)
+    handleToggleUseShortVideo (isOpen) {
       const normalForm = this.normalForm
-      normalForm.shortVideoSwitch = val
+      if (isOpen) {
+        normalForm.type = 'shortVideo'
+        normalForm.sign = 'autoSet'
+        normalForm.onclick = ''
+        normalForm.clickParams = normalForm.params
+        normalForm.clickTemplateType = normalForm.contentType
+      }
     },
     // 删除角标
     deleteCorner (form, index) {
