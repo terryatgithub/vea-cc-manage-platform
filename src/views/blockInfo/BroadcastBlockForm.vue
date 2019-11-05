@@ -17,11 +17,14 @@
       <el-form-item v-if="isGroupModel" label="使用短视频流">
         <el-switch
           :value="normalForm.shortVideoSwitch"
-          @input="$emit('toggle-use-short-video', $event)"
+          @input="handleSwitchShortVideo"
           :disabled="judegeShortVideoDisabled()"
           active-color="#13ce66"
           inactive-color="grey"
         ></el-switch>
+        <span class="sign-tip">
+          开关切换时，清空配置数据；开关开启时，将禁用个性化推荐
+        </span>
       </el-form-item>
       <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName" v-if="!normalForm.shortVideoSwitch">
         <ResourceSelector
@@ -87,9 +90,10 @@
           :disable-partner="!!source"
           :source="source"
           :selectors="['shortVideoTopic']"
+          v-if="!disabled"
           selection-type="single"
           @select-end="handleSelectVideoTopicEnd">
-          <el-button type="primary" plain :disabled="disabled">
+          <el-button type="primary" plain>
             选择话题
           </el-button>
         </ResourceSelector>
@@ -107,9 +111,10 @@
           :selectors="['shortVideo']"
           :disable-partner="!!source"
           :auto-fetch-selectors="['shortVideo']"
+          v-if="!disabled"
           selection-type="single"
           @select-end="handleSelectVideoEnd">
-          <el-button type="primary" plain :disabled="disabled">
+          <el-button type="primary" plain>
             选择短视频
           </el-button>
         </ResourceSelector>
@@ -419,7 +424,6 @@ export default {
       // 轮播资源关闭推荐流
       if (this.normalForm.clickTemplateType === 'rotate') {
         this.handleInputFlagSetRec(false)
-        this.hanleSwitchShortVideo()
       }
       this.normalForm.shortVideoSwitch = false
     },
@@ -514,29 +518,27 @@ export default {
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
     },
     // 选择资源拓展项
-    hanleSwitchShortVideo (bool) {
-      this.normalForm.thirdIdOrPackageName = undefined
-      this.normalForm.title = undefined
-      this.normalForm.subTitle = undefined
-      this.normalForm.poster.pictureUrl = undefined
-      this.normalForm.cornerIconList.forEach((item, index) => {
+    handleSwitchShortVideo (bool) {
+      const normalForm = this.normalForm
+      normalForm.thirdIdOrPackageName = undefined
+      normalForm.title = undefined
+      normalForm.subTitle = undefined
+      normalForm.poster.pictureUrl = undefined
+      normalForm.cornerIconList.forEach((item, index) => {
         this.handleRemoveCorner(index)
       })
       if (bool) {
-        this.$emit('toggle-manaulset-resource', false)
-        this.handleInputFlagSetRec(false)
-        this.normalForm.clickType = 'play-fullscreen'
+        normalForm.clickType = 'play-fullscreen'
       } else {
-        this.normalForm.shortVideoParams = {
-          topicId: undefined,
-          shortVideoId: undefined
-        }
-        this.normalForm.clickType = 'detail'
+        normalForm.clickType = 'detail'
       }
-      this.normalForm.shortVideoSwitch = bool
+      normalForm.shortVideoSwitch = bool
+      this.handleInputFlagSetRec(false)
+      this.$emit('toggle-use-short-video', bool)
     },
     handleSelectVideoTopicEnd ({ shortVideoTopic }) {
       this.normalForm.shortVideoParams.topicId = shortVideoTopic[0].id
+      this.normalForm.title = shortVideoTopic[0].topicName
     },
     handleSelectVideoEnd ({ shortVideo }) {
       const prefix = this.$consts.sourcePrefix[this.source] || ''
