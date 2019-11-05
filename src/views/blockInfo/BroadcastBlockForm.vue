@@ -16,8 +16,8 @@
       </el-form-item>
       <el-form-item v-if="isGroupModel" label="使用短视频流">
         <el-switch
-          v-model="normalForm.shortVideoSwitch"
-          @change="hanleSwitchShortVideo"
+          :value="normalForm.shortVideoSwitch"
+          @input="$emit('toggle-use-short-video', $event)"
           :disabled="judegeShortVideoDisabled()"
           active-color="#13ce66"
           inactive-color="grey"
@@ -523,6 +523,7 @@ export default {
         this.handleRemoveCorner(index)
       })
       if (bool) {
+        this.$emit('toggle-manaulset-resource', false)
         this.handleInputFlagSetRec(false)
         this.normalForm.clickType = 'play-fullscreen'
       } else {

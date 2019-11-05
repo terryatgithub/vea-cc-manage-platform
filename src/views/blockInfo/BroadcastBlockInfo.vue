@@ -134,6 +134,7 @@
           <div v-if="normalForm.showContentType === 'general'">
             <BroadcastBlockForm
               ref="broadcastBlockForm"
+              @toggle-use-short-video="handleToggleUseShortVideo"
               @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
               :config-model="basicForm.configModel"
               :normal-form="normalForm"
@@ -866,6 +867,12 @@ export default {
         this.$set(this.normalVersionContent, this.currentIndex, normalForm)
         this.normalForm = normalForm
       }
+    },
+    handleToggleUseShortVideo(val) {
+      debugger
+      this.handleToggleManualSetResource(false)
+      const normalForm = this.normalForm
+      normalForm.shortVideoSwitch = val
     },
     // 删除角标
     deleteCorner (form, index) {
