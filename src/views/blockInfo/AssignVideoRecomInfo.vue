@@ -772,7 +772,9 @@ export default {
       let isPass = true
       videoListParams.forEach(param => {
         if (param === 'picInfoList') { // 兼容预览
-          isPass = !(!video[param] || video[param].length === 0)
+          isPass = !video.picInfoList.some(item => {
+            return item.pictureUrl === undefined || item.pictureUrl === ''
+          })
         } else if (!video[param]) {
           isPass = false
         }
