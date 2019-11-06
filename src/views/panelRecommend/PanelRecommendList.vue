@@ -66,7 +66,9 @@ export default {
             minWidth: '180',
             'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
-              // return row.panelGroupName
+              if (!row.flag) {
+                return row.panelGroupName
+              }
               return createElement('el-button', {
                 attrs: {
                   type: 'text'
