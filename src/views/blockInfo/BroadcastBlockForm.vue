@@ -527,6 +527,10 @@ export default {
       normalForm.cornerIconList.forEach((item, index) => {
         this.handleRemoveCorner(index)
       })
+      normalForm.shortVideoParams = {
+        topicId: undefined,
+        shortVideoId: undefined
+      }
       if (bool) {
         normalForm.clickType = 'play-fullscreen'
       } else {
@@ -541,7 +545,11 @@ export default {
       this.normalForm.title = shortVideoTopic[0].topicName
     },
     handleSelectVideoEnd ({ shortVideo }) {
-      const prefix = this.$consts.sourcePrefix[this.source] || ''
+      let prefix = this.$consts.sourcePrefix[this.source] || ''
+      if (!prefix) {
+        let source = this.$consts.partnerToSource[shortVideo[0].source]
+        prefix = this.$consts.sourcePrefix[source]
+      }
       this.normalForm.shortVideoParams.shortVideoId = prefix + shortVideo[0].sCoocaaMId
     }
   }

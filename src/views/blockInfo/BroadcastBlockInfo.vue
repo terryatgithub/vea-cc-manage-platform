@@ -176,7 +176,7 @@
             <BroadcastBlockForm
               ref="broadcastBlockForm"
               v-if="normalForm.dmpContentList[normalForm.activeIndex]"
-              @toggle-use-short-video="handleToggleUseShortVideo"
+              @toggle-use-short-video="handleToggleUseShortVideo($event, 'dmp')"
               @toggle-manaulset-resource="handleToggleManualSetResource($event, 'dmp')"
               :config-model="basicForm.configModel"
               :normal-form="normalForm.dmpContentList[normalForm.activeIndex]"
@@ -870,15 +870,21 @@ export default {
         this.normalForm = normalForm
       }
     },
-    handleToggleUseShortVideo (isOpen) {
-      const normalForm = this.normalForm
+    handleToggleUseShortVideo (isOpen, type) {
+      let normalForm
+      if (type === 'dmp') {
+        normalForm = this.normalForm.dmpContentList[this.normalForm.activeIndex]
+      } else {
+        normalForm = this.normalForm
+      }
       if (isOpen) {
         normalForm.type = 'shortVideo'
-        normalForm.sign = 'autoSet'
-        normalForm.onclick = ''
-        normalForm.clickParams = normalForm.params
-        normalForm.clickTemplateType = normalForm.contentType
       }
+      normalForm.shortVideoSwitch = isOpen
+      normalForm.sign = 'autoSet'
+      normalForm.onclick = ''
+      normalForm.clickParams = normalForm.params
+      normalForm.clickTemplateType = normalForm.contentType
     },
     // 删除角标
     deleteCorner (form, index) {
@@ -1201,7 +1207,6 @@ export default {
     },
     // 组合模式->删除normalForm
     handleDeleteNormalContent (index) {
-      // debugger
       this.$confirm('是否删除当前选中项?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
