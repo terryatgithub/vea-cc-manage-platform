@@ -1603,16 +1603,21 @@ export default {
         }
 
         if (type === 'Lengthwise') {
-          const space = 28
+          // 布局信息里没有这个信息，这里硬编码40
+          const space = 40
+          // 计算第 n 个推荐位的信息
           return function(n) {
+            // 整个布局已经扩展过几次
             const times = Math.ceil(n / originBlockCount) - 1
+            // 当前对应的是原始布局的哪个推挤位
             const index = n - originBlockCount * times - 1
             const targetBlock = blocks[index]
             const resize = targetBlock.resize
             const titleInfo = targetBlock.title_info
             const mallResize = targetBlock.mall_resize
             const x = targetBlock.x
-            const y = targetBlock.y + times * layoutHeight + times * space
+            // y = 原始推荐位的y + 布局高度*总扩展次数 + 间隔 * 总扩展次数
+            const y = targetBlock.y + layoutHeight * times + space * times
             const result = {
               height: targetBlock.height,
               width: targetBlock.width,
