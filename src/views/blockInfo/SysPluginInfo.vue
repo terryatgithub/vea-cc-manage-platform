@@ -140,7 +140,7 @@
                       <p class="ellipsis" v-if="item.dmpRegistryInfo">
                         人群: {{ item.dmpRegistryInfo.dmpPolicyName }}({{ item.dmpRegistryInfo.dmpPolicyId }})/{{ item.dmpRegistryInfo.dmpCrowdName }}({{ item.dmpRegistryInfo.dmpCrowdId }})
                       </p>
-                      <p v-else>
+                      <p class="ellipsis" :title="item.label" v-else>
                         {{ item.label }}
                       </p>
                       <p class="ellipsis" :title="getVersionTitle(item)">{{ getVersionTitle(item) }}</p>
@@ -224,13 +224,13 @@
                     :mode="mode"
                     @activate="handleActivatePluginVersion">
                     <div slot="item" slot-scope="{item}">
-                      <span v-if="item.dmpRegistryInfo">
+                      <p class="ellipsis" v-if="item.dmpRegistryInfo">
                         人群: {{ item.dmpRegistryInfo.dmpPolicyName }}({{ item.dmpRegistryInfo.dmpPolicyId }})/{{ item.dmpRegistryInfo.dmpCrowdName }}({{ item.dmpRegistryInfo.dmpCrowdId }})
-                      </span>
-                      <span v-else>
+                      </p>
+                      <p class="ellipsis" :title="item.label" v-else>
                         {{ item.label }}
-                      </span>
-                      <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
+                      </p>
+                      <p class="ellipsis" :title="getVersionTitle(item)">{{ getVersionTitle(item) }}</p>
                     </div>
                     <PluginContent
                       slot="detail"
