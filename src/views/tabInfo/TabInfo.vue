@@ -503,7 +503,7 @@
                 </el-form-item>
 
                 <el-form-item label="固定刷新时间" prop="timeCycle">{{ parseMinToStr(tabInfo.timeCycle) }}</el-form-item>
-                <el-form-item label="强制刷新时间点" class="force-refresh-time-list">
+                <el-form-item v-if="canForceRefresh" label="强制刷新时间点" class="force-refresh-time-list">
                   <el-form-item label="时间点1" label-width="80px">
                     <el-date-picker
                       v-model="tabInfo.refreshTimeList[0]"
