@@ -124,7 +124,7 @@
                   <span class="hint remarks">设置范围:5分钟-6小时</span>
                 </el-form-item>
 
-                <el-form-item label="强制刷新时间点" class="force-refresh-time-list">
+                <el-form-item v-if="canForceRefresh" label="强制刷新时间点" class="force-refresh-time-list">
                   <el-form-item label="时间点1" label-width="80px">
                     <el-date-picker
                       v-model="tabInfo.refreshTimeList[0]"
@@ -183,7 +183,7 @@
 
               <div :style="{display: isCollapseExtend ? 'none' : 'block'}">
                 <el-form-item label="版面属性" prop="tabType">
-                  <el-radio-group v-model="tabInfo.tabType" :disabled="isReplicate">
+                  <el-radio-group :value="tabInfo.tabType" @input="handleInputTabType" :disabled="isReplicate">
                     <el-radio
                       v-for="(item, key) in TAB_TYPES"
                       :key="key"
@@ -1275,12 +1275,23 @@ export default {
       const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
       const isCoocaa = this.$consts.idPrefix === '10'
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
+    },
+    canForceRefresh () {
+      const tabInfo = this.tabInfo
+      const isSpecTab = tabInfo.tabType === 2
+      return !isSpecTab
     }
   },
   watch: {
     'tabInfo.tabResource': 'getVipButtonSource'
   },
   methods: {
+    handleInputTabType (val) {
+      if (val === 2) {
+        this.tabInfo.refreshTimeList = []
+      }
+      this.tabInfo.tabType = val
+    },
     toPercent: decimal => {
       return (Math.round(decimal * 10000) / 100.00 + '%')
     },
