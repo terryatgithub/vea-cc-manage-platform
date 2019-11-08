@@ -2,11 +2,13 @@
 All notable changes to this project will be documented in this file.  
 
 ## 1.0.0 - 2019-07-01  
+----
 ### Added  
 - 旧平台所有功能  
 
 
 ## 1.1.0 - 2019-07-30  
+----
 ### Added  
 - 支持短视频话题、话题推荐管理配置  
 - 专题版面支持配置高清背景视频  
@@ -18,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## 1.2.1 - 2019-08-22  
+----
 ### Added  
 - 策略管理添加儿童模式年龄选项  
 - 版块标签支持权重设置  
@@ -31,11 +34,13 @@ All notable changes to this project will be documented in this file.
 
 
 ## 1.3.0 - 2019-09-06  
+----
 ### Added  
 - 新增TV融合信号源通道功能
 
 
 ## 1.4.0 - 2019-09-11  
+----
 ### Added  
 - 推荐位支持个性化推荐流的设置，新增指定影片推荐流页面
 - 运营后台支持用户操作埋点；
@@ -46,17 +51,20 @@ All notable changes to this project will be documented in this file.
 
 
 ## 1.5.0 - 2019-09-14  
+----
 ### Added  
 - 轮播推荐位支持DMP配置推荐  
 
 
 ## 1.5.2 - 2019-10-08  
+----
 ### Added  
 - 轮播推荐位支持个性化推荐流  
 ### Fixed  
 - 修复爱奇艺图片加载问题  
 
 ## 1.6.0 - 2019-10-16  
+----
 ### Added  
 - 版块个性化迭代(支持推荐反馈，支持查看统计数据等)  
 - 运营后台数据展现优化  
