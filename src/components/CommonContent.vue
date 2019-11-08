@@ -289,7 +289,7 @@ export default {
     handleCancelTiming() {
       this.$confirm('您确定取消定时吗?', '提示')
         .then(() => {
-          const { type, id, version, status } = this.resourceInfo
+          const { type, id, version } = this.resourceInfo
           this.$service.timedTaskCancel({ id, type, version }).then((result) => {
             this.$emit('cancel-timing')
           })

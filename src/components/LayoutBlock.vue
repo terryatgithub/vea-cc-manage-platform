@@ -127,9 +127,6 @@ export default {
     }
   },
   computed: {
-    wrapperStyle () {
-
-    },
     boundary () {
       let x = 0; let y = 0
       this.content.forEach(val => {
@@ -142,7 +139,7 @@ export default {
     ratio () {
       const defaultRatio = 1
       const contentWidth = this.contentWidth
-      const { x, y } = this.boundary
+      const { x } = this.boundary
       if (x > contentWidth) {
         return contentWidth / x
       }

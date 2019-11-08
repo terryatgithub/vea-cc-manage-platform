@@ -79,7 +79,6 @@ const deleteUrlMap = {
   theme: 'api/v1/theme/delHistory.html', // 所有版块
   policy: 'api/v1/policyConf/delHistory.html',
   testPolicy: 'api/v1/testPolicyConf/delHistory.html',
-  icon: '',
   material: '', // 素材图片
   layout: '', // 布局
   block: 'api/v1/blockInfo/delHistory.html', // 轮播推荐位

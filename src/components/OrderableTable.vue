@@ -21,8 +21,7 @@ export default {
     }
   },
   components: {
-    Table,
-    InputOrder
+    Table
   },
   computed: {
     tableHeader() {

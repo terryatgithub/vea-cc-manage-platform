@@ -143,9 +143,8 @@ export default {
       return Number((price / 100).toFixed(2))
     },
     computeBlockItems() {
-      const showTitle = this.showTitle
       const blocks = this.blocks || []
-      if (blocks.length == 0) {
+      if (blocks.length === 0) {
         this.blockItems = []
         this.pannelStyle = { height: 0 }
         return

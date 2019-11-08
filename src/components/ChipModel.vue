@@ -72,16 +72,10 @@
   </ContentCard>
 </template>
 <script>
-import _ from 'gateschema'
-import { Button } from 'element-ui'
 import {
   ContentWrapper,
-  Table,
-  ActionList,
-  utils,
-  RemoteSelect
+  Table
 } from 'admin-toolkit'
-import SelectedTag from './SelectedTag'
 export default {
   props: {
     selectionType: {
@@ -92,13 +86,10 @@ export default {
     }
   },
   components: {
-    ActionList,
     Table,
-    ContentWrapper,
-    SelectedTag
+    ContentWrapper
   },
   data() {
-    let _this = this
     return {
       platform: 'tencent', // 默认平台
       form: this.genDefaultFormData(),

@@ -1,3 +1,4 @@
+/* eslint-disable */
 var CAV = window.CAV = {
   FRONT: 0,
   BACK: 1,

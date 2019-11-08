@@ -108,9 +108,8 @@ export default {
       let p1 = this.$service.getHistoryList({ id: this.id, type: this.type }) // 要实时查看是否显示创建副本按钮
       let p2 = this.$service.getAuditDetailButton(params)
       Promise.all([p1, p2]).then(result => {
-        let data1 = result[0].rows
+        let data1 = result[0].rows || []
         let hasCopy = true
-        data1 === null ? (data1 = []) : ''
         data1.forEach(e => {
           if (parseInt(e.status) === 2 || parseInt(e.status) === 3) {
             hasCopy = false

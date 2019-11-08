@@ -23,12 +23,11 @@
 </template>
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table, utils, ContentEllipsis } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   components: {
     Table,
-    ContentWrapper,
-    ContentEllipsis
+    ContentWrapper
   },
   props: {
     homepageModel: String,

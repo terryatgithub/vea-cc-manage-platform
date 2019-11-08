@@ -61,6 +61,7 @@ export default {
         }
       }
       this.levels = levels
+      // eslint-disable-next-line
       if (tag.nodeType != 0) {
         if (selectedIndex[tagCode]) {
           this.$set(selectedIndex, tagCode, undefined)
@@ -73,7 +74,7 @@ export default {
       }
     },
     handleRemoveTag(tag) {
-      this.selected = this.selected.filter(item => item != tag)
+      this.selected = this.selected.filter(item => item !== tag)
       this.selectedIndex[tag.tagCode] = undefined
       this.$emit('get-tag-nodes', this.selected)
     },

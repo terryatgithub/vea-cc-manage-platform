@@ -42,7 +42,7 @@ export default {
             width: 80,
             render: (h, { row }) => {
               if (!row.dailyGrowth) return 'N/A'
-              let mark = row.dailyGrowth.split(' ').pop() == '↑' ? 0 : 1
+              let mark = row.dailyGrowth.split(' ').pop() === '↑' ? 0 : 1
               return h(
                 'div',
                 {
@@ -60,7 +60,7 @@ export default {
             width: 80,
             render: (h, { row }) => {
               if (!row.weeklyGrowth) return 'N/A'
-              let mark = row.weeklyGrowth.split(' ').pop() == '↑' ? 0 : 1
+              let mark = row.weeklyGrowth.split(' ').pop() === '↑' ? 0 : 1
               return h(
                 'div',
                 {
@@ -101,7 +101,7 @@ export default {
             width: 80,
             render: (h, { row }) => {
               if (!row.dailyGrowth) return 'N/A'
-              let mark = row.dailyGrowth.split(' ').pop() == '↑' ? 0 : 1
+              let mark = row.dailyGrowth.split(' ').pop() === '↑' ? 0 : 1
               return h(
                 'div',
                 {
@@ -119,7 +119,7 @@ export default {
             width: 80,
             render: (h, { row }) => {
               if (!row.weeklyGrowth) return 'N/A'
-              let mark = row.weeklyGrowth.split(' ').pop() == '↑' ? 0 : 1
+              let mark = row.weeklyGrowth.split(' ').pop() === '↑' ? 0 : 1
               return h(
                 'div',
                 {
