@@ -167,6 +167,7 @@
 <script>
 import ThemeFileUpload from './ThemeFileUpload'
 import CommonContent from '../../components/CommonContent'
+import { cloneDeep } from 'lodash'
 export default {
   props: {
     editId: Number,
@@ -206,8 +207,7 @@ export default {
         themeName: [
           { required: true, message: '请输入主题名称', trigger: 'blur' }
         ]
-      },
-      editForm: {} // 编辑页面save的其他表单信息
+      }
     }
   },
   computed: {
@@ -262,7 +262,7 @@ export default {
       })
     },
     btnSave() {
-      let form = this.form
+      const form = cloneDeep(this.form)
       if (form.chargeType === '0') {
         form.price = '0'
         form.discountPrice = '0'
@@ -271,13 +271,11 @@ export default {
         this.form.currentVersion = ''
       }
       /* 任何情况提交审核，状态都改为3 */
-      this.form.themeStatus = 3
-      const editForm = this.editForm
-      const formData = Object.assign({}, form, editForm)
+      form.themeStatus = 3
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service
-            .savethemeInfo({ jsonStr: JSON.stringify(formData) }, '保存成功')
+            .savethemeInfo({ jsonStr: JSON.stringify(form) }, '保存成功')
             .then(() => {
               this.$emit('upsert-end')
             })
