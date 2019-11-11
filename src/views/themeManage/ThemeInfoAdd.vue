@@ -268,7 +268,7 @@ export default {
         form.discountPrice = '0'
       }
       if (this.mode === 'replicate') {
-        this.form.currentVersion = ''
+        form.currentVersion = ''
       }
       /* 任何情况提交审核，状态都改为3 */
       form.themeStatus = 3
