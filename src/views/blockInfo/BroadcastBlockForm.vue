@@ -14,7 +14,7 @@
           v-if="normalForm.dmpRegistryInfo"
         >已选择: {{ normalForm.dmpRegistryInfo.dmpPolicyName }}({{ normalForm.dmpRegistryInfo.dmpPolicyId }}) / {{ normalForm.dmpRegistryInfo.dmpCrowdName}}({{ normalForm.dmpRegistryInfo.dmpCrowdId }})</el-tag>
       </el-form-item>
-      <el-form-item v-if="isGroupModel" label="使用短视频流">
+      <el-form-item v-if="false" label="使用短视频流">
         <el-switch
           :value="normalForm.shortVideoSwitch"
           @input="handleSwitchShortVideo"
