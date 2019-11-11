@@ -100,6 +100,7 @@ export default {
             }
           }
         }).then(dataAll => {
+          // eslint-disable-next-line
           if (dataAll.code == 0) {
             fileListItem.status = 'success'
             this.picData.url = dataAll.data[0].url
@@ -112,9 +113,8 @@ export default {
           fileListItem.status = 'error'
           fileListItem.message = '网络错误'
         })
-      }
+      } else if (/vnd.android.package-archive/.test(accept)) {
       // 上传APK
-      else if (/vnd.android.package-archive/.test(accept)) {
         this.$service.uploadApk({
           file,
           onUploadProgerss: (evt) => {
@@ -123,6 +123,7 @@ export default {
             }
           }
         }).then(dataAll => {
+          // eslint-disable-next-line
           if (dataAll.code == 0) {
             fileListItem.status = 'success'
             this.picData.url = dataAll.data.url
@@ -136,9 +137,8 @@ export default {
           fileListItem.status = 'error'
           fileListItem.message = '网络错误'
         })
-      }
-      // 上传Zip
-      else if (/zip/.test(accept)) {
+      } else if (/zip/.test(accept)) {
+        // 上传Zip
         const zipType = this.zipType
         this.$service.uploadZip({
           file,
@@ -149,6 +149,7 @@ export default {
             }
           }
         }).then(dataAll => {
+          // eslint-disable-next-line
           if (dataAll.code == 0) {
             fileListItem.status = 'success'
             this.picData = dataAll.data

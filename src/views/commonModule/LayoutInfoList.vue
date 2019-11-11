@@ -33,7 +33,7 @@
 </template>
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 import BaseList from '@/components/BaseList'
 export default {
@@ -46,7 +46,7 @@ export default {
   data() {
     return {
       resourceType: 'layout',
-      notContainBtns: [ 'audit', 'batchAudit'],
+      notContainBtns: ['audit', 'batchAudit'],
       layoutType: {
         '主页6.0': 1,
         '影视V2': 2

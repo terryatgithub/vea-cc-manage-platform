@@ -40,6 +40,7 @@
             该版块为定时任务，审核通过后将于 {{ releaseTime }} 上线
           </div>
           <VersionList
+            v-if="resourceInfo.type"
             type="resourceInfo.type"
             :status="resourceInfo.status"
             :version="resourceInfo.version"
@@ -288,7 +289,7 @@ export default {
     handleCancelTiming() {
       this.$confirm('您确定取消定时吗?', '提示')
         .then(() => {
-          const { type, id, version, status } = this.resourceInfo
+          const { type, id, version } = this.resourceInfo
           this.$service.timedTaskCancel({ id, type, version }).then((result) => {
             this.$emit('cancel-timing')
           })

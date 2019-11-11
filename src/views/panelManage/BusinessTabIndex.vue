@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="resource-manager-wrapper">
     <BusinessTabList
      v-show="isShowList"
      ref="list"
@@ -86,6 +86,9 @@ export default {
   }
 }
 </script>
-<!--声明语言，并且添加scoped-->
+
 <style lang="stylus" scoped>
+.resource-manager-wrapper
+  height 100%
+  overflow auto
 </style>

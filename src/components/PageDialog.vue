@@ -1,8 +1,8 @@
 <template>
   <transition>
-    <div 
+    <div
       v-show="visible"
-      class="page-dialog__wrapper"> 
+      class="page-dialog__wrapper">
       <!-- backdrop  -->
       <div class="backdrop"></div>
       <div :class="{'page-dialog': true, fullscreen: fullscreen}">
@@ -82,6 +82,8 @@ export default {
 <style lang="stylus">
 .page-dialog__wrapper
   position absolute
+  top 0
+  left 0
   width 100%
   height 100%
   z-index 3000

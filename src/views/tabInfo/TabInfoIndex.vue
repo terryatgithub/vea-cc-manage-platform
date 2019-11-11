@@ -10,26 +10,28 @@
       @copy="handleCopy"
       @delete="handleDelete"
     />
-    <TabInfo
+    <component
       v-if="!isShowList"
+      :is="tabInfoComponent"
       :content-props="contentProps"
       :id="id"
       :init-mode="mode"
       :version="version"
       @upsert-end="handleUpsertEnd"
-      @go-back="goBack"
-    ></TabInfo>
+      @go-back="goBack"/>
   </TabPage>
 </template>
 <script>
 import TabPage from '@/components/TabPage'
 import TabInfoList from './TabInfoList'
 import TabInfo from './TabInfo'
+import JDTabInfo from './JDTabInfo'
 export default {
   components: {
     TabPage,
     TabInfoList,
-    TabInfo
+    TabInfo,
+    JDTabInfo
   },
   data() {
     return {
@@ -40,6 +42,16 @@ export default {
     }
   },
   props: ['listProps', 'contentProps'],
+  computed: {
+    tabInfoComponent () {
+      const id = this.id
+      return id
+        ? id.toString().indexOf('JD') === 0
+          ? 'JDTabInfo'
+          : 'TabInfo'
+        : 'TabInfo'
+    }
+  },
   methods: {
     handleCreate() {
       this.id = undefined
@@ -50,12 +62,18 @@ export default {
       this.id = item.tabId
       this.mode = 'edit'
       this.isShowList = false
+      if (item.tabType === 4) {
+        this.id = item.tabRemark
+      }
     },
     handleRead(item, version) {
       this.id = item.tabId
       this.mode = 'read'
       this.version = version
       this.isShowList = false
+      if (item.tabType === 4) {
+        this.id = item.tabRemark
+      }
     },
     handleCopy(item) {
       this.id = item.tabId

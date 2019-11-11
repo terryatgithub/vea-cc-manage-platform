@@ -1,8 +1,8 @@
 export function getMatchedPictureUrl (blockSize, imgList) {
-  let maxMatchingValue = -1
+  let maxMatchingValue = -99999
   let url
   if (blockSize && imgList) {
-    imgList.forEach((item) => {
+    imgList.forEach(item => {
       const matchingValue = getMatchingValue(blockSize, item.size.split('*'))
       if (matchingValue > maxMatchingValue) {
         maxMatchingValue = matchingValue
@@ -19,26 +19,29 @@ function getMatchingValue (blockSize, imgSize) {
 
   const ratio = w / h
   const imgRatio = imgW / imgH
-
-  const ratioMatchingValue = 60 - 12 * Math.abs(ratio - imgRatio)
+  const isSameOrient = (w >= h && imgW >= imgH) || (w <= h && imgW <= imgH)
+  const baseMatchingValue = isSameOrient ? 100 : 0
+  const ratioMatchingValue = 70 - 45 * Math.abs(ratio - imgRatio)
 
   let scale
   if (ratio > imgRatio) {
-    scale = w > imgW
-      ? w / imgW
-      : imgW / w
+    scale = w > imgW ? w / imgW : imgW / w
   } else {
-    scale = h > imgH
-      ? h / imgH
-      : imgH / h
+    scale = h > imgH ? h / imgH : imgH / h
   }
-  const sizeMatchingValue = 48 - 8 * scale
+  const sizeMatchingValue = Math.max(38 - 8 * scale, 0)
 
-  return ratioMatchingValue + sizeMatchingValue
+  return baseMatchingValue + ratioMatchingValue + sizeMatchingValue
 }
 
-export function setMediaContent(contentForm, options) {
-  const { partner, selectedType, selected, selectedEpisode, blockSize } = options
+export function setMediaContent (contentForm, options) {
+  const {
+    partner,
+    selectedType,
+    selected,
+    selectedEpisode,
+    blockSize
+  } = options
 
   // 清空由app可能引起的遗留数据
   Object.assign(contentForm, {
@@ -64,7 +67,8 @@ export function setMediaContent(contentForm, options) {
         yinhe: '_oqy_',
         youku: '_oyk_'
       }
-      const extraIdField = fieldMap[selectedEpisode.urlIsTrailer] || 'extraValue5'
+      const extraIdField =
+        fieldMap[selectedEpisode.urlIsTrailer] || 'extraValue5'
       const prefix = prefixMap[partner]
       contentForm.contentType = 0
       contentForm.videoContentType = 'movie'
@@ -95,7 +99,9 @@ export function setMediaContent(contentForm, options) {
       contentForm.videoContentType = 'movie'
       contentForm.extraValue5 = undefined
       contentForm.platformId = selected.source
-      contentForm.pictureUrl = getMatchedPictureUrl(blockSize, selected.imageInfoList) || selected.thumb
+      contentForm.pictureUrl =
+        getMatchedPictureUrl(blockSize, selected.imageInfoList) ||
+        selected.thumb
       contentForm.picturePreset = selected.imageInfoList
       contentForm.title = selected.title
       contentForm.subTitle = chopSubTitle(selected.subTitle)
@@ -107,10 +113,11 @@ export function setMediaContent(contentForm, options) {
     const score = entity.score
     const updatedSegment = entity.updatedSegment
     const publishSegment = entity.publishSegment
+    // eslint-disable-next-line
     const isUnknown = publishSegment == 0
     const publishStatus = isUnknown
       ? 'unknown'
-      : updatedSegment == publishSegment
+      : updatedSegment === publishSegment
         ? 'ended'
         : 'updating'
     contentForm.publishStatus = publishStatus
@@ -123,7 +130,8 @@ export function setMediaContent(contentForm, options) {
     contentForm.videoContentType = 'edu'
     contentForm.extraValue1 = '_otx_' + selected.coocaaVId
     contentForm.platformId = selected.source
-    contentForm.pictureUrl = getMatchedPictureUrl(blockSize, selected.imageInfoList) || selected.thumb
+    contentForm.pictureUrl =
+      getMatchedPictureUrl(blockSize, selected.imageInfoList) || selected.thumb
     contentForm.picturePreset = selected.imageInfoList
     contentForm.title = selected.title
     contentForm.subTitle = chopSubTitle(selected.subTitle)
@@ -188,7 +196,7 @@ export function setMediaContent(contentForm, options) {
   contentForm.categoryId = selected.categoryId
 }
 
-export function setAppContent(contentForm, selected) {
+export function setAppContent (contentForm, selected) {
   if (selected) {
     contentForm.coverType = 'app'
     contentForm.contentType = 2
@@ -202,7 +210,7 @@ export function setAppContent(contentForm, selected) {
   }
 }
 
-export function setGoodContent(contentForm, selected) {
+export function setGoodContent (contentForm, selected) {
   if (selected) {
     contentForm.coverType = 'mall'
     contentForm.contentType = 13
@@ -216,22 +224,38 @@ export function setGoodContent(contentForm, selected) {
   }
 }
 
-export function getSelectedResource(resources, selectedType) {
-  const selectType = Object.keys(resources).find(key => resources[key].length > 0)
+export function setRankingContent (contentForm, selected) {
+  if (selected) {
+    contentForm.coverType = 'media'
+    contentForm.contentType = 0
+    contentForm.videoContentType = 'movie'
+    contentForm.extraValue1 = selected.id
+    contentForm.pictureUrl = selected.images
+    contentForm.title = selected.title
+    contentForm.subTitle = chopSubTitle(selected.title)
+    contentForm.singleSubTitle = ''
+    contentForm.blockResourceType = -1
+  }
+}
+
+export function getSelectedResource (resources, selectedType) {
+  const selectType = Object.keys(resources).find(
+    key => resources[key].length > 0
+  )
   return getSelectedResourceByType(resources, selectType)
 }
-export function getSelectedResourceByType(resources, selectedType) {
+export function getSelectedResourceByType (resources, selectedType) {
   const selected = resources[selectedType]
   const selectedEpisode = resources.episode || {}
   const partner = resources.videoSource
   return { partner, selectedType, selected, selectedEpisode }
 }
 
-export function chopSubTitle(title) {
+export function chopSubTitle (title) {
   return (title || '').slice(0, 45)
 }
 
-export function genDefaultContentForm(preset) {
+export function genDefaultContentForm (preset) {
   return {
     coverType: 'media',
     title: '',
@@ -260,6 +284,12 @@ export function genDefaultContentForm(preset) {
     redundantParams: getDefaultParams(),
     // Sprint2.8.2 背景图片和视频
     bgImgUrl: '',
+    flagSetRec: 0,
+    mediaAutomationBlockRls: {
+      refreshCal: 1,
+      mediaAutomationId: '',
+      blockType: 'normal'
+    },
     bgParams: {
       id: '',
       title: ''
@@ -287,7 +317,7 @@ export function getDefaultParams () {
   }
 }
 
-export function genResourceContentList(resources, contentPreset) {
+export function genResourceContentList (resources, contentPreset) {
   const contentList = [].concat(
     genMediaContentList(resources, contentPreset, 'video'),
     genAppContentList(resources, contentPreset),
@@ -304,7 +334,7 @@ export function genResourceContentList(resources, contentPreset) {
 export function genMediaContentList (resources, contentPreset, selectType) {
   const selectedResult = getSelectedResourceByType(resources, selectType)
   const selectedType = selectedResult.selectedType
-  const selected = selectedResult.selected
+  const selected = selectedResult.selected || []
   const selectedEpisode = selectedResult.selectedEpisode
   const contentList = selected.map(item => {
     const content = genDefaultContentForm(contentPreset)
@@ -319,8 +349,8 @@ export function genMediaContentList (resources, contentPreset, selectType) {
   return contentList
 }
 export function genAppContentList (resources, contentPreset) {
-  const selected = resources.app
-  const contentList = selected.map((item) => {
+  const selected = resources.app || []
+  const contentList = selected.map(item => {
     const content = genDefaultContentForm(contentPreset)
     setAppContent(content, item)
     return content
@@ -329,11 +359,124 @@ export function genAppContentList (resources, contentPreset) {
 }
 
 export function genGoodContentList (resources, contentPreset) {
-  const selected = resources.good
-  const contentList = selected.map((item) => {
+  const selected = resources.good || []
+  const contentList = selected.map(item => {
     const content = genDefaultContentForm(contentPreset)
     setGoodContent(content, item)
     return content
   })
   return contentList
+}
+
+const rankingCorners = [
+  {
+    cornerIconId: 10334,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110042310136_46*50.png'
+  },
+  {
+    cornerIconId: 10335,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130504587_46*50.png'
+  },
+  {
+    cornerIconId: 10336,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130914436_46*50.png'
+  },
+  {
+    cornerIconId: 10337,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130735921_46*50.png'
+  },
+  {
+    cornerIconId: 10338,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110130455987_46*50.png'
+  },
+  {
+    cornerIconId: 10339,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131328570_46*50.png'
+  },
+  {
+    cornerIconId: 10340,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131373933_46*50.png'
+  },
+  {
+    cornerIconId: 10341,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131101494_46*50.png'
+  },
+  {
+    cornerIconId: 10342,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131545215_46*50.png'
+  },
+  {
+    cornerIconId: 10343,
+    position: 0,
+    imgUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131525588_46*50.png'
+  }
+]
+export function genRankingContentList (resources) {
+  const rankingCode = resources.rankingCode
+  const selected = resources.ranking || []
+  const contentList = selected.map((item, index) => {
+    const content = genDefaultContentForm()
+    const rankingCorner = rankingCorners[index]
+    content.cornerList = [
+      {
+        ...rankingCorner
+      },
+      {}
+    ]
+    setRankingContent(content, item)
+    return content
+  })
+  // 最后一个为查看更多
+  const readMore = genDefaultContentForm({
+    title: '查看更多',
+    coverType: 'custom',
+    pictureUrl:
+      'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110257831374_260*364.jpg',
+    onclick: JSON.stringify({
+      packagename: 'com.tianci.movieplatform',
+      versioncode: 7100001,
+      dowhat: 'startActivity',
+      bywhat: 'action',
+      byvalue: 'coocaa.intent.movie.ranking',
+      params: {
+        rankingCode: rankingCode
+      },
+      exception: {}
+    })
+  })
+  return contentList.concat(readMore)
+}
+
+export function isValidLayoutForRanking (contentList = []) {
+  // 检查布局
+  // 采用排行榜，布局必须满足：标题布局、只有一行、每个推荐位都是247*346、推荐位数量6~11个
+  const blockCount = contentList.length
+  const hasTitleAndOnlyOneRowAndMatchSize = contentList.every(item => {
+    // eslint-disable-next-line
+    const { width, height, y, title_info, mall_resize } = item.contentPosition
+    // eslint-disable-next-line
+    return y === 0 && width === 260 && height === 364 && title_info && !mall_resize
+  })
+  const hasSuitableBlocks = blockCount >= 6 && blockCount <= 11
+
+  return hasTitleAndOnlyOneRowAndMatchSize && hasSuitableBlocks
 }

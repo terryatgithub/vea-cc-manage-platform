@@ -1,5 +1,6 @@
 <template>
   <RemoteSelectorWrapper
+    ref="selectorWrapper"
     :title="title || '选择角标'"
     :filter="filter"
     :filterSchema="filterSchema"
@@ -21,15 +22,16 @@
       >
         <template slot="row" slot-scope="{row: item}">
           <div class="list-item__img-wrapper">
-            <img class="list-item__img" :src="item.imgUrl">
+            <img referrerpolicy="no-referrer" :key="item.imgUrl" class="list-item__img" :src="item.imgUrl">
           </div>
           <div class="list-item__info">
             {{ item.cornerIconName }}
             <br />
-            {{ item.pictureStatus == 1 ? '审核通过' : '待审核'}}
+            {{ $consts.statusText[item.cornerStatus] }}
           </div>
         </template>
       </CardList>
+      <div v-if="table.selectionType === 'single'" slot="actions"></div>
       <slot />
   </RemoteSelectorWrapper>
 </template>
@@ -37,10 +39,9 @@
 <script>
 import _ from 'gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
-import { Table, CardList, utils } from 'admin-toolkit'
+import { CardList } from 'admin-toolkit'
 export default {
   components: {
-    Table,
     CardList,
     RemoteSelectorWrapper
   },
@@ -67,14 +68,16 @@ export default {
     getDefaultFilter() {
       const idPrefix = this.$consts.idPrefix
       return {
+        cornerStatus: this.$consts.status.accepted,
         cornerIconId: undefined,
         cornerIconName: undefined,
         typeId: undefined,
-        idPrefix: idPrefix != '10' ? idPrefix : undefined
+        idPrefix: idPrefix !== '10' ? idPrefix : undefined
       }
     },
     handleRowSelectionChange(row, index) {
       this.table.selected = index
+      this.$refs.selectorWrapper.handleSelectEnd()
     },
     handleFilterChange() {
       this.pagination.currentPage = 1
@@ -123,6 +126,7 @@ export default {
 
   },
   created() {
+    const $status = this.$consts.status
     this.$service.getCornerTypes().then((data) => {
       const cornerTypeEnums = data.reduce((result, item) => {
         return (result[item.typeName] = item.typeId) && result
@@ -153,6 +157,19 @@ export default {
             item: 3,
             wrapper: 23
           }
+        }),
+        cornerStatus: _.o.enum({
+          '审核通过': $status.accepted,
+          '待审核': $status.waiting
+        }).other('form', {
+          label: '',
+          component: 'Select',
+          placeholder: '审核状态',
+          cols: {
+            item: 3,
+            label: 0,
+            wrapper: 23
+          }
         })
       }).other('form', {
         layout: 'inline',
@@ -169,7 +186,7 @@ export default {
       })
 
       const idPrefix = this.$consts.idPrefix
-      if (idPrefix != '10') {
+      if (idPrefix !== '10') {
         filterSchema.map({
           idPrefix: _.o.enum(this.$consts.idPrefixEnums).other('form', {
             label: ' ',
@@ -198,6 +215,11 @@ export default {
   border 1px solid #ccc
   margin 5px
   padding 10px
+  cursor pointer
+  &:hover
+    border 1px solid #444
+.card-list  >>> .card-item__selection
+  display none
 
 .list-item__img
   max-height 170px

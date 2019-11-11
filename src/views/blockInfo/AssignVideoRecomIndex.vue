@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <TabPage>
     <AssignVideoRecomList
       v-show="isShowList"
       ref="list"
@@ -12,17 +12,21 @@
     <AssignVideoRecomInfo
       v-if="!isShowList"
       :id="id"
+      :version="version"
       :init-mode="mode"
+      :status="status"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </AssignVideoRecomInfo>
-  </div>
+  </TabPage>
 </template>
 <script>
+import TabPage from '@/components/TabPage'
 import AssignVideoRecomList from './AssignVideoRecomList'
 import AssignVideoRecomInfo from './AssignVideoRecomInfo'
 export default {
   components: {
+    TabPage,
     AssignVideoRecomInfo,
     AssignVideoRecomList
   },
@@ -31,7 +35,8 @@ export default {
       isShowList: true,
       id: undefined,
       mode: 'create',
-      version: undefined
+      version: undefined,
+      status: undefined
     }
   },
   methods: {
@@ -50,18 +55,19 @@ export default {
     },
     handleEdit(item) {
       this.id = item.id
+      this.version = item.currentVersion // 加了
       this.mode = 'edit'
       this.isShowList = false
     },
     handleRead(item, version) {
       this.id = item.id
       this.mode = 'read'
-      this.version = version
+      this.version = version || item.currentVersion // 稍稍改动
       this.isShowList = false
     },
     handleDelete(selected) {
       this.$service
-        .deleteBroadcastBlock({
+        .deleteMediaAutomation({
           id: selected.map(item => item.id).join(',')
         }, '删除成功')
         .then(data => {

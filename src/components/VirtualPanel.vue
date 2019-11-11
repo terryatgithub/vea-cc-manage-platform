@@ -19,12 +19,14 @@
                  }"
           :style="block.style"
         >
-          <img class="cc-virtual-pannel__block-post" v-if="block.img" :src="block.img">
+          <img referrerpolicy="no-referrer" loading="lazy" class="cc-virtual-pannel__block-post" v-if="block.img" :src="block.img">
 
           <template v-for="(corner, index) in block.cornerList">
             <img
               class="corner-img"
               v-if="corner.imgUrl"
+              referrerpolicy="no-referrer"
+              loading="lazy"
               :src="corner.imgUrl"
               :key="index"
               :style="{
@@ -47,6 +49,19 @@
             class="cc-virtual-pannel__block-remove"
             @click.stop="handleRemoveBlock(index)"
           >x</span>
+          <!-- 新增时不显示看数据按钮 -->
+          <div :class="isOverFlow(block.style) ? 'analyze-data--container' : 'analyze-data--container-row'" v-if="showChartBtn === true">
+            <el-button type="success"
+            v-if="blocks[index].vcId != -101"
+            class="analyze-data--simpleBtn margin-bottom-6"
+            @click.stop="handleAnalyzeSimpleData(index)">看数据</el-button><br/>
+            <el-button
+              type="success"
+              v-if="block.specificContentList && block.specificContentList.length !== 0"
+              class="analyze-data--dmpBtn"
+              @click.stop="handleAnalyzeDmpData(index)"
+            >DMP</el-button>
+          </div>
           <template v-if="block.content">
             <div
               v-if="block.content.secKillPrice > 0"
@@ -92,7 +107,7 @@ export default {
     }
   },
 
-  props: ['blocks', 'ratio', 'draggable', 'showTitle'],
+  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn'],
   watch: {
     blocks: 'computeBlockItems'
   },
@@ -115,6 +130,12 @@ export default {
     handleRemoveBlock(index) {
       this.$emit('remove-block', index)
     },
+    handleAnalyzeSimpleData (index) {
+      this.$emit('show-simple-chart', index)
+    },
+    handleAnalyzeDmpData (index) {
+      this.$emit('show-dmp-chart', index)
+    },
     handleClickBlock(index) {
       this.$emit('click-block', index)
     },
@@ -122,9 +143,8 @@ export default {
       return Number((price / 100).toFixed(2))
     },
     computeBlockItems() {
-      const showTitle = this.showTitle
       const blocks = this.blocks || []
-      if (blocks.length == 0) {
+      if (blocks.length === 0) {
         this.blockItems = []
         this.pannelStyle = { height: 0 }
         return
@@ -135,7 +155,8 @@ export default {
         const block = {
           title: item.title,
           isExtra: item.isExtra,
-          duplicated: item.duplicated
+          duplicated: item.duplicated,
+          specificContentList: item.specificContentList
         }
         const position = item.contentPosition
         const resize = item.resize || {}
@@ -201,6 +222,10 @@ export default {
       this.pannelStyle = { height: pannelHeight }
 
       this.blockItems = blockItems
+    },
+    isOverFlow (style) {
+      let height = parseFloat(style.height.slice(0, -2))
+      return height > 96
     }
   },
   created() {
@@ -269,8 +294,14 @@ export default {
   width: 100%;
   height: 100%;
 }
-.cc-virtual-pannel__block:hover .cc-virtual-pannel__block-remove {
+.cc-virtual-pannel__block:hover .cc-virtual-pannel__block-remove{
   display: block;
+}
+.cc-virtual-pannel__block:hover .analyze-data--container {
+  display: block;
+}
+.cc-virtual-pannel__block:hover .analyze-data--container-row {
+  display: flex;
 }
 .cc-virtual-pannel__block--duplicated {
   border: 5px solid red;
@@ -315,5 +346,30 @@ export default {
   position: relative;
   top: 28px;
   padding: 0;
+}
+
+.analyze-data--container {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 0;
+}
+
+.analyze-data--container-row {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 0;
+}
+
+.analyze-data--simpleBtn,
+.analyze-data--dmpBtn{
+  width: 75px;
+  height: 32px;
+  margin-right: 10px;
+}
+
+.margin-bottom-6 {
+  margin-bottom: 6px;
 }
 </style>

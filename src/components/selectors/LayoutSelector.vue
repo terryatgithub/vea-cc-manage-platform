@@ -2,7 +2,8 @@
   <remote-selector-wrapper
     ref="wrapper"
     class="layout-selector"
-    title="选择布局"
+    :disabled="disabled"
+    :title="title || '选择布局'"
     @select-start="handleSelectStart"
   >
     <div slot="filter">
@@ -16,10 +17,10 @@
         <el-form-item label="布局分类">
           <el-select v-model="filter.layoutType" clearable>
             <el-option
-              v-for="item in layoutTypeOptoins"
-              :key="item.value"
-              :value="item.value"
-              :label="item.label"
+              v-for="item in layoutTypeOptions"
+              :key="item.dictId"
+              :value="item.dictId"
+              :label="item.dictCnName"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -52,12 +53,12 @@
       <el-dialog title="请输入预置推荐位个数" :visible.sync="showBlockCountDialog" :append-to-body="true">
         <el-form
           ref="blockCountForm"
-          @submit.native="emitSelectEnd"
+          @keypress.native.enter.prevent="emitSelectEnd"
           :model="formBlock"
           :rules="formBlockRules"
         >
           <el-form-item label="推荐位个数" prop="count">
-            <el-input @keypress.prevent.stop v-model.number="formBlock.count" :placeholder="blockCountPlaceholder"></el-input>
+            <el-input ref="blockCount" @keypress.prevent.stop v-model.number="formBlock.count" :placeholder="blockCountPlaceholder"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -96,21 +97,7 @@ import { Table } from 'admin-toolkit'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 import LayoutRead from '@/components/LayoutBlock'
 
-const layoutTypeOptoins = [
-  {
-    label: '主页6.0',
-    value: 1
-  },
-  {
-    label: '影视V2',
-    value: 2
-  }
-]
-const layoutTypeLabels = layoutTypeOptoins.reduce(
-  (result, item) => (result[item.value] = item.label) && result,
-  {}
-)
-const ID = 'layoutId'
+const idField = 'layoutId'
 
 export default {
   components: {
@@ -124,8 +111,8 @@ export default {
       showPreviewDialog: false,
       previewContent: [],
       showBlockCountDialog: false,
-      layoutTypeOptoins,
-      layoutTypeLabels,
+      layoutTypeOptions: [],
+      layoutTypeText: {},
       selectedLayout: null,
       formBlock: {
         count: undefined
@@ -158,20 +145,30 @@ export default {
             label: '分类',
             width: 200,
             render: (h, { row }) => {
-              return layoutTypeLabels[row.layoutType]
+              return this.layoutTypeText[row.layoutType]
             }
           },
           {
             label: '预览',
             render: (h, { row }) => {
-              return <el-button
-                type="text"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  this.handlePreview(row)
-                }}>
-                  预览
-              </el-button>
+              return <div>
+                <el-button
+                  type="text"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    this.handlePreview(row, 'v8')
+                  }}>
+                    预览
+                </el-button>
+                <el-button
+                  type="text"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    this.handlePreview(row, 'v6')
+                  }}>
+                    预览6.0
+                </el-button>
+              </div>
             }
           },
           {
@@ -190,12 +187,13 @@ export default {
       selected: []
     }
   },
-  props: ['selectionType'],
+  props: ['title', 'selectionType', 'disabled'],
   watch: {
     'pagination.page': 'fetchData',
     'pagination.rows': 'fetchData'
   },
   computed: {
+    // eslint-disable-next-line
     blockCountPlaceholder() {
       const selectedLayout = this.selectedLayout || {}
       const layoutJsonParsed = selectedLayout.layoutJsonParsed
@@ -206,9 +204,10 @@ export default {
     }
   },
   methods: {
-    handlePreview(row) {
+    handlePreview(row, version) {
       this.showPreviewDialog = true
-      this.previewContent = JSON.parse(row.layoutJson).contents
+      const layoutJson = version === 'v6' ? row.layoutJson : row.layoutJson8
+      this.previewContent = JSON.parse(layoutJson).contents
     },
     validateNum(rule, value, callback) {
       var reg = /^[1-9]\d*$/
@@ -255,12 +254,15 @@ export default {
     handleSelectEnd() {
       const selected = this.selected[0]
       if (selected) {
-        const layoutJsonParsed = JSON.parse(selected.layoutJson)
+        const layoutJsonParsed = JSON.parse(selected.layoutJson8)
         const type = layoutJsonParsed.type
         selected.layoutJsonParsed = layoutJsonParsed
         this.selectedLayout = selected
         if (type === 'Expander' || type === 'Lengthwise') {
           this.showBlockCountDialog = true
+          this.$nextTick(() => {
+            this.$refs.blockCount.focus()
+          })
         } else {
           this.emitSelectEnd()
         }
@@ -320,9 +322,19 @@ export default {
         }
         return result
       }, [])
+    },
+    fetchLayoutTypeOptions () {
+      this.$service.getDictType({ type: 'layoutType' }).then(layoutTypeOptions => {
+        this.layoutTypeOptions = layoutTypeOptions
+        this.layoutTypeText = layoutTypeOptions.reduce((result, item) => {
+          result[item.dictId] = item.dictCnName
+          return result
+        }, {})
+      })
     }
   },
   created() {
+    this.fetchLayoutTypeOptions()
     this.$service.getDictType({ type: 'businessType' }).then(data => {
       this.panelCategoryOptions = data
       this.pannelCategoryOptionsIndexed = data.reduce(function(result, item) {

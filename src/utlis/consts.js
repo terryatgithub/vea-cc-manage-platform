@@ -86,6 +86,12 @@ const sourceToPartner = {
   'o_youku': 'youku'
 }
 
+const partnerToSource = {
+  'tencent': 'o_tencent',
+  'yinhe': 'o_iqiyi',
+  'youku': 'o_youku'
+}
+
 const sourceText = {
   o_tencent: '腾讯',
   o_iqiyi: '爱奇艺',
@@ -226,6 +232,7 @@ export default {
   sourceOptionsWithEmpty,
   sourceOptionsWithNone,
   sourceToPartner,
+  partnerToSource,
   sourceText,
   sourceTextWithNone,
 

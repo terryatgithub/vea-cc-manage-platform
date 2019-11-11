@@ -136,7 +136,6 @@
 import ContentCard from '@/components/ContentCard'
 import PanelInfo from '../panelInfo/PanelInfo'
 import TabInfo from '../tabInfo/TabInfo'
-import FilmPage from '../panelManage/FilmDetailPageAdd'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import PanelList from './dataSync/Panel'
@@ -152,7 +151,6 @@ export default {
     FilmPageList,
     PanelInfo,
     TabInfo,
-    FilmPage,
     PageWrapper,
     PageContentWrapper
   },

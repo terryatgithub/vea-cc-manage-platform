@@ -260,3 +260,50 @@ export function getBlockChartData(params) {
     params
   })
 }
+/**
+ * 推荐位管理——指定影片推荐流
+ */
+export function getMediaAutomationDataList(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/mediaAutomation/dataList.html',
+    params
+  })
+}
+export function getMediaAutomationList(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/mediaAutomation/pageList.html',
+    params
+  })
+}
+export function saveMediaAutomation(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/mediaAutomation/save.html',
+    data
+  })
+}
+export function getMediaAutomationDetial(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/mediaAutomation/getDetailInfo.html',
+    params
+  })
+}
+export function deleteMediaAutomation(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/mediaAutomation/remove.html',
+    params
+  })
+}
+
+// 轮播推荐位看数据
+export function getBroadcastDataTitles(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/block/getAllTitles.html',
+    params
+  })
+}

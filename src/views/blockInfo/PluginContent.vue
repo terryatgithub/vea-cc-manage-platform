@@ -66,7 +66,7 @@
               选择人群
             </el-button>
             <span v-if="form.dmpRegistryInfo">
-              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}/{{ form.dmpRegistryInfo.dmpCrowdName }}
+              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}({{ form.dmpRegistryInfo.dmpPolicyId }})/{{ form.dmpRegistryInfo.dmpCrowdName }}({{ form.dmpRegistryInfo.dmpCrowdId }})
             </span>
           </el-form-item>
         </template>
@@ -194,7 +194,7 @@
             prop="onclick.tab"
             :rules="rules.tab"
           >
-          <TabSelector @select-single="handleSelectTabEnd($event, form)"    :source="source" selectionType="single"/>
+          <TabSelector @select-end="handleSelectTabEnd($event, form)"    :source="source" selectionType="single"/>
             <el-tag type="primary" v-if="form.onclick.tab">已选择: {{ form.onclick.tab.tabId }}</el-tag>
           </el-form-item>
         </template>
@@ -223,6 +223,7 @@
           prop-prefix="onclick."
           v-model="form.onclick"
         ></AppParams>
+        <Params v-if="form.appParams" :params="form.appParams" prop-prefix="appParams." />
       </template>
       <template v-else>
         <template v-if="versionHasTitle">
@@ -241,7 +242,7 @@
         <template v-if="form.dataType === 7">
           <el-form-item label="人群" prop="dmpRegistryInfo">
             <span v-if="form.dmpRegistryInfo">
-              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}/{{ form.dmpRegistryInfo.dmpCrowdName }}
+              已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}({{ form.dmpRegistryInfo.dmpPolicyId }})/{{ form.dmpRegistryInfo.dmpCrowdName }}({{ form.dmpRegistryInfo.dmpCrowdId }})
             </span>
           </el-form-item>
         </template>
@@ -292,16 +293,9 @@
           v-model="form.onclick"
           label-width="140px"
         />
+        <Params v-if="form.appParams" :params="form.appParams" :readonly="true" />
       </template>
     </el-form>
-    <!--海报-->
-    <el-dialog :visible.sync="showPosterSelector" width="1200px">
-      <PostSelector v-if="showPosterSelector" @selected="handleSelectPosterEnd"></PostSelector>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="showPosterSelector = false">取 消</el-button>
-        <!-- <el-button type="primary" @click="dialogTableVisible = false;selectSubmit()">确 定</el-button> -->
-      </div>
-    </el-dialog>
 
     <!--点击事件弹框-->
     <el-dialog :visible.sync="showClickSelector" width="1200px">
@@ -324,12 +318,10 @@
 <script>
 import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
-import PostSelector from './selectResource'
+import Params from './Params'
 import ClickSelector from './selectClick'
 import TabSelector from '@/components/selectors/TabSelector'
-import { cloneDeep } from 'lodash'
 import CrowdSelector from '@/components/CrowdSelector'
-import selectImg from './selectImg'
 import InputMinute from '@/components/InputMinute'
 
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
@@ -352,11 +344,10 @@ export default {
   components: {
     AppParams,
     AppParamsRead,
-    PostSelector,
+    Params,
     ClickSelector,
     TabSelector,
     CrowdSelector,
-    selectImg,
     InputMinute,
 
     GlobalPictureSelector
@@ -365,7 +356,6 @@ export default {
     return {
       form: null,
       showCrowdSelector: false,
-      showPosterSelector: false,
       showClickSelector: false,
       showFocusImgSelectorVisible: false,
       PARENT_TYPES,
@@ -487,10 +477,6 @@ export default {
       if ($form) {
         $form.clearValidate()
       }
-    },
-    /** 弹框选择素材 */
-    handleSelectPosterStart() {
-      this.showPosterSelector = true
     },
     /** 弹框选择素材 */
     handleSelectPosterEnd(data) {

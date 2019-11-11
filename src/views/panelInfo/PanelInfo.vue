@@ -15,8 +15,7 @@
           @save-draft="handleSaveDraft"
           @select-version="fetchData"
           @delete="$emit('upsert-end', $event)"
-          @cancel-timing="fetchData(pannel.currentVersion)"
-        >
+          @cancel-timing="fetchData(pannel.currentVersion)">
           <div slot="copy-confirm">
             复制到
             <el-select v-model="copyToPanelDataType">
@@ -52,8 +51,7 @@
 
               <el-form-item
                 label="内容源"
-                v-if="isPanelCommonOrVideo"
-              >
+                v-if="isPanelCommonOrVideo">
                 <SourceRadioSelector
                   :value="pannel.pannelResource"
                   @input="handlePannelResourceChange"
@@ -62,7 +60,7 @@
               </el-form-item>
 
               <el-form-item label="版块名称" required>
-                <el-input v-model="pannel.pannelName"></el-input>
+                <el-input v-model.trim="pannel.pannelName"></el-input>
               </el-form-item>
 
               <el-form-item label="版块分类" required>
@@ -86,22 +84,31 @@
                 <BinCheckBox label="4K" v-model="pannel.flagIs4k" :disabled="isReplica" />
               </el-form-item>
             </el-form>
-            
+
             <div v-if="mode === 'edit' || mode === 'replicate'">
-            <div class="form-legend-header" @click="handlePanelDataClick">
-              <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
-              <i v-else class="el-icon-arrow-up"></i>
-              <span>版块数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              昨日UVCTR：<span>{{panelUVCTR.value?toPercent(panelUVCTR.value):'N/A'}}</span>，
-              日环比<span :class="panelUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.dailyGrowth}}</span>；
-              周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
-            </div>
-            <div v-if="!isCollapseData">
-              <div v-for="panelChartData in panelChartDataArr" class="chart-box">
-                <div class="chart-box--title">{{panelChartData.title}}</div>
-                <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
+              <div class="form-legend-header" @click="handlePanelDataClick">
+                <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
+                <i v-else class="el-icon-arrow-up"></i>
+                <span>版块数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                昨日UVCTR：<span>{{panelUVCTR.value?toPercent(panelUVCTR.value):'N/A'}}</span>，
+                日环比<span :class="panelUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.dailyGrowth}}</span>；
+                周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
               </div>
-            </div>
+              <div v-if="!isCollapseData">
+                <div v-for="(panelChartData, index) in panelChartDataArr" class="chart-box" :key="index">
+                  <div class="chart-box--title">{{panelChartData.title}}</div>
+                  <VeLine
+                    :data="handleChartData(panelChartData)"
+                    :legend-visible="false"
+                    :extend="handleChartExtend(panelChartData)"
+                    :settings="handleChartSettings(panelChartData)"
+                    :events="handleChartEvents(index, 'edit')"
+                    :mark-line="markLine"
+                    :mark-point="markPoint"
+                    >
+                  </VeLine>
+                </div>
+              </div>
             </div>
 
             <div class="form-legend-header">
@@ -113,15 +120,17 @@
                 <el-input
                   style="width: 300px"
                   v-model="pannel.pannelList[0].pannelTitle"
-                  placeholder="请输入版本标题"
+                  placeholder="请输入版块标题"
                 ></el-input>
                 <BinCheckBox label="前端不显示标题" v-model="pannel.showTitle" is-negative />
               </el-form-item>
               <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
-                <el-input v-model="pannel.groupTitle" placeholder="请输入版本标题"></el-input>
+                <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
               </el-form-item>
               <el-form-item label="版块布局" required>
-                <LayoutSelector @select-end="handleSelectLayoutEnd"></LayoutSelector>
+                <LayoutSelector ref="layoutSelector" @select-end="handleSelectLayoutEnd">
+                  <el-button @click.stop="handleSelectLayoutStart" type="primary" plain >选择布局</el-button>
+                </LayoutSelector>
                 <span
                   class="marginL"
                   v-if="selectedLayout"
@@ -175,31 +184,66 @@
                 <span v-show="!selectedLayout">
                   请先选择布局
                 </span>
-                <ResourceSelector
-                  ref="resourceSelector"
-                  v-show="selectedLayout"
-                  :selectors="['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate', 'good']"
-                  :is-live="false"
-                  :disable-partner="!!pannel.pannelResource"
-                  selection-type="multiple"
-                  :source="pannel.pannelResource"
-                  @select-end="handleSelectResourceEnd">
-                  <el-button type="primary" plain>选择资源</el-button>
-                </ResourceSelector>
-                <template v-if="pannel.parentType === 'group'">
+                <div v-show="selectedLayout">
+                  <ResourceSelector
+                    ref="resourceSelector"
+                    :selectors="mediaResourceSelectors"
+                    :is-live="false"
+                    :disable-partner="!!pannel.pannelResource"
+                    selection-type="multiple"
+                    :source="pannel.pannelResource"
+                    :business-type="pannel.panelGroupCategory"
+                    @select-end="handleSelectResourceEnd">
+                    <el-button type="primary" plain @click.stop="handleSelectResourceStart">选择资源</el-button>
+                  </ResourceSelector>
+                  <ResourceSelector
+                    class="margin-left-10"
+                    v-if="canFillWithRanking"
+                    ref="rankingSelector"
+                    :selectors="['ranking']"
+                    :is-live="false"
+                    :disable-partner="!!pannel.pannelResource"
+                    selection-type="single"
+                    :source="pannel.pannelResource"
+                    :business-type="pannel.panelGroupCategory"
+                    @select-end="handleSelectRankingEnd">
+                      <el-button type="primary" plain @click.stop="handleSelectRankingStart">
+                        选择排行榜
+                      </el-button>
+                  </ResourceSelector>
+                  <el-tooltip
+                    v-else
+                    effect="dark"
+                    placement="top">
+                    <div slot="content">
+                      使用排行榜，布局必须满足：标题布局、不带价格、只有一行、
+                      <br/>
+                      每个推荐位都是 260*364、推荐位数量 6~11 个
+                      <br />
+                      目前只支持业务类型为 不限、教育、影视
+                    </div>
+                    <el-button class="is-disabled" type="primary" plain>
+                      选择排行榜
+                    </el-button>
+                  </el-tooltip>
+                  <el-button class="btn-clear-current-blocks" @click="handleClearCurrentBlocks" type="primary" plain>
+                    清空当前版块推荐位
+                  </el-button>
+                </div>
+                <div v-if="pannel.parentType === 'group'" style="float:right">
                   <el-button
-                    style="float:right"
-                    type="primary"
-                    @click="handleAddTab"
-                    :disabled="pannel.pannelList.length >= 10"
-                  >添加分组</el-button>
-                  <el-button
-                    style="float:right"
                     type="primary"
                     @click="handleSetDefaultActiveTab"
-                    :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''"
-                  >设置默认落焦</el-button>
-                </template>
+                    :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''">
+                    设置默认落焦
+                  </el-button>
+                  <el-button
+                    type="primary"
+                    @click="handleAddTab"
+                    :disabled="pannel.pannelList.length >= 10">
+                    添加分组
+                  </el-button>
+                </div>
                 <div class="pannel-blocks">
                   <template v-if="pannel.parentType === 'group'">
                     <el-tabs
@@ -215,7 +259,7 @@
                         :name="index.toString()"
                       >
                         <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
-                          {{ item.pannelTitle || "双击修改" }}
+                          {{ (item.pannelTitle || '').trim() || "双击修改" }}
                           {{
                           item.panelIsFocus && pannel.focusConfig === ""
                           ? "(默认落焦)"
@@ -224,6 +268,7 @@
                         </span>
                         <VirtualPanel
                           :blocks="item.contentList"
+                          :mode="mode"
                           @drag="handleDragBlock"
                           @remove-block="handleRemoveBlock"
                           @click-block="handleClickBlock"
@@ -235,6 +280,7 @@
                   <VirtualPanel
                     v-else
                     :blocks="pannel.pannelList[0].contentList"
+                    :mode="mode"
                     @drag="handleDragBlock"
                     @remove-block="handleRemoveBlock"
                     @click-block="handleClickBlock"
@@ -243,6 +289,7 @@
               </el-form-item>
             </el-form>
           </template>
+
           <template v-if="mode === 'read'">
 
             <div class="form-legend-header">
@@ -287,9 +334,17 @@
               周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
             </div>
             <div v-if="!isCollapseData">
-              <div v-for="panelChartData in panelChartDataArr" class="chart-box">
+              <div v-for="(panelChartData, index) in panelChartDataArr" :key="index" class="chart-box">
                 <div class="chart-box--title">{{panelChartData.title}}</div>
-                <VeLine :data="handleChartData(panelChartData)" :legend-visible="false" :extend="handleChartExtend(panelChartData)" :settings="handleChartSettings(panelChartData)"></VeLine>
+                <VeLine
+                  :data="handleChartData(panelChartData)"
+                  :legend-visible="false"
+                  :extend="handleChartExtend(panelChartData)"
+                  :settings="handleChartSettings(panelChartData)"
+                  :mark-line="markLine"
+                  :mark-point="markPoint"
+                >
+                </VeLine>
               </div>
             </div>
             </div>
@@ -324,7 +379,7 @@
                 <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
               </el-form-item>
               <el-form-item label="推荐位">
-                <div class="pannel-blocks">
+                <div class="pannel-blocks pannel-blocks--read">
                   <template v-if="pannel.parentType === 'group'">
                     <el-tabs
                       v-model="activePannelIndex"
@@ -333,15 +388,18 @@
                       <el-tab-pane
                         v-for="(item, index) in pannel.pannelList"
                         :key="index"
-                        :name="index.toString()"
-                      >
+                        :name="index.toString()">
 
                         <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
                           {{ item.pannelTitle }} {{ item.panelIsFocus && pannel.focusConfig === '' ? '(默认落焦)' : '' }}
                         </span>
                         <VirtualPanel
                           :blocks="item.contentList"
+                          :mode="mode"
+                          :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
                           @click-block="handleClickBlock"
+                          @show-simple-chart="handleAnalyzeData('simple', $event, index)"
+                          @show-dmp-chart="handleAnalyzeData('dmp', $event, index)"
                         ></VirtualPanel>
                       </el-tab-pane>
                     </el-tabs>
@@ -349,8 +407,12 @@
 
                   <VirtualPanel
                     v-else
+                    :mode="mode"
                     :blocks="pannel.pannelList[0].contentList"
                     @click-block="handleClickBlock"
+                    :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
+                    @show-simple-chart="handleAnalyzeData('simple', $event)"
+                    @show-dmp-chart="handleAnalyzeData('dmp', $event)"
                   ></VirtualPanel>
                 </div>
               </el-form-item>
@@ -377,12 +439,15 @@
         :data="blockContentProps"
         :source="pannel.pannelResource"
         :pannel="pannel.pannelList[+activePannelIndex]"
+        :pannel-group-id="pannel.pannelGroupId"
         :hide-title-options="!!blockContentProps.blockInfo.title_info"
         @cancel="handleSetBlockContentCancle"
         @save="handleSetBlockContentEnd"
       />
     </PageContentWrapper>
 
+    <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
+    <AnalyzeDmpDataDialog :show.sync="isVisiAnalyzeDmpData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
   </PageWrapper>
 </template>
 <script>
@@ -404,8 +469,14 @@ import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 
 import TagFrame from './TagFrame'
 import VeLine from 'v-charts/lib/line.common'
+import 'echarts/lib/component/markLine'
+import 'echarts/lib/component/markPoint'
 
-import { genResourceContentList, getMatchedPictureUrl } from './panelInfoUtil'
+import AnalyzeSimpleDataDialog from './AnalyzeSimpleDataDialog'
+import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
+
+import { genResourceContentList, genRankingContentList, getMatchedPictureUrl, isValidLayoutForRanking } from './panelInfoUtil'
+import { cloneDeep } from 'lodash'
 
 export default {
   mixins: [titleMixin],
@@ -424,42 +495,17 @@ export default {
     ResourceSelector,
     PanelGroupInfoSetter,
     TagFrame,
-    VeLine
+    VeLine,
+    AnalyzeSimpleDataDialog,
+    AnalyzeDmpDataDialog
   },
   data() {
-    var checkNum = function(rule, value, callback) {
-      var reg = /^[1-9]\d*$/
-      if (!reg.test(value)) {
-        callback(new Error('请输入个数'))
-      } else if (value < app.layoutConetntLength) {
-        callback(
-          new Error('请输入大于或等于' + app.layoutConetntLength + '的数')
-        )
-      } else {
-        callback()
-      }
-    }
-    const border = {
-      'xAxis.0.axisLabel.rotate': 45,
-      grid: {
-        top: "2%",
-        left: "5%",
-        right: "5%",
-        bottom: "10%",
-        containLabel: true
-      },
-      series: v => {
-        v[0].smooth = false
-        return v
-      },
-      color: ['#1E90FF ','#2f4554'],
-    }
     const extend = {
       grid: {
-        top: "2%",
-        left: "5%",
-        right: "5%",
-        bottom: "10%",
+        top: '10%',
+        left: '5%',
+        right: '5%',
+        bottom: '10%',
         containLabel: true
       },
       series: v => {
@@ -467,15 +513,15 @@ export default {
         return v
       },
       xAxis: {
+        // triggerEvent: true,
         axisLabel: {
           rotate: 45,
           formatter: function(val) {
             let mark = val.indexOf('(')
-            if(mark === -1)
-            {
+            if (mark === -1) {
               return val
-            }else {
-              let version = val.slice(mark-val.length)
+            } else {
+              let version = val.slice(mark - val.length)
               let date = val.slice(0, mark)
               return [`{a|${version}}`, date].join('')
             }
@@ -485,13 +531,36 @@ export default {
           }
         }
       },
-      color: ['#1E90FF ','#2f4554'],
+      color: ['#1E90FF ', '#2f4554']
+    }
+    this.markLine = {
+      data: [
+        {
+          name: '平均线',
+          type: 'average'
+        }
+      ]
+    }
+    this.markPoint = {
+      data: [
+        {
+          name: '最大值',
+          type: 'max'
+        },
+        {
+          name: '最小值',
+          type: 'min'
+        }
+      ]
     }
     return {
+      analyzeBtnCurrentIndex: undefined,
+      isVisiAnalyzeSimpleData: false,
+      isVisiAnalyzeDmpData: false,
       // 数据展现
       extend: extend,
       settings: {
-          labelMap: {
+        labelMap: {
           y: '曝光UV'
         }
       },
@@ -524,7 +593,6 @@ export default {
       // 包含选中内容
       selectedResources: [],
       selectedFocusImgUrl: undefined,
-      selectedBlocksAndResources: [],
 
       // 复制到
       copyToPanelDataType: this.panelDataType,
@@ -556,6 +624,8 @@ export default {
 
         pannelList: [
           {
+            rankIsOpen: 0,
+            rankChildId: undefined,
             pannelTitle: '',
             panelIsFocus: 0,
             contentList: [],
@@ -578,7 +648,10 @@ export default {
       sharedTags: [],
 
       // 用在 watcher 中，设置一个标识表示是否人为更新数据，避免 watcher 逻辑执行
-      isResetingData: false
+      isResetingData: false,
+      // 允许开排行榜的业务类型
+      // 不限，教育 支持排行榜
+      allowRankBusinessTypes: [67, 60, 31]
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -586,6 +659,7 @@ export default {
     resourceName() {
       return this.currentPanelDataType === 3 ? '业务专辑' : '版块'
     },
+    // eslint-disable-next-line
     resourceInfo() {
       const panel = this.pannel
       if (panel.pannelGroupId) {
@@ -598,18 +672,21 @@ export default {
         }
       }
     },
+    mediaResourceSelectors () {
+      return ['video', 'app', 'edu', 'pptv', 'live', 'topic', 'rotate', 'good']
+    },
+    mediaResourceSelectionType () {
+      if (this.isFillWithRanking) {
+        return 'single'
+      }
+      return 'multiple'
+    },
     currentPanelDataType() {
       const panel = this.pannel
       if (panel.pannelGroupId) {
         return panel.panelGroupType
       }
       return this.panelDataType
-    },
-    pannelStatusText() {
-      const pannelStatus = this.pannel.pannelList[0].pannelStatus
-      if (pannelStatus !== '') {
-        return basicFn.numToAuditStatus(pannelStatus)
-      }
     },
     isPanelCommonOrVideo() {
       const panelGroupCategory = this.pannel.panelGroupCategory
@@ -629,6 +706,7 @@ export default {
       }
       return true
     },
+    // eslint-disable-next-line
     alienFocusResolution() {
       const selectedLayout = this.selectedLayout
       if (selectedLayout) {
@@ -688,8 +766,23 @@ export default {
       const currentVersion = this.pannel.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
       const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
-      const isCoocaa = this.$consts.idPrefix == '10'
+      const isCoocaa = this.$consts.idPrefix === '10'
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
+    },
+    isFillWithRanking () {
+      const activePannelIndex = +this.activePannelIndex
+      const pannelList = this.pannel.pannelList
+      return !!pannelList[activePannelIndex].rankIsOpen
+    },
+    canFillWithRanking () {
+      const allowRankBusinessTypes = this.allowRankBusinessTypes
+      const pannel = this.pannel
+      const activePannelIndex = +this.activePannelIndex
+      const pannelList = pannel.pannelList
+      const activePannel = pannelList[activePannelIndex]
+      const validBusinessType = allowRankBusinessTypes.includes(pannel.panelGroupCategory)
+      const validLayout = isValidLayoutForRanking(activePannel.contentList)
+      return validBusinessType && validLayout
     }
   },
   watch: {
@@ -711,12 +804,32 @@ export default {
     'pannel.focusConfig': 'handleFocusConfigChange'
   },
   methods: {
+    handleToggleFillWithRanking (val) {
+      const panelList = this.pannel.pannelList
+      const activePannelIndex = +this.activePannelIndex
+      const activePannel = panelList[activePannelIndex]
+      if (val) {
+        if (!isValidLayoutForRanking(activePannel.contentList)) {
+          return this.$message({
+            type: 'error',
+            duration: 8000,
+            message: '采用排行榜，布局必须满足：标题布局、不带价格、只有一行、每个推荐位都是260*364、推荐位数量6~11个'
+          })
+        }
+        panelList[activePannelIndex].rankIsOpen = 1
+        this.clearBlocks()
+      } else {
+        // 清空内容
+        panelList[activePannelIndex].rankIsOpen = 0
+        this.clearBlocks()
+      }
+    },
     toPercent: decimal => {
-      return (Math.round(decimal * 10000) / 100.00 + "%")
+      return (Math.round(decimal * 10000) / 100.00 + '%')
     },
     toArrowPercent (decimal) {
       const rs = this.toPercent(Math.abs(decimal))
-      return rs + (decimal>0 ? ' ↑' : ' ↓')
+      return rs + (decimal > 0 ? ' ↑' : ' ↓')
     },
     handleChartData(chartData) {
       return {
@@ -740,21 +853,64 @@ export default {
         }
       }
       const extend = Object.assign({}, this.extend)
-      return chartData.unit === '%' ? 
-      Object.assign(extend, {
-        yAxis
-      })
-      : extend
+      return chartData.unit === '%'
+        ? Object.assign(extend, {
+          yAxis
+        })
+        : extend
     },
-
+    // 暂时没有extra, e.componentType !== 'xAxis', xAxis: {triggerEvent: false}
+    // 故下面的函数暂时不执行
+    handleChartEvents (index, mode) {
+      let _this = this
+      return {
+        click: function(e) {
+          const h = _this.$createElement
+          if (e.componentType === 'xAxis' && mode === 'edit') {
+            let xIndex = _this.panelChartDataArr[index].data.findIndex(item => {
+              return item.x === e.value
+            })
+            const extra = _this.panelChartDataArr[index].data[xIndex].extra
+            if (extra && extra.length !== 0) {
+              // 埋点
+              _this.$sendEvent({
+                type: 'album_version_show'
+              })
+              // 展示
+              let extraNodeArr = extra.map(item => {
+                return h('p', null, item)
+              })
+              _this.$msgbox({
+                title: '推荐位标题变化',
+                message: h('div', null, extraNodeArr),
+                confirmButtonText: '确定'
+              })
+            }
+          }
+        }
+      }
+    },
     handleBatchAddTag() {
       this.showAddTagDialog = true
+      this.$sendEvent({
+        type: 'panel_tag',
+        payload: {
+          panel_group_id: this.pannel.pannelGroupId || 'new'
+        }
+      })
     },
     handleBatchAddTagEnd() {
       this.getSharedTags()
       this.showAddTagDialog = false
     },
     handleInputTagWeight(weight, originWeight, tag) {
+      this.$sendEvent({
+        type: 'tag_weight',
+        payload: {
+          panel_group_id: this.pannel.pannelGroupId || 'new',
+          type: weight <= originWeight ? 'minus' : 'plus'
+        }
+      })
       this.$service.panelTagUpsert({
         panelId: this.pannel.pannelGroupId,
         tagId: tag.tagId,
@@ -766,19 +922,19 @@ export default {
         })
     },
     getSharedTags() {
-      const panelId = this.pannel.pannelGroupId 
+      const panelId = this.pannel.pannelGroupId
       const resourceIds = this.panelResourceIds
       const isNoResources = resourceIds && resourceIds.length === 0
       if (!this.isShowTagsField || isNoResources) {
-        return this.sharedTags = []
+        this.sharedTags = []
+      } else {
+        this.$service.getSharedTags({
+          coocaaVIds: resourceIds.join(','),
+          panelId
+        }).then((data) => {
+          this.sharedTags = data.tags || []
+        })
       }
-      this.$service.getSharedTags({ 
-        coocaaVIds: resourceIds.join(','), 
-        panelId 
-      }).then((data) => {
-        console.log(data)
-        this.sharedTags = data.tags || []
-      })
     },
     handleFocusConfigChange(val) {
       if (this.isResetingData) {
@@ -826,6 +982,15 @@ export default {
         this.setPanelInfoData(data)
       })
     },
+    getPanelIndexListUsingRanking () {
+      const pannelList = this.pannel.pannelList
+      return pannelList.reduce((result, item, index) => {
+        if (item.rankIsOpen) {
+          result.push(index)
+        }
+        return result
+      }, [])
+    },
     handleSelectVersion() {
       const pannel = this.pannel
       window.location.href =
@@ -838,28 +1003,59 @@ export default {
     handleCopy(status) {
       this.pannel.panelGroupType = this.copyToPanelDataType
       const STATUS = this.$consts.status
-      if (status == STATUS.waiting) {
+      if (status === STATUS.waiting) {
         this.handleSubmitAudit()
       } else {
         this.handleSaveDraft()
       }
     },
     // 布局
+    handleSelectLayoutStart () {
+      const panelIndexListUsingRanking = this.getPanelIndexListUsingRanking()
+      if (panelIndexListUsingRanking.length > 0) {
+        this.$confirm('当前有版块使用排行榜填充，切换布局后这些版块内容将被清空，确定要换布局？', '提示')
+          .then(() => {
+            this.$refs.layoutSelector.$refs.wrapper.handleSelectStart()
+          })
+          .catch(() => {})
+      } else {
+        this.$refs.layoutSelector.$refs.wrapper.handleSelectStart()
+      }
+    },
     handleSelectLayoutEnd(layout, blockCount) {
-      this.selectedLayout = layout
-      this.blockCount = blockCount
-      this.blockCountList = this.blockCountList.map(function() {
-        return blockCount
+      // 切换布局之后，如果含有用排行榜填充的，清空所有版块内容
+      const panelIndexListUsingRanking = this.getPanelIndexListUsingRanking()
+      panelIndexListUsingRanking.forEach(index => {
+        // 把使用排行榜填充的版块内容清空
+        this.clearBlocks(index)
       })
+      this.selectedLayout = layout
+      // 如果是横向拓展布局
+      blockCount = blockCount || layout.layoutJsonParsed.contents.length
+      this.blockCount = blockCount
+      this.blockCountList = this.blockCountList.map(_ => blockCount)
       // 如果选择的是拓展布局，按照设置的数量删除多余的资源
       if (blockCount !== undefined) {
-        this.pannel.pannelList.forEach(function(item) {
+        this.pannel.pannelList.forEach(item => {
           const selectedResources = item.selectedResources
           if (selectedResources) {
             item.selectedResources = selectedResources.slice(0, blockCount)
           }
         })
       }
+      // 关闭推荐流按钮
+      this.pannel.pannelList.forEach(pannelList => {
+        pannelList.contentList.forEach(contentList => {
+          contentList.videoContentList.forEach(videoContent => {
+            videoContent.flagSetRec = 0
+            videoContent.mediaAutomationBlockRls = {
+              refreshCal: 1,
+              mediaAutomationId: '',
+              blockType: 'normal'
+            }
+          })
+        })
+      })
       // 如果选择的是不含价格的布局，要删除所有价格信息
       if (layout.layoutJsonParsed.contents[0].type !== 'Mall') {
         this.pannel.pannelList.forEach(function(item) {
@@ -892,6 +1088,9 @@ export default {
     // 设置版块内容
     handleClickBlock(index) {
       const pannel = this.pannel
+      if (this.isFillWithRanking) {
+        return this.$message.error('使用排行榜填充的版块里的推荐位不能查看或编辑')
+      }
       const selectedLayout = this.selectedLayout
       const activePannelIndex = +this.activePannelIndex
       const selectedResources =
@@ -918,7 +1117,6 @@ export default {
       const currentBlockIndex = this.currentBlockIndex
       const resource = selectedResources[currentBlockIndex] || {}
       selectedResources[currentBlockIndex] = resource
-      const content = param.videoContentList[0]
       Object.assign(resource, param)
       if (param.specificContentList.length > 0) {
         activePannel.pannelType = 7
@@ -927,27 +1125,68 @@ export default {
       this.getSharedTags()
       this.activePage = 'panel_info'
     },
+    handleSelectRankingStart () {
+      const pannel = this.pannel
+      const activePannelIndex = +this.activePannelIndex
+      const activePannel = pannel.pannelList[activePannelIndex]
+      const areBlocksEmpty = activePannel.selectedResources.length === 0
+      if (!activePannel.rankIsOpen && !areBlocksEmpty) {
+        this.$confirm('使用排行榜填充之后，原来推荐位内容将被全部清除, 是否继续操作?', '提示')
+          .then(() => {
+            this.$refs.rankingSelector.$refs.wrapper.handleSelectStart()
+          })
+          .catch(() => {})
+      } else {
+        this.$refs.rankingSelector.$refs.wrapper.handleSelectStart()
+      }
+    },
+    handleSelectRankingEnd (selectedResources) {
+      const pannel = this.pannel
+      const activePannelIndex = +this.activePannelIndex
+      const activePannel = pannel.pannelList[activePannelIndex]
+      const blockCount = this.blockCountList[activePannelIndex]
+      // 获取排行榜资源
+      const ranking = selectedResources.ranking[0]
+      const businessType = this.pannel.panelGroupCategory
+      const partner = this.$consts.sourceToPartner[pannel.pannelResource]
+      const reqData = {
+        code: ranking.code,
+        businessType,
+        partner
+      }
+      this.$service.mediaGetRankingInfoVideoList(reqData).then(result => {
+        activePannel.rankIsOpen = 1
+        activePannel.rankChildId = ranking.id
+        activePannel.selectedResources = []
+        // 根据推荐位个数 n, 截取 n-1 个资源
+        const rankingResources = result.rankingVideoInfoEntities || []
+        selectedResources.rankingCode = ranking.code
+        selectedResources.ranking = rankingResources.slice(0, blockCount - 1)
+        return this.insertResources({
+          selectedResources,
+          isFillWithRanking: true
+        })
+      })
+    },
+    handleSelectResourceStart () {
+      const pannel = this.pannel
+      const activePannelIndex = +this.activePannelIndex
+      const activePannel = pannel.pannelList[activePannelIndex]
+      if (activePannel.rankIsOpen) {
+        this.$confirm('当前版块推荐位已使用排行榜填充，若选择其他资源填充，原来排行榜的内容将全部清除, 是否继续操作?', '提示')
+          .then(() => {
+            this.$refs.resourceSelector.$refs.wrapper.handleSelectStart()
+          })
+          .catch(() => {})
+      } else {
+        this.$refs.resourceSelector.$refs.wrapper.handleSelectStart()
+      }
+    },
     handleSelectResourceEnd(selectedResources) {
       const resourceSelector = this.$refs.resourceSelector
-      const partner = selectedResources.videoSource
-      const selectedEpisodes = selectedResources.episode || {}
       const pannel = this.pannel
-      const activePannel = this.pannel.pannelList[+this.activePannelIndex]
-      const partnerMap = {
-        tencent: 'o_tencent',
-        yinhe: 'o_iqiyi',
-        youku: 'o_youku'
-      }
-      const pannelResource = pannel.pannelResource || partnerMap[partner]
-      const getExtravue1 = function(vId) {
-        return pannelResource === 'o_tencent'
-          ? '_otx_' + vId
-          : pannelResource === 'o_iqiyi'
-            ? '_oqy_' + vId
-            : pannelResource === 'o_youku'
-              ? '_oyk_' + vId
-              : ''
-      }
+      const activePannelIndex = +this.activePannelIndex
+      const activePannel = pannel.pannelList[activePannelIndex]
       // 获取当前已有内容的推荐位数量
       let blockNotEmptyCount = 0
       activePannel.contentList.forEach(function(item) {
@@ -968,246 +1207,84 @@ export default {
           }
         }
       })
-        .then(
-          function(result) {
-            const insertAfter = result.value || 1
-            const selectedLayout = this.selectedLayout
-            /** 
-            const selectedViedos = selectedResources.video.map(function(item) {
-              const episode = selectedEpisodes[item.coocaaVId]
-              let finalItem
-              if (episode) {
-                const fieldMap = {
-                  0: 'extraValue5',
-                  1: 'extraValue5',
-                  6: 'extraValue4'
-                }
-                const extraIdField = fieldMap[episode.urlIsTrailer] || 'extraValue5'
-                finalItem = {
-                  contentType: 0, // ??
-                  coverType: 'media',
-                  videoContentType: 'movie',
-                  extraValue1: getExtravue1(item.coocaaVId),
-                  [extraIdField]: episode.coocaaMId,
-                  pictureUrl: episode.thumb,
-                  title: episode.urlTitle,
-                  subTitle: episode.urlSubTitle,
-                  blockResourceType: 1
-                }
-              } else {
-                finalItem = {
-                  contentType: 0, // ??
-                  coverType: 'media',
-                  videoContentType: 'movie',
-                  extraValue1: getExtravue1(item.coocaaVId),
-                  extraValue5: undefined,
-                  pictureUrl: item.thumb,
-                  // 候选图片列表，用于选出最合适尺寸第图片  
-                  picturePreset: item.imageInfoList,
-                  title: item.title,
-                  subTitle: item.urlSubTitle,
-                  blockResourceType: 1
-                }
-              }
-              const entity = item.ccVideoSourceEntities[0]
-              const score = entity.score
-              const updatedSegment = entity.updatedSegment
-              const publishSegment = entity.publishSegment
-              const isUnknown = publishSegment == 0
-              const publishStatus = isUnknown
-                ? 'unknown'
-                : updatedSegment == publishSegment
-                  ? 'ended'
-                  : 'updating'
-              finalItem.publishStatus = publishStatus
-              finalItem.score = score
-              finalItem.categoryId = item.categoryId
-              finalItem.series = isUnknown ? null : updatedSegment
-              finalItem.variety = entity.lastCollection
-              return finalItem
-            })
-
-            const selectedApps = selectedResources.app.map(function(item) {
-              return {
-                contentType: 2,
-
-                coverType: 'app',
-                videoContentType: 'app',
-                extraValue1: item.appPackageName,
-                pictureUrl: item.appImageUrl,
-                title: item.appName,
-                blockResourceType: 3
-              }
-            })
-
-            const selectedEdus = selectedResources.edu.map(function(item) {
-              const ccVideoSourceEntities = item.ccVideoSourceEntities
-              const ret = {
-                contentType: 3,
-
-                coverType: 'media',
-                videoContentType: 'edu',
-                extraValue1: '_otx_' + item.coocaaVId,
-                pictureUrl: item.thumb,
-                picturePreset: item.imageInfoList,
-                title: item.title,
-                subTitle: item.subTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-              if (
-                ccVideoSourceEntities &&
-                ccVideoSourceEntities[0] &&
-                ccVideoSourceEntities[0].isTvod === 1
-              ) {
-                // Sprint2.2 教育中心单点付费预置版本号
-                ret.versionCode = 3420000
-              }
-              return ret
-            })
-
-            const selectedPPTVs = selectedResources.pptv.map(function(item) {
-              return {
-                contentType: 4,
-
-                coverType: 'media',
-                videoContentType: 'pptv',
-                extraValue1:
-                  'pptv_tvsports://tvsports_detail?section_id=' +
-                  item.pid +
-                  '&from_internal=1',
-                title: item.pTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-            })
-
-            const selectedLives = selectedResources.live.map(function(item) {
-              return {
-                contentType: 4,
-
-                coverType: 'media',
-                contentType: 6,
-                videoContentType: 'txLive',
-                extraValue1: '_otx_' + item.vId,
-                pictureUrl: item.thumb,
-                title: item.title,
-                subTitle: item.subTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-            })
-
-            const selectedTopics = selectedResources.topic.map(function(item) {
-              return {
-                coverType: 'media',
-
-                contentType: item.dataSign === 'parentTopic' ? 8 : 7,
-                videoContentType:
-                  item.dataSign === 'parentTopic' ? 'bigTopic' : 'topic',
-                extraValue1: item.id + '',
-                pictureUrl: item.picture,
-                title: item.title,
-                subTitle: item.subTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-            })
-
-            const selectedBroadcast = selectedResources.rotate.map(function(
-              item
-            ) {
-              return {
-                coverType: 'media',
-                contentType: 9,
-                videoContentType: 'rotate',
-                extraValue1: item.id + '',
-                pictureUrl: item.picture,
-                title: item.title,
-                subTitle: item.subTitle,
-                blockResourceType: 1,
-                categoryId: item.categoryId
-              }
-            })
-
-            const selectedGood = selectedResources.good.map((item) => {
-              return {
-                coverType: 'mall',
-                contentType: 13,
-                videoContentType: 'mall',
-                extraValue1: item.resourceId + '',
-                pictureUrl: item.resourceImgUrl,
-                title: item.resourceName,
-                blockResourceType: -1
-              }
-            })
-            */
-
-            const resourcesToInsert = genResourceContentList(selectedResources, {
-              // 把一些值置为为定义，
-              // 因为 gen 出来的默认数据结构只适用于推荐位详情里面，在外面没必要用
-              bgParams: undefined, 
-              cornerList: undefined,
-              redundantParams: undefined,
-              // 定义一个标识，在填充的时候，填充最合适尺寸的图片
-              shouldFindFitestPicture: true
-            })
-              .map(function(item) {
-                return {
-                  contentPosition: null,
-                  blockMallPosition: null,
-                  focusImgUrl: '',
-                  lucenyFlag: 0,
-                  resize: null,
-                  titleInfo: null,
-                  videoContentList: [item],
-                  specificContentList: []
-                }
-              })
-            const newResourcesLength = Math.max(
-              insertAfter - 1 + resourcesToInsert.length,
-              activePannel.selectedResources.length
-            )
-            const newResources = Array.apply(null, {
-              length: newResourcesLength
-            })
-            for (
-              let i = 0,
-                start = insertAfter - 1,
-                end = start + resourcesToInsert.length - 1,
-                length = newResourcesLength;
-              i < length;
-              i++
-            ) {
-              if (i >= start && i <= end) {
-                // 覆盖原来的
-                newResources[i] =  resourcesToInsert[i - start]
-                // 只覆盖第一个，后面的补上
-                const videoContentList = newResources[i].videoContentList
-                const originSelectedResources = activePannel.selectedResources[i] || {}
-                const originVideoContentList = originSelectedResources.videoContentList
-                if (originVideoContentList && originVideoContentList.length > 1) {
-                  newResources[i].videoContentList = videoContentList.concat(originVideoContentList.slice(1))
-                }
-              } else {
-                // 新资源填充完毕，后面的还是原来的
-                newResources[i] = activePannel.selectedResources[i]
-              }
-            }
-
-            activePannel.selectedResources = newResources
-            resourceSelector.clearSelected()
-            // 计算每个 block 的位置
-            this.updatePosition()
-            this.getSharedTags()
-          }.bind(this)
-        )
+        .then(result => {
+          if (activePannel.rankIsOpen) {
+            activePannel.rankIsOpen = 0
+            activePannel.rankChildId = undefined
+            activePannel.selectedResources = []
+          }
+          resourceSelector.clearSelected()
+          return this.insertResources({
+            insertAfter: result.value || 1,
+            selectedResources
+          })
+        })
         .catch((e) => {
           console.log(e)
           resourceSelector.$refs.wrapper.handleSelectStart()
         })
     },
-
+    insertResources ({ insertAfter = 1, selectedResources, isFillWithRanking }) {
+      const pannel = this.pannel
+      const activePannelIndex = +this.activePannelIndex
+      const activePannel = pannel.pannelList[activePannelIndex]
+      const genMethod = isFillWithRanking ? genRankingContentList : genResourceContentList
+      const resourcesToInsert = genMethod(selectedResources, {
+        // 把一些值置为为定义，
+        // 因为 gen 出来的默认数据结构只适用于推荐位详情里面，在外面没必要用
+        bgParams: undefined,
+        cornerList: undefined,
+        redundantParams: undefined,
+        // 定义一个标识，在填充的时候，填充最合适尺寸的图片
+        shouldFindFitestPicture: true
+      })
+        .map(function(item) {
+          return {
+            contentPosition: null,
+            blockMallPosition: null,
+            focusImgUrl: '',
+            lucenyFlag: 0,
+            resize: null,
+            titleInfo: null,
+            videoContentList: [item],
+            specificContentList: []
+          }
+        })
+      const newResourcesLength = Math.max(
+        insertAfter - 1 + resourcesToInsert.length,
+        activePannel.selectedResources.length
+      )
+      const newResources = Array.apply(null, {
+        length: newResourcesLength
+      })
+      for (
+        let i = 0,
+          start = insertAfter - 1,
+          end = start + resourcesToInsert.length - 1,
+          length = newResourcesLength;
+        i < length;
+        i++
+      ) {
+        if (i >= start && i <= end) {
+          // 覆盖原来的
+          newResources[i] = resourcesToInsert[i - start]
+          // 只覆盖第一个，后面的补上
+          const videoContentList = newResources[i].videoContentList
+          const originSelectedResources = activePannel.selectedResources[i] || {}
+          const originVideoContentList = originSelectedResources.videoContentList
+          if (originVideoContentList && originVideoContentList.length > 1) {
+            newResources[i].videoContentList = videoContentList.concat(originVideoContentList.slice(1))
+          }
+        } else {
+          // 新资源填充完毕，后面的还是原来的
+          newResources[i] = activePannel.selectedResources[i]
+        }
+      }
+      activePannel.selectedResources = newResources
+      // 计算每个 block 的位置
+      this.updatePosition()
+      this.getSharedTags()
+    },
     handleRemoveTab(indexString) {
       this.$confirm('确认删除该子版块?', '提示', {
         confirmButtonText: '确定',
@@ -1253,10 +1330,12 @@ export default {
         panelIsFocus: 0
       }
     },
-    addPannel(title) {
+    addPannel() {
       const pannelList = this.pannel.pannelList
       const pannel = {
-        pannelTitle: title,
+        rankIsOpen: 0,
+        rankChildId: undefined,
+        pannelTitle: undefined,
         panelIsFocus: 0,
         selectedResources: [],
         contentList: []
@@ -1336,6 +1415,7 @@ export default {
       this.activePanelGroup = {
         index: index,
         title: panel.pannelTitle,
+        rankIsOpen: panel.rankIsOpen,
         startTime: panel.startTime,
         endTime: panel.endTime,
         panelIsFocus: panel.panelIsFocus
@@ -1351,8 +1431,7 @@ export default {
       let panel = panelList[index]
       if (!panel) {
         // 是新添加的
-        this.addPannel(groupInfo)
-        this.updateAllPosition()
+        this.addPannel()
         panel = panelList[index]
       }
       panel.pannelTitle = groupInfo.title
@@ -1361,9 +1440,17 @@ export default {
       } else {
         panel.panelIsFocus = groupInfo.panelIsFocus
       }
+      const originRankIsOpen = panel.rankIsOpen
+      const rankIsOpen = groupInfo.rankIsOpen
+      if (rankIsOpen !== originRankIsOpen) {
+        // 清空内容
+        panel.selectedResources = []
+      }
+      panel.rankIsOpen = rankIsOpen
       panel.startTime = groupInfo.startTime
       panel.endTime = groupInfo.endTime
       this.activePanelGroup = undefined
+      this.updateAllPosition()
     },
     setPanelDefaultFocus(index) {
       const panelList = this.pannel.pannelList
@@ -1373,11 +1460,31 @@ export default {
       })
       panel.panelIsFocus = 1
     },
-    clearBlocks() {
+    handleClearCurrentBlocks () {
+      this.$confirm('确定清空当前版块推荐位？', '提示')
+        .then(() => {
+          const activePannelIndex = +this.activePannelIndex
+          this.clearBlocks(activePannelIndex)
+          this.updatePosition(activePannelIndex)
+        })
+        .catch(() => {})
+    },
+    clearBlocks(index) {
       const pannel = this.pannel
-      pannel.pannelList.forEach(function(item) {
+      const pannelList = pannel.pannelList
+      const doClear = (i) => {
+        const item = pannelList[i]
+        item.rankIsOpen = 0
+        item.rankChildId = undefined
         item.selectedResources = []
-      })
+      }
+      if (index !== undefined) {
+        doClear(index)
+      } else {
+        pannelList.forEach((item, index) => {
+          doClear(index)
+        })
+      }
       this.updateAllPosition()
     },
     updateAllPosition() {
@@ -1392,16 +1499,33 @@ export default {
         return
       }
       const pannel = this.pannel
-      const layoutJson = JSON.parse(selectedLayout.layoutJson)
-      const type = layoutJson.type
-      const blocks = layoutJson.contents
+      const blockList = this.blockList
+      const currentPannelIndex = index === undefined
+        ? +this.activePannelIndex
+        : index
+      const currentPannel = pannel.pannelList[currentPannelIndex]
+
+      const { blocks, selectedBlocksAndResources } = this.getBlocksAndResources(currentPannelIndex)
+      blockList[currentPannelIndex] = blocks
+      currentPannel.contentList = selectedBlocksAndResources
+    },
+    getBlocksAndResources (currentPannelIndex, layoutVersion) {
+      // 可以使用外部传过来的 pannel 数据,
+      // 在保存的时候需要使用6.0的布局来计算
+      // 而展示的时候用8.0的布局
+      const pannel = this.pannel
+      const blockCountList = this.blockCountList
+      const selectedLayout = this.selectedLayout
+      // 用 JSON.parse，因为需要一个新的对象
+      const layoutStr = layoutVersion === 'v6' ? selectedLayout.layoutJson : selectedLayout.layoutJson8
+      const layoutJsonParsed = JSON.parse(layoutStr)
+      const type = layoutJsonParsed.type
+      const blocks = layoutJsonParsed.contents
       const originBlockCount = blocks.length
 
-      const currentPannelIndex =
-        index === undefined ? +this.activePannelIndex : index
       const currentPannel = pannel.pannelList[currentPannelIndex]
       const selectedResources = currentPannel.selectedResources || []
-      const blockCount = this.blockCountList[currentPannelIndex]
+      const blockCount = blockCountList[currentPannelIndex]
 
       const lastBlock = blocks[originBlockCount - 1]
       const layoutWidth = lastBlock.x + lastBlock.width
@@ -1411,9 +1535,8 @@ export default {
 
       const calculateFactory = function() {
         if (type === 'Expander' && originBlockCount === 2) {
-          const space = layoutJson.extra.space
+          const space = layoutJsonParsed.extra.space
           return function(n) {
-            const index = n % originBlockCount
             // 复制第 2 个推荐位
             const targetBlock = blocks[1]
             const resize = targetBlock.resize
@@ -1445,7 +1568,7 @@ export default {
             return result
           }
         } else if (type === 'Expander') {
-          const space = layoutJson.extra.space
+          const space = layoutJsonParsed.extra.space
           return function(n) {
             const times = Math.floor(n / originBlockCount) - 1
             const index = n % originBlockCount
@@ -1480,16 +1603,21 @@ export default {
         }
 
         if (type === 'Lengthwise') {
-          const space = 28
+          // 布局信息里没有这个信息，这里硬编码40
+          const space = 40
+          // 计算第 n 个推荐位的信息
           return function(n) {
+            // 整个布局已经扩展过几次
             const times = Math.ceil(n / originBlockCount) - 1
+            // 当前对应的是原始布局的哪个推挤位
             const index = n - originBlockCount * times - 1
             const targetBlock = blocks[index]
             const resize = targetBlock.resize
             const titleInfo = targetBlock.title_info
             const mallResize = targetBlock.mall_resize
             const x = targetBlock.x
-            const y = targetBlock.y + times * layoutHeight + times * space
+            // y = 原始推荐位的y + 布局高度*总扩展次数 + 间隔 * 总扩展次数
+            const y = targetBlock.y + layoutHeight * times + space * times
             const result = {
               height: targetBlock.height,
               width: targetBlock.width,
@@ -1525,17 +1653,17 @@ export default {
           pannel.parentType === 'group' && type === 'Lengthwise'
             ? blockCount
             : Math.max(blockCount, selectedResources.length)
-
+        // 把最新的推荐位个数存下来
+        blockCountList[currentPannelIndex] = count
         let i = blocks.length
         while (i++ < count) {
           blocks.push(calculate(i))
         }
       }
 
-      this.blockList[currentPannelIndex] = blocks
       // 检查重复
       const resourceIndexed = {}
-      this.selectedBlocksAndResources = blocks.map(function(item, index) {
+      const selectedBlocksAndResources = blocks.map(function(item, index) {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
@@ -1606,7 +1734,7 @@ export default {
         const picturePreset = firstContent.picturePreset
         if (firstContent.shouldFindFitestPicture && picturePreset) {
           const size = [item.width, item.height]
-          firstContent.pictureUrl = getMatchedPictureUrl(size, picturePreset) 
+          firstContent.pictureUrl = getMatchedPictureUrl(size, picturePreset)
           firstContent.shouldFindFitestPicture = undefined
         }
 
@@ -1621,10 +1749,16 @@ export default {
         return resource
       })
 
-      currentPannel.contentList = this.selectedBlocksAndResources
+      return {
+        blocks,
+        selectedBlocksAndResources
+      }
     },
 
     handleDragBlock(oldIndex, newIndex) {
+      if (this.isFillWithRanking) {
+        return this.$message.error('排行榜填充的推荐位不支持自定义位置')
+      }
       // 改变资源
       const activePannel = this.pannel.pannelList[+this.activePannelIndex]
       const selectedResources = activePannel.selectedResources
@@ -1640,8 +1774,11 @@ export default {
     handleRemoveBlock(index) {
       // 重新计算 block
       const activePannelIndex = +this.activePannelIndex
-      this.blockCountList[activePannelIndex]--
       const activePannel = this.pannel.pannelList[activePannelIndex]
+      if (activePannel.rankIsOpen) {
+        return this.$message.error('使用排行榜填充的版块里的推荐位不能删除')
+      }
+      this.blockCountList[activePannelIndex]--
       const selectedResources = activePannel.selectedResources
       // 移除对应的资源
       selectedResources.splice(index, 1)
@@ -1661,8 +1798,16 @@ export default {
       }
       return data
     },
+    makeCompatibleV6 (panel) {
+      // 使用 v6 的布局重新计算位置信息，为来兼容旧的数据同步到江苏有线等
+      const panelList = panel.pannelList
+      let i = panelList.length
+      while (--i >= 0) {
+        const { selectedBlocksAndResources } = this.getBlocksAndResources(i, 'v6')
+        panelList[i].contentList = selectedBlocksAndResources
+      }
+    },
     parseDataToApi(data) {
-      const mode = this.mode
       const panelDataType = this.currentPanelDataType
       const layout = this.selectedLayout
       const pannel = JSON.parse(JSON.stringify(data))
@@ -1756,7 +1901,9 @@ export default {
           panelIsFocus: item.panelIsFocus,
           timeSlot: timeSlot,
           focusShape: pannel.focusShape,
-          contentList: itemContentList
+          contentList: itemContentList,
+          rankIsOpen: item.rankIsOpen,
+          rankChildId: item.rankChildId
         }
       })
       delete pannel.pannelName
@@ -1786,7 +1933,7 @@ export default {
         } else {
           this.$message({
             type: 'error',
-            message: err
+            message: err.message || err
           })
         }
       }
@@ -1794,21 +1941,32 @@ export default {
       const status = pannel.pannelStatus
 
       if (!pannel.pannelName) {
-        return cb('请输入版块名称')
+        return cb(Error('请输入版块名称'))
       }
+      if (pannel.pannelName.length > 45) {
+        return cb(Error('版块名称长度不能大于 45 个字符'))
+      }
+
       if (pannel.parentType === 'normal' && !pannel.pannelList[0].pannelTitle) {
-        return cb('请输入版块标题')
+        return cb(Error('请输入版块标题'))
       }
+      if (pannel.parentType === 'normal' && pannel.pannelList[0].pannelTitle.length > 45) {
+        return cb(Error('版块标题长度不能大于 45 个字符'))
+      }
+
       if (pannel.parentType === 'group' && !pannel.groupTitle) {
-        return cb('请输入版块标题')
+        return cb(Error('请输入版块标题'))
+      }
+      if (pannel.parentType === 'group' && pannel.groupTitle.length > 45) {
+        return cb(Error('版块标题长度不能大于 45 个字符'))
       }
 
       if (!this.selectedLayout) {
-        return cb('请选择布局')
+        return cb(Error('请选择布局'))
       }
 
       if (this.isShowfocusImgUrl && !pannel.focusImgUrl) {
-        return cb('请设置异形焦点')
+        return cb(Error('请设置异形焦点'))
       }
       // 如果是待审核或者审核通过
       if (
@@ -1835,20 +1993,20 @@ export default {
 
         if (this.isPanelCommonOrVideo) {
           if (!pannel.pannelResource) {
-            return cb('请选择内容源')
+            return cb(Error('请选择内容源'))
           }
         }
 
         if (emptyPannelTitleIndex !== undefined) {
-          return cb('请填写第' + (emptyPannelTitleIndex + 1) + '分组的标题')
+          return cb(Error('请填写第' + (emptyPannelTitleIndex + 1) + '分组的标题'))
         }
 
         if (duplicatedPannelTitleIndex !== undefined) {
-          return cb('第' + (duplicatedPannelTitleIndex + 1) + '分组的标题与别的分组重复')
+          return cb(Error('第' + (duplicatedPannelTitleIndex + 1) + '分组的标题与别的分组重复'))
         }
 
         if (emptyTimeSlotIndex !== undefined) {
-          return cb('请设置第' + (emptyTimeSlotIndex + 1) + '分组的落焦时间')
+          return cb(Error('请设置第' + (emptyTimeSlotIndex + 1) + '分组的落焦时间'))
         }
 
         if (
@@ -1856,15 +2014,15 @@ export default {
           emptyPriceBlockIndex !== undefined
         ) {
           if (pannel.parentType === 'group') {
-            return cb(
+            return cb(Error(
               '请设置第 ' +
               (emptyPriceIndex + 1) +
               ' 个分组第 ' +
               (emptyPriceBlockIndex + 1) +
               ' 个推荐位的价格'
-            )
+            ))
           } else {
-            return cb('请设置第 ' + (emptyPriceBlockIndex + 1) + ' 个推荐位的价格')
+            return cb(Error('请设置第 ' + (emptyPriceBlockIndex + 1) + ' 个推荐位的价格'))
           }
         }
 
@@ -1873,45 +2031,45 @@ export default {
           emptyTitleBlockIndex !== undefined
         ) {
           if (pannel.parentType === 'group') {
-            return cb(
+            return cb(Error(
               '请设置第 ' +
               (emptyTitleIndex + 1) +
               ' 个分组第 ' +
               (emptyTitleBlockIndex + 1) +
               ' 个推荐位的标题'
-            )
+            ))
           } else {
-            return cb('请设置第 ' + (emptyTitleBlockIndex + 1) + ' 个推荐位的标题')
+            return cb(Error('请设置第 ' + (emptyTitleBlockIndex + 1) + ' 个推荐位的标题'))
           }
         }
 
         if (emptyPostIndex !== undefined && emptyPostBlockIndex !== undefined) {
           if (pannel.parentType === 'group') {
-            return cb(
+            return cb(Error(
               '请设置第 ' +
               (emptyPostIndex + 1) +
               ' 个分组第 ' +
               (emptyPostBlockIndex + 1) +
               ' 个推荐位的内容海报'
-            )
+            ))
           } else {
-            return cb(
+            return cb(Error(
               '请设置第 ' + (emptyPostBlockIndex + 1) + ' 个推荐位的内容海报'
-            )
+            ))
           }
         }
         if (duplicatedInfo) {
-          const prefix = isPanelGroup 
-            ?`第 ${duplicatedIndex + 1} 个分组`
+          const prefix = isPanelGroup
+            ? `第 ${duplicatedIndex + 1} 个分组`
             : ''
-          return cb(`${prefix}第 ${duplicatedInfo.index + 1} 推荐位
+          return cb(Error(`${prefix}第 ${duplicatedInfo.index + 1} 推荐位
             第 ${duplicatedInfo.contentIndex + 1} 
             个内容与第 ${duplicatedInfo.duplicatedIndex + 1} 个推荐位第 
-            ${duplicatedInfo.duplicatedContentIndex + 1} 个内容重复`)
+            ${duplicatedInfo.duplicatedContentIndex + 1} 个内容重复`))
         }
 
         if (emptyBlock) {
-          return cb('含有空推荐位')
+          return cb(Error('含有空推荐位'))
         }
 
         if (
@@ -1919,7 +2077,7 @@ export default {
           focusIndex === undefined &&
           pannel.parentType === 'group'
         ) {
-          return cb('请选择默认落焦')
+          return cb(Error('请选择默认落焦'))
         }
       }
       cb()
@@ -1927,7 +2085,6 @@ export default {
     validateBlocks() {
       const pannelList = this.pannel.pannelList
       const focusConfig = this.pannel.focusConfig
-      const selectedLayout = this.selectedLayout
       const pannelTitleIndex = {}
       let emptyPannelTitleIndex
       let duplicatedPannelTitleIndex
@@ -1948,11 +2105,13 @@ export default {
       let duplicatedInfo
       let focusIndex
 
+      // eslint-disable-next-line
       checkBlock:
       for (let i = 0, length = pannelList.length; i < length; i++) {
         const pannel = pannelList[i]
         if (!pannel.pannelTitle) {
           emptyPannelTitleIndex = i
+          // eslint-disable-next-line
           break checkBlock
         }
 
@@ -1960,6 +2119,7 @@ export default {
         const pannelTitle = pannel.pannelTitle.trim()
         if (pannelTitleIndex[pannelTitle]) {
           duplicatedPannelTitleIndex = i
+          // eslint-disable-next-line
           break checkBlock
         } else {
           pannelTitleIndex[pannelTitle] = true
@@ -1969,6 +2129,7 @@ export default {
         if (focusConfig === 'timeSlot') {
           if (!(pannel.startTime && pannel.endTime) && !pannel.panelIsFocus) {
             emptyTimeSlotIndex = i
+            // eslint-disable-next-line
             break checkBlock
           }
         }
@@ -1983,22 +2144,24 @@ export default {
             content.videoContentList.length === 0
           ) {
             emptyBlock = content
+            // eslint-disable-next-line
             break checkBlock
           }
           if (content.duplicated) {
             duplicatedIndex = i
             duplicatedInfo = content.duplicated
+            // eslint-disable-next-line
             break checkBlock
           }
 
           const price = content.videoContentList[0].price
-          const coverType = content.videoContentList[0].coverType
           if (
             content.contentPosition.type === 'Mall' &&
             (price === undefined || price === -1 || price === '')
           ) {
             emptyPriceIndex = i
             emptyPriceBlockIndex = j
+            // eslint-disable-next-line
             break checkBlock
           }
 
@@ -2060,6 +2223,8 @@ export default {
       })
     },
     upsertPanelInfo(data) {
+      // 使用 v6 布局重新计算 contentPosition
+      this.makeCompatibleV6(data)
       this.$service
         .panelUpsert(this.parseDataToApi(data), '保存成功')
         .then(result => {
@@ -2097,11 +2262,11 @@ export default {
                   contentItem.videoContentList || [],
                   contentItem.specificContentList || []
                 )
-                .forEach(function(item) {
-                  if (item.price == -1) {
+                .forEach((item) => {
+                  if (+item.price === -1) {
                     item.price = ''
                   }
-                  if (item.secKillPrice == -1) {
+                  if (+item.secKillPrice === -1) {
                     item.secKillPrice = ''
                   }
                 })
@@ -2112,6 +2277,7 @@ export default {
               item.startTime = new Date(timeSlot[0])
               item.endTime = new Date(timeSlot[1])
             }
+            item.rankIsOpen = item.rankIsOpen || 0
             item.selectedResources = item.contentList
             return item
           })
@@ -2122,7 +2288,7 @@ export default {
           pannel.pannelStatus = firstPannel.pannelStatus
 
           const layout = firstPannel.layoutInfo
-          layout.layoutJsonParsed = JSON.parse(layout.layoutJson)
+          layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
           this.selectedLayout = layout
 
           const firstBlock = firstPannel.contentList[0]
@@ -2132,7 +2298,7 @@ export default {
             this.isShowfocusImgUrl = firstBlock.focusImgUrl
           }
         }
-        this.pannel = { ...pannel }
+        this.pannel = cloneDeep(pannel)
         this.updateAllPosition()
         this.getSharedTags()
       })
@@ -2147,22 +2313,51 @@ export default {
       }
     },
     getSimpleBrowseData() {
-      this.$service.getPanelSimpleBrowseData({id: this.id}).then(data => {
+      this.$service.getPanelSimpleBrowseData({ id: this.id }).then(data => {
         const panelUVCTR = data.rows[0].data[0] ? data.rows[0].data[0].uvctr : 'N/A'
         this.panelUVCTR = panelUVCTR
-        panelUVCTR.dailyGrowth ? this.panelUVCTRPercent.dailyGrowth = this.toArrowPercent(panelUVCTR.dailyGrowth) : 'N/A'
-        panelUVCTR.weeklyGrowth ? this.panelUVCTRPercent.weeklyGrowth = this.toArrowPercent(panelUVCTR.weeklyGrowth) : 'N/A'
+        this.panelUVCTRPercent.dailyGrowth = panelUVCTR.dailyGrowth ? this.toArrowPercent(panelUVCTR.dailyGrowth) : 'N/A'
+        this.panelUVCTRPercent.weeklyGrowth = panelUVCTR.weeklyGrowth ? this.toArrowPercent(panelUVCTR.weeklyGrowth) : 'N/A'
       })
     },
     // 点击板块数据展示折线图
     handlePanelDataClick() {
       this.isCollapseData = !this.isCollapseData
-      if(this.panelChartDataArr.length !== 0){
+      if (this.panelChartDataArr.length !== 0) {
         return
       }
-      this.$service.getPanelChartData({id: this.id}).then(data => {
+      this.$service.getPanelChartData({ id: this.id }).then(data => {
         this.panelChartDataArr = data.rows
       })
+    },
+    // 点击看数据、dmp按钮
+    handleAnalyzeData (type, index, pannelListIndex) { // pannelListIndex对group有效
+      this.analyzeBtnCurrentIndex = undefined
+      const { pannel } = this
+      if (pannel.parentType === 'group') {
+        // let contentList = pannelList[pannelListIndex].contentList
+        this.analyzeBtnCurrentIndex = pannelListIndex + '-' + index
+      } else {
+        // let contentList = pannelList[0].contentList
+        this.analyzeBtnCurrentIndex = index
+      }
+      if (type === 'dmp') {
+        this.isVisiAnalyzeDmpData = true
+        this.$sendEvent({
+          type: 'block_data_show',
+          payload: {
+            type: 'dmp'
+          }
+        })
+      } else { // type === 'simple'
+        this.isVisiAnalyzeSimpleData = true
+        this.$sendEvent({
+          type: 'block_data_show',
+          payload: {
+            type: 'position'
+          }
+        })
+      }
     }
   },
   created() {
@@ -2176,7 +2371,7 @@ export default {
         }
       })
     })
-    if(this.mode === 'edit' || this.mode === 'replicate' || this.mode === 'copy' || this.mode === 'read'){
+    if (this.mode === 'edit' || this.mode === 'replicate' || this.mode === 'copy' || this.mode === 'read') {
       this.getSimpleBrowseData()
     }
   },
@@ -2184,6 +2379,12 @@ export default {
     if (this.id) {
       this.fetchData(this.version).then(() => {
         this.clickBlock()
+      })
+      this.$sendEvent({
+        type: 'panel_show',
+        payload: {
+          panel_group_id: this.id
+        }
       })
     }
   }
@@ -2195,9 +2396,12 @@ export default {
   max-width: 100%;
   overflow: auto;
 }
-.pannel-blocks .el-tabs__content {
+.pannel-blocks >>> .el-tabs__content {
   overflow-x: visible;
   overflow-y: auto;
+}
+.pannel-blocks--read >>> .cc-virtual-pannel__block:hover .cc-virtual-pannel__block-remove {
+  display: none;
 }
 .base-info {
   margin: 10px 0;
@@ -2241,4 +2445,8 @@ export default {
   line-height: 44px
   text-align: center
   font-size: 25px
+.btn-clear-current-blocks:focus
+  color #409EFF
+  background #ecf5ff
+  border-color #b3d8ff
 </style>

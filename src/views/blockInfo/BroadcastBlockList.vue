@@ -19,18 +19,20 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
       />
     </ContentWrapper>
 
+    <BroadcastSimpleData :show.sync="isVisibleDialog" :id="currentId"/>
   </ContentCard>
 </template>
 <script>
 import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 import BroadcastSimpleData from './BroadcastSimpleData'
 
@@ -44,7 +46,10 @@ export default {
   },
   data() {
     return {
-      isShowChart: false,
+      // 看数据
+      isVisibleDialog: false,
+      currentId: undefined,
+
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
       filterSchema: null,
@@ -82,18 +87,16 @@ export default {
           },
           {
             label: '数据表现',
-            width: 300,
-            render: (h, {row}) => {
-              const id = row.id
-              if( id === 10101 || id === 10107 || id ===10109 ) 
-              {
-                return h(
-                  BroadcastSimpleData,
-                  {
-                    props: { id }
-                  }
-                )
-              }
+            width: 100,
+            render: (h, { row }) => {
+              return h(
+                'el-button',
+                {
+                  props: { type: 'text' },
+                  on: { click: this.handleClickDataShow(row) }
+                },
+                '看数据'
+              )
             }
           },
           {
@@ -119,11 +122,12 @@ export default {
             }
           },
           {
-            label: '状态',
+            label: '版本/状态',
             prop: 'status',
-            sortable: true,
-            render: (h, { row }) => {
-              return this.$consts.statusText[row.status]
+            formatter: (row) => {
+              const status = row.status
+              const currentVersion = row.currentVersion
+              return currentVersion + '/' + this.$consts.statusText[status]
             }
           },
           {
@@ -162,18 +166,18 @@ export default {
     }
   },
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.id,
         type: 'block',
         menuElId: 'broadcastBlock'
       })
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
       }
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) {
         this.filter = filter
       }
@@ -184,12 +188,12 @@ export default {
       }
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -197,7 +201,7 @@ export default {
       }
       return filter
     },
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.broadcastBlockPageList(filter).then(data => {
         this.pagination.total = data.total
@@ -205,20 +209,29 @@ export default {
       })
     },
     toPercent: decimal => {
-      return (Math.round(decimal * 10000) / 100.00 + "%")
+      return (Math.round(decimal * 10000) / 100.00 + '%')
     },
-    getSimpleBrowseData(id) {
+    getSimpleBrowseData (id) {
       let dataShow = {}
-      this.$service.getBlockSimpleBrowseData({id}).then(data => {
+      this.$service.getBlockSimpleBrowseData({ id }).then(data => {
         const uvctr = data.rows[0].data[0].uvctr
         dataShow = {
           value: this.toPercent(uvctr.value),
           dailyGrowth: this.toPercent(uvctr.dailyGrowth),
-          weeklyGrowth: this.toPercent(uvctr.weeklyGrowth) 
+          weeklyGrowth: this.toPercent(uvctr.weeklyGrowth)
         }
-        console.log('data2',dataShow );
+        console.log('data2', dataShow)
       })
       return dataShow
+    },
+    handleClickDataShow (row) {
+      return () => {
+        this.currentId = row.id
+        this.isVisibleDialog = true
+        this.$sendEvent({
+          type: 'broadcast_data_search'
+        })
+      }
     }
   },
   created() {
@@ -233,11 +246,13 @@ export default {
       }),
       status: _.o.enum(this.$consts.statusEnums).other('form', {
         component: 'Select',
-        placeholder: '审核状态'
+        placeholder: '审核状态',
+        clearable: true
       }),
       source: _.o.enum(this.$consts.sourceOptionsWithNoneEnums).other('form', {
         component: 'Select',
-        placeholder: '内容源'
+        placeholder: '内容源',
+        clearable: true
       })
     }).other('form', {
       layout: 'inline',

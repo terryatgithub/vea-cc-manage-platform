@@ -7,7 +7,7 @@
       :model="contentForm"
       :rules="contentRule"
       ref="contentForm"
-      label-width="120px"
+      label-width="160px"
     >
       <template v-if="contentType === 'specific'">
         <el-form-item label="内容类别" prop="resourceType">
@@ -21,7 +21,7 @@
           <el-tag
             type="primary"
             v-if="contentForm.dmpRegistryInfo"
-          >已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}} / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}</el-tag>
+          >已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}}({{ contentForm.dmpRegistryInfo.dmpPolicyId }}) / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}({{ contentForm.dmpRegistryInfo.dmpCrowdId }})</el-tag>
         </el-form-item>
       </template>
       <el-form-item label="资源类别" prop="coverType">
@@ -127,7 +127,7 @@
               cursor: 'pointer'
             }"
           >
-            <img :src="contentForm.pictureUrl" referrerpolicy="no-referrer">
+            <img referrerpolicy="no-referrer" :src="contentForm.pictureUrl" >
             <div class="post-info">
               <div class="post-episode" v-if="[1, 4, 5].indexOf(contentForm.categoryId) > -1">
                 <span v-if="contentForm.showSeries"  class="episode">
@@ -178,7 +178,7 @@
                   @select-end="handleSelectCornerIconEnd($event, cIndex)"
                 >
                   <span class="corner-img-wrapper" v-if="corner.imgUrl">
-                    <img :src="corner.imgUrl" referrerpolicy="no-referrer">
+                    <img referrerpolicy="no-referrer" :src="corner.imgUrl">
                     <i
                       v-show="!isReadonly"
                       title="删除角标"
@@ -219,13 +219,22 @@
             class="post-box"
             :style="{ height: postSize.height + 'px', width: postSize.width + 'px', cursor: 'pointer' }"
           >
-            <img :src="contentForm.alternativePictureUrl" referrerpolicy="no-referrer">
+            <img referrerpolicy="no-referrer" :src="contentForm.alternativePictureUrl" >
           </div>
         </GlobalPictureSelector>
       </el-form-item>
 
       <template v-if="contentForm.coverType === 'media'">
-        <el-form-item label="背景视频" prop="bgParams.id">
+        <el-form-item label="配置高清背景图和视频">
+          <el-switch
+            :disabled="isReadonly"
+            v-model="isShowConfigBg"
+            active-color="#13ce66"
+            inactive-color="grey"
+          >
+          </el-switch>
+        </el-form-item>
+        <el-form-item v-if="isShowConfigBg" label="背景视频" prop="bgParams.id">
           <ResourceSelector
             ref="resourceSelector"
             v-if="!isReadonly"
@@ -243,15 +252,15 @@
           </el-tag>
         </el-form-item>
 
-        <el-form-item label="背景图" prop="bgImgUrl">
+        <el-form-item v-if="isShowConfigBg" label="背景图" prop="bgImgUrl">
           <GlobalPictureSelector
             :disabled="isReadonly"
             @select-end="handleSelectBgEnd">
             <div v-if="contentForm.bgImgUrl"  class="bg-img-wrapper">
               <img
                 class="bg-img"
-                :src="contentForm.bgImgUrl"
-                referrerpolicy="no-referrer">
+                referrerpolicy="no-referrer"
+                :src="contentForm.bgImgUrl">
               <i
                   v-show="!isReadonly && contentForm.bgImgUrl"
                   title="删除背景"
@@ -397,7 +406,7 @@
               selection-type="single"
               :source="source"
               :selected-close="true"
-              @select-single="handleSelectTabEnd"/>
+              @select-end="handleSelectTabEnd"/>
             <el-tag type="primary" v-if="contentForm.redundantParams.tabId">
               已选择: {{
               contentForm.redundantParams.tabId }}
@@ -416,6 +425,33 @@
           <AppParamsRead v-else :value="contentForm.redundantParams" />
         </template>
       </template>
+      <el-form-item label="开启个性化推荐" v-if="contentForm.coverType !== 'block'">
+        <el-switch
+          :disabled="isReadonly"
+          :value="!!contentForm.flagSetRec"
+          @input="handleInputFlagSetRec"
+          active-color="#13ce66"
+          inactive-color="grey"
+        >
+        </el-switch>
+      </el-form-item>
+      <RecommendStreamSelector
+        v-if="!!contentForm.flagSetRec"
+        :value="contentForm.mediaAutomationBlockRls.mediaAutomationId"
+        :disabled="isReadonly"
+        :source="source"
+        :resolution="resolution[0] + '*' + resolution[1]"
+        @select-end="handleSelectRecomStream"
+        @del-select="contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
+      />
+      <el-form-item label="刷新机制" v-if="!!contentForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
+        <InputPositiveInt
+          v-model="contentForm.mediaAutomationBlockRls.refreshCal"
+          class="flash-count-input"
+          :disabled="isReadonly"
+        />
+        客户端曝光X次之后刷新推荐位
+      </el-form-item>
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
         <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
       </el-form-item>
@@ -442,6 +478,7 @@
       :ids="[currentResourceId]"
       @close="showBlockTagDialog = false">
     </TagFrame>
+
   </div>
 </template>
 
@@ -458,7 +495,9 @@ import CrowdSelector from '@/components/CrowdSelector.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 import ClickEventSelector from '@/components/selectors/ClickEventSelector'
 import TagFrame from '../TagFrame'
-import { getSelectedResource, chopSubTitle, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
+import { getSelectedResource, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
+import InputPositiveInt from '@/components/InputPositiveInt'
+import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
 export default {
   components: {
     Upload,
@@ -472,7 +511,9 @@ export default {
     TabSelector,
     ClickEventSelector,
     AppParamsRead,
-    TagFrame
+    TagFrame,
+    InputPositiveInt,
+    RecommendStreamSelector
   },
   data() {
     const isReadonly = this.isReadonly
@@ -499,11 +540,11 @@ export default {
         callback()
       }
     }
-    const checkAttributeInfo = function(rule, value, callback) {
+    const checkAttributeInfo = (rule, value, callback) => {
       if (
-        _this.contentFormType === 'specific' &&
-        !_this.contentForm.attributeInfo &&
-        !_this.isReadonly
+        this.contentFormType === 'specific' &&
+        !this.contentForm.attributeInfo &&
+        !this.isReadonly
       ) {
         callback(new Error('请选择人群'))
       } else {
@@ -541,6 +582,9 @@ export default {
       showCrowdSelector: false,
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
+      isShowConfigBg: false, // 高清图配置项是否隐藏
+      recomStream: undefined,
+      recomStreamTags: [],
       contentRule: {
         bgImgUrl: [
           {
@@ -552,7 +596,8 @@ export default {
                 cb()
               }
             }
-          }
+          },
+          { required: true, message: '当开关开启时必填' }
         ],
         webpageUrl: [
           { required: true, validator: checkWebpageUrl, trigger: 'blur' }
@@ -619,7 +664,14 @@ export default {
         secKillPrice: [
           { required: false, validator: checkSecKill, trigger: 'blur' }
         ],
-        dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }]
+        dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }],
+        'mediaAutomationBlockRls.mediaAutomationId': [
+          { required: true, message: '当开关开启时必填' }
+        ],
+        'mediaAutomationBlockRls.refreshCal': [
+          { required: true, message: '当开关开启时必填', trigger: 'blur' }
+        ],
+        'bgParams.id': [{ required: true, message: '当开关开启时必填' }]
       }
     }
   },
@@ -630,6 +682,7 @@ export default {
     'data',
     'source',
     'pannel',
+    'pannelGroupId',
     'hideTitleOptions',
     'checkCrowd'
   ],
@@ -718,9 +771,37 @@ export default {
       return enums
     }
   },
+
+  watch: {
+    isShowConfigBg(bool) {
+      if (!bool) {
+        this.contentForm.bgParams = {
+          id: '',
+          title: ''
+        }
+        this.contentForm.bgImgUrl = ''
+      }
+    }
+  },
   methods: {
     handleAddTagStart() {
       this.showBlockTagDialog = true
+      this.$sendEvent({
+        type: 'video_content_tag',
+        payload: {
+          panel_group_id: this.pannelGroupId || 'new'
+        }
+      })
+    },
+    handleInputFlagSetRec (val) {
+      this.contentForm.flagSetRec = val ? 1 : 0
+      if (!val) {
+        this.contentForm.mediaAutomationBlockRls = {
+          refreshCal: 1,
+          mediaAutomationId: '',
+          blockType: 'normal'
+        }
+      }
     },
     genParams(openMode) {
       return {
@@ -801,6 +882,12 @@ export default {
           dmpPolicyName: policy.label,
           dmpCrowdName: crowd.label
         })
+        this.$sendEvent({
+          type: 'create_block_dmp',
+          payload: {
+            type: 'common'
+          }
+        })
         this.showCrowdSelector = false
       }
     },
@@ -808,8 +895,10 @@ export default {
       this.contentForm.redundantParams = this.genParams(val)
     },
     handleWebPageTypeChange(val) {
-      this.contentForm.redundantParams.versioncode =
-        val == '1' ? '1' : '102007'
+      // eslint-disable-next-line
+      this.contentForm.redundantParams.versioncode = val == '1'
+        ? '1'
+        : '102007'
     },
     handleSelectMediaEnd(resources) {
       const selectedResult = getSelectedResource(resources)
@@ -818,7 +907,7 @@ export default {
       const selected = selectedResult.selected[0]
       const selectedEpisode = selectedResult.selectedEpisode[selected.coocaaVId]
       const blockSize = this.resolution
-      setMediaContent(this.contentForm, {partner, selectedType, selected, selectedEpisode, blockSize})
+      setMediaContent(this.contentForm, { partner, selectedType, selected, selectedEpisode, blockSize })
       this.$refs.resourceSelector.clearSelected()
     },
     handleSelectAppEnd(resources) {
@@ -887,19 +976,15 @@ export default {
       const contentForm = this.contentForm
       let mediaId
       let mediaTitle
-      let episodeId
       if (selectedType === 'video') {
         // 影视中心
         if (selectedEpisode) {
           if (partner === 'tencent') {
             mediaId = '_otx_' + selected.coocaaVId
-            episodeId = selectedEpisode.coocaaMId
           } else if (partner === 'yinhe') {
             mediaId = '_oqy_' + selected.coocaaVId
-            episodeId = selectedEpisode.coocaaMId
           } else if (partner === 'youku') {
             mediaId = '_oyk_' + selected.coocaaVId
-            episodeId = selectedEpisode.coocaaMId
           }
         } else {
           if (partner === 'tencent') {
@@ -976,128 +1061,119 @@ export default {
         if (valid) {
           if (contentForm.coverType === 'custom') {
             if (contentForm.price < contentForm.secKillPrice) {
-              return cb('价格小于秒杀价，建议重新填写！')
+              return cb(Error('价格小于秒杀价，建议重新填写！'))
+            }
+            if (contentForm.flagSetRec === 1) {
+              if (!contentForm.mediaAutomationBlockRls.mediaAutomationId || !contentForm.mediaAutomationBlockRls.refreshCal) {
+                return cb(Error('已开启推荐位个性化推荐开关，但配置不完整!'))
+              }
+            }
+            if (this.isShowConfigBg) {
+              if (!contentForm.bgParams.id || !contentForm.bgParams.title || !contentForm.bgImgUrl) {
+                return cb(Error('已开启配置高清背景图和视频开关，但配置不完整!'))
+              }
             }
           }
           cb()
         } else {
-          cb('请把表单填写完整')
+          cb(Error('请把表单填写完整'))
         }
       })
+    },
+    handleSelectRecomStream (recomStream) {
+      this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
     }
   },
   mounted() {
-    const redundantParams = this.contentForm.redundantParams
+    const contentForm = this.contentForm
+    const redundantParams = contentForm.redundantParams
     if (redundantParams.openMode === 'picture' && redundantParams.pictureUrl) {
       this.$refs.upload.fileList = [{
         status: 'success',
         dataUrl: redundantParams.pictureUrl
       }]
     }
+    if (contentForm.bgImgUrl || contentForm.bgParams.id || contentForm.bgParams.title) {
+      this.isShowConfigBg = true
+    }
   }
 }
 </script>
 
-<style scoped>
-.block-content-form >>> .el-input {
-  max-width: 280px;
-}
-.post-box {
-  border: 1px solid #ccc;
-  overflow: hidden;
-}
-.post-box img {
-  width: 100%;
-}
-.post-info {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 5px;
-  line-height: 20px;
-  font-size: 12px;
-  background: #000;
-  opacity: 0.8;
-  color: #fff;
-}
+<style lang="stylus" scoped>
+.block-content-form >>> .el-input
+  max-width 280px
+.post-box
+  border 1px solid #ccc
+  overflow hidden
+.post-box img
+  width 100%
+.post-info
+  position absolute
+  bottom 0
+  width 100%
+  box-sizing border-box
+  padding 0 5px
+  line-height 20px
+  font-size 12px
+  background #000
+  opacity 0.8
+  color #fff
 .post-info .post-title,
-.post-info .post-sub-title {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
+.post-info .post-sub-title
+  white-space nowrap
+  text-overflow ellipsis
+  overflow hidden
 .post-info .episode,
-.post-info .score {
-  position: absolute;
-  top: -20px;
-  background: #000;
-  padding: 0 5px;
-}
-.post-info .score {
-  right: 0;
-}
-.post-info .episode {
-  left: 0;
-}
-
-.corner-box {
-  position: relative;
-}
-
-.corner-box span.corner {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.corner-box span.corner img {
-  width: 100%;
-  height: 100%;
-}
-
-.corner-box span.corner-0 {
-  top: 0;
-  left: 0;
-}
-
-.corner-box span.corner-1 {
-  top: 0;
-  right: 0;
-}
-
-.corner-box span.corner-2 {
-  bottom: 0;
-  right: 0;
-}
-
-.corner-box span.corner-3 {
-  bottom: 0;
-  left: 0;
-}
-
-.corner-add-icon-wrapper {
-  height: 24px;
-  padding: 0 8px;
-  line-height: 22px;
-  color: #12ce66;
-  border: 1px solid #12ce66;
-  background: #fff;
-}
-
-.corner-img-wrapper {
-  position: relative;
-}
-
-.corner-img-wrapper i {
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #ff4949;
-  font-size: 20px;
-}
+.post-info .score
+  position absolute
+  top -20px
+  background #000
+  padding 0 5px
+.post-info .score
+  right 0
+.post-info .episode
+  left 0
+.cursor-tip
+  cursor pointer
+.corner-box
+  position relative
+.corner-box span.corner
+  position absolute
+  width 50px
+  height 50px
+  text-align center
+  cursor pointer
+.corner-box span.corner img
+  width 100%
+  height 100%
+.corner-box span.corner-0
+  top 0
+  left 0
+.corner-box span.corner-1
+  top 0
+  right 0
+.corner-box span.corner-2
+  bottom 0
+  right 0
+.corner-box span.corner-3
+  bottom 0
+  left 0
+.corner-add-icon-wrapper
+  height 24px
+  padding 0 8px
+  line-height 22px
+  color #12ce66
+  border 1px solid #12ce66
+  background #fff
+.corner-img-wrapper
+  position relative
+.corner-img-wrapper i
+  position: absolute
+  top 0
+  right 0
+  color #ff4949
+  font-size 20px
 </style>
 
 <style lang="stylus" scoped>
@@ -1158,6 +1234,15 @@ $width = 100px;
   top: 0;
   right: 0;
 }
+
+.flashCountInput {
+  width: 100px;
+}
+
+.recomTag {
+  margin-right: 10px;
+  font-size: 14px;
+}
 </style>
 <style lang="stylus">
 .bg-placeholder
@@ -1177,4 +1262,6 @@ $width = 100px;
     position absolute
     top 0px
     right -12px
+.flash-count-input
+  width 100px !important
 </style>

@@ -13,7 +13,7 @@
 </template>
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   components: {
     Table,
@@ -84,7 +84,10 @@ export default {
           },
           {
             label: '内容源',
-            prop: 'source'
+            prop: 'source',
+            render: (h, { row }) => {
+              return this.$consts.sourceText[row.source]
+            }
           },
           {
             label: '优先级',

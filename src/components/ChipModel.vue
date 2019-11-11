@@ -15,10 +15,10 @@
           </el-select>
         </el-form-item>
         <el-form-item >
-          <el-input v-model="formSearch.model" placeholder="机型">></el-input>
+          <el-input v-model.trim="formSearch.model" placeholder="机型">></el-input>
         </el-form-item>
         <el-form-item  >
-          <el-input v-model="formSearch.chip" placeholder="机芯">></el-input>
+          <el-input v-model.trim="formSearch.chip" placeholder="机芯">></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleFilterChange">查询</el-button>
@@ -35,10 +35,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="机型" prop="model">
-          <el-input v-model="form.model" placeholder="机型">></el-input>
+          <el-input v-model.trim="form.model" placeholder="机型">></el-input>
         </el-form-item>
         <el-form-item label="机芯" prop="chip">
-          <el-input v-model="form.chip" placeholder="机芯">></el-input>
+          <el-input v-model.trim="form.chip" placeholder="机芯">></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="addModelChip">添加机芯</el-button>
@@ -72,16 +72,10 @@
   </ContentCard>
 </template>
 <script>
-import _ from 'gateschema'
-import { Button } from 'element-ui'
 import {
   ContentWrapper,
-  Table,
-  ActionList,
-  utils,
-  RemoteSelect
+  Table
 } from 'admin-toolkit'
-import SelectedTag from './SelectedTag'
 export default {
   props: {
     selectionType: {
@@ -92,13 +86,10 @@ export default {
     }
   },
   components: {
-    ActionList,
     Table,
-    ContentWrapper,
-    SelectedTag
+    ContentWrapper
   },
   data() {
-    let _this = this
     return {
       platform: 'tencent', // 默认平台
       form: this.genDefaultFormData(),

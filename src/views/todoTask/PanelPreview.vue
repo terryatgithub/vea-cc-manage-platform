@@ -5,6 +5,7 @@
        :id="id"
       :init-mode="mode"
       :version="version"
+      @upsert-end="$emit('upsert-end')"
       @go-back="goBack">
     </MarkPanelInfo>
     <PanelInfo
@@ -13,6 +14,7 @@
       :panel-data-type="1"
       :init-mode="mode"
       :version="version"
+      @upsert-end="$emit('upsert-end')"
       @go-back="goBack">
     </PanelInfo>
     <PanelInfo
@@ -21,6 +23,7 @@
       :panel-data-type="3"
       :init-mode="mode"
       :version="version"
+      @upsert-end="$emit('upsert-end')"
       @go-back="goBack">
     </PanelInfo>
     <PrivatePannelInfo
@@ -28,6 +31,7 @@
        :id="id"
       :init-mode="mode"
       :version="version"
+      @upsert-end="$emit('upsert-end')"
       @go-back="goBack">
     </PrivatePannelInfo>
   </div>

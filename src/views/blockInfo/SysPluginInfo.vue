@@ -35,11 +35,11 @@
                 >
                   <el-input v-model.trim="block.pluginInfo.pluginName"></el-input>
                 </el-form-item>
-                <template v-if="block.pluginInfo.pluginParentType === 'builtIn'">
+                <div v-if="block.pluginInfo.pluginParentType === 'builtIn'">
                   <el-form-item label="固定刷新时间" prop="pluginInfo.refreshTime">
                     <InputMinute :min="5" :max="60 * 24 - 1" v-model="block.pluginInfo.refreshTime" />
                   </el-form-item>
-                </template>
+                </div>
                 <el-form-item
                   v-show="block.pluginInfo.pluginParentType !== 'builtIn'"
                   label="类型"
@@ -80,15 +80,15 @@
                   </el-radio-group>
                 </el-form-item>
                 <!--类型位标记推荐位-->
-                <template v-if="pluginParentType === 'sign'">
+                <div v-if="pluginParentType === 'sign'">
                   <el-form-item
                     label="标记推荐位类型"
                     prop="pluginInfo.pluginType"
                     :rules="rules.pluginInfo.pluginType"
                   >
-                    <el-input v-model.trim="block.pluginInfo.pluginType"></el-input>
+                    <el-input :disabled="isReplica" v-model.trim="block.pluginInfo.pluginType"></el-input>
                   </el-form-item>
-                </template>
+                </div>
                 <!--end-->
                 <el-form-item
                   v-if="pluginParentType !== 'sign' && pluginTypes.length > 0"
@@ -111,15 +111,21 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
-                <template v-if="baseHasTitle">
+                <div v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title" :rules="rules.title">
                     <el-input v-model.trim="block.helper.title"></el-input>
                   </el-form-item>
                   <el-form-item label="副标题" prop="helper.subTitle" :rules="rules.subTitle">
                     <el-input v-model.trim="block.helper.subTitle"></el-input>
                   </el-form-item>
-                </template>
-                <template v-if="pluginParentType && pluginParentType !== 'sign'">
+                </div>
+
+                <div v-if="pluginParentType === 'sign'">
+                  <!-- 扩展参数  -->
+                  <Params prop-prefix="helper.appParams." :params="block.helper.appParams" />
+                </div>
+
+                <div v-if="pluginParentType && pluginParentType !== 'sign'">
                   <div class="form-legend-header">
                     <span>多版本信息</span>
                   </div>
@@ -131,13 +137,13 @@
                     @active-index-change="currentIndex = $event"
                     @activate="handleActivatePluginVersion">
                     <div slot="item" slot-scope="{item, index}">
-                      <span v-if="item.dmpRegistryInfo">
-                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
-                      </span>
-                      <span v-else>
+                      <p class="ellipsis" v-if="item.dmpRegistryInfo">
+                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}({{ item.dmpRegistryInfo.dmpPolicyId }})/{{ item.dmpRegistryInfo.dmpCrowdName }}({{ item.dmpRegistryInfo.dmpCrowdId }})
+                      </p>
+                      <p class="ellipsis" :title="item.label" v-else>
                         {{ item.label }}
-                      </span>
-                      <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
+                      </p>
+                      <p class="ellipsis" :title="getVersionTitle(item)">{{ getVersionTitle(item) }}</p>
                       <i
                         v-show="item.dataType === 7 || item.dataType === 4"
                         @click.stop="handleRemovePluginVersion(index)"
@@ -160,7 +166,7 @@
                       :plugin-list="block.rlsInfo"
                       :parent-type="block.pluginInfo.pluginParentType" />
                   </Gallery>
-                </template>
+                </div>
               </el-form>
             </div>
             <div v-if="mode=== 'read'">
@@ -186,21 +192,27 @@
                   v-if="pluginParentType !== 'secKill'"
                   label="内容源"
                 >{{ $consts.sourceNumberText[block.pluginInfo.source] }}</el-form-item>
-                <template v-if="pluginParentType === 'sign'">
+                <div v-if="pluginParentType === 'sign'">
                   <el-form-item
                     label="标记推荐位类型"
                     prop="pluginInfo.pluginType"
                   >{{ block.pluginInfo.pluginType }}</el-form-item>
-                </template>
+                </div>
                 <el-form-item
                   v-if="pluginParentType !== 'sign' && pluginTypes.length > 0 && pluginTypeText"
                   label="多功能推荐位类型"
                   prop="pluginInfo.pluginType"
                 >{{ pluginTypeText }}</el-form-item>
+
                 <template v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title">{{ block.helper.title }}</el-form-item>
                   <el-form-item label="副标题" prop="helper.subTitle">{{ block.helper.subTitle }}</el-form-item>
                 </template>
+
+                <div v-if="pluginParentType === 'sign'">
+                  <Params :params="block.helper.appParams" :readonly="true" />
+                </div>
+
                 <template v-if="pluginParentType !== 'sign'">
                   <div class="form-legend-header">
                     <span>多版本信息</span>
@@ -212,13 +224,13 @@
                     :mode="mode"
                     @activate="handleActivatePluginVersion">
                     <div slot="item" slot-scope="{item}">
-                      <span v-if="item.dmpRegistryInfo">
-                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}/{{ item.dmpRegistryInfo.dmpCrowdName }}
-                      </span>
-                      <span v-else>
+                      <p class="ellipsis" v-if="item.dmpRegistryInfo">
+                        人群: {{ item.dmpRegistryInfo.dmpPolicyName }}({{ item.dmpRegistryInfo.dmpPolicyId }})/{{ item.dmpRegistryInfo.dmpCrowdName }}({{ item.dmpRegistryInfo.dmpCrowdId }})
+                      </p>
+                      <p class="ellipsis" :title="item.label" v-else>
                         {{ item.label }}
-                      </span>
-                      <p> {{ item.title }} {{ item.subTitle ? (' | ' + item.subTitle) : '' }} </p>
+                      </p>
+                      <p class="ellipsis" :title="getVersionTitle(item)">{{ getVersionTitle(item) }}</p>
                     </div>
                     <PluginContent
                       slot="detail"
@@ -239,31 +251,28 @@
   </PageWrapper>
 </template>
 <script>
-// import ccAppParamsForm from './ccAppParamsForm'
-import ccTimeSpinner from './ccTimeSpinner'
-// import { AppParams, AppParamsRead } from 'admin-toolkit'
 import CommonContent from '@/components/CommonContent.vue'
 import PluginContent from './PluginContent'
 import Gallery from '@/components/Gallery'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import InputMinute from '@/components/InputMinute'
+import Params from './Params'
 const PARENT_TYPES = {
   sign: 'sign', // 标记推荐位
   multi: 'multi',
   builtIn: 'builtIn',
   secKill: 'secKill'
 }
-window.basicFn = {}
 export default {
   components: {
-    ccTimeSpinner,
     CommonContent,
     PluginContent,
     Gallery,
     PageWrapper,
     PageContentWrapper,
-    InputMinute
+    InputMinute,
+    Params
   },
   props: ['id', 'initMode', 'version', 'contentProps'],
   data() {
@@ -274,7 +283,6 @@ export default {
       dialogClickTableVisible: false,
       showFocusImgSelectorVisible: false, // 异形弹框
       clickData: {}, // 点击事件
-      selectResource: {},
       selectImgData: {},
       urls: {
         uploadImg: 'api/v1/upload/image.html' // 上传图片接口
@@ -296,6 +304,8 @@ export default {
         helper: {
           title: undefined,
           subTitle: undefined,
+          // 标记推荐位需要扩展参数
+          appParams: [],
           webpageUrl: undefined,
           webpageType: '1',
           webpageAppVersion: undefined
@@ -304,7 +314,7 @@ export default {
           pluginId: undefined,
           pluginName: '',
           pluginParentType: undefined,
-          // 0，1，2	否	Integer	内容源，0-默认, 1-腾讯，2-爱奇艺
+          // 0，1，2 否 Integer 内容源，0-默认, 1-腾讯，2-爱奇艺
           source: 0,
           // sport-体育， edu-教育，movie-影视
           channel: '',
@@ -335,7 +345,7 @@ export default {
           { required: true, message: '请输入标题', trigger: 'blur' },
           { max: 45, message: '不超过 45 个字符', trigger: 'blur' }
         ],
-        subTitle: [{ max: 100, message: '不超过 100 个字符', trigger: 'blur' }]
+        subTitle: [{ max: 45, message: '不超过 45 个字符', trigger: 'blur' }]
       }
     }
   },
@@ -345,21 +355,10 @@ export default {
     },
     source() {
       // 内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
-      switch (this.block.pluginInfo.source) {
-        case 0:
-          return ''
-          break
-        case 1:
-          return 'o_tencent'
-          break
-        case 2:
-          return 'o_iqiyi'
-          break
-        case 3:
-          return 'o_youku'
-          break
-      }
+      const sources = ['', 'o_tencent', 'o_iqiyi', 'o_youku']
+      return sources[this.block.pluginInfo.source]
     },
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.block.pluginInfo
       if (form.pluginId) {
@@ -372,16 +371,16 @@ export default {
         }
       }
     },
+    // eslint-disable-next-line
     canAddActivity() {
       if (this.contentProps.menuElId === 'sysPlugin') {
         return !this.block.rlsInfo.find(({ dataType }) => dataType === 4)
       }
     },
+    // eslint-disable-next-line
     pluginTypeText() {
       const pluginType = this.pluginType
       const pluginTypes = this.pluginTypes
-      console.log(pluginType)
-      console.log(pluginTypes)
       if (pluginTypes.length > 0) {
         const target = pluginTypes.find(function(item) {
           return item.dictEnName === pluginType
@@ -391,6 +390,7 @@ export default {
         }
       }
     },
+    // eslint-disable-next-line
     pluginParentTypeText() {
       const pluginParentType = this.pluginParentType
       const pluginParentTypes = this.pluginParentTypes
@@ -414,7 +414,6 @@ export default {
     },
     versionHasTitle() {
       // 版本信息里是否有 title 字段
-      const pluginParentType = this.pluginParentType
       const pluginType = this.pluginType
       return pluginType === 'REFERENCE_MOVIE_VIP'
     },
@@ -427,10 +426,16 @@ export default {
         pluginParentType !== 'builtIn' &&
         (pluginType && pluginType !== 'REFERENCE_MOVIE_VIP')
       )
+    },
+    isReplica() {
+      return this.mode === 'replicate' || this.block.duplicateVersion === 'yes'
     }
   },
   watch: {},
   methods: {
+    getVersionTitle(item) {
+      return `${item.title}${item.subTitle ? (' | ' + item.subTitle) : ''}`
+    },
     handleActivatePluginVersion(index) {
       if (this.currentIndex !== index) {
         if (this.mode === 'read') {
@@ -593,7 +598,6 @@ export default {
       }
     },
     setPluginParentType(val) {
-      const PARENT_TYPES = this.PARENT_TYPES
       const block = this.block
       const pluginInfo = block.pluginInfo
       const helper = block.helper
@@ -603,6 +607,7 @@ export default {
       pluginInfo.pluginParentType = val
       helper.title = ''
       helper.subTitle = ''
+      helper.appParams = []
     },
     /** 多功能推荐位类型 */
     handleChangePluginType(val) {
@@ -657,12 +662,17 @@ export default {
           clickCount: 5
         }
       }
+      let appParams
+      if (this.pluginParentType === PARENT_TYPES.multi) {
+        appParams = []
+      }
       return Object.assign(
         {
           openMode: 'app',
           pluginDataId: undefined,
           dataType: 5,
           onclick: {},
+          appParams,
           params: 0,
           title: '',
           subTitle: '',
@@ -749,17 +759,17 @@ export default {
       block.rlsInfo.forEach(
         function(item) {
           item.openMode = item.params.split(',')[0].split('==')[1]
+          if (item.appParams) {
+            const appParams = JSON.parse(item.appParams)
+            item.appParams = Object.keys(appParams).map(key => ({ key, value: appParams[key] }))
+          }
           if (item.onclick) {
             item.onclick = this.parseOnclick(JSON.parse(item.onclick))
             const originOnclick = item.onclick
-            const paramsIndexed = originOnclick.params.reduce(function(
-              result,
-              item
-            ) {
+            const paramsIndexed = originOnclick.params.reduce((result, item) => {
               result[item.key] = item.value
               return result
-            },
-            {})
+            }, {})
             switch (item.openMode) {
               case 'webpage':
                 item.onclick = {
@@ -801,17 +811,22 @@ export default {
       if (pluginParentType) {
         this.getPluginTypes(pluginParentType)
       }
+
+      const firstRls = block.rlsInfo[0] || {}
       if (
         pluginParentType !== 'secKill' &&
         (pluginType && pluginType !== 'REFERENCE_MOVIE_VIP')
       ) {
-        const firstRls = block.rlsInfo[0]
-        if (firstRls) {
-          helper.title = firstRls.title
-          helper.subTitle = firstRls.subTitle
+        helper.title = firstRls.title
+        helper.subTitle = firstRls.subTitle
+      }
+      // 标记推荐位
+      if (pluginParentType === PARENT_TYPES.sign) {
+        if (firstRls.appParams) {
+          helper.appParams = firstRls.appParams
         }
       }
-      this.block = Object.assign(this.block, block)
+      this.block = { ...this.block, ...block }
     },
     parseData(data) {
       const helper = data.helper
@@ -824,6 +839,7 @@ export default {
           title: undefined,
           subTitle: undefined
         }
+        data.rlsInfo[0].appParams = helper.appParams
       }
       data.rlsInfo.forEach(function(item) {
         const originOnclick = item.onclick
@@ -922,6 +938,7 @@ export default {
               dowhat: 'startActivity',
               bywhat: 'action',
               byvalue:
+                // eslint-disable-next-line
                 originOnclick.tab.tabType == 1
                   ? 'coocaa.intent.action.HOME_COMMON_LIST'
                   : 'coocaa.intent.action.HOME_SPECIAL_TOPIC',
@@ -965,6 +982,13 @@ export default {
           }, {})
           item.onclick = JSON.stringify(item.onclick)
         }
+        if (item.appParams) {
+          item.appParams = item.appParams.reduce(function(result, p) {
+            result[p.key] = p.value
+            return result
+          }, {})
+          item.appParams = JSON.stringify(item.appParams)
+        }
         delete item.openMode
       })
       delete data.helper
@@ -995,7 +1019,6 @@ export default {
     }
   },
   created() {
-    this.basicFn = basicFn
     this.getPluginParentTypes()
     this.mode = this.initMode || 'create'
     switch (this.mode) {
@@ -1010,6 +1033,7 @@ export default {
         break
       case 'replica':
         this.title = '创建副本'
+        break
       case 'read':
         this.title = '预览'
         break
@@ -1039,4 +1063,9 @@ export default {
 .gallery-add
   text-align center
   padding-top 20px
+.ellipsis
+  width 100%
+  text-overflow ellipsis
+  white-space nowrap
+  overflow hidden
 </style>

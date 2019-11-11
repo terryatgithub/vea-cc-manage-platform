@@ -101,11 +101,7 @@ export default {
             formatter: (row) => {
               const status = row.pannelStatus
               const currentVersion = row.currentVersion
-              return currentVersion + '/' + this.pannelStatusOption.map(function(item) {
-                if (status.toString() === item.value) {
-                  return item.label
-                }
-              }).join('')
+              return currentVersion + '/' + this.$consts.statusText[status]
             }
           },
           {
@@ -139,7 +135,7 @@ export default {
           },
           {
             label: '操作',
-            width: '100',
+            width: '120',
             fixed: 'right',
             render: utils.component.createOperationRender(this, {
               handleCopy: '复制',
@@ -349,11 +345,3 @@ export default {
 
 }
 </script>
-
-<style lang='stylus' scoped>
-.content >>> .el-table .cell
-  display flex
-  height 40px
-.btns
-  margin 20px auto
-</style>

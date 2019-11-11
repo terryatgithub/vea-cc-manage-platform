@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <TabPage>
     <AlbumPannelInfoList
       v-show='isShowList'
       ref="list"
@@ -18,14 +18,16 @@
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </PanelInfo>
-  </div>
+  </TabPage>
 </template>
 <script>
+import TabPage from '@/components/TabPage'
 import PanelInfo from '../panelInfo/PanelInfo'
 import AlbumPannelInfoList from './AlbumPannelInfoList'
 const idField = 'pannelGroupId'
 export default {
   components: {
+    TabPage,
     PanelInfo,
     AlbumPannelInfoList
   },
@@ -83,3 +85,8 @@ export default {
   }
 }
 </script>
+<style lang="stylus" scoped>
+.resource-manager-wrapper
+  height 100%
+  overflow auto
+</style>

@@ -15,7 +15,7 @@
 
     <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
-        <el-form :inline="true" :model="filter" class="search-form-inline" label-width="80px">
+        <el-form @keypress.enter.native="handleFilterChange" :inline="true" :model="filter" class="search-form" label-width="80px">
           <el-form-item label="渠道">
             <CommonSelector v-model="filter.partner" :disabled="disablePartner" :options="$consts.partnerOptions" />
           </el-form-item>
@@ -102,6 +102,7 @@
             >{{ isMore ? '收起' : '展开'}}</el-button>
             <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
             <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
+            <el-button size="small" type="primary" @click="handleFilterChangeAndReset">查询并重置</el-button>
           </div>
         </el-form>
       </el-collapse-item>
@@ -171,9 +172,7 @@ export default {
             label: '状态',
             width: '50',
             formatter: function(row) {
-              return ['失效', '有效', '待审核', '审核不通过', '草稿'][
-                row.videoStatus
-              ]
+              return ['失效', '有效', '待审核', '审核不通过', '草稿'][row.videoStatus]
             }
           },
           {
@@ -182,11 +181,12 @@ export default {
             width: '60',
             render: (h, { row }) => {
               return h('img', {
+                key: row.thumb,
                 attrs: {
-                  src: row.thumb,
                   width: '50px',
                   height: '50px',
-                  'referrerpolicy': 'no-referrer'
+                  referrerpolicy: 'no-referrer',
+                  src: row.thumb
                 }
               })
             }
@@ -226,7 +226,7 @@ export default {
             prop: 'segment',
             label: '已选集数',
             type: 'specialBut',
-            width: '100',
+            width: '105',
             mouseStyle: 'hover',
             fixed: 'right',
             render: (h, { row }) => {
@@ -246,7 +246,7 @@ export default {
           {
             prop: 'but',
             label: '操作',
-            width: '100',
+            width: '105',
             fixed: 'right',
             render: (h, { row }) => {
               const ccVideoSourceEntities = row.ccVideoSourceEntities || []
@@ -277,7 +277,7 @@ export default {
       return this.$refs.baseSelector.selected.slice()
     },
     licenseEnums() {
-      return (this.conditionList.license || [])
+      return (this.conditionList.license || this.conditionList.licensee || [])
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
     categoryEnums() {
@@ -375,6 +375,7 @@ export default {
           const sourceEnums = data.rows.reduce(function(result, item) {
             if (item.source_List) {
               result = result.concat(item.source_List
+                // eslint-disable-next-line
                 .map(({ source_code, source_title }) => ({ label: source_title, value: source_code })))
             }
             return result
@@ -465,6 +466,13 @@ export default {
       }
       return filter
     },
+    handleFilterChangeAndReset() {
+      this.handleFilterChange()
+      this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
+      this.$refs.tagLogicFilter.reset()
+      this.onPartnerChange()
+    },
     handleFilterChange() {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
@@ -521,7 +529,9 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.search-form-inline
-  >>> .el-form-item__content
+.search-form >>>
+  .el-form-item__content
     width 174px
+  .el-form-item
+    margin-bottom 5px
 </style>

@@ -2,10 +2,10 @@
   <div class="cc-level">
       <template
         v-for="(level, levelIndex) in levels">
-        <div v-if="levelIndex > 0" class="cc-level-buttons">
+        <div v-if="levelIndex > 0" class="cc-level-buttons" :key="`level-btn-${levelIndex}`">
           <i class="el-icon-arrow-right" />
         </div>
-        <div class="cc-level-wrapper">
+        <div class="cc-level-wrapper" :key="`level-wrapper-${levelIndex}`">
           <div class="cc-level-title">
               <el-input :value="level.label" @input="$emit('level-label-change', $event, levelIndex)" />
           </div>
@@ -15,9 +15,8 @@
               <el-button @click="handleAddItem(levelIndex)">添加</el-button>
             </div>
           </slot>
-          </el-form>
           <div class="cc-level-item-list">
-            <template v-for="(item, index) in items">
+            <template v-for="item in items">
               <div
                 v-if="item.parentValue === level.parentValue && item.level === levelIndex"
                 :class="['cc-level-item', item.value === level.activeValue ? 'active' : '']"

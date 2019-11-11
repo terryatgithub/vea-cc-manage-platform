@@ -8,6 +8,7 @@
     :pagination="pagination"
     :filter="filter"
     :filter-schema="filterSchema"
+    :select-end-on-dbl-click="true"
     @pagination-change="fetchData"
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
@@ -19,12 +20,6 @@
 <script>
 import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
-const sourceValueMap = {
-  '': '0',
-  'o_tencent': '1',
-  'o_iqiyi': '2',
-  'o_youku': '3'
-}
 export default {
   components: {
     BaseSelector
@@ -81,7 +76,7 @@ export default {
       return {
         id: undefined,
         containerName: undefined,
-        source: undefined
+        source: this.source
       }
     },
     getFilter() {
@@ -112,6 +107,16 @@ export default {
     }
   },
   created() {
+    const source = this.source
+    let sourceOptions = this.$consts.sourceOptionsWithEmpty
+    if (source) {
+      sourceOptions = sourceOptions.filter(item => item.value === source || item.value === '')
+    }
+    const sourceEnums = sourceOptions.reduce((result, item) => {
+      // 轮播这里如果内容源为 无 时，是 none
+      result[item.label] = item.value || 'none'
+      return result
+    }, {})
     const filterSchema = _.map({
       id: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'Input',
@@ -120,6 +125,11 @@ export default {
       }),
       containerName: _.o.string.other('form', {
         placeholder: '轮播名称',
+        label: ' '
+      }),
+      source: _.o.enum(sourceEnums).other('form', {
+        component: 'Select',
+        placeholder: '内容源',
         label: ' '
       })
     }).other('form', {

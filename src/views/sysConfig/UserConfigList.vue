@@ -217,7 +217,7 @@ export default {
     handleChange (value, direction, movedKeys) {
       var str = []
       for (var i = 0; i < value.length; i++) {
-        if (str.indexOf(value[i]) == -1) {
+        if (str.indexOf(value[i]) === -1) {
           str.push(value[i])
         }
         // str.push(['roleIds', value[i]])

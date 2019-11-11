@@ -58,15 +58,11 @@
 </template>
 <script>
 import _ from 'gateschema'
-import ButtonList from './../../components/ButtonLIst'
-import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   components: {
-    ActionList,
     Table,
-    ContentWrapper,
-    ButtonGroupForListPage
+    ContentWrapper
   },
   data() {
     return {
@@ -149,10 +145,10 @@ export default {
      */
     batchDel() {
       // const id = this.selected[0]
-      if (this.selected.length == 0) {
+      if (this.selected.length === 0) {
         this.$message('请选择一条数据')
       }
-      if (this.selected.length == 1) {
+      if (this.selected.length === 1) {
         this.$confirm('确定要删除吗？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -270,7 +266,6 @@ export default {
         filter.rows = pagination.pageSize
       }
       return filter
-      console.log(filter)
     },
     /**
      * 获取数据

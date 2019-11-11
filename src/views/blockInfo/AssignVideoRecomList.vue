@@ -18,6 +18,7 @@
         :data="table.data"
         :selected="table.selected"
         :selection-type="table.selectionType"
+        :select-on-row-click="true"
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
@@ -29,24 +30,28 @@
 <script>
 import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
-import BroadcastSimpleData from './BroadcastSimpleData'
+
+const typeOption = {
+  normal: '普通', child: '少儿', movie: '电影', series: '电视剧'
+}
 
 export default {
   extends: BaseList,
   components: {
     Table,
     ContentWrapper,
-    ButtonGroupForListPage,
-    BroadcastSimpleData
+    ButtonGroupForListPage
   },
   data() {
     return {
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
       filterSchema: null,
-      pagination: {},
+      pagination: {
+        currentPage: 1
+      },
       selected: [],
       table: {
         props: {},
@@ -54,11 +59,30 @@ export default {
           {
             label: '指定影片推荐流ID',
             prop: 'id',
-            sortable: true
+            sortable: true,
+            width: '100px',
+            fixed: 'left'
           },
           {
             label: '指定影片推荐流名称',
-            prop: 'videoName'
+            prop: 'name',
+            fixed: 'left',
+            render: (h, { row }) => {
+              return h(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.handleRead(row)
+                    }
+                  }
+                },
+                row.name
+              )
+            }
           },
           {
             label: '内容源',
@@ -69,17 +93,64 @@ export default {
           },
           {
             label: '源状态',
-            prop: 'status',
+            prop: 'openStatus',
             render: (h, { row }) => {
-              return ['关闭', '开启'][row.status]
+              return ['关闭', '开启'][row.openStatus]
             }
           },
           {
-            label: '影片数量'
+            label: '流类型',
+            prop: 'type',
+            formatter: row => {
+              return typeOption[row.type] || '普通'
+            }
           },
           {
-            label: '最后一次推荐计算完成时间',
+            label: '版本/状态',
+            prop: 'status',
+            formatter: (row) => {
+              const status = row.status
+              const currentVersion = row.currentVersion
+              return currentVersion + '/' + this.$consts.statusText[status]
+            }
           },
+          {
+            label: '待审核的版本',
+            prop: 'duplicateVersion',
+            render: (h, { row }) => {
+              return h(
+                'el-button',
+                {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleRead(row, row.duplicateVersion)
+                    }
+                  }
+                },
+                row.duplicateVersion
+              )
+            }
+          },
+          {
+            label: '影片数量',
+            prop: 'videoNum'
+          },
+          {
+            label: '已屏蔽影片数量',
+            prop: 'disableVideoNum'
+          },
+          {
+            label: '图片海报尺寸',
+            prop: 'picSize'
+          },
+          // {
+          //   label: '最后一次推荐计算完成时间',
+          //   prop: 'lastCalDate'
+          // },
           {
             label: '操作',
             fixed: 'right',
@@ -99,7 +170,8 @@ export default {
           }
         ],
         data: [],
-        selectionType: 'none'
+        selected: [],
+        selectionType: 'multiple'
       }
     }
   },
@@ -113,6 +185,8 @@ export default {
     },
     genDefaultFilter() {
       return {
+        page: 1,
+        rows: 10
       }
     },
     handleFilterChange(type, filter) {
@@ -141,26 +215,20 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter()
-      this.$service.broadcastBlockPageList(filter).then(data => {
+      this.$service.getMediaAutomationList(filter).then(data => {
         this.pagination.total = data.total
+        data.rows = data.rows.map(item => {
+          item.picSize = item.picSize.join(',')
+          return item
+        })
         this.table.data = data.rows
       })
     },
-    toPercent: decimal => {
-      return (Math.round(decimal * 10000) / 100.00 + "%")
-    },
-    getSimpleBrowseData(id) {
-      let dataShow = {}
-      this.$service.getBlockSimpleBrowseData({id}).then(data => {
-        const uvctr = data.rows[0].data[0].uvctr
-        dataShow = {
-          value: this.toPercent(uvctr.value),
-          dailyGrowth: this.toPercent(uvctr.dailyGrowth),
-          weeklyGrowth: this.toPercent(uvctr.weeklyGrowth) 
-        }
-        console.log('data2',dataShow );
-      })
-      return dataShow
+    keyAndValueExchage (obj) {
+      return Object.keys(obj).reduce((result, key) => {
+        result[obj[key]] = key
+        return result
+      }, {})
     }
   },
   created() {
@@ -169,22 +237,34 @@ export default {
         component: 'Input',
         placeholder: '影片流ID'
       }),
-      videoName: _.o.string.other('form', {
+      name: _.o.string.other('form', {
         component: 'Input',
         placeholder: '影片流名称'
       }),
       source: _.o.enum(this.$consts.sourceOptionsWithNoneEnums).other('form', {
         component: 'Select',
-        placeholder: '内容源'
+        placeholder: '内容源',
+        clearable: true
       }),
-      status: _.o.enum({'开启': 1, '关闭': 0}).other('form', {
+      openStatus: _.o.enum({ '开启': 1, '关闭': 0 }).other('form', {
         component: 'Select',
-        placeholder: '源状态'
+        placeholder: '源状态',
+        clearable: true
+      }),
+      status: _.o.enum(this.$consts.statusEnums).other('form', {
+        component: 'Select',
+        placeholder: '审核状态',
+        clearable: true
+      }),
+      type: _.o.enum(this.keyAndValueExchage(typeOption)).other('form', {
+        component: 'Select',
+        placeholder: '流类型',
+        clearable: true
       })
     }).other('form', {
       layout: 'inline',
       cols: {
-        item: 5,
+        item: 6,
         label: 0,
         wrapper: 20
       },
@@ -200,19 +280,19 @@ export default {
       }
     })
     this.filterSchema = filterSchema
-    // this.fetchData()
+    this.fetchData()
   }
 }
 </script>
 <style lang = 'stylus' scoped>
 .pics img
-  max-width: 350px
-  max-height: 500px
+  max-width 350px
+  max-height 500px
 .content
   >>> table .imgs
-    cursor: pointer
+    cursor pointer
 .btns
-  margin-bottom: 10px
+  margin-bottom 10px
 .checkItemStyle
-  margin: 10px
+  margin 10px
 </style>

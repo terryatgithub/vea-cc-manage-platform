@@ -14,8 +14,10 @@
           @add="handleCreate"
           @edit="handleEdit"
           @delete="handleDelete"
+          @batch-audit="batchAudit"
         >
         </ButtonGroupForListPage>
+        <GlobalIconBatchAudit @audit-end="fetchData" />
         <el-button type="primary" @click="handleAllRowSelectionChange(checkAll = !checkAll)">全选/全不选</el-button>
       </div>
       <!-- <div class="btns">
@@ -46,7 +48,7 @@
         @row-selection-remove="handleRowSelectionRemove"
       >
         <div class="img-item" slot="row" slot-scope="{row: item}" @click.stop="handleRead(item)">
-          <img :src="item.imgUrl" />
+          <img referrerpolicy="no-referrer"  :key="item.imgUrl" :src="item.imgUrl" />
           <a class="img-preview" @click.stop="reviewPic(item)">预览</a>
           <div class="img-detail">
             <span>角标id：{{ item.cornerIconId }}</span>
@@ -65,12 +67,12 @@
     <!-- 预览图片 -->
     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
       <span class="pics">
-        <img :src="reviewPicUrl" alt="图片" style="width:400px">
+        <img referrerpolicy="no-referrer"  :src="reviewPicUrl" alt="图片" style="width:400px">
       </span>
     </el-dialog>
     <!--批量审核-->
-    <el-dialog title="审核" :visible.sync="dialogPLVisible" :before-close="handleDialogClose">
-      <GlobalIconAudit @auditForm="submitForm" @cancle="cancle" ref="auditForm"></GlobalIconAudit>
+    <el-dialog title="审核" :visible.sync="auditDialogVisible" :before-close="handleDialogClose">
+      <GlobalIconAudit @auditForm="handleDoBatchAudit" @cancle="cancle" ref="auditForm"></GlobalIconAudit>
     </el-dialog>
     <!--调整优先级-->
     <el-dialog title="调整优先级" :visible.sync="dialogLevelVisible">
@@ -85,23 +87,21 @@
 </template>
 <script>
 import _ from 'gateschema'
-import ButtonList from './../../components/ButtonLIst'
 import GlobalIconAudit from './GlobalIconAudit'
 import GlobelIconLevel from './GlobelIconLevel'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import { ContentWrapper, Table, ActionList, utils } from 'admin-toolkit'
+import GlobalIconBatchAudit from '@/components/GlobalIconBatchAudit'
+import { ContentWrapper, CardList } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
-import { CardList } from 'admin-toolkit'
 export default {
   extends: BaseList,
   components: {
     CardList,
-    ActionList,
-    Table,
     ContentWrapper,
     GlobalIconAudit,
     GlobelIconLevel,
-    ButtonGroupForListPage
+    ButtonGroupForListPage,
+    GlobalIconBatchAudit
   },
   data() {
     return {
@@ -117,7 +117,7 @@ export default {
         素材播出属性: '102'
       }, // 角标分类
       attributeTypes: {}, // 角标类别
-      dialogPLVisible: false,
+      auditDialogVisible: false,
       dialogLevelVisible: false,
       typePositions: {
         左上: 0,
@@ -218,46 +218,39 @@ export default {
       return filter
     },
     // 批量审核
-    batchHandle() {
-      var that = this
-      if (that.selected.length == 0) {
-        that.$message('最少选择一条数据')
-      } else {
-        console.log(that.table.data)
-        const ids = that.selected
-        for (var i = 0; i < ids.length; i++) {
-          for (var j = 0; j < that.table.data.length; j++) {
-            if (ids[i] == that.table.data[j].cornerIconId) {
-              if (that.table.data[j].cornerStatus == 3 || that.table.data[j].cornerStatuses == 2) {
-                this.dialogPLVisible = true
-              } else {
-                that.$message('[' + ids[i] + ']' + '不是待审核状态，不允许审核')
-              }
-            }
-          }
-        }
+    batchAudit() {
+      if (this.selected.length === 0) {
+        return this.$message.error('请选择再审批')
       }
+      const waiting = this.$consts.status.waiting
+      const length = this.selected.filter(item => item.cornerStatus === waiting).length
+      if (length === 0) {
+        return this.$message.error('选中的素材里没有待审核素材')
+      }
+      this.auditForm = {
+        idStr: null,
+        auditFlag: '4',
+        auditDesc: ''
+      }
+      this.auditDialogVisible = true
     },
-    submitForm(data) {
-      const auditForm = data
+    handleDoBatchAudit(data) {
+      const waiting = this.$consts.status.waiting
+      data.idStr = this.selected
+        .filter(item => item.cornerStatus === waiting)
+        .map(({ cornerIconId }) => cornerIconId)
+        .join(',')
       this.$service
-        .batchAudit(
-          {
-            idStr: this.selected.join(','),
-            auditFlag: auditForm.auditFlag,
-            auditDesc: auditForm.auditDesc
-          },
-          '审核成功'
-        )
+        .batchAudit(data, '审核成功')
         .then(data => {
           this.fetchData()
           this.$refs.auditForm.cancle()
-          this.dialogPLVisible = false
+          this.auditDialogVisible = false
         })
     },
     // 取消事件
     cancle(data) {
-      this.dialogPLVisible = data
+      this.auditDialogVisible = data
     },
     handleDialogClose() {
       this.$refs.auditForm.cancle()
@@ -351,7 +344,7 @@ export default {
       }
     })
 
-    if (this.$consts.idPrefix != '10') {
+    if (this.$consts.idPrefix !== '10') {
       filterSchema.map({
         idPrefix: _.o.enum({
           '酷开': '10',

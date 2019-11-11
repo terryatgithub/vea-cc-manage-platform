@@ -37,7 +37,6 @@
 <script>
 import { loginRedbg } from '../assets/loginRedbg.js'
 import _ from 'gateschema'
-import { setTimeout } from 'timers'
 const schema = _.map({
   username: _.required.$msg('请输入登录名').string.other('form', {
     placeholder: '登录名'

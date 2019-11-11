@@ -33,7 +33,7 @@ export default {
     getButtons() {
       const idPrefix = this.$consts.idPrefix
       const { id, version, type, status, menuElId } = this.resourceInfo
-      if (idPrefix != '10' && id.toString().substr(0, 2) !== idPrefix) {
+      if (idPrefix !== '10' && id.toString().substr(0, 2) !== idPrefix) {
         // 非现网环境 && 前缀不符的情况下，不返回任何权限按钮
         return
       }

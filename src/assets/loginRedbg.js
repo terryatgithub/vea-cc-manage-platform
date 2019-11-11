@@ -1,3 +1,4 @@
+/* eslint-disable */
 import $ from 'jquery'
 import './cav'
 function loginRedbg () {

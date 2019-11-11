@@ -47,13 +47,11 @@
 
 <script>
 import CommonContent from '@/components/CommonContent.vue'
-import { Upload } from 'admin-toolkit'
 import titleMixin from '@/mixins/title'
 export default {
   mixins: [titleMixin],
   components: {
-    CommonContent,
-    Upload
+    CommonContent
   },
   data() {
     return {
@@ -82,6 +80,7 @@ export default {
   },
   props: ['initMode', 'id'],
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.form
       if (form.typeId) {

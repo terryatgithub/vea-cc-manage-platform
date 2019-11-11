@@ -50,8 +50,7 @@
 </template>
 
 <script>
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
-import _ from '../../utlis/gateschema'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import { Button, Tooltip } from 'element-ui'
 
 export default {
@@ -61,7 +60,6 @@ export default {
   },
 
   data() {
-    let that = this
     return {
       filter: {
         sort: undefined,

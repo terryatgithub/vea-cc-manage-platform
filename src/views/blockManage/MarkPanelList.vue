@@ -29,8 +29,7 @@
 <script>
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import ButtonList from './../../components/ButtonLIst'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
 export default {
   extends: BaseList,
@@ -235,7 +234,7 @@ export default {
         resetText: '重置'
       }
     })
-    if (this.$consts.idPrefix != '10') {
+    if (this.$consts.idPrefix !== '10') {
       filterSchema.map({
         idPrefix: _.o.enum({
           '酷开': '10',

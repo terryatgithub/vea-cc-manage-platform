@@ -61,6 +61,7 @@ export default {
                 style: {
                   height: '100px'
                 },
+                key: row.resourceImgUrl,
                 attrs: {
                   src: row.resourceImgUrl
                 }

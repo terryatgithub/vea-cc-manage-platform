@@ -60,6 +60,7 @@ export default function fetch({
             total: data.total
           }
         } else {
+          // eslint-disable-next-line
           if (typeof (data.code) !== 'undefined' && data.code != '0') {
             throw new Error(data.msg)
           } else {

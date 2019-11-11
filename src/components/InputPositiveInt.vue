@@ -4,8 +4,10 @@
     type="text"
     :name="name"
     :autocomplete="autocomplete"
+    :clearable="clearable"
     :value="inputValue"
     @input="handleInputValue"
+    @blur="$emit('blur')"
     :disabled="disabled"
     :placeholder="placeholder">
     <span
@@ -28,7 +30,7 @@ export default {
       inputValue: undefined
     }
   },
-  props: ['value', 'disabled', 'append', 'prepend', 'placeholder', 'name', 'autocomplete'],
+  props: ['value', 'disabled', 'append', 'prepend', 'placeholder', 'name', 'autocomplete', 'clearable'],
   methods: {
     handleInputValue(val) {
       if (val === '' || /^[1-9]\d*$/.test(val)) {

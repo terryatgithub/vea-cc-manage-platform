@@ -8,6 +8,7 @@
     :pagination="pagination"
     :filter="filter"
     :filter-schema="filterSchema"
+    :select-end-on-dbl-click="true"
     @pagination-change="fetchData"
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
@@ -53,6 +54,7 @@ export default {
             prop: 'appImageUrl',
             render: (createElement, { row }) => {
               return createElement('img', {
+                key: row.appImageUrl,
                 attrs: {
                   src: row.appImageUrl,
                   width: '50px',

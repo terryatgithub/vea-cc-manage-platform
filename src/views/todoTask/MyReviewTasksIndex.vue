@@ -29,7 +29,12 @@
       ></PanelPreview>
     </el-tab-pane>
     <el-tab-pane label="素材" name="material">
-      <MySubmitTasksList resourceType="material" v-show="mode==='materialList'" @read="handleRead"></MySubmitTasksList>
+      <MySubmitTasksList
+        resourceType="material"
+        v-show="mode==='materialList'"
+        ref="materialList"
+        @read="handleRead">
+      </MySubmitTasksList>
       <GlobalPictureUpsert
         v-if="mode==='materialPreview'"
         :edit-id="previewData.resourceId"
@@ -39,7 +44,12 @@
       />
     </el-tab-pane>
     <el-tab-pane label="布局" name="layout">
-      <MySubmitTasksList resourceType="layout" v-show="mode==='layoutList'" @read="handleRead"></MySubmitTasksList>
+      <MySubmitTasksList
+        resourceType="layout"
+        v-show="mode==='layoutList'"
+        ref="layoutList"
+        @read="handleRead">
+      </MySubmitTasksList>
       <LayoutInfo
         v-if="mode==='layoutPreview'"
         class="el-tab-preview"
@@ -51,7 +61,12 @@
       </LayoutInfo>
     </el-tab-pane>
     <el-tab-pane label="首页" name="homepage">
-      <MySubmitTasksList resourceType="homepage" v-show="mode==='homepageList'" @read="handleRead"></MySubmitTasksList>
+      <MySubmitTasksList
+        resourceType="homepage"
+        v-show="mode==='homepageList'"
+        ref="homepageList"
+        @read="handleRead">
+      </MySubmitTasksList>
       <HomePageInfo
         v-if="mode==='homepagePreview'"
         class="el-tab-preview"
@@ -63,7 +78,12 @@
       ></HomePageInfo>
     </el-tab-pane>
     <el-tab-pane label="策略" name="policy">
-      <MySubmitTasksList resourceType="policy" v-show="mode==='policyList'" @read="handleRead"></MySubmitTasksList>
+      <MySubmitTasksList
+        resourceType="policy"
+        v-show="mode==='policyList'"
+        ref="policyList"
+        @read="handleRead">
+      </MySubmitTasksList>
 
         <PolicyManageInfo
           class="el-tab-preview"
@@ -76,7 +96,12 @@
     </PolicyManageInfo>
     </el-tab-pane>
     <el-tab-pane label="主题" name="theme">
-      <MySubmitTasksList resourceType="theme" v-show="mode==='themeList'" @read="handleRead"></MySubmitTasksList>
+      <MySubmitTasksList
+        resourceType="theme"
+        v-show="mode==='themeList'"
+        ref="themeList"
+        @read="handleRead">
+      </MySubmitTasksList>
       <ThemeInfoAdd
         v-if="mode==='themePreview'"
         :editId="previewData.resourceId"
@@ -87,7 +112,12 @@
       />
     </el-tab-pane>
     <el-tab-pane label="角标" name="icon">
-      <MySubmitTasksList resourceType="icon" v-show="mode==='iconList'" @read="handleRead"></MySubmitTasksList>
+      <MySubmitTasksList
+        resourceType="icon"
+        v-show="mode==='iconList'"
+        ref="iconList"
+        @read="handleRead">
+      </MySubmitTasksList>
       <GlobalCornerIcon
         v-if="mode==='iconPreview'"
         class="el-tab-preview"
@@ -98,11 +128,20 @@
       </GlobalCornerIcon>
     </el-tab-pane>
     <el-tab-pane label="系统功能" name="sysPlugin">
-      <MySubmitTasksList resourceType="sysPlugin" v-show="mode==='sysPluginList'" @read="handleRead"></MySubmitTasksList>
+      <MySubmitTasksList
+        resourceType="sysPlugin"
+        v-show="mode==='sysPluginList'"
+        ref="sysPluginList"
+        @read="handleRead">
+      </MySubmitTasksList>
       <MultiFunctionBlockInfo
         v-if="mode ==='sysPluginPreview'"
+        class="el-tab-preview"
         init-mode="read"
         :id="previewData.resourceId"
+        :content-props="{
+          menuElId: 'multiFunctionBlock'
+        }"
         @upsert-end="handleUpsertEnd"
         @go-back="goBack">
       </MultiFunctionBlockInfo>
@@ -119,7 +158,7 @@ import HomePageInfo from './../homePageManage/HomePageInfo.vue'
 import PolicyManageInfo from './../homePageManage/PolicyManageInfo'
 import ThemeInfoAdd from './../themeManage/ThemeInfoAdd'
 import GlobalCornerIcon from './../commonModule/GlobalCornerIcon'
-import MultiFunctionBlockInfo from './../blockInfo/MultiFunctionBlockInfo'
+import MultiFunctionBlockInfo from './../blockInfo/SysPluginInfo'
 export default {
   components: {
     MySubmitTasksList: MyReviewTasksList,
@@ -154,6 +193,7 @@ export default {
       this.mode = this.preMode = tab.name + 'List'
     },
     handleUpsertEnd() {
+      this.goBack()
       this.$refs[this.preMode].fetchData()
     }
   }

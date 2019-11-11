@@ -84,9 +84,8 @@
 </template>
 
 <script>
-import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
 export default {
   extends: BaseList,

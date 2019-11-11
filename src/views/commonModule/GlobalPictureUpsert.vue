@@ -243,6 +243,7 @@ export default {
               }
             })
             .then(data => {
+              // eslint-disable-next-line
               if (data.code == 0) {
                 const uploadResult = data.data[0]
                 fileInfo.pictureName = uploadResult.originFileName
@@ -324,7 +325,7 @@ export default {
                 type: 'error',
                 message: '最少要上传一个素材，才能保存'
               })
-              cb(true)
+              cb(Error())
             } else {
               cb()
             }
@@ -333,7 +334,7 @@ export default {
               type: 'error',
               message: '请把表单填写完整'
             })
-            cb(true)
+            cb(Error())
           }
         }.bind(this)
       )

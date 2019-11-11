@@ -12,8 +12,8 @@ export default {
   props: ['value'],
   watch: {
     inputValue: 'handleInputValue',
-    value: () => {
-      this.inputValue = value
+    value: (val) => {
+      this.inputValue = val
     }
   },
 

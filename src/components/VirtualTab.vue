@@ -20,8 +20,7 @@
             'cc-virtual-tab': true,
             'collapse-all': isDragging,
         }"
-    :style="{width: width + 'px'}"
-  >
+    :style="{width: width + 'px'}">
     <!-- placeholder top -->
     <div
       v-if="!readOnly"
@@ -29,11 +28,12 @@
       @dragenter="handleDragEnter"
       @dragleave="handleDragLeave"
       @dragover="handleDragOver"
-      @drop="handleDrop($event, {type: 'NORMAL', index: -1})"
-    ></div>
+      @drop="handleDrop($event, {type: 'NORMAL', index: -1})">
+    </div>
 
     <template v-for="(panelItem, index) in panels">
       <div
+        :key="'panel-' + index"
         :class="{
           'tab-placeholder': true,
           'tab-placeholder--normal': panelItem.type === 'NORMAL',
@@ -98,8 +98,7 @@
                 v-shadow-drag="{type: 'CROWD', index: index, crowdIndex: crowdIndex}"
                 @shadow-drag-start.native="handleDragStart($event, index, crowdIndex)"
                 @shadow-drag-end.native="handleDragEnd"
-                :panel="getPanelInfo(item)"
-              >
+                :panel="getPanelInfo(item)">
                 <template slot-scope="{panel: panel}">
                   <template v-if="!readOnly">
                     <i
@@ -160,6 +159,7 @@
 
               <div
                 v-if="!readOnly"
+                :key="'crowd-' + crowdIndex"
                 v-show="isDragging || panelItem.isShowAll || crowdIndex === 0"
                 class="panel-placeholder"
                 @dragenter="handleDragEnter"
@@ -240,6 +240,7 @@
       <!-- placeholder bottom -->
       <div
         v-if="!readOnly"
+        :key="'placeholder-' + index"
         class="panel-placeholder panel-placeholder__normal"
         @dragenter="handleDragEnter"
         @dragleave="handleDragLeave"
@@ -252,16 +253,13 @@
 
 <script>
 import Var from './Var'
-import VirtualPanel from './VirtualPanel'
 import VirtualPanelGroup from './VirtualPanelGroup'
 import InputOrder from '@/components/InputOrder'
 import PanelStatisticTable from './PanelStatisticTable'
 
-let key = 0
 export default {
   components: {
     'cc-var': Var,
-    'cc-virtual-panel': VirtualPanel,
     'cc-virtual-panel-group': VirtualPanelGroup,
     InputOrder,
     PanelStatisticTable
@@ -483,8 +481,6 @@ export default {
 }
 </script>
 <style>
-.cc-virtual-tab {
-}
 .cc-virtual-tab .tab-placeholder {
   margin: 3px 0;
   line-height: 1;
@@ -528,10 +524,6 @@ export default {
   display: none;
 }
 
-.cc-virtual-tab .tab-placeholder__spec-panel {
-}
-.cc-virtual-tab .tab-placeholder__normal-panel {
-}
 .cc-virtual-tab .tab-placeholder__panel-wrapper {
   display: flex;
   position: relative;
@@ -617,8 +609,6 @@ export default {
   padding: 5px 10px;
   font-size: 10px;
   cursor: pointer;
-}
-.cc-virtual-tab .btn-crowd--set {
 }
 .cc-virtual-tab .btn-crowd--disabled {
   color: #ccc;

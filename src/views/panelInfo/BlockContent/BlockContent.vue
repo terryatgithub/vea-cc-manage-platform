@@ -36,7 +36,7 @@
                   @start="handleDragConentStart"
                   @end="handleDragConentEnd($event, 'normal')">
                   <el-card
-                    v-for="(content, index) in normalContentList" 
+                    v-for="(content, index) in normalContentList"
                     :key="index"
                     :class="{activeContent: activeType === 'normal' && index === activeIndex}"
                     :body-style="{ padding: '0px' }"
@@ -47,7 +47,7 @@
                       class="remove-handle el-icon-close"
                       @click.stop.prevent="handleRemoveContent(index, 'normal')"
                     ></i>
-                    <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
+                    <img referrerpolicy="no-referrer" :src="getPictureUrl(content.pictureUrl)" >
                   </el-card>
                 </component>
 
@@ -66,6 +66,7 @@
                 :source="source"
                 :data="data"
                 :pannel="pannel"
+                :pannel-group-id="pannelGroupId"
                 :content-form="contentForm"
                 :hide-title-options="hideTitleOptions"
               />
@@ -94,7 +95,7 @@
             @start="handleDragConentStart"
             @end="handleDragConentEnd($event, 'specific')">
             <el-card
-              v-for="(content, index) in specificContentList" 
+              v-for="(content, index) in specificContentList"
               :key="index"
               :class="{activeContent: activeType === 'specific' && index === activeIndex}"
               :body-style="{ padding: '0px' }"
@@ -104,7 +105,7 @@
                 class="remove-handle el-icon-close"
                 @click.stop.prevent="handleRemoveContent(index, 'specific')"
               ></i>
-              <img :src="getPictureUrl(content.pictureUrl)" referrerpolicy="no-referrer">
+              <img referrerpolicy="no-referrer" :src="getPictureUrl(content.pictureUrl)" >
               <span class="content-id" v-if="content.vContentId"> {{ content.vContentId }} </span>
             </el-card>
           </component>
@@ -122,6 +123,7 @@
           :check-crowd="checkCrowd"
           :data="data"
           :source="source"
+          :pannel-group-id="pannelGroupId"
           :pannel="pannel"
           :content-form="contentForm"
           :hide-title-options="hideTitleOptions"
@@ -136,7 +138,7 @@ import draggable from 'vuedraggable'
 import BlockForm from './BlockForm'
 import CommonSelector from '@/components/CommonSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
-import { 
+import {
   genDefaultContentForm,
   genResourceContentList
 } from '../panelInfoUtil'
@@ -157,7 +159,7 @@ export default {
       specificContentList: []
     }
   },
-  props: ['mode', 'data', 'source', 'pannel', 'hideTitleOptions'],
+  props: ['mode', 'data', 'source', 'pannel', 'hideTitleOptions', 'pannelGroupId'],
   computed: {
     title() {
       if (this.mode === 'read') {
@@ -209,7 +211,7 @@ export default {
       const contentPreset = {
         coverType: this.isMall ? 'custom' : 'media',
         // hideTitleOptions 表示强制需要标题，无法关闭
-        showTitle: this.hideTitleOptions ? 1 : 0,
+        showTitle: this.hideTitleOptions ? 1 : 0
       }
       const contentList = genResourceContentList(resources, contentPreset)
       this.normalContentList.splice(this.activeIndex, contentList.length, ...contentList)
@@ -260,7 +262,7 @@ export default {
           if (id && shouldCheck) {
             // 单集的 extraValue1 相同，可能有 extraValue4 或 extraValue5
             id = id + (content.extraValue4 || '') + (content.extraValue5 || '')
-            const existsId = resourcesIndexed[id] 
+            const existsId = resourcesIndexed[id]
             if (existsId !== undefined) {
               return this.error(`通用内容第 ${existsId + 1} 个资源与第 ${i + 1} 相同`)
             } else {
@@ -290,7 +292,7 @@ export default {
       const contentPreset = {
         coverType: this.isMall ? 'custom' : 'media',
         // hideTitleOptions 表示强制需要标题，无法关闭
-        showTitle: this.hideTitleOptions ? 1 : 0,
+        showTitle: this.hideTitleOptions ? 1 : 0
       }
       return genDefaultContentForm(contentPreset)
     },
@@ -390,7 +392,7 @@ export default {
           return result
         }, defaultContentForm.cornerList)
 
-        if (data.coverType == 'custom') {
+        if (data.coverType === 'custom') {
           const onclick = JSON.parse(data.onclick)
           // 处理格式奇怪的params属性
           const params = data.params.split(',').reduce((result, item) => {
@@ -546,10 +548,10 @@ export default {
                 versioncode: '',
                 dowhat: 'startActivity',
                 bywhat: 'action',
-                byvalue:
-                              tabType == 1
-                                ? 'coocaa.intent.action.HOME_COMMON_LIST'
-                                : 'coocaa.intent.action.HOME_SPECIAL_TOPIC',
+                // eslint-disable-next-line
+                byvalue: tabType == 1
+                  ? 'coocaa.intent.action.HOME_COMMON_LIST'
+                  : 'coocaa.intent.action.HOME_SPECIAL_TOPIC',
                 params: {
                   id: currentOnclick.tabId
                 },
@@ -601,7 +603,7 @@ export default {
           content.bgParams = JSON.stringify(content.bgParams)
         }
 
-        delete content.picturePreset 
+        delete content.picturePreset
         delete content.redundantParams
         return content
       }

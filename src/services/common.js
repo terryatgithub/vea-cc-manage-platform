@@ -7,11 +7,13 @@ export function getVersionList(params) {
   }).then((data) => {
     const rows = data.rows || []
     return rows.map((item) => {
-      const { version, lastUpdateDate, modifierName, status } = item
+      const { version, createdDate, launchDate, modifierName, status } = item
+      const createdDateFormat = typeof (createdDate) === 'string' ? '创建：' + createdDate.slice(createdDate.indexOf('-') + 1) : '创建：'
+      const onlineTime = typeof (launchDate) === 'string' ? '上线：' + launchDate.slice(launchDate.indexOf('-') + 1) : '未上线'
       return {
         row: item,
         value: item.version,
-        label: `${version}/${lastUpdateDate}/${modifierName}/${consts.statusText[status]}`
+        label: `${version}/${createdDateFormat}/${onlineTime}/${modifierName}/${consts.statusText[status]}`
       }
     })
   })
@@ -77,13 +79,14 @@ const deleteUrlMap = {
   theme: 'api/v1/theme/delHistory.html', // 所有版块
   policy: 'api/v1/policyConf/delHistory.html',
   testPolicy: 'api/v1/testPolicyConf/delHistory.html',
-  icon: '',
   material: '', // 素材图片
   layout: '', // 布局
   block: 'api/v1/blockInfo/delHistory.html', // 轮播推荐位
   systemPlugin: 'api/v1/sysPlugin/delHistory.html', // 系统插件
   topic: 'api/v1/topic/delHistory.html',
-  topicConfig: 'api/v1/topicConfig/delHistory.html'
+  topicConfig: 'api/v1/topicConfig/delHistory.html',
+  mediaAutomation: 'api/v1/mediaAutomation/delHistory.html',
+  icon: 'api/v1/cornerIcon/remove.html'
 }
 export function deleteVersion (data) {
   return this.fetch({
@@ -102,7 +105,9 @@ const RESOURCE_DELETE_URL_MAP = {
   sysPlugin: 'api/v1/sysPlugin/remove.html',
   crowdRel: 'api/v1/dmpMgr/remove.html',
   topic: 'api/v1/topic/remove.html',
-  topicConfig: 'api/v1/topicConfig/remove.html'
+  topicConfig: 'api/v1/topicConfig/remove.html',
+  mediaAutomation: '/v1/mediaAutomation/remove.html',
+  icon: 'api/v1/cornerIcon/remove.html'
 }
 
 export function deleteResource(data) {

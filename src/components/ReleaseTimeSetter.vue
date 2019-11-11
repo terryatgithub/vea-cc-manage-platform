@@ -62,6 +62,10 @@ export default {
       this.$refs.submitForm.validate((valid) => {
         if (valid) {
           const isTiming = this.submitForm.isTiming
+          const releaseTime = this.submitForm.releaseTime
+          if (releaseTime && Date.now() > +new Date(releaseTime)) {
+            return this.$message.error('上线时间不能小于当前时间')
+          }
           if (isTiming) { // 设置了定时
             this.$service.getTimedTaskLimit().then(this.submitTask)
           } else { // 未设置定时
@@ -71,9 +75,10 @@ export default {
       })
     },
     submitTask() {
+      const submitForm = this.submitForm
       this.$emit('submit', {
-        isTiming: this.submitForm.isTiming,
-        releaseTime: this.submitForm.releaseTime
+        isTiming: submitForm.isTiming,
+        releaseTime: submitForm.releaseTime
       })
     }
   }

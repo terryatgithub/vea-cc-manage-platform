@@ -6,7 +6,7 @@
     <div class="resource-selector__header" slot="title">
       <template v-for="item in SELECTORS" >
         <a
-          v-if="selectors.indexOf(item.value) > -1"
+          v-if="isUseSelector(item.value)"
           :class="item.value === activeSelector ? 'active' : ''"
           :key="item.value"
           @click="handleActivateSelector(item.value)">
@@ -17,6 +17,7 @@
     <template slot="content" slot-scope="{isShow}">
       <template v-if="isLive ? true : isShow">
           <video-selector
+            v-if="isUseSelector('video')"
             v-show="activeSelector === 'video'"
             ref="video-selector"
             :disable-partner="disablePartner"
@@ -25,6 +26,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <app-selector
+            v-if="isUseSelector('app')"
             v-show="activeSelector === 'app'"
             ref="app-selector"
             :source="source"
@@ -32,6 +34,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <edu-selector
+            v-if="isUseSelector('edu')"
             v-show="activeSelector === 'edu'"
             ref="edu-selector"
             :source="source"
@@ -39,6 +42,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <pptv-selector
+            v-if="isUseSelector('pptv')"
             v-show="activeSelector === 'pptv'"
             ref="pptv-selector"
             :source="source"
@@ -46,6 +50,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <live-selector
+            v-if="isUseSelector('live')"
             v-show="activeSelector === 'live'"
             ref="live-selector"
             :source="source"
@@ -53,6 +58,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <topic-selector
+            v-if="isUseSelector('topic')"
             v-show="activeSelector === 'topic'"
             ref="topic-selector"
             :source="source"
@@ -60,6 +66,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <rotate-selector
+            v-if="isUseSelector('rotate')"
             v-show="activeSelector === 'rotate'"
             ref="rotate-selector"
             :source="source"
@@ -67,6 +74,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <func-selector
+            v-if="isUseSelector('func')"
             v-show="activeSelector === 'func'"
             ref="func-selector"
             :source="source"
@@ -74,6 +82,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <broadcast-selector
+            v-if="isUseSelector('broadcast')"
             v-show="activeSelector === 'broadcast'"
             ref="broadcast-selector"
             :source="source"
@@ -81,6 +90,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <short-video-selector
+            v-if="isUseSelector('shortVideo')"
             v-show="activeSelector === 'shortVideo'"
             ref="shortVideo-selector"
             :source="source"
@@ -89,6 +99,7 @@
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <short-video-topic-selector
+            v-if="isUseSelector('shortVideoTopic')"
             v-show="activeSelector === 'shortVideoTopic'"
             ref="shortVideoTopic-selector"
             :source="source"
@@ -96,7 +107,17 @@
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
+          <ranking-selector
+            v-if="isUseSelector('ranking')"
+            v-show="activeSelector === 'ranking'"
+            ref="ranking-selector"
+            :source="source"
+            :business-type="businessType"
+            :selection-type="selectionType"
+            @select-cancel="handleSelectCancel"
+            @select-end="handleSelectEnd" />
           <good-selector
+            v-if="isUseSelector('good')"
             v-show="activeSelector === 'good'"
             ref="good-selector"
             :source="source"
@@ -111,7 +132,8 @@
 </template>
 
 <script>
-import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
+import RemoteSelectorWrapper from '../SelectorWrapper'
+// import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
 import TopicSelector from './TopicSelector'
 import AppSelector from './AppSelector'
 import BroadcastSelector from './BroadcastSelector'
@@ -122,6 +144,7 @@ import VideoSelector from './VideoSelector'
 import FuncSelector from './FuncSelector'
 import RotateSelector from './RotateSelector'
 import ShortVideoTopicSelector from './ShortVideoTopicSelector'
+import RankingSelector from './Ranking'
 import GoodSelector from './GoodSelector'
 
 const SELECTORS = [
@@ -170,6 +193,10 @@ const SELECTORS = [
     value: 'shortVideoTopic'
   },
   {
+    label: '排行榜',
+    value: 'ranking'
+  },
+  {
     label: '商品',
     value: 'good'
   }
@@ -188,6 +215,7 @@ export default {
     FuncSelector,
     RotateSelector,
     ShortVideoTopicSelector,
+    RankingSelector,
     GoodSelector
   },
   data() {
@@ -200,6 +228,7 @@ export default {
   },
   props: {
     source: String,
+    businessType: Number,
     disablePartner: Boolean,
     selectors: {
       type: Array,
@@ -218,11 +247,14 @@ export default {
     autoFetchSelectors: {
       type: Array,
       default() {
-        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'good']
+        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'ranking', 'good']
       }
     }
   },
   methods: {
+    isUseSelector(name) {
+      return this.selectors.indexOf(name) > -1
+    },
     handleSelectStart() {
       this.shouldAutoFetch = (this.autoFetchSelectors || []).slice()
       this.handleActivateSelector(this.selectors[0])

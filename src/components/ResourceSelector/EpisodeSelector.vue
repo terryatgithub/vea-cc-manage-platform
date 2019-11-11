@@ -11,6 +11,7 @@
       :selection-type="selectionType"
       :table="table"
       :pagination="pagination"
+      :select-end-on-dbl-click="true"
       @pagination-change="fetchData"
       @filter-reset="handleFilterReset"
       @select-cancel="handleSelectCancel"
@@ -38,7 +39,6 @@
 </template>
 
 <script>
-import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 
@@ -117,21 +117,21 @@ export default {
           {
             label: '时长',
             width: 120,
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               return this.secondToTimeStr(row.duration)
             }
           },
           {
             label: '跳转播放',
             width: 100,
-            render: (h, {row}) => {
+            render: (h, { row }) => {
               const source = this.source
               if (source === 'tencent' || source === 'yinhe') {
                 const url = source === 'tencent'
                   ? `https://v.qq.com/x/cover/${row.coocaaMId}/${row.thirdVuId}.html`
                   : `http://so.iqiyi.com/so/q_${row.urlTitle}`
                 return h('a', {
-                  class: "link",
+                  class: 'link',
                   attrs: {
                     target: '_blank',
                     href: url
@@ -148,7 +148,17 @@ export default {
       selected: []
     }
   },
-  props: ['selectionType', 'source', 'id'],
+  props: {
+    selectionType: {
+      type: String,
+      default () {
+        return 'single'
+      }
+    },
+    source: String,
+    id: [String, Number]
+  },
+  // props: ['selectionType', 'source', 'id'],
   methods: {
     secondToTimeStr(seconds) {
       if (seconds) {

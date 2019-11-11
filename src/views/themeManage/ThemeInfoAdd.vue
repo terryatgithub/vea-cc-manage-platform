@@ -211,6 +211,7 @@ export default {
     }
   },
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.form
       if (form.themeId) {

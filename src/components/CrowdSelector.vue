@@ -37,13 +37,13 @@
             </div>
             <div v-else>
                 <el-cascader
-                    :options="crowd.cascadeItems"
-                    filterable
-                    :expandTrigger="'hover'"
-                    v-model="selectedCascaderCrowd"
-                    :disabled="crowd.cascadeItems.length === 0"
-                    :placeholder="crowd.cascadeItems.length > 0 ? '请选择' : '无人群数据'"
-                    change-on-select
+                  :options="crowd.cascadeItems"
+                  filterable
+                  :expandTrigger="'hover'"
+                  v-model="selectedCascaderCrowd"
+                  :disabled="crowd.cascadeItems.length === 0"
+                  :placeholder="crowd.cascadeItems.length > 0 ? '请选择' : '无人群数据'"
+                  change-on-select
                 ></el-cascader>
                 <el-button :disabled="!selectedCascaderCrowd" type="primary" @click="handleSelectCascadeCrowd">
                     确定
@@ -135,7 +135,7 @@ export default {
         childrenOf[id] = childrenOf[id] || []
         // init its children
         item[CHILDREN_KEY] = childrenOf[id]
-        if (parentId != 0) {
+        if (parentId !== 0) {
           // init its parent's children object
           childrenOf[parentId] = childrenOf[parentId] || []
           // push it into its parent's children object

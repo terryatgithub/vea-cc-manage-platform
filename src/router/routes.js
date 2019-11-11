@@ -16,9 +16,9 @@ import LayoutInfo from '../views/commonModule/LayoutInfoIndex'
 import CommonAlbumPanneleUser from '../views/commonResource/CommonAlbumPanneleUserIndex'
 import CommonPannelUser from '../views/commonResource/CommonPannelUserIndex'
 import CommonTabUser from '../views/commonResource/CommonTabUserIndex'
-import DataSync from '../views/dataSyncMgr/DataSyncIndex'
-import SlaveBizErrLog from '../views/dataSyncMgr/SlaveBizErrLogIndex'
-import SlaveSecondAudit from '../views/dataSyncMgr/SlaveSecondAuditIndex'
+// import DataSync from '../views/dataSyncMgr/DataSyncIndex'
+// import SlaveBizErrLog from '../views/dataSyncMgr/SlaveBizErrLogIndex'
+// import SlaveSecondAudit from '../views/dataSyncMgr/SlaveSecondAuditIndex'
 import ActDmpGroupInfo from '../views/dirCrowdManager/ActDmpGroupInfoIndex'
 import HomePageInfo from '../views/homePageManage/HomePageInfoIndex'
 import PolicyManage from '../views/homePageManage/PolicyManageIndex'
@@ -27,8 +27,8 @@ import BusinessTab from '../views/panelManage/BusinessTabIndex'
 import FilmDetailPage from '../views/panelManage/FilmDetailPageIndex'
 import TabInfo from '../views/tabInfo/TabInfoIndex'
 import VideoContent from '../views/resourceManage/VideoContentIndex'
-import AdminMasterControl from '../views/sysConfig/AdminMasterControlIndex'
-import DataDictionary from '../views/sysConfig/DataDictionaryIndex'
+// import AdminMasterControl from '../views/sysConfig/AdminMasterControlIndex'
+// import DataDictionary from '../views/sysConfig/DataDictionaryIndex'
 import DepartmentManage from '../views/sysConfig/DepartmentManageIndex'
 import RoleConfig from '../views/sysConfig/RoleConfigIndex'
 import SysLogLogin from '../views/sysConfig/SysLogLoginIndex'
@@ -48,8 +48,13 @@ import CrowdRel from '../views/crowdRel/Index.vue'
 import PanelRecommend from '../views/panelRecommend/PanelRecommendIndex.vue'
 import AssignVideoRecom from '../views/blockInfo/AssignVideoRecomIndex.vue'
 
+const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
+
 const Topic = () => import('../views/topic/Index')
 const TopicConfig = () => import('../views/topicConfig/Index')
+
+const PanelRecommendStat = () => import('../views/panelRecommend/PanelRecommendStat.vue')
+const PanelRecommendFeedback = () => import('../views/panelRecommend/PanelRecommendFeedback.vue')
 
 /** */
 const children = [
@@ -158,6 +163,15 @@ const children = [
 
           tagId: 'filmDetailPage'
         }
+      },
+      {
+        name: 'tabForceInsert',
+        path: '/tabInsertionTask',
+        component: TabInsertionTask,
+        meta: {
+          title: '版面强插任务',
+          tagId: 'tabForceInsert'
+        }
       }
     ]
   },
@@ -215,6 +229,24 @@ const children = [
         meta: {
           title: '版块推荐流管理',
           tagId: 'panelRecommend'
+        }
+      },
+      {
+        name: 'panelRecommendCoreData',
+        path: '/panelRecommendCoreData',
+        component: PanelRecommendStat,
+        meta: {
+          title: '个性化推荐核心指标',
+          tagId: 'panelRecommendCoreData'
+        }
+      },
+      {
+        name: 'panelRecommendFeedback',
+        path: '/panelRecommendFeedback',
+        component: PanelRecommendFeedback,
+        meta: {
+          title: '个性化推荐反馈',
+          tagId: 'panelRecommendFeedback'
         }
       }
     ]
@@ -361,12 +393,12 @@ const children = [
         }
       },
       {
-        name: 'assignVideoRecom',
-        path: '/assignVideoRecom/view.html',
+        name: 'mediaAutomation',
+        path: '/mediaAutomation/view.html',
         component: AssignVideoRecom,
         meta: {
           title: '指定影片推荐流',
-          tagId: 'assignVideoRecom'
+          tagId: 'mediaAutomation'
         }
       }
     ]

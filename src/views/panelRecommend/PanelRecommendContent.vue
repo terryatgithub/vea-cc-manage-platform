@@ -7,32 +7,32 @@
           <el-button v-if="mode === 'read'" type="primary" @click="mode = 'edit'">编辑</el-button>
         </div>
         <DataForm label-width="120px">
-          <DataString label="版块ID" 
-            v-model="panelRecommend.panelGroupId" 
+          <DataString label="版块ID"
+            v-model="panelRecommend.panelGroupId"
             :readonly="true" />
-          <DataString label="版块名称" 
-            v-model="panelRecommend.panelGroupName" 
+          <DataString label="版块名称"
+            v-model="panelRecommend.panelGroupName"
             :readonly="true" />
-          <DataEnum label="内容源" 
-            v-model="panelRecommend.source" 
-            :options="$consts.sourceOptions" 
+          <DataEnum label="内容源"
+            v-model="panelRecommend.source"
+            :options="$consts.sourceOptions"
             :readonly="true" />
           <DataAny label="允许推荐流设置">
             <div slot="edit" class="stream-sign-list">
-              <div 
+              <div
                 class="stream-sign-item"
-                v-for="(item, index) in recommendStreamSignOptions" 
+                v-for="(item, index) in recommendStreamSignOptions"
                 :key="index">
-                <el-checkbox 
+                <el-checkbox
                   :disabled="mode === 'read'"
                   @input="handleInputCategoryItem(item.value)"
-                  :value="panelRecommend.panelGroupCategory.indexOf(item.value) > -1" 
+                  :value="panelRecommend.panelGroupCategory.indexOf(item.value) > -1"
                   :label="item.label">
                 </el-checkbox>
-                <el-radio 
+                <el-radio
                   :disabled="mode === 'read'"
                   @click.native.prevent="handleInputLockItem(item.value)"
-                  :value="panelRecommend.recLockCategory.indexOf(item.value) > -1" 
+                  :value="panelRecommend.recLockCategory.indexOf(item.value) > -1"
                   :label="true">
                   锁定
                 </el-radio>
@@ -82,7 +82,7 @@ export default {
       if (panelGroupCategory.indexOf(category) === -1) {
         panelGroupCategory.push(category)
       } else {
-        panelRecommend.panelGroupCategory = panelGroupCategory.filter(item => item !== category )
+        panelRecommend.panelGroupCategory = panelGroupCategory.filter(item => item !== category)
       }
     },
     handleInputLockItem(category) {
@@ -92,7 +92,7 @@ export default {
       if (!isChecked) {
         recLockCategory.push(category)
       } else {
-        panelRecommend.recLockCategory = recLockCategory.filter(item => item !== category )
+        panelRecommend.recLockCategory = recLockCategory.filter(item => item !== category)
       }
     },
     getRecommendStreamSignOptions() {
@@ -123,7 +123,7 @@ export default {
         'flagRecommend']))
     },
     fetchData(version) {
-      this.$service.panelRecommendGetDetail({id: this.id})
+      this.$service.panelRecommendGetDetail({ id: this.id })
         .then(this.setPanelRecommend)
     },
     parseDataToApi(data) {
@@ -134,16 +134,18 @@ export default {
     },
     handleSave() {
       this.$service
-      .panelRecommendUpsert(this.parseDataToApi(this.panelRecommend))
-      .then(() => {
-        this.$emit('upsert-end')
-      })
+        .panelRecommendUpsert(this.parseDataToApi(this.panelRecommend))
+        .then(() => {
+          this.$emit('upsert-end')
+        })
     }
   },
   created() {
     this.mode = this.initMode
     this.fetchData(this.version)
-    this.getRecommendStreamSignOptions().then((result) => this.recommendStreamSignOptions = result)
+    this.getRecommendStreamSignOptions().then((result) => {
+      this.recommendStreamSignOptions = result
+    })
   }
 
 }

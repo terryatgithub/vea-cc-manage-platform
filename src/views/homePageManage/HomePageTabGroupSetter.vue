@@ -5,36 +5,47 @@
         class="cc-homepage-tab-group-setter"
         :title="title"
         @go-back="$emit('go-back')">
-          <div v-show="!readonly" class="actions" >
+        <div v-if="!readonly">
+          <div class="actions">
             <TabSelector
               ref="tabSelector"
               title="添加定向版面"
               @select-start="handleSelectTabStart"
-              @select-end="handleSelectTabEnd"
-            />
-            <el-button type="primary" @click="handleSave">
-              保存
-            </el-button>
+              @select-end="handleSelectTabEnd"/>
+            <el-button type="primary" @click="handleSave">保存</el-button>
           </div>
+          <DataForm>
+            <DataBoolean type="switch" label="是否固定位置" :value="tabIsFix" @input="handleInputTabIsFix"  />
+            <DataBoolean type="switch" label="是否初始化在首页分类" v-model="tabIsInitInCategory" />
+          </DataForm>
+        </div>
+
           <OrderableTable
             ref="tabTable"
             v-model="tabList"
             :header="tabTableHeader"
             :hide-action="true"
             :readonly="readonly"
+            order-text="人群优先级"
           />
-
-        <CrowdSelector
-            v-if="showCrowdSelector"
-            @select-cancel="handleSelectCrowdCancel"
-            @select-end="handleSelectCrowdEnd"
-        />
-
+          <CrowdSelector
+              v-if="showCrowdSelector"
+              @select-cancel="handleSelectCrowdCancel"
+              @select-end="handleSelectCrowdEnd"/>
       </ContentCard>
     </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'tab'">
+      <JDTabInfo
+        v-if="embedTab.tabType === 4"
+        :title-prefix="title"
+        :id="embedTab.id"
+        :version="embedTab.version"
+        :init-mode="embedTab.mode"
+        @upsert-end="handleTabEmbedBack"
+        @go-back="handleTabEmbedBack" />
       <TabInfo
+        v-else
         :title-prefix="title"
         :id="embedTab.id"
         :version="embedTab.version"
@@ -51,6 +62,7 @@ import PageContentWrapper from '@/components/PageContentWrapper'
 import TabSelector from '@/components/selectors/TabSelector.vue'
 import OrderableTable from '@/components/OrderableTable.vue'
 import TabInfo from '@/views/tabInfo/TabInfo'
+import JDTabInfo from '@/views/tabInfo/JDTabInfo'
 import CrowdSelector from '@/components/CrowdSelector.vue'
 import titleMixin from '@/mixins/title'
 import { cloneDeep } from 'lodash'
@@ -62,13 +74,16 @@ export default {
     TabSelector,
     OrderableTable,
     TabInfo,
+    JDTabInfo,
     CrowdSelector
   },
   data() {
     return {
       activePage: 'tab_group_setter',
-      resourceName: '版面管理',
+      resourceName: '位置设置',
       showCrowdSelector: false,
+      tabIsFix: 0,
+      tabIsInitInCategory: 0,
       tabList: [],
       embedTab: undefined,
       activeTabIndex: undefined
@@ -197,10 +212,9 @@ export default {
     }
   },
   props: {
-    tabs: {
-      type: Array,
+    tabInfo: {
       default() {
-        return []
+        return {}
       }
     },
     readonly: {
@@ -211,9 +225,28 @@ export default {
     }
   },
   methods: {
+    handleInputTabIsFix (val) {
+      if (val) {
+        this.$confirm('不让用户移除是非常损伤用户体验的功能，过频使用可能会导致客诉，请尊重用户慎用此功能', '提示')
+          .then(() => {
+            this.tabIsFix = val
+          })
+          .catch(() => {})
+      } else {
+        this.tabIsFix = val
+      }
+    },
     handleSave() {
       if (this.tabList.length > 0) {
-        this.$emit('set-end', this.tabList)
+        const tabInfo = {
+          tabIsFix: this.tabIsFix,
+          tabIsInitInCategory: this.tabIsInitInCategory,
+          tabList: this.tabList
+        }
+        if (this.tabIsFix) {
+          tabInfo.tabIsFocus = 0
+        }
+        this.$emit('set-end', tabInfo)
       } else {
         this.$message({
           type: 'error',
@@ -222,13 +255,19 @@ export default {
       }
     },
     handlePreviewTab(row, index) {
-      this.activePage = 'tab'
-      this.embedTab = {
-        index: index,
-        id: row.tabId,
-        version: row.currentVersion,
-        mode: 'read'
-      }
+      const tabId = row.tabId
+      this.$service.tabInfoGetBase({ id: tabId }).then(baseInfo => {
+        const tabType = baseInfo.tabType
+        const tabRemark = baseInfo.tabRemark
+        this.activePage = 'tab'
+        this.embedTab = {
+          index: index,
+          id: tabType === 4 ? tabRemark : tabId,
+          tabType: tabType,
+          version: row.currentVersion,
+          mode: 'read'
+        }
+      })
     },
     handleTabEmbedBack() {
       const { index, id } = this.embedTab
@@ -296,9 +335,14 @@ export default {
     }
   },
   created() {
-    this.tabList = cloneDeep(this.tabs)
+    const tabInfo = this.tabInfo
+    this.tabIsFix = tabInfo.tabIsFix || 0
+    this.tabIsInitInCategory = tabInfo.tabIsInitInCategory || 0
+    this.tabList = cloneDeep(this.tabInfo.tabList)
   }
 }
 </script>
-<style>
+<style lang="stylus" scoped>
+.actions
+  margin-bottom 20px
 </style>

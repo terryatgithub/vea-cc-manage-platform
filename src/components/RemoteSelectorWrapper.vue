@@ -34,44 +34,45 @@
           <div class="remote-selector-main__content">
             <slot name="item-list"></slot>
           </div>
-          <div class="remote-selector-main__footer">
-            <div class="remote-selector-main__pagination">
-              <slot name="pagination">
-                <el-pagination
-                    v-if="pagination"
-                    @size-change="handlePageSizeChange"
-                    @current-change="handlePageChange"
-                    :current-page="pagination.currentPage"
-                    :page-sizes="[15, 20, 30, 50, 100, 200]"
-                    :page-size="pagination.pageSize"
-                    layout="total, sizes, prev, pager, next, jumper"
-                    :total="pagination.total">
-                </el-pagination>
-              </slot>
+          <slot name="footer">
+            <div class="remote-selector-main__footer">
+              <div class="remote-selector-main__pagination">
+                <slot name="pagination">
+                  <el-pagination
+                      v-if="pagination"
+                      @size-change="handlePageSizeChange"
+                      @current-change="handlePageChange"
+                      :current-page="pagination.currentPage"
+                      :page-sizes="[15, 20, 30, 50, 100, 200]"
+                      :page-size="pagination.pageSize"
+                      layout="total, sizes, prev, pager, next, jumper"
+                      :total="pagination.total">
+                  </el-pagination>
+                </slot>
+              </div>
+              <div class="remote-selector-main__actions">
+                <slot name="actions">
+                    <Button type="primary" @click="handleSelectEnd" v-if="!hideSubmit">
+                      确定
+                    </Button>
+                    <Button @click="handleSelectCancel">
+                      取消
+                    </Button>
+                </slot>
+              </div>
             </div>
-            <div class="remote-selector-main__actions">
-              <slot name="actions">
-                  <Button type="primary" @click="handleSelectEnd" v-if="!hideSubmit">
-                    确定
-                  </Button>
-                  <Button @click="handleSelectCancel">
-                    取消
-                  </Button>
-              </slot>
-            </div>
-          </div>
+          </slot>
         </div>
       </slot>
     </Dialog>
   </div>
 </template>
 <script>
-import { Button, Tag, Dialog } from 'element-ui'
+import { Button, Dialog } from 'element-ui'
 export default {
   components: {
     Button,
-    Dialog,
-    Tag
+    Dialog
   },
   props: {
     title: {

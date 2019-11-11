@@ -112,9 +112,7 @@ export default {
       })
     },
     getEditData() {
-      let obj = this
       this.$service.userConfigEdit({ id: this.editId }).then(data => {
-        console.log(data)
         Object.keys(this.form).forEach(v => {
           if (v === 'disabled') {
             this.form[v] = data[v] + ''

@@ -6,6 +6,7 @@
     :selection-type="selectionType"
     :table="table"
     :pagination="pagination"
+    :select-end-on-dbl-click="true"
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
@@ -24,10 +25,8 @@
       <el-form-item label="专题名称">
         <el-input v-model="filter.title"/>
       </el-form-item>
-      <div style="text-align: center">
-        <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
-        <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
-      </div>
+      <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
+      <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
     </el-form>
   </BaseSelector>
 </template>
@@ -71,6 +70,7 @@ export default {
             render: (h, { row }) => {
               if (row.picture) {
                 return h('img', {
+                  key: row.picture,
                   attrs: {
                     src: row.picture,
                     width: '110px',

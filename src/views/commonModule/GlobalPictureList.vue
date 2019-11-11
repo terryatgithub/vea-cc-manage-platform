@@ -16,6 +16,7 @@
           @delete="handleDelete"
           @batch-audit="batchAudit"
         ></ButtonGroupForListPage>
+        <GlobalPictureBatchAudit @audit-end="fetchData" />
         <el-button type="primary" @click="handleAllRowSelectionChange(checkAll = !checkAll)">全选/全不选</el-button>
       </div>
       <CardList
@@ -28,7 +29,7 @@
         @row-selection-remove="handleRowSelectionRemove"
       >
         <div class="img-item" slot="row" slot-scope="{row: item}" @click.stop="handleRead(item)">
-          <img :src="item.pictureUrl" referrerpolicy="no-referrer" />
+          <img referrerpolicy="no-referrer" :key="item.pictureUrl" :src="item.pictureUrl" />
           <a class="img-preview" @click.stop="reviewPic(item)">预览</a>
           <div class="img-detail">
             <span>素材id：{{ item.pictureId }}</span>
@@ -46,7 +47,7 @@
     <!-- 预览图片 -->
     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="30%">
       <span class="pics">
-        <img :src="reviewPicUrl" alt="图片" max-width="500">
+        <img referrerpolicy="no-referrer" :src="reviewPicUrl" alt="图片" max-width="500">
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="picDialogVisible = false">取 消</el-button>
@@ -79,15 +80,15 @@
 <script>
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import GlobalPictureBatchAudit from '@/components/GlobalPictureBatchAudit'
+import { ContentWrapper, CardList } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
-import { CardList } from 'admin-toolkit'
 export default {
   extends: BaseList,
   components: {
-    Table,
     ContentWrapper,
     ButtonGroupForListPage,
+    GlobalPictureBatchAudit,
     CardList
   },
   data() {
@@ -141,11 +142,11 @@ export default {
             render: (createElement, { row }) => {
               return createElement('img', {
                 attrs: {
-                  src: row.pictureUrl,
                   width: '50px',
                   height: '50px',
                   class: 'imgs',
-                  'referrerpolicy': 'no-referrer'
+                  'referrerpolicy': 'no-referrer',
+                  src: row.pictureUrl
                 },
                 on: {
                   click: () => {
@@ -188,7 +189,7 @@ export default {
             prop: 'pictureStatus',
             width: '90',
             render: (createElement, { row }) => {
-              return this.$numToAuditStatus(row.pictureStatus)
+              return this.$const.statusText[row.pictureStatus]
             }
           },
           {
@@ -220,11 +221,16 @@ export default {
   },
   methods: {
     submitAudit() {
+      const auditForm = this.auditForm
+      const waiting = this.$consts.status.waiting
       this.$refs.auditForm.validate(valid => {
         if (valid) {
-          this.auditForm.idStr = this.selected.map(({ pictureId }) => pictureId).join(',')
+          auditForm.idStr = this.selected
+            .filter(item => item.pictureStatus === waiting)
+            .map(({ pictureId }) => pictureId)
+            .join(',')
           this.$service
-            .materialBatchAudit(this.auditForm, this.auditForm.auditFlag === '4' ? '审批成功' : '打回成功')
+            .materialBatchAudit(auditForm, auditForm.auditFlag === '4' ? '审批成功' : '打回成功')
             .then(data => {
               this.fetchData()
               this.auditDialogVisible = false
@@ -244,26 +250,12 @@ export default {
      */
     batchAudit() {
       if (this.selected.length === 0) {
-        this.$message('请选择再审批')
-        return
+        return this.$message.error('请选择再审批')
       }
-      let error = ''
-      this.status.forEach((item, index) => {
-        if (item === 4) {
-          if (error === '') {
-            error += 'ID=' + this.selected[index]
-          } else {
-            error += ','
-            error += 'ID=' + this.selected[index]
-          }
-        }
-      })
-      if (error !== '') {
-        this.$message({
-          type: 'error',
-          message: error + ' 已经审核通过了，不需要再审核'
-        })
-        return false
+      const waiting = this.$consts.status.waiting
+      const length = this.selected.filter(item => item.pictureStatus === waiting).length
+      if (length === 0) {
+        return this.$message.error('选中的素材里没有待审核素材')
       }
       this.auditForm = {
         idStr: null,
@@ -289,8 +281,6 @@ export default {
     },
     handleFilterReset() {
       this.filter = {
-        sort: undefined,
-        order: undefined
       }
       this.pagination.currentPage = 1
       this.fetchData()

@@ -51,7 +51,6 @@ import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import ContentCard from '@/components/ContentCard'
 import CommonContent from '@/components/CommonContent'
-import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import titleMixin from '@/mixins/title'
 import OrderableTable from '@/components/OrderableTable'
@@ -68,7 +67,6 @@ export default {
     PageContentWrapper,
     ContentCard,
     CommonContent,
-    GlobalPictureSelector,
     ResourceSelector,
     OrderableTable,
 
@@ -130,6 +128,7 @@ export default {
   },
   props: ['initMode', 'id', 'version'],
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const topic = this.topic
       if (topic.id) {

@@ -6,6 +6,7 @@
     :selection-type="selectionType"
     :table="table"
     :pagination="pagination"
+    :select-end-on-dbl-click="true"
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
@@ -112,6 +113,7 @@ export default {
             label: '海报',
             render: (h, { row }) => {
               return h('img', {
+                key: row.thumb,
                 attrs: {
                   src: row.thumb,
                   width: '50px',
@@ -143,7 +145,6 @@ export default {
             width: '200'
           }
         ],
-        selected: [],
         selectionType: 'single'
       }
     }

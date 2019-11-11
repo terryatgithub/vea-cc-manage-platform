@@ -1,5 +1,5 @@
 <template>
-  <PageWrapper class="tab-info-wrapper">
+  <PageWrapper ref="pageWrapper" class="tab-info-wrapper">
     <PageContentWrapper v-show="activePage === 'tab_info'">
       <ContentCard :title="title" @go-back="$emit('go-back')">
         <CommonContent
@@ -108,12 +108,11 @@
                   <cc-global-picture-selector
                     title="选择素材"
                     @select-end="handleSelectTitleIcon('imgOnBlur', $event)"
-                    picture-resolution="178*80"
-                  >
+                    picture-resolution="178*80">
                     <el-form-item class="tab-title-icon-wrapper" prop="imgOnBlur">
                       <template v-if="tabInfo.imgOnBlur">
                         <img :src="tabInfo.imgOnBlur">
-                        <i @click.native="tabInfo.imgOnBlur = ''" class="el-icon el-icon-close tab-title-icon__remove"></i>
+                        <i @click.stop="tabInfo.imgOnBlur = ''" class="el-icon el-icon-close tab-title-icon__remove"></i>
                       </template>
                       <div class="tab-title-icon__title">非落焦</div>
                     </el-form-item>
@@ -123,6 +122,31 @@
                 <el-form-item label="固定刷新时间" prop="timeCycle">
                   <InputMinute v-model="tabInfo.timeCycle" :min="5" :max="360" />
                   <span class="hint remarks">设置范围:5分钟-6小时</span>
+                </el-form-item>
+
+                <el-form-item v-if="canForceRefresh" label="强制刷新时间点" class="force-refresh-time-list">
+                  <el-form-item label="时间点1" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[0]"
+                      type="datetime"
+                      placeholder="选择日期时间">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="时间点2" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[1]"
+                      type="datetime"
+                      placeholder="选择日期时间">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="时间点3" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[2]"
+                      type="datetime"
+                      placeholder="选择日期时间">
+                    </el-date-picker>
+                  </el-form-item>
+                  <div class="hint remarks">强制刷新时会导致画面闪动，如无必要，请勿使用</div>
                 </el-form-item>
               </div>
 
@@ -146,7 +170,7 @@
                 </div>
                 <div class="chart-box">
                   <div class="chart-box--title">{{uvctrHourChartData.title}}</div>
-                  <VeLine :data="uvctrHourChartData" :legend-visible="false" :extend="uvctrHourChartExtend":settings="uvctrHourChartSettings"></VeLine>
+                  <VeLine :data="uvctrHourChartData" :legend-visible="false" :extend="uvctrHourChartExtend" :settings="uvctrHourChartSettings"></VeLine>
                 </div>
               </div>
               </div>
@@ -159,7 +183,7 @@
 
               <div :style="{display: isCollapseExtend ? 'none' : 'block'}">
                 <el-form-item label="版面属性" prop="tabType">
-                  <el-radio-group v-model="tabInfo.tabType" :disabled="isReplicate">
+                  <el-radio-group :value="tabInfo.tabType" @input="handleInputTabType" :disabled="isReplicate">
                     <el-radio
                       v-for="(item, key) in TAB_TYPES"
                       :key="key"
@@ -239,7 +263,7 @@
                     <Affix
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".el-main"
-                      style="width: 840px; display: inline-block;background: #fff; z-index: 1;"
+                      style="width: 725px; display: inline-block;background: #fff; z-index: 1;"
                       :offset="{ top: 128, bottom: 50 }"
                     >
                       <cc-panel-selector-el
@@ -280,8 +304,8 @@
                     @show-all-panel="handleShowAllPanels"
                     :panels="tabInfo.pannelList"
                     :panel-data="panelListIndexed"
-                    :width="840"
-                    :ratio="0.4"
+                    :width="725"
+                    :ratio="0.315"
                     :show-title="true"
                   />
                 </el-form-item>
@@ -371,13 +395,13 @@
 
               <div v-if="!tabInfo.hasSubTab"  :style="{display: isCollapseCustom ? 'none' : 'block'}">
                 <el-form-item label="启动版块个性化推荐">
-                  <el-switch 
-                    :value="!!tabInfo.panelRecommendConfig.enableRecommend" 
+                  <el-switch
+                    :value="!!tabInfo.panelRecommendConfig.enableRecommend"
                     @input="handleInputRecommendFlag" />
                 </el-form-item>
                 <div v-if="tabInfo.panelRecommendConfig.enableRecommend">
                   <el-form-item label="选择版块流" prop="panelRecommendConfig.recommendSign" :rules="[{required: true, message: '请选择版块流'}]">
-                    <RecommendStreamSignSelector 
+                    <RecommendStreamSignSelector
                       confirm="改变版块流将清空优先推荐版块，确认修改？"
                       :value="tabInfo.panelRecommendConfig.recommendSign"
                       @input="handleInputRecommendSign"/>
@@ -388,11 +412,11 @@
                     例: 选择 1， 则整个版面都是个性化推荐, 当前版块总数 {{ tabInfo.pannelList.length }}
                   </el-form-item>
                   <el-form-item label="优先推荐版块">
-                    <RecommendPanelSelector 
+                    <RecommendPanelSelector
                       :disabled="!tabInfo.panelRecommendConfig.recommendSign"
                       :title="tabInfo.panelRecommendConfig.recommendSign ? '选择版块' : '请先选择版块流'"
-                      :category="tabInfo.panelRecommendConfig.recommendSign" 
-                      :source="tabInfo.tabResource" 
+                      :category="tabInfo.panelRecommendConfig.recommendSign"
+                      :source="tabInfo.tabResource"
                       @select-end="handleSelectRecommendPanelEnd" />
 
                     <OrderableTable
@@ -479,8 +503,31 @@
                 </el-form-item>
 
                 <el-form-item label="固定刷新时间" prop="timeCycle">{{ parseMinToStr(tabInfo.timeCycle) }}</el-form-item>
+                <el-form-item v-if="canForceRefresh" label="强制刷新时间点" class="force-refresh-time-list">
+                  <el-form-item label="时间点1" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[0]"
+                      :disabled="true"
+                      type="datetime">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="时间点2" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[1]"
+                      :disabled="true"
+                      type="datetime">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="时间点3" label-width="80px">
+                    <el-date-picker
+                      v-model="tabInfo.refreshTimeList[2]"
+                      :disabled="true"
+                      type="datetime">
+                    </el-date-picker>
+                  </el-form-item>
+                </el-form-item>
               </div>
-              
+
               <div class="form-legend-header" @click="handleTabDataClick">
                 <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
@@ -492,18 +539,42 @@
               <div v-if="!isCollapseData">
                 <div class="chart-box">
                   <div class="chart-box--title">{{clickUvChartData.title}}</div>
-                  <VeLine :data="clickUvChartData" :legend-visible="false" :extend="clickUvChartExtend" :settings="clickUvChartSettings"></VeLine>
+                  <VeLine
+                    :data="clickUvChartData"
+                    :legend-visible="false"
+                    :extend="clickUvChartExtend"
+                    :settings="clickUvChartSettings"
+                    :mark-line="markLine"
+                    :mark-point="markPoint"
+                    >
+                  </VeLine>
                 </div>
                 <div class="chart-box">
                   <div class="chart-box--title">{{uvctrChartData.title}}</div>
-                  <VeLine :data="uvctrChartData" :legend-visible="false" :extend="uvctrChartExtend" :settings="uvctrChartSettings"></VeLine>
+                  <VeLine
+                    :data="uvctrChartData"
+                    :legend-visible="false"
+                    :extend="uvctrChartExtend"
+                    :settings="uvctrChartSettings"
+                    :mark-line="markLine"
+                    :mark-point="markPoint"
+                    >
+                  </VeLine>
                 </div>
                 <div class="chart-box">
                   <div class="chart-box--title">{{uvctrHourChartData.title}}</div>
-                  <VeLine :data="uvctrHourChartData" :legend-visible="false" :extend="uvctrHourChartExtend":settings="uvctrHourChartSettings"></VeLine>
+                  <VeLine
+                    :data="uvctrHourChartData"
+                    :legend-visible="false"
+                    :extend="uvctrHourChartExtend"
+                    :settings="uvctrHourChartSettings"
+                    :mark-line="markLine"
+                    :mark-point="markPoint"
+                    >
+                  </VeLine>
                 </div>
               </div>
-              
+
               <div class="form-legend-header" @click="isCollapseExtend = !isCollapseExtend">
                 <i v-if="isCollapseExtend" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
@@ -579,15 +650,15 @@
 
                 <el-form-item label="选择版块" v-if="tabInfo.hasSubTab === 0">
                   <div class="tab-info__virtual-tab-menu">
-                    <affix
+                    <Affix
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".el-main"
-                      style="width: 840px; display: inline-block;background: #fff; z-index: 1;"
+                      style="width: 725px; display: inline-block;background: #fff; z-index: 1;"
                       :offset="{ top: 128, bottom: 50 }"
                     >
                       <el-button @click="handleToggleAllPanel(false)">展开所有</el-button>
                       <el-button @click="handleToggleAllPanel(true)">收起所有</el-button>
-                    </affix>
+                    </Affix>
                   </div>
                   <cc-virtual-tab
                     class="tab-info__virtual-tab"
@@ -599,8 +670,8 @@
                     @uncollapse="handleChangeCollapseState"
                     @show-all-panel="handleShowAllPanels"
                     :read-only="true"
-                    :width="840"
-                    :ratio="0.4"
+                    :width="725"
+                    :ratio="0.315"
                     :show-title="true"
                   />
                 </el-form-item>
@@ -645,7 +716,6 @@
                   </el-form-item>
                 </template>
 
-
               </div>
 
               <div v-if="!tabInfo.hasSubTab"  class="form-legend-header" @click="isCollapseCustom = !isCollapseCustom">
@@ -660,7 +730,7 @@
                 </el-form-item>
                 <template v-if="tabInfo.panelRecommendConfig.enableRecommend">
                   <el-form-item label="选择版块流">
-                    <RecommendStreamSignSelector 
+                    <RecommendStreamSignSelector
                       :is-read="true"
                       confirm="改变版块流将清空优先推荐版块，确认修改？"
                       v-model="tabInfo.panelRecommendConfig.recommendSign" />
@@ -685,7 +755,17 @@
     </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'tab'">
+      <JDTabInfo
+        v-if="embedTab.tabType === 4"
+        :title-prefix="title"
+        :id="embedTab.id"
+        :version="embedTab.version"
+        :init-mode="embedTab.mode"
+        @upsert-end="handleTabEmbedBack"
+        @go-back="activePage = 'tab_info'"
+      />
       <TabInfo
+        v-else
         :title-prefix="title"
         :id="embedTab.id"
         :version="embedTab.version"
@@ -752,8 +832,7 @@
 
 <script>
 import { getAppIDByTabCategory } from '../../utlis/bizUtil'
-import { Table } from 'admin-toolkit'
-import Var from '@/components/Var'
+import JDTabInfo from './JDTabInfo'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import SourceRadioSelector from '@/components/SourceRadioSelector'
@@ -766,10 +845,8 @@ import AppIdSelector from '@/components/selectors/AppIdSelector'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import FloatWindowSelector from '@/components/selectors/FloatWindowSelector'
 import IconSelector from '@/components/selectors/IconSelector'
-import TimeSpinner from '@/components/TimeSpinner'
 import VirtualTab from '@/components/VirtualTab'
 import CrowdSelector from '@/components/CrowdSelector'
-import InputOrder from '@/components/InputOrder'
 import { Affix } from 'vue-affix'
 import titleMixin from '@/mixins/title'
 import OrderableTable from '@/components/OrderableTable'
@@ -780,13 +857,13 @@ import RecommendStreamSignSelector from '@/components/selectors/RecommendStreamS
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendPanelSelector from '@/components/selectors/RecommendPanelSelector'
 import VeLine from 'v-charts/lib/line.common'
+import 'echarts/lib/component/markLine'
+import 'echarts/lib/component/markPoint'
 
 export default {
   name: 'TabInfo',
   mixins: [titleMixin],
   components: {
-    'cc-var': Var,
-    'cc-table-el': Table,
     'cc-tab-selector-el': TabSelector,
     'cc-panel-selector-el': PanelSelector,
     'cc-business-type-selector': BusinessTypeSelector,
@@ -794,16 +871,14 @@ export default {
     'cc-global-picture-selector': GlobalPictureSelector,
     'cc-float-window-selector': FloatWindowSelector,
     'cc-icon-selector': IconSelector,
-    'cc-time-spinner': TimeSpinner,
     'cc-virtual-tab': VirtualTab,
     'cc-crowd-selector': CrowdSelector,
+    JDTabInfo,
     InputPositiveInt,
-    Table,
     CommonContent,
     Affix,
     ContentCard,
     SourceRadioSelector,
-    InputOrder,
     OrderableTable,
     PageWrapper,
     PageContentWrapper,
@@ -812,10 +887,29 @@ export default {
     InputMinute,
     RecommendStreamSignSelector,
     RecommendPanelSelector,
-    OrderableTable,
     VeLine
   },
   data() {
+    this.markLine = {
+      data: [
+        {
+          name: '平均线',
+          type: 'average'
+        }
+      ]
+    }
+    this.markPoint = {
+      data: [
+        {
+          name: '最大值',
+          type: 'max'
+        },
+        {
+          name: '最小值',
+          type: 'min'
+        }
+      ]
+    }
     const STATUS = {
       draft: 2,
       waiting: 3,
@@ -833,10 +927,10 @@ export default {
     }
     const extend = {
       grid: {
-        top: "2%",
-        left: "5%",
-        right: "5%",
-        bottom: "10%",
+        top: '10%',
+        left: '5%',
+        right: '5%',
+        bottom: '10%',
         containLabel: true
       },
       series: v => {
@@ -848,11 +942,10 @@ export default {
           rotate: 45,
           formatter: function(val) {
             let mark = val.indexOf('(')
-            if(mark === -1)
-            {
+            if (mark === -1) {
               return val
-            }else {
-              let version = val.slice(mark-val.length)
+            } else {
+              let version = val.slice(mark - val.length)
               let date = val.slice(0, mark)
               return [`{a|${version}}`, date].join('')
             }
@@ -862,7 +955,7 @@ export default {
           }
         }
       },
-      color: ['#1E90FF ','#2f4554'],
+      color: ['#1E90FF ', '#2f4554']
     }
     this.clickUvChartSettings = {
       labelMap: {
@@ -919,6 +1012,7 @@ export default {
       uvctrHourChartExtend: Object.assign({}, extend),
       mode: 'create',
       activePage: 'tab_info',
+      scrollTop: 0,
       panelPreview: {
         panel: null,
         id: undefined,
@@ -1004,6 +1098,7 @@ export default {
         flagIsRecord: 0,
         isTiming: 0,
         releaseTime: undefined,
+        refreshTimeList: [undefined, undefined, undefined],
         tabExtArr: {},
         pannelList: [],
         tabList: [],
@@ -1027,13 +1122,13 @@ export default {
 
         // 个性化推荐
         panelRecommendConfig: {
-          // 是	Integer	启动推荐，状态:1为开启,0为关闭
+          // 是 Integer 启动推荐，状态:1为开启,0为关闭
           enableRecommend: 0,
-          // 是	String	版块推荐流 recommendStreamSign-推荐流标记-数据字典 dictCnName
+          // 是 String 版块推荐流 recommendStreamSign-推荐流标记-数据字典 dictCnName
           recommendSign: '',
-          // 是	Integer	开始推荐的位置，默认4,前3屏运营配置，保证质量
+          // 是 Integer 开始推荐的位置，默认4,前3屏运营配置，保证质量
           recommendIndex: undefined,
-          // 否	List	优先推荐的版块列表信息
+          // 否 List 优先推荐的版块列表信息
           panelInfoList: []
         }
       },
@@ -1096,7 +1191,7 @@ export default {
         {
           label: '版块名称',
           prop: 'pannelName'
-        },
+        }
         // {
         //   label: '生效',
         //   render: (h, {row}) => {
@@ -1113,8 +1208,9 @@ export default {
   computed: {
     resourceInfo() {
       const tabInfo = this.tabInfo
+      let result
       if (tabInfo.tabId) {
-        return {
+        result = {
           id: tabInfo.tabId,
           version: tabInfo.currentVersion,
           status: tabInfo.tabStatus,
@@ -1122,6 +1218,7 @@ export default {
           menuElId: 'tabInfo'
         }
       }
+      return result
     },
     floatWindowParams() {
       const sourceMap = {
@@ -1160,34 +1257,47 @@ export default {
     },
     showSystemDefault() {
       const tabCategory = this.tabInfo.tabCategory
-      return tabCategory == 60 || tabCategory == 61 || tabCategory == 66
+      // eslint-disable-next-line
+      return tabCategory === 60 || tabCategory === 61 || tabCategory === 66
     },
     hasSource() {
       const tabCategory = this.tabInfo.tabCategory
+      // eslint-disable-next-line
       return tabCategory == 67 || tabCategory == 31
     },
     disableAppId() {
-      return +getAppIDByTabCategory(this.tabInfo.tabCategory) != -1
+      return +getAppIDByTabCategory(this.tabInfo.tabCategory) !== -1
     },
     couldSetReleaseTime() {
       const mode = this.mode
       const currentVersion = this.tabInfo.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
       const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
-      const isCoocaa = this.$consts.idPrefix == '10'
+      const isCoocaa = this.$consts.idPrefix === '10'
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
+    },
+    canForceRefresh () {
+      const tabInfo = this.tabInfo
+      const isSpecTab = tabInfo.tabType === 2
+      return !isSpecTab
     }
   },
   watch: {
     'tabInfo.tabResource': 'getVipButtonSource'
   },
   methods: {
+    handleInputTabType (val) {
+      if (val === 2) {
+        this.tabInfo.refreshTimeList = []
+      }
+      this.tabInfo.tabType = val
+    },
     toPercent: decimal => {
-      return (Math.round(decimal * 10000) / 100.00 + "%")
+      return (Math.round(decimal * 10000) / 100.00 + '%')
     },
     toArrowPercent (decimal) {
       const rs = this.toPercent(Math.abs(decimal))
-      return rs + (decimal>0 ? ' ↑' : ' ↓')
+      return rs + (decimal > 0 ? ' ↑' : ' ↓')
     },
     parseMinToStr(min) {
       const hours = Math.floor(min / 60)
@@ -1196,25 +1306,10 @@ export default {
       const minsStr = mins > 9 ? '' + mins : '0' + mins
       return hoursStr + ':' + minsStr
     },
-    openPannelWin(pannelType) {
-      const FastDevTool = this.FastDevTool
-      const url = basicFn.numToPannelTypeUrl(pannelType) + '/add.html'
-      FastDevTool.createDialogWin('add-view', {
-        confirmInfo: true,
-        fit: true,
-        iconCls: 'icon-edit',
-        minimizable: false,
-        maximizable: true,
-        title: '版块页面',
-        content: FastDevTool.createIframe(url)
-      })
-    },
     handleDragStart() {
-      setTimeout(
-        function() {
-          this.isPanelDragging = true
-        }.bind(this)
-      )
+      setTimeout(() => {
+        this.isPanelDragging = true
+      })
     },
     handleDragEnd() {
       setTimeout(
@@ -1257,6 +1352,12 @@ export default {
             isCollapse: panelItem.isCollapse
           })
           this.updateDuplicates()
+          this.$sendEvent({
+            type: 'create_panel_dmp',
+            payload: {
+              tab_id: this.tabInfo.tabId || 'new'
+            }
+          })
         }
         this.selectCrowdForIndex = index
         this.handleSelectCrowdStart()
@@ -1285,7 +1386,7 @@ export default {
           // 不分源
           tabInfo.tabResource = ''
         }
-        if (!(tabCategory == 60 || tabCategory == 61 || tabCategory == 66)) {
+        if (!(tabCategory === 60 || tabCategory === 61 || tabCategory === 66)) {
           tabInfo.systemDefault = 0
         }
         tabInfo.tabAppid = +getAppIDByTabCategory(tabCategory)
@@ -1327,18 +1428,6 @@ export default {
             });
             */
     },
-    openPannelWin: function(pannelType) {
-      var url = this.basicFn.numToPannelTypeUrl(pannelType) + '/add.html'
-      this.FastDevTool.createDialogWin('add-view', {
-        confirmInfo: true,
-        fit: true,
-        iconCls: 'icon-edit',
-        minimizable: false,
-        maximizable: true,
-        title: '版块页面',
-        content: this.FastDevTool.createIframe(url)
-      })
-    },
     handlePreviewPanel(panel) {
       const row = this.panelListIndexed[panel.panelId]
       const version = row.duplicateVersion || row.currentVersion
@@ -1373,7 +1462,6 @@ export default {
       const panelStatus = panelData.pannelStatus
       const STATUS = this.STATUS
 
-      const version = panelData.duplicateVersion || panelData.currentVersion
       const isJiangSu = idPrefix === '11'
       const panelPreview = {
         panel: panelData,
@@ -1807,15 +1895,12 @@ export default {
     },
     getPanelBlocks(panel) {
       const parentType = panel.parentType
-      const contentList = panel.contentList
-      const layoutJson = JSON.parse(panel.layoutInfo.layoutJson)
+      const layoutJson = JSON.parse(panel.layoutInfo.layoutJson8)
       const type = layoutJson.type
       const blocks = layoutJson.contents
       const originBlockCount = blocks.length
       const blockCount = blocks.length
 
-      const currentPannelIndex = 0
-      const currentPannel = panel
       const selectedResources = panel.contentList
 
       const lastBlock = blocks[originBlockCount - 1]
@@ -1828,7 +1913,6 @@ export default {
         if (type === 'Expander' && originBlockCount === 2) {
           const space = layoutJson.extra.space
           return function(n) {
-            const index = n % originBlockCount
             // 复制第 2 个推荐位
             const targetBlock = blocks[1]
             const resize = targetBlock.resize
@@ -2084,7 +2168,7 @@ export default {
     },
     handleTabEmbedBack() {
       this.activePage = 'tab_info'
-      const { index, id, version, mode } = this.embedTab
+      const { index, id } = this.embedTab
       if (index !== undefined) {
         this.$service.tabInfoList({ tabId: id }).then(data => {
           Object.assign(this.tabInfo.tabList[index], data.rows[0])
@@ -2093,13 +2177,20 @@ export default {
       this.embedTab = undefined
     },
     handlePreviewTab(row, version, index) {
-      this.activePage = 'tab'
-      this.embedTab = {
-        index: index,
-        id: row.tabId,
-        version: version,
-        mode: 'read'
-      }
+      const tabId = row.tabId
+      this.$service.tabInfoGetBase({ id: tabId }).then(baseInfo => {
+        const tabType = baseInfo.tabType
+        const tabRemark = baseInfo.tabRemark
+        this.activePage = 'tab'
+        this.embedTab = {
+          index: index,
+          // 第三方版面
+          id: tabType === 4 ? tabRemark : tabId,
+          version: version,
+          tabType: tabType,
+          mode: 'read'
+        }
+      })
     },
     handleShowTimeShelf() {
       const data = this.getFormData()
@@ -2184,7 +2275,7 @@ export default {
     validateFormData(data, cb) {
       const STATUS = this.STATUS
       const tabStatus = data.tabStatus
-      const enableRecommend = data.panelRecommendConfig.enableRecommend 
+      const enableRecommend = data.panelRecommendConfig.enableRecommend
       const showError = function(message) {
         this.$message({
           type: 'error',
@@ -2223,7 +2314,7 @@ export default {
             showError('请把表单填写完整')
           } else {
             // 如果是普通版面，并且是二级版面
-            if (data.tabType == 1 && data.hasSubTab === 1) {
+            if (data.tabType === 1 && data.hasSubTab === 1) {
               if (data.tabList.length === 0) {
                 error = '请选择二级版面'
               }
@@ -2232,6 +2323,7 @@ export default {
             } else {
               // 检查重复版块
               const panelList = data.pannelList
+              // eslint-disable-next-line
               checkPanelDuplicated: for (
                 let i = 0, length = panelList.length;
                 i < length;
@@ -2241,6 +2333,7 @@ export default {
                 if (item.type === 'NORMAL') {
                   if (item.panel.isDuplicate) {
                     error = '含有重复版块'
+                    // eslint-disable-next-line
                     break checkPanelDuplicated
                   }
                 } else {
@@ -2252,6 +2345,7 @@ export default {
                   ) {
                     if (crowdPanels[j].isDuplicate) {
                       error = '含有重复版块'
+                      // eslint-disable-next-line
                       break checkPanelDuplicated
                     }
                   }
@@ -2270,10 +2364,16 @@ export default {
 
             const panelRecommendConfig = data.panelRecommendConfig
             const panelListLength = data.pannelList.length
-            if (panelRecommendConfig.enableRecommend && 
+            if (panelRecommendConfig.enableRecommend &&
                 panelRecommendConfig.recommendIndex > panelListLength
             ) {
               error = `推荐开始位置不能大于版面的版块数, 当前版块总数 ${panelListLength}`
+            }
+            // 时间点是否重复
+            const refreshTimeList = data.refreshTimeList.filter(item => item)
+            const refreshTimeSet = new Set(refreshTimeList)
+            if (refreshTimeList.length > refreshTimeSet.size) {
+              error = '强制刷新时间点不能重复'
             }
 
             if (error) {
@@ -2287,6 +2387,8 @@ export default {
     },
 
     parseTabInfo(tabInfo) {
+      const refreshTimeList = tabInfo.refreshTimeList.filter(item => item).map(item => +new Date(item))
+
       let panelInfoList = []
       {
         const panelList = tabInfo.pannelList
@@ -2349,6 +2451,7 @@ export default {
       }
 
       let tabParams = {}
+      // eslint-disable-next-line
       {
         tabParams = JSON.stringify(tabParams)
       }
@@ -2382,7 +2485,7 @@ export default {
             panelRecommendConfig: index,
             pannelGroupId: item.pannelGroupId
           }
-        }) 
+        })
       } else {
         panelRecommendConfig = {
           enableRecommend: 0,
@@ -2401,6 +2504,7 @@ export default {
         panelInfoList: panelInfoList,
         pictureName: tabInfo.pictureName,
         releaseTime: tabInfo.releaseTime,
+        refreshTimeList: refreshTimeList,
         systemDefault: tabInfo.systemDefault || 0,
         systemPluginList: systemPluginList,
         tabAppid: tabInfo.tabAppid,
@@ -2419,7 +2523,7 @@ export default {
         tabTitleIcons: tabTitleIcons,
         tabType: tabInfo.tabType,
         timeCycle: tabInfo.timeCycle,
-        panelRecommendConfig 
+        panelRecommendConfig
       }
       return data
     },
@@ -2427,7 +2531,6 @@ export default {
       const tabInfo = this.tabInfo
       const tabTitleIcons = JSON.parse(data.tabTitleIcons || '{}')
       const tabExtArr = data.tabExtArr || data.tabExtArrEntity || {}
-      const tabParams = JSON.parse(data.tabParams || '{}')
 
       let activityFloatWindow
       const systemPluginList = data.systemPluginList || []
@@ -2492,7 +2595,14 @@ export default {
         )
       }
 
-      const panelRecommendConfig = data.panelRecommendConfig 
+      const originRefreshTimeList = data.refreshTimeList || []
+      const refreshTimeList = Array.apply(null, { length: 3 }).map((item, i) => {
+        const originTime = originRefreshTimeList[i]
+        if (originTime) {
+          return new Date(originTime)
+        }
+      })
+      const panelRecommendConfig = data.panelRecommendConfig
         ? data.panelRecommendConfig
         : tabInfo.panelRecommendConfig
       panelRecommendConfig.panelInfoList = panelRecommendConfig.panelInfoList || []
@@ -2521,6 +2631,7 @@ export default {
         flagIsRecord: data.flagIsRecord,
         isTiming: data.isTiming,
         releaseTime: data.releaseTime,
+        refreshTimeList,
         pannelList: pannelList,
         tabList: data.tabList,
 
@@ -2538,7 +2649,7 @@ export default {
         imgOnFocus: tabTitleIcons.focus_img_url,
         imgOnSelected: tabTitleIcons.selected_img_url,
         vipButtonSourceId: tabExtArr.vipButtonSourceId,
-        panelRecommendConfig: panelRecommendConfig 
+        panelRecommendConfig: panelRecommendConfig
       })
 
       this.updateDuplicates()
@@ -2560,6 +2671,7 @@ export default {
 <<<<<<< Updated upstream
         const tabUVCTR = data.rows[0].data[0] ? data.rows[0].data[0].uvctr : 'N/A'
         this.tabUVCTR = tabUVCTR
+<<<<<<< HEAD
         tabUVCTR.dailyGrowth ? this.tabUVCTRPercent.dailyGrowth = this.toArrowPercent(tabUVCTR.dailyGrowth) : 'N/A'
         tabUVCTR.weeklyGrowth ? this.tabUVCTRPercent.weeklyGrowth = this.toArrowPercent(tabUVCTR.weeklyGrowth) : 'N/A'
 =======
@@ -2567,6 +2679,10 @@ export default {
         this.UVCTR = Object.assign({}, tabUVCTR)
         console.log('tab', this.tabUVCTR);
 >>>>>>> Stashed changes
+=======
+        this.tabUVCTRPercent.dailyGrowth = tabUVCTR.dailyGrowth ? this.toArrowPercent(tabUVCTR.dailyGrowth) : 'N/A'
+        this.tabUVCTRPercent.weeklyGrowth = tabUVCTR.weeklyGrowth ? this.toArrowPercent(tabUVCTR.weeklyGrowth) : 'N/A'
+>>>>>>> c0e0f4e477b04273e9cf7676c0733b67a5b2911c
       })
     },
     getVipButtonSourceItem(id) {
@@ -2617,7 +2733,7 @@ export default {
       this.recommendStreamSignPanelCount = '-'
       if (recommendSign) {
         this.$service.panelRecommendList({
-          source: tabInfo.tabResource, 
+          source: tabInfo.tabResource,
           panelGroupCategory: recommendSign
         }).then((data) => {
           this.recommendStreamSignPanelCount = data.total
@@ -2642,7 +2758,7 @@ export default {
     // 点击版面数据展示折线图
     handleTabDataClick() {
       this.isCollapseData = !this.isCollapseData
-      if(this.clickUvChartData.title !== '') {
+      if (this.clickUvChartData.title !== '') {
         return
       }
       this.$service.getTabChartData({ id: this.id }).then(data => {
@@ -2666,6 +2782,12 @@ export default {
     if (this.id) {
       this.fetchData(this.version)
       this.getSimpleBrowseData()
+      this.$sendEvent({
+        type: 'tab_show',
+        payload: {
+          tab_id: this.id
+        }
+      })
     }
     this.getVipButtonSource()
     this.equipChartStyle()
@@ -2745,4 +2867,8 @@ export default {
   color: red
 .data-down
   color: #00AA00
+.force-refresh-time-list
+  >>> .el-form-item
+    margin-bottom 0
+    display inline-block
 </style>

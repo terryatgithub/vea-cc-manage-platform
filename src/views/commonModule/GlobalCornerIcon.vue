@@ -86,11 +86,11 @@
                 <el-button
                   :disabled="mode === 'edit' && fileInfo.length >=1"
                   type="primary"
-                  plain
                   class="upload-pic-list__add"
                   @click="$refs.upload.handleSelectFile()">
                   点击选择图片
                 </el-button>
+                <el-button @click="showPicTypeSelector=true"   type="primary" plain>批量设置分类</el-button>
               </template>
             </Upload>
           </el-form>
@@ -116,6 +116,19 @@
             </el-form-item>
           </el-form>
         </div>
+
+        <el-dialog
+          class="global-pic-type-selector"
+          title="选择素材类型"
+          size="tiny"
+          :visible.sync="showPicTypeSelector">
+          <el-tag
+            v-for="(item, index) in  attributes"
+            :key="index"
+            @click.native="handleBatchSetPicType(item)">
+            {{ item.typeName }}
+          </el-tag>
+        </el-dialog>
       </CommonContent>
     </ContentCard>
 </template>
@@ -134,6 +147,7 @@ export default {
     return {
       mode: 'create',
       resourceName: '角标',
+      showPicTypeSelector: false,
       fileInfo: [],
       attributes: [], // 角标分类
       attributesIndexed: [],
@@ -150,6 +164,7 @@ export default {
   },
   props: ['initMode', 'id'],
   computed: {
+    // eslint-disable-next-line
     resourceInfo() {
       const form = this.fileInfo[0]
       if (form && form.cornerIconId) {
@@ -178,7 +193,6 @@ export default {
       })
     },
     getFormData() {
-      const attributesIndexed = this.attributesIndexed
       const data = this.getUploadedFiles().map(item => {
         return {
           cornerIconId: this.id,
@@ -214,7 +228,7 @@ export default {
                 type: 'error',
                 message: '最少要上传一个角标素材，才能保存'
               })
-              cb(true)
+              cb(Error())
             } else {
               cb()
             }
@@ -223,7 +237,7 @@ export default {
               type: 'error',
               message: '请把表单填写完整'
             })
-            cb(true)
+            cb(Error())
           }
         }.bind(this)
       )
@@ -249,7 +263,7 @@ export default {
               typeId: undefined
             },
             cornerIconName: undefined,
-            attributeCode: undefined, // 角标分类
+            attributeCode: '0', // 角标分类
             imgUrl: undefined,
             pictureType: undefined // 上传图片格式
           }
@@ -265,6 +279,7 @@ export default {
               }
             })
             .then(data => {
+              // eslint-disable-next-line
               if (data.code == 0) {
                 const uploadResult = data.data[0]
                 fileInfo.cornerIconName = uploadResult.originFileName
@@ -288,6 +303,13 @@ export default {
       this.fileInfo = this.fileInfo.filter(function(item, i) {
         return i !== index
       })
+    },
+    handleBatchSetPicType(type) {
+      const typeId = type.typeId
+      this.fileInfo.forEach(function(item) {
+        item.typeRls.typeId = typeId
+      })
+      this.showPicTypeSelector = false
     }
   },
   created() {

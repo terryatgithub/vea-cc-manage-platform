@@ -305,7 +305,10 @@ export default {
           // 数组对象去重
           const obj = {}
           this.allData = this.allData.reduce(function(item, next) {
-            obj[next.runId] ? '' : (obj[next.runId] = true && item.push(next))
+            if (!obj[next.runId]) {
+              obj[next.runId] = true
+              item.push(next)
+            }
             return item
           }, []) // 全部数据
           for (let i = 0; i < this.allData.length; i++) {
@@ -318,7 +321,7 @@ export default {
             rightData.push(this.data2[j].runId)
           }
           for (let k = 0; k < rightData.length; k++) {
-            if (rightData1.indexOf(rightData[k]) == -1) {
+            if (rightData1.indexOf(rightData[k]) === -1) {
               rightData1.push(rightData[k])
             }
           }
@@ -334,7 +337,7 @@ export default {
       var str = []
       // 去重
       for (var i = 0; i < value.length; i++) {
-        if (str.indexOf(value[i]) == -1) {
+        if (str.indexOf(value[i]) === -1) {
           str.push(value[i])
         }
       }

@@ -6,6 +6,7 @@
     :selection-type="selectionType"
     :table="table"
     :pagination="pagination"
+    :select-end-on-dbl-click="true"
     @pagination-change="fetchData"
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
@@ -38,7 +39,6 @@
 </template>
 
 <script>
-import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
 import ResourceSelector from './ResourceSelector'

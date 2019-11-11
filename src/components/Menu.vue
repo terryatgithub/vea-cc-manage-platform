@@ -10,14 +10,15 @@
   >
     <template v-for="(item, index) in items">
       <el-submenu v-if="item.children" :key="index"  :index="index + ''">
-        <template slot="title">
+        <div @click="handleClickMenu(item.title)" slot="title">
           <i v-if="item.icon" :class="item.icon"></i>
           <span>{{ item.title }}</span>
-        </template>
+        </div>
 
         <template v-for="(child, idx) in item.children">
           <el-menu-item
             v-if="typeof(child.children)=== 'undefined'"
+            @click="handleClickMenu(child.title)"
             :key="idx"
             :index="child.route"
           >
@@ -25,12 +26,12 @@
             <span slot="title">{{ child.title }}</span>
           </el-menu-item>
           <el-submenu v-else :key="idx" :index="index +'_'+idx">
-            <template slot="title">
+            <div @click="handleClickMenu(child.title)" slot="title">
               <i v-if="child.icon" :class="child.icon"></i>
               <span>{{ child.title }}</span>
-            </template>
+            </div>
             <template v-for="(c,n) in child.children">
-              <el-menu-item :key="n" :index="c.route">
+              <el-menu-item @click="handleClickMenu(c.title)" :key="n" :index="c.route">
                 <i v-if="c.icon" :class="c.icon"></i>
                 <span slot="title">{{c.title}}</span>
               </el-menu-item>
@@ -38,7 +39,7 @@
           </el-submenu>
         </template>
       </el-submenu>
-      <el-menu-item v-else :key="index" :index="item.route">
+      <el-menu-item  v-else @click="handleClickMenu(item.title)" :key="index" :index="item.route">
         <i v-if="item.icon" :class="item.icon"></i>
         <span slot="title">{{ item.title }}</span>
       </el-menu-item>
@@ -80,6 +81,14 @@ export default {
       }
       walk(items)
       this.itemsIndexed = index
+    },
+    handleClickMenu(name) {
+      this.$sendEvent({
+        type: 'menu_click',
+        payload: {
+          menu_name: name
+        }
+      })
     }
   },
   created() {

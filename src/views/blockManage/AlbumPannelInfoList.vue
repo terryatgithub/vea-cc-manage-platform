@@ -61,7 +61,6 @@ export default {
       pagination: {
         currentPage: 1
       },
-      businessType: {},
       table: {
         props: {},
         data: [],
@@ -358,7 +357,7 @@ export default {
         resetText: '重置'
       }
     })
-    if (this.$consts.idPrefix != '10') {
+    if (this.$consts.idPrefix !== '10') {
       filterSchema.map({
         idPrefix: _.o.enum({
           '酷开': '10',
