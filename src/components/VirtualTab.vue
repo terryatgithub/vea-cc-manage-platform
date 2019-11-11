@@ -265,6 +265,110 @@ export default {
     PanelStatisticTable
   },
   data() {
+    this.table = {
+      props: {
+        border: true,
+        size: 'small',
+        'row-style': () => {return "height: 20px"},
+        'cell-style': () => {return "padding: 0"} ,
+        'header-cell-style': () => {return "padding: 0" }
+      },
+      header: [
+        {
+          label: '',
+          prop: 'date',
+          width: 35
+        },
+        {
+          label: '曝光UV',
+          prop: 'exposureUV',
+          width: 70
+        },
+        {
+          label: '环比',
+          prop: 'dailyGrowth',
+          width: 70
+        },
+        {
+          label: '同比',
+          prop: 'weeklyGrowth',
+          width: 70
+        }
+      ],
+      data: [
+        {
+          date: '27',
+          exposureUV: '178123',
+          dailyGrowth: '13.3%',
+          weeklyGrowth: '13.3%'
+        },
+        {
+          date: '28',
+          exposureUV: '178123',
+          dailyGrowth: '13.3%',
+          weeklyGrowth: '13.3%'
+        },
+        {
+          date: '29',
+          exposureUV: '178123',
+          dailyGrowth: '13.3%',
+          weeklyGrowth: '13.3%'
+        }
+      ],
+      selectionType: 'none'
+    }
+    this.table2 = {
+      props: {
+        border: true,
+        size: 'small',
+        'row-style': () => {return "height: 20px"},
+        'cell-style': () => {return "padding: 0"} ,
+        'header-cell-style': () => {return "padding: 0" }
+      },
+      header: [
+        {
+          label: '',
+          prop: 'date',
+          width: 35
+        },
+        {
+          label: 'UVCTR',
+          prop: 'UVCTR',
+          width: 70
+        },
+        {
+          label: '环比',
+          prop: 'dailyGrowth',
+          width: 70
+        },
+        {
+          label: '同比',
+          prop: 'weeklyGrowth',
+          width: 70
+        }
+      ],
+      data: [
+        {
+          date: '27',
+          UVCTR: '178123',
+          dailyGrowth: '13.3%',
+          weeklyGrowth: '13.3%'
+        },
+        {
+          date: '28',
+          UVCTR: '178123',
+          dailyGrowth: '13.3%',
+          weeklyGrowth: '13.3%'
+        },
+        {
+          date: '29',
+          UVCTR: '178123',
+          dailyGrowth: '13.3%',
+          weeklyGrowth: '13.3%'
+        }
+      ],
+      selectionType: 'none'
+    }
     return {
       isDragging: false,
       draggingIndex: undefined,
