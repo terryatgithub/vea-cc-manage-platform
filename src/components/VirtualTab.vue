@@ -269,9 +269,9 @@ export default {
       props: {
         border: true,
         size: 'small',
-        'row-style': () => {return "height: 20px"},
-        'cell-style': () => {return "padding: 0"} ,
-        'header-cell-style': () => {return "padding: 0" }
+        'row-style': () => { return 'height: 20px' },
+        'cell-style': () => { return 'padding: 0' },
+        'header-cell-style': () => { return 'padding: 0' }
       },
       header: [
         {
@@ -321,9 +321,9 @@ export default {
       props: {
         border: true,
         size: 'small',
-        'row-style': () => {return "height: 20px"},
-        'cell-style': () => {return "padding: 0"} ,
-        'header-cell-style': () => {return "padding: 0" }
+        'row-style': () => { return 'height: 20px' },
+        'cell-style': () => { return 'padding: 0' },
+        'header-cell-style': () => { return 'padding: 0' }
       },
       header: [
         {
