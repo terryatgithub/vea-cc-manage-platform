@@ -87,16 +87,18 @@ export default {
           },
           {
             label: '数据表现',
-            width: 100,
+            width: 250,
             render: (h, { row }) => {
-              return h(
-                'el-button',
-                {
+              return h('div', [
+                h('el-button', {
                   props: { type: 'text' },
                   on: { click: this.handleClickDataShow(row) }
-                },
-                '看数据'
-              )
+                }, '看数据'),
+                h('el-button', {
+                  props: { type: 'text' },
+                  on: { click: this.handleClickDataShow(row) }
+                }, '看实时数据')
+              ])
             }
           },
           {
