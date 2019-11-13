@@ -2331,7 +2331,8 @@ export default {
       })
     },
     // 点击看数据、dmp按钮
-    handleAnalyzeData (type, index, pannelListIndex) { // pannelListIndex对group有效
+    handleAnalyzeData (type, e, pannelListIndex) { // pannelListIndex对group有效
+      const index = e.index
       this.analyzeBtnCurrentIndex = undefined
       const { pannel } = this
       if (pannel.parentType === 'group') {

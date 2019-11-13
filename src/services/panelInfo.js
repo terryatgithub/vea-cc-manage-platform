@@ -179,3 +179,11 @@ export function getVideoChartData(params) {
     params
   })
 }
+
+export function getVideoDmpChartData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/videoDmp/getChartData.html',
+    params
+  })
+}

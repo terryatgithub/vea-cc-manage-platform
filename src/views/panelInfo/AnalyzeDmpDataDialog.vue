@@ -8,6 +8,32 @@
       @open="fetchData"
       @close="$emit('update:show', false)"
     >
+      <el-form :inline="true" class="filter-form">
+        <el-form-item label="推荐位标题">
+          <el-select v-model="filter.title" filterable clearable>
+            <el-option
+              v-for="(title, index) in allTitles"
+              :key="index"
+              :label="title"
+              :value="title"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="人群">
+          <el-select v-model="filter.crowd" filterable clearable>
+            <el-option
+              v-for="(title, index) in allCrowd"
+              :key="index"
+              :label="title"
+              :value="title"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="fetchData">查询</el-button>
+        </el-form-item>
+      </el-form>
+
       <el-radio-group v-model="uvClickTab" class="tab--container" @change="fetchData">
         <el-radio-button label="dailyClickUv" class="tab--item">点击UV(天)对比</el-radio-button>
         <el-radio-button label="dailyUvctr" class="tab--item">点击UVCTR(天)对比</el-radio-button>
@@ -108,7 +134,13 @@ export default {
       chartDataArr: [],
       uvClickTab: 'dailyClickUv',
       extraVisible: false,
-      extraArr: [] // Array< string > 信息细节
+      extraArr: [], // Array< string > 信息细节
+      allTitles: [],
+      allCrowd: [],
+      filter: {
+        title: '',
+        crowd: ''
+      }
     }
   },
 
@@ -221,4 +253,6 @@ export default {
   font-size: 25px
 .extra-dia >>> .el-dialog__body
   padding 0px 20px 20px
+.filter-form
+  border-bottom 1px solid
 </style>
