@@ -13,7 +13,7 @@
       :id="id"
       :init-mode="mode"
       :version="version"
-      :is-test-policy="true"
+      policy-type="test"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </PolicyManageInfo>

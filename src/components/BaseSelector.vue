@@ -1,7 +1,7 @@
 <template>
   <div class="remote-selector-main">
     <div class="remote-selector-main__filter">
-      <slot name="filter">
+      <slot name="filter" :selected="selected">
         <GateSchemaForm
           v-if="filterSchema"
           v-model="viewFilter"

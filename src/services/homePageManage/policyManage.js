@@ -5,6 +5,13 @@ export function getPolicyManagePageList (data) {
     data
   })
 }
+export function getChildPolicyManagePageList (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/childPolicy/pageList.html',
+    data
+  })
+}
 export function getTestPolicyManagePageList (data) {
   return this.fetch({
     method: 'post',
@@ -45,6 +52,14 @@ export function testPolicyConfSave(data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/testPolicyConf/save.html',
+    data
+  })
+}
+
+export function childPolicyConfSave(data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/childPolicy/save.html',
     data
   })
 }

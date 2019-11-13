@@ -56,6 +56,8 @@ const TopicConfig = () => import('../views/topicConfig/Index')
 const PanelRecommendStat = () => import('../views/panelRecommend/PanelRecommendStat.vue')
 const PanelRecommendFeedback = () => import('../views/panelRecommend/PanelRecommendFeedback.vue')
 
+const ChildPolicy = () => import('../views/homePageManage/child-policy/ChildPolicyManageIndex')
+
 /** */
 const children = [
   {
@@ -113,6 +115,12 @@ const children = [
         path: '/homepageInfo/view.html',
         component: HomePageInfo,
         meta: { title: '首页方案', tagId: 'homepageInfo' }
+      },
+      {
+        name: 'childPolicy',
+        path: '/childPolicy/view.html',
+        component: ChildPolicy,
+        meta: { title: '儿童策略管理', tagId: 'childPolicy' }
       },
       {
         name: 'policyConf',

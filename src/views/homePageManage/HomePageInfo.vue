@@ -24,13 +24,13 @@
               <el-form-item label="首页名称" prop="homepageName">
                 <el-input v-model="homepage.homepageName" placeholder="首页名称"/>
               </el-form-item>
-              <el-form-item label="首页模式" prop="homepageModel">
+              <!-- <el-form-item label="首页模式" prop="homepageModel">
                 <el-radio-group v-model="homepage.homepageModel">
                   <el-radio label="normal">标准模式</el-radio>
                   <el-radio label="child">儿童模式</el-radio>
                   <el-radio label="old">老人模式</el-radio>
                 </el-radio-group>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item label="首页版本号" prop="homepageVersion">
                 <el-input v-model="homepage.homepageVersion" placeholder="首页版本号"></el-input>
               </el-form-item>

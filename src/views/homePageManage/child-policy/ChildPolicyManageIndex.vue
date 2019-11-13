@@ -13,7 +13,7 @@
       :id="id"
       :init-mode="mode"
       :version="version"
-      policy-type="normal"
+      policy-type="child"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
     </PolicyManageInfo>
@@ -21,8 +21,8 @@
 </template>
 <script>
 import TabPage from '@/components/TabPage'
-import PolicyManageInfo from './PolicyManageInfo'
-import PolicyManageList from './PolicyManageList'
+import PolicyManageInfo from '../PolicyManageInfo'
+import PolicyManageList from './ChildPolicyManageList'
 export default {
   components: {
     TabPage,
