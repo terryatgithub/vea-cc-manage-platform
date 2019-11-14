@@ -180,10 +180,42 @@ export function getVideoChartData(params) {
   })
 }
 
+export function getVideoRealTimeChartData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/videoRealTime/getChartData.html',
+    params
+  })
+}
+
 export function getVideoDmpChartData(params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/videoDmp/getChartData.html',
+    params
+  })
+}
+
+export function getVideoDmpRealTimeChartData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/videoDmpRealTime/getChartData.html',
+    params
+  })
+}
+
+export function getVideoDmpTitles(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/videoDmp/getAllTitles.html',
+    params
+  })
+}
+
+export function getVideoDmpCrowds(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/videoDmp/getAllCrowds.html',
     params
   })
 }

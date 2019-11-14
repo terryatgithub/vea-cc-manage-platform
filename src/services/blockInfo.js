@@ -260,6 +260,14 @@ export function getBlockChartData(params) {
     params
   })
 }
+
+export function getBlockRealTimeChartData(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dataShow/blockRealTime/getChartData.html',
+    params
+  })
+}
 /**
  * 推荐位管理——指定影片推荐流
  */

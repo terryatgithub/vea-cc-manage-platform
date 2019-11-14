@@ -446,8 +446,8 @@
       />
     </PageContentWrapper>
 
-    <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
-    <AnalyzeDmpDataDialog :show.sync="isVisiAnalyzeDmpData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
+    <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData" :parentId="id" :position="analyzeBtnCurrentIndex" :isRealTime="analyzeIsRealTime"/>
+    <AnalyzeDmpDataDialog :show.sync="isVisiAnalyzeDmpData" :parentId="id" :position="analyzeBtnCurrentIndex" :isRealTime="analyzeIsRealTime"/>
   </PageWrapper>
 </template>
 <script>
@@ -555,6 +555,7 @@ export default {
     }
     return {
       analyzeBtnCurrentIndex: undefined,
+      analyzeIsRealTime: false,
       isVisiAnalyzeSimpleData: false,
       isVisiAnalyzeDmpData: false,
       // 数据展现
@@ -2333,6 +2334,7 @@ export default {
     // 点击看数据、dmp按钮
     handleAnalyzeData (type, e, pannelListIndex) { // pannelListIndex对group有效
       const index = e.index
+      this.analyzeIsRealTime = e.isRealTime || false
       this.analyzeBtnCurrentIndex = undefined
       const { pannel } = this
       if (pannel.parentType === 'group') {
