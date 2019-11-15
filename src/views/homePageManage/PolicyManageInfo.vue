@@ -28,78 +28,79 @@
                 ref="form"
                 label-width="160px" >
                 <el-form-item label="策略名称" prop="policyName">
-                  <el-input v-model="form.policyName" placeholder="策略名称"></el-input>
+                  <template v-if="isChildPolicy">
+                    {{ form.policyName }}
+                  </template>
+                  <el-input v-else v-model="form.policyName" placeholder="策略名称"></el-input>
                 </el-form-item>
-                <div v-if="!isChildPolicy">
-                  <el-form-item label="机型机芯" prop="chipModel">
-                    <DeviceSelector
-                      title="选择机芯机型"
-                      :init-selected="form.deviceInfos"
-                      :platform="form.platform || 'tencent'"
-                      :selection-type="mode === 'create' ? 'multiple' : 'single'"
-                      @select-end="handleSelectChipEnd" />
-                    <SelectedTag v-if="form.deviceInfos.length>0">
-                      <ul>
-                        <li v-for="(item, index) in form.deviceInfos" :key="index">
-                          <el-tag
-                            type="success"
-                            closable
-                            @close="modelChipSelectedRemove(item)"
-                          >{{item.model}}_{{item.chip}}</el-tag>
-                        </li>
-                      </ul>
-                    </SelectedTag>
-                  </el-form-item>
-                  <el-form-item label="首页版本号" required class="linkwork">
-                    <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                      <el-form-item prop="homePageVerStart">
-                        <el-input-number v-model="form.homePageVerStart" :min="0" :max="9999999"></el-input-number>
-                      </el-form-item>
-                    </el-col>
-                    <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
-                    <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                      <el-form-item prop="homePageVerEnd">
-                        <el-input-number v-model="form.homePageVerEnd" :min="0" :max="9999999"></el-input-number>
-                        <!-- <el-input placeholder="首页版本号结尾" v-model="form.homePageVerEnd" style="width: 100%;"></el-input> -->
-                      </el-form-item>
-                    </el-col>
-                  </el-form-item>
+                <el-form-item label="机型机芯" prop="chipModel">
+                  <DeviceSelector
+                    title="选择机芯机型"
+                    :init-selected="form.deviceInfos"
+                    :platform="form.platform || 'tencent'"
+                    :selection-type="mode === 'create' ? 'multiple' : 'single'"
+                    @select-end="handleSelectChipEnd" />
+                  <SelectedTag v-if="form.deviceInfos.length>0">
+                    <ul>
+                      <li v-for="(item, index) in form.deviceInfos" :key="index">
+                        <el-tag
+                          type="success"
+                          closable
+                          @close="modelChipSelectedRemove(item)"
+                        >{{item.model}}_{{item.chip}}</el-tag>
+                      </li>
+                    </ul>
+                  </SelectedTag>
+                </el-form-item>
+                <el-form-item label="首页版本号" required class="linkwork">
+                  <el-col :span="11" style="padding-left:0px;padding-right:0px;">
+                    <el-form-item prop="homePageVerStart">
+                      <el-input-number v-model="form.homePageVerStart" :min="0" :max="9999999"></el-input-number>
+                    </el-form-item>
+                  </el-col>
+                  <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
+                  <el-col :span="11" style="padding-left:0px;padding-right:0px;">
+                    <el-form-item prop="homePageVerEnd">
+                      <el-input-number v-model="form.homePageVerEnd" :min="0" :max="9999999"></el-input-number>
+                      <!-- <el-input placeholder="首页版本号结尾" v-model="form.homePageVerEnd" style="width: 100%;"></el-input> -->
+                    </el-form-item>
+                  </el-col>
+                </el-form-item>
 
-                  <el-form-item v-if="isTestPolicy" label="Mac地址" prop="macStart" class="linkwork">
-                    <el-input placeholder="Mac地址" v-model="form.macStart"></el-input>
-                  </el-form-item>
+                <el-form-item v-if="isTestPolicy" label="Mac地址" prop="macStart" class="linkwork">
+                  <el-input placeholder="Mac地址" v-model="form.macStart"></el-input>
+                </el-form-item>
 
-                  <el-form-item v-else label="Mac地址" class="linkwork">
-                    <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                      <el-form-item prop="macStart">
-                        <el-input placeholder="Mac地址起始" v-model="form.macStart" style="width: 100%;"></el-input>
-                      </el-form-item>
-                    </el-col>
-                    <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
-                    <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                      <el-form-item prop="macEnd">
-                        <el-input placeholder="Mac地址结尾" v-model="form.macEnd" style="width: 100%;"></el-input>
-                      </el-form-item>
-                    </el-col>
-                  </el-form-item>
+                <el-form-item v-else label="Mac地址" class="linkwork">
+                  <el-col :span="11" style="padding-left:0px;padding-right:0px;">
+                    <el-form-item prop="macStart">
+                      <el-input placeholder="Mac地址起始" v-model="form.macStart" style="width: 100%;"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
+                  <el-col :span="11" style="padding-left:0px;padding-right:0px;">
+                    <el-form-item prop="macEnd">
+                      <el-input placeholder="Mac地址结尾" v-model="form.macEnd" style="width: 100%;"></el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-form-item>
 
-                  <el-form-item label="策略优先级" prop="priority">
-                    <el-input-number v-model="form.priority" placeholder="策略优先级" :min="1" :max="9999"></el-input-number>
-                    <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
-                  </el-form-item>
-                  <el-form-item label="关联首页方案">
-                    <HomepageSelector
-                      title="选择首页方案"
-                      homepageModel="normal"
-                      @select-end="handleSelectNormalHomepageEnd" selection-type="single" />
-                    <span v-if="form.normalHpList[0]" class="tip">
-                      已选首页：
-                      <el-tag type="success" class="el-tag" @click.native="showHomePageDetail(form.normalHpList[0])">
-                        {{ form.normalHpList[0].homepageName }}
-                      </el-tag>
-                    </span>
-                  </el-form-item>
-                </div>
+                <el-form-item label="策略优先级" prop="priority">
+                  <el-input-number v-model="form.priority" placeholder="策略优先级" :min="1" :max="9999"></el-input-number>
+                  <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
+                </el-form-item>
+                <el-form-item label="关联首页方案">
+                  <HomepageSelector
+                    title="选择首页方案"
+                    homepageModel="normal"
+                    @select-end="handleSelectNormalHomepageEnd" selection-type="single" />
+                  <span v-if="form.normalHpList[0]" class="tip">
+                    已选首页：
+                    <el-tag type="success" class="el-tag" @click.native="showHomePageDetail(form.normalHpList[0])">
+                      {{ form.normalHpList[0].homepageName }}
+                    </el-tag>
+                  </span>
+                </el-form-item>
                 <el-form-item label="关联儿童首页方案">
                   <HomepageSelector
                     title="选择儿童首页方案"
@@ -127,7 +128,7 @@
                     </div>
                   </div>
                 </el-form-item>
-                <el-form-item v-if="!isChildPolicy" label="定向首页方案">
+                <el-form-item label="定向首页方案">
                   <!-- <el-button type="primary" plain @click="addHomePage('child')">添加</el-button> -->
                   <el-button type="primary" plain @click="addHomePage('normal')">添加</el-button>
                   <el-button type="primary" plain @click="handleRemoveAllSpecHomePage">解绑所有方案</el-button>
@@ -158,75 +159,73 @@
             <el-col :span="24">
               <el-form :model="form" ref="form" label-width="160px">
                 <el-form-item label="策略名称" prop="policyName">{{form.policyName}}</el-form-item>
-                <div v-if="!isChildPolicy">
-                  <el-form-item label="机型机芯" prop="chipModel">
-                    <SelectedTag v-if="form.deviceInfos.length>0">
-                      <ul>
-                        <li v-for="(item, index) in form.deviceInfos" :key="index">
-                          <el-tag type="success">{{item.model}}_{{item.chip}}</el-tag>
-                        </li>
-                      </ul>
-                    </SelectedTag>
-                  </el-form-item>
-                  <el-form-item label="首页版本号" required class="linkwork">
-                    <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                      <el-form-item prop="homePageVerStart">
-                        <el-input-number
-                          v-model="form.homePageVerStart"
-                          disabled="disabled"
-                          :min="0"
-                          :max="9999999"
-                        ></el-input-number>
-                      </el-form-item>
-                    </el-col>
-                    <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
-                    <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                      <el-form-item prop="homePageVerEnd">
-                        <el-input-number
-                          v-model="form.homePageVerEnd"
-                          disabled="disabled"
-                          :min="0"
-                          :max="9999999"
-                        ></el-input-number>
-                      </el-form-item>
-                    </el-col>
-                  </el-form-item>
-                  <el-form-item label="Mac地址" required class="linkwork">
-                    <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                      <el-form-item prop="macStart">
-                        <el-input
-                          placeholder="Mac地址起始"
-                          disabled="disabled"
-                          v-model="form.macStart"
-                          style="width: 100%;"
-                        ></el-input>
-                      </el-form-item>
-                    </el-col>
-                    <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
-                    <el-col :span="11" style="padding-left:0px;padding-right:0px;">
-                      <el-form-item prop="macEnd">
-                        <el-input
-                          placeholder="Mac地址起始"
-                          disabled="disabled"
-                          v-model="form.macEnd"
-                          style="width: 100%;"
-                        ></el-input>
-                      </el-form-item>
-                    </el-col>
-                  </el-form-item>
-                  <el-form-item label="策略优先级" prop="priority">
-                    {{form.priority}}
-                    <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
-                  </el-form-item>
-                  <el-form-item label="关联首页方案">
-                    <span v-if="form.normalHpList[0]" class="tip">
-                      已选首页：
-                      <el-tag type="success" class="el-tag" @click.native="showHomePageDetail(form.normalHpList[0])">
-                        {{ form.normalHpList[0].homepageName }}
-                      </el-tag>
-                    </span>
-                  </el-form-item>
-                </div>
+                <el-form-item label="机型机芯" prop="chipModel">
+                  <SelectedTag v-if="form.deviceInfos.length>0">
+                    <ul>
+                      <li v-for="(item, index) in form.deviceInfos" :key="index">
+                        <el-tag type="success">{{item.model}}_{{item.chip}}</el-tag>
+                      </li>
+                    </ul>
+                  </SelectedTag>
+                </el-form-item>
+                <el-form-item label="首页版本号" required class="linkwork">
+                  <el-col :span="11" style="padding-left:0px;padding-right:0px;">
+                    <el-form-item prop="homePageVerStart">
+                      <el-input-number
+                        v-model="form.homePageVerStart"
+                        disabled="disabled"
+                        :min="0"
+                        :max="9999999"
+                      ></el-input-number>
+                    </el-form-item>
+                  </el-col>
+                  <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
+                  <el-col :span="11" style="padding-left:0px;padding-right:0px;">
+                    <el-form-item prop="homePageVerEnd">
+                      <el-input-number
+                        v-model="form.homePageVerEnd"
+                        disabled="disabled"
+                        :min="0"
+                        :max="9999999"
+                      ></el-input-number>
+                    </el-form-item>
+                  </el-col>
+                </el-form-item>
+                <el-form-item label="Mac地址" required class="linkwork">
+                  <el-col :span="11" style="padding-left:0px;padding-right:0px;">
+                    <el-form-item prop="macStart">
+                      <el-input
+                        placeholder="Mac地址起始"
+                        disabled="disabled"
+                        v-model="form.macStart"
+                        style="width: 100%;"
+                      ></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col class="line" :span="2" style="padding-left:0px;padding-right:0px;">-</el-col>
+                  <el-col :span="11" style="padding-left:0px;padding-right:0px;">
+                    <el-form-item prop="macEnd">
+                      <el-input
+                        placeholder="Mac地址起始"
+                        disabled="disabled"
+                        v-model="form.macEnd"
+                        style="width: 100%;"
+                      ></el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-form-item>
+                <el-form-item label="策略优先级" prop="priority">
+                  {{form.priority}}
+                  <span class="tip">注：数值越大优先级越高，数值越小优先级越低</span>
+                </el-form-item>
+                <el-form-item label="关联首页方案">
+                  <span v-if="form.normalHpList[0]" class="tip">
+                    已选首页：
+                    <el-tag type="success" class="el-tag" @click.native="showHomePageDetail(form.normalHpList[0])">
+                      {{ form.normalHpList[0].homepageName }}
+                    </el-tag>
+                  </span>
+                </el-form-item>
                 <el-form-item label="关联儿童首页方案">
                   <div class="child-homepage-list">
                     <div
@@ -242,7 +241,7 @@
                     </div>
                   </div>
                 </el-form-item>
-                <el-form-item v-if="!isChildPolicy" label="定向首页方案">
+                <el-form-item label="定向首页方案">
                   <SelectedHomePage
                     :dataArr="form.specialNormalHp"
                     @edit-item="editHomePage"
@@ -425,8 +424,7 @@ export default {
     resourceName () {
       const resourceNameMap = {
         normal: '策略',
-        test: '测试策略',
-        child: '儿童策略'
+        test: '测试策略'
       }
       return resourceNameMap[this.policyType]
     }
@@ -720,8 +718,7 @@ export default {
         }
         const serviceNameMap = {
           normal: 'policyConfSave',
-          test: 'testPolicyConfSave',
-          child: 'childPolicyConfSave'
+          test: 'testPolicyConfSave'
         }
         this.$service[serviceNameMap[this.policyType]](options, '保存成功').then(data => {
           this.$emit('upsert-end')

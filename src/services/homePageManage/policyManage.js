@@ -93,3 +93,11 @@ export function getTestPolicyConfDetail(params) {
     params
   })
 }
+
+export function getChildPolicyConfDetail(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/childPolicy/getDetailInfo.html',
+    params
+  })
+}

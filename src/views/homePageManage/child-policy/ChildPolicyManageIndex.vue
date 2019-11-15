@@ -21,7 +21,7 @@
 </template>
 <script>
 import TabPage from '@/components/TabPage'
-import PolicyManageInfo from '../PolicyManageInfo'
+import PolicyManageInfo from './ChildPolicyInfo'
 import PolicyManageList from './ChildPolicyManageList'
 export default {
   components: {

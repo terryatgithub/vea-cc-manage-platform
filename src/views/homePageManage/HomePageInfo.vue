@@ -82,10 +82,10 @@
                 <i class="el-icon-edit">基本信息</i>
               </div>
               <el-form-item label="首页名称" prop="homepageName">{{ homepage.homepageName }}</el-form-item>
-              <el-form-item
+              <!-- <el-form-item
                 label="首页模式"
                 prop="homepageModel"
-              >{{ HOME_MODE_MAP[homepage.homepageModel] }}</el-form-item>
+              >{{ HOME_MODE_MAP[homepage.homepageModel] }}</el-form-item> -->
               <el-form-item label="首页版本号" prop="homepageVersion">{{ homepage.homepageVersion }}</el-form-item>
 
               <div class="form-legend-header">

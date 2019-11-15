@@ -8,7 +8,7 @@
       @filter-reset="handleFilterReset"
     >
       <ButtonGroupForListPage
-        pageName="policyConf"
+        pageName="childPolicy"
         @add="handleCreate"
         @edit="handleEdit"
         @delete="handleDelete"
@@ -93,21 +93,9 @@ export default {
             }
           },
           {
-            label: '策略优先级',
-            prop: 'priority'
-          },
-          {
             label: '关联首页方案',
             width: 150,
             prop: 'relationHomepageName'
-          },
-          {
-            label: '机型',
-            prop: 'model'
-          },
-          {
-            label: '机芯',
-            prop: 'chip'
           },
           {
             label: '版本',
@@ -291,11 +279,7 @@ export default {
         .other('form', {
           component: 'Select',
           placeholder: '状态'
-        }),
-      chipModel: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '机型/机芯'
-      })
+        })
     }).other('form', {
       cols: {
         item: 5,
