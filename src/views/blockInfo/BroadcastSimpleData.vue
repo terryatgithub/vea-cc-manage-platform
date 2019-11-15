@@ -118,6 +118,12 @@ export default {
       default() {
         return false
       }
+    },
+    isRealTime: {
+      type: Boolean,
+      default () {
+        return false
+      }
     }
   },
 
@@ -133,8 +139,12 @@ export default {
 
   methods: {
     fetchData () {
-      this.$service.getBlockChartData({ id: this.id, title: this.selectTitle }).then(data => {
+      const analyzeMethods = this.isRealTime ? 'getBlockRealTimeChartData' : 'getBlockChartData'
+      this.$service[analyzeMethods]({ id: this.id, title: this.selectTitle }).then(data => {
         this.broadcastChartDataArr = data.rows
+        if (data.rows.length === 0) {
+          this.$message('暂无数据')
+        }
       })
     },
     handleDialogOpen () {

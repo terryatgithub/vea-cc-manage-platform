@@ -26,7 +26,7 @@
       />
     </ContentWrapper>
 
-    <BroadcastSimpleData :show.sync="isVisibleDialog" :id="currentId"/>
+    <BroadcastSimpleData :show.sync="isVisibleDialog" :id="currentId" :isRealTime="isRealTime"/>
   </ContentCard>
 </template>
 <script>
@@ -49,6 +49,7 @@ export default {
       // 看数据
       isVisibleDialog: false,
       currentId: undefined,
+      isRealTime: false,
 
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
@@ -87,21 +88,24 @@ export default {
           },
           {
             label: '数据表现',
-            width: 100,
+            width: 200,
             render: (h, { row }) => {
-              return h(
-                'el-button',
-                {
+              return h('div', [
+                h('el-button', {
                   props: { type: 'text' },
                   on: { click: this.handleClickDataShow(row) }
-                },
-                '看数据'
-              )
+                }, '看数据'),
+                h('el-button', {
+                  props: { type: 'text' },
+                  on: { click: this.handleClickDataShow(row, true) }
+                }, '看实时数据')
+              ])
             }
           },
           {
             label: '待审核的版本',
             prop: 'duplicateVersion',
+            width: 130,
             sortable: true,
             render: (h, { row }) => {
               return h(
@@ -224,10 +228,11 @@ export default {
       })
       return dataShow
     },
-    handleClickDataShow (row) {
+    handleClickDataShow (row, isRealTime) {
       return () => {
         this.currentId = row.id
         this.isVisibleDialog = true
+        this.isRealTime = isRealTime || false
         this.$sendEvent({
           type: 'broadcast_data_search'
         })

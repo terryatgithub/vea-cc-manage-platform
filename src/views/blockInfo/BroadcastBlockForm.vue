@@ -424,6 +424,7 @@ export default {
       // 轮播资源关闭推荐流
       if (this.normalForm.clickTemplateType === 'rotate') {
         this.handleInputFlagSetRec(false)
+        this.normalForm.clickType = 'detail'
       }
       this.normalForm.shortVideoSwitch = false
     },

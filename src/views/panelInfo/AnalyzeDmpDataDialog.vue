@@ -5,15 +5,41 @@
       :visible.sync="visible"
       :show="show"
       width="70%"
-      @open="fetchData"
+      @open="handleDialogOpen"
       @close="$emit('update:show', false)"
     >
-      <el-radio-group v-model="uvClickTab" class="tab--container" @change="fetchData">
+      <el-form :inline="true" class="filter-form">
+        <el-form-item label="推荐位标题">
+          <el-select v-model="filter.title" filterable clearable>
+            <el-option
+              v-for="(title, index) in allTitles"
+              :key="index"
+              :label="title"
+              :value="title"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="人群">
+          <el-select v-model="filter.crowdId" filterable clearable>
+            <el-option
+              v-for="(crowd, index) in allCrowd"
+              :key="index"
+              :label="crowd.crowdName"
+              :value="crowd.crowdId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="fetchData">查询</el-button>
+        </el-form-item>
+      </el-form>
+
+      <!-- <el-radio-group v-model="uvClickTab" class="tab--container" @change="fetchData">
         <el-radio-button label="dailyClickUv" class="tab--item">点击UV(天)对比</el-radio-button>
         <el-radio-button label="dailyUvctr" class="tab--item">点击UVCTR(天)对比</el-radio-button>
         <el-radio-button label="hourlyClickUv" class="tab--item">点击UV(小时)对比</el-radio-button>
         <el-radio-button label="hourlyUvctr" class="tab--item">点击UVCTR(小时)对比</el-radio-button>
-      </el-radio-group>
+      </el-radio-group> -->
 
       <div class="chart--wrapper" v-for="(dmpChartData, index) in chartDataArr" :key="index">
         <div class="chart-box--title">{{dmpChartData.title}}</div>
@@ -106,9 +132,15 @@ export default {
     return {
       visible: this.show,
       chartDataArr: [],
-      uvClickTab: 'dailyClickUv',
+      // uvClickTab: 'dailyClickUv',
       extraVisible: false,
-      extraArr: [] // Array< string > 信息细节
+      extraArr: [], // Array< string > 信息细节
+      allTitles: [],
+      allCrowd: [],
+      filter: {
+        title: '',
+        crowdId: ''
+      }
     }
   },
 
@@ -126,13 +158,29 @@ export default {
       }
     },
     parentId: Number,
-    position: [String, Number]
+    position: [String, Number],
+    isRealTime: {
+      type: Boolean,
+      default () {
+        return false
+      }
+    }
   },
 
   methods: {
+    handleDialogOpen () {
+      const { parentId, position, filter } = this
+      this.$service.getVideoDmpTitles({ parentId, position }).then(data => {
+        this.allTitles = data.rows
+      })
+      this.$service.getVideoDmpCrowds({ parentId, position, ...filter }).then(data => {
+        this.allCrowd = data.rows
+      })
+    },
     fetchData() {
-      const { parentId, position, uvClickTab } = this
-      this.$service.getVideoDmpChartData({ parentId, position, type: uvClickTab }).then(data => {
+      const { parentId, position } = this
+      const analyzeMethods = this.isRealTime ? 'getVideoDmpRealTimeChartData' : 'getVideoDmpChartData'
+      this.$service[analyzeMethods]({ parentId, position }).then(data => {
         this.chartDataArr = data.rows
         if (this.chartDataArr.length === 0) {
           this.$message('暂无数据')
@@ -221,4 +269,6 @@ export default {
   font-size: 25px
 .extra-dia >>> .el-dialog__body
   padding 0px 20px 20px
+.filter-form
+  border-bottom 1px solid
 </style>

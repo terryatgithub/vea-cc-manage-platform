@@ -92,7 +92,7 @@ export function parseResourceContent(tabName, selected, sourceType) {
   }
   switch (tabName) {
     case 'video': {
-      const selectedEpisode = selected.selectedEpisode
+      const selectedEpisode = selected.selectedEpisodes
       const prefix = (prefixMap[sourceType] || '')
       if (selectedEpisode) {
         if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
@@ -103,6 +103,8 @@ export function parseResourceContent(tabName, selected, sourceType) {
           s.thirdIdOrPackageName = prefix + selected.coocaaVId
           s.vid = selectedEpisode.coocaaMId
         }
+        // 集数
+        this.singleEpisodeNum = selectedEpisode.urlCollection
         s.pictureUrl = selectedEpisode.thumb
         s.title = selectedEpisode.urlTitle
         s.subTitle = selectedEpisode.urlSubTitle

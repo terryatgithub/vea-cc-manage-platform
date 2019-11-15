@@ -391,7 +391,7 @@ import { cloneDeep } from 'lodash'
 import titleMixin from '@/mixins/title'
 import BroadcastBlockForm from './BroadcastBlockForm'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
-import { getParams } from './broadcastBlockUtil'
+import { parseResourceContent, setContentForm, getParams, getSelectedResourceByType, getSelectedResource } from './broadcastBlockUtil'
 
 export default {
   mixins: [titleMixin],
@@ -563,7 +563,6 @@ export default {
       referenceOptions: {
         picture: false
       },
-      resourceVisible: false,
       layoutOptions: {
         contentDataNew: []
       },
@@ -931,223 +930,24 @@ export default {
       this.normalForm = normalForm
       this.normalVersionContent = [normalForm]
     },
-    /** 轮播模式，正常版本选择资源回掉函数 */
-    handleSelectNormalSingleResourceEnd(selectedResources, mode) {
-      let data
-      if (mode === 'single') {
-        data = this.callbackParam('rotate', selectedResources.rotate[0])
-      } else {
-        let resourceOptions = this.resourceOptionsNormalForm
-        for (var i = 0; i < resourceOptions.length; i++) {
-          const resourceType = resourceOptions[i]
-          const resources = selectedResources[resourceType]
-          if (resources && resources.length === 1) {
-            data = this.callbackParam(
-              resourceOptions[i],
-              resources[0],
-              selectedResources.videoSource
-            )
-          }
-        }
-      }
-      this.resourceConfirm(data, 'normalForm')
-    },
     handleSelectNormalmultipleResourceEnd(selectedResources) {
-      let dataArr = []
-      let resourceOptions = this.resourceOptions
-      for (var i = 0; i < resourceOptions.length; i++) {
-        selectedResources[resourceOptions[i]].forEach(item => {
-          dataArr.push(
-            this.callbackParam(
-              resourceOptions[i],
-              item,
-              selectedResources.videoSource
-            )
-          )
+      const resourceOptions = this.resourceOptions
+      let contentArr = []
+      resourceOptions.forEach(resourceName => {
+        selectedResources[resourceName].forEach(selected => {
+          const normalForm = this.genDefaultContentForm()
+          const resourceContent = parseResourceContent(resourceName, selected, selectedResources.videoSource)
+          setContentForm(normalForm, resourceContent)
+          contentArr.push(normalForm)
         })
-      }
-      this.resourceConfirm(dataArr, 'normalForm')
+      })
+      this.normalVersionContent.splice(this.currentIndex, 0, ...contentArr)
+      this.currentIndex = this.normalVersionContent.length - 1
     },
     handleSelectLowerSingleResourceEnd(selectedResources) {
-      let data
-      let resourceOptions = this.resourceOptionsLowerForm
-      for (var i = 0; i < resourceOptions.length; i++) {
-        const resources = selectedResources[resourceOptions[i]]
-        if (resources && resources.length === 1) {
-          data = this.callbackParam(
-            resourceOptions[i],
-            resources[0],
-            selectedResources.videoSource
-          )
-        }
-      }
-      this.resourceConfirm(data, 'lowerForm')
-    },
-    /**
-     * 资源转换
-     */
-    callbackParam(tabName, selected, sourceType) {
-      let s = {
-        type: '', // 面向客户端
-        contentType: '', // 面向管理后台
-        thirdIdOrPackageName: ''
-      }
-      const prefixMap = {
-        tencent: '_otx_',
-        o_tencent: '_otx_',
-        yinhe: '_oqy_',
-        o_iqiyi: '_oqy_',
-        youku: '_oyk_'
-      }
-      switch (tabName) {
-        case 'video': {
-          const selectedEpisode = selected.selectedEpisodes
-          const prefix = (prefixMap[sourceType] || '')
-          if (selectedEpisode) {
-            if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
-              // 如果是短视频, 并且 thirdVId 存在
-              s.thirdIdOrPackageName = prefix + selectedEpisode.thirdVId
-              s.sid = selectedEpisode.coocaaMId
-            } else {
-              s.thirdIdOrPackageName = prefix + selected.coocaaVId
-              s.vid = selectedEpisode.coocaaMId
-            }
-            // 集数
-            this.singleEpisodeNum = selectedEpisode.urlCollection
-            s.pictureUrl = selectedEpisode.thumb
-            s.title = selectedEpisode.urlTitle
-            s.subTitle = selectedEpisode.urlSubTitle
-          } else {
-            s.thirdIdOrPackageName = prefix + selected.coocaaVId
-            s.pictureUrl = selected.thumb
-            s.title = selected.title
-            s.subTitle = selected.subTitle
-          }
-          s.contentType = 'movie'
-          s.type = 'res'
-          s.coverType = 'media'
-          break
-        }
-        case 'app': {
-          s.contentType = 'app'
-          s.thirdIdOrPackageName = selected.appPackageName
-          s.pictureUrl = selected.appImageUrl
-          s.title = selected.appName
-          s.type = 'app'
-          s.coverType = 'app'
-          break
-        }
-        case 'edu': {
-          s.contentType = 'edu'
-          s.coverType = 'media'
-          s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
-          s.platformId = selected.source
-          s.pictureUrl = selected.thumb
-          s.title = selected.title
-          s.subTitle = selected.subTitle
-          s.type = 'res'
-          break
-        }
-        case 'pptv': {
-          s.contentType = 'pptv'
-          s.coverType = 'media'
-          s.thirdIdOrPackageName =
-            'pptv_tvsports://tvsports_detail?section_id=' +
-            selected.pid +
-            '&from_internal=1'
-          s.title = selected.pTitle
-          s.type = ''
-          break
-        }
-        case 'live': {
-          s.contentType = 'txLive'
-          s.coverType = 'media'
-          s.thirdIdOrPackageName = '_otx_' + selected.vId + ''
-          s.platformId = selected.source
-          s.pictureUrl = selected.thumb
-          s.title = selected.title
-          s.subTitle = selected.subTitle
-          s.type = 'live'
-          break
-        }
-        case 'topic': {
-          selected.dataSign === 'parentTopic'
-            ? (s.contentType = 'bigTopic')
-            : (s.contentType = 'topic')
-          s.thirdIdOrPackageName = selected.id + ''
-          s.pictureUrl = selected.picture
-          s.title = selected.title
-          s.subTitle = selected.subTitle
-          s.type = 'topic'
-          s.coverType = 'media'
-          break
-        }
-        case 'rotate': {
-          s.contentType = 'rotate'
-          s.coverType = 'media'
-          s.thirdIdOrPackageName = selected.id + ''
-          s.pictureUrl = selected.picture
-          s.title = selected.title
-          s.subTitle = selected.subTitle
-          s.type = 'rotate'
-          break
-        }
-        default:
-          break
-      }
-      return s
-    },
-
-    packageFormParam (item) {
-      const form = cloneDeep(this.versionForm)
-      form.type = item.type
-      form.coverType = item.coverType
-      if (item.contentType === 'rotate') {
-        form.subchannelIs = true
-      } else {
-        form.subchannelIs = false
-      }
-      if (item.contentType === 'bigTopic') {
-        form.smallTopicsIs = true
-      } else {
-        form.smallTopicsIs = false
-      }
-      form.title = item.title
-      form.contentType = item.contentType
-      form.subTitle = item.subTitle
-      form.thirdIdOrPackageName = item.thirdIdOrPackageName
-      if (item.pictureUrl) {
-        const poster = Object.assign({}, form.poster)
-        poster.pictureUrl = item.pictureUrl
-        form.poster = poster
-      } else {
-        form.poster = { pictureUrl: '' }
-      }
-      const param = getParams(item)
-      form.params = param
-      if (form.sign === 'autoSet') {
-        form.clickParams = cloneDeep(param)
-        form.clickTemplateType = item.contentType
-      }
-      return form
-    },
-    // ??资源确定
-    resourceConfirm (callbackData, form) {
-      this.currentForm = this[form]
-      this.resourceVisible = false
-      if (callbackData instanceof Array) {
-        let data = callbackData.reduce((result, current) => {
-          result.push(this.packageFormParam(current))
-          return result
-        }, [])
-        this.normalVersionContent.splice(this.currentIndex, 1, ...data)
-        this[form] = data[0]
-      } else {
-        this[form] = this.packageFormParam(callbackData)
-        if (form === 'normalForm') {
-          this.normalVersionContent.splice(this.currentIndex, 1, this[form])
-        }
-      }
+      const result = getSelectedResource(selectedResources)
+      const resourceContent = parseResourceContent(result.selectedType, result.selected[0], result.partner)
+      setContentForm(this.lowerForm, resourceContent)
     },
     // 校验normalForm
     checkNormalForm: function(cb) {

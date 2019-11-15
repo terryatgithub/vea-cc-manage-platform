@@ -117,13 +117,20 @@ export default {
       }
     },
     parentId: Number,
-    position: [String, Number]
+    position: [String, Number],
+    isRealTime: {
+      type: Boolean,
+      default () {
+        return false
+      }
+    }
   },
 
   methods: {
     fetchData () {
       const { parentId, position } = this
-      this.$service.getVideoChartData({ parentId, position }).then(data => {
+      const analyzeMethods = this.isRealTime ? 'getVideoRealTimeChartData' : 'getVideoChartData'
+      this.$service[analyzeMethods]({ parentId, position }).then(data => {
         this.chartDataArr = data.rows
         if (this.chartDataArr.length === 0) {
           this.$message('暂无数据')

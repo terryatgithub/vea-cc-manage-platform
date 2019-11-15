@@ -97,7 +97,9 @@ export default {
           },
           {
             label: '引用状态',
-            prop: 'fullTabName'
+            prop: 'fullTabName',
+            width: 300,
+            'show-overflow-tooltip': true
           },
 
           {

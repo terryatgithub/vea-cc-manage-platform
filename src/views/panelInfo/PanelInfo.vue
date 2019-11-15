@@ -372,8 +372,7 @@
                     <img
                       v-if="pannel.focusImgUrl"
                       :src="pannel.focusImgUrl"
-                      style="margin-top: 10px; width: 200px; border: 1px solid #eee"
-                    >
+                      style="margin-top: 10px; width: 200px; border: 1px solid #eee">
                   </div>
                 </el-form-item>
                 <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
@@ -559,6 +558,7 @@ export default {
     }
     return {
       analyzeBtnCurrentIndex: undefined,
+      analyzeIsRealTime: false,
       isVisiAnalyzeSimpleData: false,
       isVisiAnalyzeDmpData: false,
       // 数据展现
@@ -2335,7 +2335,9 @@ export default {
       })
     },
     // 点击看数据、dmp按钮
-    handleAnalyzeData (type, index, pannelListIndex) { // pannelListIndex对group有效
+    handleAnalyzeData (type, e, pannelListIndex) { // pannelListIndex对group有效
+      const index = e.index
+      this.analyzeIsRealTime = e.isRealTime || false
       this.analyzeBtnCurrentIndex = undefined
       const { pannel } = this
       if (pannel.parentType === 'group') {

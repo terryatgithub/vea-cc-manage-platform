@@ -51,16 +51,29 @@
           >x</span>
           <!-- 新增时不显示看数据按钮 -->
           <div :class="isOverFlow(block.style) ? 'analyze-data--container' : 'analyze-data--container-row'" v-if="showChartBtn === true">
-            <el-button type="success"
-            v-if="blocks[index].vcId != -101"
-            class="analyze-data--simpleBtn margin-bottom-6"
-            @click.stop="handleAnalyzeSimpleData(index)">看数据</el-button><br/>
+            <el-button
+              type="success"
+              v-if="blocks[index].vcId != -101"
+              class="analyze-data--btn"
+              @click.stop="handleAnalyzeSimpleData(index)"
+            >整体数据</el-button><br/>
             <el-button
               type="success"
               v-if="block.specificContentList && block.specificContentList.length !== 0"
-              class="analyze-data--dmpBtn"
+              class="analyze-data--btn"
               @click.stop="handleAnalyzeDmpData(index)"
-            >DMP</el-button>
+            >DMP</el-button><br v-if="block.specificContentList && block.specificContentList.length !== 0"/>
+            <el-button
+              type="success"
+              class="analyze-data--btn"
+              @click.stop="handleAnalyzeSimpleData(index, true)"
+            >整体实时数据</el-button><br/>
+            <el-button
+              type="success"
+              v-if="block.specificContentList && block.specificContentList.length !== 0"
+              class="analyze-data--btn"
+              @click.stop="handleAnalyzeDmpData(index, true)"
+            >DMP实时数据</el-button>
           </div>
           <template v-if="block.content">
             <div
@@ -130,11 +143,17 @@ export default {
     handleRemoveBlock(index) {
       this.$emit('remove-block', index)
     },
-    handleAnalyzeSimpleData (index) {
-      this.$emit('show-simple-chart', index)
+    handleAnalyzeSimpleData (index, isRealTime) {
+      this.$emit('show-simple-chart', {
+        index,
+        isRealTime
+      })
     },
-    handleAnalyzeDmpData (index) {
-      this.$emit('show-dmp-chart', index)
+    handleAnalyzeDmpData (index, isRealTime) {
+      this.$emit('show-dmp-chart', {
+        index,
+        isRealTime
+      })
     },
     handleClickBlock(index) {
       this.$emit('click-block', index)
@@ -349,9 +368,10 @@ export default {
 }
 
 .analyze-data--container {
+  line-height: 25px !important;
   display: none;
   position: absolute;
-  top: 20px;
+  top: 15px;
   left: 0;
 }
 
@@ -362,14 +382,17 @@ export default {
   left: 0;
 }
 
-.analyze-data--simpleBtn,
-.analyze-data--dmpBtn{
-  width: 75px;
-  height: 32px;
-  margin-right: 10px;
+.analyze-data--btn {
+  width: 83px;
+  height: 23px;
+  margin-right: 2px;
+  padding: 5px 5px;
 }
 
 .margin-bottom-6 {
   margin-bottom: 6px;
+}
+.el-form-item--small .el-form-item__content, .el-form-item--small .el-form-item__label {
+  line-height: 25px;
 }
 </style>
