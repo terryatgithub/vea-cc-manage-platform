@@ -1,4 +1,5 @@
 <template>
+<TabPage>
   <ContentCard :title="title" @go-back="$emit('go-back')">
     <CommonContent
       :mode="mode"
@@ -166,7 +167,7 @@
                     v-if="!disabled"
                     class="remove-handle el-icon-close"
                     @click.stop.prevent="handleRemoveDmpContent(index)">
-                   </i>
+                  </i>
                 </el-card>
               </component>
               <el-card v-if="mode !== 'read'" @click.native="handleAddDmpContent">
@@ -373,9 +374,11 @@
       <!-- 第三方运用快速填充弹框end -->
     </CommonContent>
   </ContentCard>
+</TabPage>
 </template>
 
 <script>
+import TabPage from '@/components/TabPage'
 import draggable from 'vuedraggable'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import CornerSelector from '@/components/selectors/CornerIconSelector'
@@ -393,6 +396,7 @@ import { getParams } from './broadcastBlockUtil'
 export default {
   mixins: [titleMixin],
   components: {
+    TabPage,
     draggable,
     ResourceSelector,
     GlobalPictureSelector,

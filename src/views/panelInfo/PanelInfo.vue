@@ -1,91 +1,331 @@
 <template>
-  <PageWrapper>
-    <PageContentWrapper v-show="activePage == 'panel_info'">
-      <ContentCard :title="title" @go-back="$emit('go-back')">
-        <CommonContent
-          ref="commonContent"
-          :mode="mode"
-          :resource-info="resourceInfo"
-          @replicate="mode = 'replicate'"
-          @edit="mode = 'edit'"
-          @unaudit="$emit('upsert-end')"
-          @shelves="fetchData"
-          @audit="$emit('upsert-end')"
-          @submit-audit="handleSubmitAudit"
-          @save-draft="handleSaveDraft"
-          @select-version="fetchData"
-          @delete="$emit('upsert-end', $event)"
-          @cancel-timing="fetchData(pannel.currentVersion)">
-          <div slot="copy-confirm">
-            复制到
-            <el-select v-model="copyToPanelDataType">
-              <el-option :value="1" label="常规运营"></el-option>
-              <el-option :value="3" label="业务专辑"></el-option>
-            </el-select>
-            &nbsp;
-            <el-button type="primary" @click="handleCopy($consts.status.draft)">复制为草稿</el-button>
-            <el-button type="primary" @click="handleCopy($consts.status.waiting)">复制并提交审核</el-button>
-          </div>
-
-          <div v-if="currentPanelDataType == 1" class="base-info">
-            <div>常规运营版块：</div>
-            <div>运营人员纯手工运营的版块，可以通过此版块自主配置影片、频道、活动、系统功能等，此类版块适合首屏比较固定的内容版块，不做个性推荐积累。</div>
-          </div>
-          <div v-if="currentPanelDataType == 3" class="base-info">
-            <div>业务专辑：</div>
-            <div>运营人员可以把业务站点专辑，关联映射至此版块中，可以多个进行排序。</div>
-          </div>
-          <template v-if="mode !== 'read'">
-            <div class="form-legend-header">
-              <i class="el-icon-edit">基本信息</i>
+  <TabPage>
+    <PageWrapper>
+      <PageContentWrapper v-show="activePage == 'panel_info'">
+        <ContentCard :title="title" @go-back="$emit('go-back')">
+          <CommonContent
+            ref="commonContent"
+            :mode="mode"
+            :resource-info="resourceInfo"
+            @replicate="mode = 'replicate'"
+            @edit="mode = 'edit'"
+            @unaudit="$emit('upsert-end')"
+            @shelves="fetchData"
+            @audit="$emit('upsert-end')"
+            @submit-audit="handleSubmitAudit"
+            @save-draft="handleSaveDraft"
+            @select-version="fetchData"
+            @delete="$emit('upsert-end', $event)"
+            @cancel-timing="fetchData(pannel.currentVersion)">
+            <div slot="copy-confirm">
+              复制到
+              <el-select v-model="copyToPanelDataType">
+                <el-option :value="1" label="常规运营"></el-option>
+                <el-option :value="3" label="业务专辑"></el-option>
+              </el-select>
+              &nbsp;
+              <el-button type="primary" @click="handleCopy($consts.status.draft)">复制为草稿</el-button>
+              <el-button type="primary" @click="handleCopy($consts.status.waiting)">复制并提交审核</el-button>
             </div>
-            <el-form ref="form" :model="pannel" label-width="120px">
-              <el-form-item label="业务分类"  class="selectItem">
-                <CommonSelector
-                  :value="pannel.panelGroupCategory"
-                  @input="handlePanelGroupCategoryChange"
-                  :disabled="isReplica"
-                  :options="businessTypeEnums"/>
-                <span class="remarks marginL">注：只有一个权限的操作者不能选择业务分类</span>
-              </el-form-item>
 
-              <el-form-item
-                label="内容源"
-                v-if="isPanelCommonOrVideo">
-                <SourceRadioSelector
-                  :value="pannel.pannelResource"
-                  @input="handlePannelResourceChange"
-                  :disabled="isReplica"
-                />
-              </el-form-item>
+            <div v-if="currentPanelDataType == 1" class="base-info">
+              <div>常规运营版块：</div>
+              <div>运营人员纯手工运营的版块，可以通过此版块自主配置影片、频道、活动、系统功能等，此类版块适合首屏比较固定的内容版块，不做个性推荐积累。</div>
+            </div>
+            <div v-if="currentPanelDataType == 3" class="base-info">
+              <div>业务专辑：</div>
+              <div>运营人员可以把业务站点专辑，关联映射至此版块中，可以多个进行排序。</div>
+            </div>
+            <template v-if="mode !== 'read'">
+              <div class="form-legend-header">
+                <i class="el-icon-edit">基本信息</i>
+              </div>
+              <el-form ref="form" :model="pannel" label-width="120px">
+                <el-form-item label="业务分类"  class="selectItem">
+                  <CommonSelector
+                    :value="pannel.panelGroupCategory"
+                    @input="handlePanelGroupCategoryChange"
+                    :disabled="isReplica"
+                    :options="businessTypeEnums"/>
+                  <span class="remarks marginL">注：只有一个权限的操作者不能选择业务分类</span>
+                </el-form-item>
 
-              <el-form-item label="版块名称" required>
-                <el-input v-model.trim="pannel.pannelName"></el-input>
-              </el-form-item>
+                <el-form-item
+                  label="内容源"
+                  v-if="isPanelCommonOrVideo">
+                  <SourceRadioSelector
+                    :value="pannel.pannelResource"
+                    @input="handlePannelResourceChange"
+                    :disabled="isReplica"
+                  />
+                </el-form-item>
 
-              <el-form-item label="版块分类" required>
-                <CommonSelector
-                  type='radio'
-                  :value="pannel.parentType"
-                  @input="handleParentTypeChange"
-                  :disabled="isReplica"
-                  :options="$consts.panelTypeOptions"/>
-              </el-form-item>
+                <el-form-item label="版块名称" required>
+                  <el-input v-model.trim="pannel.pannelName"></el-input>
+                </el-form-item>
 
-              <el-form-item v-if="pannel.parentType === 'group'" label="落焦规则">
-                <el-radio-group v-model="pannel.focusConfig" @change="handleFocusConfigChange">
-                  <el-radio label="">手动指定</el-radio>
-                  <el-radio label="week">根据一周时间</el-radio>
-                  <el-radio label="timeSlot">根据时间段</el-radio>
-                </el-radio-group>
-              </el-form-item>
+                <el-form-item label="版块分类" required>
+                  <CommonSelector
+                    type='radio'
+                    :value="pannel.parentType"
+                    @input="handleParentTypeChange"
+                    :disabled="isReplica"
+                    :options="$consts.panelTypeOptions"/>
+                </el-form-item>
 
-              <el-form-item label="版块属性">
-                <BinCheckBox label="4K" v-model="pannel.flagIs4k" :disabled="isReplica" />
-              </el-form-item>
-            </el-form>
+                <el-form-item v-if="pannel.parentType === 'group'" label="落焦规则">
+                  <el-radio-group v-model="pannel.focusConfig" @change="handleFocusConfigChange">
+                    <el-radio label="">手动指定</el-radio>
+                    <el-radio label="week">根据一周时间</el-radio>
+                    <el-radio label="timeSlot">根据时间段</el-radio>
+                  </el-radio-group>
+                </el-form-item>
 
-            <div v-if="mode === 'edit' || mode === 'replicate'">
+                <el-form-item label="版块属性">
+                  <BinCheckBox label="4K" v-model="pannel.flagIs4k" :disabled="isReplica" />
+                </el-form-item>
+              </el-form>
+
+              <div v-if="mode === 'edit' || mode === 'replicate'">
+                <div class="form-legend-header" @click="handlePanelDataClick">
+                  <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
+                  <i v-else class="el-icon-arrow-up"></i>
+                  <span>版块数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                  昨日UVCTR：<span>{{panelUVCTR.value?toPercent(panelUVCTR.value):'N/A'}}</span>，
+                  日环比<span :class="panelUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.dailyGrowth}}</span>；
+                  周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
+                </div>
+                <div v-if="!isCollapseData">
+                  <div v-for="(panelChartData, index) in panelChartDataArr" class="chart-box" :key="index">
+                    <div class="chart-box--title">{{panelChartData.title}}</div>
+                    <VeLine
+                      :data="handleChartData(panelChartData)"
+                      :legend-visible="false"
+                      :extend="handleChartExtend(panelChartData)"
+                      :settings="handleChartSettings(panelChartData)"
+                      :events="handleChartEvents(index, 'edit')"
+                      :mark-line="markLine"
+                      :mark-point="markPoint"
+                      >
+                    </VeLine>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-legend-header">
+                <span>内容配置</span>
+              </div>
+
+              <el-form ref="form" :model="pannel" label-width="120px">
+                <el-form-item v-if="pannel.parentType === 'normal'" label="版块标题" required>
+                  <el-input
+                    style="width: 300px"
+                    v-model="pannel.pannelList[0].pannelTitle"
+                    placeholder="请输入版块标题"
+                  ></el-input>
+                  <BinCheckBox label="前端不显示标题" v-model="pannel.showTitle" is-negative />
+                </el-form-item>
+                <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
+                  <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
+                </el-form-item>
+                <el-form-item label="版块布局" required>
+                  <LayoutSelector ref="layoutSelector" @select-end="handleSelectLayoutEnd">
+                    <el-button @click.stop="handleSelectLayoutStart" type="primary" plain >选择布局</el-button>
+                  </LayoutSelector>
+                  <span
+                    class="marginL"
+                    v-if="selectedLayout"
+                  >(已选择: {{ selectedLayout.layoutName }})</span>
+                  <BinCheckBox class="marginL" label="设置前端推荐位底色透明" v-model="pannel.lucenyFlag" />
+                </el-form-item>
+                <el-form-item label="落焦形式" required>
+                  <CommonSelector
+                    v-model="pannel.focusShape"
+                    :options="$consts.panelFocusOptions"
+                    placeholder="请选择"
+                  />
+                  <BinCheckBox v-model="isShowfocusImgUrl" v-show="pannel.focusShape === 0" label="设置异形焦点" />
+                </el-form-item>
+                <el-form-item label="异形焦点" v-if="isShowfocusImgUrl && (pannel.focusShape === 0)">
+                  <el-button v-show="!selectedLayout" :disabled="!selectedLayout">选择异形焦点(请先选择布局)</el-button>
+                  <GlobalPictureSelector
+                    v-show="selectedLayout"
+                    title="选择异形焦点"
+                    :picture-resolution="alienFocusResolution"
+                    @select-end="handleSelectAlienFocusEnd"
+                  />
+                  <div>
+                    <img
+                      v-if="pannel.focusImgUrl"
+                      :src="pannel.focusImgUrl"
+                      style="margin-top: 10px; width: 200px; border: 1px solid #eee"
+                    >
+                  </div>
+                </el-form-item>
+                <el-form-item v-if="!pannel.pannelGroupId" v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+                  <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight}}</el-tag>
+                </el-form-item>
+                <el-form-item v-else v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+                  <div class="media-tag-list">
+                    <div
+                      v-for="(item, index) in sharedTags"
+                      :key="index"
+                      class="media-tag-list__item">
+                      {{ item.tagName }}
+                      <el-input-number :max="1.5" :min="0.5" @change="handleInputTagWeight(arguments[0], arguments[1], item)" v-model="item.tagWeight" :step="0.1" />
+                    </div>
+                  </div>
+                </el-form-item>
+                <el-form-item v-show="isShowTagsField"  class="tag-list" label="资源批量打标签">
+                  <el-button type="primary" plain @click="handleBatchAddTag">
+                    批量打标签
+                  </el-button>
+                </el-form-item>
+                <el-form-item label="批量填充">
+                  <span v-show="!selectedLayout">
+                    请先选择布局
+                  </span>
+                  <div v-show="selectedLayout">
+                    <ResourceSelector
+                      ref="resourceSelector"
+                      :selectors="mediaResourceSelectors"
+                      :is-live="false"
+                      :disable-partner="!!pannel.pannelResource"
+                      selection-type="multiple"
+                      :source="pannel.pannelResource"
+                      :business-type="pannel.panelGroupCategory"
+                      @select-end="handleSelectResourceEnd">
+                      <el-button type="primary" plain @click.stop="handleSelectResourceStart">选择资源</el-button>
+                    </ResourceSelector>
+                    <ResourceSelector
+                      class="margin-left-10"
+                      v-if="canFillWithRanking"
+                      ref="rankingSelector"
+                      :selectors="['ranking']"
+                      :is-live="false"
+                      :disable-partner="!!pannel.pannelResource"
+                      selection-type="single"
+                      :source="pannel.pannelResource"
+                      :business-type="pannel.panelGroupCategory"
+                      @select-end="handleSelectRankingEnd">
+                        <el-button type="primary" plain @click.stop="handleSelectRankingStart">
+                          选择排行榜
+                        </el-button>
+                    </ResourceSelector>
+                    <el-tooltip
+                      v-else
+                      effect="dark"
+                      placement="top">
+                      <div slot="content">
+                        使用排行榜，布局必须满足：标题布局、不带价格、只有一行、
+                        <br/>
+                        每个推荐位都是 260*364、推荐位数量 6~11 个
+                        <br />
+                        目前只支持业务类型为 不限、教育、影视
+                      </div>
+                      <el-button class="is-disabled" type="primary" plain>
+                        选择排行榜
+                      </el-button>
+                    </el-tooltip>
+                    <el-button class="btn-clear-current-blocks" @click="handleClearCurrentBlocks" type="primary" plain>
+                      清空当前版块推荐位
+                    </el-button>
+                  </div>
+                  <div v-if="pannel.parentType === 'group'" style="float:right">
+                    <el-button
+                      type="primary"
+                      @click="handleSetDefaultActiveTab"
+                      :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''">
+                      设置默认落焦
+                    </el-button>
+                    <el-button
+                      type="primary"
+                      @click="handleAddTab"
+                      :disabled="pannel.pannelList.length >= 10">
+                      添加分组
+                    </el-button>
+                  </div>
+                  <div class="pannel-blocks">
+                    <template v-if="pannel.parentType === 'group'">
+                      <el-tabs
+                        :value="activePannelIndex + ''"
+                        @input="activePannelIndex = +$event"
+                        type="card"
+                        closable
+                        @tab-remove="handleRemoveTab"
+                      >
+                        <el-tab-pane
+                          v-for="(item, index) in pannel.pannelList"
+                          :key="index"
+                          :name="index.toString()"
+                        >
+                          <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
+                            {{ (item.pannelTitle || '').trim() || "双击修改" }}
+                            {{
+                            item.panelIsFocus && pannel.focusConfig === ""
+                            ? "(默认落焦)"
+                            : ""
+                            }}
+                          </span>
+                          <VirtualPanel
+                            :blocks="item.contentList"
+                            :mode="mode"
+                            @drag="handleDragBlock"
+                            @remove-block="handleRemoveBlock"
+                            @click-block="handleClickBlock"
+                          ></VirtualPanel>
+                        </el-tab-pane>
+                      </el-tabs>
+                    </template>
+
+                    <VirtualPanel
+                      v-else
+                      :blocks="pannel.pannelList[0].contentList"
+                      :mode="mode"
+                      @drag="handleDragBlock"
+                      @remove-block="handleRemoveBlock"
+                      @click-block="handleClickBlock"
+                    ></VirtualPanel>
+                  </div>
+                </el-form-item>
+              </el-form>
+            </template>
+
+            <template v-if="mode === 'read'">
+
+              <div class="form-legend-header">
+                <i class="el-icon-edit">基本信息</i>
+              </div>
+              <el-form ref="form" :model="pannel" label-width="120px">
+                <el-form-item label="业务分类" v-if="businessTypeEnums.length > 0">
+                  {{ (businessTypeEnums.find(item => item.value == pannel.panelGroupCategory) || {}).label }}
+                </el-form-item>
+
+                <el-form-item
+                  label="内容源"
+                  v-if="isPanelCommonOrVideo"
+                >
+                  {{ $consts.sourceText[pannel.pannelResource] }}
+                </el-form-item>
+
+                <el-form-item label="版块名称" required>
+                  <div>{{pannel.pannelName}}</div>
+                </el-form-item>
+
+                <el-form-item label="版块分类" required>
+                  <div>{{ $consts.panelTypeText[pannel.parentType] }} </div>
+                </el-form-item>
+
+                <el-form-item v-if="pannel.focusConfig !== ''" label="落焦规则">
+                  <div>{{ pannel.focusConfig === '' ? '手动指定' : ({week:'根据一周时间', timeSlot: '根据时间段'})[pannel.focusConfig] }} </div>
+                </el-form-item>
+
+                <el-form-item label="版块属性">
+                  <BinCheckBox label="4K" v-model="pannel.flagIs4k" :disabled="true" />
+                </el-form-item>
+              </el-form>
+
+              <div>
               <div class="form-legend-header" @click="handlePanelDataClick">
                 <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
                 <i v-else class="el-icon-arrow-up"></i>
@@ -95,362 +335,125 @@
                 周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
               </div>
               <div v-if="!isCollapseData">
-                <div v-for="(panelChartData, index) in panelChartDataArr" class="chart-box" :key="index">
+                <div v-for="(panelChartData, index) in panelChartDataArr" :key="index" class="chart-box">
                   <div class="chart-box--title">{{panelChartData.title}}</div>
                   <VeLine
                     :data="handleChartData(panelChartData)"
                     :legend-visible="false"
                     :extend="handleChartExtend(panelChartData)"
                     :settings="handleChartSettings(panelChartData)"
-                    :events="handleChartEvents(index, 'edit')"
                     :mark-line="markLine"
                     :mark-point="markPoint"
-                    >
+                  >
                   </VeLine>
                 </div>
               </div>
-            </div>
-
-            <div class="form-legend-header">
-              <span>内容配置</span>
-            </div>
-
-            <el-form ref="form" :model="pannel" label-width="120px">
-              <el-form-item v-if="pannel.parentType === 'normal'" label="版块标题" required>
-                <el-input
-                  style="width: 300px"
-                  v-model="pannel.pannelList[0].pannelTitle"
-                  placeholder="请输入版块标题"
-                ></el-input>
-                <BinCheckBox label="前端不显示标题" v-model="pannel.showTitle" is-negative />
-              </el-form-item>
-              <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
-                <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
-              </el-form-item>
-              <el-form-item label="版块布局" required>
-                <LayoutSelector ref="layoutSelector" @select-end="handleSelectLayoutEnd">
-                  <el-button @click.stop="handleSelectLayoutStart" type="primary" plain >选择布局</el-button>
-                </LayoutSelector>
-                <span
-                  class="marginL"
-                  v-if="selectedLayout"
-                >(已选择: {{ selectedLayout.layoutName }})</span>
-                <BinCheckBox class="marginL" label="设置前端推荐位底色透明" v-model="pannel.lucenyFlag" />
-              </el-form-item>
-              <el-form-item label="落焦形式" required>
-                <CommonSelector
-                  v-model="pannel.focusShape"
-                  :options="$consts.panelFocusOptions"
-                  placeholder="请选择"
-                />
-                <BinCheckBox v-model="isShowfocusImgUrl" v-show="pannel.focusShape === 0" label="设置异形焦点" />
-              </el-form-item>
-              <el-form-item label="异形焦点" v-if="isShowfocusImgUrl && (pannel.focusShape === 0)">
-                <el-button v-show="!selectedLayout" :disabled="!selectedLayout">选择异形焦点(请先选择布局)</el-button>
-                <GlobalPictureSelector
-                  v-show="selectedLayout"
-                  title="选择异形焦点"
-                  :picture-resolution="alienFocusResolution"
-                  @select-end="handleSelectAlienFocusEnd"
-                />
-                <div>
-                  <img
-                    v-if="pannel.focusImgUrl"
-                    :src="pannel.focusImgUrl"
-                    style="margin-top: 10px; width: 200px; border: 1px solid #eee"
-                  >
-                </div>
-              </el-form-item>
-              <el-form-item v-if="!pannel.pannelGroupId" v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight}}</el-tag>
-              </el-form-item>
-              <el-form-item v-else v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                <div class="media-tag-list">
-                  <div
-                    v-for="(item, index) in sharedTags"
-                    :key="index"
-                    class="media-tag-list__item">
-                    {{ item.tagName }}
-                    <el-input-number :max="1.5" :min="0.5" @change="handleInputTagWeight(arguments[0], arguments[1], item)" v-model="item.tagWeight" :step="0.1" />
-                  </div>
-                </div>
-              </el-form-item>
-              <el-form-item v-show="isShowTagsField"  class="tag-list" label="资源批量打标签">
-                <el-button type="primary" plain @click="handleBatchAddTag">
-                  批量打标签
-                </el-button>
-              </el-form-item>
-              <el-form-item label="批量填充">
-                <span v-show="!selectedLayout">
-                  请先选择布局
-                </span>
-                <div v-show="selectedLayout">
-                  <ResourceSelector
-                    ref="resourceSelector"
-                    :selectors="mediaResourceSelectors"
-                    :is-live="false"
-                    :disable-partner="!!pannel.pannelResource"
-                    selection-type="multiple"
-                    :source="pannel.pannelResource"
-                    :business-type="pannel.panelGroupCategory"
-                    @select-end="handleSelectResourceEnd">
-                    <el-button type="primary" plain @click.stop="handleSelectResourceStart">选择资源</el-button>
-                  </ResourceSelector>
-                  <ResourceSelector
-                    class="margin-left-10"
-                    v-if="canFillWithRanking"
-                    ref="rankingSelector"
-                    :selectors="['ranking']"
-                    :is-live="false"
-                    :disable-partner="!!pannel.pannelResource"
-                    selection-type="single"
-                    :source="pannel.pannelResource"
-                    :business-type="pannel.panelGroupCategory"
-                    @select-end="handleSelectRankingEnd">
-                      <el-button type="primary" plain @click.stop="handleSelectRankingStart">
-                        选择排行榜
-                      </el-button>
-                  </ResourceSelector>
-                  <el-tooltip
-                    v-else
-                    effect="dark"
-                    placement="top">
-                    <div slot="content">
-                      使用排行榜，布局必须满足：标题布局、不带价格、只有一行、
-                      <br/>
-                      每个推荐位都是 260*364、推荐位数量 6~11 个
-                      <br />
-                      目前只支持业务类型为 不限、教育、影视
-                    </div>
-                    <el-button class="is-disabled" type="primary" plain>
-                      选择排行榜
-                    </el-button>
-                  </el-tooltip>
-                  <el-button class="btn-clear-current-blocks" @click="handleClearCurrentBlocks" type="primary" plain>
-                    清空当前版块推荐位
-                  </el-button>
-                </div>
-                <div v-if="pannel.parentType === 'group'" style="float:right">
-                  <el-button
-                    type="primary"
-                    @click="handleSetDefaultActiveTab"
-                    :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''">
-                    设置默认落焦
-                  </el-button>
-                  <el-button
-                    type="primary"
-                    @click="handleAddTab"
-                    :disabled="pannel.pannelList.length >= 10">
-                    添加分组
-                  </el-button>
-                </div>
-                <div class="pannel-blocks">
-                  <template v-if="pannel.parentType === 'group'">
-                    <el-tabs
-                      :value="activePannelIndex + ''"
-                      @input="activePannelIndex = +$event"
-                      type="card"
-                      closable
-                      @tab-remove="handleRemoveTab"
-                    >
-                      <el-tab-pane
-                        v-for="(item, index) in pannel.pannelList"
-                        :key="index"
-                        :name="index.toString()"
-                      >
-                        <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
-                          {{ (item.pannelTitle || '').trim() || "双击修改" }}
-                          {{
-                          item.panelIsFocus && pannel.focusConfig === ""
-                          ? "(默认落焦)"
-                          : ""
-                          }}
-                        </span>
-                        <VirtualPanel
-                          :blocks="item.contentList"
-                          :mode="mode"
-                          @drag="handleDragBlock"
-                          @remove-block="handleRemoveBlock"
-                          @click-block="handleClickBlock"
-                        ></VirtualPanel>
-                      </el-tab-pane>
-                    </el-tabs>
-                  </template>
-
-                  <VirtualPanel
-                    v-else
-                    :blocks="pannel.pannelList[0].contentList"
-                    :mode="mode"
-                    @drag="handleDragBlock"
-                    @remove-block="handleRemoveBlock"
-                    @click-block="handleClickBlock"
-                  ></VirtualPanel>
-                </div>
-              </el-form-item>
-            </el-form>
-          </template>
-
-          <template v-if="mode === 'read'">
-
-            <div class="form-legend-header">
-              <i class="el-icon-edit">基本信息</i>
-            </div>
-            <el-form ref="form" :model="pannel" label-width="120px">
-              <el-form-item label="业务分类" v-if="businessTypeEnums.length > 0">
-                {{ (businessTypeEnums.find(item => item.value == pannel.panelGroupCategory) || {}).label }}
-              </el-form-item>
-
-              <el-form-item
-                label="内容源"
-                v-if="isPanelCommonOrVideo"
-              >
-                {{ $consts.sourceText[pannel.pannelResource] }}
-              </el-form-item>
-
-              <el-form-item label="版块名称" required>
-                <div>{{pannel.pannelName}}</div>
-              </el-form-item>
-
-              <el-form-item label="版块分类" required>
-                <div>{{ $consts.panelTypeText[pannel.parentType] }} </div>
-              </el-form-item>
-
-              <el-form-item v-if="pannel.focusConfig !== ''" label="落焦规则">
-                <div>{{ pannel.focusConfig === '' ? '手动指定' : ({week:'根据一周时间', timeSlot: '根据时间段'})[pannel.focusConfig] }} </div>
-              </el-form-item>
-
-              <el-form-item label="版块属性">
-                <BinCheckBox label="4K" v-model="pannel.flagIs4k" :disabled="true" />
-              </el-form-item>
-            </el-form>
-
-            <div>
-            <div class="form-legend-header" @click="handlePanelDataClick">
-              <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
-              <i v-else class="el-icon-arrow-up"></i>
-              <span>版块数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              昨日UVCTR：<span>{{panelUVCTR.value?toPercent(panelUVCTR.value):'N/A'}}</span>，
-              日环比<span :class="panelUVCTR.dailyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.dailyGrowth}}</span>；
-              周同比<span :class="panelUVCTR.weeklyGrowth>0 ? 'data-up' : 'data-down'">{{panelUVCTRPercent.weeklyGrowth}}</span>
-            </div>
-            <div v-if="!isCollapseData">
-              <div v-for="(panelChartData, index) in panelChartDataArr" :key="index" class="chart-box">
-                <div class="chart-box--title">{{panelChartData.title}}</div>
-                <VeLine
-                  :data="handleChartData(panelChartData)"
-                  :legend-visible="false"
-                  :extend="handleChartExtend(panelChartData)"
-                  :settings="handleChartSettings(panelChartData)"
-                  :mark-line="markLine"
-                  :mark-point="markPoint"
-                >
-                </VeLine>
               </div>
-            </div>
-            </div>
 
-            <div class="form-legend-header">
-              <span>内容配置</span>
-            </div>
+              <div class="form-legend-header">
+                <span>内容配置</span>
+              </div>
 
-            <el-form ref="form" :model="pannel" label-width="120px">
-              <el-form-item v-if="pannel.parentType === 'normal'" label="版块标题" required>
-                <div>{{pannel.pannelList[0].pannelTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
-              </el-form-item>
-              <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
-                <div>{{pannel.groupTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
-              </el-form-item>
-              <el-form-item label="版块布局" v-if="selectedLayout">
-                <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
-              </el-form-item>
-              <el-form-item label="落焦形式" required>
-                {{ $consts.panelFocusText[pannel.focusShape] }}
-              </el-form-item>
-              <el-form-item label="异形焦点" v-if="isShowfocusImgUrl && (pannel.focusShape === 0)">
-                <div>
-                  <img
-                    v-if="pannel.focusImgUrl"
-                    :src="pannel.focusImgUrl"
-                    style="margin-top: 10px; width: 200px; border: 1px solid #eee"
-                  >
-                </div>
-              </el-form-item>
-              <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
-              </el-form-item>
-              <el-form-item label="推荐位">
-                <div class="pannel-blocks pannel-blocks--read">
-                  <template v-if="pannel.parentType === 'group'">
-                    <el-tabs
-                      v-model="activePannelIndex"
-                      type="card"
+              <el-form ref="form" :model="pannel" label-width="120px">
+                <el-form-item v-if="pannel.parentType === 'normal'" label="版块标题" required>
+                  <div>{{pannel.pannelList[0].pannelTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
+                </el-form-item>
+                <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
+                  <div>{{pannel.groupTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
+                </el-form-item>
+                <el-form-item label="版块布局" v-if="selectedLayout">
+                  <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
+                </el-form-item>
+                <el-form-item label="落焦形式" required>
+                  {{ $consts.panelFocusText[pannel.focusShape] }}
+                </el-form-item>
+                <el-form-item label="异形焦点" v-if="isShowfocusImgUrl && (pannel.focusShape === 0)">
+                  <div>
+                    <img
+                      v-if="pannel.focusImgUrl"
+                      :src="pannel.focusImgUrl"
+                      style="margin-top: 10px; width: 200px; border: 1px solid #eee"
                     >
-                      <el-tab-pane
-                        v-for="(item, index) in pannel.pannelList"
-                        :key="index"
-                        :name="index.toString()">
+                  </div>
+                </el-form-item>
+                <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+                  <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
+                </el-form-item>
+                <el-form-item label="推荐位">
+                  <div class="pannel-blocks pannel-blocks--read">
+                    <template v-if="pannel.parentType === 'group'">
+                      <el-tabs
+                        v-model="activePannelIndex"
+                        type="card"
+                      >
+                        <el-tab-pane
+                          v-for="(item, index) in pannel.pannelList"
+                          :key="index"
+                          :name="index.toString()">
 
-                        <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
-                          {{ item.pannelTitle }} {{ item.panelIsFocus && pannel.focusConfig === '' ? '(默认落焦)' : '' }}
-                        </span>
-                        <VirtualPanel
-                          :blocks="item.contentList"
-                          :mode="mode"
-                          :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
-                          @click-block="handleClickBlock"
-                          @show-simple-chart="handleAnalyzeData('simple', $event, index)"
-                          @show-dmp-chart="handleAnalyzeData('dmp', $event, index)"
-                        ></VirtualPanel>
-                      </el-tab-pane>
-                    </el-tabs>
-                  </template>
+                          <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
+                            {{ item.pannelTitle }} {{ item.panelIsFocus && pannel.focusConfig === '' ? '(默认落焦)' : '' }}
+                          </span>
+                          <VirtualPanel
+                            :blocks="item.contentList"
+                            :mode="mode"
+                            :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
+                            @click-block="handleClickBlock"
+                            @show-simple-chart="handleAnalyzeData('simple', $event, index)"
+                            @show-dmp-chart="handleAnalyzeData('dmp', $event, index)"
+                          ></VirtualPanel>
+                        </el-tab-pane>
+                      </el-tabs>
+                    </template>
 
-                  <VirtualPanel
-                    v-else
-                    :mode="mode"
-                    :blocks="pannel.pannelList[0].contentList"
-                    @click-block="handleClickBlock"
-                    :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
-                    @show-simple-chart="handleAnalyzeData('simple', $event)"
-                    @show-dmp-chart="handleAnalyzeData('dmp', $event)"
-                  ></VirtualPanel>
-                </div>
-              </el-form-item>
-            </el-form>
-          </template>
+                    <VirtualPanel
+                      v-else
+                      :mode="mode"
+                      :blocks="pannel.pannelList[0].contentList"
+                      @click-block="handleClickBlock"
+                      :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
+                      @show-simple-chart="handleAnalyzeData('simple', $event)"
+                      @show-dmp-chart="handleAnalyzeData('dmp', $event)"
+                    ></VirtualPanel>
+                  </div>
+                </el-form-item>
+              </el-form>
+            </template>
 
-        </CommonContent>
-          <PanelGroupInfoSetter
-            v-if="activePanelGroup"
-            :info="activePanelGroup"
-            :mode="mode"
-            :panel-list="pannel.pannelList"
-            :focus-config="pannel.focusConfig"
-            @set-end="handleSetPanelGroupInfoEnd"
-            @set-cancel="handleSetPanelGroupInfoCancel">
-          </PanelGroupInfoSetter>
-          <TagFrame :is-batch="true" :ids="panelResourceIds" v-if="showAddTagDialog" @close="handleBatchAddTagEnd"></TagFrame>
-      </ContentCard>
-    </PageContentWrapper>
+          </CommonContent>
+            <PanelGroupInfoSetter
+              v-if="activePanelGroup"
+              :info="activePanelGroup"
+              :mode="mode"
+              :panel-list="pannel.pannelList"
+              :focus-config="pannel.focusConfig"
+              @set-end="handleSetPanelGroupInfoEnd"
+              @set-cancel="handleSetPanelGroupInfoCancel">
+            </PanelGroupInfoSetter>
+            <TagFrame :is-batch="true" :ids="panelResourceIds" v-if="showAddTagDialog" @close="handleBatchAddTagEnd"></TagFrame>
+        </ContentCard>
+      </PageContentWrapper>
 
-    <PageContentWrapper v-if="activePage == 'block_content'">
-      <BlockContent
-        :mode="mode"
-        :data="blockContentProps"
-        :source="pannel.pannelResource"
-        :pannel="pannel.pannelList[+activePannelIndex]"
-        :pannel-group-id="pannel.pannelGroupId"
-        :hide-title-options="!!blockContentProps.blockInfo.title_info"
-        @cancel="handleSetBlockContentCancle"
-        @save="handleSetBlockContentEnd"
-      />
-    </PageContentWrapper>
+      <PageContentWrapper v-if="activePage == 'block_content'">
+        <BlockContent
+          :mode="mode"
+          :data="blockContentProps"
+          :source="pannel.pannelResource"
+          :pannel="pannel.pannelList[+activePannelIndex]"
+          :pannel-group-id="pannel.pannelGroupId"
+          :hide-title-options="!!blockContentProps.blockInfo.title_info"
+          @cancel="handleSetBlockContentCancle"
+          @save="handleSetBlockContentEnd"
+        />
+      </PageContentWrapper>
 
-    <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
-    <AnalyzeDmpDataDialog :show.sync="isVisiAnalyzeDmpData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
-  </PageWrapper>
+      <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
+      <AnalyzeDmpDataDialog :show.sync="isVisiAnalyzeDmpData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
+    </PageWrapper>
+  </TabPage>
 </template>
 <script>
+import TabPage from '@/components/TabPage'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import ContentCard from '@/components/ContentCard'
@@ -481,6 +484,7 @@ import { cloneDeep } from 'lodash'
 export default {
   mixins: [titleMixin],
   components: {
+    TabPage,
     PageWrapper,
     PageContentWrapper,
     ContentCard,
