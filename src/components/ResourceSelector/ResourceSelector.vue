@@ -125,6 +125,15 @@
             :selection-type="selectionType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
+          <subscribe-selector
+            v-if="isUseSelector('subscribe')"
+            v-show="activeSelector === 'subscribe'"
+            ref="subscribe-selector"
+            :source="source"
+            :disable-partner="disablePartner"
+            :selection-type="selectionType"
+            @select-cancel="handleSelectCancel"
+            @select-end="handleSelectEnd" />
       </template>
     </template>
     <slot></slot>
@@ -146,6 +155,7 @@ import RotateSelector from './RotateSelector'
 import ShortVideoTopicSelector from './ShortVideoTopicSelector'
 import RankingSelector from './Ranking'
 import GoodSelector from './GoodSelector'
+import SubscribeSelector from './SubscribeSelector'
 
 const SELECTORS = [
   {
@@ -199,6 +209,10 @@ const SELECTORS = [
   {
     label: '商品',
     value: 'good'
+  },
+  {
+    label: '预约影片',
+    value: 'subscribe'
   }
 ]
 export default {
@@ -216,7 +230,8 @@ export default {
     RotateSelector,
     ShortVideoTopicSelector,
     RankingSelector,
-    GoodSelector
+    GoodSelector,
+    SubscribeSelector
   },
   data() {
     return {
@@ -247,7 +262,7 @@ export default {
     autoFetchSelectors: {
       type: Array,
       default() {
-        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'ranking', 'good']
+        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'ranking', 'good', 'subscribe']
       }
     }
   },

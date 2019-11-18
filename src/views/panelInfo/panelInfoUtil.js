@@ -238,6 +238,21 @@ export function setRankingContent (contentForm, selected) {
   }
 }
 
+export function setSubscribeContent (contentForm, selected) {
+  if (selected) {
+    contentForm.coverType = 'media'
+    contentForm.contentType = 0
+    contentForm.videoContentType = 'movie'
+    contentForm.extraValue1 = selected.trailerId
+    contentForm.pictureUrl = selected.picture
+    contentForm.title = selected.trailerTitle
+    contentForm.subTitle = chopSubTitle(selected.trailerTitle)
+    contentForm.singleSubTitle = ''
+    contentForm.blockResourceType = -1
+    contentForm.subscribeOnlineTime = selected.onlineTime || ''
+  }
+}
+
 export function getSelectedResource (resources, selectedType) {
   const selectType = Object.keys(resources).find(
     key => resources[key].length > 0
@@ -430,7 +445,7 @@ const rankingCorners = [
       'http://img.sky.fs.skysrt.com/tvos6_imgs_master/20191029/20191029110131525588_46*50.png'
   }
 ]
-export function genRankingContentList (resources) {
+export function genRankingContentList (resources, contentPreset) {
   const rankingCode = resources.rankingCode
   const selected = resources.ranking || []
   const contentList = selected.map((item, index) => {
@@ -464,6 +479,16 @@ export function genRankingContentList (resources) {
     })
   })
   return contentList.concat(readMore)
+}
+
+export function genSubscribeContentList (resources, contentPreset) {
+  const selected = resources.subscribe || []
+  const contentList = selected.map(item => {
+    const content = genDefaultContentForm(contentPreset)
+    setSubscribeContent(content, item)
+    return content
+  })
+  return contentList
 }
 
 export function isValidLayoutForRanking (contentList = []) {

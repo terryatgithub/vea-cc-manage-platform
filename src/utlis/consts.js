@@ -155,6 +155,10 @@ const panelTypeOptions = [
   {
     label: '分组版块',
     value: 'group'
+  },
+  {
+    label: '预约版块',
+    value: 'subscribe'
   }
 ]
 const panelTypeText = optionsToText(panelTypeOptions)
