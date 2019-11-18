@@ -629,7 +629,6 @@ export default {
     validateFormData(data, cb) {
       this.$refs.form.validate(valid => {
         if (valid) {
-          const policyType = this.policyType
           const { normalHpList, childHpList, macStart, macEnd, deviceInfos } = data
           const hasSetMac = macStart && macEnd
 
@@ -640,13 +639,11 @@ export default {
             })
           }
 
-          if (policyType === 'normal' || policyType === 'test') {
-            if (policyType === 'normal' && normalHpList.length === 0) {
-              return this.$message({
-                type: 'error',
-                message: '请选择标准模式首页'
-              })
-            }
+          if (normalHpList.length === 0) {
+            return this.$message({
+              type: 'error',
+              message: '请选择标准模式首页'
+            })
           }
 
           if (childHpList.length === 0) {

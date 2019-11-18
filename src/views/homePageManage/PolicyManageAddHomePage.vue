@@ -105,11 +105,11 @@ export default {
       const form = this.form
       const crowdIds = form.attribute.crowdIds
       if (!crowdIds || crowdIds.length === 0) {
-        return this.$message('请选择人群')
+        return this.$message.error('请选择人群')
       }
 
       if (!form.homepageId) {
-        return this.$message('请选择首页')
+        return this.$message.error('请选择首页')
       }
 
       if (form.useABTest) {
