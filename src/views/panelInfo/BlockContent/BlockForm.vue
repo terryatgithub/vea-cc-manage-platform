@@ -415,14 +415,18 @@
         </template>
 
         <template v-if="contentForm.redundantParams.openMode === 'app'">
-          <AppParamsForm
-            v-if="!isReadonly"
-            key="app"
-            v-model="contentForm.redundantParams"
-            label-width="140px"
-            prop-prefix="redundantParams."
-          />
-          <AppParamsRead v-else :value="contentForm.redundantParams" />
+          <div v-if="!isReadonly">
+            <AppParamsForm
+              key="app"
+              v-model="contentForm.redundantParams"
+              label-width="140px"
+              prop-prefix="redundantParams."/>
+            <Params :params="contentForm.appParams" prop-prefix="appParams." />
+          </div>
+          <div v-else>
+            <AppParamsRead :value="contentForm.redundantParams" />
+            <Params :readonly="true" :params="contentForm.appParams" prop-prefix="appParams." />
+          </div>
         </template>
       </template>
       <el-form-item label="开启个性化推荐" v-if="contentForm.coverType !== 'block'">
@@ -498,11 +502,13 @@ import TagFrame from '../TagFrame'
 import { getSelectedResource, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
+import Params from '@/components/Params'
 export default {
   components: {
     Upload,
     Price,
-    AppParamsForm,
+    AppParamsForm, // 点击事件参数
+    Params, // 应用参数
     CornerSelector,
     GlobalPictureSelector,
     ResourceSelector,

@@ -44,6 +44,7 @@ export default {
         pageSize: 15
       },
       sourceEnums: [],
+      sourceText: {},
       filter: this.getDefaultFilter(),
       efficientFilter: this.getDefaultFilter(),
       filterSchema: null,
@@ -60,14 +61,15 @@ export default {
           },
           {
             label: '内容源',
-            prop: 'source',
             render: (h, { row }) => {
-              return row.thirdSource
+              return this.sourceText[row.thirdSource]
             }
           },
           {
-            label: '正片',
-            prop: 'status'
+            label: '有正片',
+            render: (h, { row }) => {
+              return row.positiveId ? '是' : ''
+            }
           }
         ],
         data: []
@@ -95,7 +97,7 @@ export default {
     getDefaultFilter() {
       return {
         partner: this.$consts.sourceToPartner[this.source || this.$consts.partnerOptions[0].value],
-        source: '',
+        sources: '',
         resType: 'videoReservation',
         callback: 'result'
       }
@@ -149,6 +151,10 @@ export default {
             this.filter.sources = defaultSelected.value
           }
           this.sourceEnums = sourceEnums
+          this.sourceText = sourceEnums.reduce((result, item) => {
+            result[item.value] = item.label
+            return result
+          }, {})
         })
       }
     }

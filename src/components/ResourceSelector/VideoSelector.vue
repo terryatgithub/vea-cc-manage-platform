@@ -134,6 +134,7 @@ export default {
       currentVideoId: undefined,
       conditionList: {},
       sourceEnums: [],
+      sourceText: {},
       pagination: {
         currentPage: 1,
         pageSize: 15
@@ -164,7 +165,10 @@ export default {
             label: '内容源',
             width: '60',
             render: (h, { row }) => {
-              return h('div', this.getSourceLabel(row))
+              const entity = row.ccVideoSourceEntities[0]
+              if (entity) {
+                return this.sourceText[entity.thirdSource] || ''
+              }
             }
           },
           {
@@ -387,6 +391,10 @@ export default {
             this.filter.sources = defaultSelected.value
           }
           this.sourceEnums = sourceEnums
+          this.sourceText = sourceEnums.reduce((result, item) => {
+            result[item.value] = item.label
+            return result
+          }, {})
         })
       }
     },

@@ -6,6 +6,7 @@
     :selection-type="selectionType"
     :table="table"
     :pagination="pagination"
+    :select-end-on-dbl-click="true"
     :filter="filter"
     :filter-schema="filterSchema"
     @pagination-change="fetchData"
@@ -129,7 +130,7 @@ export default {
       layout: 'inline',
       footer: {
         cols: {
-          item: 3,
+          item: 5,
           label: 1,
           wrapper: 23
         },

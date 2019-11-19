@@ -1953,15 +1953,19 @@ export default {
           ) {
             hasSpecific = true
           }
-          // 去除辅助字段
-          ;[]
-            .concat(
-              contentItem.videoContentList || [],
-              contentItem.specificContentList || []
-            )
+          // 去除辅助字段, 转换数据结构
+          ;[].concat(contentItem.videoContentList || [], contentItem.specificContentList || [])
             .forEach(function(item) {
               item.forceTitle = undefined
               item.picturePreset = undefined
+              const appParamsList = item.appParams
+              if (appParamsList) {
+                const appParamsObj = appParamsList.reduce((result, item) => {
+                  result[item.key] = item.value
+                  return result
+                }, {})
+                item.appParams = JSON.stringify(appParamsObj)
+              }
             })
 
           delete contentItem.mallResize
@@ -2358,17 +2362,22 @@ export default {
               contentItem.contentPosition = JSON.parse(
                 contentItem.contentPosition
               )
-              ;[]
-                .concat(
-                  contentItem.videoContentList || [],
-                  contentItem.specificContentList || []
-                )
+              ;[].concat(contentItem.videoContentList || [], contentItem.specificContentList || [])
                 .forEach((item) => {
                   if (+item.price === -1) {
                     item.price = ''
                   }
                   if (+item.secKillPrice === -1) {
                     item.secKillPrice = ''
+                  }
+                  const appParamsStr = item.appParams
+                  if (appParamsStr) {
+                    const appParamsObj = JSON.parse(appParamsStr)
+                    item.appParams = Object.keys(appParamsObj).map(key => {
+                      return { key, value: appParamsObj[key] }
+                    })
+                  } else {
+                    item.appParams = []
                   }
                 })
               return contentItem

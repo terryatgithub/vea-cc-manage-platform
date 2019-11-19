@@ -310,6 +310,8 @@ export function genDefaultContentForm (preset) {
       title: ''
     },
     bgType: '',
+    // 应用参数
+    appParams: [],
     ...preset
   }
 }
