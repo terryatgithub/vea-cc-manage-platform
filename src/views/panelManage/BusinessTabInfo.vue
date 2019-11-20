@@ -37,7 +37,10 @@
                 <el-input v-model.trim="tab.tabEnTitle"></el-input>
               </el-form-item>
               <el-form-item label="内容源" prop="tabResource">
-                <el-radio-group :value="tab.tabResource" @input="handleChangeTabResource">
+                <el-radio-group
+                  :value="tab.tabResource"
+                  @input="handleChangeTabResource"
+                  :disabled="isReplica">
                   <el-radio label>不限</el-radio>
                   <el-radio label="o_tencent">腾讯</el-radio>
                   <el-radio label="o_iqiyi">爱奇艺</el-radio>
@@ -92,7 +95,7 @@
                   :header="tabGroupTableHeader"
                   :hide-action="true"
                   class="orderableTable"
-                />
+                  :readonly="isSignalTab"/>
               </el-form-item>
 
             </el-form>
@@ -271,7 +274,6 @@ export default {
       tabTypes: [],
       status: undefined,
       mode: 'create',
-      isReplica: false, // 是否创建副本
       tab: {
         tabId: undefined,
         currentVersion: undefined,
@@ -416,6 +418,9 @@ export default {
       const isEditingV1 = mode === 'edit' && currentVersion === 'V1'
       const isCoocaa = this.$consts.idPrefix === '10'
       return isCoocaa && !(isCreatingOrCopying || isEditingV1)
+    },
+    isReplica () {
+      return this.mode === 'replicate' || this.tab.duplicateVersion === 'yes'
     }
   },
   methods: {
