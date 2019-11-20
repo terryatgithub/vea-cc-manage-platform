@@ -508,7 +508,7 @@ import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
 import SubscribeVideos from './SubscribeVideos'
 
 import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking } from './panelInfoUtil'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, uniqBy, sortBy } from 'lodash'
 
 export default {
   mixins: [titleMixin],
@@ -1365,6 +1365,10 @@ export default {
           // 一个字母比数字开头的时间的字符串要大
           return (r.videoContentList[0] || {}).subscribeOnlineTime || 'Z'
         }
+        const getId = (r) => {
+          return (r.videoContentList[0] || {}).extraValue1
+        }
+        activePannel.selectedResources = sortBy(uniqBy(activePannel.selectedResources, getId), getTime)
         activePannel.selectedResources = activePannel.selectedResources.sort((prev, next) => {
           return getTime(prev) < getTime(next) ? -1 : 1
         })
@@ -1483,24 +1487,28 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       })
-        .then(
-          function() {
-            const pannel = this.pannel
-            const originParentType = pannel.parentType
-            if (parentType === 'normal') {
-              pannel.focusConfig = ''
-            }
-            pannel.pannelList = pannel.pannelList.slice(0, 1)
-            this.activePannelIndex = 0
-            this.clearBlocks()
-            this.pannel.parentType = parentType
-            if (parentType === 'subscribe') {
-              this.handleSetLayoutForSubscribeType()
-            } else if (originParentType === 'subscribe') {
-              this.handleClearLayoutForSubscribeType()
-            }
-          }.bind(this)
-        )
+        .then(() => {
+          const pannel = this.pannel
+          const originParentType = pannel.parentType
+          if (parentType === 'normal') {
+            pannel.focusConfig = ''
+          }
+          // 只保留第一个版块
+          pannel.pannelList = pannel.pannelList.slice(0, 1)
+          // 重置当前激活版块
+          this.activePannelIndex = 0
+          // 清空推荐位内容
+          this.clearBlocks()
+          this.pannel.parentType = parentType
+          if (parentType === 'subscribe') {
+            pannel.lucenyFlag = 0
+            pannel.focusShape = 0
+            this.isShowfocusImgUrl = false
+            this.handleSetLayoutForSubscribeType()
+          } else if (originParentType === 'subscribe') {
+            this.handleClearLayoutForSubscribeType()
+          }
+        })
         .catch((e) => { console.log(e) })
     },
 

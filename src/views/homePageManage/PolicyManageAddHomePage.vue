@@ -219,7 +219,6 @@ export default {
       }
       this.showHomePageDialogVisible = false
     },
-    /** 选择首页 */
     handleSelectCrowdStart() {
       const attribute = JSON.parse(JSON.stringify(this.form.attribute || {}))
       this.selectedPolicyIds = attribute.crowdPolicyIds || []
@@ -230,7 +229,9 @@ export default {
       this.useABTestHomePage = item
       this.showHomePageDialogVisible = true
     },
-    handleSelectCrowdCancel() {},
+    handleSelectCrowdCancel() {
+      this.showSelectCrowdDialog = false
+    },
     /** 选择人群 */
     handleSelectCrowdEnd(policy, crowd) {
       // const specialNormalHp = this.specialNormalHp

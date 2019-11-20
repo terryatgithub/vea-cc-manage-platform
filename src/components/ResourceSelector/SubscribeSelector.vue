@@ -120,8 +120,8 @@ export default {
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
-      this.pagination.currentPage = 1
-      this.fetchData()
+      this.setDefaultFilterSource()
+      this.handleFilterChange()
     },
     fetchData() {
       const filter = this.getFilter()
@@ -130,6 +130,16 @@ export default {
         // ??? 有些是 rows 有些是 list
         this.table.data = result.rows || result.list || []
       })
+    },
+    setDefaultFilterSource () {
+      const partner = this.filter.partner
+      const sourceEnums = this.sourceEnums
+      const defaultSelected = sourceEnums.find(function(item) {
+        return item.value === partner
+      }) || sourceEnums[0]
+      if (defaultSelected) {
+        this.filter.sources = defaultSelected.value
+      }
     },
     onPartnerChange() {
       const partner = this.filter.partner
@@ -144,17 +154,12 @@ export default {
             }
             return result
           }, [])
-          const defaultSelected = sourceEnums.find(function(item) {
-            return item.value === partner
-          }) || sourceEnums[0]
-          if (defaultSelected) {
-            this.filter.sources = defaultSelected.value
-          }
           this.sourceEnums = sourceEnums
           this.sourceText = sourceEnums.reduce((result, item) => {
             result[item.value] = item.label
             return result
           }, {})
+          this.setDefaultFilterSource()
         })
       }
     }

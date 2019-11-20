@@ -165,6 +165,10 @@ export default {
 }
 </script>
 <style scoped>
+.name-list {
+  max-height: 400px;
+  overflow: auto;
+}
 .name-list__item {
     display: inline-block;
     width: 100px;
