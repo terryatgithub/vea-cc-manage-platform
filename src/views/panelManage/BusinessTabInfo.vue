@@ -69,21 +69,23 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="选择版块" prop="tags">
-                <cc-panel-selector-el
-                  ref="panelSelector"
-                  :source="tab.tabResource"
-                  @select-end="handleSelectPanelEnd"/>
-                <el-dropdown>
-                  <el-button type="primary" plain >
-                    新建
-                    <i class="el-icon-caret-bottom el-icon--right"></i>
-                  </el-button>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="activePage = 'panel'">常规版块</el-dropdown-item>
-                    <el-dropdown-item @click.native="activePage = 'album_panel'">业务专辑</el-dropdown-item>
-                    <el-dropdown-item @click.native="activePage = 'private_panel'">专属影院</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
+                <template v-if="!isSignalTab">
+                  <cc-panel-selector-el
+                    ref="panelSelector"
+                    :source="tab.tabResource"
+                    @select-end="handleSelectPanelEnd"/>
+                  <el-dropdown>
+                    <el-button type="primary" plain >
+                      新建
+                      <i class="el-icon-caret-bottom el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item @click.native="activePage = 'panel'">常规版块</el-dropdown-item>
+                      <el-dropdown-item @click.native="activePage = 'album_panel'">业务专辑</el-dropdown-item>
+                      <el-dropdown-item @click.native="activePage = 'private_panel'">专属影院</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </template>
 
                 <OrderableTable
                   v-model="tab.pannelList"
@@ -331,6 +333,10 @@ export default {
       const mode = this.mode
       return mode === 'edit' || mode === 'replicate' || mode === 'copy'
     },
+    isSignalTab () {
+      // eslint-disable-next-line
+      return this.tab.tabType == 5
+    },
     tabGroupTableHeader() {
       const header = [
         {
@@ -379,7 +385,7 @@ export default {
           }
         }
       ]
-      if (this.mode !== 'read') {
+      if (this.mode !== 'read' && !this.isSignalTab) {
         header.push({
           label: '操作',
           width: 80,
