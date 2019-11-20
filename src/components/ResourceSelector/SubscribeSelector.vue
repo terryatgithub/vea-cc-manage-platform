@@ -21,7 +21,7 @@
         <CommonSelector v-model="filter.sources" :options="sourceEnums" />
       </el-form-item>
       <el-form-item>
-        <el-input placeholder="影片名" clearable v-model="filter.mTitle"/>
+        <el-input placeholder="影片名" clearable v-model="filter.code"/>
       </el-form-item>
       <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
       <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
@@ -98,6 +98,7 @@ export default {
       return {
         partner: this.$consts.sourceToPartner[this.source || this.$consts.partnerOptions[0].value],
         sources: '',
+        code: undefined,
         resType: 'videoReservation',
         callback: 'result'
       }
@@ -105,7 +106,6 @@ export default {
     getFilter() {
       const pagination = this.pagination
       const filter = Object.assign({}, this.efficientFilter)
-      filter.code = filter.id
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize

@@ -14,8 +14,11 @@
           <div class="video-item__release" :title="video.title">
             {{ video.subscribeOnlineTime || '敬请期待' }}
           </div>
-          <div class="video-item__info" :title="video.title">
+          <div class="video-item__title" :title="video.title">
             {{ video.title }}
+          </div>
+          <div class="video-item__title video-item__title--sub" :title="video.subTitle">
+            {{ video.subTitle }}
           </div>
           <i v-if="mode !== 'read'" title="移除" @click="handleRemoveItem(index)" class="video-item__remove el-icon-circle-close"></i>
         </template>
@@ -55,7 +58,7 @@ export default {
   display  inline-block
   margin-right 30px
   margin-top 30px
-  margin-bottom 30px
+  margin-bottom 40px
 .video-item--duplicated
   border 2px solid red
 .video-item__img
@@ -68,13 +71,16 @@ export default {
   width 100%
   top -30px
   text-align center
-.video-item__info
+.video-item__title
   position absolute
   width 100%
   text-overflow ellipsis
   overflow hidden
   white-space nowrap
+  text-align center
   bottom -30px
+.video-item__title--sub
+  bottom -50px
 .video-item__remove
   position absolute
   right -10px

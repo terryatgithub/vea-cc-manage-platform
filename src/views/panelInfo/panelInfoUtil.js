@@ -246,7 +246,7 @@ export function setSubscribeContent (contentForm, selected) {
     contentForm.extraValue1 = selected.trailerId
     contentForm.pictureUrl = selected.picture
     contentForm.title = selected.trailerTitle
-    contentForm.subTitle = chopSubTitle(selected.trailerTitle)
+    contentForm.subTitle = selected.positiveTitle
     contentForm.singleSubTitle = ''
     contentForm.blockResourceType = -1
     contentForm.subscribeOnlineTime = selected.onlineTime || ''

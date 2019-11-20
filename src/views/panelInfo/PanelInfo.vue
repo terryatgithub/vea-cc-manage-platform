@@ -2054,10 +2054,10 @@ export default {
         return cb(Error('版块名称长度不能大于 45 个字符'))
       }
 
-      if (parentType === 'normal' && !pannel.pannelList[0].pannelTitle) {
+      if (parentType !== 'group' && !pannel.pannelList[0].pannelTitle) {
         return cb(Error('请输入版块标题'))
       }
-      if (parentType === 'normal' && pannel.pannelList[0].pannelTitle.length > 45) {
+      if (parentType !== 'group' && pannel.pannelList[0].pannelTitle.length > 45) {
         return cb(Error('版块标题长度不能大于 45 个字符'))
       }
 
