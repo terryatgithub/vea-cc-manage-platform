@@ -117,7 +117,7 @@
               </div>
 
               <el-form ref="form" :model="pannel" label-width="120px">
-                <el-form-item v-if="pannel.parentType === 'normal'" label="版块标题" required>
+                <el-form-item v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe'" label="版块标题" required>
                   <el-input
                     style="width: 300px"
                     v-model="pannel.pannelList[0].pannelTitle"
@@ -375,7 +375,7 @@
               </div>
 
               <el-form ref="form" :model="pannel" label-width="120px">
-                <el-form-item v-if="pannel.parentType === 'normal'" label="版块标题" required>
+                <el-form-item v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe'" label="版块标题" required>
                   <div>{{pannel.pannelList[0].pannelTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
                 </el-form-item>
                 <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
