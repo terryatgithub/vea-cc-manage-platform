@@ -112,7 +112,7 @@
                   <el-form-item label="标题(中文)" prop="tabCnTitle">{{tab.tabCnTitle}}</el-form-item>
                   <el-form-item label="标题(英文)" prop="tabEnTitle">{{tab.tabEnTitle}}</el-form-item>
                   <el-form-item label="内容源" prop="tabResource">
-                    <el-radio-group :value="tab.tabResource" :disabed="true">
+                    <el-radio-group :value="tab.tabResource" :disabled="true">
                       <el-radio label>不限</el-radio>
                       <el-radio label="o_tencent">腾讯</el-radio>
                       <el-radio label="o_iqiyi">爱奇艺</el-radio>
