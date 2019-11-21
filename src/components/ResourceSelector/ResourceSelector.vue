@@ -316,6 +316,12 @@ export default {
           enumerable: false
         })
       }
+      if ($refs['subscribe-selector']) {
+        Object.defineProperty(result, 'subscribeSource', {
+          value: $refs['subscribe-selector'].filter.partner,
+          enumerable: false
+        })
+      }
       this.$emit('select-end', result)
     },
     handleSelectCancel() {

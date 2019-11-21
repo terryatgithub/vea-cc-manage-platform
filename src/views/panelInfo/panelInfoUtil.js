@@ -238,12 +238,21 @@ export function setRankingContent (contentForm, selected) {
   }
 }
 
-export function setSubscribeContent (contentForm, selected) {
+export function setSubscribeContent (contentForm, options) {
+  const {
+    partner,
+    selected
+  } = options
+  const prefixMap = {
+    tencent: '_otx_',
+    yinhe: '_oqy_',
+    youku: '_oyk_'
+  }
   if (selected) {
     contentForm.coverType = 'media'
     contentForm.contentType = 0
     contentForm.videoContentType = 'movie'
-    contentForm.extraValue1 = selected.trailerId
+    contentForm.extraValue1 = prefixMap[partner] + selected.trailerId
     contentForm.pictureUrl = selected.picture
     contentForm.title = selected.trailerTitle
     contentForm.subTitle = selected.positiveTitle
@@ -484,10 +493,11 @@ export function genRankingContentList (resources, contentPreset) {
 }
 
 export function genSubscribeContentList (resources, contentPreset) {
+  const partner = resources.subscribeSource
   const selected = resources.subscribe || []
   const contentList = selected.map(item => {
     const content = genDefaultContentForm(contentPreset)
-    setSubscribeContent(content, item)
+    setSubscribeContent(content, { selected: item, partner })
     return content
   })
   return contentList

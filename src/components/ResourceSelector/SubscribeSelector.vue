@@ -13,7 +13,7 @@
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')">
 
-    <el-form slot="filter" :inline="true" v-model="filter" label-width="72px">
+    <el-form slot="filter" :inline="true" @keypress.stop.native="handleFilterChange" v-model="filter" label-width="72px">
       <el-form-item label="渠道">
         <CommonSelector v-model="filter.partner" :disabled="disablePartner" :options="$consts.partnerOptions" />
       </el-form-item>
