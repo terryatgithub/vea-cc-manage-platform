@@ -1140,6 +1140,9 @@ export default {
       if (this.isFillWithRanking) {
         return this.$message.error('使用排行榜填充的版块里的推荐位不能查看或编辑')
       }
+      if (pannel.parentType === 'subscribe') {
+        return this.$message.error('预约版块里的推荐位不可以查看或编辑详情')
+      }
       const selectedLayout = this.selectedLayout
       const activePannelIndex = +this.activePannelIndex
       const selectedResources =
