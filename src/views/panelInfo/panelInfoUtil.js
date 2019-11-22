@@ -255,6 +255,7 @@ export function setSubscribeContent (contentForm, options) {
     contentForm.extraValue1 = prefixMap[partner] + selected.trailerId
     contentForm.pictureUrl = selected.picture
     contentForm.title = selected.trailerTitle
+    contentForm.thirdSource = selected.thirdSource
     contentForm.subTitle = selected.positiveTitle
     contentForm.singleSubTitle = ''
     contentForm.blockResourceType = -1
