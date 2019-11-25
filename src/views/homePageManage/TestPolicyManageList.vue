@@ -187,14 +187,13 @@ export default {
     },
     // 查询
     handleFilterChange(type, filter) {
-      if (filter) { this.filter = filter }
+      if (filter) {
+        this.filter = filter
+      }
       if (type === 'query') {
         this.pagination.currentPage = 1
       }
-      let pagination = this.pagination
-      if (pagination.currentPage * pagination.pageSize - pagination.total < pagination.pageSize) {
-        this.fetchData()
-      }
+      this.fetchData()
     },
     // 重置
     handleFilterReset() {
