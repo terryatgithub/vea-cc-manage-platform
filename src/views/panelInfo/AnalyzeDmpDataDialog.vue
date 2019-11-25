@@ -242,6 +242,7 @@ export default {
       }
     },
     handleSelectTitle (val) {
+      this.filter.crowdId = undefined
       const { parentId, position, filter } = this
       this.$service.getVideoDmpCrowds({ parentId, position, title: filter.title }).then(data => {
         this.allCrowd = data.rows
