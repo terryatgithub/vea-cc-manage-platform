@@ -130,7 +130,7 @@ export default {
     },
     getDefaultFilter() {
       return {
-        source: this.$consts.sourceToPartner[this.source || this.$consts.partnerOptions[0].value],
+        source: this.$consts.sourceToPartner[this.source || this.$consts.sourceOptions[0].value],
         mTitle: '',
         pThirdVId: '',
         resType: 'shortVideo',

@@ -262,7 +262,7 @@ export default {
     autoFetchSelectors: {
       type: Array,
       default() {
-        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'ranking', 'good', 'subscribe']
+        return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'ranking', 'good']
       }
     }
   },

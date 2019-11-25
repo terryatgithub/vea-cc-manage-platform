@@ -96,7 +96,7 @@ export default {
     },
     getDefaultFilter() {
       return {
-        partner: this.$consts.sourceToPartner[this.source || this.$consts.partnerOptions[0].value],
+        partner: this.$consts.sourceToPartner[this.source || this.$consts.sourceOptions[0].value],
         sources: '',
         code: undefined,
         resType: 'videoReservation',
@@ -120,8 +120,8 @@ export default {
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
-      this.setDefaultFilterSource()
-      this.handleFilterChange()
+      this.pagination.currentPage = 1
+      this.onPartnerChange().then(this.fetchData)
     },
     fetchData() {
       const filter = this.getFilter()
@@ -145,7 +145,7 @@ export default {
       const partner = this.filter.partner
       this.sourceEnums = []
       if (partner) {
-        this.$service.getPartnerSource({ partnerName: partner }).then(data => {
+        return this.$service.getPartnerSource({ partnerName: partner }).then(data => {
           const sourceEnums = data.rows.reduce(function(result, item) {
             if (item.source_List) {
               result = result.concat(item.source_List
@@ -162,10 +162,11 @@ export default {
           this.setDefaultFilterSource()
         })
       }
+      return Promise.resolve()
     }
   },
   created() {
-    this.onPartnerChange()
+    this.onPartnerChange().then(this.fetchData)
   }
 }
 </script>

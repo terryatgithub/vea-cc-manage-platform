@@ -375,7 +375,7 @@ export default {
       const partner = this.filter.partner
       this.sourceEnums = []
       if (partner) {
-        this.$service.getPartnerSource({ partnerName: partner }).then(data => {
+        return this.$service.getPartnerSource({ partnerName: partner }).then(data => {
           const sourceEnums = data.rows.reduce(function(result, item) {
             if (item.source_List) {
               result = result.concat(item.source_List
@@ -397,6 +397,7 @@ export default {
           }, {})
         })
       }
+      return Promise.resolve()
     },
     onSourceChange(val) {
       if (val !== 'tencent') {
@@ -477,9 +478,10 @@ export default {
     handleFilterChangeAndReset() {
       this.handleFilterChange()
       this.filter = this.getDefaultFilter()
-      this.efficientFilter = this.getDefaultFilter()
       this.$refs.tagLogicFilter.reset()
-      this.onPartnerChange()
+      this.onPartnerChange().then(() => {
+        this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
+      })
     },
     handleFilterChange() {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
@@ -488,11 +490,11 @@ export default {
     },
     handleFilterReset() {
       this.filter = this.getDefaultFilter()
-      this.efficientFilter = this.getDefaultFilter()
-      this.$refs.tagLogicFilter.reset()
-      this.onPartnerChange()
       this.pagination.currentPage = 1
-      this.fetchData()
+      this.$refs.tagLogicFilter.reset()
+      this.onPartnerChange().then(() => {
+        this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
+      })
     },
     fetchData() {
       const filter = this.getFilter()
