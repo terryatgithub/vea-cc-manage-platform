@@ -474,8 +474,16 @@
         />
       </PageContentWrapper>
 
-      <AnalyzeSimpleDataDialog :show.sync="isVisiAnalyzeSimpleData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
-      <AnalyzeDmpDataDialog :show.sync="isVisiAnalyzeDmpData" :parentId="id" :position="analyzeBtnCurrentIndex"/>
+      <AnalyzeSimpleDataDialog
+        :show.sync="isVisiAnalyzeSimpleData"
+        :parentId="id"
+        :position="analyzeBtnCurrentIndex"
+        :isRealTime="analyzeIsRealTime"/>
+      <AnalyzeDmpDataDialog
+        :show.sync="isVisiAnalyzeDmpData"
+        :parentId="id"
+        :position="analyzeBtnCurrentIndex"
+        :isRealTime="analyzeIsRealTime"/>
     </PageWrapper>
   </TabPage>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-dialog
-      title="DMP"
+      :title="dialogTitle"
       :visible.sync="visible"
       :show="show"
       width="70%"
@@ -10,7 +10,7 @@
     >
       <el-form :inline="true" class="filter-form">
         <el-form-item label="推荐位标题">
-          <el-select v-model="filter.title" filterable clearable>
+          <el-select v-model="filter.title" filterable clearable @change="handleSelectTitle">
             <el-option
               v-for="(title, index) in allTitles"
               :key="index"
@@ -149,6 +149,11 @@ export default {
       this.visible = this.show
     }
   },
+  computed: {
+    dialogTitle () {
+      return this.isRealTime ? 'DMP实时数据' : 'DMP'
+    }
+  },
 
   props: {
     show: {
@@ -169,18 +174,21 @@ export default {
 
   methods: {
     handleDialogOpen () {
-      const { parentId, position, filter } = this
+      this.chartDataArr = []
+      this.filter = {
+        title: '',
+        crowdId: ''
+      }
+      this.allCrowd = []
+      const { parentId, position } = this
       this.$service.getVideoDmpTitles({ parentId, position }).then(data => {
         this.allTitles = data.rows
       })
-      this.$service.getVideoDmpCrowds({ parentId, position, ...filter }).then(data => {
-        this.allCrowd = data.rows
-      })
     },
     fetchData() {
-      const { parentId, position } = this
+      const { parentId, position, filter } = this
       const analyzeMethods = this.isRealTime ? 'getVideoDmpRealTimeChartData' : 'getVideoDmpChartData'
-      this.$service[analyzeMethods]({ parentId, position }).then(data => {
+      this.$service[analyzeMethods]({ parentId, position, ...filter }).then(data => {
         this.chartDataArr = data.rows
         if (this.chartDataArr.length === 0) {
           this.$message('暂无数据')
@@ -214,6 +222,12 @@ export default {
           y: chartData.title
         }
       }
+    },
+    handleSelectTitle (val) {
+      const { parentId, position, filter } = this
+      this.$service.getVideoDmpCrowds({ parentId, position, title: filter.title }).then(data => {
+        this.allCrowd = data.rows
+      })
     },
     // 暂时没有extra, e.componentType !== 'xAxis', xAxis: {triggerEvent: false}
     // 故下面的函数暂时不执行

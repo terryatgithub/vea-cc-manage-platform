@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog title="看数据"
+    <el-dialog :title="dialogTitle"
       :visible.sync="visible"
       :show="show"
       width="70%"
@@ -109,6 +109,12 @@ export default {
     }
   },
 
+  computed: {
+    dialogTitle () {
+      return this.isRealTime ? '看整体实时数据' : '看整体数据'
+    }
+  },
+
   props: {
     show: {
       type: Boolean,
@@ -128,6 +134,7 @@ export default {
 
   methods: {
     fetchData () {
+      this.chartDataArr = []
       const { parentId, position } = this
       const analyzeMethods = this.isRealTime ? 'getVideoRealTimeChartData' : 'getVideoChartData'
       this.$service[analyzeMethods]({ parentId, position }).then(data => {
