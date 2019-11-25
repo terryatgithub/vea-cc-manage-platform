@@ -176,7 +176,8 @@ export function getVideoChartData(params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/video/getChartData.html',
-    params
+    params,
+    useLoading: false
   })
 }
 
@@ -184,7 +185,8 @@ export function getVideoRealTimeChartData(params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/videoRealTime/getChartData.html',
-    params
+    params,
+    useLoading: false
   })
 }
 
@@ -192,7 +194,8 @@ export function getVideoDmpChartData(params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/videoDmp/getChartData.html',
-    params
+    params,
+    useLoading: false
   })
 }
 
@@ -200,7 +203,8 @@ export function getVideoDmpRealTimeChartData(params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/videoDmpRealTime/getChartData.html',
-    params
+    params,
+    useLoading: false
   })
 }
 

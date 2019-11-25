@@ -40,7 +40,7 @@
         <el-radio-button label="hourlyClickUv" class="tab--item">点击UV(小时)对比</el-radio-button>
         <el-radio-button label="hourlyUvctr" class="tab--item">点击UVCTR(小时)对比</el-radio-button>
       </el-radio-group> -->
-
+      <div class="loading-text" v-if="isShowLoadTip">数据搬运中，请稍候。。。</div>
       <div class="chart--wrapper" v-for="(dmpChartData, index) in chartDataArr" :key="index">
         <div class="chart-box--title">{{dmpChartData.title}}</div>
         <VeLine
@@ -140,7 +140,11 @@ export default {
       filter: {
         title: '',
         crowdId: ''
-      }
+      },
+      isShowLoadTip: false,
+      cacheParentId: undefined,
+      cachePosition: undefined,
+      cacheIsRealTime: undefined
     }
   },
 
@@ -174,21 +178,35 @@ export default {
 
   methods: {
     handleDialogOpen () {
-      this.chartDataArr = []
       this.filter = {
         title: '',
         crowdId: ''
       }
       this.allCrowd = []
-      const { parentId, position } = this
+      const { parentId, position, isRealTime } = this
+      const originParentId = this.cacheParentId
+      const originPosition = this.cachePosition
+      const originIsRealTime = this.cacheIsRealTime
+      if (originParentId === parentId && originPosition === position && originIsRealTime === isRealTime) {
+        return
+      } else {
+        this.cacheParentId = parentId
+        this.cachePosition = position
+        this.cacheIsRealTime = isRealTime
+        this.chartDataArr = []
+      }
+      console.log('1', );
       this.$service.getVideoDmpTitles({ parentId, position }).then(data => {
         this.allTitles = data.rows
       })
     },
     fetchData() {
+      this.isShowLoadTip = true
+      this.chartDataArr = []
       const { parentId, position, filter } = this
       const analyzeMethods = this.isRealTime ? 'getVideoDmpRealTimeChartData' : 'getVideoDmpChartData'
       this.$service[analyzeMethods]({ parentId, position, ...filter }).then(data => {
+        this.isShowLoadTip = false
         this.chartDataArr = data.rows
         if (this.chartDataArr.length === 0) {
           this.$message('暂无数据')
@@ -285,4 +303,7 @@ export default {
   padding 0px 20px 20px
 .filter-form
   border-bottom 1px solid
+.loading-text
+  color red
+  margin-top 10px
 </style>

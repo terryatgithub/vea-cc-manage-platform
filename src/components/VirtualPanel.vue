@@ -7,56 +7,18 @@
     :style="pannelStyle"
   >
       <div v-for="(block, index) in blockItems" :key="index">
-        <div
-          :draggable="draggable"
-          @dragstart="handleDragStart(index, $event)"
-          @dragover="handleDragOver(index, $event)"
-          @drop="handleDrop"
-          @click="handleClickBlock(index)"
-          :class="{
-                    'cc-virtual-pannel__block': true,
-                    'cc-virtual-pannel__block--duplicated': block.duplicated
-                 }"
-          :style="block.style"
-        >
-          <img referrerpolicy="no-referrer" loading="lazy" class="cc-virtual-pannel__block-post" v-if="block.img" :src="block.img">
-
-          <template v-for="(corner, index) in block.cornerList">
-            <img
-              class="corner-img"
-              v-if="corner.imgUrl"
-              referrerpolicy="no-referrer"
-              loading="lazy"
-              :src="corner.imgUrl"
-              :key="index"
-              :style="{
-                  position: 'absolute',
-                  top: corner.position === 0 || corner.position === 1 ? 0 : undefined,
-                  buttom: corner.position === 2 || corner.position === 3 ? 0 : undefined ,
-                  left: corner.position === 0 || corner.position === 3 ? 0 : undefined,
-                  right: corner.position === 1 || corner.position === 2 ? 0 : undefined,
-              }"
-            />
-          </template>
-
-          <div class="cc-virtual-pannel__block-base-info">
-            <span class="seq-num">{{ block.content.vContentId || (index + 1) }}</span>
-            <span class="size-mark">{{ block.width }}*{{ block.height }}</span>
-          </div>
-
-          <span
-            v-if="block.isExtra"
-            class="cc-virtual-pannel__block-remove"
-            @click.stop="handleRemoveBlock(index)"
-          >x</span>
-          <!-- 新增时不显示看数据按钮 -->
-          <div :class="isOverFlow(block.style) ? 'analyze-data--container' : 'analyze-data--container-row'" v-if="showChartBtn === true">
+        <el-popover
+          placement="top"
+          trigger="hover"
+          :disabled="!showChartBtn">
+          <!-- 看数据按钮 -->
+          <div>
             <el-button
               type="success"
               v-if="blocks[index].vcId != -101"
               class="analyze-data--btn"
               @click.stop="handleAnalyzeSimpleData(index)"
-            >整体数据</el-button><br/>
+            >整体数据</el-button>
             <el-button
               type="success"
               v-if="block.specificContentList && block.specificContentList.length !== 0"
@@ -67,7 +29,7 @@
               type="success"
               class="analyze-data--btn"
               @click.stop="handleAnalyzeSimpleData(index, true)"
-            >整体实时数据</el-button><br/>
+            >整体实时数据</el-button>
             <el-button
               type="success"
               v-if="block.specificContentList && block.specificContentList.length !== 0"
@@ -75,29 +37,75 @@
               @click.stop="handleAnalyzeDmpData(index, true)"
             >DMP实时数据</el-button>
           </div>
-          <template v-if="block.content">
-            <div
-              v-if="block.content.secKillPrice > 0"
-              name="smallPrice"
-              class="specialSamll cc-virtual-pannel__block-price"
-            >
-              <span class="sec-kill-price">￥{{ fixPrice(block.content.secKillPrice) }}</span>
-              <span>￥{{ fixPrice(block.content.price) }}</span>
+          <!-- 内容 -->
+          <div
+            slot="reference"
+            :draggable="draggable"
+            @dragstart="handleDragStart(index, $event)"
+            @dragover="handleDragOver(index, $event)"
+            @drop="handleDrop"
+            @click="handleClickBlock(index)"
+            :class="{
+                      'cc-virtual-pannel__block': true,
+                      'cc-virtual-pannel__block--duplicated': block.duplicated
+                  }"
+            :style="block.style"
+          >
+            <img referrerpolicy="no-referrer" loading="lazy" class="cc-virtual-pannel__block-post" v-if="block.img" :src="block.img">
+
+            <template v-for="(corner, index) in block.cornerList">
+              <img
+                class="corner-img"
+                v-if="corner.imgUrl"
+                referrerpolicy="no-referrer"
+                loading="lazy"
+                :src="corner.imgUrl"
+                :key="index"
+                :style="{
+                    position: 'absolute',
+                    top: corner.position === 0 || corner.position === 1 ? 0 : undefined,
+                    buttom: corner.position === 2 || corner.position === 3 ? 0 : undefined ,
+                    left: corner.position === 0 || corner.position === 3 ? 0 : undefined,
+                    right: corner.position === 1 || corner.position === 2 ? 0 : undefined,
+                }"
+              />
+            </template>
+
+            <div class="cc-virtual-pannel__block-base-info">
+              <span class="seq-num">{{ block.content.vContentId || (index + 1) }}</span>
+              <span class="size-mark">{{ block.width }}*{{ block.height }}</span>
             </div>
-            <div
-              v-else-if="block.content.price > 0"
-              name="smallPrice"
-              class="specialSamll cc-virtual-pannel__block-price"
-            >
-              <span>￥{{ fixPrice(block.content.price) }}</span>
-            </div>
-            <div
-              v-if="showTitle"
-              :title="block.content.title"
-              class="cc-virtual-pannel__title"
-            >{{ block.content.title}}</div>
-          </template>
-        </div>
+
+            <span
+              v-if="block.isExtra"
+              class="cc-virtual-pannel__block-remove"
+              @click.stop="handleRemoveBlock(index)"
+            >x</span>
+            <template v-if="block.content">
+              <div
+                v-if="block.content.secKillPrice > 0"
+                name="smallPrice"
+                class="specialSamll cc-virtual-pannel__block-price"
+              >
+                <span class="sec-kill-price">￥{{ fixPrice(block.content.secKillPrice) }}</span>
+                <span>￥{{ fixPrice(block.content.price) }}</span>
+              </div>
+              <div
+                v-else-if="block.content.price > 0"
+                name="smallPrice"
+                class="specialSamll cc-virtual-pannel__block-price"
+              >
+                <span>￥{{ fixPrice(block.content.price) }}</span>
+              </div>
+              <div
+                v-if="showTitle"
+                :title="block.content.title"
+                class="cc-virtual-pannel__title"
+              >{{ block.content.title}}</div>
+            </template>
+          </div>
+        </el-popover>
+
         <div
           class="cc-virtual-pannel__block-title"
           v-if="block.titleStyle"
@@ -383,10 +391,8 @@ export default {
 }
 
 .analyze-data--btn {
-  width: 83px;
-  height: 23px;
-  margin-right: 2px;
-  padding: 5px 5px;
+  width: 100px;
+  margin: 3px;
 }
 
 .margin-bottom-6 {

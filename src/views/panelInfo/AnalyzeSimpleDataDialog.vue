@@ -7,6 +7,7 @@
       @close="$emit('update:show', false)"
       @open="fetchData"
     >
+      <div class="loading-text" v-if="isShowLoadTip">数据搬运中，请稍候。。。</div>
       <div v-for="(simpleChartData, index) in chartDataArr" :key="index">
         <div class="chart-box--title">{{simpleChartData.title}}</div>
         <VeLine
@@ -99,7 +100,11 @@ export default {
       visible: this.show,
       chartDataArr: [],
       extraVisible: false,
-      extraArr: [] // Array< string > 信息细节
+      extraArr: [], // Array< string > 信息细节
+      isShowLoadTip: false,
+      cacheParentId: undefined,
+      cachePosition: undefined,
+      cacheIsRealTime: undefined
     }
   },
 
@@ -134,10 +139,23 @@ export default {
 
   methods: {
     fetchData () {
+      const originParentId = this.cacheParentId
+      const originPosition = this.cachePosition
+      const originIsRealTime = this.cacheIsRealTime
+      const { parentId, position, isRealTime } = this
+      // 获取缓存数据
+      if (originParentId === parentId && originPosition === position && originIsRealTime === isRealTime) {
+        return
+      } else {
+        this.cacheParentId = parentId
+        this.cachePosition = position
+        this.cacheIsRealTime = isRealTime
+      }
       this.chartDataArr = []
-      const { parentId, position } = this
+      this.isShowLoadTip = true
       const analyzeMethods = this.isRealTime ? 'getVideoRealTimeChartData' : 'getVideoChartData'
       this.$service[analyzeMethods]({ parentId, position }).then(data => {
+        this.isShowLoadTip = false
         this.chartDataArr = data.rows
         if (this.chartDataArr.length === 0) {
           this.$message('暂无数据')
@@ -213,4 +231,6 @@ export default {
   font-size 25px
 .extra-dia >>> .el-dialog__body
   padding 0px 20px 20px
+.loading-text
+  color red
 </style>
