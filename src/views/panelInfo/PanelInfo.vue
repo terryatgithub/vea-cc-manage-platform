@@ -1505,7 +1505,11 @@ export default {
             pannel.focusConfig = ''
           }
           // 只保留第一个版块
-          pannel.pannelList = pannel.pannelList.slice(0, 1)
+          const firstPannel = pannel.pannelList[0]
+          // 清除版块标题
+          firstPannel.pannelTitle = ''
+          pannel.pannelList = [firstPannel]
+
           // 重置当前激活版块
           this.activePannelIndex = 0
           // 清空推荐位内容
