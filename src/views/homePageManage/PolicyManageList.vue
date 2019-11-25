@@ -192,10 +192,7 @@ export default {
       if (type === 'query') {
         this.pagination.currentPage = 1
       }
-      let pagination = this.pagination
-      if (pagination.currentPage * pagination.pageSize - pagination.total < pagination.pageSize) {
-        this.fetchData()
-      }
+      this.fetchData()
     },
     // 重置
     handleFilterReset() {
