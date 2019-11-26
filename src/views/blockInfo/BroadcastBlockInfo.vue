@@ -1352,7 +1352,6 @@ export default {
     }
   },
   created() {
-    window.test = this
     this.normalForm = cloneDeep(this.versionForm)
     this.lowerForm = cloneDeep(this.versionForm)
     this.lowerForm.smallTopicsId = ''
