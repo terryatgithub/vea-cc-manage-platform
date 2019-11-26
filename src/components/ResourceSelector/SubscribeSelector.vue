@@ -129,6 +129,12 @@ export default {
         this.pagination.total = result.total
         // ??? 有些是 rows 有些是 list
         this.table.data = result.rows || result.list || []
+        this.setPartner(this.table.data, this.filter.partner)
+      })
+    },
+    setPartner (data = [], partner) {
+      data.forEach(item => {
+        item._partner = partner
       })
     },
     setDefaultFilterSource () {

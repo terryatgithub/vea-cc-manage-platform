@@ -36,12 +36,12 @@ function getMatchingValue (blockSize, imgSize) {
 
 export function setMediaContent (contentForm, options) {
   const {
-    partner,
     selectedType,
     selected,
     selectedEpisode,
     blockSize
   } = options
+  const partner = selected._partner
 
   // 清空由app可能引起的遗留数据
   Object.assign(contentForm, {
@@ -240,9 +240,9 @@ export function setRankingContent (contentForm, selected) {
 
 export function setSubscribeContent (contentForm, options) {
   const {
-    partner,
     selected
   } = options
+  const partner = selected._partner
   const prefixMap = {
     tencent: '_otx_',
     yinhe: '_oqy_',
@@ -272,8 +272,7 @@ export function getSelectedResource (resources, selectedType) {
 export function getSelectedResourceByType (resources, selectedType) {
   const selected = resources[selectedType]
   const selectedEpisode = resources.episode || {}
-  const partner = resources.videoSource
-  return { partner, selectedType, selected, selectedEpisode }
+  return { selectedType, selected, selectedEpisode }
 }
 
 export function chopSubTitle (title) {
@@ -366,7 +365,6 @@ export function genMediaContentList (resources, contentPreset, selectType) {
   const contentList = selected.map(item => {
     const content = genDefaultContentForm(contentPreset)
     setMediaContent(content, {
-      partner: selectedResult.partner,
       selectedType,
       selected: item,
       selectedEpisode: selectedEpisode[item.coocaaVId]
@@ -494,11 +492,10 @@ export function genRankingContentList (resources, contentPreset) {
 }
 
 export function genSubscribeContentList (resources, contentPreset) {
-  const partner = resources.subscribeSource
   const selected = resources.subscribe || []
   const contentList = selected.map(item => {
     const content = genDefaultContentForm(contentPreset)
-    setSubscribeContent(content, { selected: item, partner })
+    setSubscribeContent(content, { selected: item })
     return content
   })
   return contentList
