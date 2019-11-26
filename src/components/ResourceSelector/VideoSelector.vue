@@ -394,7 +394,7 @@ export default {
           this.sourceText = sourceEnums.reduce((result, item) => {
             result[item.value] = item.label
             return result
-          }, {})
+          }, { ...this.sourceText })
         })
       }
       return Promise.resolve()

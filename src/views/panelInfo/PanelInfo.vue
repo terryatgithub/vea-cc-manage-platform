@@ -1501,27 +1501,35 @@ export default {
         .then(() => {
           const pannel = this.pannel
           const originParentType = pannel.parentType
-          if (parentType === 'normal') {
-            pannel.focusConfig = ''
-          }
           // 只保留第一个版块
           const firstPannel = pannel.pannelList[0]
           // 清除版块标题
           firstPannel.pannelTitle = ''
           pannel.pannelList = [firstPannel]
-
           // 重置当前激活版块
           this.activePannelIndex = 0
           // 清空推荐位内容
           this.clearBlocks()
           this.pannel.parentType = parentType
-          if (parentType === 'subscribe') {
-            pannel.lucenyFlag = 0
-            pannel.focusShape = 0
-            this.isShowfocusImgUrl = false
-            this.handleSetLayoutForSubscribeType()
-          } else if (originParentType === 'subscribe') {
-            this.handleClearLayoutForSubscribeType()
+          switch (true) {
+            case parentType === 'normal':
+              pannel.focusConfig = ''
+              if (originParentType === 'subscribe') {
+                this.handleClearLayoutForSubscribeType()
+              }
+              break
+            case parentType === 'group':
+              if (originParentType === 'subscribe') {
+                this.handleClearLayoutForSubscribeType()
+              }
+              break
+            case parentType === 'subscribe':
+              pannel.focusConfig = ''
+              pannel.lucenyFlag = 0
+              pannel.focusShape = 0
+              this.isShowfocusImgUrl = false
+              this.handleSetLayoutForSubscribeType()
+              break
           }
         })
         .catch((e) => { console.log(e) })
