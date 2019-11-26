@@ -104,7 +104,6 @@ export function parseResourceContent(tabName, selected) {
           s.vid = selectedEpisode.coocaaMId
         }
         // 集数
-        this.singleEpisodeNum = selectedEpisode.urlCollection
         s.pictureUrl = selectedEpisode.thumb
         s.title = selectedEpisode.urlTitle
         s.subTitle = selectedEpisode.urlSubTitle
