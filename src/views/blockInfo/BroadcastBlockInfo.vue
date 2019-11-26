@@ -942,6 +942,8 @@ export default {
         })
       })
       this.normalVersionContent.splice(this.currentIndex, contentArr.length, ...contentArr)
+      this.normalForm = this.genDefaultContentForm()
+      this.normalForm = Object.assign(this.normalVersionContent[this.currentIndex])
     },
     handleSelectLowerSingleResourceEnd(selectedResources) {
       const result = getSelectedResource(selectedResources)
