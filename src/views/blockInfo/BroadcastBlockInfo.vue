@@ -941,8 +941,7 @@ export default {
           contentArr.push(normalForm)
         })
       })
-      this.normalVersionContent.splice(this.currentIndex, 0, ...contentArr)
-      this.currentIndex = this.normalVersionContent.length - 1
+      this.normalVersionContent.splice(this.currentIndex, contentArr.length, ...contentArr)
     },
     handleSelectLowerSingleResourceEnd(selectedResources) {
       const result = getSelectedResource(selectedResources)

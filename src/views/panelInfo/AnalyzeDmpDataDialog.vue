@@ -195,7 +195,6 @@ export default {
         this.cacheIsRealTime = isRealTime
         this.chartDataArr = []
       }
-      console.log('1', );
       this.$service.getVideoDmpTitles({ parentId, position }).then(data => {
         this.allTitles = data.rows
       })
