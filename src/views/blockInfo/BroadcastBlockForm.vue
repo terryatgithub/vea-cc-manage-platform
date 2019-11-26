@@ -419,7 +419,7 @@ export default {
     },
     handleSelectNormalSingleResourceEnd(selectedResources, mode) {
       const result = getSelectedResource(selectedResources)
-      const resourceContent = parseResourceContent(result.selectedType, result.selected[0], result.partner)
+      const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
       setContentForm(this.normalForm, resourceContent)
       // 轮播资源关闭推荐流
       if (this.normalForm.clickTemplateType === 'rotate') {
@@ -430,7 +430,7 @@ export default {
     },
     handleSelectNormalSingleOtherResourceEnd(selectedResources) {
       const result = getSelectedResource(selectedResources)
-      const resourceContent = parseResourceContent(result.selectedType, result.selected[0], result.partner)
+      const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
       this.normalForm.clickParams = getParams(resourceContent)
       this.normalForm.clickTemplateType = resourceContent.contentType
     },

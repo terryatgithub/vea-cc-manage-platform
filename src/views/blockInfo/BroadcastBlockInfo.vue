@@ -391,7 +391,7 @@ import { cloneDeep } from 'lodash'
 import titleMixin from '@/mixins/title'
 import BroadcastBlockForm from './BroadcastBlockForm'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
-import { parseResourceContent, setContentForm, getParams, getSelectedResourceByType, getSelectedResource } from './broadcastBlockUtil'
+import { parseResourceContent, setContentForm, getSelectedResource } from './broadcastBlockUtil'
 
 export default {
   mixins: [titleMixin],
@@ -936,7 +936,7 @@ export default {
       resourceOptions.forEach(resourceName => {
         selectedResources[resourceName].forEach(selected => {
           const normalForm = this.genDefaultContentForm()
-          const resourceContent = parseResourceContent(resourceName, selected, selectedResources.videoSource)
+          const resourceContent = parseResourceContent(resourceName, selected)
           setContentForm(normalForm, resourceContent)
           contentArr.push(normalForm)
         })
@@ -946,7 +946,7 @@ export default {
     },
     handleSelectLowerSingleResourceEnd(selectedResources) {
       const result = getSelectedResource(selectedResources)
-      const resourceContent = parseResourceContent(result.selectedType, result.selected[0], result.partner)
+      const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
       setContentForm(this.lowerForm, resourceContent)
     },
     // 校验normalForm
@@ -1353,6 +1353,7 @@ export default {
     }
   },
   created() {
+    window.test = this
     this.normalForm = cloneDeep(this.versionForm)
     this.lowerForm = cloneDeep(this.versionForm)
     this.lowerForm.smallTopicsId = ''

@@ -6,14 +6,13 @@ export function getSelectedResource(resources) {
 export function getSelectedResourceByType(resources, selectedType) {
   const selected = resources[selectedType]
   const selectedEpisode = resources.episode || {}
-  const partner = resources.videoSource
   selected.forEach((item) => {
     const episode = selectedEpisode[item.coocaaVId]
     if (episode) {
       item.selectedEpisode = episode
     }
   })
-  return { partner, selectedType, selected }
+  return { selectedType, selected }
 }
 
 export function setContentForm(contentForm, options) {
@@ -77,7 +76,7 @@ export function getParams (selected) {
   return param
 }
 
-export function parseResourceContent(tabName, selected, sourceType) {
+export function parseResourceContent(tabName, selected) {
   let s = {
     type: '', // 面向客户端
     contentType: '', // 面向管理后台
@@ -90,10 +89,11 @@ export function parseResourceContent(tabName, selected, sourceType) {
     o_iqiyi: '_oqy_',
     youku: '_oyk_'
   }
+  const partner = selected._partner
   switch (tabName) {
     case 'video': {
       const selectedEpisode = selected.selectedEpisodes
-      const prefix = (prefixMap[sourceType] || '')
+      const prefix = (prefixMap[partner] || '')
       if (selectedEpisode) {
         if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
           // 如果是短视频, 并且 thirdVId 存在
