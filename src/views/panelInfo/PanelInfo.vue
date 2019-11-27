@@ -516,7 +516,7 @@ import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
 import SubscribeVideos from './SubscribeVideos'
 
 import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking } from './panelInfoUtil'
-import { cloneDeep, uniqBy, sortBy } from 'lodash'
+import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 export default {
   mixins: [titleMixin],
@@ -1379,10 +1379,11 @@ export default {
         const getId = (r) => {
           return (r.videoContentList[0] || {}).extraValue1
         }
-        activePannel.selectedResources = sortBy(uniqBy(activePannel.selectedResources, getId), getTime)
-        activePannel.selectedResources = activePannel.selectedResources.sort((prev, next) => {
-          return getTime(prev) < getTime(next) ? -1 : 1
-        })
+        debugger
+        activePannel.selectedResources = sortBy(uniqBy(reverse(activePannel.selectedResources), getId), getTime)
+        // activePannel.selectedResources = activePannel.selectedResources.sort((prev, next) => {
+        //   return getTime(prev) < getTime(next) ? -1 : 1
+        // })
       }
       // 计算每个 block 的位置
       this.updatePosition()
