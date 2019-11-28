@@ -94,7 +94,7 @@ export default {
                 h('el-button', {
                   props: { type: 'text' },
                   on: { click: this.handleClickDataShow(row) }
-                }, '看数据'),
+                }, '看数据')
                 // h('el-button', {
                 //   props: { type: 'text' },
                 //   on: { click: this.handleClickDataShow(row, true) }
