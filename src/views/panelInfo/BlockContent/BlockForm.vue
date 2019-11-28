@@ -908,9 +908,9 @@ export default {
     },
     handleSelectMediaEnd(resources) {
       const selectedResult = getSelectedResource(resources)
-      const partner = selectedResult.partner
       const selectedType = selectedResult.selectedType
       const selected = selectedResult.selected[0]
+      const partner = selected._partner
       const selectedEpisode = selectedResult.selectedEpisode[selected.coocaaVId]
       const blockSize = this.resolution
       setMediaContent(this.contentForm, { partner, selectedType, selected, selectedEpisode, blockSize })
@@ -974,9 +974,9 @@ export default {
     },
     handleSelectBgMediaEnd(resources) {
       const selectedResult = getSelectedResource(resources)
-      const partner = selectedResult.partner
       const selectedType = selectedResult.selectedType
       const selected = selectedResult.selected[0]
+      const partner = selected._partner
       const selectedEpisode = selectedResult.selectedEpisode[selected.coocaaVId]
 
       const contentForm = this.contentForm

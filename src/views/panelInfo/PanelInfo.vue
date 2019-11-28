@@ -1379,7 +1379,6 @@ export default {
         const getId = (r) => {
           return (r.videoContentList[0] || {}).extraValue1
         }
-        debugger
         activePannel.selectedResources = sortBy(uniqBy(reverse(activePannel.selectedResources), getId), getTime)
         // activePannel.selectedResources = activePannel.selectedResources.sort((prev, next) => {
         //   return getTime(prev) < getTime(next) ? -1 : 1
