@@ -10,7 +10,8 @@
         <el-popover
           placement="top"
           trigger="hover"
-          :disabled="!showChartBtn">
+          :disabled="!showChartBtn"
+          popper-class="show-chart-popper">
           <!-- 看数据按钮 -->
           <div>
             <el-button
@@ -25,7 +26,7 @@
               class="analyze-data--btn"
               @click.stop="handleAnalyzeDmpData(index)"
             >DMP</el-button><br v-if="block.specificContentList && block.specificContentList.length !== 0"/>
-            <el-button
+            <!-- <el-button
               type="success"
               class="analyze-data--btn"
               @click.stop="handleAnalyzeSimpleData(index, true)"
@@ -35,7 +36,7 @@
               v-if="block.specificContentList && block.specificContentList.length !== 0"
               class="analyze-data--btn"
               @click.stop="handleAnalyzeDmpData(index, true)"
-            >DMP实时数据</el-button>
+            >DMP实时数据</el-button> -->
           </div>
           <!-- 内容 -->
           <div
@@ -400,5 +401,10 @@ export default {
 }
 .el-form-item--small .el-form-item__content, .el-form-item--small .el-form-item__label {
   line-height: 25px;
+}
+</style>
+<style>
+.show-chart-popper {
+  min-width: 100px;
 }
 </style>
