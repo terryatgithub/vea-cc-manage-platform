@@ -188,7 +188,8 @@ export default {
       formRules: {
         // 表单规则
         layoutName: [
-          { required: true, message: '请输入布局名称', trigger: 'blur' }
+          { required: true, message: '请输入布局名称', trigger: 'blur' },
+          { max: 45, message: '不超过 45 个字符' }
         ],
         layoutType: [
           { required: true, message: '请输入布局类别', trigger: 'blur' }
