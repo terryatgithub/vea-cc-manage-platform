@@ -135,9 +135,9 @@
     <el-dialog title="添加尺寸" :visible.sync="isVisibleSize" width="30%">
       <el-row :gutter="10"><el-col :span="12" class="text-center-align">宽</el-col><el-col :span="12" class="text-center-align">高</el-col></el-row>
       <el-row>
-        <el-col :span="10"><InputPositiveInt v-model="newTabSize.width"/></el-col>
+        <el-col :span="10"><InputPositiveInt v-model="newTabSize.width" @keyup.enter.native="handleAddTabSize"/></el-col>
         <el-col :span="4" class="text-center-align">X</el-col>
-        <el-col :span="10"><InputPositiveInt v-model="newTabSize.height"/></el-col>
+        <el-col :span="10"><InputPositiveInt v-model="newTabSize.height" @keyup.enter.native="handleAddTabSize"/></el-col>
       </el-row>
       <div class="size-btn-group">
         <el-button type="primary" @click="handleAddTabSize">确定</el-button>
