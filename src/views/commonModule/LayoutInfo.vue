@@ -41,6 +41,7 @@
               <el-form-item label="布局" prop="layoutJson8">
                 <el-button type="primary" plain @click="$refs.upload.handleSelectFile()">上传布局文件</el-button>
                 <el-button type="primary" plain @click="activePage = 'layout-generate'">生成布局</el-button>
+                <el-button type="primary" plain :disabled="!form.layoutJson8" @click="handleDownloadLayout(form.layoutJson8)">下载</el-button>
                 <Upload
                   ref="upload"
                   @upload="handleUpload(arguments[0], arguments[1], 'v8')">
@@ -73,6 +74,7 @@
               <el-form-item label="布局6.0" prop="layoutJson">
                 <el-button type="primary" :disabled="form.layout6GenMode === 'auto'" plain @click="$refs.uploadV6.handleSelectFile()">上传布局文件</el-button>
                 <el-button type="primary" :disabled="form.layout6GenMode === 'auto'" plain @click="activePage = 'layout-generate-v6'">生成布局</el-button>
+                <el-button type="primary" plain :disabled="!form.layoutJson" @click="handleDownloadLayout(form.layoutJson)">下载</el-button>
                 <Upload
                   ref="uploadV6"
                   @upload="handleUpload(arguments[0], arguments[1], 'v6')">
@@ -110,12 +112,18 @@
                 <div>{{ layoutTypeText[form.layoutType] }}</div>
               </el-form-item>
               <el-form-item label="布局">
-                <LayoutPreview v-if="form.layoutJson8" :content="form.layoutJson8.contents" class="layoutBloack"></LayoutPreview>
+                <el-button type="primary" plain :disabled="!form.layoutJson8" @click="handleDownloadLayout(form.layoutJson8)">下载</el-button>
+                <LayoutPreview
+                  v-if="form.layoutJson8"
+                  class="layout-preview"
+                  :content="form.layoutJson8.contents">
+                </LayoutPreview>
               </el-form-item>
               <el-form-item label="6.0布局生成方式" prop="layout6GenMode">
                 {{ form.layout6GenMode === 'manual' ? '手动' : '自动' }}
               </el-form-item>
               <el-form-item label="布局6.0" prop="layoutJson">
+                <el-button type="primary" plain :disabled="!form.layoutJson" @click="handleDownloadLayout(form.layoutJson)">下载</el-button>
                 <LayoutPreview
                   v-if="form.layoutJson"
                   class="layout-preview"
@@ -221,6 +229,14 @@ export default {
     }
   },
   methods: {
+    handleDownloadLayout (layout) {
+      const urlObject = window.URL || window.webkitURL || window
+      const blobData = new Blob([JSON.stringify(layout)])
+      const aElement = document.createElement('a')
+      aElement.href = urlObject.createObjectURL(blobData)
+      aElement.download = this.form.layoutName || 'layout'
+      aElement.click()
+    },
     handleInputLayout6GenMode (val) {
       const form = this.form
       form.layout6GenMode = val
