@@ -497,7 +497,7 @@ export default {
       const videoTabs = this.videoTabs
       videoTabs[index].imageInfoList = resources[tabName][0].imageInfoList
       // 有尺寸填充默认图
-      this.dealFillDefaultImg()
+      this.dealFillDefaultImg(true)
       if (tabName === 'video') {
         const entity = resources[tabName][0].ccVideoSourceEntities[0]
         const score = entity.score
@@ -519,7 +519,7 @@ export default {
       }
       videoTabs[index].picList = []
     },
-    dealFillDefaultImg () {
+    dealFillDefaultImg (isClickSingle) {
       const { sizeTags, videoTabs } = this
       if (sizeTags.length !== 0) {
         sizeTags.forEach((item, index) => {
@@ -561,6 +561,13 @@ export default {
                   })
                   videoTab.picInfoList[index].pictureUrl = currentImageInfo ? currentImageInfo.url : undefined
                 }
+              }
+              // isClickSingle替换图片,当选择单个资源时
+              if (isClickSingle) {
+                const currentImageInfo = (videoTab.imageInfoList || []).find(imageInfoList => {
+                  return imageInfoList.size === resolution
+                })
+                videoTab.picInfoList[index].pictureUrl = currentImageInfo ? currentImageInfo.url : undefined
               }
             })
           }
