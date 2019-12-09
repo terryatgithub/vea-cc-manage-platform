@@ -255,9 +255,11 @@ export default {
     this.$service.getTotal('msn').then(data => {
       this.movieNum = data
     })
-    this.$service.desktopGetDataSyncInfo().then((data) => {
-      this.isAutoSync = data.isOn
-    })
+    if (this.$consts.idPrefix !== '10') {
+      this.$service.desktopGetDataSyncInfo().then((data) => {
+        this.isAutoSync = data.isOn
+      })
+    }
   }
 }
 </script>
