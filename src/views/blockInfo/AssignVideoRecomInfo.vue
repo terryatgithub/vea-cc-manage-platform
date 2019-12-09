@@ -497,7 +497,7 @@ export default {
       const videoTabs = this.videoTabs
       videoTabs[index].imageInfoList = resources[tabName][0].imageInfoList
       // 有尺寸填充默认图
-      this.dealFillDefaultImg(true)
+      this.dealFillDefaultImg(index)
       if (tabName === 'video') {
         const entity = resources[tabName][0].ccVideoSourceEntities[0]
         const score = entity.score
@@ -519,14 +519,14 @@ export default {
       }
       videoTabs[index].picList = []
     },
-    dealFillDefaultImg (isClickSingle) {
+    dealFillDefaultImg (clickSingleIndex) {
       const { sizeTags, videoTabs } = this
       if (sizeTags.length !== 0) {
         sizeTags.forEach((item, index) => {
           // 寻找标准分辨率
           const resolution = item.width + '*' + item.height
           if (resolution === '260*364' || resolution === '498*280') {
-            videoTabs.forEach(videoTab => {
+            videoTabs.forEach((videoTab, videoIndex) => {
               // 有url就不填充
               if (!videoTab.picInfoList[index].pictureUrl) {
                 // 不存在imageInfoList时访问媒资
@@ -562,8 +562,8 @@ export default {
                   videoTab.picInfoList[index].pictureUrl = currentImageInfo ? currentImageInfo.url : undefined
                 }
               }
-              // isClickSingle替换图片,当选择单个资源时
-              if (isClickSingle) {
+              // 当选择单个资源时,clickSingleIndex处切换图片
+              if (clickSingleIndex === videoIndex) {
                 const currentImageInfo = (videoTab.imageInfoList || []).find(imageInfoList => {
                   return imageInfoList.size === resolution
                 })
