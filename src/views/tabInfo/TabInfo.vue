@@ -302,6 +302,7 @@
                     @drag-start="handleDragStart"
                     @drag-end="handleDragEnd"
                     @show-all-panel="handleShowAllPanels"
+                    @lazy-init="handleLazyInit"
                     :panels="tabInfo.pannelList"
                     :panel-data="panelListIndexed"
                     :width="725"
@@ -669,6 +670,7 @@
                     @collapse="handleChangeCollapseState"
                     @uncollapse="handleChangeCollapseState"
                     @show-all-panel="handleShowAllPanels"
+                    @lazy-init="handleLazyInit"
                     :read-only="true"
                     :width="725"
                     :ratio="0.315"
@@ -1286,6 +1288,10 @@ export default {
     'tabInfo.tabResource': 'getVipButtonSource'
   },
   methods: {
+    handleLazyInit (item) {
+      const panel = this.panelListIndexed[item.id]
+      this.loadPanelDetail(panel)
+    },
     handleInputTabType (val) {
       if (val === 2) {
         this.tabInfo.refreshTimeList = []
@@ -1445,6 +1451,7 @@ export default {
       this.updatePanelVersion(
         panel,
         function() {
+          // 预览完，重新加载版块信息，因为版本可能已经变了
           this.loadPanelDetail(panel)
         }.bind(this)
       )
@@ -1674,7 +1681,7 @@ export default {
           dmpInfo: dmpInfo
         })
       }
-
+      // 插入新的版块，重新加载版块信息
       this.loadPanelDetail(panel)
       this.updateDuplicates()
     },
@@ -1683,7 +1690,7 @@ export default {
       const id = panel.pannelGroupId
       // 如果有草稿或者待审核副本，则加载， 否则， 加载当前版本
       const version = panel.duplicateVersion || panel.currentVersion
-      this.$service.panelGetDetail({ id, version }).then(panelDetail => {
+      this.$service.panelGetDetailSilence({ id, version }).then(panelDetail => {
         if (!panelDetail.pannelGroupId) {
           // 接口没状态吗。。。
           return
@@ -2587,12 +2594,12 @@ export default {
             }
           }.bind(this)
         )
-        setTimeout(
-          function() {
-            panelToLoad.forEach(this.loadPanelDetail.bind(this))
-          }.bind(this),
-          50
-        )
+        // setTimeout(
+        //   function() {
+        //     panelToLoad.forEach(this.loadPanelDetail.bind(this))
+        //   }.bind(this),
+        //   50
+        // )
       }
 
       const originRefreshTimeList = data.refreshTimeList || []

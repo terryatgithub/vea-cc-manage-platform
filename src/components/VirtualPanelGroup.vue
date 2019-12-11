@@ -22,6 +22,12 @@
         @click-block="handleClickBlock(0, $event)"
       ></cc-virtual-panel>
     </template>
+    <div v-else class="skeleton">
+      <div class="skeleton__block"></div>
+      <div class="skeleton__block"></div>
+      <div class="skeleton__block"></div>
+      <div class="skeleton__block"></div>
+    </div>
     <slot name="stat"></slot>
   </div>
 </template>
@@ -40,8 +46,17 @@ export default {
   }
 }
 </script>
-<style scoped>
-.cc-virtual-panel-group .el-tab-pane {
-  overflow-x: auto;
-}
+<style lang="stylus" scoped>
+.cc-virtual-panel-group .el-tab-pane
+  overflow-x auto
+.skeleton
+  width 100%
+  height 100%
+  display flex
+.skeleton__block
+  height 200px
+  width 25%
+  margin 10px
+  display inline-block
+  background #d3dce6
 </style>

@@ -117,10 +117,12 @@
                   <div class="tab-plcacholder-info">
                     <div class="tab-placeholder-info__link" @click="handleOpenPanel(panel)">
                       {{ panel.panelId }}
+                      <vue-lazy-component @before-init="$emit('lazy-init', item)"></vue-lazy-component>
                       <span
                         class="panel-status--waiting"
-                        v-show="panel.status !== 4"
-                      >({{ STATUS_TEXT[panel.status] }})</span>
+                        v-show="panel.status !== 4">
+                        ({{ STATUS_TEXT[panel.status] }})
+                      </span>
                     </div>
                     <div
                       class="tab-placeholder-info__link"
@@ -135,8 +137,9 @@
                   <div class="tab-placeholder__panel">
                     <div
                       class="tab-placeholder__panel-title"
-                      @click="handleOpenPanel(panel)"
-                    >{{ panel.panelTitle }}</div>
+                      @click="handleOpenPanel(panel)">
+                      {{ panel.panelTitle }}
+                    </div>
                     <cc-virtual-panel-group
                       :key="crowdIndex"
                       :panel="panelData[item.id]"
@@ -199,10 +202,12 @@
                 <div class="tab-plcacholder-info">
                   <div class="tab-placeholder-info__link" @click="handleOpenPanel(panel)">
                     {{ panel.panelId }}
+                    <vue-lazy-component @before-init="$emit('lazy-init', panelItem.panel)"></vue-lazy-component>
                     <span
                       class="panel-status--waiting"
-                      v-show="panel.status !== 4"
-                    >({{ STATUS_TEXT[panel.status] }})</span>
+                      v-show="panel.status !== 4">
+                      ({{ STATUS_TEXT[panel.status] }})
+                    </span>
                   </div>
                   <div
                     class="tab-placeholder-info__link"
@@ -212,8 +217,9 @@
                 <div class="tab-placeholder__panel">
                   <div
                     class="tab-placeholder__panel-title"
-                    @click="handleOpenPanel(panel)"
-                  >{{ panel.panelTitle }}</div>
+                    @click="handleOpenPanel(panel)">
+                    {{ panel.panelTitle }}
+                  </div>
                   <cc-virtual-panel-group
                     :panel="panelData[panelItem.panel.id]"
                     :active="panelItem.panel.activeIndex"
@@ -256,13 +262,15 @@ import Var from './Var'
 import VirtualPanelGroup from './VirtualPanelGroup'
 import InputOrder from '@/components/InputOrder'
 import PanelStatisticTable from './PanelStatisticTable'
+import { component as VueLazyComponent } from '@xunlei/vue-lazy-component'
 
 export default {
   components: {
     'cc-var': Var,
     'cc-virtual-panel-group': VirtualPanelGroup,
     InputOrder,
-    PanelStatisticTable
+    PanelStatisticTable,
+    VueLazyComponent
   },
   data() {
     this.table = {

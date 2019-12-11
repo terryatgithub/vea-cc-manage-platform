@@ -4,8 +4,7 @@
             'cc-virtual-pannel': true,
             'cc-virtual-pannel--show-title': showTitle
         }"
-    :style="pannelStyle"
-  >
+    :style="pannelStyle">
       <div v-for="(block, index) in blockItems" :key="index">
         <el-popover
           placement="top"

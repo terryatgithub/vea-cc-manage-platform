@@ -24,6 +24,13 @@ export function panelGetDetail(params) {
     params
   })
 }
+export function panelGetDetailSilence(params) {
+  return this.fetch({
+    url: 'api/v1/panel/getDetailInfo.html',
+    params,
+    useLoading: false
+  })
+}
 
 export function panelUpsert(data) {
   return this.fetch({
