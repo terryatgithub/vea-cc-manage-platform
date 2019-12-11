@@ -899,6 +899,7 @@ export default {
     },
     handleOpenModeChange(val) {
       this.contentForm.redundantParams = this.genParams(val)
+      this.contentForm.appParams = []
     },
     handleWebPageTypeChange(val) {
       // eslint-disable-next-line
