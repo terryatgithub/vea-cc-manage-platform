@@ -396,7 +396,8 @@ export default {
         duplicateVersion: panel.duplicateVersion,
         dmpInfo: tabPanel.dmpInfo,
         panelId: panel.pannelGroupId,
-        status: panel.pannelStatus
+        status: panel.pannelStatus,
+        panelName: panel.pannelName
       }
       if (panel.parentType) {
         const activePanel = panel.pannelList[tabPanel.activeIndex || 0]
