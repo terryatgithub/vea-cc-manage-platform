@@ -16,6 +16,7 @@
 */
 <template>
   <div
+    v-if="show"
     :class="{
             'cc-virtual-tab': true,
             'collapse-all': isDragging,
@@ -116,8 +117,9 @@
 
                   <div class="tab-plcacholder-info">
                     <div class="tab-placeholder-info__link" @click="handleOpenPanel(panel)">
-                      {{ panel.panelId }}
-                      <vue-lazy-component @before-init="$emit('lazy-init', item)"></vue-lazy-component>
+                      <vue-lazy-component @before-init="$emit('lazy-init', item)">
+                        {{ panel.panelId }}
+                      </vue-lazy-component>
                       <span
                         class="panel-status--waiting"
                         v-show="panel.status !== 4">
@@ -201,8 +203,9 @@
                 </template>
                 <div class="tab-plcacholder-info">
                   <div class="tab-placeholder-info__link" @click="handleOpenPanel(panel)">
-                    {{ panel.panelId }}
-                    <vue-lazy-component @before-init="$emit('lazy-init', panelItem.panel)"></vue-lazy-component>
+                    <vue-lazy-component @before-init="$emit('lazy-init', panelItem.panel)">
+                      {{ panel.panelId }}
+                    </vue-lazy-component>
                     <span
                       class="panel-status--waiting"
                       v-show="panel.status !== 4">
@@ -263,6 +266,7 @@ import VirtualPanelGroup from './VirtualPanelGroup'
 import InputOrder from '@/components/InputOrder'
 import PanelStatisticTable from './PanelStatisticTable'
 import { component as VueLazyComponent } from '@xunlei/vue-lazy-component'
+// import VueLazyComponent from '@/components/LazyLoad'
 
 export default {
   components: {
@@ -378,6 +382,7 @@ export default {
       selectionType: 'none'
     }
     return {
+      show: true,
       isDragging: false,
       draggingIndex: undefined,
       draggingCrowdIndex: undefined,
@@ -385,7 +390,17 @@ export default {
     }
   },
   props: ['panels', 'ratio', 'width', 'panelData', 'showTitle', 'readOnly'],
+  watch: {
+    panels: 'onPanelsChange'
+  },
   methods: {
+    onPanelsChange () {
+      console.log('panel-change')
+      this.show = false
+      this.$nextTick(() => {
+        this.show = true
+      })
+    },
     disableDrag(event) {
       event.stopPropagation()
       event.preventDefault()
