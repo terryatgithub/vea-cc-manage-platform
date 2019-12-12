@@ -390,12 +390,8 @@ export default {
     }
   },
   props: ['panels', 'ratio', 'width', 'panelData', 'showTitle', 'readOnly'],
-  watch: {
-    panels: 'onPanelsChange'
-  },
   methods: {
-    onPanelsChange () {
-      console.log('panel-change')
+    refresh () {
       this.show = false
       this.$nextTick(() => {
         this.show = true

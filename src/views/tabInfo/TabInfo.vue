@@ -663,6 +663,7 @@
                   </div>
                   <cc-virtual-tab
                     class="tab-info__virtual-tab"
+                    ref="virtualTab"
                     @open-panel="handlePreviewPanel"
                     :panels="tabInfo.pannelList"
                     :panel-data="panelListIndexed"
@@ -1682,11 +1683,10 @@ export default {
         })
       }
       // 插入新的版块，重新加载版块信息
-      this.loadPanelDetail(panel)
+      this.$set(this.panelListIndexed, panel.pannelGroupId, panel)
       this.updateDuplicates()
     },
     loadPanelDetail(panel, checkDuplicateVersion) {
-      this.$set(this.panelListIndexed, panel.pannelGroupId, panel)
       const id = panel.pannelGroupId
       // 如果有草稿或者待审核副本，则加载， 否则， 加载当前版本
       const version = panel.duplicateVersion || panel.currentVersion
@@ -2594,12 +2594,6 @@ export default {
             }
           }.bind(this)
         )
-        // setTimeout(
-        //   function() {
-        //     panelToLoad.forEach(this.loadPanelDetail.bind(this))
-        //   }.bind(this),
-        //   50
-        // )
       }
 
       const originRefreshTimeList = data.refreshTimeList || []
@@ -2671,6 +2665,7 @@ export default {
     fetchData(version) {
       this.$service.tabInfoGet({ id: this.id, version }).then(data => {
         this.setTabInfo(data)
+        this.$refs.virtualTab.refresh()
       })
     },
     getSimpleBrowseData() {
