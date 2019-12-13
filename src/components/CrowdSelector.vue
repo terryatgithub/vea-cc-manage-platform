@@ -207,7 +207,8 @@ export default {
     }
   },
   created () {
-    this.fetchData()
+    // 防止弹窗遮住了 loading
+    this.$nextTick(this.fetchData)
   }
 }
 </script>
