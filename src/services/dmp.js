@@ -22,6 +22,15 @@ export function getTaglist(params) {
   })
 }
 
+// 含分页的接口
+export function getPolicyList(params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/tag/listCrowdPolicy.html',
+    params
+  })
+}
+
 export function getCrowdOfPolicy({ id }) {
   return this.getTaglist({ id, type: 'crowd' })
 }

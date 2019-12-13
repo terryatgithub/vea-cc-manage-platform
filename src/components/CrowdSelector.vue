@@ -11,8 +11,7 @@
                     class="name-list__item"
                     @click="handleSelectPolicy(item)"
                     :title="item.label"
-                    :key="item.value"
-                >
+                    :key="item.value">
                     {{ item.label }}
                 </div>
             </div>
@@ -63,8 +62,15 @@ export default {
       selectedPolicy: undefined,
       selectedCrowd: undefined,
       selectedCascaderCrowd: undefined,
+      filter: {
+        policyName: undefined
+      },
       policy: {
-        pagination: {},
+        pagination: {
+          currentPage: 1,
+          pageSize: 56,
+          total: 0
+        },
         items: []
       },
       crowd: {
@@ -154,13 +160,23 @@ export default {
       */
 
       return tree
+    },
+    fetchData () {
+      const filter = this.filter
+      const pagination = this.policy.pagination
+      const efficientFilter = {
+        keyword: filter.policyName,
+        rows: pagination.pageSize,
+        page: pagination.currentPage
+      }
+      this.$service.getPolicyList(efficientFilter).then((result) => {
+        this.policy.items = result.rows
+        this.pagination.total = result.total
+      })
     }
   },
   created () {
-    this.$service.getCrowdPolicy().then(function (result) {
-      this.policy.items = result
-      console.log(result)
-    }.bind(this))
+    this.fetchData()
   }
 }
 </script>

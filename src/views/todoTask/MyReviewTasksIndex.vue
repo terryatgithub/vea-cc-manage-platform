@@ -129,7 +129,7 @@
     </el-tab-pane>
     <el-tab-pane label="系统功能" name="sysPlugin">
       <MySubmitTasksList
-        resourceType="sysPlugin"
+        resourceType="systemPlugin"
         v-show="mode==='sysPluginList'"
         ref="sysPluginList"
         @read="handleRead">

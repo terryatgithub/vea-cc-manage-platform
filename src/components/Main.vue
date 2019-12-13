@@ -434,8 +434,8 @@ export default {
           return item
         }
         this.menu = parseMenu(menu)
-        console.log(this.menu)
         this.titles = titles
+        this.scrollMenuIntoView()
       })
     },
     handleNavigate(route) {
@@ -445,6 +445,19 @@ export default {
           menu_name: this.titles[route.name]
         }
       })
+      this.scrollMenuIntoView()
+    },
+    scrollMenuIntoView () {
+      setTimeout(() => {
+        const $activeSubMenu = document.querySelector('.el-submenu.is-active')
+        const $activeMenu = document.querySelector('.el-menu-item.is-active')
+        if ($activeMenu) {
+          $activeMenu.scrollIntoViewIfNeeded()
+        }
+        if ($activeSubMenu) {
+          $activeSubMenu.scrollIntoViewIfNeeded()
+        }
+      }, 1000)
     }
   },
   created() {
@@ -460,6 +473,7 @@ export default {
         this.$refs.main.$el.scrollTo(0, 0)
       }
     })
+
     //  this.saveTags()
     window.addEventListener('beforeunload', this.saveTags)
   },
