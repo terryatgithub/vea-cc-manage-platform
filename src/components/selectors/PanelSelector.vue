@@ -16,7 +16,7 @@
         @pagination-change="fetchData"
         @select-cancel="handleSelectCancel"
         @select-end="handleSelectEnd">
-        <el-form slot="filter" :inline="true" v-model="filter">
+        <el-form slot="filter" @keypress.enter.prevent.native="handleFilterChange" :inline="true" v-model="filter">
           <el-form-item>
             <el-select v-model="filter.pannelType" placeholder="类型">
               <el-option :value="1" label="内容版块"></el-option>
