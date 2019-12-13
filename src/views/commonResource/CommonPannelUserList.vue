@@ -284,31 +284,31 @@ export default {
       return result
     }, {})
     let filterSchema = _.map({
-      'pannelInfo.pannelCategory': _.o.enum(this.businessType).other('form', {
+      'pannelCategory': _.o.enum(this.businessType).other('form', {
         placeholder: '业务分类',
         component: 'Select'
       }),
-      'pannelInfo.pannelId': _.o.string.other('form', {
+      'pannelId': _.o.string.other('form', {
         placeholder: 'ID',
         component: 'Input'
       }),
-      'pannelInfo.pannelName': _.o.string.other('form', {
+      'pannelName': _.o.string.other('form', {
         placeholder: '版块名称',
         component: 'Input'
       }),
-      'pannelInfo.pannelTitle': _.o.string.other('form', {
+      'pannelTitle': _.o.string.other('form', {
         placeholder: '版块标题',
         component: 'Input'
       }),
-      'pannelInfo.tabName': _.o.string.other('form', {
+      'tabName': _.o.string.other('form', {
         placeholder: '引用状态',
         component: 'Input'
       }),
-      'pannelInfo.pannelResource': _.o.enum({ '腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优酷': 'o_youku' }).other('form', {
+      'pannelResource': _.o.enum({ '腾讯': 'o_tencent', '爱奇艺': 'o_iqiyi', '优酷': 'o_youku' }).other('form', {
         placeholder: '内容源',
         component: 'Select'
       }),
-      'pannelInfo.pannelStatus': _.o.enum(this.pannelStatus).other('form', {
+      'pannelStatus': _.o.enum(this.pannelStatus).other('form', {
         placeholder: '状态',
         component: 'Select'
       })
