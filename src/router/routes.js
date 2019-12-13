@@ -13,7 +13,7 @@ import GlobalCornerIcon from '../views/commonModule/GlobalCornerIconIndex'
 import GlobalCornerIconType from '../views/commonModule/GlobalCornerIconTypeIndex'
 import GlobalPicture from '../views/commonModule/GlobalPictureIndex'
 import LayoutInfo from '../views/commonModule/LayoutInfoIndex'
-import CommonAlbumPanneleUser from '../views/commonResource/CommonAlbumPanneleUserIndex'
+import CommonAlbumPanelUser from '../views/commonResource/CommonAlbumPanelUserIndex'
 import CommonPannelUser from '../views/commonResource/CommonPannelUserIndex'
 import CommonTabUser from '../views/commonResource/CommonTabUserIndex'
 // import DataSync from '../views/dataSyncMgr/DataSyncIndex'
@@ -87,7 +87,7 @@ const children = [
       {
         name: 'commonAlbumPanneleUser',
         path: '/commonResourceUser/AlbumPannel/view.html',
-        component: CommonAlbumPanneleUser,
+        component: CommonAlbumPanelUser,
         meta: {
           title: '常用业务专辑',
           tagId: 'commonAlbumPanneleUser'

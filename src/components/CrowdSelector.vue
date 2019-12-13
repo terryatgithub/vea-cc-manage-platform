@@ -5,6 +5,14 @@
                 :visible="showPolicySelector"
                 append-to-body
                 :before-close="handleClose">
+            <div>
+              <el-form :inline="true" @keypress.enter.prevent.native="handleFilterPolicy">
+                <el-form-item>
+                  <el-input v-model="filter.policyName" placeholder="策略名称" clearable />
+                </el-form-item>
+                <el-button type="primary" @click="handleFilterPolicy">搜索</el-button>
+              </el-form>
+            </div>
             <div class="name-list">
                 <div
                     v-for="item in policy.items"
@@ -15,7 +23,18 @@
                     {{ item.label }}
                 </div>
             </div>
-
+            <div class="pagination">
+              <el-pagination
+                  v-if="policy.pagination"
+                  @size-change="handlePolicyPageSizeChange"
+                  @current-change="handlePolicyPageChange"
+                  :current-page="policy.pagination.currentPage"
+                  :page-sizes="[10, 20, 40, 50, 100, 200]"
+                  :page-size="policy.pagination.pageSize"
+                  layout="total, sizes, prev, pager, next, jumper"
+                  :total="policy.pagination.total">
+              </el-pagination>
+            </div>
         </el-dialog>
 
         <el-dialog
@@ -68,7 +87,7 @@ export default {
       policy: {
         pagination: {
           currentPage: 1,
-          pageSize: 56,
+          pageSize: 40,
           total: 0
         },
         items: []
@@ -88,6 +107,18 @@ export default {
       setTimeout(function () {
         this.$emit('select-cancel')
       }.bind(this), 20)
+    },
+    handleFilterPolicy () {
+      this.policy.pagination.currentPage = 1
+      this.fetchData()
+    },
+    handlePolicyPageSizeChange (val) {
+      this.policy.pagination.pageSize = val
+      this.fetchData()
+    },
+    handlePolicyPageChange (val) {
+      this.policy.pagination.currentPage = val
+      this.fetchData()
     },
     handleSelectPolicy (item) {
       this.selectedPolicy = item
@@ -171,7 +202,7 @@ export default {
       }
       this.$service.getPolicyList(efficientFilter).then((result) => {
         this.policy.items = result.rows
-        this.pagination.total = result.total
+        this.policy.pagination.total = result.total
       })
     }
   },
@@ -215,6 +246,9 @@ export default {
 }
 .el-cascader >>> .el-input__inner {
   width: 300px;
+}
+.pagination {
+  margin-top: 10px;
 }
 
 </style>
