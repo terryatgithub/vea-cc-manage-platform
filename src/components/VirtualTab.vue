@@ -54,9 +54,9 @@
           <i v-else class="el-icon-arrow-down" @click="handleCollapse(false, index)"></i>
           <template
             v-if="panelItem.type === 'SPEC'">
-            {{ getPanelInfo(panelItem.crowdPanels[0]).panelTitle }} ({{ panelItem.crowdPanels.length }})
+            {{ getPanelInfo(panelItem.crowdPanels[0]).panelName }} ({{ panelItem.crowdPanels.length }})
           </template>
-          <template v-else>{{ getPanelInfo(panelItem.panel).panelTitle }}</template>
+          <template v-else>{{ getPanelInfo(panelItem.panel).panelName }}</template>
           <InputOrder
             size="small"
             :key="Math.random().toString()"
@@ -84,18 +84,18 @@
               @dragenter="handleDragEnter"
               @dragleave="handleDragLeave"
               @dragover="handleDragOver"
-              @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: -1})"
-            ></div>
+              @drop="handleDrop($event, {type: 'CROWD', index: index, crowdIndex: -1})">
+            </div>
 
             <template v-for="(item, crowdIndex) in panelItem.crowdPanels">
               <cc-var
                 :key="crowdIndex"
                 v-show="isDragging || panelItem.isShowAll || crowdIndex === 0"
                 :class="{
-                                    'tab-placeholder__panel-wrapper': true,
-                                    'panel-duplicate': item.isDuplicate,
-                                    'tab-placeholder__panel-wrapper--dragging': draggingCrowdIndex === crowdIndex && draggingIndex === index
-                                }"
+                  'tab-placeholder__panel-wrapper': true,
+                  'panel-duplicate': item.isDuplicate,
+                  'tab-placeholder__panel-wrapper--dragging': draggingCrowdIndex === crowdIndex && draggingIndex === index
+                }"
                 v-shadow-drag="{type: 'CROWD', index: index, crowdIndex: crowdIndex}"
                 @shadow-drag-start.native="handleDragStart($event, index, crowdIndex)"
                 @shadow-drag-end.native="handleDragEnd"
@@ -105,13 +105,14 @@
                     <i
                       title="删除"
                       @click="handleRemovePanel(index, crowdIndex)"
-                      class="tab-placeholder__panel-remove el-icon-close"
-                    ></i>
+                      class="tab-placeholder__panel-remove el-icon-close">
+                    </i>
                     <a
                       v-if="panelItem.crowdPanels.length === 1"
                       @click="$emit('toggle-type', index)"
-                      class="btn-crowd btn-crowd--unset"
-                    >取消定向</a>
+                      class="btn-crowd btn-crowd--unset">
+                      取消定向
+                    </a>
                     <a v-else class="btn-crowd btn-crowd--disabled" title="请将版块移出版块组，再取消定向">取消定向</a>
                   </template>
 
@@ -128,13 +129,15 @@
                     </div>
                     <div
                       class="tab-placeholder-info__link"
-                      @click="handleOpenPanel(panel)"
-                    >{{ panel.panelName }}</div>
+                      @click="handleOpenPanel(panel)">
+                      {{ panel.panelName }}
+                    </div>
                     <div
                       class="tab-placeholder-info__link"
                       v-if="item.dmpInfo"
-                      @click="$emit('change-crowd', index, crowdIndex)"
-                    >人群: {{ item.dmpInfo.crowdName }}</div>
+                      @click="$emit('change-crowd', index, crowdIndex)">
+                      人群: {{ item.dmpInfo.crowdName }}
+                    </div>
                   </div>
                   <div class="tab-placeholder__panel">
                     <div
@@ -150,12 +153,11 @@
                       :show-title="showTitle"
                       @activate="handleActivate(item, $event)"
                       @click-block="handleClickBlock({
-                                                        index: index,
-                                                        crowdIndex: crowdIndex,
-                                                        activeIndex: arguments[0],
-                                                        blockIndex:arguments[1]
-                                                    })"
-                    >
+                        index: index,
+                        crowdIndex: crowdIndex,
+                        activeIndex: arguments[0],
+                        blockIndex:arguments[1]
+                      })">
                       <PanelStatisticTable slot="stat" v-if="panelItem.panel" :panelID="panelItem.panel.id" :isShow="!panelItem.isCollapse"/>
                     </cc-virtual-panel-group>
                   </div>
@@ -175,8 +177,7 @@
             </template>
             <div
               class="btn-show-all"
-              v-show="!isDragging && !panelItem.isShowAll && panelItem.crowdPanels.length > 1"
-            >
+              v-show="!isDragging && !panelItem.isShowAll && panelItem.crowdPanels.length > 1">
               <a @click="handleShowAllPanels(index)" title="显示所有版块">
                 <i class="el-icon-arrow-down"></i>
                 共 {{ panelItem.crowdPanels.length }} 个版块
@@ -190,8 +191,7 @@
                 'tab-placeholder__panel-wrapper': true,
                 'panel-duplicate': panelItem.panel.isDuplicate
               }"
-              :panel="getPanelInfo(panelItem.panel)"
-            >
+              :panel="getPanelInfo(panelItem.panel)">
               <template slot-scope="{panel: panel}">
                 <template v-if="!readOnly">
                   <i
@@ -225,15 +225,15 @@
                   </div>
                   <cc-virtual-panel-group
                     :panel="panelData[panelItem.panel.id]"
-                    :active="panelItem.panel.activeIndex"
+                    :active="panel.activeIndex"
                     :ratio="ratio"
                     :show-title="showTitle"
-                    @activate="handleActivate(panelItem, $event)"
+                    @activate="handleActivate(panelItem.panel, $event)"
                     @click-block="handleClickBlock({
-                                                    index: index,
-                                                    activeIndex: arguments[0],
-                                                    blockIndex:arguments[1]
-                                                })"
+                      index: index,
+                      activeIndex: arguments[0],
+                      blockIndex:arguments[1]
+                    })"
                   >
                   </cc-virtual-panel-group>
                 </div>
@@ -403,16 +403,19 @@ export default {
     },
     getPanelInfo(tabPanel) {
       const panel = this.panelData[tabPanel.id]
+      const activeIndex = tabPanel.activeIndex || 0
       const result = {
         duplicateVersion: panel.duplicateVersion,
         dmpInfo: tabPanel.dmpInfo,
         panelId: panel.pannelGroupId,
         status: panel.pannelStatus,
-        panelName: panel.pannelName
+        panelName: panel.pannelName,
+        panelTitle: panel.panelTitle,
+        activeIndex
       }
       if (panel.parentType) {
-        const activePanel = panel.pannelList[tabPanel.activeIndex || 0]
-        result.panelTitle = panel.groupTitle || activePanel.pannelTitle
+        const activePanel = panel.pannelList[activeIndex]
+        result.panelTitle = activePanel.pannelTitle || ' '
         result.panelName = activePanel.pannelName
       }
       return result
