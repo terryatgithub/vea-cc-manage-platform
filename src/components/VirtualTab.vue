@@ -158,7 +158,12 @@
                         activeIndex: arguments[0],
                         blockIndex:arguments[1]
                       })">
-                      <PanelStatisticTable slot="stat" v-if="panelData[item.id]" :panelID="item.id" :isShow="!panelItem.isCollapse"/>
+                      <PanelStatisticTable
+                        slot="stat"
+                        v-if="panelData[item.id].panelList"
+                        :key="item.id"
+                        :panelID="item.id"
+                        :isShow="!panelItem.isCollapse" />
                     </cc-virtual-panel-group>
                   </div>
                 </template>
@@ -237,7 +242,11 @@
                   >
                   </cc-virtual-panel-group>
                 </div>
-                <PanelStatisticTable v-if="panelData[panelItem.panel.id].panelList" :panelID="panelItem.panel.id" :isShow="!panelItem.isCollapse"/>
+                <PanelStatisticTable
+                  v-if="panelData[panelItem.panel.id].panelList"
+                  :key="panelItem.panel.id"
+                  :panelID="panelItem.panel.id"
+                  :isShow="!panelItem.isCollapse" />
               </template>
             </cc-var>
           </div>

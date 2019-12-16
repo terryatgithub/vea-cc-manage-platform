@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isShow" class="table-box">
+  <div v-if="isShow" class="table-box" :title="`版块ID: ${panelID}`">
     <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
     <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
   </div>
