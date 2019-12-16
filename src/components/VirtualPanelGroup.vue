@@ -58,5 +58,14 @@ export default {
   width 25%
   margin 10px
   display inline-block
-  background #d3dce6
+  background rgb(194, 207, 214)
+  background-image linear-gradient(90deg,rgba(255, 255, 255, 0.15) 25%, transparent 25%)
+  background-size 20rem 20rem
+  animation skeleton-stripes 1s linear infinite
+@keyframes skeleton-stripes
+    from
+      background-position 0 0
+    to
+      background-position 20rem 0
+
 </style>
