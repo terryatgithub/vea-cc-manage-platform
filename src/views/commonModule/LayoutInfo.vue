@@ -176,7 +176,7 @@ export default {
     LayoutPreview,
     LayoutInfoGenerator
   },
-  data() {
+  data () {
     return {
       activePage: 'layout',
       mode: 'create',
@@ -246,16 +246,16 @@ export default {
         this.setLayout6()
       }
     },
-    fetchData(version) {
+    fetchData (version) {
       this.$service.getLayoutInforById({ id: this.id }).then(this.setLayoutInfo)
     },
-    setLayoutInfo(data) {
+    setLayoutInfo (data) {
       this.form = Object.assign({}, data, {
         layoutJson: JSON.parse(data.layoutJson),
         layoutJson8: JSON.parse(data.layoutJson8)
       })
     },
-    handleSave() {
+    handleSave () {
       this.$refs.form.validate(valid => {
         if (valid) {
           const data = cloneDeep(this.form)
@@ -305,7 +305,7 @@ export default {
     getLastFile (fileList) {
       return fileList[fileList.length - 1]
     },
-    handleUpload(file, fileItem, version) {
+    handleUpload (file, fileItem, version) {
       this.$service
         .uploadLayoutFile({
           file,
@@ -324,7 +324,7 @@ export default {
           fileItem.message = e.message
         })
     },
-    handleGenLayoutEnd(layoutInfo, version) {
+    handleGenLayoutEnd (layoutInfo, version) {
       const form = this.form
       let { fileName, content } = layoutInfo
       content = JSON.parse(content) // 布局内容
@@ -371,7 +371,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

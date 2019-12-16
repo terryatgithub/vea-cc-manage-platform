@@ -20,7 +20,7 @@
 export default {
   props: ['value', 'disabled', 'freeze', 'allowEmpty', 'placeholder'],
   computed: {
-    sourceOptions() {
+    sourceOptions () {
       const $consts = this.$consts
       if (this.allowEmpty) {
         return $consts.sourceOptionsWidthEmpty

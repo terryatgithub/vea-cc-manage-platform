@@ -9,19 +9,19 @@ export default {
     ResourceList,
     ResourceContent
   },
-  data() {
+  data () {
     return {
       idField: 'taskId'
     }
   },
   computed: {
-    listProps() {
+    listProps () {
       return {}
     },
-    contentProps() {
+    contentProps () {
       return {}
     },
-    resourceInfo() {
+    resourceInfo () {
       return {
       }
     }

@@ -114,7 +114,7 @@ export default {
     LayoutBlock
   },
   props: ['layoutVersion', 'layoutSpacing', 'layoutWidth'],
-  data() {
+  data () {
     return {
       dynamicValidateForm: {
         rows: [this.genRow()],
@@ -152,7 +152,7 @@ export default {
         }
       }
     },
-    validateAndGenLayout(cb) {
+    validateAndGenLayout (cb) {
       this.$refs.dynamicValidateForm.validate(valid => {
         if (valid) {
           cb(this.genLayout())
@@ -161,7 +161,7 @@ export default {
         }
       })
     },
-    genLayout() {
+    genLayout () {
       const layoutVersion = this.layoutVersion || 'v8'
       const rowNames = ['A', 'B', 'C', 'D']
       const { rows, hasPrice, spacing, lengthwiseIs } = this.dynamicValidateForm
@@ -243,10 +243,10 @@ export default {
       }
       return layout
     },
-    handleResetForm() {
+    handleResetForm () {
       this.$refs.dynamicValidateForm.resetFields()
     },
-    handleCalSurplusWidth(row) {
+    handleCalSurplusWidth (row) {
       const spacing = +this.dynamicValidateForm.spacing
       const totalWidth = this.totalWidth
       const blockCount = row.blockWidth.length
@@ -257,7 +257,7 @@ export default {
     /**
      * 根据 块数得到每块的宽度
      */
-    setBlockWidth(row) {
+    setBlockWidth (row) {
       row.blockWidth = []
       row.surplusWidth = 0
       let oneBlockWidth = this.getBlockWidth(row.blockNum)
@@ -265,7 +265,7 @@ export default {
         row.blockWidth.push(oneBlockWidth)
       }
     },
-    setAllBlockWidth() {
+    setAllBlockWidth () {
       this.dynamicValidateForm.rows.forEach(r => {
         this.setBlockWidth(r)
       })
@@ -273,7 +273,7 @@ export default {
     /*
     点击纵向布局触发的事件
     */
-    changeLayout() {
+    changeLayout () {
       const dynamicValidateForm = this.dynamicValidateForm
       const rows = dynamicValidateForm.rows || []
       dynamicValidateForm.rows = rows.slice(0, 1)
@@ -281,12 +281,12 @@ export default {
     /**
      * width 改变后的宽度，whichRow 所在第几行，whichBlock所在哪一行的第几块，contentsIndex为data.contents中所在的索引值
      */
-    changeWidth(width, whichRow, whichBlock, contentsIndex) {
+    changeWidth (width, whichRow, whichBlock, contentsIndex) {
     },
     /*
     预览布局
      */
-    handlePreviewLayout() {
+    handlePreviewLayout () {
       this.validateAndGenLayout(layout => {
         this.layoutForPreview = layout
       })
@@ -306,7 +306,7 @@ export default {
         this.layoutForPreview = this.genDefaultLayout()
       }
     },
-    getBlockWidth(blockNum) {
+    getBlockWidth (blockNum) {
       return Math.floor(
         (this.totalWidth - this.dynamicValidateForm.spacing * (blockNum - 1)) /
           blockNum
@@ -323,7 +323,7 @@ export default {
         surplusWidth: 0
       }
     },
-    handleRemoveRow(index) {
+    handleRemoveRow (index) {
       this.dynamicValidateForm.rows.splice(index, 1)
     },
     handleAddRow () {

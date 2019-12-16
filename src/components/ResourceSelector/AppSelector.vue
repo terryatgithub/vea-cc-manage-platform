@@ -24,7 +24,7 @@ export default {
   components: {
     BaseSelector
   },
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -70,20 +70,20 @@ export default {
     }
   },
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     }
   },
   props: ['isLive', 'selectionType'],
   methods: {
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         appId: undefined,
         appName: undefined,
         appPackageName: undefined
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const filter = Object.assign({}, this.filter)
       if (pagination) {
@@ -92,16 +92,16 @@ export default {
       }
       return filter
     },
-    handleFilterChange(filter) {
+    handleFilterChange (filter) {
       this.filter = filter
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getAppManagementList(filter).then(data => {
         this.pagination.total = data.total
@@ -109,7 +109,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       appId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'Input',

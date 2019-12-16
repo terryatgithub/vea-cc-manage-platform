@@ -47,7 +47,7 @@ export default {
     PrivatePannelInfo
   },
   props: ['row'],
-  data() {
+  data () {
     return {
       id: undefined,
       mode: 'read',

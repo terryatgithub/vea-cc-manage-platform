@@ -25,7 +25,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       id: undefined,
       closed: true
@@ -34,7 +34,7 @@ export default {
   props: ['title', 'visible', 'fullscreen'],
   inject: ['tabPage'],
   watch: {
-    visible(val) {
+    visible (val) {
       if (val) {
         this.openDialog()
       } else {
@@ -43,32 +43,32 @@ export default {
     }
   },
   methods: {
-    openDialog() {
+    openDialog () {
       this.$emit('open')
       this.closed = false
       this.tabPage.$el.append(this.$el)
       this.toggleLockScroll()
     },
-    closeDialog() {
+    closeDialog () {
       this.$emit('close')
       this.closed = true
       this.toggleLockScroll()
     },
-    toggleLockScroll() {
+    toggleLockScroll () {
       this.tabPage.toggleLockScroll(this.visible, this.id)
     }
   },
-  created() {
+  created () {
     this.id = '' + this._uid + Math.random()
   },
-  mounted() {
+  mounted () {
     if (this.visible) {
       this.closed = false
       this.tabPage.$el.append(this.$el)
       this.toggleLockScroll()
     }
   },
-  destroyed() {
+  destroyed () {
     if (this.$el && this.$el.parentNode) {
       this.$el.parentNode.removeChild(this.$el)
     }

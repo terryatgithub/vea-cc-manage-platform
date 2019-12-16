@@ -16,7 +16,7 @@ export function crowdRelGet (params) {
   })
 }
 
-export function crowdRelDel(params) {
+export function crowdRelDel (params) {
   return this.fetch({
     url: 'api/v1/dmpMgr/remove.html',
     params

@@ -55,7 +55,7 @@ export default {
     ContentWrapper,
     ButtonGroupForListPage
   },
-  data() {
+  data () {
     return {
       filter: {
         sort: undefined,
@@ -167,13 +167,13 @@ export default {
     /**
      * 新增
      */
-    addData() {
+    addData () {
       this.$emit('open-add-page', null)
     },
     /**
      * 编辑
      */
-    editData() {
+    editData () {
       if (this.$isAllowEdit(this.selected)) {
         this.$emit('open-add-page', this.selected[0])
       }
@@ -181,7 +181,7 @@ export default {
     /**
      * 批量删除
      */
-    deleteData() {
+    deleteData () {
       if (this.selected.length === 0) {
         this.$message('请选择再删除')
         return
@@ -199,21 +199,21 @@ export default {
           })
       })
     },
-    handleCreate() {
+    handleCreate () {
       this.$router.push({ name: 'prize-create' })
     },
     // 表格操作
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.menuId)
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.menuId
       })
       this.updateTableSelected()
     },
-    handleAllRowSelectionChange(value) {
+    handleAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
@@ -221,11 +221,11 @@ export default {
         this.table.selected = []
       }
     },
-    handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -236,7 +236,7 @@ export default {
       }, [])
     },
     // 查询
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId([
         { label: 'ID', value: this.filter.elid },
@@ -252,7 +252,7 @@ export default {
       }
     },
     // 重置
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -260,7 +260,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -271,7 +271,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getSysMenuList(filter).then(data => {
@@ -282,7 +282,7 @@ export default {
     /**
      * 获取menuInfoTree
      */
-    getSysMenuInfo() {
+    getSysMenuInfo () {
       return this.$service.getMenuInfo().then(data => {
         this.buttonList = data
       })
@@ -290,7 +290,7 @@ export default {
     /**
      * 设施操作
      */
-    setData({ row }) {
+    setData ({ row }) {
       this.setDialogVisible = true
       const MenuObj = { menuId: row.menuId }
       var newData = []
@@ -304,7 +304,7 @@ export default {
           this.allData = this.data1.concat(this.data2)
           // 数组对象去重
           const obj = {}
-          this.allData = this.allData.reduce(function(item, next) {
+          this.allData = this.allData.reduce(function (item, next) {
             if (!obj[next.runId]) {
               obj[next.runId] = true
               item.push(next)
@@ -333,7 +333,7 @@ export default {
       })
     },
     // 选中操作
-    handleChange(value, direction, movedKeys) {
+    handleChange (value, direction, movedKeys) {
       var str = []
       // 去重
       for (var i = 0; i < value.length; i++) {
@@ -345,7 +345,7 @@ export default {
       this.setMenu = select
     },
     // 弹框保存事件
-    setSave() {
+    setSave () {
       const menuId = this.setMenuId
       const runIds = this.setMenu
       this.$service.saveMenuRun({ menuId: menuId, runIds: runIds }, '保存成功').then(() => {
@@ -354,7 +354,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       menuName: _.o.string.other('form', {
         component: 'Input',

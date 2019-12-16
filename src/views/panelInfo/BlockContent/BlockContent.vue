@@ -149,7 +149,7 @@ export default {
     CommonSelector,
     ResourceSelector
   },
-  data() {
+  data () {
     return {
       activeNames: ['normal', 'specific'],
       activeType: 'normal',
@@ -161,19 +161,19 @@ export default {
   },
   props: ['mode', 'data', 'source', 'pannel', 'hideTitleOptions', 'pannelGroupId'],
   computed: {
-    title() {
+    title () {
       if (this.mode === 'read') {
         return '推荐位内容查看'
       }
       return '推荐位内容设置'
     },
-    isMall() {
+    isMall () {
       return this.data.blockInfo.type === 'Mall'
     },
-    contentForm() {
+    contentForm () {
       return this[this.activeType + 'ContentList'][this.activeIndex]
     },
-    coverTypeEnums() {
+    coverTypeEnums () {
       const enums = [
         {
           label: '媒体资源',
@@ -201,13 +201,13 @@ export default {
     }
   },
   methods: {
-    error(message) {
+    error (message) {
       return this.$message({
         type: 'error',
         message
       })
     },
-    handleSelectResourcesEnd(resources) {
+    handleSelectResourcesEnd (resources) {
       const contentPreset = {
         coverType: this.isMall ? 'custom' : 'media',
         // hideTitleOptions 表示强制需要标题，无法关闭
@@ -216,7 +216,7 @@ export default {
       const contentList = genResourceContentList(resources, contentPreset)
       this.normalContentList.splice(this.activeIndex, contentList.length, ...contentList)
     },
-    getPictureUrl(pictureUrl) {
+    getPictureUrl (pictureUrl) {
       if (pictureUrl) {
         const BLOCK_SIGN_IMG_SRC = process.env.BASE_URL + 'block/sign.png'
         return pictureUrl === '/themes/images/block/sign.png'
@@ -225,9 +225,9 @@ export default {
           // block.style['background-image'] = 'url(' + content.pictureUrl + ')'
       }
     },
-    handleDragConentStart(event) {
+    handleDragConentStart (event) {
     },
-    handleDragConentEnd(event, type) {
+    handleDragConentEnd (event, type) {
       const { oldIndex, newIndex } = event
       const currentIndex = this.activeIndex
       if (this.activeType === type) {
@@ -240,7 +240,7 @@ export default {
         }
       }
     },
-    handleSave() {
+    handleSave () {
       this.validateCurrentContent(() => {
         // 验证所有资源
         const normalContentList = this.normalContentList
@@ -281,14 +281,14 @@ export default {
         })
       })
     },
-    genDefaultNormalContentWrapper() {
+    genDefaultNormalContentWrapper () {
       return {
         selectionType: 'manual',
         props: {
         }
       }
     },
-    genDefaultContentForm(preset) {
+    genDefaultContentForm (preset) {
       const contentPreset = {
         coverType: this.isMall ? 'custom' : 'media',
         // hideTitleOptions 表示强制需要标题，无法关闭
@@ -296,7 +296,7 @@ export default {
       }
       return genDefaultContentForm(contentPreset)
     },
-    handleCoverTypeChange(coverType) {
+    handleCoverTypeChange (coverType) {
       if (this.mode === 'read') {
         return
       }
@@ -318,7 +318,7 @@ export default {
       }
       this.$set(contentList, activeIndex, contentForm)
     },
-    handleRemoveContent(index, contentType) {
+    handleRemoveContent (index, contentType) {
       this.$confirm('确认删除该内容', '提示', {
         callback: (result) => {
           if (result === 'confirm') {
@@ -339,7 +339,7 @@ export default {
         }
       })
     },
-    handleAddContent(contentType) {
+    handleAddContent (contentType) {
       this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
         if (!err) {
           const contentList = this[contentType + 'ContentList']
@@ -358,7 +358,7 @@ export default {
         }
       })
     },
-    handleActivate(contentType, index) {
+    handleActivate (contentType, index) {
       if (this[this.activeType + 'ContentList'][this.activeIndex]) {
         this.validateCurrentContent(() => {
           this.activeType = contentType
@@ -370,7 +370,7 @@ export default {
         this.activeIndex = index
       }
     },
-    validateCurrentContent(cb) {
+    validateCurrentContent (cb) {
       const contentForm = this.contentForm
       this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
@@ -380,7 +380,7 @@ export default {
         }
       })
     },
-    setContentList() {
+    setContentList () {
       const block = JSON.parse(JSON.stringify(this.data.block || '{}'))
       const normalContentList = block.videoContentList || []
       const specificContentList = block.specificContentList || []
@@ -459,10 +459,10 @@ export default {
         : [this.genDefaultContentForm()]
       this.specificContentList = specificContentList.map(parse)
     },
-    parseContentList(contentList) {
+    parseContentList (contentList) {
       contentList = JSON.parse(JSON.stringify(contentList))
 
-      function parse(content) {
+      function parse (content) {
         const coverType = content.coverType
         let onclick = ''
         let params = ''
@@ -609,7 +609,7 @@ export default {
       }
       return contentList.map(parse)
     },
-    checkCrowd(crowd) {
+    checkCrowd (crowd) {
       const specificContentList = this.specificContentList
       let length = specificContentList.length
       let existsIndex
@@ -624,7 +624,7 @@ export default {
       return existsIndex
     }
   },
-  created() {
+  created () {
     this.setContentList()
   }
 }

@@ -6,19 +6,19 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       modals: [],
       originScrollTop: undefined
     }
   },
-  provide() {
+  provide () {
     return {
       tabPage: this
     }
   },
   methods: {
-    toggleLockScroll(val, id) {
+    toggleLockScroll (val, id) {
       const modals = this.modals
       if (val) {
         if (modals.length <= 0) {

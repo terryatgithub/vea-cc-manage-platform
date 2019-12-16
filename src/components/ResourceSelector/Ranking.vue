@@ -20,7 +20,7 @@ export default {
   components: {
     BaseSelector
   },
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -51,12 +51,12 @@ export default {
   },
   props: ['isLive', 'selectionType', 'source', 'businessType'],
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     }
   },
   methods: {
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         resType: 'operation',
         dataType: 'coocaaRanking',
@@ -64,7 +64,7 @@ export default {
         callback: 'result'
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const filter = Object.assign({}, this.efficientFilter)
       if (pagination) {
@@ -75,18 +75,18 @@ export default {
       filter.partner = this.$consts.sourceToPartner[this.source]
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(data => {
         this.pagination.total = data.total

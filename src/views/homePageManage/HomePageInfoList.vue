@@ -79,7 +79,7 @@ export default {
     PageWrapper,
     PageContentWrapper
   },
-  data() {
+  data () {
     return {
       resourceType: 'homepage',
       activePage: 'homepage_list',
@@ -248,33 +248,33 @@ export default {
   computed: {
   },
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.homepageId,
         type: 'homepage',
         menuElId: 'homepageInfo'
       })
     },
-    handleShowChips(chipStr) {
+    handleShowChips (chipStr) {
       this.chips = chipStr.split(',')
       this.showChipDialog = true
     },
-    handleShowPolicyNames(relationPolicyNames) {
+    handleShowPolicyNames (relationPolicyNames) {
       this.policyNames = relationPolicyNames.split(',')
       this.showPolicyNameDialog = true
     },
-    handleShowPolicy(name) {
+    handleShowPolicy (name) {
       const id = name.match(/\((.+)\)/)[1]
       this.policyId = +id
       this.activePage = 'policy'
       this.showPolicyNameDialog = false
     },
-    handleShowPolicyEnd() {
+    handleShowPolicyEnd () {
       this.showPolicyNameDialog = true
       this.activePage = 'homepage_list'
     },
     // 查询
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
@@ -284,7 +284,7 @@ export default {
       this.fetchData()
     },
     // 重置
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -292,7 +292,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -303,7 +303,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.getHomePageInfoList(filter).then(data => {
         this.pagination.total = data.total
@@ -319,7 +319,7 @@ export default {
     //   })
     // }
   },
-  created() {
+  created () {
     const filterSchema = _.map({
       homepageId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'InputPositiveInt',

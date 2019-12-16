@@ -41,7 +41,7 @@ export default {
     ContentWrapper,
     ButtonGroupForListPage
   },
-  data() {
+  data () {
     return {
       resourceType: 'cornerIconType',
       materialTypes: {}, // 素材类型
@@ -119,7 +119,7 @@ export default {
     }
   },
   methods: {
-    batchAudit() {
+    batchAudit () {
       if (this.selected.length > 0) {
         this.auditDialogVisible = true
       } else {
@@ -129,7 +129,7 @@ export default {
         })
       }
     },
-    submitAudit() {
+    submitAudit () {
       this.$refs.auditForm.validate(valid => {
         if (valid) {
           this.auditForm.idStr = this.selected.join(',')
@@ -142,14 +142,14 @@ export default {
         }
       })
     },
-    handleChange(value, direction, movedKeys) {
+    handleChange (value, direction, movedKeys) {
       var str = []
       for (var i = 0; i < value.length; i++) {
         str.push(['roleIds', value[i]])
       }
       this.selectedRole = this.user.concat(str)
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.typeId)) {
         if (type === 'query') {
@@ -160,7 +160,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -168,7 +168,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -179,7 +179,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getGlobalCornerIconTypePageList(filter).then(data => {
@@ -188,7 +188,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       typeId: _.o.string.other('form', {
         component: 'Input',

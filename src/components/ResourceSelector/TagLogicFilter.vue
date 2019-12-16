@@ -34,7 +34,7 @@ export default {
   components: {
     PanelTagSelector
   },
-  data() {
+  data () {
     return {
       showPanelTagsDialog: false,
       activeTagListIndex: undefined,
@@ -43,19 +43,19 @@ export default {
   },
   props: ['value'],
   methods: {
-    reset() {
+    reset () {
       this.tags = [[]]
     },
-    emitInput() {
-      const tagCodes = this.tags.reduce(function(result, item) {
+    emitInput () {
+      const tagCodes = this.tags.reduce(function (result, item) {
         if (item.length > 0) {
-          result.push(item.map(function(tag) { return tag.tagCode }).join(','))
+          result.push(item.map(function (tag) { return tag.tagCode }).join(','))
         }
         return result
       }, [])
       this.$emit('input', tagCodes)
     },
-    handleRemoveTag(listIndex, index) {
+    handleRemoveTag (listIndex, index) {
       const list = this.tags[listIndex]
       list.splice(index, 1)
       if (list.length === 0) {
@@ -63,14 +63,14 @@ export default {
       }
       this.emitInput()
     },
-    handleAddTagStart(index) {
+    handleAddTagStart (index) {
       this.activeTagListIndex = index
       this.showPanelTagsDialog = true
     },
-    handleAddTagCancel() {
+    handleAddTagCancel () {
       this.showPanelTagsDialog = false
     },
-    handleAddTagEnd(tags) {
+    handleAddTagEnd (tags) {
       const index = this.activeTagListIndex
       const currentTagList = this.tags[index]
       if (!currentTagList) {
@@ -83,7 +83,7 @@ export default {
       this.showPanelTagsDialog = false
     }
   },
-  created() {
+  created () {
   }
 }
 </script>

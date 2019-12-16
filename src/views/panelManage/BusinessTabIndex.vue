@@ -28,7 +28,7 @@ export default {
     BusinessTabList,
     BusinessTabInfo
   },
-  data() {
+  data () {
     return {
       isShowList: true,
       id: undefined,
@@ -45,23 +45,23 @@ export default {
         this.version = undefined
       }
     },
-    handleCreate() {
+    handleCreate () {
       this.id = undefined
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(item) {
+    handleEdit (item) {
       this.id = item.tabId
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(item, version) {
+    handleRead (item, version) {
       this.id = item.tabId
       this.mode = 'read'
       this.version = version
       this.isShowList = false
     },
-    handleDelete(selected) {
+    handleDelete (selected) {
       this.$service
         .businessTabDelete({
           id: selected.map(item => item.tabId).join(',')
@@ -70,7 +70,7 @@ export default {
           this.$refs.list.fetchData()
         })
     },
-    handleCopy(item) {
+    handleCopy (item) {
       this.id = item.tabId
       this.mode = 'copy'
       this.isShowList = false

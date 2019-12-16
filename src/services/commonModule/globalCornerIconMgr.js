@@ -1,6 +1,6 @@
 /** 角标素材管理 */
 // 分页
-export function getGlobalMgrList(params) {
+export function getGlobalMgrList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/cornerIcon/pageList.html',
@@ -8,7 +8,7 @@ export function getGlobalMgrList(params) {
   })
 }
 // 获取角标分类
-export function getCornerTypes(params) {
+export function getCornerTypes (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/cornerIconType/getCornerTypes.html',
@@ -16,7 +16,7 @@ export function getCornerTypes(params) {
   })
 }
 // 角标类别
-export function getIconAttributes(params) {
+export function getIconAttributes (params) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/cornerIcon/getIconAttributes.html',
@@ -24,7 +24,7 @@ export function getIconAttributes(params) {
   })
 }
 // 角标素材管理-编辑
-export function globalCornerIconEdit(params) {
+export function globalCornerIconEdit (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/cornerIcon/getDetailInfo.html',
@@ -32,7 +32,7 @@ export function globalCornerIconEdit(params) {
   })
 }
 // 角标素材管理-保存
-export function globalCornerIconSave(data) {
+export function globalCornerIconSave (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/cornerIcon/save.html',
@@ -40,7 +40,7 @@ export function globalCornerIconSave(data) {
   })
 }
 // 角标素材-删除
-export function globalCornerIconRemove(params) {
+export function globalCornerIconRemove (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/cornerIcon/remove.html',
@@ -48,7 +48,7 @@ export function globalCornerIconRemove(params) {
   })
 }
 // 角标素材管理—批量审核
-export function batchAudit(params) {
+export function batchAudit (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/cornerIcon/batchAudit.html',
@@ -64,7 +64,7 @@ export function batchAudit(params) {
 //     })
 // }
 // 角标素材管理—撤销审核
-export function revokedAudit(data) {
+export function revokedAudit (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/audit/revokedAudit.html',
@@ -72,7 +72,7 @@ export function revokedAudit(data) {
   })
 }
 // 角标素材管理-预览
-export function getDetailInfo(params) {
+export function getDetailInfo (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/cornerIcon/getDetailInfo.html',
@@ -80,7 +80,7 @@ export function getDetailInfo(params) {
   })
 }
 // 角标素材管理—调整优先级
-export function changePriority(params) {
+export function changePriority (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/cornerIcon/changePriority.html',

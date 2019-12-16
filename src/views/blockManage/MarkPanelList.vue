@@ -38,7 +38,7 @@ export default {
     ContentWrapper,
     ButtonGroupForListPage
   },
-  data() {
+  data () {
     return {
       resourceType: 'panelInfo',
       businessTypes: {}, // 业务分类
@@ -141,20 +141,20 @@ export default {
     }
   },
   methods: {
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         idPrefix: this.$consts.idPrefix,
         pannelType: 8
       }
     },
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.getMarkPanelList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -163,7 +163,7 @@ export default {
       return filter
     },
     /** 获取业务分类 */
-    getBusinessType() {
+    getBusinessType () {
       return this.$service.getDictType({ type: 'businessType' }).then(data => {
         data.forEach(element => {
           this.businessTypes[element.dictCnName] = element.dictId
@@ -172,7 +172,7 @@ export default {
       })
     },
     // 查询
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
@@ -184,13 +184,13 @@ export default {
       }
     },
     // 重置
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       pannelId: _.o.string.other('form', {
         component: 'Input',

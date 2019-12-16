@@ -55,7 +55,7 @@ export default {
     BaseSelector,
     SourceSelector
   },
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -151,12 +151,12 @@ export default {
   },
   props: ['isLive', 'selectionType', 'source'],
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     }
   },
   methods: {
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         callbackparam: 'result',
         source: this.source || this.$consts.sourceOptions[0].value, // 内容源
@@ -165,7 +165,7 @@ export default {
         title: '' // 内容搜索
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const filter = Object.assign({}, this.efficientFilter)
       if (pagination) {
@@ -177,18 +177,18 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.queryLiveVideoResult(filter).then(data => {
         data = JSON.parse(data.replace('result(', '').replace(/\)*$/, ''))

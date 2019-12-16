@@ -48,7 +48,7 @@ export default {
     CommonSelector,
     ResourceSelector
   },
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -100,12 +100,12 @@ export default {
   },
   props: ['isLive', 'selectionType', 'source', 'disablePartner'],
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     }
   },
   methods: {
-    secondToTimeStr(seconds) {
+    secondToTimeStr (seconds) {
       if (seconds) {
         const hour = Math.floor(seconds / 3600)
         const min = Math.floor((seconds - 3600 * hour) / 60)
@@ -113,7 +113,7 @@ export default {
         return `${hour}小时${min}分${sec}秒`
       }
     },
-    handleSelectParentVideoEnd({ video, episode, edu }) {
+    handleSelectParentVideoEnd ({ video, episode, edu }) {
       let pThirdVId
       if (video.length > 0) {
         const coocaaVId = video[0].coocaaVId
@@ -128,7 +128,7 @@ export default {
       }
       this.filter.pThirdVId = pThirdVId
     },
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         source: this.$consts.sourceToPartner[this.source || this.$consts.sourceOptions[0].value],
         mTitle: '',
@@ -139,7 +139,7 @@ export default {
         order: 'desc'
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const filter = Object.assign({}, this.efficientFilter)
       filter.code = filter.id
@@ -149,18 +149,18 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(result => {
         this.pagination.total = result.total
@@ -168,7 +168,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
   }
 }
 </script>

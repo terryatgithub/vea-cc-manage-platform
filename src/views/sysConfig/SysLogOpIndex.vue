@@ -25,7 +25,7 @@ export default {
     Table,
     ContentWrapper
   },
-  data() {
+  data () {
     return {
       filter: {
         sort: undefined,
@@ -68,7 +68,7 @@ export default {
           {
             label: '操作的数据',
             prop: 'opData',
-            render(h, { row }) {
+            render (h, { row }) {
               return h(
                 Tooltip,
                 {
@@ -155,7 +155,7 @@ export default {
       }
       document.body.removeChild(textArea)
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.id)) {
         if (type === 'query') {
@@ -166,7 +166,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -174,7 +174,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -185,7 +185,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.sysLogOpPageList(filter).then(data => {
         this.pagination.total = data.total
@@ -193,7 +193,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       id: _.o.string.other('form', {
         component: 'Input',

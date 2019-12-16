@@ -40,7 +40,7 @@ export function getMaterialTypes (type) {
 /**
  * 推荐位保存
  */
-export function saveBlockInfo(data) {
+export function saveBlockInfo (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/blockInfo/save.html',
@@ -70,7 +70,7 @@ export function editSysPlugin (params) {
 /**
  * 获取系统功能父类型数据字典
  */
-export function getPluginParentTypes(data) {
+export function getPluginParentTypes (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/dict/getTypes/sysPlugin/pluginParentType.html',
@@ -80,7 +80,7 @@ export function getPluginParentTypes(data) {
 /**
  * 获取系统功能类型数据字典
  */
-export function getPluginTypes(data) {
+export function getPluginTypes (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/dict/getTypes/sysPlugin/pluginType.html',
@@ -131,13 +131,13 @@ export function queryLiveVideoResult (params) {
 //     url: 'api/dict/sysPlugin/' + data + '.html'
 //   })
 // }
-export function getPluginVersions(data) {
+export function getPluginVersions (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/dict/getTypes/sysPlugin/' + data + '.html'
   })
 }
-export function getPluginType(data) {
+export function getPluginType (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/dict/getTypes/sysPlugin/pluginType.html',
@@ -178,7 +178,7 @@ export function SavePlugin (data) {
 /**
  * 推荐位——多功能推荐位
  */
-export function getMultiBlockList(data) {
+export function getMultiBlockList (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/sysPlugin/pageList.html?builtInNotShow=1',
@@ -188,7 +188,7 @@ export function getMultiBlockList(data) {
 /**
  * 推荐位——多功能推荐位预览
  */
-export function getData(params) {
+export function getData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/sysPlugin/getDetailInfo.html',
@@ -198,7 +198,7 @@ export function getData(params) {
 /**
  * 多功能推进位-删除
  */
-export function removeMulti(params) {
+export function removeMulti (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/sysPlugin/remove.html',
@@ -208,7 +208,7 @@ export function removeMulti(params) {
 /**
  * 功能推荐位——快速填充弹框数据
  */
-export function getClickData(data) {
+export function getClickData (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/onclickInfo/pageList.html',
@@ -220,7 +220,7 @@ export function getClickData(data) {
    type: block
    预览页面版本历史记录
 */
-export function getHistoryList(params) {
+export function getHistoryList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/hvi/historyList.html',
@@ -230,7 +230,7 @@ export function getHistoryList(params) {
 /**
  * 得到轮播推荐位的编辑数据
  */
-export function getBroadcastBlockEditData(data) {
+export function getBroadcastBlockEditData (data) {
   return this.fetch({
     method: 'POST',
     url: 'api/v1/blockInfo/getDetailInfo.html',
@@ -245,7 +245,7 @@ export function broadcastBlockDataList (params) {
   })
 }
 
-export function getBlockSimpleBrowseData(params) {
+export function getBlockSimpleBrowseData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/block/getSimpleBrowseData.html',
@@ -253,7 +253,7 @@ export function getBlockSimpleBrowseData(params) {
   })
 }
 
-export function getBlockChartData(params) {
+export function getBlockChartData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/block/getChartData.html',
@@ -261,7 +261,7 @@ export function getBlockChartData(params) {
   })
 }
 
-export function getBlockRealTimeChartData(params) {
+export function getBlockRealTimeChartData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/blockRealTime/getChartData.html',
@@ -271,35 +271,35 @@ export function getBlockRealTimeChartData(params) {
 /**
  * 推荐位管理——指定影片推荐流
  */
-export function getMediaAutomationDataList(params) {
+export function getMediaAutomationDataList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/mediaAutomation/dataList.html',
     params
   })
 }
-export function getMediaAutomationList(params) {
+export function getMediaAutomationList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/mediaAutomation/pageList.html',
     params
   })
 }
-export function saveMediaAutomation(data) {
+export function saveMediaAutomation (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/mediaAutomation/save.html',
     data
   })
 }
-export function getMediaAutomationDetial(params) {
+export function getMediaAutomationDetial (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/mediaAutomation/getDetailInfo.html',
     params
   })
 }
-export function deleteMediaAutomation(params) {
+export function deleteMediaAutomation (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/mediaAutomation/remove.html',
@@ -308,7 +308,7 @@ export function deleteMediaAutomation(params) {
 }
 
 // 轮播推荐位看数据
-export function getBroadcastDataTitles(params) {
+export function getBroadcastDataTitles (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/block/getAllTitles.html',

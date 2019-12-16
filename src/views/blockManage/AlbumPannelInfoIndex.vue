@@ -40,23 +40,23 @@ export default {
     }
   },
   methods: {
-    handleCreate() {
+    handleCreate () {
       this.id = undefined
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(item) {
+    handleEdit (item) {
       this.id = item[idField]
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(item, version) {
+    handleRead (item, version) {
       this.id = item[idField]
       this.mode = 'read'
       this.version = version
       this.isShowList = false
     },
-    handleCopy(item) {
+    handleCopy (item) {
       this.id = item[idField]
       this.mode = 'copy'
       this.isShowList = false
@@ -69,7 +69,7 @@ export default {
         this.version = undefined
       }
     },
-    handleDelete(selected) {
+    handleDelete (selected) {
       this.$service.panelRemove({
         id: selected.map(item => item.pannelGroupId).join(',')
       }, '删除成功')

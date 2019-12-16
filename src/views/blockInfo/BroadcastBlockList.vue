@@ -44,7 +44,7 @@ export default {
     ButtonGroupForListPage,
     BroadcastSimpleData
   },
-  data() {
+  data () {
     return {
       // 看数据
       isVisibleDialog: false,
@@ -239,7 +239,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       id: _.o.oneOf([_.number, _.value('')]).$msg('请输入数字').other('form', {
         component: 'Input',

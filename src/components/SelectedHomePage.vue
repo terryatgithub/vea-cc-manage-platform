@@ -37,14 +37,14 @@ export default {
     title: String,
     mode: String
   },
-  data() {
+  data () {
     return {}
   },
   methods: {
-    edit(homepageModel, index) {
+    edit (homepageModel, index) {
       this.$emit('edit-item', homepageModel, index)
     },
-    remove(homepageModel, index) {
+    remove (homepageModel, index) {
       this.$emit('remove-item', homepageModel, index)
     }
   }

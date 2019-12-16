@@ -63,7 +63,7 @@ export default {
     PageContentWrapper
   },
   props: ['id', 'initMode', 'version', 'policyType'],
-  data() {
+  data () {
     const isTestPolicy = this.isTestPolicy
     return {
       activePage: 'policy_info',
@@ -175,7 +175,7 @@ export default {
     }
   },
   methods: {
-    getHomepageInfo(homepage, preset) {
+    getHomepageInfo (homepage, preset) {
       return {
         homepageId: homepage.homepageId,
         homepageModel: homepage.homepageModel,
@@ -184,21 +184,21 @@ export default {
         ...preset
       }
     },
-    handlePreviewHomepage(homepage) {
+    handlePreviewHomepage (homepage) {
       this.homePageId = homepage.homepageId
       this.homePageVersion = homepage.currentVersion
       this.activePage = 'showHomePageDetail'
     },
-    handleSelectHomepageEnd(index, [homepage]) {
+    handleSelectHomepageEnd (index, [homepage]) {
       const childHpList = this.form.childHpList
       const oldHomepage = childHpList[index]
       childHpList.splice(index, 1, this.getHomepageInfo(homepage, { age: oldHomepage.age }))
     },
-    getFormData() {
+    getFormData () {
       const data = cloneDeep(this.form)
       return data
     },
-    validateFormData(data, cb) {
+    validateFormData (data, cb) {
       this.$refs.form.$refs.form.validate(valid => {
         if (valid) {
           const { childHpList } = data
@@ -215,7 +215,7 @@ export default {
         }
       })
     },
-    parseDataToApi(data) {
+    parseDataToApi (data) {
       data.childHpList = data.childHpList.map((item) => {
         return {
           homepageId: item.homepageId,
@@ -233,7 +233,7 @@ export default {
       }
       return data
     },
-    submitBtn(status) {
+    submitBtn (status) {
       const data = this.getFormData()
       data.policyStatus = status
       this.validateFormData(data, () => {
@@ -245,7 +245,7 @@ export default {
         })
       })
     },
-    setData(data) {
+    setData (data) {
       data = cloneDeep(data)
       const childHpListIndexed = data.childHpList.reduce((result, item) => {
         result[item.age + ''] = item
@@ -276,12 +276,12 @@ export default {
         specialChildHp: []
       }
     },
-    fetchData(version) {
+    fetchData (version) {
       const options = { id: this.id, version }
       this.$service.getChildPolicyConfDetail(options).then(this.setData)
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     this.$service.getDictType({ type: 'childAge' }).then(data => {
       this.ageOptions = data.map(item => {

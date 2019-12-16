@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       inputValue: undefined
     }
@@ -18,11 +18,11 @@ export default {
   },
 
   methods: {
-    handleInputValue(val) {
+    handleInputValue (val) {
       this.$emit('input', val)
     }
   },
-  created() {
+  created () {
     this.inputValue = this.value
   }
 }

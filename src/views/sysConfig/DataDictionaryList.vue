@@ -64,7 +64,7 @@ export default {
     Table,
     ContentWrapper
   },
-  data() {
+  data () {
     return {
       dialogFormVisible: false, // 字典分类弹框默认false
       labelPosition: 'right',
@@ -129,13 +129,13 @@ export default {
     /**
      * 新增字典
      */
-    addDict() {
+    addDict () {
       this.$emit('open-add-page', null)
     },
     /**
      * 修改字典
      */
-    editData() {
+    editData () {
       if (this.$isAllowEdit(this.selected)) {
         this.$emit('open-add-page', this.selectedRows[this.selected[0]])
       }
@@ -143,7 +143,7 @@ export default {
     /**
      * 批量删除
      */
-    batchDel() {
+    batchDel () {
       // const id = this.selected[0]
       if (this.selected.length === 0) {
         this.$message('请选择一条数据')
@@ -169,7 +169,7 @@ export default {
     /**
      * 得到数据字典分类
      */
-    getDictCategoryList() {
+    getDictCategoryList () {
       return this.$service.getDictCategoryList().then(data => {
         data.forEach(element => {
           this.dictCategories[element.label] = element.value
@@ -179,7 +179,7 @@ export default {
     /**
      * 新增数据字典分类
      */
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           const dictCategoryObj = {
@@ -198,27 +198,27 @@ export default {
         }
       })
     },
-    resetForm(formName) {
+    resetForm (formName) {
       this.dialogFormVisible = false
       this.$refs[formName].resetFields()
     },
-    handleCreate() {
+    handleCreate () {
       this.$router.push({ name: 'prize-create' })
     },
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.dictId)
       let id = targetItem.dictId
       this.selectedRows[id] = targetItem
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.dictId
       })
       delete this.selectedRows[targetItem.dictId]
       this.updateTableSelected()
     },
-    handleAllRowSelectionChange(value) {
+    handleAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
@@ -226,11 +226,11 @@ export default {
         this.table.selected = []
       }
     },
-    handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -240,7 +240,7 @@ export default {
         return result
       }, [])
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.dictId)) {
         if (type === 'query') {
@@ -251,7 +251,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -259,7 +259,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -270,7 +270,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getDictList(filter).then(data => {
@@ -280,7 +280,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       dictId: _.o.string.other('form', {
         component: 'Input',

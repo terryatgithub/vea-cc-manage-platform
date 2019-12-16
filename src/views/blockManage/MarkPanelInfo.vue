@@ -103,12 +103,12 @@ export default {
     initMode: String,
     version: {
       type: String,
-      default() {
+      default () {
         return ''
       }
     }
   },
-  data() {
+  data () {
     const STATUS = {
       draft: 2,
       waiting: 3,
@@ -169,7 +169,7 @@ export default {
         }
       }
     },
-    couldSetReleaseTime() {
+    couldSetReleaseTime () {
       const mode = this.mode
       const currentVersion = this.form.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
@@ -179,7 +179,7 @@ export default {
     }
   },
   methods: {
-    handleSubmitAudit(timing) {
+    handleSubmitAudit (timing) {
       const data = this.getFormData()
       data.pannelList[0].pannelStatus = this.$consts.status.waiting
       this.validateFormData(data, () => {
@@ -196,19 +196,19 @@ export default {
         }
       })
     },
-    handleSaveDraft() {
+    handleSaveDraft () {
       const data = this.getFormData()
       data.isTiming = undefined
       data.releaseTime = undefined
       data.pannelList[0].pannelStatus = this.$consts.status.draft
       this.validateFormData(
         data,
-        function() {
+        function () {
           this.submit(data)
         }.bind(this)
       )
     },
-    getFormData() {
+    getFormData () {
       const data = JSON.parse(JSON.stringify(this.form))
       const mode = this.mode
       if (mode === 'replicate') {
@@ -220,7 +220,7 @@ export default {
       }
       return data
     },
-    submit(data) {
+    submit (data) {
       const jsonStr = JSON.stringify(data)
       this.$service
         .MarkPanelSave({ jsonStr: jsonStr }, '保存成功')
@@ -228,7 +228,7 @@ export default {
           this.$emit('upsert-end')
         })
     },
-    validateFormData(data, cb) {
+    validateFormData (data, cb) {
       this.$refs.form.validate(valid => {
         if (valid) {
           cb()
@@ -241,7 +241,7 @@ export default {
       })
     },
     /** 编辑数据回显 */
-    fetchData(version) {
+    fetchData (version) {
       this.$service.getViewData({ id: this.id, version }).then(data => {
         this.form = data
         if (version !== '' && version !== undefined) {
@@ -254,7 +254,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

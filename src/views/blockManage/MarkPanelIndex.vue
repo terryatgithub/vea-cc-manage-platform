@@ -8,11 +8,11 @@ export default {
     ResourceList: MarkPanelList,
     ResourceContent: MarkPanelInfo
   },
-  data() {
+  data () {
     return {}
   },
   computed: {
-    resourceInfo() {
+    resourceInfo () {
       return {
         type: 'markPanel',
         idField: 'pannelGroupId'

@@ -8,11 +8,11 @@ export default {
     ResourceList: List,
     ResourceContent: Content
   },
-  data() {
+  data () {
     return {}
   },
   computed: {
-    resourceInfo() {
+    resourceInfo () {
       return {
         type: 'topic',
         idField: 'id'

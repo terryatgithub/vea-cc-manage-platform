@@ -8,11 +8,11 @@ export default {
     ResourceList,
     ResourceContent
   },
-  data() {
+  data () {
     return {}
   },
   computed: {
-    resourceInfo() {
+    resourceInfo () {
       return {
         type: 'panelRecommend',
         idField: 'panelGroupId'

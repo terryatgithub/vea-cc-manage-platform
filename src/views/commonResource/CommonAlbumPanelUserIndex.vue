@@ -46,23 +46,23 @@ export default {
         this.version = undefined
       }
     },
-    handleCreate() {
+    handleCreate () {
       this.id = undefined
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(id) {
+    handleEdit (id) {
       this.id = id
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(id, version) {
+    handleRead (id, version) {
       this.id = id
       this.mode = 'read'
       this.version = version
       this.isShowList = false
     },
-    handleCopy(id) {
+    handleCopy (id) {
       this.id = id
       this.mode = 'copy'
       this.isShowList = false

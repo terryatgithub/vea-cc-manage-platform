@@ -1,11 +1,11 @@
-export function businessTabSave(data) {
+export function businessTabSave (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/tab/save.html',
     data
   })
 }
-export function businessTabDelete(data) {
+export function businessTabDelete (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/tab/remove.html',
@@ -13,7 +13,7 @@ export function businessTabDelete(data) {
   })
 }
 
-export function businessTabEdit(params) {
+export function businessTabEdit (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/tab/getDetailInfo.html',
@@ -21,7 +21,7 @@ export function businessTabEdit(params) {
   })
 }
 /** 收藏 */
-export function businessTabCollect(data) {
+export function businessTabCollect (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/commonResourceUser/tab/collectResource.html',
@@ -30,7 +30,7 @@ export function businessTabCollect(data) {
 }
 
 /** 取消收藏 */
-export function businessTabCancelCollect(data) {
+export function businessTabCancelCollect (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/commonResourceUser/tab/cancelCollectResource.html',

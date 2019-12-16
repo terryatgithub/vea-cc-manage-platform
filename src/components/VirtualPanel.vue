@@ -119,7 +119,7 @@
 <script>
 export default {
   template: '#cc-virtual-panel',
-  data() {
+  data () {
     return {
       blockItems: [],
       pannelStyle: {},
@@ -133,14 +133,14 @@ export default {
     blocks: 'computeBlockItems'
   },
   methods: {
-    handleDragStart(index) {
+    handleDragStart (index) {
       this.dragIndex = index
     },
-    handleDragOver(index, event) {
+    handleDragOver (index, event) {
       this.dropIndex = index
       event.preventDefault()
     },
-    handleDrop() {
+    handleDrop () {
       const dragIndex = this.dragIndex
       const dropIndex = this.dropIndex
       if (dragIndex !== undefined && dropIndex !== undefined) {
@@ -148,7 +148,7 @@ export default {
         this.dragIndex = this.dropIndex = undefined
       }
     },
-    handleRemoveBlock(index) {
+    handleRemoveBlock (index) {
       this.$emit('remove-block', index)
     },
     handleAnalyzeSimpleData (index, isRealTime) {
@@ -163,13 +163,13 @@ export default {
         isRealTime
       })
     },
-    handleClickBlock(index) {
+    handleClickBlock (index) {
       this.$emit('click-block', index)
     },
-    fixPrice(price) {
+    fixPrice (price) {
       return Number((price / 100).toFixed(2))
     },
-    computeBlockItems() {
+    computeBlockItems () {
       const blocks = this.blocks || []
       if (blocks.length === 0) {
         this.blockItems = []
@@ -178,7 +178,7 @@ export default {
       }
 
       const ratio = this.ratio || 0.5
-      const blockItems = this.blocks.map(function(item) {
+      const blockItems = this.blocks.map(function (item) {
         const block = {
           title: item.title,
           isExtra: item.isExtra,
@@ -255,7 +255,7 @@ export default {
       return height > 96
     }
   },
-  created() {
+  created () {
     this.computeBlockItems()
   }
 }

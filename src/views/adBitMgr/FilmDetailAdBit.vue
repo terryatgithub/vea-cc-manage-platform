@@ -273,14 +273,14 @@ export default {
   components: {
     'cc-var': Var
   },
-  data() {
+  data () {
     return {
       adSwitches: {},
       activeTab: 'detail'
     }
   },
   methods: {
-    handleToggleSwitch(item) {
+    handleToggleSwitch (item) {
       this.$confirm('确定' + (item.value ? '关闭' : '开启') + '【' + item.label + '】的广告投放权限吗？')
         .then(() => {
           this.$service.advertisementUpsert({
@@ -294,13 +294,13 @@ export default {
 
         })
     },
-    getLabel(type, remark) {
+    getLabel (type, remark) {
       return this.adSwitches[type + remark].label
     },
-    getSwitches() {
+    getSwitches () {
       this.$service.advertisementList().then(result => {
         const adSwitches = {}
-        result.rows.forEach(function(item) {
+        result.rows.forEach(function (item) {
           adSwitches[item.remark] = {
             id: item.id,
             label: item.name,
@@ -312,7 +312,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.getSwitches()
   }
 }

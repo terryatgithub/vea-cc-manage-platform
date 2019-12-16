@@ -8,11 +8,11 @@ export default {
     ResourceList,
     ResourceContent
   },
-  data() {
+  data () {
     return {}
   },
   computed: {
-    resourceInfo() {
+    resourceInfo () {
       return {
         type: 'crowdRel',
         idField: 'policyId'
@@ -20,7 +20,7 @@ export default {
     }
   },
   methods: {
-    handleDelete(selected) {
+    handleDelete (selected) {
       const resourceInfo = this.resourceInfo
       const idField = 'id'
       this.$service

@@ -28,11 +28,11 @@
 <script>
 export default {
   template: '#cc-app-params-read',
-  data() {
+  data () {
     return {}
   },
   props: ['value'],
-  created() {}
+  created () {}
 }
 </script>
 

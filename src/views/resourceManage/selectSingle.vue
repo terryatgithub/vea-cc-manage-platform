@@ -30,7 +30,7 @@ export default {
   props: {
     singleId: null
   },
-  data() {
+  data () {
     return {
       urlIsTrailers: {
         腾讯: 1,
@@ -90,14 +90,14 @@ export default {
     }
   },
   watch: {
-    'singleId': function(newValue, oldValue) {
+    'singleId': function (newValue, oldValue) {
       this.singleId = newValue
       this.fetchData()
     }
   },
   methods: {
     /** 获取数据 */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       filter.id = this.singleId
       this.$service.getSegmentList(filter).then(data => {
@@ -106,25 +106,25 @@ export default {
         this.table.data = data.rows
       })
     },
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.commonOnclickId)
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.commonOnclickId
       })
       this.updateTableSelected()
     },
-    handleRowSelectionChange(value, index) {
+    handleRowSelectionChange (value, index) {
       this.table.selected = index
       this.$emit('single', value)
     },
-    handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -134,7 +134,7 @@ export default {
         return result
       }, [])
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
@@ -143,7 +143,7 @@ export default {
       }
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -151,7 +151,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -162,7 +162,7 @@ export default {
       return filter
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       urlIsTrailer: _.o.enum(this.urlIsTrailers).other('form', {
         component: 'Select',

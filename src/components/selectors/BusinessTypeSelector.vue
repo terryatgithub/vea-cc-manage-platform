@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       options: []
     }
@@ -23,7 +23,7 @@ export default {
       const value = this.value
       const options = this.options
       if (value && options) {
-        const selected = options.find(function(item) {
+        const selected = options.find(function (item) {
           return item.value === value
         })
         if (selected) {
@@ -34,10 +34,10 @@ export default {
   },
   props: ['value', 'isRead'],
   methods: {},
-  created() {
+  created () {
     const isRead = this.isRead
     this.$service.getDictType({ type: 'businessType', isFilter: isRead ? 0 : 1 }).then(data => {
-      this.options = data.map(function(item) {
+      this.options = data.map(function (item) {
         return {
           label: item.dictCnName,
           value: item.dictId

@@ -104,7 +104,7 @@ export default {
     InputPositiveInt
   },
 
-  data() {
+  data () {
     return {
       resourceType: 'tabInfo',
       selected: [],
@@ -162,7 +162,7 @@ export default {
           {
             label: '版面属性',
             prop: 'tabType',
-            formatter: function(row) {
+            formatter: function (row) {
               const v = row.tabType
               return (
                 {
@@ -206,7 +206,7 @@ export default {
                 currentVersion +
                 '/' +
                 this.tabStatusOption
-                  .map(function(item) {
+                  .map(function (item) {
                     if (status.toString() === item.value) {
                       return item.label
                     }
@@ -298,7 +298,7 @@ export default {
   props: {
     listProps: {
       type: Object,
-      default() {
+      default () {
         return {
           // 是否是 常用tab版面 页面
           isCollectionPage: false
@@ -307,22 +307,22 @@ export default {
     }
   },
   methods: {
-    preventSubmit(event) {
+    preventSubmit (event) {
       event.preventDefault()
     },
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.tabId,
         type: 'tab',
         menuElId: 'tabInfo'
       })
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         idPrefix: this.$consts.idPrefix
       }
     },
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       if (filter.tabId && !/^\d+$/.test(filter.tabId)) {
@@ -343,7 +343,7 @@ export default {
         })
       }
     },
-    parseFilter() {
+    parseFilter () {
       const pagination = this.pagination
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
@@ -352,32 +352,32 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.pagination.currentPage = 1
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    addTabInfo() {
+    addTabInfo () {
       this.$emit('create')
     },
-    editData() {
+    editData () {
       const table = this.table
       const selected = this.table.selected
       const target = table.data[selected[0]]
       this.$emit('edit', target)
     },
-    getBusinessType() {
+    getBusinessType () {
       this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.businessType = data
       })
     },
-    handleToggleCollect(row) {
+    handleToggleCollect (row) {
       if (row.collected) {
         this.$service.collectCancel({ type: 'tab', data: { resourceId: row.tabId } }, '取消收藏成功')
           .then(() => {
@@ -391,7 +391,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.$service.getDictType({ type: 'appIdType' }).then(data => {
       this.appIdType = data
       this.fetchData()

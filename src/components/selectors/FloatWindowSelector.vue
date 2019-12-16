@@ -43,12 +43,12 @@ export default {
   props: {
     params: {
       type: Object,
-      default() {
+      default () {
         return {}
       }
     }
   },
-  data() {
+  data () {
     return {
       filter: {
         pluginId: undefined,
@@ -94,15 +94,15 @@ export default {
     }
   },
   methods: {
-    handleRowSelectionChange(row, index) {
+    handleRowSelectionChange (row, index) {
       this.table.selected = index
       this.$refs.wrapper.handleSelectEnd()
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         pluginId: undefined,
         pluginName: undefined
@@ -110,7 +110,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination, params } = this
       const { sourceArray } = params
       if (pagination) {
@@ -123,7 +123,7 @@ export default {
       return filter
     },
     // 获取数据
-    fetchData() {
+    fetchData () {
       this.table.selected = undefined
       const filter = this.parseFilter()
       if (this.pictureResolution) {
@@ -134,13 +134,13 @@ export default {
         this.table.data = data.rows
       })
     },
-    handleSelectEnd() {
+    handleSelectEnd () {
       const { data, selected } = this.table
       this.$emit('select-end', data[selected])
       this.table.selected = undefined
     }
   },
-  created() {}
+  created () {}
 }
 </script>
 

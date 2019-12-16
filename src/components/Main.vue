@@ -278,7 +278,7 @@ export default {
     TagNav
   },
   // props: ['menu'],
-  data() {
+  data () {
     return {
       menu: [],
       titles: {},
@@ -309,11 +309,11 @@ export default {
     }
   },
   computed: {
-    isKeepAlive() {
+    isKeepAlive () {
       const meta = this.$route.meta
       return meta && meta.isCache !== false
     },
-    initTags() {
+    initTags () {
       const tags =
         this.$appState.$get('tags' + '_' + this.$appState.user.name) || []
       if (tags.length === 0) {
@@ -329,12 +329,12 @@ export default {
       }
       return tags
     },
-    defaultMenu() {
+    defaultMenu () {
       const mainRoute = this.$router.options.routes.find(item => {
         return item.path === '/'
       })
       mainRoute.children.pop()
-      function gen({ name, meta = {}, children }) {
+      function gen ({ name, meta = {}, children }) {
         if (!meta.hideInMenu) {
           const currentMenuItem = {
             title: meta.title,
@@ -359,17 +359,17 @@ export default {
     }
   },
   methods: {
-    handleOpenMenu(name, menu) {
+    handleOpenMenu (name, menu) {
       this.$router.push({
         name: routerMap[name],
         query: menu.query,
         params: menu.params
       })
     },
-    modifyPwd() {
+    modifyPwd () {
       this.modifyDialogVisible = true
     },
-    modifyPwdSave() {
+    modifyPwdSave () {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service.modifyPwd(this.form, '修改成功').then(data => {
@@ -381,7 +381,7 @@ export default {
         }
       })
     },
-    validatePass2(rule, value, callback) {
+    validatePass2 (rule, value, callback) {
       if (value === '') {
         callback(new Error('请再次输入密码'))
       } else if (value !== this.form.newpwd) {
@@ -390,23 +390,23 @@ export default {
         callback()
       }
     },
-    handleDropdownCommand(command) {
+    handleDropdownCommand (command) {
       if (command === 'logout') {
         this.$logout().then(() => {
           this.$router.push({ name: 'login' })
         })
       }
     },
-    toggleMenu() {
+    toggleMenu () {
       const isCollapseMenu = !this.isCollapseMenu
       this.$appState.$set('isCollapseMenu', isCollapseMenu)
       this.isCollapseMenu = isCollapseMenu
     },
-    saveTags() {
+    saveTags () {
       const tags = this.$refs.tag.tags
       this.$appState.$set('tags' + '_' + this.$appState.user.name, tags)
     },
-    getMenu() {
+    getMenu () {
       this.$service.getMenu().then(menu => {
         const titles = {}
         const parseMenu = menu => {
@@ -438,7 +438,7 @@ export default {
         this.scrollMenuIntoView()
       })
     },
-    handleNavigate(route) {
+    handleNavigate (route) {
       this.$sendEvent({
         type: 'menu_click',
         payload: {
@@ -460,14 +460,14 @@ export default {
       }, 1000)
     }
   },
-  created() {
+  created () {
     this.isCollapseMenu = !!this.$appState.$get('isCollapseMenu')
     this.$bus.$on('breadcrumb-change', breadcrumb => {
       this.breadcrumb = breadcrumb
     })
     this.getMenu()
   },
-  mounted() {
+  mounted () {
     this.$bus.$on('scroll-top', () => {
       if (this.$refs.main) {
         this.$refs.main.$el.scrollTo(0, 0)
@@ -477,7 +477,7 @@ export default {
     //  this.saveTags()
     window.addEventListener('beforeunload', this.saveTags)
   },
-  destroyed() {
+  destroyed () {
     window.removeEventListener('beforeunload', this.saveTags)
   }
 }

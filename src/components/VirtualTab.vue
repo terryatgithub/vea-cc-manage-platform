@@ -276,7 +276,7 @@ export default {
     PanelStatisticTable,
     VueLazyComponent
   },
-  data() {
+  data () {
     this.table = {
       props: {
         border: true,
@@ -397,11 +397,11 @@ export default {
         this.show = true
       })
     },
-    disableDrag(event) {
+    disableDrag (event) {
       event.stopPropagation()
       event.preventDefault()
     },
-    getPanelInfo(tabPanel) {
+    getPanelInfo (tabPanel) {
       const panel = this.panelData[tabPanel.id]
       const activeIndex = tabPanel.activeIndex || 0
       const result = {
@@ -420,16 +420,16 @@ export default {
       }
       return result
     },
-    hasDuplicateVersion(panel) {
+    hasDuplicateVersion (panel) {
       const v = panel.duplicateVersion
       if (v && v !== 'no') {
         return v
       }
     },
-    handleActivate(panel, index) {
+    handleActivate (panel, index) {
       this.$set(panel, 'activeIndex', +index)
     },
-    handleDragStart(event, index, crowdIndex) {
+    handleDragStart (event, index, crowdIndex) {
       if (this.readOnly) {
         event.preventDefault()
         event.stopPropagation()
@@ -437,7 +437,7 @@ export default {
       }
       this.$emit('drag-start')
       setTimeout(
-        function() {
+        function () {
           this.isDragging = true
           this.draggingIndex = index
           this.draggingCrowdIndex = crowdIndex
@@ -445,35 +445,35 @@ export default {
         0
       )
     },
-    handleDragEnd() {
+    handleDragEnd () {
       this.isDragging = false
       this.draggingIndex = undefined
       this.draggingCrowdIndex = undefined
       this.$emit('drag-end')
     },
-    handleCollapse(isCollapse, index) {
+    handleCollapse (isCollapse, index) {
       this.$emit(isCollapse ? 'collapse' : 'uncollapse', index)
     },
-    handleDragEnter(e) {
+    handleDragEnter (e) {
       e.currentTarget.classList.add('active')
     },
-    handleDragLeave(e) {
+    handleDragLeave (e) {
       e.currentTarget.classList.remove('active')
     },
-    handleAddPanel(type, index, crowdIndex) {
+    handleAddPanel (type, index, crowdIndex) {
       this.$emit('add-panel', {
         type: type,
         index: index,
         crowdIndex: crowdIndex
       })
     },
-    handleDrop(dragEvent, dropInfo) {
+    handleDrop (dragEvent, dropInfo) {
       // this.isDragging = false
       this.handleDragLeave(dragEvent)
       const dragInfo = JSON.parse(dragEvent.dataTransfer.getData('text/plain'))
       // dragEnd 事件还没触发，dom变太早的话，造成 dragEnd 事件被解绑导致触发不了
       setTimeout(
-        function() {
+        function () {
           if (dragInfo.pannelGroupId) {
             // 插入版块
             this.$emit('insert-panel', dragInfo, dropInfo)
@@ -484,20 +484,20 @@ export default {
         20
       )
     },
-    handleDragOver(e) {
+    handleDragOver (e) {
       e.preventDefault()
     },
-    handleOpenPanel(panel) {
+    handleOpenPanel (panel) {
       this.$emit('open-panel', panel)
     },
-    handleInsertPanel() {},
-    handleRemovePanel(index, crowdIndex) {
+    handleInsertPanel () {},
+    handleRemovePanel (index, crowdIndex) {
       this.$emit('remove-panel', index, crowdIndex)
     },
-    handleClickBlock(data) {
+    handleClickBlock (data) {
       this.$emit('click-block', data)
     },
-    handleShowAllPanels(index) {
+    handleShowAllPanels (index) {
       this.$emit('show-all-panel', index)
     }
   }

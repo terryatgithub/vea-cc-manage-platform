@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       order: undefined
     }
@@ -14,10 +14,10 @@ export default {
   },
   props: ['value', 'disabled'],
   methods: {
-    handleInputValue(val) {
+    handleInputValue (val) {
       this.order = val
     },
-    handleOrderChange(val) {
+    handleOrderChange (val) {
       if (/^\d+$/.test(val) && val > 0) {
         this.$emit('input', val)
       } else {
@@ -29,7 +29,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.order = this.value
   }
 }

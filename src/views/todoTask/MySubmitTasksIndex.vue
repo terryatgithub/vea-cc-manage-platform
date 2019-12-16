@@ -169,7 +169,7 @@ export default {
     GlobalCornerIcon,
     MultiFunctionBlockInfo
   },
-  data() {
+  data () {
     return {
       activeName: 'tab',
       mode: 'tabList',
@@ -178,18 +178,18 @@ export default {
     }
   },
   methods: {
-    handleRead(row, mode) {
+    handleRead (row, mode) {
       this.previewData = row
       this.preMode = this.mode
       this.mode = mode
     },
-    goBack() {
+    goBack () {
       this.mode = this.preMode
     },
-    handleClick(tab) {
+    handleClick (tab) {
       this.mode = this.preMode = tab.name + 'List'
     },
-    handleUpsertEnd() {
+    handleUpsertEnd () {
       this.goBack()
       this.$refs[this.preMode].fetchData()
     }

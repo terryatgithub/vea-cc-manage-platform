@@ -1,5 +1,5 @@
 // 资源管理——影片资源
-export function getMediaVideoInfos(params) {
+export function getMediaVideoInfos (params) {
   const tagCodes = params.tagCodes || []
   let tagCodeParam
   if (tagCodes.length > 0) {
@@ -44,7 +44,7 @@ export function getMediaVideoInfos(params) {
 }
 
 // 影片内容源获取
-export function getPartnerSource(params) {
+export function getPartnerSource (params) {
   return this.fetch({
     methods: 'get',
     url: 'api/tvos/getPartnerSource.html',
@@ -52,7 +52,7 @@ export function getPartnerSource(params) {
   })
 }
 // 频道类型
-export function getCondition() {
+export function getCondition () {
   return this.fetch({
     methods: 'get',
     url: 'api/tvos/getCondition.html'
@@ -65,7 +65,7 @@ export function getCondition() {
   })
 }
 // 影片单集资源
-export function getSegmentList(params) {
+export function getSegmentList (params) {
   return this.fetch({
     methods: 'get',
     url: 'api/tvos/getSegmentList.html',
@@ -79,7 +79,7 @@ export function getSegmentList(params) {
   })
 }
 
-export function getAppManagementList(params) {
+export function getAppManagementList (params) {
   return this.fetch({
     methods: 'get',
     url: 'api/v1/appManagement/pageList.html',

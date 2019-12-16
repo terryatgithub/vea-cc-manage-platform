@@ -143,7 +143,7 @@ export default {
     CommonContent,
     Upload
   },
-  data() {
+  data () {
     return {
       mode: 'create',
       resourceName: '角标',
@@ -179,10 +179,10 @@ export default {
     }
   },
   methods: {
-    fetchData(version) {
+    fetchData (version) {
       this.$service.globalCornerIconEdit({ id: this.id }).then(this.setFormData)
     },
-    handleSave() {
+    handleSave () {
       this.validateFormData(err => {
         if (!err) {
           const data = this.getFormData()
@@ -192,7 +192,7 @@ export default {
         }
       })
     },
-    getFormData() {
+    getFormData () {
       const data = this.getUploadedFiles().map(item => {
         return {
           cornerIconId: this.id,
@@ -204,7 +204,7 @@ export default {
       })
       return data
     },
-    setFormData(data) {
+    setFormData (data) {
       this.fileInfo = [
         {
           upload: {
@@ -218,9 +218,9 @@ export default {
         }
       ]
     },
-    validateFormData(cb) {
+    validateFormData (cb) {
       this.$refs.form.validate(
-        function(valid) {
+        function (valid) {
           if (valid) {
             const uploadedFiles = this.getUploadedFiles()
             if (uploadedFiles.length === 0) {
@@ -242,21 +242,21 @@ export default {
         }.bind(this)
       )
     },
-    getUploadedFiles() {
+    getUploadedFiles () {
       return this.fileInfo.filter(item => item.imgUrl !== undefined)
     },
-    getCornerTypes() {
+    getCornerTypes () {
       this.$service.getCornerTypes().then(data => {
         this.attributes = data || []
-        this.attributesIndexed = this.attributes.reduce(function(result, item) {
+        this.attributesIndexed = this.attributes.reduce(function (result, item) {
           result[item.typeName] = item
           return result
         }, {})
       })
     },
-    handleUpload(file, fileItem) {
+    handleUpload (file, fileItem) {
       this.$refs.upload.getImageInfo(fileItem.dataUrl).then(
-        function(imageInfo) {
+        function (imageInfo) {
           const fileInfo = {
             upload: fileItem,
             typeRls: {
@@ -298,21 +298,21 @@ export default {
         }.bind(this)
       )
     },
-    handleRemoveFile(file, index) {
+    handleRemoveFile (file, index) {
       this.$refs.upload.handleRemove(file.upload)
-      this.fileInfo = this.fileInfo.filter(function(item, i) {
+      this.fileInfo = this.fileInfo.filter(function (item, i) {
         return i !== index
       })
     },
-    handleBatchSetPicType(type) {
+    handleBatchSetPicType (type) {
       const typeId = type.typeId
-      this.fileInfo.forEach(function(item) {
+      this.fileInfo.forEach(function (item) {
         item.typeRls.typeId = typeId
       })
       this.showPicTypeSelector = false
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

@@ -50,7 +50,7 @@ export default {
     PageContentWrapper
   },
   props: ['id'],
-  data() {
+  data () {
     return {
       tabData: {
         enableAutoAudited: undefined,
@@ -110,7 +110,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.fetchData()
   }
 }

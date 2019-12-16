@@ -44,7 +44,7 @@ export default {
     ContentWrapper,
     ButtonGroupForListPage
   },
-  data() {
+  data () {
     return {
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
@@ -176,20 +176,20 @@ export default {
     }
   },
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.id,
         type: 'block',
         menuElId: 'broadcastBlock'
       })
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         page: 1,
         rows: 10
       }
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) {
         this.filter = filter
       }
@@ -200,12 +200,12 @@ export default {
       }
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -213,7 +213,7 @@ export default {
       }
       return filter
     },
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.getMediaAutomationList(filter).then(data => {
         this.pagination.total = data.total
@@ -231,7 +231,7 @@ export default {
       }, {})
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       id: _.o.oneOf([_.number, _.value('')]).$msg('请输入数字').other('form', {
         component: 'Input',

@@ -154,7 +154,7 @@ export default {
     PageWrapper,
     PageContentWrapper
   },
-  data() {
+  data () {
     return {
       activePage: 'desktop',
       draftNum: null,
@@ -186,10 +186,10 @@ export default {
     isAutoSync: 'handleAutoSyncChange'
   },
   methods: {
-    handleViewDataList(type) {
+    handleViewDataList (type) {
       this.activePage = type
     },
-    handleSetAutoSync(val) {
+    handleSetAutoSync (val) {
       const message = val
         ? '开启同步后，酷开数据将会自动更新至该平台，确认开启？'
         : '关闭同步后，您需要进行手动确认才可同步酷开数据，确认关闭？'
@@ -203,12 +203,12 @@ export default {
         console.log(e)
       })
     },
-    handleAutoSyncChange() {
+    handleAutoSyncChange () {
       if (!this.isAutoSync) {
         this.getDataSyncGeneral()
       }
     },
-    handleReadPanel(panel) {
+    handleReadPanel (panel) {
       this.panelPreview = {
         id: panel.pannelGroupId,
         version: panel.currentVersion,
@@ -216,33 +216,33 @@ export default {
       }
       this.activePage = 'panel-read'
     },
-    handleReadTab(tab) {
+    handleReadTab (tab) {
       this.tabPreview = {
         id: tab.tabId,
         version: tab.currentVersion
       }
       this.activePage = 'tab-read'
     },
-    handleReadFilm(film) {
+    handleReadFilm (film) {
       this.filmPreview = {
         id: film.tabId,
         version: film.currentVersion
       }
       this.activePage = 'film-read'
     },
-    goTo(routeName) {
+    goTo (routeName) {
       return this.$router.push({ name: routeName })
     },
-    goBack(page) {
+    goBack (page) {
       this.activePage = page || 'desktop'
     },
-    getDataSyncGeneral() {
+    getDataSyncGeneral () {
       this.$service.desktopGetDataSyncGeneral().then((data) => {
         this.dataSyncGeneral = data
       })
     }
   },
-  created() {
+  created () {
     this.$service.getTotal('myDrafts').then(data => {
       this.draftNum = data
     })

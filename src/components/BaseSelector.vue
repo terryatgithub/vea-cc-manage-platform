@@ -65,7 +65,7 @@ export default {
   components: {
     Table
   },
-  data() {
+  data () {
     return {
       tableHeight: undefined,
       selected: [],
@@ -76,7 +76,7 @@ export default {
   },
   props: ['idField', 'filter', 'filterSchema', 'table', 'pagination', 'selectionType', 'selectEndOnDblClick', 'selectEndOnClick'],
   computed: {
-    tableProps() {
+    tableProps () {
       const originProps = this.table.Props || {}
       if (!originProps.height) {
         return { ...originProps, height: this.tableHeight }
@@ -88,14 +88,14 @@ export default {
     'table.data': 'updateTableSelected'
   },
   methods: {
-    setViewFilter(filter) {
+    setViewFilter (filter) {
       // 如果外面传进来的 filter 与 inputFilter 不一样
       if (this.inputFilter !== filter) {
         this.inputFilter = filter || {}
         this.viewFilter = filter ? JSON.parse(JSON.stringify(filter)) : {}
       }
     },
-    clearSelected() {
+    clearSelected () {
       this.selected = []
       this.tableSelected = []
     },
@@ -132,32 +132,32 @@ export default {
     handleResetFilterForm () {
       this.$emit('filter-reset')
     },
-    handleTableRowSelectionChange(item, index) {
+    handleTableRowSelectionChange (item, index) {
       this.selected = [item]
       this.tableSelected = index
       if (this.selectEndOnClick && this.selectionType === 'single') {
         this.handleSelectEnd()
       }
     },
-    handleTableRowSelectionAdd(targetItem) {
+    handleTableRowSelectionAdd (targetItem) {
       this.selected = this.selected.concat(targetItem)
       this.updateTableSelected()
     },
-    handleTableRowSelectionRemove(targetItem) {
+    handleTableRowSelectionRemove (targetItem) {
       const ID = this.idField
       this.selected = this.selected.filter(item => {
         return item[ID] !== targetItem[ID]
       })
       this.updateTableSelected()
     },
-    handleTableAllRowSelectionChange(value) {
+    handleTableAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleTableRowSelectionAdd)
       } else {
         this.table.data.forEach(this.handleTableRowSelectionRemove)
       }
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const ID = this.idField
       const table = this.table
       const newSelectedIndex = this.selected.map(item => item[ID])
@@ -174,27 +174,27 @@ export default {
         window.dispatchEvent(new Event('resize'))
       }, 0)
     },
-    setTableHeight() {
+    setTableHeight () {
       this.tableHeight = this.$refs.selectorContent.clientHeight + 'px'
       this.$refs.table.$refs.table.doLayout()
     },
-    handleRowDblClick() {
+    handleRowDblClick () {
       if (this.selectEndOnDblClick && this.selectionType === 'single') {
         this.handleSelectEnd()
       }
     }
   },
-  created() {
+  created () {
     // 保存一个引用
     this.$watch('filter', this.setViewFilter, {
       immediate: true
     })
   },
-  mounted() {
+  mounted () {
     window.addEventListener('resize', this.setTableHeight)
     this.setTableHeight()
   },
-  beforeDestroy() {
+  beforeDestroy () {
     window.removeEventListener('resize', this.setTableHeight)
   }
 }

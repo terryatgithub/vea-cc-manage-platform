@@ -16,14 +16,14 @@
 <script>
 export default {
   props: ['hourOption', 'minuteOption', 'initSumTime', 'min', 'max', 'disabled'],
-  data() {
+  data () {
     return {
       hour: null,
       minute: null
     }
   },
   computed: {
-    sumTime() {
+    sumTime () {
       return (
         parseInt(this.hour === null ? 0 : this.hour) * 60 +
         parseInt(this.minute === null ? 0 : this.minute.toString().replace('00:', ''))
@@ -31,7 +31,7 @@ export default {
     }
   },
   methods: {
-    limit() {
+    limit () {
       if (this.sumTime > this.max) {
         this.$message({
           type: 'error',
@@ -48,7 +48,7 @@ export default {
       }
       return true
     },
-    setHourAndMinute() {
+    setHourAndMinute () {
       let hour = Math.floor(this.initSumTime / 60)
       let minute = this.initSumTime - hour * 60
       this.hour = '0' + hour + ':00'
@@ -57,14 +57,14 @@ export default {
     }
   },
   watch: {
-    hour: function(newV, oldV) {
+    hour: function (newV, oldV) {
       if (this.limit()) {
         this.$emit('input', this.sumTime)
       } else {
         this.hour = oldV
       }
     },
-    minute: function(newV, oldV) {
+    minute: function (newV, oldV) {
       if (this.limit()) {
         this.$emit('input', this.sumTime)
       } else {

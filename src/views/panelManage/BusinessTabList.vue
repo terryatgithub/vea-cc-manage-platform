@@ -41,7 +41,7 @@ export default {
     ButtonGroupForListPage
   },
 
-  data() {
+  data () {
     return {
       resourceType: 'tabInfo',
       tabTypeOption: [
@@ -140,7 +140,7 @@ export default {
                 currentVersion +
                 '/' +
                 this.tabStatusOption
-                  .map(function(item) {
+                  .map(function (item) {
                     if (status.toString() === item.value) {
                       return item.label
                     }
@@ -199,14 +199,14 @@ export default {
   },
 
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.tabId,
         type: 'tab',
         menuElId: 'tabInfo'
       })
     },
-    createOperationRender(obj) {
+    createOperationRender (obj) {
       return (h, { row }) => {
         let btn1 = h('el-button',
           {
@@ -263,12 +263,12 @@ export default {
         return [btn1, btn2, contentAuthBtn]
       }
     },
-    collect(row) {
+    collect (row) {
       this.$service.collect({ type: 'tab', data: { resourceId: row.tabId } }, '收藏成功').then(() => {
         this.fetchData()
       })
     },
-    cancalCollect(row) {
+    cancalCollect (row) {
       this.$service.collectCancel({ type: 'tab', data: { resourceId: row.tabId } }, '取消成功').then(() => {
         this.fetchData()
       })
@@ -276,7 +276,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.tabInfoList(filter).then(data => {
@@ -284,13 +284,13 @@ export default {
         this.table.data = data.rows
       })
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         tabParentType: 'biz',
         idPrefix: this.$consts.idPrefix
       }
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -298,19 +298,19 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (type === 'query') {
         this.pagination.currentPage = 1
       }
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    getTabType() {
+    getTabType () {
       return this.$service.getTabType({ tabParentType: 'biz' }).then(data => {
         data.forEach(element => {
           this.tabType[element.dictCnName] = element.dictEnName
@@ -318,13 +318,13 @@ export default {
         })
       })
     },
-    getBusinessType() {
+    getBusinessType () {
       this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.businessType = data
       })
     }
   },
-  created() {
+  created () {
     this.tabStatus = this.tabStatusOption.reduce((result, item) => {
       result[item.label] = item.value
       return result

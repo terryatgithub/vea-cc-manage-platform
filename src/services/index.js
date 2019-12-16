@@ -81,7 +81,7 @@ const service = {
   ...tabInsertionTask
 }
 
-export default function install(Vue) {
+export default function install (Vue) {
   const $service = {}
   Object.keys(service).forEach((key) => {
     if (typeof service[key] === 'function') {

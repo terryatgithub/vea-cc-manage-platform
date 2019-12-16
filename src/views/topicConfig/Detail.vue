@@ -76,7 +76,7 @@ export default {
     Any
   },
   mixins: [titleMixin],
-  data() {
+  data () {
     return {
       mode: 'create',
       resourceName: '话题推荐',
@@ -143,12 +143,12 @@ export default {
     }
   },
   methods: {
-    fetchData(version) {
+    fetchData (version) {
       this.$service.topicConfigGetDetail({ id: this.id, version }).then(data => {
         this.setData(data)
       })
     },
-    handleSetDefaultFocus(index) {
+    handleSetDefaultFocus (index) {
       const contentList = this.topic.contentList
       contentList.forEach((item, idx) => {
         if (index === idx) {
@@ -159,7 +159,7 @@ export default {
       })
       this.topic.contentList = contentList.slice()
     },
-    setData(data) {
+    setData (data) {
       data = cloneDeep(data)
       data.contentList = data.contentList.map(item => {
         return {
@@ -171,16 +171,16 @@ export default {
 
       this.topic = data
     },
-    handleSelectIcon(img) {
+    handleSelectIcon (img) {
       this.topic.icon = img.pictureUrl
     },
-    handleTopicTypeChange() {
+    handleTopicTypeChange () {
       this.topic.contentList = []
     },
-    handleTopicSourceChange() {
+    handleTopicSourceChange () {
       this.topic.contentList = []
     },
-    handleSelectVideoTopicEnd({ shortVideoTopic }) {
+    handleSelectVideoTopicEnd ({ shortVideoTopic }) {
       const idField = 'id'
       const selectedList = shortVideoTopic || []
       const originSelectList = this.topic.contentList || []
@@ -188,14 +188,14 @@ export default {
         result[item[idField]] = index
         return result
       }, {})
-      const result = selectedList.filter(function(item) {
+      const result = selectedList.filter(function (item) {
         return originSelectedListIndexed[item[idField]] === undefined
       })
 
       // 把新添加都加到后面
       this.topic.contentList = originSelectList.concat(result)
     },
-    validate(data, cb) {
+    validate (data, cb) {
       const error = (msg) => {
         this.$message({
           type: 'error',
@@ -222,7 +222,7 @@ export default {
         }
       })
     },
-    handleSubmitAudit() {
+    handleSubmitAudit () {
       const data = cloneDeep(this.topic)
       data.iconType = undefined
       data.status = this.$consts.status.waiting
@@ -230,7 +230,7 @@ export default {
         this.submit(data)
       })
     },
-    handleSaveDraft() {
+    handleSaveDraft () {
       const data = cloneDeep(this.topic)
       data.iconType = undefined
       data.status = this.$consts.status.draft
@@ -238,12 +238,12 @@ export default {
         this.submit(data)
       })
     },
-    submit(data) {
+    submit (data) {
       return this.$service.topicConfigUpsert(this.parseDataToApi(data), '保存成功').then(() => {
         this.$emit('upsert-end')
       })
     },
-    parseDataToApi(data) {
+    parseDataToApi (data) {
       const mode = this.mode
       data.contentList = data.contentList.map((item) => {
         return {
@@ -258,7 +258,7 @@ export default {
       return data
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

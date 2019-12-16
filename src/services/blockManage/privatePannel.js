@@ -10,7 +10,7 @@
 /** 获取数据字典 */
 
 /** 历史版本 */
-export function getHistory(params) {
+export function getHistory (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/hvi/historyList.html',
@@ -36,7 +36,7 @@ export function getHistory(params) {
 //     })
 // }
 /** 批量删除 */
-export function privatePanelRemove(params) {
+export function privatePanelRemove (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/panel/remove.html',

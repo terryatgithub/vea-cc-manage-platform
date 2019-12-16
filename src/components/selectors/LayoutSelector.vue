@@ -105,7 +105,7 @@ export default {
     RemoteSelectorWrapper,
     LayoutRead
   },
-  data() {
+  data () {
     return {
       options: [],
       showPreviewDialog: false,
@@ -204,12 +204,12 @@ export default {
     }
   },
   methods: {
-    handlePreview(row, version) {
+    handlePreview (row, version) {
       this.showPreviewDialog = true
       const layoutJson = version === 'v6' ? row.layoutJson : row.layoutJson8
       this.previewContent = JSON.parse(layoutJson).contents
     },
-    validateNum(rule, value, callback) {
+    validateNum (rule, value, callback) {
       var reg = /^[1-9]\d*$/
       const length = this.selectedLayout.layoutJsonParsed.contents.length
       if (!reg.test(value)) {
@@ -220,11 +220,11 @@ export default {
         callback()
       }
     },
-    handleRowDblClick(row) {
+    handleRowDblClick (row) {
       this.handleTableRowSelectionChange(row, this.table.data.indexOf(row))
       this.handleSelectEnd()
     },
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         layoutStatus: this.$consts.status.accepted,
         layoutId: undefined,
@@ -233,25 +233,25 @@ export default {
         layoutIsTitle: undefined
       }
     },
-    resetPageAndSelect() {
+    resetPageAndSelect () {
       this.selected = []
       this.table.selected = undefined
       this.pagination.page = 1
     },
-    handleFilter() {
+    handleFilter () {
       this.resetPageAndSelect()
       this.fetchData()
     },
-    handleResetFilter() {
+    handleResetFilter () {
       this.filter = this.getDefaultFilter()
       this.resetPageAndSelect()
       this.fetchData()
     },
-    handleSelectStart() {
+    handleSelectStart () {
       this.formBlock = { count: undefined }
       this.handleResetFilter()
     },
-    handleSelectEnd() {
+    handleSelectEnd () {
       const selected = this.selected[0]
       if (selected) {
         const layoutJsonParsed = JSON.parse(selected.layoutJson8)
@@ -273,10 +273,10 @@ export default {
         })
       }
     },
-    emitSelectEnd() {
+    emitSelectEnd () {
       if (this.showBlockCountDialog) {
         this.$refs.blockCountForm.validate(
-          function(result) {
+          function (result) {
             if (result) {
               this.showBlockCountDialog = false
               this.$refs.wrapper.handleSelectEnd()
@@ -293,7 +293,7 @@ export default {
         this.$emit('select-end', this.selectedLayout, this.formBlock.count)
       }
     },
-    fetchData() {
+    fetchData () {
       const filter = JSON.parse(JSON.stringify(this.filter))
       const pagination = this.pagination
       filter.page = pagination.page
@@ -305,15 +305,15 @@ export default {
         this.table.selected = undefined
       })
     },
-    handleTableRowSelectionChange(item, index) {
+    handleTableRowSelectionChange (item, index) {
       this.selected = [item]
       this.table.selected = index
     },
-    handleTableRowSelectionAdd(targetItem) {
+    handleTableRowSelectionAdd (targetItem) {
       this.selected = this.selected.concat(targetItem)
       this.updateTableSelected()
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected.map(item => item.id)
       table.selected = table.data.reduce((result, item, index) => {
@@ -333,11 +333,11 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.fetchLayoutTypeOptions()
     this.$service.getDictType({ type: 'businessType' }).then(data => {
       this.panelCategoryOptions = data
-      this.pannelCategoryOptionsIndexed = data.reduce(function(result, item) {
+      this.pannelCategoryOptionsIndexed = data.reduce(function (result, item) {
         result[item.dictId] = item.dictCnName
         return result
       }, {})

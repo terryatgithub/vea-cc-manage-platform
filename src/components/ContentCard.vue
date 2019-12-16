@@ -29,14 +29,14 @@ export default {
     ContentAuthManager
   },
   props: ['title'],
-  data() {
+  data () {
     return {
       showContentAuthManager: false,
       contentAuthInfo: null
     }
   },
   methods: {
-    handleShowContentAuthManager(info) {
+    handleShowContentAuthManager (info) {
       this.showContentAuthManager = true
       this.contentAuthInfo = info
       this.$nextTick(() => {

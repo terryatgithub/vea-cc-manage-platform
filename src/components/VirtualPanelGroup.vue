@@ -40,7 +40,7 @@ export default {
   },
   props: ['panel', 'ratio', 'active', 'showTitle'],
   methods: {
-    handleClickBlock(panelIndex, blockIndex) {
+    handleClickBlock (panelIndex, blockIndex) {
       this.$emit('click-block', panelIndex, blockIndex)
     }
   }

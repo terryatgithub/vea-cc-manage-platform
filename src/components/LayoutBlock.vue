@@ -122,7 +122,7 @@ export default {
       default: 811
     }
   },
-  data() {
+  data () {
     return {
     }
   },
@@ -148,7 +148,7 @@ export default {
   },
   methods: {
   },
-  created() {
+  created () {
   }
 }
 </script>

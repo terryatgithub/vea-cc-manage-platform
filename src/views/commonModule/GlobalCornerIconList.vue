@@ -103,7 +103,7 @@ export default {
     ButtonGroupForListPage,
     GlobalIconBatchAudit
   },
-  data() {
+  data () {
     return {
       resourceType: 'cornerIcon',
       checkAll: false,
@@ -195,12 +195,12 @@ export default {
     }
   },
   methods: {
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         idPrefix: this.$consts.idPrefix
       }
     },
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getGlobalMgrList(filter).then(data => {
@@ -209,7 +209,7 @@ export default {
         this.checkAll = false
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -218,7 +218,7 @@ export default {
       return filter
     },
     // 批量审核
-    batchAudit() {
+    batchAudit () {
       if (this.selected.length === 0) {
         return this.$message.error('请选择再审批')
       }
@@ -234,7 +234,7 @@ export default {
       }
       this.auditDialogVisible = true
     },
-    handleDoBatchAudit(data) {
+    handleDoBatchAudit (data) {
       const waiting = this.$consts.status.waiting
       data.idStr = this.selected
         .filter(item => item.cornerStatus === waiting)
@@ -249,17 +249,17 @@ export default {
         })
     },
     // 取消事件
-    cancle(data) {
+    cancle (data) {
       this.auditDialogVisible = data
     },
-    handleDialogClose() {
+    handleDialogClose () {
       this.$refs.auditForm.cancle()
     },
-    changePriority() {
+    changePriority () {
       this.dialogLevelVisible = true
     },
     // 查询
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.cornerIconId)) {
         if (type === 'query') {
@@ -271,13 +271,13 @@ export default {
       }
     },
     // 重置
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
     // 角标分类
-    getCornerTypes() {
+    getCornerTypes () {
       return this.$service.getCornerTypes().then(data => {
         data.forEach(element => {
           this.globalTypes[element.typeName] = element.typeId
@@ -286,7 +286,7 @@ export default {
       })
     },
     // 角标类别
-    getIconAttributes() {
+    getIconAttributes () {
       return this.$service.getIconAttributes().then(data => {
         data.attributes.forEach(element => {
           this.attributeTypes[element.attributeName] = element.attributeCode
@@ -294,12 +294,12 @@ export default {
         console.log(this.attributeTypes)
       })
     },
-    reviewPic(row) {
+    reviewPic (row) {
       this.reviewPicUrl = row.imgUrl
       this.picDialogVisible = true
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       cornerIconName: _.o.string.other('form', {
         component: 'Input',

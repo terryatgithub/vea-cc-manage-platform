@@ -34,14 +34,14 @@ export default {
   components: {
     MediaTagSelector
   },
-  data() {
+  data () {
     return {
       selectedTags: [],
       removingTags: []
     }
   },
   methods: {
-    handleSelectEnd() {
+    handleSelectEnd () {
       if (this.selectedTags.length === 0) {
         return this.$message({
           type: 'error',
@@ -50,11 +50,11 @@ export default {
       }
       this.$emit('select-end', this.selectedTags.slice())
     },
-    handleSelectCancel() {
+    handleSelectCancel () {
       this.$emit('select-cancel')
     },
-    handleRemoveTag(tag) {
-      const index = this.selectedTags.findIndex(function(item) {
+    handleRemoveTag (tag) {
+      const index = this.selectedTags.findIndex(function (item) {
         return item.tagCode === tag.tagCode
       })
       if (index > -1) {
@@ -62,7 +62,7 @@ export default {
       }
       this.$refs.mediaTag.handleRemoveTag(tag)
     },
-    handleInputTags(tags) {
+    handleInputTags (tags) {
       this.selectedTags = tags
     }
   }

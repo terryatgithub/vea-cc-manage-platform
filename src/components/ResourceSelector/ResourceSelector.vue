@@ -233,7 +233,7 @@ export default {
     GoodSelector,
     SubscribeSelector
   },
-  data() {
+  data () {
     return {
       showDialog: false,
       activeSelector: undefined,
@@ -247,34 +247,34 @@ export default {
     disablePartner: Boolean,
     selectors: {
       type: Array,
-      default() {
+      default () {
         return SELECTORS.map(item => item.value)
       }
     },
     isLive: Boolean,
     selectionType: {
       type: String,
-      default() {
+      default () {
         return 'single'
       }
     },
     // 显示的时候自动查询数据的 selector
     autoFetchSelectors: {
       type: Array,
-      default() {
+      default () {
         return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'ranking', 'good']
       }
     }
   },
   methods: {
-    isUseSelector(name) {
+    isUseSelector (name) {
       return this.selectors.indexOf(name) > -1
     },
-    handleSelectStart() {
+    handleSelectStart () {
       this.shouldAutoFetch = (this.autoFetchSelectors || []).slice()
       this.handleActivateSelector(this.selectors[0])
     },
-    handleActivateSelector(name) {
+    handleActivateSelector (name) {
       this.activeSelector = name
       this.$nextTick(() => {
         const shouldAutoFetch = this.shouldAutoFetch
@@ -290,7 +290,7 @@ export default {
         }
       })
     },
-    handleSelectEnd() {
+    handleSelectEnd () {
       const selectionType = this.selectionType
       const activeSelector = this.activeSelector
       const $refs = this.$refs
@@ -324,10 +324,10 @@ export default {
       }
       this.$emit('select-end', result)
     },
-    handleSelectCancel() {
+    handleSelectCancel () {
       this.$refs.wrapper.handleSelectCancel()
     },
-    clearSelected() {
+    clearSelected () {
       this.selectors.forEach((item) => {
         const $refs = this.$refs
         const ref = $refs[item + '-selector']
@@ -337,13 +337,13 @@ export default {
       })
     }
   },
-  created() {
+  created () {
   },
-  beforeCreate() {
+  beforeCreate () {
     // circular reference
     this.$options.components['short-video-selector'] = require('./ShortVideoSelector.vue').default
   },
-  mounted() {
+  mounted () {
   }
 }
 </script>

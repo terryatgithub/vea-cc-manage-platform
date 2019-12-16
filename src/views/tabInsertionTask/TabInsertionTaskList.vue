@@ -83,7 +83,7 @@ export default {
     ListLayout,
     InputPositiveInt
   },
-  data() {
+  data () {
     return {
       taskStatusOptions: [
         {
@@ -156,7 +156,7 @@ export default {
                   value: !!row.enableTask
                 },
                 nativeOn: {
-                  click(event) {
+                  click (event) {
                     event.stopPropagation()
                   }
                 },
@@ -193,7 +193,7 @@ export default {
         enableTask
       }
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         enableTask: undefined,
         source: undefined
@@ -218,7 +218,7 @@ export default {
       }
       return filter
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.tabInsertionTaskGetList(filter).then(data => {
         this.pagination.total = data.total

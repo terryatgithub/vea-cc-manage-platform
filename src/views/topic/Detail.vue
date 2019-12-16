@@ -109,7 +109,7 @@ export default {
     Any
   },
   mixins: [titleMixin],
-  data() {
+  data () {
     return {
       mode: 'create',
       resourceName: '短视频话题',
@@ -200,7 +200,7 @@ export default {
     }
   },
   methods: {
-    secondToTimeStr(seconds) {
+    secondToTimeStr (seconds) {
       if (seconds) {
         const hour = Math.floor(seconds / 3600)
         const min = Math.floor((seconds - 3600 * hour) / 60)
@@ -208,18 +208,18 @@ export default {
         return `${hour}小时${min}分${sec}秒`
       }
     },
-    handleInputIconType(val) {
+    handleInputIconType (val) {
       this.topic.iconType = val
       if (val === 'default') {
         this.topic.icon = ''
       }
     },
-    fetchData(version) {
+    fetchData (version) {
       this.$service.topicGetDetail({ id: this.id, version }).then(data => {
         this.setData(data)
       })
     },
-    setData(data) {
+    setData (data) {
       const topic = cloneDeep(data)
       const contentList = topic.contentList || []
       topic.contentList = contentList.map(item => {
@@ -239,20 +239,20 @@ export default {
       }
       this.topic = topic
     },
-    handleSelectIcon(img) {
+    handleSelectIcon (img) {
       this.topic.icon = img.pictureUrl
     },
-    handleTopicTypeChange() {
+    handleTopicTypeChange () {
       const $consts = this.$consts
       const topic = this.topic
       topic.source = topic.type === 2 ? $consts.sourceOptions[0].value : ''
       topic.recommendSign = ''
       topic.contentList = []
     },
-    handleTopicSourceChange() {
+    handleTopicSourceChange () {
       this.topic.contentList = []
     },
-    handleSelectVideoEnd({ shortVideo }) {
+    handleSelectVideoEnd ({ shortVideo }) {
       const idField = 'sCoocaaMId'
       const selectedList = shortVideo || []
       const originSelectList = this.topic.contentList || []
@@ -264,14 +264,14 @@ export default {
       selectedList.forEach((item) => {
         item.sCoocaaMId = prefix + item.sCoocaaMId
       })
-      const result = selectedList.filter(function(item) {
+      const result = selectedList.filter(function (item) {
         return originSelectedListIndexed[item[idField]] === undefined
       })
 
       // 把新添加都加到后面
       this.topic.contentList = originSelectList.concat(result)
     },
-    validate(data, cb) {
+    validate (data, cb) {
       this.$refs.dataForm.$refs.form.validate((valid) => {
         if (valid) {
           cb()
@@ -283,7 +283,7 @@ export default {
         }
       })
     },
-    handleSubmitAudit() {
+    handleSubmitAudit () {
       const data = cloneDeep(this.topic)
       data.iconType = undefined
       data.status = this.$consts.status.waiting
@@ -291,7 +291,7 @@ export default {
         this.submit(data)
       })
     },
-    handleSaveDraft() {
+    handleSaveDraft () {
       const data = cloneDeep(this.topic)
       data.iconType = undefined
       data.status = this.$consts.status.draft
@@ -299,12 +299,12 @@ export default {
         this.submit(data)
       })
     },
-    submit(data) {
+    submit (data) {
       return this.$service.topicUpsert(this.parseDataToApi(data), '保存成功').then(() => {
         this.$emit('upsert-end')
       })
     },
-    parseDataToApi(data) {
+    parseDataToApi (data) {
       const mode = this.mode
       data.contentList = data.contentList.map((item) => {
         return {
@@ -323,7 +323,7 @@ export default {
       return data
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

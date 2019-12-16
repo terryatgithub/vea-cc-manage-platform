@@ -152,7 +152,7 @@ export default {
 
   watch: {
     selected: {
-      handler(newVal, oldVal) {
+      handler (newVal, oldVal) {
         const table = this.table
         let rows = []
         table.data.map(tableRow => {
@@ -171,18 +171,18 @@ export default {
   },
 
   methods: {
-    handleCopy({ row }) {
+    handleCopy ({ row }) {
       this.$emit('copy', row.pannelGroupId)
     },
-    cancalCollect({ row }) {
+    cancalCollect ({ row }) {
       this.$service.collectCancel({ type: 'pannel', data: { resourceId: row.pannelGroupId } }, '取消成功').then(() => {
         this.fetchData()
       })
     },
-    handleRead(row, version) {
+    handleRead (row, version) {
       this.$emit('read', row.pannelGroupId, version)
     },
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.collectionGetList({ data: filter, type: 'pannel' }).then(data => {
@@ -190,7 +190,7 @@ export default {
         this.table.data = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -198,7 +198,7 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
@@ -209,7 +209,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       console.log(this.dataList)
       if (this.dataList) {
         this.filter = Object.assign({}, this.dataList.filter)
@@ -224,7 +224,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    getBusinessType() {
+    getBusinessType () {
       return this.$service.getDictType({ type: 'businessType' }).then(data => {
         data.forEach((item) => {
           this.businessType[item.dictCnName] = item.dictId
@@ -234,17 +234,17 @@ export default {
     /**
      * 行选择操作
      */
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.pannelGroupId)
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.pannelGroupId
       })
       this.updateTableSelected()
     },
-    handleAllRowSelectionChange(value) {
+    handleAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
@@ -252,11 +252,11 @@ export default {
         this.table.selected = []
       }
     },
-    handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -267,18 +267,18 @@ export default {
       }, [])
     },
     // 按钮操作
-    addTabInfo() {
+    addTabInfo () {
 
     },
-    editData() {
+    editData () {
 
     },
-    batchDel() {
+    batchDel () {
 
     }
   },
 
-  created() {
+  created () {
     this.pannelStatus = this.pannelStatusOption.reduce((result, item) => {
       result[item.label] = item.value
       return result

@@ -18,13 +18,13 @@ export default {
     MyDraftsPolicyIndex,
     MyDraftsPanelIndex
   },
-  data() {
+  data () {
     return {
       activeName: 'first'
     }
   },
   methods: {
-    handleClick() {
+    handleClick () {
 
     }
   }

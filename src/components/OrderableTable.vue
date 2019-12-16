@@ -11,7 +11,7 @@
 import { Table } from 'admin-toolkit'
 import InputOrder from '@/components/InputOrder'
 export default {
-  data() {
+  data () {
     return {
       table: {
         props: {
@@ -24,7 +24,7 @@ export default {
     Table
   },
   computed: {
-    tableHeader() {
+    tableHeader () {
       const header = (this.header || []).slice()
       const orderHeader = {
         label: this.orderText || '排序',
@@ -90,7 +90,7 @@ export default {
   },
   props: ['value', 'header', 'hideAction', 'readonly', 'filterFn', 'orderText'],
   methods: {
-    handleChangeOrder(index, order) {
+    handleChangeOrder (index, order) {
       const dataList = this.value
       if (order > dataList.length) {
         order = dataList.length
@@ -101,27 +101,27 @@ export default {
       dataList.splice(oldIndex, 1)
       this.$emit('input', [].concat(dataList.slice(0, newIndex), item, dataList.slice(newIndex)))
     },
-    handleRemoveRow(index) {
+    handleRemoveRow (index) {
       const value = this.value.slice()
       value.splice(index, 1)
       this.$emit('input', value)
     },
-    handleAppendData(data, idField) {
+    handleAppendData (data, idField) {
       const originSelectedList = this.value
       const selectedList = data
-      const selectedListIndexed = data.reduce(function(result, item, index) {
+      const selectedListIndexed = data.reduce(function (result, item, index) {
         result[item[idField]] = index
         return result
       }, {})
       let newList = []
-      originSelectedList.forEach(function(item) {
+      originSelectedList.forEach(function (item) {
         const index = selectedListIndexed[item[idField]]
         if (index !== undefined) {
           newList.push(item)
           selectedList[index] = undefined
         }
       })
-      this.$emit('input', newList.concat(selectedList.filter(function(item) { return item })))
+      this.$emit('input', newList.concat(selectedList.filter(function (item) { return item })))
     }
   }
 }

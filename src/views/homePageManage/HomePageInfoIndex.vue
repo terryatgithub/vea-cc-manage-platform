@@ -8,11 +8,11 @@ export default {
     ResourceList: HomePageInfoList,
     ResourceContent: HomePageInfo
   },
-  data() {
+  data () {
     return {}
   },
   computed: {
-    resourceInfo() {
+    resourceInfo () {
       return {
         type: 'homepage',
         idField: 'homepageId'

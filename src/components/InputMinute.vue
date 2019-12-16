@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       inited: false,
       hour: 0,
@@ -29,13 +29,13 @@ export default {
     }
   },
   computed: {
-    hourMax() {
+    hourMax () {
       if (this.max) {
         return Math.floor(this.max / 60)
       }
       return 24
     },
-    minMax() {
+    minMax () {
       if (this.max < 60) {
         return this.max
       }
@@ -44,7 +44,7 @@ export default {
   },
   props: ['value', 'max', 'min'],
   methods: {
-    handleInputMinute(minute) {
+    handleInputMinute (minute) {
       const total = this.hour * 60 + minute
       if (total > this.max) {
         return this.setHourAndMinute(this.max)
@@ -55,7 +55,7 @@ export default {
       this.minute = minute
       this.emitInput(total)
     },
-    handleInputHour(hour) {
+    handleInputHour (hour) {
       const total = hour * 60 + this.minute
       if (total > this.max) {
         return this.setHourAndMinute(this.max)
@@ -66,7 +66,7 @@ export default {
       this.hour = hour
       this.emitInput(total)
     },
-    setHourAndMinute(val) {
+    setHourAndMinute (val) {
       if (val) {
         this.$nextTick(() => {
           this.hour = Math.floor(val / 60)
@@ -74,13 +74,13 @@ export default {
         })
       }
     },
-    emitInput(val) {
+    emitInput (val) {
       if (this.inited) {
         this.$emit('input', val)
       }
     }
   },
-  mounted() {
+  mounted () {
     // mounted 之后再初始化值，因为elementui一开始就会触发 input 事件... 坑...
     this.$watch('value', this.setHourAndMinute, {
       immediate: true

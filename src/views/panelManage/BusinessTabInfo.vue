@@ -242,12 +242,12 @@ export default {
     initMode: String,
     version: {
       type: String,
-      default() {
+      default () {
         return ''
       }
     }
   },
-  data() {
+  data () {
     return {
       resourceName: '业务版面',
       hourOption: {
@@ -331,7 +331,7 @@ export default {
         }
       }
     },
-    isDisableTabType() {
+    isDisableTabType () {
       const mode = this.mode
       return mode === 'edit' || mode === 'replicate' || mode === 'copy'
     },
@@ -339,7 +339,7 @@ export default {
       // eslint-disable-next-line
       return this.tab.tabType == 5
     },
-    tabGroupTableHeader() {
+    tabGroupTableHeader () {
       const header = [
         {
           label: '版块ID',
@@ -411,7 +411,7 @@ export default {
       }
       return header
     },
-    couldSetReleaseTime() {
+    couldSetReleaseTime () {
       const mode = this.mode
       const currentVersion = this.tab.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
@@ -424,14 +424,14 @@ export default {
     }
   },
   methods: {
-    handleCopy(status) {
+    handleCopy (status) {
       const data = this.getFormData()
       data.tabStatus = status
       data.tabId = undefined
       data.currentVersion = ''
       this.validateFormData(
         data,
-        function() {
+        function () {
           if (status === 3) {
             this.$refs.commonContent.showReleaseTimeSetter = true
           } else {
@@ -441,9 +441,9 @@ export default {
         }.bind(this)
       )
     },
-    validateFormData(data, cb) {
+    validateFormData (data, cb) {
       const tabStatus = data.tabStatus
-      const showError = function(message) {
+      const showError = function (message) {
         this.$message({
           type: 'error',
           message: message
@@ -476,7 +476,7 @@ export default {
         })
       }
     },
-    handleSubmitAudit(timing) {
+    handleSubmitAudit (timing) {
       const data = this.getFormData()
       data.tabStatus = this.$consts.status.waiting
       this.validateFormData(data, () => {
@@ -493,19 +493,19 @@ export default {
         }
       })
     },
-    handleSaveDraft() {
+    handleSaveDraft () {
       const data = this.getFormData()
       data.isTiming = undefined
       data.releaseTime = undefined
       data.tabStatus = this.$consts.status.draft
       this.validateFormData(
         data,
-        function() {
+        function () {
           this.submit(data)
         }.bind(this)
       )
     },
-    submit(formData) {
+    submit (formData) {
       formData = this.parseFormData(formData)
       this.$service
         .businessTabSave({ jsonStr: JSON.stringify(formData) }, '保存成功')
@@ -514,12 +514,12 @@ export default {
           this.$emit('upsert-end')
         })
     },
-    parseFormData(data) {
+    parseFormData (data) {
       if (data.tabParams) {
         data.tabParams = JSON.stringify(data.tabParams)
       }
       if (data.pannelList) {
-        data.panelInfoList = data.pannelList.map(function(item, index) {
+        data.panelInfoList = data.pannelList.map(function (item, index) {
           return {
             pannelGroupId: item.pannelGroupId,
             pannelSequence: index,
@@ -534,7 +534,7 @@ export default {
       }
       return data
     },
-    getFormData() {
+    getFormData () {
       const data = JSON.parse(JSON.stringify(this.tab))
       const mode = this.mode
       if (mode === 'replicate') {
@@ -546,7 +546,7 @@ export default {
       }
       return data
     },
-    handlePreviewPanel(panel, targetVersion) {
+    handlePreviewPanel (panel, targetVersion) {
       const row = panel
       const version = targetVersion || row.currentVersion
       this.activePage = 'panel_preview'
@@ -558,22 +558,22 @@ export default {
         version
       }
     },
-    handlePreviewPanelEnd() {
+    handlePreviewPanelEnd () {
       const panel = this.panelPreview.panel
       this.updatePanelVersion(panel)
       this.panelPreview = null
       this.activePage = 'tab_info'
     },
-    handleSelectPanelEnd(selected) {
+    handleSelectPanelEnd (selected) {
       const selectedPanelList = selected || []
       const originSelectPanelList = this.tab.pannelList || []
-      const originSelectedPanelListIndexed = originSelectPanelList.reduce(function(result, item, index) {
+      const originSelectedPanelListIndexed = originSelectPanelList.reduce(function (result, item, index) {
         result[item.pannelGroupId] = index
         return result
       }, {})
 
       let panelList = []
-      selectedPanelList.forEach(function(item) {
+      selectedPanelList.forEach(function (item) {
         const index = originSelectedPanelListIndexed[item.pannelGroupId]
         // 把之前没选中都添加到列表里
         if (index === undefined) {
@@ -583,10 +583,10 @@ export default {
       // 把新添加都加到后面
       this.tab.pannelList = originSelectPanelList.concat(panelList)
     },
-    handleRemovePannel(index) {
+    handleRemovePannel (index) {
       this.tab.pannelList.splice(index, 1)
     },
-    handleChangeTabResource(val) {
+    handleChangeTabResource (val) {
       this.$confirm(
         '是否要切换内容源，切换内容源之后所选择的版块数据将会清除掉！',
         '提示',
@@ -597,14 +597,14 @@ export default {
         }
       )
         .then(
-          function() {
+          function () {
             this.tab.tabResource = val
             this.tab.pannelList = []
           }.bind(this)
         )
-        .catch(function() {})
+        .catch(function () {})
     },
-    updatePanelVersion(panel, cb) {
+    updatePanelVersion (panel, cb) {
       this.$service.panelPageList({
         pannelType: panel.pannelType,
         pannelId: panel.pannelGroupId
@@ -614,7 +614,7 @@ export default {
         cb && cb()
       })
     },
-    getTabType() {
+    getTabType () {
       return this.$service.getTabType({ tabParentType: 'biz' }).then(data => {
         this.tabTypes = data.reduce((result, current) => {
           result.push({
@@ -626,7 +626,7 @@ export default {
         }, [])
       })
     },
-    fetchData(version) {
+    fetchData (version) {
       this.$service
         .businessTabEdit({ id: this.id, version: version })
         .then(data => {
@@ -640,7 +640,7 @@ export default {
         })
     }
   },
-  created() {
+  created () {
     this.getTabType()
     this.mode = this.initMode || 'create'
     if (this.id) {

@@ -39,7 +39,7 @@ export default {
     ContentWrapper,
     ButtonGroupForListPage
   },
-  data() {
+  data () {
     return {
       resourceType: 'clickEvent',
       resourceName: '点击事件',
@@ -117,7 +117,7 @@ export default {
   },
   methods: {
     // 查询
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.commonOnclickId)) {
         if (type === 'query') {
@@ -129,12 +129,12 @@ export default {
       }
     },
     // 重置
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {}
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -145,7 +145,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.getCommonOnclickInfoList(filter).then(data => {
         this.pagination.total = data.total
@@ -153,7 +153,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       commonOnclickId: _.o.string.other('form', {
         component: 'Input',

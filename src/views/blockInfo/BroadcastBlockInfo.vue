@@ -409,7 +409,7 @@ export default {
     BroadcastBlockForm
   },
   props: ['id', 'initMode', 'version'],
-  data() {
+  data () {
     return {
       mode: 'create',
       resourceName: '轮播推荐位',
@@ -515,7 +515,7 @@ export default {
             },
             {
               field: 'pictureStatus',
-              customFormatter: function(row, column) {
+              customFormatter: function (row, column) {
                 return ['', '审核通过', '待审核'][column]
               }
             }
@@ -543,7 +543,7 @@ export default {
             },
             {
               field: 'cornerStatus',
-              customFormatter: function(row, column) {
+              customFormatter: function (row, column) {
                 return ['', '审核通过', '待审核'][column]
               }
             }
@@ -610,21 +610,21 @@ export default {
     normalResourceBtn () {
       return this.isGroupModel ? '播放资源' : '轮播资源'
     },
-    isGroupModel() {
+    isGroupModel () {
       const configModel = this.basicForm.configModel
       return configModel === 'group' || configModel === 'sign'
     },
-    source() {
+    source () {
       return this.basicForm.source === 'none' ? '' : this.basicForm.source
     },
-    thirdIdOrPackageNameForClick() {
+    thirdIdOrPackageNameForClick () {
       return this.getThirdId(this.normalForm.clickParams)
     },
-    couldFullscreen() {
+    couldFullscreen () {
       const contentType = this.normalForm.contentType
       return ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
     },
-    classObject: function() {
+    classObject: function () {
       if (this.normalForm.sign === 'autoSet') {
         return {
           height: '600px'
@@ -648,7 +648,7 @@ export default {
         }
       }
     },
-    couldSetReleaseTime() {
+    couldSetReleaseTime () {
       const mode = this.mode
       const currentVersion = this.basicForm.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
@@ -691,7 +691,7 @@ export default {
         }
       })
     },
-    handleSwitchShowContentType(val) {
+    handleSwitchShowContentType (val) {
       if (val === 'general' && this.dmpContentList.length === 0) {
         this.normalForm.showContentType = val
       } else {
@@ -700,7 +700,7 @@ export default {
         })
       }
     },
-    handleAddDmpContent() {
+    handleAddDmpContent () {
       const normalForm = this.normalForm
       const dmpContentList = normalForm.dmpContentList
       if (dmpContentList.length > 0) {
@@ -713,9 +713,9 @@ export default {
         normalForm.activeIndex = dmpContentList.length - 1
       }
     },
-    handleDragDmpConentStart(event) {
+    handleDragDmpConentStart (event) {
     },
-    handleDragDmpConentEnd(event) {
+    handleDragDmpConentEnd (event) {
       const normalForm = this.normalForm
       const currentIndex = normalForm.activeIndex
       const { oldIndex, newIndex } = event
@@ -727,7 +727,7 @@ export default {
         normalForm.activeIndex = currentIndex + 1
       }
     },
-    checkCrowd(crowd) {
+    checkCrowd (crowd) {
       const specificContentList = this.dmpContentList
       let length = specificContentList.length
       let existsIndex
@@ -741,14 +741,14 @@ export default {
       }
       return existsIndex
     },
-    handleSourceChange(val) {
+    handleSourceChange (val) {
       this.$confirm('切换内容源将清空内容, 确定切换?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(
-          function() {
+          function () {
             this.normalForm = this.genDefaultContentForm()
             this.normalVersionContent = [this.normalForm]
             this.currentIndex = 0
@@ -756,9 +756,9 @@ export default {
             this.basicForm.source = val
           }.bind(this)
         )
-        .catch(function(e) {})
+        .catch(function (e) {})
     },
-    getThirdId(clickParams) {
+    getThirdId (clickParams) {
       if (clickParams) {
         const result = (clickParams.id ||
           clickParams.rotateId ||
@@ -768,13 +768,13 @@ export default {
         return result
       }
     },
-    replicate() {
+    replicate () {
       this.mode = 'replicate'
     },
-    edit() {
+    edit () {
       this.mode = 'edit'
     },
-    clickThirdpartSubmit() {
+    clickThirdpartSubmit () {
       const { onclickEventVisibleFlag } = this
       if (onclickEventVisibleFlag === 'lower') {
         const inputValue = this.$refs.openWayLower.inputValue
@@ -784,12 +784,12 @@ export default {
         this.parseOnclick(inputValue)
       }
     },
-    parseOnclick(inputValue) {
+    parseOnclick (inputValue) {
       const clickData = this.clickData
       Object.keys(inputValue).map(item => {
         if (item === 'params') {
           const params = JSON.parse(clickData[item])
-          inputValue[item] = Object.keys(params).map(function(key) {
+          inputValue[item] = Object.keys(params).map(function (key) {
             return {
               key: key,
               value: params[key]
@@ -801,7 +801,7 @@ export default {
       })
     },
     // 第三方应用快速填充
-    getClickData(data) {
+    getClickData (data) {
       this.onclickEventVisible = false
       this.clickData = data
       let params = JSON.parse(data.params)
@@ -824,7 +824,7 @@ export default {
       }
       this[this.onclickEventVisibleFlag + 'Form']['onclick'] = o
     },
-    handleChangeSign(newVal) {
+    handleChangeSign (newVal) {
       const normalForm = this.normalForm
       if (newVal === 'autoSet') {
         normalForm.onclick = ''
@@ -922,7 +922,7 @@ export default {
           })
         })
     },
-    clearFormAll: function() {
+    clearFormAll: function () {
       // 清空正常版本和低版本数据
       const normalForm = cloneDeep(this.versionForm)
       const lowerForm = cloneDeep(this.versionForm)
@@ -930,7 +930,7 @@ export default {
       this.normalForm = normalForm
       this.normalVersionContent = [normalForm]
     },
-    handleSelectNormalmultipleResourceEnd(selectedResources) {
+    handleSelectNormalmultipleResourceEnd (selectedResources) {
       const resourceOptions = this.resourceOptions
       let contentArr = []
       resourceOptions.forEach(resourceName => {
@@ -945,13 +945,13 @@ export default {
       this.normalForm = this.genDefaultContentForm()
       this.normalForm = Object.assign(this.normalVersionContent[this.currentIndex])
     },
-    handleSelectLowerSingleResourceEnd(selectedResources) {
+    handleSelectLowerSingleResourceEnd (selectedResources) {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
       setContentForm(this.lowerForm, resourceContent)
     },
     // 校验normalForm
-    checkNormalForm: function(cb) {
+    checkNormalForm: function (cb) {
       const $broadcastBlockForm = this.$refs.broadcastBlockForm
       if ($broadcastBlockForm) {
         $broadcastBlockForm.$refs.normalForm.validate((valid) => {
@@ -965,7 +965,7 @@ export default {
         cb()
       }
     },
-    genDefaultContentForm(preset) {
+    genDefaultContentForm (preset) {
       return {
         flagSetRec: 0,
         mediaAutomationBlockRls: {
@@ -1055,10 +1055,10 @@ export default {
       }
       this.$set(this.lowerForm.cornerIconList, index, corner)
     },
-    onDragStart: function(event) {
+    onDragStart: function (event) {
       console.log(event)
     },
-    onDragtEnd: function(event) {
+    onDragtEnd: function (event) {
       const { oldIndex, newIndex } = event
       const currentIndex = this.currentIndex
       if (oldIndex === currentIndex) {
@@ -1071,7 +1071,7 @@ export default {
     },
 
     // 快速填充
-    lowerFill: function() {
+    lowerFill: function () {
       var newForm = cloneDeep(this.normalVersionContent[0])
       if (newForm.shortVideoSwitch === true) {
         this.$message({
@@ -1097,7 +1097,7 @@ export default {
     handleInputLowerFormCoverType (val) {
       this.cleanLowerForm(val)
     },
-    cleanLowerForm: function(val) {
+    cleanLowerForm: function (val) {
       var newForm = Object.assign({}, this.versionForm)
       newForm.type = val
       newForm.coverType = val
@@ -1179,7 +1179,7 @@ export default {
         }
       })
     },
-    doSave(data) {
+    doSave (data) {
       const parseParams = (onclick) => {
         const params = onclick.params || []
         onclick.params = params.reduce((result, item) => {
@@ -1268,7 +1268,7 @@ export default {
         })
     },
 
-    fetchData(version) {
+    fetchData (version) {
       this.$service
         .getBroadcastBlockEditData({ id: this.id, version })
         .then(data => {
@@ -1353,7 +1353,7 @@ export default {
       this.singleEpisodeNum = undefined
     }
   },
-  created() {
+  created () {
     this.normalForm = cloneDeep(this.versionForm)
     this.lowerForm = cloneDeep(this.versionForm)
     this.lowerForm.smallTopicsId = ''

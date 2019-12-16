@@ -71,7 +71,7 @@ export default {
     'cc-level': CCLevel,
     'cc-tag-selector': CrowdSelector
   },
-  data() {
+  data () {
     return {
       isRefreshing: false,
       showCrowdSelector: false,
@@ -95,7 +95,7 @@ export default {
     'rel.policyId': 'handlePolicyIdChange'
   },
   methods: {
-    getDefaultLevels() {
+    getDefaultLevels () {
       return [
         {
           level: 0,
@@ -117,20 +117,20 @@ export default {
         }
       ]
     },
-    handleAddCrowdFromInput(crowd, levelIndex) {
+    handleAddCrowdFromInput (crowd, levelIndex) {
       if (crowd.value !== undefined) {
         this.addCrowdToLevel(crowd, levelIndex)
       }
       this.itemToAdd[levelIndex] = ''
     },
-    handleSearchCrowd(keyword, cb) {
+    handleSearchCrowd (keyword, cb) {
       let result = []
       if (keyword) {
-        const relItemsIndexed = this.rel.items.reduce(function(result, item) {
+        const relItemsIndexed = this.rel.items.reduce(function (result, item) {
           result[item.value] = item
           return result
         }, {})
-        const list = this.crowdOptions.filter(function(item) {
+        const list = this.crowdOptions.filter(function (item) {
           return relItemsIndexed[item.value] === undefined
         })
         const fuse = new Fuse(list, { keys: ['label', 'value'] }) // "list" is the item array
@@ -143,7 +143,7 @@ export default {
       }
       cb(result)
     },
-    handleAddLevel() {
+    handleAddLevel () {
       const levels = this.rel.levels
       levels.push({
         id: undefined,
@@ -151,40 +151,40 @@ export default {
         selected: {}
       })
     },
-    handleChangeLevelLabel(label, levelIndex) {
+    handleChangeLevelLabel (label, levelIndex) {
       this.rel.levels[levelIndex].label = label
     },
-    handleRemoveLevel(levelIndex) {
+    handleRemoveLevel (levelIndex) {
       const level = this.rel.levels[levelIndex]
       this.$confirm('是否确认删除整个 ' + level.label + '  层级, 删除后所有后面的层级也会被删除', '提示')
-        .then(function() {
-          const items = this.rel.items.filter(function(item) {
+        .then(function () {
+          const items = this.rel.items.filter(function (item) {
             return item.level === levelIndex
           })
           items.forEach(this.doRemoveItem)
           this.rel.levels = this.rel.levels.slice(0, levelIndex)
         }.bind(this))
-        .catch(function() {})
+        .catch(function () {})
     },
-    handleAddItem(levelIndex) {
+    handleAddItem (levelIndex) {
       this.showCrowdSelector = true
       this.selectedLevelIndex = levelIndex
       const hiddenItemsIndexed = {}
-      this.rel.items.forEach(function(item) {
+      this.rel.items.forEach(function (item) {
         hiddenItemsIndexed[item.value] = true
       })
-      this.availableCrowdOptions = this.crowdOptions.filter(function(item) {
+      this.availableCrowdOptions = this.crowdOptions.filter(function (item) {
         return !hiddenItemsIndexed[item.value]
       })
     },
-    handleActivateItem(item, levelIndex) {
-      const notExists = !this.rel.items.find(function(selectedItem) {
+    handleActivateItem (item, levelIndex) {
+      const notExists = !this.rel.items.find(function (selectedItem) {
         return selectedItem.value === item.value
       })
       if (notExists) {
         return
       }
-      this.rel.levels.slice(levelIndex + 1).forEach(function(item) {
+      this.rel.levels.slice(levelIndex + 1).forEach(function (item) {
         item.parentValue = undefined
         item.activeValue = undefined
       })
@@ -194,10 +194,10 @@ export default {
       }
       this.rel.levels[levelIndex].activeValue = item.value
     },
-    doRemoveItem(targetItem) {
+    doRemoveItem (targetItem) {
       const items = this.rel.items
       const removeList = {}
-      const levelsActiveValueMap = this.rel.levels.reduce(function(result, item) {
+      const levelsActiveValueMap = this.rel.levels.reduce(function (result, item) {
         if (item.activeValue) {
           result[item.activeValue] = item
         }
@@ -205,9 +205,9 @@ export default {
       }, {})
 
       // 记录需要删除的 value
-      const mark = function(value) {
+      const mark = function (value) {
         removeList[value] = true
-        items.forEach(function(item) {
+        items.forEach(function (item) {
           if (item.parentValue === value) {
             mark(item.value)
           }
@@ -217,28 +217,28 @@ export default {
         }
       }
       mark(targetItem.value)
-      this.rel.items = items.filter(function(item) {
+      this.rel.items = items.filter(function (item) {
         return !removeList[item.value]
       })
     },
-    handleRemoveItem(targetItem) {
-      const hasChild = this.rel.items.some(function(item) {
+    handleRemoveItem (targetItem) {
+      const hasChild = this.rel.items.some(function (item) {
         return item.parentValue === targetItem.value
       })
       const doRemoveItem = this.doRemoveItem.bind(this)
       if (hasChild) {
         this.$confirm('是否确认删除 ' + targetItem.label + ' 分组, 删除后将同时删除它下面的标签', '提示')
-          .then(function() {
+          .then(function () {
             doRemoveItem(targetItem)
           })
-          .catch(function() {})
+          .catch(function () {})
       } else {
         doRemoveItem(targetItem)
       }
     },
-    handlePolicyIdChange(id) {
+    handlePolicyIdChange (id) {
       this.clearDmpRel()
-      this.$service.crowdRelGet({ id: id }).then(function(result) {
+      this.$service.crowdRelGet({ id: id }).then(function (result) {
         if (result.hasCascadeTag) {
           this.setDmpRel(result)
           if (!this.id) {
@@ -246,20 +246,20 @@ export default {
           }
         }
       }.bind(this))
-      this.$service.getCrowdOfPolicy({ id: id }).then(function(data) {
+      this.$service.getCrowdOfPolicy({ id: id }).then(function (data) {
         this.crowdOptions = data
       }.bind(this))
     },
-    handleSelectCrowdEnd(selectedList) {
+    handleSelectCrowdEnd (selectedList) {
       const currentLevelIndex = this.selectedLevelIndex
       if (selectedList) {
-        selectedList.forEach(function(item) {
+        selectedList.forEach(function (item) {
           this.addCrowdToLevel(item, currentLevelIndex)
         }.bind(this))
       }
       this.showCrowdSelector = false
     },
-    addCrowdToLevel(crowd, levelIndex) {
+    addCrowdToLevel (crowd, levelIndex) {
       const currentLevel = this.rel.levels[levelIndex]
       const newItem = {
         parentValue: currentLevel.parentValue,
@@ -269,22 +269,22 @@ export default {
       }
       this.rel.items.push(newItem)
     },
-    handleSubmit() {
+    handleSubmit () {
       // 校验层级标题
-      this.validate(this.rel, function(error) {
+      this.validate(this.rel, function (error) {
         if (error) {
           this.$message({
             type: 'error',
             message: error
           })
         } else {
-          this.$service.crowdRelUpsert(this.parseDataToApi(this.rel), '保存成功').then(function() {
+          this.$service.crowdRelUpsert(this.parseDataToApi(this.rel), '保存成功').then(function () {
             this.$emit('upsert-end')
           }.bind(this))
         }
       }.bind(this))
     },
-    validate(data, cb) {
+    validate (data, cb) {
       const levels = data.levels
       for (let i = 0, length = levels.length; i < length; i++) {
         if (!levels[i].label) {
@@ -293,13 +293,13 @@ export default {
       }
       cb()
     },
-    parseDataToApi(data) {
+    parseDataToApi (data) {
       data = JSON.parse(JSON.stringify(data))
       const finalData = {
         policyId: data.policyId,
         crowdRelationship: {}
       }
-      finalData.crowdRelationship.levels = data.levels.map(function(item) {
+      finalData.crowdRelationship.levels = data.levels.map(function (item) {
         return {
           label: item.label
         }
@@ -307,10 +307,10 @@ export default {
       finalData.crowdRelationship.items = data.items
       return finalData
     },
-    parseApiToData(data) {
+    parseApiToData (data) {
       data = JSON.parse(JSON.stringify(data))
       const crowdRelationship = data.crowdRelationship
-      data.levels = crowdRelationship.levels.map(function(item, index) {
+      data.levels = crowdRelationship.levels.map(function (item, index) {
         return {
           level: index,
           label: item.label,
@@ -318,7 +318,7 @@ export default {
           activeValue: undefined
         }
       })
-      data.items = crowdRelationship.items.map(function(item) {
+      data.items = crowdRelationship.items.map(function (item) {
         return {
           label: item.label,
           value: +item.value,
@@ -329,7 +329,7 @@ export default {
       data.crowdRelationship = undefined
       return data
     },
-    setDmpRel(data) {
+    setDmpRel (data) {
       const rel = {}
       data = this.parseApiToData(data)
       rel.policyId = data.policyId
@@ -338,25 +338,25 @@ export default {
       this.rel = rel
       console.log(this.rel)
     },
-    clearDmpRel() {
+    clearDmpRel () {
       this.rel.levels = this.getDefaultLevels()
       this.rel.items = []
     },
-    getPolicyOptions() {
-      return this.$service.getCrowdPolicy().then(function(data) {
+    getPolicyOptions () {
+      return this.$service.getCrowdPolicy().then(function (data) {
         this.policyOptions = data
       }.bind(this))
     },
-    handleRefreshCrowd() {
+    handleRefreshCrowd () {
       this.isRefreshing = true
-      this.$service.crowdRefresh().then(function() {
-        this.$service.getCrowdOfPolicy({ id: this.rel.policyId }).then(function(data) {
+      this.$service.crowdRefresh().then(function () {
+        this.$service.getCrowdOfPolicy({ id: this.rel.policyId }).then(function (data) {
           this.crowdOptions = data
-          const crowdOptionsIndexed = data.reduce(function(result, item) {
+          const crowdOptionsIndexed = data.reduce(function (result, item) {
             result[item.value] = item
             return result
           }, {})
-          this.rel.items.forEach(function(item) {
+          this.rel.items.forEach(function (item) {
             const upstreamItem = crowdOptionsIndexed[item.value]
             if (upstreamItem) {
               this.$set(item, 'label', upstreamItem.label)
@@ -365,16 +365,16 @@ export default {
           this.isRefreshing = false
           this.$message('刷新成功')
         }.bind(this))
-      }.bind(this)).catch(function() {
+      }.bind(this)).catch(function () {
         this.isRefreshing = false
         this.$message('刷新失败')
       })
     }
   },
-  created() {
+  created () {
     this.getPolicyOptions()
     if (this.id) {
-      this.$service.crowdRelGet({ id: this.id }).then(function(result) {
+      this.$service.crowdRelGet({ id: this.id }).then(function (result) {
         this.setDmpRel(result)
       }.bind(this))
     }

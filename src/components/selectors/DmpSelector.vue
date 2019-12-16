@@ -82,7 +82,7 @@ export default {
   },
   props: ['selectedPolicyId', 'selectedCrowdId', 'title', 'disabled', 'isLive'],
   methods: {
-    handleSelectStart() {
+    handleSelectStart () {
       this.$emit('select-start')
       this.showPolicySelector = true
       this.$service.getCrowdPolicy().then((result) => {
@@ -98,9 +98,9 @@ export default {
     },
     handleSelectPolicy (item) {
       this.selectedPolicy = item
-      this.$service.crowdRelGet({ id: item.value }).then(function(result) {
+      this.$service.crowdRelGet({ id: item.value }).then(function (result) {
         if (!result.hasCascadeTag) {
-          this.$service.getCrowdOfPolicyWithCache({ id: item.value }).then(function(result) {
+          this.$service.getCrowdOfPolicyWithCache({ id: item.value }).then(function (result) {
             this.hasCascadeTag = false
             this.crowd.items = result
             this.showCrowdSelector = true
@@ -117,14 +117,14 @@ export default {
       this.selectedCrowd = item
       this.selectEnd()
     },
-    handleSelectCascadeCrowd() {
+    handleSelectCascadeCrowd () {
       const selectedCrowdValue = this.selectedCascaderCrowd.slice(-1)[0]
-      this.selectedCrowd = this.crowd.items.find(function(item) {
+      this.selectedCrowd = this.crowd.items.find(function (item) {
         return item.value === selectedCrowdValue
       })
       this.selectEnd()
     },
-    handleSelectCrowdCancel() {
+    handleSelectCrowdCancel () {
       this.showCrowdSelector = false
     },
     selectEnd () {
@@ -132,7 +132,7 @@ export default {
       this.showCrowdSelector = false
       this.showPolicySelector = false
     },
-    listToTree(data, options) {
+    listToTree (data, options) {
       data = JSON.parse(JSON.stringify(data))
       options = options || {}
       var ID_KEY = options.idKey || 'value'

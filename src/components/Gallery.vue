@@ -42,18 +42,18 @@ export default {
   },
   props: ['value', 'activeIndex', 'mode'],
   methods: {
-    handleActivate(index) {
+    handleActivate (index) {
       this.$emit('activate', index)
     },
-    handleAdd(event) {
+    handleAdd (event) {
       event.stopPropagation()
       this.$emit('add')
     },
-    handleDragStart(event) {
+    handleDragStart (event) {
       event.preventDefault()
       return false
     },
-    handleDragEnd(event) {
+    handleDragEnd (event) {
       const { oldIndex, newIndex } = event
       const currentIndex = this.activeIndex
       let nextActiveIndex

@@ -230,12 +230,12 @@ export default {
     initMode: String,
     version: {
       type: String,
-      default() {
+      default () {
         return ''
       }
     }
   },
-  data() {
+  data () {
     const blockVideoTypeOptions = [
       {
         value: 0,
@@ -269,7 +269,7 @@ export default {
         ],
         amount: [
           {
-            validator(rule, value, callback) {
+            validator (rule, value, callback) {
               if (Number.isInteger(Number(value)) && Number(value) >= 0) {
                 callback()
               } else {
@@ -339,7 +339,7 @@ export default {
     }
   },
   computed: {
-    sourceDisabled() {
+    sourceDisabled () {
       const panel = this.panel
       return this.mode === 'replicate' || (panel.currentVersion !== undefined && panel.pannelList[0].pannelStatus !== 2)
     },
@@ -348,7 +348,7 @@ export default {
       const options = this.panelGroupCategoryOptions
       const panelGroupCategory = this.panel.panelGroupCategory
       if (options) {
-        const target = options.find(function(item) {
+        const target = options.find(function (item) {
           return item.dictId === panelGroupCategory
         })
         return target && target.dictEnName
@@ -367,50 +367,50 @@ export default {
         }
       }
     },
-    isReplica() {
+    isReplica () {
       return this.mode === 'replica'
     },
-    isDisableTabType() {
+    isDisableTabType () {
       const mode = this.mode
       return mode === 'edit' || mode === 'replicate' || mode === 'copy'
     }
   },
   methods: {
-    handleRecommedStrategyInput(recommendStrategy) {
+    handleRecommedStrategyInput (recommendStrategy) {
       this.panel.pannelList[0].recommendStrategy = recommendStrategy
       this.initPanelTitleByRecommendStrategy(recommendStrategy)
     },
-    initPanelTitleByRecommendStrategy(recommendStrategy) {
+    initPanelTitleByRecommendStrategy (recommendStrategy) {
       const selected = this.recommendStrategyOptions.find(function (item) {
         return item.value === recommendStrategy
       })
       this.panel.pannelList[0].pannelTitle = selected && selected.label
     },
-    getRecommendStrategyLabel(value) {
+    getRecommendStrategyLabel (value) {
       const selected = this.recommendStrategyOptions.find(function (item) {
         return item.value === value
       })
       return selected && selected.label
     },
-    setDefaultPanelTitle(pannelType) {
+    setDefaultPanelTitle (pannelType) {
       this.panel.pannelList[0].pannelType = pannelType
       this.panel.pannelList[0].pannelTitle =
         pannelType === 10 ? '猜你喜欢' : '专属剧场'
     },
-    getCategoryLabel(value) {
-      const selected = this.panelGroupCategoryOptions.find(function(item) {
+    getCategoryLabel (value) {
+      const selected = this.panelGroupCategoryOptions.find(function (item) {
         return item.dictId === value
       })
       return selected && selected.dictCnName
     },
-    getPanelGroupTypeLabel(value) {
+    getPanelGroupTypeLabel (value) {
       const labelMap = {
         9: '根据用户近期观影偏好推荐',
         10: '根据用户近期观看的影片推荐'
       }
       return labelMap[value]
     },
-    handlePanelGroupCategoryChange(val) {
+    handlePanelGroupCategoryChange (val) {
       this.panel.panelGroupCategory = val
       const panelGroupCategoryValue = this.panelGroupCategoryValue
       if (
@@ -422,20 +422,20 @@ export default {
         this.panel.pannelResource = ''
       }
     },
-    handlePannelResourceChange(val) {
+    handlePannelResourceChange (val) {
       this.panel.pannelResource = val
     },
-    handleSaveDraft() {
+    handleSaveDraft () {
       const data = JSON.parse(JSON.stringify(this.panel))
       data.pannelStatus = 2
       this.submit(data)
     },
-    handleSubmitAudit() {
+    handleSubmitAudit () {
       const data = JSON.parse(JSON.stringify(this.panel))
       data.pannelStatus = 3
       this.submit(data)
     },
-    validate(data, cb) {
+    validate (data, cb) {
       this.$refs.upsertForm.validate(function (valid) {
         if (valid) {
           // 首屏不能比付费多
@@ -453,7 +453,7 @@ export default {
         }
       })
     },
-    submit(data) {
+    submit (data) {
       let firstPageVipContentAmount = data.pannelList[0].firstPageVipContentAmount
       let vipContentAmount = data.pannelList[0].vipContentAmount
       if (vipContentAmount > firstPageVipContentAmount + 9) {
@@ -479,7 +479,7 @@ export default {
         }
       )
     },
-    parseDataToApi(data) {
+    parseDataToApi (data) {
       if (this.mode === 'replicate') {
         data.currentVersion = ''
       }
@@ -490,7 +490,7 @@ export default {
       const layoutId = panel.layoutId
       const showTitle = panel.showTitle ? 1 : 0
       const lucenyFlag = panel.lucenyFlag ? 1 : 0
-      panel.pannelList.forEach(function(item) {
+      panel.pannelList.forEach(function (item) {
         item.pannelCategory = panelGroupCategory
         item.pannelResource = pannelResource
         item.pannelStatus = pannelStatus
@@ -498,7 +498,7 @@ export default {
         item.showTitle = showTitle
 
         if (item.contentList) {
-          item.contentList.forEach(function(cItem) {
+          item.contentList.forEach(function (cItem) {
             cItem.lucenyFlag = lucenyFlag
           })
         }
@@ -510,7 +510,7 @@ export default {
       delete panel.layoutId
       return panel
     },
-    parseApiToData(data) {
+    parseApiToData (data) {
       const panel = data
       const firstPanel = data.pannelList[0]
       panel.pannelResource = firstPanel.pannelResource
@@ -524,28 +524,28 @@ export default {
       }
       return panel
     },
-    setPanel(data) {
+    setPanel (data) {
       const panel = this.parseApiToData(data)
       Object.assign(this.panel, panel)
     },
-    getDictType() {
+    getDictType () {
       this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.panelGroupCategoryOptions = data
       })
     },
-    getRecommendStrategy() {
+    getRecommendStrategy () {
       this.$service.getRecommendStrategy().then((data) => {
         console.log('rs', data)
         this.recommendStrategyOptions = data
       })
     },
-    fetchData(version) {
+    fetchData (version) {
       this.$service.panelGetDetail({ id: this.id, version }).then(data => {
         this.setPanel(data)
       })
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

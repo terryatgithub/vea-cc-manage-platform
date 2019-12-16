@@ -49,7 +49,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       itemsIndexed: {}
     }
@@ -66,9 +66,9 @@ export default {
     handleSelect (name) {
       this.$emit('select', name, this.itemsIndexed[name])
     },
-    buildIndex(items = []) {
+    buildIndex (items = []) {
       const index = {}
-      function walk(item) {
+      function walk (item) {
         if (item.route) {
           index[item.route] = item
         }
@@ -82,7 +82,7 @@ export default {
       walk(items)
       this.itemsIndexed = index
     },
-    handleClickMenu(name) {
+    handleClickMenu (name) {
       this.$sendEvent({
         type: 'menu_click',
         payload: {
@@ -91,7 +91,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.$watch('items', this.buildIndex, { immediate: true })
   }
 }

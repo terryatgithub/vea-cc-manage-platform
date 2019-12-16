@@ -66,7 +66,7 @@ export default {
     BaseSelector,
     RemoteSelectorWrapper
   },
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -160,7 +160,7 @@ export default {
   },
   // props: ['selectionType', 'source', 'id'],
   methods: {
-    secondToTimeStr(seconds) {
+    secondToTimeStr (seconds) {
       if (seconds) {
         const hour = Math.floor(seconds / 3600)
         const min = Math.floor((seconds - 3600 * hour) / 60)
@@ -168,17 +168,17 @@ export default {
         return `${hour}小时${min}分${sec}秒`
       }
     },
-    handleSelectStart() {
+    handleSelectStart () {
       const baseSelector = this.$refs.baseSelector
       if (baseSelector) {
         baseSelector.clearSelected()
       }
       this.handleFilterReset()
     },
-    handleSelectCancel() {
+    handleSelectCancel () {
       this.$refs.wrapper.handleSelectCancel()
     },
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         urlIsTrailer: undefined,
         urlTitle: undefined,
@@ -186,7 +186,7 @@ export default {
         id: this.id
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const filter = { ...this.efficientFilter }
       if (pagination) {
@@ -195,31 +195,31 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.table.data = []
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getSegmentList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows || []
       })
     },
-    handleSelectEnd() {
+    handleSelectEnd () {
       this.$refs.wrapper.handleSelectEnd()
       this.$emit('select-end', ...arguments)
     }
   },
-  created() {
+  created () {
   }
 }
 </script>

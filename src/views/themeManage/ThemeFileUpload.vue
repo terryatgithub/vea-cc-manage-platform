@@ -51,7 +51,7 @@ export default {
     },
     zipType: {
       type: String,
-      default() {
+      default () {
         return 'none'
       }
     }
@@ -165,13 +165,13 @@ export default {
       }
     },
 
-    handleRemove(file) {
+    handleRemove (file) {
       this.$refs.upload.handleRemove(file)
       this.fileNum--
       this.$emit('handleRemove')
     }
   },
-  created() {}
+  created () {}
 
 }
 </script>

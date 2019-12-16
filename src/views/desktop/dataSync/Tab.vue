@@ -26,7 +26,7 @@ export default {
     Table
   },
 
-  data() {
+  data () {
     return {
       resourceType: 'tabInfo',
       selected: [],
@@ -86,7 +86,7 @@ export default {
           {
             label: '版面属性',
             prop: 'tabType',
-            formatter: function(row) {
+            formatter: function (row) {
               const v = row.tabType
               return (
                 {
@@ -105,7 +105,7 @@ export default {
           {
             label: '内容源',
             prop: 'tabResource',
-            formatter: function(row) {
+            formatter: function (row) {
               const source = row.tabResource
               return this.$consts.sourceText[source] || ''
             }
@@ -131,7 +131,7 @@ export default {
                 currentVersion +
                 '/' +
                 this.tabStatusOption
-                  .map(function(item) {
+                  .map(function (item) {
                     if (status.toString() === item.value) {
                       return item.label
                     }
@@ -163,14 +163,14 @@ export default {
   },
 
   methods: {
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         idPrefix: '10',
         keyword: 'tab',
         subCategoryArray: '1,2'
       }
     },
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       if (filter.tabId && !/^\d+$/.test(filter.tabId)) {
@@ -184,7 +184,7 @@ export default {
         this.table.data = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const pagination = this.pagination
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
@@ -193,32 +193,32 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.pagination.currentPage = 1
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    addTabInfo() {
+    addTabInfo () {
       this.$emit('create')
     },
-    editData() {
+    editData () {
       const table = this.table
       const selected = this.table.selected
       const target = table.data[selected[0]]
       this.$emit('edit', target)
     },
-    getBusinessType() {
+    getBusinessType () {
       this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.businessType = data
       })
     },
-    handleToggleCollect(row) {
+    handleToggleCollect (row) {
       if (row.collected) {
         this.$service.collectCancel({ type: 'tab', data: { resourceId: row.tabId } }, '取消收藏成功')
           .then(() => {
@@ -232,7 +232,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.$service.getDictType({ type: 'appIdType' }).then(data => {
       this.appIdType = data
       this.fetchData()

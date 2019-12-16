@@ -9,12 +9,12 @@ export default {
     FrameDialog
   },
   props: ['ids', 'isBatch'],
-  data() {
+  data () {
     return {
     }
   },
   computed: {
-    url() {
+    url () {
       const ids = this.ids || []
       const server = /^(127|172)/.test(location.host)
         ? 'http://dev-mgr-media.tc.cc0808.com'
@@ -23,14 +23,14 @@ export default {
     }
   },
   methods: {
-    handleClose() {
+    handleClose () {
       this.$emit('close')
     }
   },
-  mounted() {
+  mounted () {
     window.addEventListener('message', this.handleClose)
   },
-  beforeDestroy() {
+  beforeDestroy () {
     window.removeEventListener('message', this.handleClose)
   }
 }

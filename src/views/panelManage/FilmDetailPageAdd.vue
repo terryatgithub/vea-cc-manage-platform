@@ -227,7 +227,7 @@ export default {
     initMode: String,
     version: {
       type: String,
-      default() {
+      default () {
         return ''
       }
     }
@@ -235,7 +235,7 @@ export default {
   watch: {
     'form.tabCategory': {
       deep: true,
-      handler: function(newVal, oldVal) {
+      handler: function (newVal, oldVal) {
         if (newVal === 1) {
           this.pannelItems = this.eduProductItems.categoryList
           this.productItems = this.eduProductItems.productList
@@ -253,11 +253,11 @@ export default {
         }
       }
     },
-    'form.tabResource': function(value, oldVal) {
+    'form.tabResource': function (value, oldVal) {
       this.handleTabResourceChange(value)
     }
   },
-  data() {
+  data () {
     return {
       activePage: 'tab_info',
       panelPreview: {
@@ -320,11 +320,11 @@ export default {
         }
       }
     },
-    isDisableTabType() {
+    isDisableTabType () {
       const mode = this.mode
       return mode === 'edit' || mode === 'replicate' || mode === 'copy'
     },
-    tabGroupTableHeader() {
+    tabGroupTableHeader () {
       const header = [
         {
           label: '版块ID',
@@ -398,7 +398,7 @@ export default {
     }
   },
   methods: {
-    handlePreviewPanel(panel, targetVersion) {
+    handlePreviewPanel (panel, targetVersion) {
       const row = panel
       const version = targetVersion || row.currentVersion
       if (row.pannelGroupId > 0) {
@@ -417,13 +417,13 @@ export default {
         })
       }
     },
-    handlePreviewPanelEnd() {
+    handlePreviewPanelEnd () {
       const panel = this.panelPreview.panel
       this.updatePanelVersion(panel)
       this.panelPreview = null
       this.activePage = 'tab_info'
     },
-    handleSelectPanelEnd(selected) {
+    handleSelectPanelEnd (selected) {
       let originSelectPanelList = this.form.panelInfoList || []
       if (originSelectPanelList.length === 0) {
         originSelectPanelList = [
@@ -442,13 +442,13 @@ export default {
         ]
       }
       const selectedPanelList = selected || []
-      const originSelectedPanelListIndexed = originSelectPanelList.reduce(function(result, item, index) {
+      const originSelectedPanelListIndexed = originSelectPanelList.reduce(function (result, item, index) {
         result[item.pannelGroupId] = index
         return result
       }, {})
 
       let panelList = []
-      selectedPanelList.forEach(function(item) {
+      selectedPanelList.forEach(function (item) {
         const index = originSelectedPanelListIndexed[item.pannelGroupId]
         // 把之前没选中都添加到列表里
         if (index === undefined) {
@@ -458,7 +458,7 @@ export default {
       // 把新添加都加到后面
       this.form.panelInfoList = originSelectPanelList.concat(panelList)
     },
-    updatePanelVersion(panel, cb) {
+    updatePanelVersion (panel, cb) {
       this.$service.panelPageList({
         pannelType: panel.pannelType,
         pannelId: panel.pannelGroupId
@@ -468,13 +468,13 @@ export default {
         cb && cb()
       })
     },
-    btnAudit() {
+    btnAudit () {
       this.save(3)
     },
-    btnSave() {
+    btnSave () {
       this.save(2)
     },
-    save(status) {
+    save (status) {
       if (this.form.panelInfoList.length === 0) {
         this.$message('请添加版块')
         return false
@@ -484,7 +484,7 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           if (form.panelInfoList) {
-            form.panelInfoList = form.panelInfoList.map(function(item, index) {
+            form.panelInfoList = form.panelInfoList.map(function (item, index) {
               return {
                 pannelGroupId: item.pannelGroupId,
                 pannelSequence: index,
@@ -524,7 +524,7 @@ export default {
       })
     },
     // 内容源改变
-    changeResource(value) {
+    changeResource (value) {
       this.$confirm(
         '是否要切换内容源，切换内容源之后所选择的版块数据将会清除掉！',
         '提示',
@@ -549,11 +549,11 @@ export default {
           })
         })
     },
-    handleRemovePanel(index) {
+    handleRemovePanel (index) {
       this.form.panelInfoList.splice(index, 1)
     },
     // 服务
-    getMediaResourceInfos() {
+    getMediaResourceInfos () {
       const toOptions = (arr, labelKey, valueKey) => {
         return arr.map((item) => ({ label: item[labelKey], value: item[valueKey] }))
       }
@@ -629,7 +629,7 @@ export default {
         this.eduProductItems = coocaaSource
       })
     },
-    handleTabResourceChange(value) {
+    handleTabResourceChange (value) {
       const { qqSource, iqiyiSource, youkuSource } = this
       if (this.tabResourceFlag === 0 && this.globalTabResource === value) {
         this.tabResourceFlag = 1
@@ -659,7 +659,7 @@ export default {
         }
       }
     },
-    setFormInfo(data) {
+    setFormInfo (data) {
       this.form.tabId = data.tabId
       this.form.tabName = data.tabName
       this.form.tabCategory = data.tabCategory
@@ -685,7 +685,7 @@ export default {
       // })
       this.tabResourceFlag = 0
     },
-    fetchData(version) {
+    fetchData (version) {
       // if (version !== undefined) { this.form.currentVersion = version }
       this.$service
         .tabInfoGet({ id: this.id, version, tabType: 3 })
@@ -694,7 +694,7 @@ export default {
         })
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     this.getMediaResourceInfos().then(() => {
       this.handleTabResourceChange(this.form.tabResource) // 给频道，产品包赋值

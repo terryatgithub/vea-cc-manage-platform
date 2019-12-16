@@ -124,7 +124,7 @@ export default {
           xAxis: {
             axisLabel: {
               rotate: 45,
-              formatter: function(val) {
+              formatter: function (val) {
                 let mark = val.indexOf('(')
                 if (mark === -1) {
                   return val

@@ -37,7 +37,7 @@ export default {
     }
   },
   //  prop: ['editId'],
-  data() {
+  data () {
     return {
       title: null,
       form: {
@@ -74,14 +74,14 @@ export default {
     /**
      * 获取字典分类
      */
-    getDictCategoryList() {
+    getDictCategoryList () {
       this.$service.getDictCategoryList().then(data => {
         // 去重
         this.dictCategoryStr = data
       })
     },
 
-    submitBtn() {
+    submitBtn () {
       this.$refs.form.validate(valid => {
         if (valid) {
           const dictObj = {
@@ -97,7 +97,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     if (this.editData !== null && this.editData !== undefined) {
       this.title = '编辑'
       this.form = this.editData

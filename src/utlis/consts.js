@@ -1,11 +1,11 @@
-function optionsToText(options) {
+function optionsToText (options) {
   return options.reduce((result, { label, value }) => {
     result[value] = label
     return result
   }, {})
 }
 
-function optionsToEnums(options) {
+function optionsToEnums (options) {
   return options.reduce((result, item) => {
     result[item.label] = item.value
     return result

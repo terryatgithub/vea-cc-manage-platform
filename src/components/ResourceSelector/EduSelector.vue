@@ -129,7 +129,7 @@ export default {
     BaseSelector,
     CommonSelector
   },
-  data() {
+  data () {
     return {
       isMore: false,
       conditionList: {},
@@ -198,14 +198,14 @@ export default {
     }
   },
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     },
-    contentProviderEnums() {
+    contentProviderEnums () {
       return (this.conditionList.contentProviders || [])
         .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
-    teachTypeEnums() {
+    teachTypeEnums () {
       const sources = this.conditionList.sources
       if (sources) {
         return sources[0].child
@@ -213,7 +213,7 @@ export default {
       }
       return []
     },
-    gradeEnums() {
+    gradeEnums () {
       const gradeList = this.conditionList.gradeList
       const teachType = this.filter.teachTypes
       const teachTypeRange = {
@@ -229,7 +229,7 @@ export default {
       }
       return []
     },
-    videoTypeEnums() {
+    videoTypeEnums () {
       const teachTypes = this.filter.teachTypes
       if (teachTypes) {
         return (this.conditionList.sources[0].child
@@ -239,30 +239,30 @@ export default {
       }
       return []
     },
-    payTypeEnums() {
+    payTypeEnums () {
       return (this.conditionList.payTypes || [])
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
-    contentTagEnums() {
+    contentTagEnums () {
       return (this.conditionList.contentTag || []).map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
-    courseVersionEnums() {
+    courseVersionEnums () {
       return (this.conditionList.courseVersion || [])
         .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
-    segmentTagEnums() {
+    segmentTagEnums () {
       return (this.conditionList.segmentTag || [])
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     }
   },
   props: ['isLive', 'selectionType'],
   methods: {
-    handleCollapseChange() {
+    handleCollapseChange () {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'))
       }, 1000)
     },
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         // 筛选条件表单
         resType: 'vod',
@@ -288,7 +288,7 @@ export default {
         businessType: 1 // 业务线类型:0影视, 1教育
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const originFilter = this.efficientFilter
       const filter = Object.keys(originFilter).reduce((result, key) => {
@@ -303,42 +303,42 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
     },
-    handleTeachTypesChange(teachTypes) {
+    handleTeachTypesChange (teachTypes) {
       this.filter.gradeList = undefined
       this.filter.videoTypes = undefined
       this.filter.teachTypes = teachTypes
     },
-    yearStartListen: function() {
+    yearStartListen: function () {
       if (this.filter.yearStart && !+this.filter.yearStart) {
         this.$message('年代必须为数字')
         this.filter.yearStart = null
       }
     },
-    yearEndListen: function() {
+    yearEndListen: function () {
       if (this.filter.yearEnd && !+this.filter.yearEnd) {
         this.$message('年代必须为数字')
         this.filter.yearEnd = null
       }
     },
-    changeSort: function() {
+    changeSort: function () {
       // 修改排序按钮的点击事件
       if (this.filter.order === 'asc') {
         this.filter.order = 'desc'
@@ -347,7 +347,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     const params = {
       type: 'vod',
       businessType: 1

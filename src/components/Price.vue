@@ -7,12 +7,12 @@
 // 0.1 + 0.2 = 0.30000000000000004
 // 16.08 * 100 = 1607.9999999999998
 // 如果要保留2位小数，最多可处理10位整数的数字
-var accurateNumber = function(number) {
+var accurateNumber = function (number) {
   // 转为12位有效数字的指数记数法，再转为浮点数
   return (parseFloat(number.toPrecision(12)))
 }
 export default {
-  data() {
+  data () {
     return {
       inputValue: undefined
     }
@@ -23,14 +23,14 @@ export default {
     'value': 'updateInputValue'
   },
   methods: {
-    updateValue(val) {
+    updateValue (val) {
       const numVal = +val
       if (!isNaN(numVal) && numVal !== 0) {
         val = accurateNumber(val * 100)
       }
       this.$emit('input', val)
     },
-    updateInputValue(val) {
+    updateInputValue (val) {
       const newVal = accurateNumber(val / 100)
       if (!isNaN(newVal) && newVal !== 0) {
         if (newVal !== (+this.inputValue)) {
@@ -41,7 +41,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.updateInputValue(this.value)
   }
 }

@@ -31,7 +31,7 @@ import _ from '../../utlis/gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
 import BaseSelector from '../BaseSelector'
 export default {
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -80,32 +80,32 @@ export default {
     BaseSelector
   },
   methods: {
-    handleSelectStart() {
+    handleSelectStart () {
       this.$emit('select-start')
       this.fetchData()
     },
-    handleSelectCancel() {
+    handleSelectCancel () {
       this.$refs.wrapper.handleSelectCancel()
     },
-    handleSelectEnd(data) {
+    handleSelectEnd (data) {
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
     },
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
       }
     },
-    handleFilterChange(filter) {
+    handleFilterChange (filter) {
       this.filter = filter
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleResetFilter() {
+    handleResetFilter () {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -113,7 +113,7 @@ export default {
       }
       return filter
     },
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.getClickData(filter).then(data => {
         this.pagination.total = data.total
@@ -121,7 +121,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       commonOnclickId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'Input',

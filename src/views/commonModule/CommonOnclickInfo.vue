@@ -33,7 +33,7 @@ export default {
     default: null
   },
   //  prop: ['editId'],
-  data() {
+  data () {
     return {
       title: null,
       form: {
@@ -71,16 +71,16 @@ export default {
     }
   },
   methods: {
-    paramsAddBtn() {
+    paramsAddBtn () {
       this.paramsList.push({
         key: '',
         value: ''
       })
     },
-    paramsRedBtn(index) {
+    paramsRedBtn (index) {
       this.paramsList.splice(index, 1)
     },
-    submitBtn() {
+    submitBtn () {
       this.$refs.form.validate(valid => {
         if (valid) {
           let params = {}
@@ -102,7 +102,7 @@ export default {
         }
       })
     },
-    getEditData() {
+    getEditData () {
       this.$service.getCommonOnclickInfoEdit({ id: this.editId }).then(data => {
         const params = JSON.parse(data.params || '{}')
         data.params = Object.keys(params).map(key => {
@@ -129,7 +129,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
       this.getEditData()

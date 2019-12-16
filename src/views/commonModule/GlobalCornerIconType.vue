@@ -53,7 +53,7 @@ export default {
   components: {
     CommonContent
   },
-  data() {
+  data () {
     return {
       mode: 'create',
       resourceName: '角标分类',
@@ -95,14 +95,14 @@ export default {
     }
   },
   methods: {
-    fetchData(version) {
+    fetchData (version) {
       this.$service
         .globalCornerIconTypeDetail({ id: this.id })
         .then(data => {
           this.form = Object.assign({}, this.form, data)
         })
     },
-    handleSave() {
+    handleSave () {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service
@@ -114,7 +114,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

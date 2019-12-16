@@ -26,7 +26,7 @@ export default {
     ThemeInfoAdd
   },
 
-  data() {
+  data () {
     return {
       isShowList: true,
       editId: null,
@@ -36,16 +36,16 @@ export default {
   },
 
   methods: {
-    openAddPage(editId, mode, version) {
+    openAddPage (editId, mode, version) {
       this.editId = editId
       this.isShowList = false
       this.mode = mode
       this.version = version
     },
-    goBack() {
+    goBack () {
       this.isShowList = true
     },
-    openListPage() {
+    openListPage () {
       this.isShowList = true
       this.$refs.list.fetchData()
     }

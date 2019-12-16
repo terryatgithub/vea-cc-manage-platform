@@ -1,12 +1,12 @@
 <script>
 export default {
-  provide() {
+  provide () {
     return {
       dataForm: this
     }
   },
   props: ['readonly'],
-  render(h) {
+  render (h) {
     return h('el-form', {
       ref: 'form',
       props: {

@@ -45,21 +45,21 @@
 import formItemMixin from './formItemMixin'
 export default {
   mixins: [formItemMixin],
-  data() {
+  data () {
     return {
 
     }
   },
   props: ['type', 'options', 'filterable', 'allowCreate', 'confirm'],
   methods: {
-    getLabel(val) {
+    getLabel (val) {
       const options = this.options || []
       const selected = options.find(({ value }) => value === val)
       if (selected) {
         return selected.label
       }
     },
-    handleInputVal(val) {
+    handleInputVal (val) {
       const confirm = this.confirm
       if (confirm) {
         let title

@@ -9,17 +9,17 @@ export default {
     ResourceList: MultiFunctionBlockList,
     ResourceContent: MultiFunctionBlockInfo
   },
-  data() {
+  data () {
     return {}
   },
   computed: {
-    resourceInfo() {
+    resourceInfo () {
       return {
         type: 'multiFunctionBlock',
         idField: 'pluginId'
       }
     },
-    contentProps() {
+    contentProps () {
       return {
         menuElId: 'multiFunctionBlock'
       }

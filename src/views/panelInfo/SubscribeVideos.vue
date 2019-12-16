@@ -43,7 +43,7 @@ export default {
     }
   },
   methods: {
-    handleRemoveItem(index) {
+    handleRemoveItem (index) {
       this.$emit('remove-block', index)
     }
   }

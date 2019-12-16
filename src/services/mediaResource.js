@@ -1,5 +1,5 @@
 // 查询直播资源
-export function mediaPPTVVideoList(params) {
+export function mediaPPTVVideoList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/tvos/queryPPTVVideoResult.html?callbackparam=result',
@@ -11,7 +11,7 @@ export function mediaPPTVVideoList(params) {
   })
 }
 
-export function mediaGetCondition(params) {
+export function mediaGetCondition (params) {
   return this.fetch({
     url: 'api/tvos/getCondition.html',
     params
@@ -22,7 +22,7 @@ export function mediaGetCondition(params) {
   })
 }
 
-export function mediaGetTagList(params) {
+export function mediaGetTagList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/tvos/getMediaTagList.html?tagCode=',

@@ -5,7 +5,7 @@
 <script>
 export default {
   computed: {
-    src() {
+    src () {
       const url = this.$route.query.url
       return /^http/.test(url) ? url : `${location.protocol}//${url}`
     }

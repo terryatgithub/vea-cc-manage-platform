@@ -1,6 +1,6 @@
 import resourceFields from '../utlis/resourceFields'
 export default {
-  data() {
+  data () {
     return {
       resourceType: undefined
     }
@@ -104,7 +104,7 @@ export default {
         })
         .catch(() => {})
     },
-    handleCopy(row) {
+    handleCopy (row) {
       const resourceType = this.resourceType
       if (resourceType === 'tabInfo') {
         if (row.tabType === 4) {
@@ -153,7 +153,7 @@ export default {
         return result
       }, [])
     },
-    clearSelected() {
+    clearSelected () {
       this.selected = []
       this.table.selected = []
       this.updateTableSelected()

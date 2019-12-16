@@ -32,7 +32,7 @@ export default {
     editId: undefined,
     index: undefined
   },
-  data() {
+  data () {
     return {
       title: '',
       formData: {
@@ -53,7 +53,7 @@ export default {
     }
   },
   methods: {
-    saveRoleInfo() {
+    saveRoleInfo () {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service
@@ -67,7 +67,7 @@ export default {
         }
       })
     },
-    getEditData() {
+    getEditData () {
       this.$service.getRoleDetailById({ id: this.editId }).then(data => {
         Object.keys(this.formData).forEach(v => {
           this.formData[v] = data[v]
@@ -75,7 +75,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
       this.formData.roleId = this.editId

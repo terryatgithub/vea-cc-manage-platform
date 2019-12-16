@@ -59,7 +59,7 @@ export default {
     Table
   },
 
-  data() {
+  data () {
     return {
       filter: {
         sort: undefined,
@@ -101,7 +101,7 @@ export default {
           {
             label: '操作的数据',
             prop: 'opData',
-            render(h, { row }) {
+            render (h, { row }) {
               return h(
                 Tooltip,
                 {
@@ -157,14 +157,14 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.sysLogOpPageList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -172,11 +172,11 @@ export default {
       }
       return filter
     },
-    clearForm() {
+    clearForm () {
       this.filter = {}
       this.fetchData()
     },
-    handleFilterChange(type) {
+    handleFilterChange (type) {
       if (type !== 'pagination') {
         if (this.pagination) {
           this.pagination.currentPage = 1
@@ -220,7 +220,7 @@ export default {
       document.body.removeChild(textArea)
     }
   },
-  created() {
+  created () {
     this.fetchData()
   }
 }

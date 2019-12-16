@@ -41,7 +41,7 @@ import { cloneDeep } from 'lodash'
 export default {
   components: {
   },
-  data() {
+  data () {
     return {
       isVisiableRecom: false,
       recomStreamTags: [],
@@ -91,7 +91,7 @@ export default {
       this.isVisiableRecom = false
     }
   },
-  created() {
+  created () {
   }
 }
 </script>

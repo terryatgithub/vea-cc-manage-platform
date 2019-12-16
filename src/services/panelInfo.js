@@ -2,7 +2,7 @@ import axios from 'axios'
 /**
  * 版块管理 -> 常规运营
  */
-export function panelPageList(data) {
+export function panelPageList (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/panel/pageList.html',
@@ -10,7 +10,7 @@ export function panelPageList(data) {
   })
 }
 
-export function panelDataList(data) {
+export function panelDataList (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/panel/dataList.html',
@@ -18,13 +18,13 @@ export function panelDataList(data) {
   })
 }
 
-export function panelGetDetail(params) {
+export function panelGetDetail (params) {
   return this.fetch({
     url: 'api/v1/panel/getDetailInfo.html',
     params
   })
 }
-export function panelGetDetailSilence(params) {
+export function panelGetDetailSilence (params) {
   return this.fetch({
     url: 'api/v1/panel/getDetailInfo.html',
     params,
@@ -32,7 +32,7 @@ export function panelGetDetailSilence(params) {
   })
 }
 
-export function panelUpsert(data) {
+export function panelUpsert (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/panel/save.html',
@@ -41,7 +41,7 @@ export function panelUpsert(data) {
     }
   })
 }
-export function panelRemove(data) {
+export function panelRemove (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/panel/remove.html',
@@ -49,14 +49,14 @@ export function panelRemove(data) {
   })
 }
 
-export function collectCancel(data) {
+export function collectCancel (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/collect/' + data.type + '/cancel.html',
     data: data.data
   })
 }
-export function collect(data) {
+export function collect (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/collect/' + data.type + '/collect.html',
@@ -64,7 +64,7 @@ export function collect(data) {
   })
 }
 
-export function getSharedTags(params) {
+export function getSharedTags (params) {
   return this.fetch({
     method: 'get',
     url: 'api/tvos/getMediaCommonTags.html',
@@ -73,7 +73,7 @@ export function getSharedTags(params) {
   })
 }
 
-export function panelTagUpsert(data) {
+export function panelTagUpsert (data) {
   return this.fetch({
     method: 'post',
     url: 'api/tvos/updateTagWeight.html',
@@ -81,7 +81,7 @@ export function panelTagUpsert(data) {
   })
 }
 
-export function panelRecommendList(data) {
+export function panelRecommendList (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/panelRecommend/pageList.html',
@@ -89,14 +89,14 @@ export function panelRecommendList(data) {
   })
 }
 
-export function panelRecommendGetDetail(params) {
+export function panelRecommendGetDetail (params) {
   return this.fetch({
     url: 'api/v1/panelRecommend/getDetailInfo.html',
     params
   })
 }
 
-export function panelRecommendUpsert(data) {
+export function panelRecommendUpsert (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/panelRecommend/save.html',
@@ -106,7 +106,7 @@ export function panelRecommendUpsert(data) {
   })
 }
 
-export function panelRecommendFlagUpsert(data) {
+export function panelRecommendFlagUpsert (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/panelRecommend/switchRecommend.html',
@@ -159,7 +159,7 @@ export function getPanelRecommandFeedback (params) {
   })
 }
 
-export function getPanelSimpleBrowseData(params) {
+export function getPanelSimpleBrowseData (params) {
   return axios({
     method: 'get',
     url: 'api/v1/dataShow/panel/getSimpleBrowseData.html',
@@ -171,7 +171,7 @@ export function getPanelSimpleBrowseData(params) {
   })
 }
 
-export function getPanelChartData(params) {
+export function getPanelChartData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/panel/getChartData.html',
@@ -179,7 +179,7 @@ export function getPanelChartData(params) {
   })
 }
 
-export function getVideoChartData(params) {
+export function getVideoChartData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/video/getChartData.html',
@@ -187,7 +187,7 @@ export function getVideoChartData(params) {
   })
 }
 
-export function getVideoRealTimeChartData(params) {
+export function getVideoRealTimeChartData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/videoRealTime/getChartData.html',
@@ -195,7 +195,7 @@ export function getVideoRealTimeChartData(params) {
   })
 }
 
-export function getVideoDmpChartData(params) {
+export function getVideoDmpChartData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/videoDmp/getChartData.html',
@@ -203,7 +203,7 @@ export function getVideoDmpChartData(params) {
   })
 }
 
-export function getVideoDmpRealTimeChartData(params) {
+export function getVideoDmpRealTimeChartData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/videoDmpRealTime/getChartData.html',
@@ -211,7 +211,7 @@ export function getVideoDmpRealTimeChartData(params) {
   })
 }
 
-export function getVideoDmpTitles(params) {
+export function getVideoDmpTitles (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/videoDmp/getAllTitles.html',
@@ -219,7 +219,7 @@ export function getVideoDmpTitles(params) {
   })
 }
 
-export function getVideoDmpCrowds(params) {
+export function getVideoDmpCrowds (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/videoDmp/getAllCrowds.html',

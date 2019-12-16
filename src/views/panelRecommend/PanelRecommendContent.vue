@@ -58,7 +58,7 @@ export default {
     ContentCard
   },
   mixins: [titleMixin],
-  data() {
+  data () {
     return {
       resourceName: '版块推荐流',
       mode: 'create',
@@ -76,7 +76,7 @@ export default {
   },
   props: ['id', 'initMode'],
   methods: {
-    handleInputCategoryItem(category) {
+    handleInputCategoryItem (category) {
       const panelRecommend = this.panelRecommend
       const panelGroupCategory = panelRecommend.panelGroupCategory
       if (panelGroupCategory.indexOf(category) === -1) {
@@ -85,7 +85,7 @@ export default {
         panelRecommend.panelGroupCategory = panelGroupCategory.filter(item => item !== category)
       }
     },
-    handleInputLockItem(category) {
+    handleInputLockItem (category) {
       const panelRecommend = this.panelRecommend
       const recLockCategory = panelRecommend.recLockCategory
       const isChecked = recLockCategory.indexOf(category) > -1
@@ -95,9 +95,9 @@ export default {
         panelRecommend.recLockCategory = recLockCategory.filter(item => item !== category)
       }
     },
-    getRecommendStreamSignOptions() {
+    getRecommendStreamSignOptions () {
       return this.$service.getDictType({ type: 'recommendStreamSign' }).then(data => {
-        return data.map(function(item) {
+        return data.map(function (item) {
           return {
             label: item.dictCnName,
             value: item.dictCnName
@@ -105,7 +105,7 @@ export default {
         })
       })
     },
-    setPanelRecommend(data) {
+    setPanelRecommend (data) {
       const panelRecommend = this.panelRecommend
       const panelGroupCategory = data.panelGroupCategory
       const recLockCategory = data.recLockCategory
@@ -122,17 +122,17 @@ export default {
         'source',
         'flagRecommend']))
     },
-    fetchData(version) {
+    fetchData (version) {
       this.$service.panelRecommendGetDetail({ id: this.id })
         .then(this.setPanelRecommend)
     },
-    parseDataToApi(data) {
+    parseDataToApi (data) {
       data = cloneDeep(data)
       data.panelGroupCategory = data.panelGroupCategory.join(',')
       data.recLockCategory = data.recLockCategory.join(',')
       return data
     },
-    handleSave() {
+    handleSave () {
       this.$service
         .panelRecommendUpsert(this.parseDataToApi(this.panelRecommend))
         .then(() => {
@@ -140,7 +140,7 @@ export default {
         })
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode
     this.fetchData(this.version)
     this.getRecommendStreamSignOptions().then((result) => {

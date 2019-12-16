@@ -193,7 +193,7 @@ export default {
     AssignVideoTab,
     CommonContent
   },
-  data() {
+  data () {
     return {
       resourceName: '指定影片推荐流',
       createForm: {
@@ -257,7 +257,7 @@ export default {
       }
       return mode === 'read'
     },
-    isReplica() {
+    isReplica () {
       return this.mode === 'replicate' || this.basicForm.duplicateVersion === 'yes'
     },
     streamType () {
@@ -269,7 +269,7 @@ export default {
   },
 
   methods: {
-    getDefaultVideoTab() {
+    getDefaultVideoTab () {
       return {
         id: undefined, //  影片自增id
         clickTemplateType: undefined, // 点击事件模板类型,refer资源类型
@@ -290,7 +290,7 @@ export default {
         picInfoList: []
       }
     },
-    genPicInfo() {
+    genPicInfo () {
       return {
         pictureResolution: '',
         pictureUrl: undefined,
@@ -308,7 +308,7 @@ export default {
         return false
       }
     },
-    handleCreate() {
+    handleCreate () {
       const createForm = this.createForm
       this.$refs.createForm.validate(valid => {
         if (valid) {
@@ -320,13 +320,13 @@ export default {
         }
       })
     },
-    messageCancel() {
+    messageCancel () {
       this.$message({
         type: 'info',
         message: '已取消切换源'
       })
     },
-    handleSourceChange(val) {
+    handleSourceChange (val) {
       const messageCancel = this.messageCancel
       this.$confirm('修改源，会删除所有影片和素材，确定要修改', '警告', {
         confirmButtonText: '确定',
@@ -350,7 +350,7 @@ export default {
         }).catch(messageCancel)
       }).catch(messageCancel)
     },
-    handleAddVideoTab(tabNum) {
+    handleAddVideoTab (tabNum) {
       let sizetagsLen = this.sizeTags.length
       if (!tabNum) {
         let newVideoTab = this.getDefaultVideoTab()
@@ -373,7 +373,7 @@ export default {
         this.$message.success('添加成功')
       }
     },
-    handleAddTabSize(e, width, height) {
+    handleAddTabSize (e, width, height) {
       if (width) {
         const isRepeatSize = this.judgeIsRepeatSize({ width, height })
         if (isRepeatSize) {
@@ -407,7 +407,7 @@ export default {
         return item.width === newTabSize.width && item.height === newTabSize.height
       })
     },
-    handleTagClose(tag) {
+    handleTagClose (tag) {
       this.$confirm('删除本尺寸后，本流中配置的本尺寸海报图也会删除，确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -430,7 +430,7 @@ export default {
         })
       })
     },
-    handleDelTab(index) {
+    handleDelTab (index) {
       const videoTabs = this.videoTabs
       videoTabs.splice(index, 1)
       this.videoTabs = []
@@ -439,7 +439,7 @@ export default {
         this.$message.success('删除成功')
       })
     },
-    handleSelectResourcesEnd(resources) {
+    handleSelectResourcesEnd (resources) {
       console.log('resources', resources)
       const source = this.basicForm.source
       ;['video', 'edu', 'pptv', 'live', 'topic', 'rotate'].forEach(name => {
@@ -448,7 +448,7 @@ export default {
       })
       this.dealFillDefaultImg()
     },
-    dealCommonParams(resources) {
+    dealCommonParams (resources) {
       console.log('resources', resources)
       const source = this.basicForm.source
       // sigle, length === 1
@@ -482,7 +482,7 @@ export default {
         categoryId
       }
     },
-    handleSelectClickedSource(resources, index) {
+    handleSelectClickedSource (resources, index) {
       const { tabName, anotherName, jsonParams, title, subTitle, thirdIdOrPackageName, categoryId } = this.dealCommonParams(resources)
       Object.assign(this.videoTabs[index], {
         clickParams: jsonParams,
@@ -574,7 +574,7 @@ export default {
         })
       }
     },
-    handleSelectNormalSource(resources, index) {
+    handleSelectNormalSource (resources, index) {
       const { anotherName, jsonParams, thirdIdOrPackageName } = this.dealCommonParams(resources)
       Object.assign(this.videoTabs[index], {
         params: jsonParams,
@@ -582,14 +582,14 @@ export default {
         videoId: thirdIdOrPackageName
       })
     },
-    handleDelNormalSource(index) {
+    handleDelNormalSource (index) {
       if (this.isRead) {
         return
       }
       this.videoTabs[index].videoId = undefined
       this.videoTabs[index].params = undefined
     },
-    handleDiffResources(resourceArr, resourceName, source, resources) {
+    handleDiffResources (resourceArr, resourceName, source, resources) {
       let anotherName = resourceName
       switch (resourceName) {
         case 'video':
@@ -647,7 +647,7 @@ export default {
         videoTabs.push(newTab)
       })
     },
-    handleBlurSort(index) {
+    handleBlurSort (index) {
       const videoTabs = this.videoTabs
       this.videoTabs = []
       this.$nextTick(() => {
@@ -656,7 +656,7 @@ export default {
         })
       })
     },
-    handleSubmit(status) {
+    handleSubmit (status) {
       let isFormValid = true
       this.$refs.basicForm.validate((valid) => {
         if (!valid) {
@@ -702,7 +702,7 @@ export default {
         ...basicForm,
         status
       }
-      this.checkParams(basicParam, videoList, function() {
+      this.checkParams(basicParam, videoList, function () {
         let saveForm = Object.assign({}, basicParam)
         saveForm.videoList = videoList.length === 0 ? undefined : cloneDeep(videoList)
         // parse
@@ -734,13 +734,13 @@ export default {
         })
       }.bind(this))
     },
-    handleSubmitAudit() {
+    handleSubmitAudit () {
       this.handleSubmit(3)
     },
-    handleSaveDraft() {
+    handleSaveDraft () {
       this.handleSubmit(2)
     },
-    checkParams(basicParam, videos, cb) {
+    checkParams (basicParam, videos, cb) {
       const sizeTags = this.sizeTags
       if (!this.checkBasicParam(basicParam)) {
         this.$message.error('流基本设置，信息不完整')
@@ -774,7 +774,7 @@ export default {
         }
       }
     },
-    checkVideoList(video) {
+    checkVideoList (video) {
       const { videoListParams } = this
       let isPass = true
       videoListParams.forEach(param => {
@@ -795,7 +795,7 @@ export default {
       }
       return isPass
     },
-    checkBasicParam(basicParams) {
+    checkBasicParam (basicParams) {
       const params = this.params
       let isPass = true
       params.forEach(item => {
@@ -808,7 +808,7 @@ export default {
     /**
      * 审核按钮组
      */
-    handleCopy(status) {
+    handleCopy (status) {
       const STATUS = this.$consts.status
       if (status === STATUS.waiting) {
         this.handleSubmitAudit()
@@ -819,7 +819,7 @@ export default {
     /**
      * 资源转换
      */
-    callbackParam(tabName, selected, sourceType) {
+    callbackParam (tabName, selected, sourceType) {
       let s = {
         type: '', // 面向客户端
         contentType: '', // 面向管理后台
@@ -922,7 +922,7 @@ export default {
       }
       return s
     },
-    paramIdFun(selected) {
+    paramIdFun (selected) {
       // 封装保存的id
       let param
       if (selected.contentType === 'movie') {
@@ -960,12 +960,12 @@ export default {
 
       return param
     },
-    fetchData(version) {
+    fetchData (version) {
       this.$service.getMediaAutomationDetial({ id: this.id, version }).then(data => {
         this.setBasicInfo(data)
       })
     },
-    setBasicInfo(data) {
+    setBasicInfo (data) {
       let basicForm = this.basicForm
       basicForm.id = data.id
       basicForm.name = data.name
@@ -1003,7 +1003,7 @@ export default {
     }
   },
 
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.$service.getMediaAutomationDetial({ id: this.id, version: this.version }).then(data => {

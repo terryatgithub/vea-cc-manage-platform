@@ -46,7 +46,7 @@ export default {
     RemoteSelectorWrapper
   },
   props: ['title', 'position', 'disabled'],
-  data() {
+  data () {
     return {
       reviewPicUrl: null,
       filter: this.getDefaultFilter(),
@@ -65,7 +65,7 @@ export default {
     }
   },
   methods: {
-    getDefaultFilter() {
+    getDefaultFilter () {
       const idPrefix = this.$consts.idPrefix
       return {
         cornerStatus: this.$consts.status.accepted,
@@ -75,20 +75,20 @@ export default {
         idPrefix: idPrefix !== '10' ? idPrefix : undefined
       }
     },
-    handleRowSelectionChange(row, index) {
+    handleRowSelectionChange (row, index) {
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination, position } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -100,7 +100,7 @@ export default {
       return filter
     },
     // 获取数据
-    fetchData() {
+    fetchData () {
       this.table.selected = undefined
       const filter = this.parseFilter()
       if (this.pictureResolution) {
@@ -111,21 +111,21 @@ export default {
         this.table.data = data.rows
       })
     },
-    getMaterialTypes() {
+    getMaterialTypes () {
       return this.$service.getMaterialTypes().then(data => {
         data.forEach(element => {
           this.materialTypes[element.label] = element.id
         })
       })
     },
-    handleSelectEnd() {
+    handleSelectEnd () {
       const { data, selected } = this.table
       this.$emit('select-end', data[selected])
       this.table.selected = undefined
     }
 
   },
-  created() {
+  created () {
     const $status = this.$consts.status
     this.$service.getCornerTypes().then((data) => {
       const cornerTypeEnums = data.reduce((result, item) => {

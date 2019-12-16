@@ -892,7 +892,7 @@ export default {
     RecommendPanelSelector,
     VeLine
   },
-  data() {
+  data () {
     this.markLine = {
       data: [
         {
@@ -943,7 +943,7 @@ export default {
       xAxis: {
         axisLabel: {
           rotate: 45,
-          formatter: function(val) {
+          formatter: function (val) {
             let mark = val.indexOf('(')
             if (mark === -1) {
               return val
@@ -1209,7 +1209,7 @@ export default {
   },
   props: ['id', 'version', 'init-mode'],
   computed: {
-    resourceInfo() {
+    resourceInfo () {
       const tabInfo = this.tabInfo
       let result
       if (tabInfo.tabId) {
@@ -1223,7 +1223,7 @@ export default {
       }
       return result
     },
-    floatWindowParams() {
+    floatWindowParams () {
       const sourceMap = {
         o_tencent: '0,1',
         o_iqiyi: '0,2',
@@ -1233,10 +1233,10 @@ export default {
         sourceArray: sourceMap[this.tabInfo.tabResource] || '0'
       }
     },
-    isReplicate() {
+    isReplicate () {
       return this.mode === 'replicate'
     },
-    rules() {
+    rules () {
       return {
         tabName: [
           { required: true, message: '请输入版面名称', trigger: 'blur' },
@@ -1258,20 +1258,20 @@ export default {
         ]
       }
     },
-    showSystemDefault() {
+    showSystemDefault () {
       const tabCategory = this.tabInfo.tabCategory
       // eslint-disable-next-line
       return tabCategory === 60 || tabCategory === 61 || tabCategory === 66
     },
-    hasSource() {
+    hasSource () {
       const tabCategory = this.tabInfo.tabCategory
       // eslint-disable-next-line
       return tabCategory == 67 || tabCategory == 31
     },
-    disableAppId() {
+    disableAppId () {
       return +getAppIDByTabCategory(this.tabInfo.tabCategory) !== -1
     },
-    couldSetReleaseTime() {
+    couldSetReleaseTime () {
       const mode = this.mode
       const currentVersion = this.tabInfo.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
@@ -1306,38 +1306,38 @@ export default {
       const rs = this.toPercent(Math.abs(decimal))
       return rs + (decimal > 0 ? ' ↑' : ' ↓')
     },
-    parseMinToStr(min) {
+    parseMinToStr (min) {
       const hours = Math.floor(min / 60)
       const mins = min % 60
       const hoursStr = hours > 9 ? '' + hours : '0' + hours
       const minsStr = mins > 9 ? '' + mins : '0' + mins
       return hoursStr + ':' + minsStr
     },
-    handleDragStart() {
+    handleDragStart () {
       setTimeout(() => {
         this.isPanelDragging = true
       })
     },
-    handleDragEnd() {
+    handleDragEnd () {
       setTimeout(
-        function() {
+        function () {
           this.isPanelDragging = false
         }.bind(this)
       )
     },
-    handleCreateTab() {
+    handleCreateTab () {
       this.activePage = 'tab'
       this.embedTab = {
         mode: 'create'
       }
     },
-    handleOpenPanel() {
+    handleOpenPanel () {
       console.log(arguments)
     },
-    handleShowAllPanels(index) {
+    handleShowAllPanels (index) {
       this.$set(this.tabInfo.pannelList[index], 'isShowAll', true)
     },
-    handleTogglePanelType(index) {
+    handleTogglePanelType (index) {
       const pannelList = this.tabInfo.pannelList
       const panelItem = pannelList[index]
       if (panelItem.type === 'SPEC') {
@@ -1350,7 +1350,7 @@ export default {
         })
         this.updateDuplicates()
       } else {
-        this.selectCrowdCallback = function(dmpInfo) {
+        this.selectCrowdCallback = function (dmpInfo) {
           panelItem.panel.dmpInfo = dmpInfo
           this.$set(pannelList, index, {
             type: 'SPEC',
@@ -1370,21 +1370,21 @@ export default {
         this.handleSelectCrowdStart()
       }
     },
-    handleToggleAllPanel(isCollapse) {
+    handleToggleAllPanel (isCollapse) {
       this.tabInfo.pannelList.forEach(
-        function(item) {
+        function (item) {
           this.$set(item, 'isCollapse', isCollapse)
         }.bind(this)
       )
     },
-    handleChangeTabCategory(tabCategory) {
+    handleChangeTabCategory (tabCategory) {
       const tabInfo = this.tabInfo
       const originTabCategory = tabInfo.tabCategory
       // 从不分源切换到分源，要清除内容
       const originHasSource = [67, 31].indexOf(originTabCategory) > -1
       const hasSource = [67, 31].indexOf(tabCategory) > -1
       const shouldClearContents = !originHasSource && hasSource
-      const doChange = function() {
+      const doChange = function () {
         if (hasSource) {
           if (tabInfo.tabResource === '') {
             tabInfo.tabResource = 'o_tencent'
@@ -1413,7 +1413,7 @@ export default {
           }
         )
           .then(doChange)
-          .catch(function() {})
+          .catch(function () {})
       } else {
         doChange()
       }
@@ -1435,7 +1435,7 @@ export default {
             });
             */
     },
-    handlePreviewPanel(panel) {
+    handlePreviewPanel (panel) {
       const row = this.panelListIndexed[panel.panelId]
       const version = row.duplicateVersion || row.currentVersion
       this.activePage = 'panel_preview'
@@ -1447,11 +1447,11 @@ export default {
         version
       }
     },
-    handlePreviewPanelEnd() {
+    handlePreviewPanelEnd () {
       const panel = this.panelPreview.panel
       this.updatePanelVersion(
         panel,
-        function() {
+        function () {
           // 预览完，重新加载版块信息，因为版本可能已经变了
           this.loadPanelDetail(panel)
         }.bind(this)
@@ -1459,7 +1459,7 @@ export default {
       this.panelPreview = null
       this.activePage = 'tab_info'
     },
-    handleClickBlock(data) {
+    handleClickBlock (data) {
       const idPrefix = this.$consts.idPrefix
       const index = data.index
       const crowdIndex = data.crowdIndex
@@ -1502,7 +1502,7 @@ export default {
       this.panelPreview = panelPreview
       this.activePage = 'panel_preview'
     },
-    handleChangeSource(val) {
+    handleChangeSource (val) {
       this.$confirm(
         '是否要切换内容源，切换内容源之后所选择的版块或二级版面数据将会清除掉！',
         '提示',
@@ -1513,17 +1513,17 @@ export default {
         }
       )
         .then(
-          function() {
+          function () {
             this.tabInfo.tabResource = val
             this.resetPanelRecommendConfig()
             this.clearContents()
           }.bind(this)
         )
-        .catch(function(e) {
+        .catch(function (e) {
           throw e
         })
     },
-    clearContents() {
+    clearContents () {
       const tabSelector = this.$refs.tabSelector
       this.tabInfo.vipButtonSourceId = undefined
       this.tabInfo.tabList = []
@@ -1532,23 +1532,23 @@ export default {
       }
       this.tabInfo.pannelList = []
     },
-    handleClose() {},
-    handleSelectTitleIcon(type, post) {
+    handleClose () {},
+    handleSelectTitleIcon (type, post) {
       this.tabInfo[type] = post.pictureUrl
     },
-    handleSelectIconStart() {
+    handleSelectIconStart () {
       this.showIconSelector = true
     },
-    handleSelectIconCancel() {
+    handleSelectIconCancel () {
       this.showIconSelector = false
     },
-    handleSelectIconEnd(icon) {
+    handleSelectIconEnd (icon) {
       this.showIconSelector = false
       this.tabInfo.pictureName = icon.pictureName
       this.tabInfo.iconTypeName = icon.iconTypeName
       this.tabInfo.pictureUrl = icon.pictureUrl
     },
-    handleSelectFloatWindowEnd(data) {
+    handleSelectFloatWindowEnd (data) {
       this.showFloatWindowSelector = false
       this.tabInfo.activityFloatWindow = {
         pluginId: data.pluginId,
@@ -1556,38 +1556,38 @@ export default {
         pluginType: data.pluginType
       }
     },
-    handleRemoveFloatWindow() {
+    handleRemoveFloatWindow () {
       this.tabInfo.activityFloatWindow = undefined
     },
-    handleSelectBgStart() {
+    handleSelectBgStart () {
       this.showBgSelector = true
     },
-    handleSelectBgCancel() {
+    handleSelectBgCancel () {
       this.showBgSelector = false
     },
-    handleSelectBgEnd(data) {
+    handleSelectBgEnd (data) {
       this.showBgSelector = false
       this.tabInfo.alumbTabBg = data.pictureUrl
     },
 
-    handleSelectLongBgStart() {
+    handleSelectLongBgStart () {
       this.showLongBgSelector = true
     },
-    handleSelectLongBgCancel() {
+    handleSelectLongBgCancel () {
       this.showLongBgSelector = false
     },
-    handleSelectLongBgEnd(data) {
+    handleSelectLongBgEnd (data) {
       this.showLongBgSelector = false
       this.tabInfo.alumbTabLongBg = data.pictureUrl
     },
 
-    handleSelectCrowdStart() {
+    handleSelectCrowdStart () {
       this.showCrowdSelector = true
     },
-    handleSelectCrowdCancel() {
+    handleSelectCrowdCancel () {
       this.showCrowdSelector = false
     },
-    handleSelectCrowdEnd(policy, crowd) {
+    handleSelectCrowdEnd (policy, crowd) {
       const dmpInfo = {
         crowdId: crowd.value,
         crowdName: crowd.label,
@@ -1616,19 +1616,19 @@ export default {
       this.showCrowdSelector = false
       this.selectCrowdCallback = undefined
     },
-    handleChangeCrowdOfPanel(index, crowdIndex) {
-      this.selectCrowdCallback = function(dmpInfo) {
+    handleChangeCrowdOfPanel (index, crowdIndex) {
+      this.selectCrowdCallback = function (dmpInfo) {
         this.tabInfo.pannelList[index].crowdPanels[crowdIndex].dmpInfo = dmpInfo
       }
       this.selectCrowdForIndex = index
       this.handleSelectCrowdStart()
     },
-    handleSelectPanelEnd(data) {
+    handleSelectPanelEnd (data) {
       // 新添加的，将成为普通版块加在最后面
       const pannelList = this.tabInfo.pannelList
       const start = pannelList.length - 1
       data.forEach(
-        function(item, index) {
+        function (item, index) {
           this.doInsertPanel(item, {
             index: start + index,
             type: 'NORMAL'
@@ -1638,9 +1638,9 @@ export default {
       this.showPanelSelector = false
       this.$refs.virtualTab.isDragging = false
     },
-    handleInsertPanel(panel, dropInfo) {
+    handleInsertPanel (panel, dropInfo) {
       if (dropInfo.type !== 'NORMAL' && !panel.dmpInfo) {
-        this.selectCrowdCallback = function(dmpInfo) {
+        this.selectCrowdCallback = function (dmpInfo) {
           panel.dmpInfo = dmpInfo
           this.doInsertPanel(panel, dropInfo)
         }
@@ -1650,11 +1650,11 @@ export default {
         this.doInsertPanel(panel, dropInfo)
       }
     },
-    handleChangeCollapseState(index) {
+    handleChangeCollapseState (index) {
       const panel = this.tabInfo.pannelList[index]
       this.$set(panel, 'isCollapse', !panel.isCollapse)
     },
-    doInsertPanel(panel, dropInfo) {
+    doInsertPanel (panel, dropInfo) {
       const panelId = panel.pannelGroupId
       const dmpInfo = panel.dmpInfo
       const type = dropInfo.type
@@ -1686,7 +1686,7 @@ export default {
       this.$set(this.panelListIndexed, panel.pannelGroupId, panel)
       this.updateDuplicates()
     },
-    loadPanelDetail(panel, checkDuplicateVersion) {
+    loadPanelDetail (panel, checkDuplicateVersion) {
       const id = panel.pannelGroupId
       // 如果有草稿或者待审核副本，则加载， 否则， 加载当前版本
       const version = panel.duplicateVersion || panel.currentVersion
@@ -1697,7 +1697,7 @@ export default {
         }
         const originPanelList = panelDetail.pannelList || []
         const panelList = originPanelList.map(
-          function(item) {
+          function (item) {
             return {
               panelTitle: item.pannelTitle,
               blocks:
@@ -1720,7 +1720,7 @@ export default {
         )
       })
     },
-    updatePanelVersion(panel, cb) {
+    updatePanelVersion (panel, cb) {
       this.$service.panelPageList({
         pannelType: panel.pannelType,
         pannelId: panel.pannelGroupId
@@ -1731,7 +1731,7 @@ export default {
         cb()
       })
     },
-    handleReOrderPanel(dragInfo, dropInfo) {
+    handleReOrderPanel (dragInfo, dropInfo) {
       const dragType = dragInfo.type
       const dragIndex = dragInfo.index
       const dragCrowdIndex = dragInfo.crowdIndex
@@ -1834,7 +1834,7 @@ export default {
         }
         case dragType === 'NORMAL' && dropType === 'CROWD': {
           // 拖动一个普通版块到某个定向版块组
-          this.selectCrowdCallback = function(dmpInfo) {
+          this.selectCrowdCallback = function (dmpInfo) {
             this.$set(dragPanelItem.panel, 'dmpInfo', dmpInfo)
             // 插入
             panelList[dropIndex].crowdPanels.splice(
@@ -1852,10 +1852,10 @@ export default {
         }
       }
     },
-    getPanelIdByIndex(index, crowdIndex) {
+    getPanelIdByIndex (index, crowdIndex) {
       return this.getPanelByIndex(index, crowdIndex).id
     },
-    getPanelByIndex(index, crowdIndex) {
+    getPanelByIndex (index, crowdIndex) {
       let panel
       const panelList = this.tabInfo.pannelList
       if (crowdIndex !== undefined) {
@@ -1865,7 +1865,7 @@ export default {
       }
       return panel
     },
-    handleRemovePanel(index, crowdIndex) {
+    handleRemovePanel (index, crowdIndex) {
       const panelList = this.tabInfo.pannelList
       const panelItem = panelList[index]
       let msg
@@ -1881,14 +1881,14 @@ export default {
       }
       this.$confirm(msg)
         .then(
-          function() {
+          function () {
             this.doRemovePanel(index, crowdIndex)
             this.updateDuplicates()
           }.bind(this)
         )
-        .catch(function() {})
+        .catch(function () {})
     },
-    doRemovePanel(index, crowdIndex) {
+    doRemovePanel (index, crowdIndex) {
       const panelList = this.tabInfo.pannelList
       if (crowdIndex !== undefined) {
         const crowdPanels = panelList[index].crowdPanels
@@ -1900,7 +1900,7 @@ export default {
         panelList.splice(index, 1)
       }
     },
-    getPanelBlocks(panel) {
+    getPanelBlocks (panel) {
       const parentType = panel.parentType
       const layoutJson = JSON.parse(panel.layoutInfo.layoutJson8)
       const type = layoutJson.type
@@ -1916,10 +1916,10 @@ export default {
       const layoutHeight =
         lastBlock.y + (lastBlockResize.height || lastBlock.height)
 
-      const calculateFactory = function() {
+      const calculateFactory = function () {
         if (type === 'Expander' && originBlockCount === 2) {
           const space = layoutJson.extra.space
-          return function(n) {
+          return function (n) {
             // 复制第 2 个推荐位
             const targetBlock = blocks[1]
             const resize = targetBlock.resize
@@ -1950,7 +1950,7 @@ export default {
           }
         } else if (type === 'Expander') {
           const space = layoutJson.extra.space
-          return function(n) {
+          return function (n) {
             const times = Math.floor(n / originBlockCount) - 1
             const index = n % originBlockCount
             const targetBlock = blocks[index]
@@ -1983,7 +1983,7 @@ export default {
 
         if (type === 'Lengthwise') {
           const space = 0
-          return function(n) {
+          return function (n) {
             const times = Math.ceil(n / originBlockCount) - 1
             const index = n - originBlockCount * times - 1
             const targetBlock = blocks[index]
@@ -2029,7 +2029,7 @@ export default {
 
       // 检查重复
       const resourceIndexed = {}
-      const blocksWithResources = blocks.map(function(item, index) {
+      const blocksWithResources = blocks.map(function (item, index) {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
         const content = contentList[0]
@@ -2059,13 +2059,13 @@ export default {
       return blocksWithResources
     },
 
-    updateDuplicates() {
+    updateDuplicates () {
       const panelList = this.tabInfo.pannelList
       const normalDuplicates = {}
       const specDuplicates = {}
       const normalPanelIndexd = {}
       const specPanelIndexed = {}
-      panelList.forEach(function(item, index) {
+      panelList.forEach(function (item, index) {
         if (item.type === 'NORMAL') {
           const panel = item.panel
           const pannelGroupId = panel.id
@@ -2079,7 +2079,7 @@ export default {
           }
 
           if (specPanelIndexed[pannelGroupId]) {
-            specPanelIndexed[pannelGroupId].forEach(function(sIndex) {
+            specPanelIndexed[pannelGroupId].forEach(function (sIndex) {
               specDuplicates[sIndex] = specDuplicates[sIndex] || {}
               specDuplicates[sIndex][pannelGroupId] = true
             })
@@ -2089,7 +2089,7 @@ export default {
           const crowdPanels = item.crowdPanels
           const crowdPanelIndexed = {}
           const duplicates = specDuplicates[index] || {}
-          crowdPanels.forEach(function(cItem, index) {
+          crowdPanels.forEach(function (cItem, index) {
             const panel = cItem
             const pannelGroupId = panel.id
 
@@ -2116,7 +2116,7 @@ export default {
       console.log(normalDuplicates)
       console.log(specDuplicates)
 
-      panelList.forEach(function(item, index) {
+      panelList.forEach(function (item, index) {
         if (item.type === 'NORMAL') {
           if (normalDuplicates[item.panel.id + '']) {
             item.panel.isDuplicate = true
@@ -2125,7 +2125,7 @@ export default {
           }
         } else {
           const crowdDuplicates = specDuplicates[index] || {}
-          item.crowdPanels.forEach(function(cItem) {
+          item.crowdPanels.forEach(function (cItem) {
             if (crowdDuplicates[cItem.id + '']) {
               cItem.isDuplicate = true
             } else {
@@ -2136,20 +2136,20 @@ export default {
       })
       console.log('panelList', panelList)
     },
-    handleSelectTabStart() {
+    handleSelectTabStart () {
       this.$nextTick(
-        function() {
+        function () {
           const tabSelector = this.$refs.tabSelector
-          this.tabInfo.tabList.forEach(function(item) {
+          this.tabInfo.tabList.forEach(function (item) {
             tabSelector.handleTableRowSelectionAdd(item)
           })
         }.bind(this)
       )
     },
-    handleSelectTabEnd(data) {
+    handleSelectTabEnd (data) {
       this.$refs.subTabTable.handleAppendData(data, 'tabId')
     },
-    handleChangePanelOrder(index, order) {
+    handleChangePanelOrder (index, order) {
       const newIndex = order - 1
       const oldIndex = index
       const panelList = this.tabInfo.pannelList
@@ -2161,7 +2161,7 @@ export default {
         panelList.slice(newIndex)
       )
     },
-    openTabWin: function(pannelType) {
+    openTabWin: function (pannelType) {
       var url = this.basicFn.numToPannelTypeUrl(pannelType) + '/add.html'
       this.FastDevTool.createDialogWin('add-view', {
         confirmInfo: true,
@@ -2173,7 +2173,7 @@ export default {
         content: this.FastDevTool.createIframe(url)
       })
     },
-    handleTabEmbedBack() {
+    handleTabEmbedBack () {
       this.activePage = 'tab_info'
       const { index, id } = this.embedTab
       if (index !== undefined) {
@@ -2183,7 +2183,7 @@ export default {
       }
       this.embedTab = undefined
     },
-    handlePreviewTab(row, version, index) {
+    handlePreviewTab (row, version, index) {
       const tabId = row.tabId
       this.$service.tabInfoGetBase({ id: tabId }).then(baseInfo => {
         const tabType = baseInfo.tabType
@@ -2199,17 +2199,17 @@ export default {
         }
       })
     },
-    handleShowTimeShelf() {
+    handleShowTimeShelf () {
       const data = this.getFormData()
       data.tabStatus = this.STATUS.waiting
       this.validateFormData(
         data,
-        function() {
+        function () {
           this.showTimeShelf = true
         }.bind(this)
       )
     },
-    handleCopy(status) {
+    handleCopy (status) {
       const STATUS = this.$consts.status
       if (status === STATUS.waiting) {
         this.handleSubmitAudit()
@@ -2217,7 +2217,7 @@ export default {
         this.handleSaveDraft()
       }
     },
-    handleSaveDraft() {
+    handleSaveDraft () {
       const data = this.getFormData()
       data.isTiming = undefined
       data.releaseTime = undefined
@@ -2226,7 +2226,7 @@ export default {
         this.upsertTabInfo(data)
       })
     },
-    handleSubmitAudit(timing) {
+    handleSubmitAudit (timing) {
       const data = this.getFormData()
       data.tabStatus = this.$consts.status.waiting
       this.validateFormData(data, () => {
@@ -2243,7 +2243,7 @@ export default {
         }
       })
     },
-    handleSelectRecommendPanelEnd(selected) {
+    handleSelectRecommendPanelEnd (selected) {
       const selectedPanelList = (selected || []).map((item) => {
         return {
           pannelGroupId: item.panelGroupId,
@@ -2251,13 +2251,13 @@ export default {
         }
       })
       const originSelectPanelList = this.tabInfo.panelRecommendConfig.panelInfoList || []
-      const originSelectedPanelListIndexed = originSelectPanelList.reduce(function(result, item, index) {
+      const originSelectedPanelListIndexed = originSelectPanelList.reduce(function (result, item, index) {
         result[item.pannelGroupId] = index
         return result
       }, {})
 
       let panelList = []
-      selectedPanelList.forEach(function(item) {
+      selectedPanelList.forEach(function (item) {
         const index = originSelectedPanelListIndexed[item.pannelGroupId]
         // 把之前没选中都添加到列表里
         if (index === undefined) {
@@ -2267,7 +2267,7 @@ export default {
       // 把新添加都加到后面
       this.tabInfo.panelRecommendConfig.panelInfoList = originSelectPanelList.concat(panelList)
     },
-    getFormData() {
+    getFormData () {
       const data = JSON.parse(JSON.stringify(this.tabInfo))
       const mode = this.mode
       if (mode === 'replicate') {
@@ -2279,11 +2279,11 @@ export default {
       }
       return data
     },
-    validateFormData(data, cb) {
+    validateFormData (data, cb) {
       const STATUS = this.STATUS
       const tabStatus = data.tabStatus
       const enableRecommend = data.panelRecommendConfig.enableRecommend
-      const showError = function(message) {
+      const showError = function (message) {
         this.$message({
           type: 'error',
           message: message
@@ -2316,7 +2316,7 @@ export default {
         }
         this.$refs.tabForm.validateField(fields, validateFieldCb)
       } else {
-        this.$refs.tabForm.validate(function(valid) {
+        this.$refs.tabForm.validate(function (valid) {
           if (!valid) {
             showError('请把表单填写完整')
           } else {
@@ -2393,7 +2393,7 @@ export default {
       }
     },
 
-    parseTabInfo(tabInfo) {
+    parseTabInfo (tabInfo) {
       const refreshTimeList = tabInfo.refreshTimeList.filter(item => item).map(item => +new Date(item))
 
       let panelInfoList = []
@@ -2413,7 +2413,7 @@ export default {
               pannelSequence: i,
               isDmpPanel: 1
             }
-            panelInfoItem.dmpPanelList = item.crowdPanels.map(function(
+            panelInfoItem.dmpPanelList = item.crowdPanels.map(function (
               p,
               pIndex
             ) {
@@ -2476,7 +2476,7 @@ export default {
 
       let tabJson
       if (tabInfo.hasSubTab && tabInfo.tabList.length > 0) {
-        tabJson = tabInfo.tabList.map(function(item, index) {
+        tabJson = tabInfo.tabList.map(function (item, index) {
           return {
             subTabId: item.tabId,
             subSequence: index
@@ -2534,7 +2534,7 @@ export default {
       }
       return data
     },
-    setTabInfo(data) {
+    setTabInfo (data) {
       const tabInfo = this.tabInfo
       const tabTitleIcons = JSON.parse(data.tabTitleIcons || '{}')
       const tabExtArr = data.tabExtArr || data.tabExtArrEntity || {}
@@ -2554,14 +2554,14 @@ export default {
       if (data.panelInfoList) {
         const panelToLoad = []
         pannelList = data.panelInfoList.map(
-          function(item) {
+          function (item) {
             if (item.isDmpPanel) {
               return {
                 type: 'SPEC',
                 isCollapse: false,
                 isShowAll: false,
                 crowdPanels: item.dmpPanelList.map(
-                  function(pItem) {
+                  function (pItem) {
                     this.$set(this.panelListIndexed, pItem.pannelGroupId, pItem)
                     panelToLoad.push(pItem)
                     return {
@@ -2656,19 +2656,19 @@ export default {
       this.updateDuplicates()
       this.setRecommendStreamSignPanelCount()
     },
-    upsertTabInfo(tabInfo) {
+    upsertTabInfo (tabInfo) {
       const formData = this.parseTabInfo(tabInfo)
       this.$service.tabInfoUpsert(formData, '操作成功').then(() => {
         this.$emit('upsert-end')
       })
     },
-    fetchData(version) {
+    fetchData (version) {
       this.$service.tabInfoGet({ id: this.id, version }).then(data => {
         this.setTabInfo(data)
         this.$refs.virtualTab.refresh()
       })
     },
-    getSimpleBrowseData() {
+    getSimpleBrowseData () {
       this.$service.getTabSimpleBrowseData({ id: this.id }).then(data => {
         const tabUVCTR = data.rows[0].data[0] ? data.rows[0].data[0].uvctr : 'N/A'
         this.tabUVCTR = tabUVCTR
@@ -2676,13 +2676,13 @@ export default {
         this.tabUVCTRPercent.weeklyGrowth = tabUVCTR.weeklyGrowth ? this.toArrowPercent(tabUVCTR.weeklyGrowth) : 'N/A'
       })
     },
-    getVipButtonSourceItem(id) {
-      const result = this.vipEnumsData.find(function(item) {
+    getVipButtonSourceItem (id) {
+      const result = this.vipEnumsData.find(function (item) {
         return item.sourceId === id
       })
       return result || {}
     },
-    getVipButtonSource() {
+    getVipButtonSource () {
       let params = null
       const source = this.tabInfo.tabResource
       if (source) {
@@ -2692,7 +2692,7 @@ export default {
       }
       this.$service.getVipButtonSource(params).then((data) => {
         this.vipEnumsData = data
-        this.vipEnums = data.map(function(item) {
+        this.vipEnums = data.map(function (item) {
           return {
             value: item.sourceId,
             label: item.sourceName
@@ -2700,25 +2700,25 @@ export default {
         })
       })
     },
-    handleModeChange(mode) {
+    handleModeChange (mode) {
       if (mode === 'edit' || mode === 'copy' || mode === 'replicate') {
         this.isCollapseBase = true
       }
     },
-    handleInputRecommendFlag(val) {
+    handleInputRecommendFlag (val) {
       this.tabInfo.panelRecommendConfig.enableRecommend = val ? 1 : 0
     },
-    handleInputRecommendSign(val) {
+    handleInputRecommendSign (val) {
       const panelRecommendConfig = this.tabInfo.panelRecommendConfig
       panelRecommendConfig.recommendSign = val
       this.resetPanelRecommendConfig()
     },
-    handleInputHasSubTab(val) {
+    handleInputHasSubTab (val) {
       this.tabInfo.hasSubTab = val ? 1 : 0
       // 含有二级版面的，没有推荐
       this.tabInfo.panelRecommendConfig.enableRecommend = 0
     },
-    setRecommendStreamSignPanelCount() {
+    setRecommendStreamSignPanelCount () {
       const tabInfo = this.tabInfo
       const recommendSign = tabInfo.panelRecommendConfig.recommendSign
       this.recommendStreamSignPanelCount = '-'
@@ -2731,13 +2731,13 @@ export default {
         })
       }
     },
-    resetPanelRecommendConfig() {
+    resetPanelRecommendConfig () {
       const panelRecommendConfig = this.tabInfo.panelRecommendConfig
       panelRecommendConfig.panelInfoList = []
       panelRecommendConfig.recommendIndex = undefined
       this.setRecommendStreamSignPanelCount()
     },
-    equipChartStyle() {
+    equipChartStyle () {
       const yAxis = {
         axisLabel: {
           formatter: '{value}%'
@@ -2747,7 +2747,7 @@ export default {
       this.uvctrHourChartExtend.yAxis = yAxis
     },
     // 点击版面数据展示折线图
-    handleTabDataClick() {
+    handleTabDataClick () {
       this.isCollapseData = !this.isCollapseData
       if (this.clickUvChartData.title !== '') {
         return
@@ -2766,7 +2766,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     const mode = this.initMode
     this.mode = mode
     this.$watch('mode', this.handleModeChange, { immediate: true })

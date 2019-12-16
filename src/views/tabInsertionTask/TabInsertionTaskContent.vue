@@ -67,7 +67,7 @@ export default {
     CommonContent,
     InputPositiveInt
   },
-  data() {
+  data () {
     return {
       resourceName: '版面强插任务',
       form: {

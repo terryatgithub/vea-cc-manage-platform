@@ -91,7 +91,7 @@ export default {
             label: '主题品牌',
             prop: 'themeBrand',
             sortable: true,
-            formatter: function(row) {
+            formatter: function (row) {
               if (row.themeBrand === 'Coocaa') {
                 return '创维酷开'
               } else if (row.themeBrand === 'Other') {
@@ -103,7 +103,7 @@ export default {
             label: '系统默认',
             prop: 'systemDefault',
             sortable: true,
-            formatter: function(row) {
+            formatter: function (row) {
               var systemDefault = ['否', '是']
               return systemDefault[row.systemDefault]
             }
@@ -112,7 +112,7 @@ export default {
             label: '状态',
             prop: 'themeStatus',
             sortable: true,
-            formatter: function(row) {
+            formatter: function (row) {
               var status = ['下架', '上架', '草稿', '待审核', '审核通过', '审核不通过']
               return status[row.themeStatus]
             }
@@ -166,7 +166,7 @@ export default {
             label: '原价(元)',
             prop: 'price',
             sortable: true,
-            formatter: function(row) {
+            formatter: function (row) {
               return row.chargeType ? row.price : '免费'
             }
           },
@@ -174,7 +174,7 @@ export default {
             label: '折扣价(元)',
             prop: 'discountPrice',
             sortable: true,
-            formatter: function(row) {
+            formatter: function (row) {
               return row.chargeType ? row.discountPrice : '免费'
             }
           },
@@ -196,7 +196,7 @@ export default {
   },
 
   methods: {
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.themeInfoPageList(filter).then(data => {
@@ -204,7 +204,7 @@ export default {
         this.table.data = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -212,7 +212,7 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.themeId)) {
         if (type === 'query') {
@@ -223,16 +223,16 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {}
       this.pagination.currentPage = 1
       this.fetchData()
     },
     // 按钮操作
-    addUser() {
+    addUser () {
       this.$emit('open-add-page')
     },
-    editData() {
+    editData () {
       const selected = this.selected
       if (selected.length !== 1) {
         this.$message('只能选择一条数据')
@@ -248,7 +248,7 @@ export default {
       }
       this.$emit('open-add-page', selected[0], 'edit')
     },
-    batchDel() {
+    batchDel () {
       if (this.selected.length === 0) {
         this.$message('请选择数据后进行操作')
         return
@@ -264,17 +264,17 @@ export default {
     /**
      * 行选择操作
      */
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.themeId)
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.themeId
       })
       this.updateTableSelected()
     },
-    handleAllRowSelectionChange(value) {
+    handleAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
@@ -286,7 +286,7 @@ export default {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -297,15 +297,15 @@ export default {
       }, [])
     },
     // 预览主题
-    themeInfoPreview(row) {
+    themeInfoPreview (row) {
       this.$emit('open-add-page', row.themeId, 'read')
     },
     // 副本
-    duplicatePreview(row) {
+    duplicatePreview (row) {
       this.$emit('open-add-page', row.themeId, 'read', row.duplicateVersion)
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       themeId: _.o.string.other('form', {
         component: 'Input',

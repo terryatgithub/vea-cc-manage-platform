@@ -25,7 +25,7 @@ export default {
     GlobalCornerIconList,
     GlobalCornerIcon
   },
-  data() {
+  data () {
     return {
       isShowList: true,
       mode: 'list',
@@ -34,22 +34,22 @@ export default {
     }
   },
   methods: {
-    handleCreate() {
+    handleCreate () {
       this.mode = 'create'
       this.id = undefined
       this.isShowList = false
     },
-    handleEdit(row) {
+    handleEdit (row) {
       this.id = row.cornerIconId
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(row) {
+    handleRead (row) {
       this.id = row.cornerIconId
       this.mode = 'read'
       this.isShowList = false
     },
-    handleDelete(selected) {
+    handleDelete (selected) {
       this.$service
         .globalCornerIconRemove({
           id: selected.map(item => item.cornerIconId).join(',')
@@ -66,7 +66,7 @@ export default {
         this.version = undefined
       }
     },
-    goBack() {
+    goBack () {
       this.isShowList = true
       this.mode = 'list'
       this.version = undefined

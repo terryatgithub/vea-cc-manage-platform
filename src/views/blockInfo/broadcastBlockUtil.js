@@ -1,9 +1,9 @@
 import { cloneDeep } from 'lodash'
-export function getSelectedResource(resources) {
+export function getSelectedResource (resources) {
   const selectType = Object.keys(resources).find(key => resources[key].length > 0)
   return getSelectedResourceByType(resources, selectType)
 }
-export function getSelectedResourceByType(resources, selectedType) {
+export function getSelectedResourceByType (resources, selectedType) {
   const selected = resources[selectedType]
   const selectedEpisode = resources.episode || {}
   selected.forEach((item) => {
@@ -15,7 +15,7 @@ export function getSelectedResourceByType(resources, selectedType) {
   return { selectedType, selected }
 }
 
-export function setContentForm(contentForm, options) {
+export function setContentForm (contentForm, options) {
   contentForm.type = options.type
   contentForm.coverType = options.coverType
   contentForm.subchannelIs = options.contentType === 'rotate'
@@ -76,7 +76,7 @@ export function getParams (selected) {
   return param
 }
 
-export function parseResourceContent(tabName, selected) {
+export function parseResourceContent (tabName, selected) {
   let s = {
     type: '', // 面向客户端
     contentType: '', // 面向管理后台

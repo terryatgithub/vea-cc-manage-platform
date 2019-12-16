@@ -11,7 +11,7 @@ export default {
     rules: {}
   },
   computed: {
-    isReadonly() {
+    isReadonly () {
       const readonly = this.readonly
       if (readonly !== undefined) {
         return readonly

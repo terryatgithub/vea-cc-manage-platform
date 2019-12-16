@@ -22,7 +22,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       buttons: [],
       warningButtons: ['delete', 'unclaim', 'unaudit', 'copy']
@@ -30,7 +30,7 @@ export default {
   },
   props: ['resourceInfo', 'options'],
   methods: {
-    getButtons() {
+    getButtons () {
       const idPrefix = this.$consts.idPrefix
       const { id, version, type, status, menuElId } = this.resourceInfo
       if (idPrefix !== '10' && id.toString().substr(0, 2) !== idPrefix) {
@@ -49,7 +49,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.$watch('resourceInfo', this.getButtons, {
       immediate: true
     })

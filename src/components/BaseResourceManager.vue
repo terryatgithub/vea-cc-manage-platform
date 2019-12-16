@@ -29,7 +29,7 @@ export default {
     ResourceList: () => {},
     ResourceContent: () => {}
   },
-  data() {
+  data () {
     return {
       isShowList: true,
       id: undefined,
@@ -38,7 +38,7 @@ export default {
     }
   },
   computed: {
-    resourceInfo() {
+    resourceInfo () {
       return {
         type: 'resource',
         idField: 'id'
@@ -52,23 +52,23 @@ export default {
     }
   },
   methods: {
-    handleCreate() {
+    handleCreate () {
       this.id = undefined
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(item) {
+    handleEdit (item) {
       this.id = item[this.resourceInfo.idField]
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(item, version) {
+    handleRead (item, version) {
       this.id = item[this.resourceInfo.idField]
       this.mode = 'read'
       this.version = version
       this.isShowList = false
     },
-    handleDelete(selected) {
+    handleDelete (selected) {
       const resourceInfo = this.resourceInfo
       const idField = resourceInfo.idField
       this.$service
@@ -80,12 +80,12 @@ export default {
           this.$refs.list.fetchData()
         })
     },
-    handleCopy(item) {
+    handleCopy (item) {
       this.id = item[this.resourceInfo.idField]
       this.mode = 'copy'
       this.isShowList = false
     },
-    handleUpsertEnd(onlyRefreshList) {
+    handleUpsertEnd (onlyRefreshList) {
       this.$refs.list.fetchData()
       if (!onlyRefreshList) {
         this.isShowList = true
@@ -93,7 +93,7 @@ export default {
         this.version = undefined
       }
     },
-    goBack() {
+    goBack () {
       this.isShowList = true
       this.mode = 'list'
       this.version = undefined

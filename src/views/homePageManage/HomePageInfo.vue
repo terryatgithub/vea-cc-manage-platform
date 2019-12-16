@@ -183,7 +183,7 @@ export default {
     OrderableTable,
     TabInfo
   },
-  data() {
+  data () {
     return {
       mode: 'create',
       resourceName: '首页方案',
@@ -256,11 +256,11 @@ export default {
       }
     },
     tabGroupList: {
-      get() {
+      get () {
         const homepage = this.homepage
         const tabInfos = homepage.tabInfos || []
         const tabGroupList = []
-        tabInfos.forEach(function(tabInfoItem) {
+        tabInfos.forEach(function (tabInfoItem) {
           const tabList = tabInfoItem.tabList
           const defaultTabIndex = tabList.findIndex(item => item.isDefaultTab)
           const tabItemToShow = tabList[defaultTabIndex > -1 ? defaultTabIndex : 0]
@@ -289,7 +289,7 @@ export default {
         })
         return tabGroupList
       },
-      set(val) {
+      set (val) {
         const tabInfos = val.map(item => {
           return {
             tabIsFix: item.tabIsFix,
@@ -302,7 +302,7 @@ export default {
         this.homepage.tabInfos = tabInfos
       }
     },
-    tabGroupTableHeader() {
+    tabGroupTableHeader () {
       const header = [
         {
           label: '置底',
@@ -449,7 +449,7 @@ export default {
   },
   props: ['id', 'initMode', 'version'],
   methods: {
-    tabGroupFilterFn(item) {
+    tabGroupFilterFn (item) {
       const { tabIsFix, tabIsInitInCategory } = this.tabGroupFilter
       const isMatchTabIsFix = tabIsFix === -1 ? true : (item.tabIsFix === tabIsFix)
       const isMatchTabIsInitCategory = tabIsInitInCategory === -1 ? true : (item.tabIsInitInCategory === tabIsInitInCategory)
@@ -471,11 +471,11 @@ export default {
       }
       tabInfos[theIndex].tabIsForeverLast = flag
     },
-    handleShowTabGroup(index) {
+    handleShowTabGroup (index) {
       this.activeTabGroupIndex = index
       this.activePage = 'tab_group_setter'
     },
-    handleSetTabGroupEnd(tabInfo) {
+    handleSetTabGroupEnd (tabInfo) {
       this.activePage = 'homepage'
       const activeTabGroupIndex = this.activeTabGroupIndex
       const homepage = this.homepage
@@ -486,7 +486,7 @@ export default {
       }
       this.$set(tabInfos, activeTabGroupIndex, newTabInfoItem)
     },
-    handleSaveDraft() {
+    handleSaveDraft () {
       const data = JSON.parse(JSON.stringify(this.homepage))
       data.homepageStatus = 2
       if (this.mode === 'replicate') {
@@ -494,7 +494,7 @@ export default {
       }
       this.submit(data)
     },
-    handleSubmitAudit() {
+    handleSubmitAudit () {
       const data = JSON.parse(JSON.stringify(this.homepage))
       data.homepageStatus = 3
       if (this.mode === 'replicate') {
@@ -502,8 +502,8 @@ export default {
       }
       this.submit(data)
     },
-    validate(data, cb) {
-      this.$refs.homepageForm.validate(function(valid) {
+    validate (data, cb) {
+      this.$refs.homepageForm.validate(function (valid) {
         if (valid) {
           const tabInfos = data.tabInfos
           if (data.homepageStatus === 3) {
@@ -529,7 +529,7 @@ export default {
                 tab = tabGroup[0]
               } else {
                 // 含有2个或以上版面，不是普通版面, 找出默认版面
-                tab = tabGroup.find(function(item) {
+                tab = tabGroup.find(function (item) {
                   return item.isDefaultTab
                 })
               }
@@ -600,10 +600,10 @@ export default {
         }
       })
     },
-    submit(data) {
+    submit (data) {
       this.validate(
         data,
-        function(err) {
+        function (err) {
           if (!err) {
             this.$service
               .homePageInfoSave(this.parseDataToApi(data), '保存成功')
@@ -619,9 +619,9 @@ export default {
         }.bind(this)
       )
     },
-    parseApiToData(data) {
+    parseApiToData (data) {
       const finalData = cloneDeep(data)
-      finalData.tabInfos = (finalData.tabInfos || []).map(function(item, index) {
+      finalData.tabInfos = (finalData.tabInfos || []).map(function (item, index) {
         let tabList = []
         if (item.tabId) {
           // 那是一个普通的版面
@@ -635,7 +635,7 @@ export default {
           })
         }
         if (item.dmpTabList) {
-          item.dmpTabList.forEach(function(dItem) {
+          item.dmpTabList.forEach(function (dItem) {
             // 人群为 -1 的是默认版面
             const currentItem = {
               isDefaultTab: false,
@@ -669,10 +669,10 @@ export default {
       })
       return finalData
     },
-    parseDataToApi(data) {
+    parseDataToApi (data) {
       const finalData = JSON.parse(JSON.stringify(data))
       const tabInfos = []
-      finalData.tabInfos.forEach(function(item, index) {
+      finalData.tabInfos.forEach(function (item, index) {
         const tabInfoItem = {
           isDmpTab: 0,
           tabIsFix: item.tabIsFix,
@@ -682,7 +682,7 @@ export default {
         }
         const dmpTabList = []
         let tabSequence = 0
-        item.tabList.forEach(function(tItem) {
+        item.tabList.forEach(function (tItem) {
           // 如果只有一个版面，并且版面没有设人群，那它是一个普通的版面
           if (tItem.dmpInfo === undefined && item.tabList.length === 1) {
             tabInfoItem.tabId = tItem.tabId
@@ -728,10 +728,10 @@ export default {
       finalData.tabInfos = tabInfos
       return finalData
     },
-    setHomepage(data) {
+    setHomepage (data) {
       data = this.parseApiToData(data)
       Object.assign(this.homepage, data)
-      this.selectedTabList = data.tabInfos.map(function(item) {
+      this.selectedTabList = data.tabInfos.map(function (item) {
         return {
           id: item.tabId,
           label: item.tabName,
@@ -739,7 +739,7 @@ export default {
         }
       })
     },
-    handleSelectTabEnd(data) {
+    handleSelectTabEnd (data) {
       const tabInfos = this.homepage.tabInfos
       this.homepage.tabInfos = tabInfos.concat(data.map(item => {
         return {
@@ -751,16 +751,16 @@ export default {
         }
       }))
     },
-    handleTabEmbedBack() {
+    handleTabEmbedBack () {
       this.activePage = 'homepage'
     },
-    handleCreateTab() {
+    handleCreateTab () {
       this.activePage = 'tab'
       this.embedTab = {
         mode: 'create'
       }
     },
-    handleRemoveTab(index) {
+    handleRemoveTab (index) {
       const homepage = this.homepage
       const defaultFocusIndex = homepage.defaultFocusIndex
       this.homepage.tabInfos.splice(index, 1)
@@ -771,20 +771,20 @@ export default {
             ? undefined
             : defaultFocusIndex
     },
-    handleCopy(status) {
+    handleCopy (status) {
       const data = JSON.parse(JSON.stringify(this.homepage))
       data.homepageId = undefined
       data.homepageStatus = status
       data.currentVersion = ''
       this.submit(data)
     },
-    fetchData(version) {
+    fetchData (version) {
       this.$service.homePageGetDetail({ id: this.id, version }).then(data => {
         this.setHomepage(data)
       })
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

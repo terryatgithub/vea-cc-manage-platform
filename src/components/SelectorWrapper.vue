@@ -83,7 +83,7 @@ export default {
     },
     fullscreen: {
       type: Boolean,
-      default() {
+      default () {
         return true
       }
     },
@@ -93,13 +93,13 @@ export default {
     customClass: String,
     showClose: {
       type: Boolean,
-      default() {
+      default () {
         return true
       }
     },
     disabled: {
       type: Boolean,
-      default() {
+      default () {
         return false
       }
     }
@@ -145,7 +145,7 @@ export default {
       this.$emit('filter-change', type)
     }
   },
-  created() {
+  created () {
   }
 }
 </script>

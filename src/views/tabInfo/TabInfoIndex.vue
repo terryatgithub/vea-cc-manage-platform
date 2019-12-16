@@ -33,7 +33,7 @@ export default {
     TabInfo,
     JDTabInfo
   },
-  data() {
+  data () {
     return {
       isShowList: true,
       id: null,
@@ -53,12 +53,12 @@ export default {
     }
   },
   methods: {
-    handleCreate() {
+    handleCreate () {
       this.id = undefined
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(item) {
+    handleEdit (item) {
       this.id = item.tabId
       this.mode = 'edit'
       this.isShowList = false
@@ -66,7 +66,7 @@ export default {
         this.id = item.tabRemark
       }
     },
-    handleRead(item, version) {
+    handleRead (item, version) {
       this.id = item.tabId
       this.mode = 'read'
       this.version = version
@@ -75,12 +75,12 @@ export default {
         this.id = item.tabRemark
       }
     },
-    handleCopy(item) {
+    handleCopy (item) {
       this.id = item.tabId
       this.mode = 'copy'
       this.isShowList = false
     },
-    handleDelete(selected) {
+    handleDelete (selected) {
       this.$service.tabInfoRemove({
         id: selected.map(item => item.tabId).join(',')
       }, '删除成功')
@@ -96,7 +96,7 @@ export default {
         this.version = undefined
       }
     },
-    goBack() {
+    goBack () {
       this.isShowList = true
       this.mode = 'list'
     }

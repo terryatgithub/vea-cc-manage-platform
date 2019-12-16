@@ -46,7 +46,7 @@ export default {
       type: Object
     }
   },
-  data() {
+  data () {
     return {
       resourceType: 'panelInfo',
       pannelCategories: {},
@@ -155,7 +155,7 @@ export default {
   },
   watch: {
     selected: {
-      handler(newVal, oldVal) {
+      handler (newVal, oldVal) {
         const table = this.table
         let rows = []
         table.data.map(tableRow => {
@@ -177,7 +177,7 @@ export default {
   },
   methods: {
     // 初始化表格‘
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       if (this.dataList) {
@@ -192,7 +192,7 @@ export default {
         })
       }
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -200,7 +200,7 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
@@ -211,7 +211,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       if (this.dataList) {
         this.filter = Object.assign({}, this.dataList.filter)
       } else {
@@ -225,7 +225,7 @@ export default {
       this.fetchData()
     },
     // 获取业务分类
-    getDictType() {
+    getDictType () {
       return this.$service.getDictType({ type: 'businessType' }).then(data => {
         data.forEach(element => {
           this.pannelCategories[element.dictCnName] = element.dictId
@@ -233,7 +233,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       pannelId: _.o.string.other('form', {
         component: 'Input',

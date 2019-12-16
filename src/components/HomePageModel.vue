@@ -34,7 +34,7 @@ export default {
     homepageResource: String,
     homepageStatusArray: String
   },
-  data() {
+  data () {
     return {
       filter: {
       },
@@ -95,15 +95,15 @@ export default {
     }
   },
   watch: {
-    homepageModel: function() {
+    homepageModel: function () {
       this.fetchData()
     }
   },
   methods: {
-    rowClick(params) {
+    rowClick (params) {
       this.$emit('row-click', params)
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.homepageId)) {
         if (type === 'query') {
@@ -114,12 +114,12 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {}
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -130,7 +130,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       filter.homepageModel = this.homepageModel
       filter.homepageResource = this.homepageResource
@@ -142,7 +142,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       homepageId: _.o.string.other('form', {
         component: 'Input',

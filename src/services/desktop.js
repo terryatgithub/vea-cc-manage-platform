@@ -1,4 +1,4 @@
-export function desktopGetDataSyncInfo() {
+export function desktopGetDataSyncInfo () {
   return this.fetch({
     method: 'post',
     url: 'api/dataSync/getSwitcherInfo.html'
@@ -9,7 +9,7 @@ export function desktopGetDataSyncInfo() {
   })
 }
 
-export function desktopUpdateDataSyncInfo(params) {
+export function desktopUpdateDataSyncInfo (params) {
   return this.fetch({
     url: 'api/dataSync/manualIsOn.html',
     params: {
@@ -18,13 +18,13 @@ export function desktopUpdateDataSyncInfo(params) {
   })
 }
 
-export function desktopGetDataSyncGeneral() {
+export function desktopGetDataSyncGeneral () {
   return this.fetch({
     url: 'api/secondAudit/getTotalInfo.html'
   })
 }
 
-export function desktopGetDataSyncList(params) {
+export function desktopGetDataSyncList (params) {
   return this.fetch({
     url: 'api/secondAudit/pageList.html',
     params

@@ -314,9 +314,9 @@ export default {
     HomepageSelector
   },
   props: ['id', 'initMode', 'version', 'policyType'],
-  data() {
+  data () {
     const isTestPolicy = this.isTestPolicy
-    function checkMacType(rule, value, callback) {
+    function checkMacType (rule, value, callback) {
       if (value === '') {
         return callback()
       }
@@ -430,7 +430,7 @@ export default {
     }
   },
   methods: {
-    handleInputPlatform(platform) {
+    handleInputPlatform (platform) {
       const form = this.form
       if (form.platform !== platform) {
         form.platform = platform
@@ -440,9 +440,9 @@ export default {
         form.specialChildHp = []
       }
     },
-    mergeSelected(options) {
+    mergeSelected (options) {
       const { idField, parse, selectedList, originSelectedList } = options
-      const originSelectedListIndexed = originSelectedList.reduce(function(result, item, index) {
+      const originSelectedListIndexed = originSelectedList.reduce(function (result, item, index) {
         result[item[idField]] = index
         return result
       }, {})
@@ -451,10 +451,10 @@ export default {
         .map(parse)
       return [...originSelectedList, ...appendList]
     },
-    handleRemoveChildHpItem(index) {
+    handleRemoveChildHpItem (index) {
       this.form.childHpList.splice(index, 1)
     },
-    getHomepageInfo(homepage, preset) {
+    getHomepageInfo (homepage, preset) {
       return {
         homepageId: homepage.homepageId,
         homepageModel: homepage.homepageModel,
@@ -463,12 +463,12 @@ export default {
         ...preset
       }
     },
-    handleSelectNormalHomepageEnd([homepage]) {
+    handleSelectNormalHomepageEnd ([homepage]) {
       this.form.normalHpList = [
         this.getHomepageInfo(homepage)
       ]
     },
-    handleSelectChildHomepageEnd(selected) {
+    handleSelectChildHomepageEnd (selected) {
       this.form.childHpList = this.mergeSelected({
         idField: 'homepageId',
         parse: (item) => {
@@ -478,7 +478,7 @@ export default {
         originSelectedList: this.form.childHpList
       })
     },
-    showHomePageDetail(homepage) {
+    showHomePageDetail (homepage) {
       this.homePageId = homepage.homepageId
       this.homePageVersion = homepage.currentVersion
       this.activePage = 'showHomePageDetail'
@@ -487,11 +487,11 @@ export default {
       this.form.specialNormalHp = []
       this.form.specialChildHp = []
     },
-    addHomePageClose() {
+    addHomePageClose () {
       this.addHomePageDialogVisible = false
     },
     /* 定向首页方案编辑 */
-    editHomePage(mode, index) {
+    editHomePage (mode, index) {
       this.addHomePageDialogVisible = true
       //  this.editHomePageMode = mode
       this.dialogType = mode
@@ -505,7 +505,7 @@ export default {
       }
     },
     /* 定向首页方案编辑 */
-    removeHomePage(mode, index) {
+    removeHomePage (mode, index) {
       if (mode === 'normal') {
         this.editHomePageData = this.form.specialNormalHp.splice(index, 1)
       } else {
@@ -515,7 +515,7 @@ export default {
     /**
      * 生存一个定向首页方案
      */
-    createHomePage(form, isEdit) {
+    createHomePage (form, isEdit) {
       let crowdPolicyIds = form.attribute.crowdPolicyIds[0]
       let crowdId = form.attribute.crowdIds[0]
       this.$service
@@ -559,12 +559,12 @@ export default {
         })
       this.addHomePageDialogVisible = false
     },
-    isContainCrowdName(form, crowdId) {
+    isContainCrowdName (form, crowdId) {
       return form.some(item => {
         return item.attribute.crowdIds[0] === crowdId
       })
     },
-    getCrowdNames(data) {
+    getCrowdNames (data) {
       let form = data.map(e => {
         let crowdPolicyIds = e.attribute.crowdPolicyIds[0]
         let crowdId = e.attribute.crowdIds[0]
@@ -585,7 +585,7 @@ export default {
     /**
      * 添加定向首页
      */
-    addHomePage(mode) {
+    addHomePage (mode) {
       this.addHomePageDialogVisible = true
       this.dialogType = mode
       if (mode === 'normal') {
@@ -598,7 +598,7 @@ export default {
     /*
     移除机型机芯
     */
-    modelChipSelectedRemove(index) {
+    modelChipSelectedRemove (index) {
       this.form.deviceInfos.splice(index, 1)
     },
     handleSelectChipEnd (data) {
@@ -615,7 +615,7 @@ export default {
         }
       })
     },
-    getFormData() {
+    getFormData () {
       const data = cloneDeep(this.form)
       // 把 devParId 去掉
       data.deviceInfos = data.deviceInfos.map(item => {
@@ -626,7 +626,7 @@ export default {
       })
       return data
     },
-    validateFormData(data, cb) {
+    validateFormData (data, cb) {
       this.$refs.form.validate(valid => {
         if (valid) {
           const { normalHpList, childHpList, macStart, macEnd, deviceInfos } = data
@@ -679,7 +679,7 @@ export default {
         }
       })
     },
-    parseDataToApi(data) {
+    parseDataToApi (data) {
       data.childHpList = data.childHpList.map((item) => {
         return {
           homepageId: item.homepageId,
@@ -706,7 +706,7 @@ export default {
       }
       return data
     },
-    submitBtn(status) {
+    submitBtn (status) {
       const data = this.getFormData()
       data.policyStatus = status
       this.validateFormData(data, () => {
@@ -722,7 +722,7 @@ export default {
         })
       })
     },
-    setData(data) {
+    setData (data) {
       data = cloneDeep(data)
       this.form = {
         currentVersion: data.currentVersion,
@@ -744,7 +744,7 @@ export default {
         specialChildHp: this.getCrowdNames(data.specialChildHp)
       }
     },
-    fetchData(version) {
+    fetchData (version) {
       const options = { id: this.id, version }
       if (this.isTestPolicy) {
         this.$service.getPolicyConfDetail(options).then(this.setData)
@@ -753,7 +753,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
       this.fetchData(this.version)

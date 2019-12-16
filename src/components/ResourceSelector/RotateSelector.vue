@@ -24,7 +24,7 @@ export default {
   components: {
     BaseSelector
   },
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -50,12 +50,12 @@ export default {
   },
   props: ['isLive', 'selectionType'],
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     }
   },
   methods: {
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         id: undefined,
         title: undefined,
@@ -65,7 +65,7 @@ export default {
         callback: 'result'
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const filter = Object.assign({}, this.filter)
       filter.code = filter.id
@@ -75,16 +75,16 @@ export default {
       }
       return filter
     },
-    handleFilterChange(filter) {
+    handleFilterChange (filter) {
       this.filter = filter
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(result => {
         this.pagination.total = result.total
@@ -92,7 +92,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     const filterSchema = _.map({
       id: _.o.number.other('form', {
         component: 'Input',

@@ -128,7 +128,7 @@ export default {
     EpisodeSelector,
     TagLogicFilter
   },
-  data() {
+  data () {
     return {
       isMore: false,
       currentVideoId: undefined,
@@ -175,7 +175,7 @@ export default {
             prop: 'videoStatus',
             label: '状态',
             width: '50',
-            formatter: function(row) {
+            formatter: function (row) {
               return ['失效', '有效', '待审核', '审核不通过', '草稿'][row.videoStatus]
             }
           },
@@ -277,19 +277,19 @@ export default {
     }
   },
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     },
-    licenseEnums() {
+    licenseEnums () {
       return (this.conditionList.license || this.conditionList.licensee || [])
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
-    categoryEnums() {
+    categoryEnums () {
       const categories = (this.conditionList.sources || [{}])[0].child
       return (categories || [])
         .map(({ categoryName, categoryId }) => ({ label: categoryName, value: categoryId }))
     },
-    videoTypeEnums() {
+    videoTypeEnums () {
       const selectedCategory = this.filter.category
       if (selectedCategory) {
         return (this.conditionList.sources[0].child
@@ -299,31 +299,31 @@ export default {
       }
       return []
     },
-    payTypeEnums() {
+    payTypeEnums () {
       return (this.conditionList.payTypes || [])
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
-    contentTypeEnums() {
+    contentTypeEnums () {
       return (this.conditionList.contentTypes || [])
         .map(({ contentType, contentTypeId }) => ({ label: contentType, value: contentTypeId }))
     },
-    videoFormatEnums() {
+    videoFormatEnums () {
       return (this.conditionList.videoFormat || [])
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     },
-    contentTagEnums() {
+    contentTagEnums () {
       return (this.conditionList.contentTag || [])
         .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
-    directorEnums() {
+    directorEnums () {
       return (this.conditionList.directors || [])
         .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
-    actiorEnums() {
+    actiorEnums () {
       return (this.conditionList.actors || [])
         .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     },
-    areaEnums() {
+    areaEnums () {
       return (this.conditionList.areas || [])
         .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     }
@@ -335,25 +335,25 @@ export default {
     'filter.category': 'onCategoryChange'
   },
   methods: {
-    selectEnd(data) {
+    selectEnd (data) {
       data = data.map((e) => {
         e.selectedEpisodes = this.selectedEpisodes[e.coocaaVId]
         return e
       })
       this.$emit('select-end', data)
     },
-    handleCollapseChange() {
+    handleCollapseChange () {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'))
       }, 1000)
     },
-    handleSelectEpisode(movie) {
+    handleSelectEpisode (movie) {
       this.currentVideoId = movie.coocaaVId
       this.$nextTick(() => {
         this.$refs.episodeSelector.$refs.wrapper.handleSelectStart()
       })
     },
-    handleSelectEpisodeEnd(episodes) {
+    handleSelectEpisodeEnd (episodes) {
       const currentVideoId = this.currentVideoId
       this.$set(this.selectedEpisodes, currentVideoId, episodes[0])
       // 自动勾选当前影片
@@ -371,12 +371,12 @@ export default {
         }
       }
     },
-    onPartnerChange() {
+    onPartnerChange () {
       const partner = this.filter.partner
       this.sourceEnums = []
       if (partner) {
         return this.$service.getPartnerSource({ partnerName: partner }).then(data => {
-          const sourceEnums = data.rows.reduce(function(result, item) {
+          const sourceEnums = data.rows.reduce(function (result, item) {
             if (item.source_List) {
               result = result.concat(item.source_List
                 // eslint-disable-next-line
@@ -384,7 +384,7 @@ export default {
             }
             return result
           }, [])
-          const defaultSelected = sourceEnums.find(function(item) {
+          const defaultSelected = sourceEnums.find(function (item) {
             return item.value === partner
           }) || sourceEnums[0]
           if (defaultSelected) {
@@ -399,15 +399,15 @@ export default {
       }
       return Promise.resolve()
     },
-    onSourceChange(val) {
+    onSourceChange (val) {
       if (val !== 'tencent') {
         this.filter.license = undefined
       }
     },
-    onCategoryChange() {
+    onCategoryChange () {
       this.filter.videoTypes = undefined
     },
-    getSourceLabel(row) {
+    getSourceLabel (row) {
       var flag = false
       for (var i = 0; i < row.ccVideoSourceEntities.length; i++) {
         if (row.ccVideoSourceEntities[i].thirdSource === '4KGarden') {
@@ -431,10 +431,10 @@ export default {
         }
       }
     },
-    statusLabel(row) {
+    statusLabel (row) {
       return ['失效', '有效', '待审核', '审核不通过', '草稿'][row.videoStatus]
     },
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         resType: 'vod',
         callbackparam: 'result',
@@ -459,7 +459,7 @@ export default {
         tagCodes: [[]]
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const originFilter = this.efficientFilter
       const filter = Object.keys(originFilter).reduce((result, key) => {
@@ -475,7 +475,7 @@ export default {
       }
       return filter
     },
-    handleFilterChangeAndReset() {
+    handleFilterChangeAndReset () {
       this.handleFilterChange()
       this.filter = this.getDefaultFilter()
       this.$refs.tagLogicFilter.reset()
@@ -483,12 +483,12 @@ export default {
         this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       })
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.$refs.tagLogicFilter.reset()
@@ -496,7 +496,7 @@ export default {
         this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       })
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(data => {
         this.pagination.total = data.total
@@ -509,24 +509,24 @@ export default {
         item._partner = partner
       })
     },
-    handleTeachTypesChange(teachTypes) {
+    handleTeachTypesChange (teachTypes) {
       this.filter.gradeList = undefined
       this.filter.videoTypes = undefined
       this.filter.teachTypes = teachTypes
     },
-    yearStartListen: function() {
+    yearStartListen: function () {
       if (this.filter.yearStart && !+this.filter.yearStart) {
         this.$message('年代必须为数字')
         this.filter.yearStart = null
       }
     },
-    yearEndListen: function() {
+    yearEndListen: function () {
       if (this.filter.yearEnd && !+this.filter.yearEnd) {
         this.$message('年代必须为数字')
         this.filter.yearEnd = null
       }
     },
-    changeSort: function() {
+    changeSort: function () {
       // 修改排序按钮的点击事件
       if (this.filter.order === 'asc') {
         this.filter.order = 'desc'
@@ -535,7 +535,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.$service.mediaGetCondition().then(data => {
       this.conditionList = data.vod
     })

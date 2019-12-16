@@ -77,7 +77,7 @@ export default {
     JDTabInfo,
     CrowdSelector
   },
-  data() {
+  data () {
     return {
       activePage: 'tab_group_setter',
       resourceName: '位置设置',
@@ -90,7 +90,7 @@ export default {
     }
   },
   computed: {
-    tabTableHeader() {
+    tabTableHeader () {
       const header = [
         {
           label: '版面ID',
@@ -213,13 +213,13 @@ export default {
   },
   props: {
     tabInfo: {
-      default() {
+      default () {
         return {}
       }
     },
     readonly: {
       type: Boolean,
-      default() {
+      default () {
         return false
       }
     }
@@ -236,7 +236,7 @@ export default {
         this.tabIsFix = val
       }
     },
-    handleSave() {
+    handleSave () {
       if (this.tabList.length > 0) {
         const tabInfo = {
           tabIsFix: this.tabIsFix,
@@ -254,7 +254,7 @@ export default {
         })
       }
     },
-    handlePreviewTab(row, index) {
+    handlePreviewTab (row, index) {
       const tabId = row.tabId
       this.$service.tabInfoGetBase({ id: tabId }).then(baseInfo => {
         const tabType = baseInfo.tabType
@@ -269,15 +269,15 @@ export default {
         }
       })
     },
-    handleTabEmbedBack() {
+    handleTabEmbedBack () {
       const { index, id } = this.embedTab
       const tab = this.tabList[index]
       this.activePage = 'tab_group_setter'
-      this.$service.tabInfoGet({ id }).then(function(result) {
+      this.$service.tabInfoGet({ id }).then(function (result) {
         Object.assign(tab, result)
       })
     },
-    handleSetDefaultTab(index) {
+    handleSetDefaultTab (index) {
       this.tabList.forEach((item, idx) => {
         if (idx === index) {
           this.$set(item, 'isDefaultTab', true)
@@ -286,28 +286,28 @@ export default {
         }
       })
     },
-    handleRemoveTab(index) {
+    handleRemoveTab (index) {
       this.tabList.splice(index, 1)
     },
-    handleSelectTabStart() {
+    handleSelectTabStart () {
       this.$nextTick(() => {
         const tabSelector = this.$refs.tabSelector
         this.tabList.forEach(tabSelector.handleTableRowSelectionAdd)
       })
     },
-    handleSelectTabEnd(data) {
+    handleSelectTabEnd (data) {
       this.$refs.tabTable.handleAppendData(data, 'tabId')
     },
-    handleSelectCrowdStart(index) {
+    handleSelectCrowdStart (index) {
       this.showCrowdSelector = true
       this.activeTabIndex = index
     },
-    handleSelectCrowdCancel() {
+    handleSelectCrowdCancel () {
       this.showCrowdSelector = false
     },
-    handleSelectCrowdEnd(policy, crowd) {
+    handleSelectCrowdEnd (policy, crowd) {
       const tabList = this.tabList
-      const index = tabList.findIndex(function(item) {
+      const index = tabList.findIndex(function (item) {
         const dmpInfo = item.dmpInfo
         if (dmpInfo && dmpInfo.dmpPolicyId === policy.value && dmpInfo.dmpCrowdId === crowd.value) {
           return true
@@ -329,12 +329,12 @@ export default {
         })
       }
     },
-    handleRemoveCrowd(index) {
+    handleRemoveCrowd (index) {
       const tabList = this.tabList
       tabList[index].dmpInfo = undefined
     }
   },
-  created() {
+  created () {
     const tabInfo = this.tabInfo
     this.tabIsFix = tabInfo.tabIsFix || 0
     this.tabIsInitInCategory = tabInfo.tabIsInitInCategory || 0

@@ -26,14 +26,14 @@ export function getChipAndModelPageList (data) {
     data
   })
 }
-export function addChipAndModel(data) {
+export function addChipAndModel (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/device/save.html',
     data
   })
 }
-export function getHomePageModelPageList(data) {
+export function getHomePageModelPageList (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/homepage/dataList.html',
@@ -41,14 +41,14 @@ export function getHomePageModelPageList(data) {
   })
 }
 /** 新增保存 */
-export function policyConfSave(data) {
+export function policyConfSave (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/policyConf/save.html',
     data
   })
 }
-export function testPolicyConfSave(data) {
+export function testPolicyConfSave (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/testPolicyConf/save.html',
@@ -56,7 +56,7 @@ export function testPolicyConfSave(data) {
   })
 }
 
-export function childPolicyConfSave(data) {
+export function childPolicyConfSave (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/childPolicy/save.html',
@@ -64,14 +64,14 @@ export function childPolicyConfSave(data) {
   })
 }
 /* 删除 */
-export function policyConfRemove(data) {
+export function policyConfRemove (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/policyConf/remove.html',
     data
   })
 }
-export function testPolicyConfRemove(data) {
+export function testPolicyConfRemove (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/testPolicyConf/remove.html',
@@ -79,14 +79,14 @@ export function testPolicyConfRemove(data) {
   })
 }
 /** 编辑 */
-export function getPolicyConfDetail(params) {
+export function getPolicyConfDetail (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/policyConf/getDetailInfo.html',
     params
   })
 }
-export function getTestPolicyConfDetail(params) {
+export function getTestPolicyConfDetail (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/testPolicyConf/getDetailInfo.html',
@@ -94,7 +94,7 @@ export function getTestPolicyConfDetail(params) {
   })
 }
 
-export function getChildPolicyConfDetail(params) {
+export function getChildPolicyConfDetail (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/childPolicy/getDetailInfo.html',

@@ -2,14 +2,14 @@
 // shadow-drag
 // @author William
 const DATA = {}
-function genId() {
+function genId () {
   var id
   do {
     id = '' + Date.now() + Math.random()
   } while (DATA[id])
   return id
 }
-function handleDragStart(event) {
+function handleDragStart (event) {
   event.stopPropagation()
   const target = event.currentTarget
   const shadowDragId = target.dataset.shadowDragId
@@ -19,12 +19,12 @@ function handleDragStart(event) {
   event.dataTransfer.setData('text/plain', JSON.stringify(transData))
   target.dispatchEvent(new Event('shadow-drag-start'))
 }
-function handleDragEnd(event) {
+function handleDragEnd (event) {
   event.currentTarget.dispatchEvent(new Event('shadow-drag-end'))
 }
 
 export default {
-  bind: function(el, binding, vnode) {
+  bind: function (el, binding, vnode) {
     if (binding) {
       const shadowDragId = genId()
       DATA[shadowDragId] = {
@@ -37,14 +37,14 @@ export default {
       el.setAttribute('draggable', true)
     }
   },
-  inserted: function(el, binding, vnode) {
+  inserted: function (el, binding, vnode) {
   },
-  update: function(el, binding, vnode) {
+  update: function (el, binding, vnode) {
     const shadowDragId = el.dataset.shadowDragId
     const data = DATA[shadowDragId]
     data.binding = binding
   },
-  unbind: function(el, binding, vnode) {
+  unbind: function (el, binding, vnode) {
     const shadowDragId = el.dataset.shadowDragId
     delete DATA[shadowDragId]
     el.removeEventListener('dragstart', handleDragStart)

@@ -50,7 +50,7 @@ export default {
     PageContentWrapper,
     ButtonGroupForListPage
   },
-  data() {
+  data () {
     return {
       resourceType: 'topic',
       activePage: 'topic_list',
@@ -155,14 +155,14 @@ export default {
   computed: {
   },
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.homepageId,
         type: 'topic',
         menuElId: 'topic'
       })
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
@@ -172,7 +172,7 @@ export default {
       this.fetchData()
     },
     // 重置
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -180,7 +180,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -191,7 +191,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.topicGetList(filter).then(data => {
         this.pagination.total = data.total
@@ -207,7 +207,7 @@ export default {
     //   })
     // }
   },
-  created() {
+  created () {
     this.filterSchema = _.map({
       topicName: _.o.string.other('form', {
         component: 'Input',

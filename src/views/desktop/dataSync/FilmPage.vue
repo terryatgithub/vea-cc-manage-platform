@@ -30,7 +30,7 @@ export default {
     Table
   },
 
-  data() {
+  data () {
     return {
       resourceType: 'film',
       pannelValue: [],
@@ -170,7 +170,7 @@ export default {
       filterFormRules: {
         tabId: [
           {
-            validator(rule, value, cb) {
+            validator (rule, value, cb) {
               if (value && !/^\d+$/.test(value)) {
                 return cb(Error('请输入数字'))
               }
@@ -183,7 +183,7 @@ export default {
   },
 
   methods: {
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         keyword: 'tab',
         subCategoryArray: 3
@@ -192,7 +192,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.desktopGetDataSyncList(filter).then(data => {
@@ -202,7 +202,7 @@ export default {
         this.selected = []
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { pagination } = this
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
@@ -211,7 +211,7 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.$refs.filterForm.validate((valid) => {
         if (valid) {
           this.pagination.currentPage = 1
@@ -220,7 +220,7 @@ export default {
         }
       })
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.efficientFilter = this.genDefaultFilter()
       this.pannelValue = []
@@ -228,7 +228,7 @@ export default {
       this.fetchData()
     },
     // 服务
-    getMediaResourceInfo() {
+    getMediaResourceInfo () {
       return this.$service.getMediaResourceInfo().then(data => {
         var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
         var videoItemModels = movieData.videoItemModels
@@ -288,12 +288,12 @@ export default {
         this.channelOptions.push(channelYouku)
       })
     },
-    handleChannelChange(value) {
+    handleChannelChange (value) {
       this.filter['filmDetailPageInfo.source'] = ''
       this.filter['filmDetailPageInfo.source'] = value[0]
     }
   },
-  created() {
+  created () {
     this.getMediaResourceInfo().then(() => {})
     this.fetchData()
   }

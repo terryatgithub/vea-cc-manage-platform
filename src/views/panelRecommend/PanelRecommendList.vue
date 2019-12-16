@@ -182,7 +182,7 @@ export default {
 
   watch: {
     selected: {
-      handler(newVal, oldVal) {
+      handler (newVal, oldVal) {
         const table = this.table
         let rows = []
         table.data.map(tableRow => {
@@ -201,21 +201,21 @@ export default {
   },
 
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.pannelGroupId,
         menuElId: 'pannelInfo',
         type: 'pannel'
       })
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         panelGroupId: undefined,
         panelGroupName: undefined,
         source: undefined
       }
     },
-    handleToggleRecommendFlag(row) {
+    handleToggleRecommendFlag (row) {
       this.$confirm('设置为“不可推荐”后，该版块将不会出现在任何流中，但是，若要将该版块恢复成“可推荐”，则非常困难，需要联系开发处理', '提示')
         .then(() => {
           const flag = row.flag ? 0 : 1
@@ -225,14 +225,14 @@ export default {
         })
         .catch(() => {})
     },
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.panelRecommendList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -240,7 +240,7 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
@@ -251,7 +251,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       console.log(this.dataList)
       if (this.dataList) {
         this.filter = Object.assign({}, this.dataList.filter)
@@ -263,7 +263,7 @@ export default {
       this.fetchData()
     }
   },
-  created() {
+  created () {
     this.$service.getDictType({ type: 'recommendStreamSign' }).then(data => {
       const panelGroupCategoryEnums = data.reduce((result, { dictCnName }) => {
         result[dictCnName] = dictCnName

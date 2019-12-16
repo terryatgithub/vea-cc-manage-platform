@@ -117,7 +117,7 @@ export default {
     AuditHistory,
     ReleaseTimeSetter
   },
-  data() {
+  data () {
     return {
       showReleaseTimeSetter: false,
       showAuditDialog: false,
@@ -139,7 +139,7 @@ export default {
     mode: String,
     resourceInfo: {
       type: Object,
-      default() {
+      default () {
         return {}
       }
     },
@@ -151,16 +151,16 @@ export default {
     resourceInfo: 'handleResourceChange'
   },
   computed: {
-    showContentAuthManager() {
+    showContentAuthManager () {
       const resourceInfo = this.resourceInfo
       if (resourceInfo.type) {
         return ['homepage', 'policy', 'tab', 'pannel', 'block', 'systemPlugin'].indexOf(resourceInfo.type) > -1
       }
       return false
     },
-    buttonGroupOptions() {
+    buttonGroupOptions () {
       const { draft, waiting, rejected, processing, waiting2 } = this.$consts.status
-      const isAllowCopy = !this.versionList.some(function(item) {
+      const isAllowCopy = !this.versionList.some(function (item) {
         const status = item.row.status
         return status === draft || status === waiting || status === rejected
       })
@@ -175,11 +175,11 @@ export default {
     }
   },
   methods: {
-    handleSubmitWithReleaseTime(releaseTimeInfo) {
+    handleSubmitWithReleaseTime (releaseTimeInfo) {
       this.showReleaseTimeSetter = false
       this.$emit('submit-audit', releaseTimeInfo)
     },
-    handleDelete() {
+    handleDelete () {
       const { type, id, version } = this.resourceInfo
       this.$confirm('确认删除该版本吗?', '提示').then(() => {
         this.$service.deleteVersion({ type, id, version }, '删除成功').then(() => {
@@ -197,10 +197,10 @@ export default {
         })
       }).catch(() => {})
     },
-    handleAuditStart() {
+    handleAuditStart () {
       this.showAuditDialog = true
     },
-    handleAuditEnd() {
+    handleAuditEnd () {
       this.$refs.auditForm.validate(valid => {
         if (valid) {
           const { id, version, type } = this.resourceInfo
@@ -219,7 +219,7 @@ export default {
         }
       })
     },
-    handleSecondAudit() {
+    handleSecondAudit () {
       const { id, version, type } = this.resourceInfo
       this.$confirm('是否对该内容进行二次审核', '提示')
         .then(() => {
@@ -236,7 +236,7 @@ export default {
           console.log(e)
         })
     },
-    handleUnAudit() {
+    handleUnAudit () {
       const { id, version, type } = this.resourceInfo
       this.$confirm('您确定要撤销审核吗?', '提示')
         .then(() => {
@@ -244,15 +244,15 @@ export default {
             this.$emit('unaudit')
           })
         })
-        .catch(function() {})
+        .catch(function () {})
     },
-    handleShelves() {
+    handleShelves () {
       const { type, id, version } = this.resourceInfo
       this.$service.putOnShelves({ id, version, type }, '上架成功').then(() => {
         this.$emit('shelves')
       })
     },
-    getHistoryList: function() {
+    getHistoryList: function () {
       const { type, id, version } = this.resourceInfo
       if (id && version) {
         // 一些没版本的资源没有历史列表
@@ -263,7 +263,7 @@ export default {
         this.versionList = []
       }
     },
-    getAuditHistoryList() {
+    getAuditHistoryList () {
       const { type, id, version } = this.resourceInfo
       if (id && version) {
         // 一些没版本的资源没有历史列表
@@ -274,7 +274,7 @@ export default {
         this.auditHistoryList = []
       }
     },
-    getReleaseTime() {
+    getReleaseTime () {
       this.releaseTime = undefined
       const { type, id, version, status } = this.resourceInfo
       const { processing, waiting } = this.$consts.status
@@ -286,7 +286,7 @@ export default {
         }
       }
     },
-    handleCancelTiming() {
+    handleCancelTiming () {
       this.$confirm('您确定取消定时吗?', '提示')
         .then(() => {
           const { type, id, version } = this.resourceInfo
@@ -298,13 +298,13 @@ export default {
 
         })
     },
-    handleResourceChange() {
+    handleResourceChange () {
       this.getHistoryList()
       this.getAuditHistoryList()
       this.getReleaseTime()
     }
   },
-  created() {
+  created () {
   }
 
 }

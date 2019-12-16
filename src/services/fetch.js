@@ -1,7 +1,7 @@
 import qs from 'qs'
 import axios from 'axios'
 import Vue from 'vue'
-export default function fetch({
+export default function fetch ({
   method = 'get',
   url,
   data,

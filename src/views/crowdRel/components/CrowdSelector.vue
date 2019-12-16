@@ -40,7 +40,7 @@ export default {
       type: Array
     }
   },
-  data() {
+  data () {
     return {
       keyword: undefined,
       selectedIndexed: {},
@@ -49,7 +49,7 @@ export default {
     }
   },
   computed: {
-    availableTags() {
+    availableTags () {
       const keyword = this.keyword
       if (keyword) {
         const fuse = new Fuse(this.tags, { keys: ['label', 'value'] })
@@ -64,9 +64,9 @@ export default {
     disables: 'updateDisablesIndex'
   },
   methods: {
-    handleSelectEnd() {
+    handleSelectEnd () {
       const selectMap = this.selectMap
-      const selections = this.tags.reduce(function(result, item) {
+      const selections = this.tags.reduce(function (result, item) {
         if (selectMap[item.value]) {
           result.push(item)
         }
@@ -74,28 +74,28 @@ export default {
       }, [])
       this.$emit('select-end', selections)
     },
-    updateSelectedIndex() {
+    updateSelectedIndex () {
       this.buildIndex('selected', 'selectedIndexed')
     },
-    updateDisablesIndex() {
+    updateDisablesIndex () {
       this.buildIndex('disables', 'disablesIndexed')
     },
-    buildIndex(propKey, dataKey) {
-      this[dataKey] = (this[propKey] || []).reduce(function(result, item) {
+    buildIndex (propKey, dataKey) {
+      this[dataKey] = (this[propKey] || []).reduce(function (result, item) {
         result[item] = true
         return result
       }, {})
     },
-    handleClose() {
+    handleClose () {
       this.$emit('select-cancel')
     }
   },
-  created() {
+  created () {
     this.buildIndex('selected', 'selectedIndexed')
     this.buildIndex('disables', 'disablesIndexed')
     const selectMap = {}
     const selectedIndexed = this.selectedIndexed
-    this.tags.forEach(function(item) {
+    this.tags.forEach(function (item) {
       selectMap[item.value] = !!selectedIndexed[item.value]
     })
     this.selectMap = selectMap

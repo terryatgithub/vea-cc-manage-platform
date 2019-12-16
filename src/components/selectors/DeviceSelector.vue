@@ -84,7 +84,7 @@
 import RemoteSelectorWrapper from '../SelectorWrapper'
 import BaseSelector from '../BaseSelector'
 export default {
-  data() {
+  data () {
     return {
       options: [],
       pagination: {
@@ -140,14 +140,14 @@ export default {
     BaseSelector
   },
   methods: {
-    genDefaultFormData() {
+    genDefaultFormData () {
       return {
         platform: undefined,
         model: undefined,
         chip: undefined
       }
     },
-    handleInputPlatform(val) {
+    handleInputPlatform (val) {
       this.$confirm('是否要切换内容源，切换内容源之后，首页方案数据将会清除掉', '提示')
         .then(() => {
           this.filter.platform = val
@@ -155,7 +155,7 @@ export default {
         })
         .catch(() => {})
     },
-    addModelChip() {
+    addModelChip () {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service.addChipAndModel(this.form, '添加成功').then(data => {
@@ -165,7 +165,7 @@ export default {
         }
       })
     },
-    handleSelectStart() {
+    handleSelectStart () {
       this.$emit('select-start')
       if (!this.isLive) {
         this.handleResetFilter()
@@ -181,32 +181,32 @@ export default {
         })
       }
     },
-    handleSelectCancel() {
+    handleSelectCancel () {
       this.$refs.wrapper.handleSelectCancel()
     },
-    handleSelectEnd(data) {
+    handleSelectEnd (data) {
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         platform: this.platform,
         chip: undefined,
         model: undefined
       }
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.effectiveFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleResetFilter() {
+    handleResetFilter () {
       this.filter = this.genDefaultFilter()
       this.effectiveFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = JSON.parse(JSON.stringify(this.effectiveFilter))
       const pagination = this.pagination
       if (pagination) {
@@ -219,7 +219,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
   }
 }
 </script>

@@ -42,7 +42,7 @@ export default {
   components: {
     VeLine
   },
-  data() {
+  data () {
     this.extend = {
       grid: {
         top: '10%',
@@ -59,7 +59,7 @@ export default {
         triggerEvent: true,
         axisLabel: {
           rotate: 45,
-          formatter: function(val) {
+          formatter: function (val) {
             let mark = val.indexOf('(')
             if (mark === -1) {
               return val
@@ -193,7 +193,7 @@ export default {
     handleChartEvents (index) {
       let _this = this
       return {
-        click: function(e) {
+        click: function (e) {
           if (e.componentType === 'xAxis') {
             let xIndex = _this.chartDataArr[index].data.findIndex(item => {
               return item.x === e.value
@@ -219,7 +219,7 @@ export default {
     }
   },
 
-  created() {}
+  created () {}
 }
 </script>
 

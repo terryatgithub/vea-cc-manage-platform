@@ -52,7 +52,7 @@ const schema = _.map({
   }
 })
 export default {
-  data() {
+  data () {
     return {
       user: {
         username: '',
@@ -66,18 +66,18 @@ export default {
   },
   components: {},
   computed: {
-    formSchema() {
+    formSchema () {
       return this.schema || schema
     }
   },
   props: ['schema'],
   methods: {
-    keyupSubmit(event) {
+    keyupSubmit (event) {
       if (event.keyCode === 13) {
         this.$refs.loginForm.handleSubmit()
       }
     },
-    changAccoutType(type) {
+    changAccoutType (type) {
       if (type === 'normal') {
         this.isNormalActive = true
         this.isDomainActive = false
@@ -86,14 +86,14 @@ export default {
         this.isDomainActive = true
       }
     },
-    createCav() {
+    createCav () {
       if (
         !window.ActiveXObject &&
         !!document.createElement('canvas').getContext
       ) {
       }
     },
-    handleLogin(err) {
+    handleLogin (err) {
       if (err.length === 0) {
         if (this.isDomainActive) {
           this.user.ldapName = this.user.username
@@ -122,11 +122,11 @@ export default {
         )
       }
     },
-    updateValicode() {
+    updateValicode () {
       this.codeUrl += '?_=' + new Date().getTime()
     }
   },
-  created: function() {
+  created: function () {
     loginRedbg()
   }
 }

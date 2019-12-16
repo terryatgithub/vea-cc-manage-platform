@@ -8,17 +8,17 @@ export default {
     ResourceList: SysPluginList,
     ResourceContent: SysPluginInfo
   },
-  data() {
+  data () {
     return {}
   },
   computed: {
-    resourceInfo() {
+    resourceInfo () {
       return {
         type: 'sysPlugin',
         idField: 'pluginId'
       }
     },
-    contentProps() {
+    contentProps () {
       return {
         menuElId: 'sysPlugin'
       }

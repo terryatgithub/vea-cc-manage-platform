@@ -339,11 +339,11 @@ export default {
         ? ['rotate']
         : ['video', 'edu', 'live', 'rotate']
     },
-    couldFullscreen() {
+    couldFullscreen () {
       const contentType = this.normalForm.contentType
       return this.normalForm.shortVideoSwitch || ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
     },
-    thirdIdOrPackageNameForClick() {
+    thirdIdOrPackageNameForClick () {
       return this.getThirdId(this.normalForm.clickParams)
     },
     singleEpisodeNum () {
@@ -352,7 +352,7 @@ export default {
     }
   },
   methods: {
-    getThirdId(clickParams) {
+    getThirdId (clickParams) {
       if (clickParams) {
         const result = (clickParams.id ||
           clickParams.rotateId ||
@@ -388,10 +388,10 @@ export default {
       }
       return isReadonly
     },
-    handleSelectClickEventStart() {
+    handleSelectClickEventStart () {
       this.onclickEventVisible = true
     },
-    handleSelectClickEvent(data) {
+    handleSelectClickEvent (data) {
       this.onclickEventVisible = false
       this.clickData = data
       let params = JSON.parse(data.params)
@@ -414,10 +414,10 @@ export default {
       }
       this.normalForm.onclick = o
     },
-    handleSelectClickEventEnd() {
+    handleSelectClickEventEnd () {
 
     },
-    handleSelectNormalSingleResourceEnd(selectedResources, mode) {
+    handleSelectNormalSingleResourceEnd (selectedResources, mode) {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
       setContentForm(this.normalForm, resourceContent)
@@ -428,7 +428,7 @@ export default {
       }
       this.normalForm.shortVideoSwitch = false
     },
-    handleSelectNormalSingleOtherResourceEnd(selectedResources) {
+    handleSelectNormalSingleOtherResourceEnd (selectedResources) {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
       this.normalForm.clickParams = getParams(resourceContent)
@@ -449,7 +449,7 @@ export default {
       }
       this.$set(this.normalForm.cornerIconList, index, corner)
     },
-    handleChangeSign(newVal) {
+    handleChangeSign (newVal) {
       const normalForm = this.normalForm
       if (newVal === 'autoSet') {
         normalForm.onclick = ''
@@ -476,13 +476,13 @@ export default {
       }
       this.$set(this.normalForm.cornerIconList, index, corner)
     },
-    handleSelectCrowdStart() {
+    handleSelectCrowdStart () {
       this.showCrowdSelector = true
     },
-    handleSelectCrowdCancel() {
+    handleSelectCrowdCancel () {
       this.showCrowdSelector = false
     },
-    handleSelectCrowdEnd(policy, crowd) {
+    handleSelectCrowdEnd (policy, crowd) {
       const existsIndex = this.checkCrowd(crowd)
       if (existsIndex !== undefined) {
         this.$message({
@@ -515,7 +515,7 @@ export default {
         }
       }
     },
-    handleSelectRecomStream(recomStream) {
+    handleSelectRecomStream (recomStream) {
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
     },
     // 选择资源拓展项

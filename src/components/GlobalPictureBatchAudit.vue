@@ -77,7 +77,7 @@ export default {
     }
   },
   methods: {
-    handleSelectStart() {
+    handleSelectStart () {
       this.fetchData()
       this.$nextTick(() => {
         const $auditForm = this.$refs.auditForm
@@ -104,7 +104,7 @@ export default {
     handleCancel () {
       this.$refs.selectorWrapper.handleSelectCancel()
     },
-    getFilter() {
+    getFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -112,7 +112,7 @@ export default {
       }
       return { ...filter }
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getResourceList(filter).then(data => {
         this.pagination.total = data.total

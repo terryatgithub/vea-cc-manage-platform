@@ -35,11 +35,11 @@
 export default {
   props: ['pagination'],
   methods: {
-    handlePageSizeChange(pageSize) {
+    handlePageSizeChange (pageSize) {
       this.pagination.pageSize = pageSize
       this.$emit('pagingation-change')
     },
-    handlePageChange(page) {
+    handlePageChange (page) {
       this.pagination.currentPage = page
       this.$emit('pagingation-change')
     }

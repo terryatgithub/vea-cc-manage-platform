@@ -75,7 +75,7 @@ export default {
   components: {
     VeLine
   },
-  data() {
+  data () {
     this.extend = {
       grid: {
         top: '10%',
@@ -92,7 +92,7 @@ export default {
         // triggerEvent: true,
         axisLabel: {
           rotate: 45,
-          formatter: function(val) {
+          formatter: function (val) {
             let mark = val.indexOf('(')
             if (mark === -1) {
               return val
@@ -149,7 +149,7 @@ export default {
   },
 
   watch: {
-    show() {
+    show () {
       this.visible = this.show
     }
   },
@@ -162,7 +162,7 @@ export default {
   props: {
     show: {
       type: Boolean,
-      default() {
+      default () {
         return false
       }
     },
@@ -199,7 +199,7 @@ export default {
         this.allTitles = data.rows
       })
     },
-    fetchData() {
+    fetchData () {
       this.isShowLoadTip = true
       this.chartDataArr = []
       const { parentId, position, filter } = this
@@ -212,7 +212,7 @@ export default {
         }
       })
     },
-    handleChartData(chartData) {
+    handleChartData (chartData) {
       return {
         title: chartData.title,
         unit: chartData.unit,
@@ -220,7 +220,7 @@ export default {
         rows: chartData.data
       }
     },
-    handleChartExtend(chartData) {
+    handleChartExtend (chartData) {
       const yAxis = {
         axisLabel: {
           formatter: '{value}%'
@@ -233,7 +233,7 @@ export default {
         })
         : extend
     },
-    handleChartSettings(chartData) {
+    handleChartSettings (chartData) {
       return {
         labelMap: {
           y: chartData.title
@@ -252,7 +252,7 @@ export default {
     handleChartEvents (index) {
       let _this = this
       return {
-        click: function(e) {
+        click: function (e) {
           if (e.componentType === 'xAxis') {
             let xIndex = _this.chartDataArr[index].data.findIndex(item => {
               return item.x === e.value
@@ -274,7 +274,7 @@ export default {
 
   },
 
-  created() {}
+  created () {}
 }
 </script>
 

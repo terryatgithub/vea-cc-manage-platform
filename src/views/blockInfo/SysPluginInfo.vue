@@ -275,7 +275,7 @@ export default {
     Params
   },
   props: ['id', 'initMode', 'version', 'contentProps'],
-  data() {
+  data () {
     return {
       currentIndex: 0,
       title: null,
@@ -350,10 +350,10 @@ export default {
     }
   },
   computed: {
-    currentPlugin() {
+    currentPlugin () {
       return this.block.rlsInfo[this.currentIndex]
     },
-    source() {
+    source () {
       // 内容源 1-腾讯;2-爱奇艺;3-优酷;0-默认
       const sources = ['', 'o_tencent', 'o_iqiyi', 'o_youku']
       return sources[this.block.pluginInfo.source]
@@ -382,7 +382,7 @@ export default {
       const pluginType = this.pluginType
       const pluginTypes = this.pluginTypes
       if (pluginTypes.length > 0) {
-        const target = pluginTypes.find(function(item) {
+        const target = pluginTypes.find(function (item) {
           return item.dictEnName === pluginType
         })
         if (target) {
@@ -395,7 +395,7 @@ export default {
       const pluginParentType = this.pluginParentType
       const pluginParentTypes = this.pluginParentTypes
       if (pluginParentTypes.length > 0) {
-        const target = pluginParentTypes.find(function(item) {
+        const target = pluginParentTypes.find(function (item) {
           return item.dictEnName === pluginParentType
         })
         if (target) {
@@ -403,21 +403,21 @@ export default {
         }
       }
     },
-    pluginParentType() {
+    pluginParentType () {
       return this.block.pluginInfo.pluginParentType
     },
-    pluginType() {
+    pluginType () {
       return this.block.pluginInfo.pluginType
     },
-    isDisabledSource() {
+    isDisabledSource () {
       return this.mode === 'edit'
     },
-    versionHasTitle() {
+    versionHasTitle () {
       // 版本信息里是否有 title 字段
       const pluginType = this.pluginType
       return pluginType === 'REFERENCE_MOVIE_VIP'
     },
-    baseHasTitle() {
+    baseHasTitle () {
       // 基本信息里是否有 title 字段
       const pluginParentType = this.pluginParentType
       const pluginType = this.pluginType
@@ -427,16 +427,16 @@ export default {
         (pluginType && pluginType !== 'REFERENCE_MOVIE_VIP')
       )
     },
-    isReplica() {
+    isReplica () {
       return this.mode === 'replicate' || this.block.duplicateVersion === 'yes'
     }
   },
   watch: {},
   methods: {
-    getVersionTitle(item) {
+    getVersionTitle (item) {
       return `${item.title}${item.subTitle ? (' | ' + item.subTitle) : ''}`
     },
-    handleActivatePluginVersion(index) {
+    handleActivatePluginVersion (index) {
       if (this.currentIndex !== index) {
         if (this.mode === 'read') {
           this.currentIndex = index
@@ -447,7 +447,7 @@ export default {
         }
       }
     },
-    handleAddPluginVersion(type) {
+    handleAddPluginVersion (type) {
       this.$refs.pluginContent.validate(() => {
         const options = type === 'activity'
           ? { label: '活动形式', dataType: 4 }
@@ -459,7 +459,7 @@ export default {
         this.currentIndex = rlsInfo.length - 1
       })
     },
-    handleRemovePluginVersion(index) {
+    handleRemovePluginVersion (index) {
       const rlsInfo = this.block.rlsInfo
       rlsInfo.splice(index, 1)
       let currentIndex = this.currentIndex
@@ -474,14 +474,14 @@ export default {
       }
     },
     // 时间处理-:转换为数值
-    parseStrToMin(str) {
+    parseStrToMin (str) {
       const timeArr = str.split(':')
       const hours = parseInt(timeArr[0])
       const mins = parseInt(timeArr[1])
       return hours * 60 + mins
     },
     // 转换位时间格式 ：hh:mm
-    parseMinToStr(min) {
+    parseMinToStr (min) {
       const hours = Math.floor(min / 60)
       const mins = min % 60
       const hoursStr = hours > 9 ? '' + hours : '0' + hours
@@ -489,14 +489,14 @@ export default {
       return hoursStr + ':' + minsStr
     },
     // 数据回显
-    fetchData(version) {
+    fetchData (version) {
       this.$service.editSysPlugin({ id: this.id, version }).then(data => {
         if (data) {
           this.setData(data)
           // this.pluginType = data.pluginInfo.pluginType
           if (this.pluginType) {
             this.getPluginVersions(this.pluginType).then(
-              function(versions) {
+              function (versions) {
                 if (versions) {
                   const rlsInfo = this.block.rlsInfo
                   const versionIndexed = versions.reduce((result, item) => {
@@ -517,18 +517,18 @@ export default {
       })
     },
     // 父数据字典查询接口
-    getPluginParentTypes() {
+    getPluginParentTypes () {
       this.$service.getPluginParentTypes().then(data => {
         console.log(data)
         if (data) {
-          this.pluginParentTypes = data.filter(function(item) {
+          this.pluginParentTypes = data.filter(function (item) {
             return item.dictEnName !== 'builtIn'
           })
         }
       })
     },
     // 数据字典查询
-    getPluginTypes(pluginParentType) {
+    getPluginTypes (pluginParentType) {
       this.$service
         .getPluginTypes({ pluginParentType: pluginParentType })
         .then(data => {
@@ -538,7 +538,7 @@ export default {
           }
         })
     },
-    getPluginVersions(type) {
+    getPluginVersions (type) {
       const pluginVersions = this.pluginVersions
       return new Promise((resolve, reject) => {
         if (!pluginVersions[type]) {
@@ -554,27 +554,27 @@ export default {
       })
     },
     /** 类容源切换事件 */
-    handleChangeSource(val) {
+    handleChangeSource (val) {
       this.$confirm('确定切换内容源？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(
-          function() {
+          function () {
             this.$refs['blockForm'].clearValidate()
             this.block.pluginInfo.source = val
           }.bind(this)
         )
-        .catch(function(e) {
+        .catch(function (e) {
           throw e
         })
     },
     /** 类型选择——父类 */
-    handleChangePluginParentType(val) {
+    handleChangePluginParentType (val) {
       this.$refs['blockForm'].clearValidate()
       const originType = this.block.pluginInfo.pluginParentType
-      const confirmOK = function() {
+      const confirmOK = function () {
         this.pluginTypes = []
         this.setPluginParentType(val)
         this.getPluginTypes(val)
@@ -590,14 +590,14 @@ export default {
           type: 'warning'
         })
           .then(confirmOK)
-          .catch(function(e) {
+          .catch(function (e) {
             throw e
           })
       } else if (!originType) {
         confirmOK()
       }
     },
-    setPluginParentType(val) {
+    setPluginParentType (val) {
       const block = this.block
       const pluginInfo = block.pluginInfo
       const helper = block.helper
@@ -610,10 +610,10 @@ export default {
       helper.appParams = []
     },
     /** 多功能推荐位类型 */
-    handleChangePluginType(val) {
+    handleChangePluginType (val) {
       this.$refs['blockForm'].clearValidate()
       const originType = this.block.pluginInfo.pluginType
-      const confirmOK = function() {
+      const confirmOK = function () {
         this.setPluginType(val)
       }.bind(this)
       if (originType && originType !== val) {
@@ -623,22 +623,22 @@ export default {
           type: 'warning'
         })
           .then(confirmOK)
-          .catch(function() {})
+          .catch(function () {})
       } else if (!originType) {
         confirmOK()
       }
     },
-    setPluginType(val) {
+    setPluginType (val) {
       const block = this.block
       const helper = block.helper
       this.getPluginVersions(val)
         .then(
-          function(versions) {
+          function (versions) {
             block.pluginInfo.pluginType = val
             helper.title = ''
             helper.subTitle = ''
             block.rlsInfo = versions.map(
-              function(item) {
+              function (item) {
                 return this.genRlsInfo(
                   {
                     label: item.dictCnName,
@@ -651,9 +651,9 @@ export default {
             this.currentIndex = 0
           }.bind(this)
         )
-        .then(function() {})
+        .then(function () {})
     },
-    genRlsInfo(preset, pluginType) {
+    genRlsInfo (preset, pluginType) {
       let extendInfo = {}
       if (pluginType === 'REFERENCE_ACTIVITY') {
         extendInfo = {
@@ -687,12 +687,12 @@ export default {
         preset
       )
     },
-    selectSubmit() {},
-    clickSubmit() {},
-    parseOnclick(onclick) {
+    selectSubmit () {},
+    clickSubmit () {},
+    parseOnclick (onclick) {
       if (onclick.params) {
         const params = onclick.params
-        onclick.params = Object.keys(onclick.params).map(function(key) {
+        onclick.params = Object.keys(onclick.params).map(function (key) {
           return {
             key: key,
             value: params[key]
@@ -701,7 +701,7 @@ export default {
       }
       return onclick
     },
-    getData(status) {
+    getData (status) {
       const data = JSON.parse(JSON.stringify(this.block))
       if (this.mode === 'replicate') {
         data.pluginInfo.currentVersion = ''
@@ -709,7 +709,7 @@ export default {
       data.pluginInfo.pluginStatus = status
       return data
     },
-    validateData(data, cb) {
+    validateData (data, cb) {
       const error = (msg) => {
         this.$message({
           type: 'error',
@@ -730,7 +730,7 @@ export default {
         cb()
       }
       this.$refs.blockForm.validate(
-        function(valid) {
+        function (valid) {
           if (valid) {
             const pluginContent = this.$refs.pluginContent
             // 标记推荐位没有版本信息
@@ -751,13 +751,13 @@ export default {
         }.bind(this)
       )
     },
-    setData(data) {
+    setData (data) {
       const helper = this.block.helper
       const block = JSON.parse(JSON.stringify(data))
       const pluginParentType = block.pluginInfo.pluginParentType
       const pluginType = block.pluginInfo.pluginType
       block.rlsInfo.forEach(
-        function(item) {
+        function (item) {
           item.openMode = item.params.split(',')[0].split('==')[1]
           if (item.appParams) {
             const appParams = JSON.parse(item.appParams)
@@ -828,7 +828,7 @@ export default {
       }
       this.block = { ...this.block, ...block }
     },
-    parseData(data) {
+    parseData (data) {
       const helper = data.helper
       const hasBaseTitle = this.baseHasTitle
       const pluginParentType = this.pluginParentType
@@ -841,7 +841,7 @@ export default {
         }
         data.rlsInfo[0].appParams = helper.appParams
       }
-      data.rlsInfo.forEach(function(item) {
+      data.rlsInfo.forEach(function (item) {
         const originOnclick = item.onclick
         if (item.openMode) {
           item.params = 'openMode==' + item.openMode
@@ -976,14 +976,14 @@ export default {
           item.subTitle = helper.subTitle
         }
         if (item.onclick && item.onclick.params) {
-          item.onclick.params = item.onclick.params.reduce(function(result, p) {
+          item.onclick.params = item.onclick.params.reduce(function (result, p) {
             result[p.key] = p.value
             return result
           }, {})
           item.onclick = JSON.stringify(item.onclick)
         }
         if (item.appParams) {
-          item.appParams = item.appParams.reduce(function(result, p) {
+          item.appParams = item.appParams.reduce(function (result, p) {
             result[p.key] = p.value
             return result
           }, {})
@@ -995,20 +995,20 @@ export default {
       return data
     },
     /** 提交审核 */
-    handleSubmitAudit(d, status) {
+    handleSubmitAudit (d, status) {
       const data = this.getData(status)
       this.validateData(
         data,
-        function() {
+        function () {
           this.submit(data) // 审核保存方法
         }.bind(this)
       )
     },
     /** 审核保存的方法 */
-    submit(formData) {
+    submit (formData) {
       this.validateData(
         formData,
-        function() {
+        function () {
           formData = this.parseData(formData)
           console.log(formData)
           this.$service.SavePlugin(formData, '保存成功').then(data => {
@@ -1018,7 +1018,7 @@ export default {
       )
     }
   },
-  created() {
+  created () {
     this.getPluginParentTypes()
     this.mode = this.initMode || 'create'
     switch (this.mode) {

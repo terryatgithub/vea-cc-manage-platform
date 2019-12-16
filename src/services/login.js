@@ -1,4 +1,4 @@
-export function login(data) {
+export function login (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/userlogin.html',
@@ -9,7 +9,7 @@ export function login(data) {
   })
 }
 
-export function logout(data) {
+export function logout (data) {
   return this.fetch({
     method: 'get',
     url: 'api/logout.html'

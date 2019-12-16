@@ -29,7 +29,7 @@ export default {
     Table,
     ContentWrapper
   },
-  data() {
+  data () {
     return {
       filter: {
         sort: undefined,
@@ -89,23 +89,23 @@ export default {
     }
   },
   methods: {
-    handleCreate() {
+    handleCreate () {
       this.$router.push({ name: 'prize-create' })
     },
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       // this.selected = this.selected.concat({
       //   id: targetItem.userId
       // });
       this.selected.push(targetItem.id)
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.id
       })
       this.updateTableSelected()
     },
-    handleAllRowSelectionChange(value) {
+    handleAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
@@ -113,11 +113,11 @@ export default {
         this.table.selected = []
       }
     },
-    handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -127,7 +127,7 @@ export default {
         return result
       }, [])
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.id)) {
         if (type === 'query') {
@@ -138,7 +138,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -146,7 +146,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -157,7 +157,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.getLoginLogList(filter).then(data => {
         this.pagination.total = data.total
@@ -165,7 +165,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       userName: _.o.string.other('form', {
         component: 'Input',

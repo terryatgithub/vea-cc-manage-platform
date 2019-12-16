@@ -179,7 +179,7 @@ export default {
     CommonContent,
     ThemeFileUpload
   },
-  data() {
+  data () {
     return {
       form: {
         themeId: undefined,
@@ -227,7 +227,7 @@ export default {
   },
 
   methods: {
-    replicate() {
+    replicate () {
       this.mode = 'replicate'
       this.title = '创建副本'
       this.$nextTick(() => {
@@ -244,7 +244,7 @@ export default {
         this.$refs.tabBgEntitys.$refs.upload.fileList = [{ dataUrl: '' }]
       })
     },
-    edit() {
+    edit () {
       this.mode = 'edit'
       this.title = '编辑'
       this.$nextTick(() => {
@@ -261,7 +261,7 @@ export default {
         this.$refs.tabBgEntitys.$refs.upload.fileList = [{ dataUrl: '' }]
       })
     },
-    btnSave() {
+    btnSave () {
       const form = cloneDeep(this.form)
       if (form.chargeType === '0') {
         form.price = '0'
@@ -282,7 +282,7 @@ export default {
         }
       })
     },
-    handleApk(picData) {
+    handleApk (picData) {
       this.$service
         .checkThemeMd5({ themeMd5: picData.fileMd5 }, '该主题可用')
         .then(() => {
@@ -290,19 +290,19 @@ export default {
           this.form.themeMd5 = picData.fileMd5
         })
     },
-    handlePreviewImg(picData) {
+    handlePreviewImg (picData) {
       this.form.previewImgUrl = picData.url
     },
-    handleThumbImg(picData) {
+    handleThumbImg (picData) {
       this.form.thumbImgUrl = picData.url
     },
-    handlePictureEntitys(picData) {
+    handlePictureEntitys (picData) {
       this.form.pictureEntitys = this.EntitysPicUp(picData)
     },
-    handleTabBgEntitys(picData) {
+    handleTabBgEntitys (picData) {
       this.form.tabBgEntitys = this.EntitysPicUp(picData)
     },
-    EntitysPicUp(picData) {
+    EntitysPicUp (picData) {
       return picData.reduce((result, item) => {
         let entity = {
           pictureName: item.originFileName,
@@ -313,7 +313,7 @@ export default {
         return result
       }, [])
     },
-    setFormData(data) {
+    setFormData (data) {
       const form = this.form
       form.themeId = data.themeId
       form.themeName = data.themeName
@@ -389,7 +389,7 @@ export default {
         this.$refs.tabBgEntitys.fileNum++
       }
     },
-    fetchData(version) {
+    fetchData (version) {
       if (version !== undefined) {
         this.form.currentVersion = version
       }
@@ -398,7 +398,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode
     if (this.editId) {
       if (this.mode === 'edit') {

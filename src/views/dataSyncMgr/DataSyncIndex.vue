@@ -6,7 +6,7 @@
 <script>
 export default {
   methods: {
-    editData() {
+    editData () {
       if (this.$isAllowEdit(this.selected)) {
         this.$emit('open-add-page', this.selected[0])
       }

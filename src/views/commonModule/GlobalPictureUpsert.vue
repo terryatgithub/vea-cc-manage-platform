@@ -167,7 +167,7 @@ export default {
   components: {
     Upload
   },
-  data() {
+  data () {
     return {
       mode: 'create',
       status: undefined,
@@ -202,10 +202,10 @@ export default {
   },
   props: ['editId', 'initMode'],
   methods: {
-    audit() {
+    audit () {
       this.auditDialogVisible = true
     },
-    submitAudit() {
+    submitAudit () {
       this.$refs.auditForm.validate(valid => {
         if (valid) {
           this.auditForm.idStr = this.editId
@@ -218,9 +218,9 @@ export default {
         }
       })
     },
-    handleUpload(file, fileItem) {
+    handleUpload (file, fileItem) {
       this.$refs.upload.getImageInfo(fileItem.dataUrl).then(
-        function(imageInfo) {
+        function (imageInfo) {
           const fileInfo = {
             upload: fileItem,
             materialTypeDictEnName: undefined,
@@ -262,22 +262,22 @@ export default {
         }.bind(this)
       )
     },
-    handleRemoveFile(file, index) {
+    handleRemoveFile (file, index) {
       this.$refs.upload.handleRemove(file.upload)
-      this.fileInfo = this.fileInfo.filter(function(item, i) {
+      this.fileInfo = this.fileInfo.filter(function (item, i) {
         return i !== index
       })
     },
-    handleSelectPicTypeStart() {
+    handleSelectPicTypeStart () {
       this.showPicTypeSelector = true
     },
-    handleBatchSetPicType(type) {
-      this.fileInfo.forEach(function(item) {
+    handleBatchSetPicType (type) {
+      this.fileInfo.forEach(function (item) {
         item.materialTypeDictEnName = type.dictEnName
       })
       this.showPicTypeSelector = false
     },
-    getFormData() {
+    getFormData () {
       const pictureId = this.pictureId
       const picTypeOptionsIndexed = this.picTypeOptionsIndexed
       const jsonStr = this.getUploadedFiles().map(item => {
@@ -296,7 +296,7 @@ export default {
       const data = { jsonStr: JSON.stringify(jsonStr) }
       return data
     },
-    setFormData(data) {
+    setFormData (data) {
       this.status = data.pictureStatus
       data = JSON.parse(JSON.stringify(data))
       const materialTypes = data.materialTypes
@@ -308,16 +308,16 @@ export default {
       this.pictureId = data.pictureId
       this.fileInfo.push(data)
     },
-    parseMaterialType(item) {
+    parseMaterialType (item) {
       return {
         dictId: item.dictId,
         dictEnName: item.dictEnName,
         dictCnName: item.dictCnName
       }
     },
-    validateFormData(cb) {
+    validateFormData (cb) {
       this.$refs.form.validate(
-        function(valid) {
+        function (valid) {
           if (valid) {
             const uploadedFiles = this.getUploadedFiles()
             if (uploadedFiles.length === 0) {
@@ -339,10 +339,10 @@ export default {
         }.bind(this)
       )
     },
-    getUploadedFiles() {
+    getUploadedFiles () {
       return this.fileInfo.filter(item => item.pictureUrl !== undefined)
     },
-    handleSubmit() {
+    handleSubmit () {
       this.validateFormData(err => {
         if (!err) {
           const data = this.getFormData()
@@ -352,13 +352,13 @@ export default {
         }
       })
     },
-    handleCancel() {
+    handleCancel () {
       this.$emit('go-back')
     },
-    getMaterialTypes() {
+    getMaterialTypes () {
       this.$service.getDictType({ type: 'materialType' }).then(data => {
         this.picTypeOptions = data || []
-        this.picTypeOptionsIndexed = this.picTypeOptions.reduce(function(
+        this.picTypeOptionsIndexed = this.picTypeOptions.reduce(function (
           result,
           item
         ) {
@@ -369,7 +369,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     if (this.editId) {
       this.title = '编辑'
       this.$service.globalPictureGet({ id: this.editId }).then(this.setFormData)

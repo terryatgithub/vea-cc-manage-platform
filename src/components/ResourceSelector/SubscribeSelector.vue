@@ -37,7 +37,7 @@ export default {
     BaseSelector,
     CommonSelector
   },
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -78,7 +78,7 @@ export default {
   },
   props: ['isLive', 'selectionType', 'source', 'disablePartner'],
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     }
   },
@@ -86,7 +86,7 @@ export default {
     'filter.partner': 'onPartnerChange'
   },
   methods: {
-    secondToTimeStr(seconds) {
+    secondToTimeStr (seconds) {
       if (seconds) {
         const hour = Math.floor(seconds / 3600)
         const min = Math.floor((seconds - 3600 * hour) / 60)
@@ -94,7 +94,7 @@ export default {
         return `${hour}小时${min}分${sec}秒`
       }
     },
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         partner: this.$consts.sourceToPartner[this.source || this.$consts.sourceOptions[0].value],
         sources: '',
@@ -103,7 +103,7 @@ export default {
         callback: 'result'
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const filter = Object.assign({}, this.efficientFilter)
       if (pagination) {
@@ -112,18 +112,18 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.onPartnerChange().then(this.fetchData)
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(result => {
         this.pagination.total = result.total
@@ -140,19 +140,19 @@ export default {
     setDefaultFilterSource () {
       const partner = this.filter.partner
       const sourceEnums = this.sourceEnums
-      const defaultSelected = sourceEnums.find(function(item) {
+      const defaultSelected = sourceEnums.find(function (item) {
         return item.value === partner
       }) || sourceEnums[0]
       if (defaultSelected) {
         this.filter.sources = defaultSelected.value
       }
     },
-    onPartnerChange() {
+    onPartnerChange () {
       const partner = this.filter.partner
       this.sourceEnums = []
       if (partner) {
         return this.$service.getPartnerSource({ partnerName: partner }).then(data => {
-          const sourceEnums = data.rows.reduce(function(result, item) {
+          const sourceEnums = data.rows.reduce(function (result, item) {
             if (item.source_List) {
               result = result.concat(item.source_List
                 // eslint-disable-next-line
@@ -171,7 +171,7 @@ export default {
       return Promise.resolve()
     }
   },
-  created() {
+  created () {
     this.onPartnerChange().then(this.fetchData)
   }
 }

@@ -1,5 +1,5 @@
 import consts from '../utlis/consts'
-export function getVersionList(params) {
+export function getVersionList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/hvi/historyList.html',
@@ -36,7 +36,7 @@ export function revokeAudit (data) {
   })
 }
 
-export function secondAudit(data) {
+export function secondAudit (data) {
   return this.fetch({
     method: 'post',
     url: 'api/secondAudit/audit.html',
@@ -44,20 +44,20 @@ export function secondAudit(data) {
   })
 }
 
-export function getTimedTaskLimit() {
+export function getTimedTaskLimit () {
   return this.fetch({
     url: 'api/v1/timedTask/taskLimit.html'
   })
 }
 
-export function getTimedTaskInfo(params) {
+export function getTimedTaskInfo (params) {
   return this.fetch({
     url: 'api/v1/timedTask/getTimedInfo.html',
     params
   })
 }
 
-export function timedTaskCancel(params) {
+export function timedTaskCancel (params) {
   return this.fetch({
     url: 'api/v1/timedTask/cancelTimedTask.html',
     params
@@ -111,7 +111,7 @@ const RESOURCE_DELETE_URL_MAP = {
   icon: 'api/v1/cornerIcon/remove.html'
 }
 
-export function deleteResource(data) {
+export function deleteResource (data) {
   return this.fetch({
     url: RESOURCE_DELETE_URL_MAP[data.type],
     params: {
@@ -128,7 +128,7 @@ export function getAuditHistoryList (params) {
 }
 
 const DICT_TYPE_CACHE = {}
-export function getDictType({ type, isFilter }) {
+export function getDictType ({ type, isFilter }) {
   const key = isFilter ? `${type}_filtered` : type
   const cache = DICT_TYPE_CACHE[key]
   if (cache) {
@@ -145,14 +145,14 @@ export function getDictType({ type, isFilter }) {
   }
 }
 
-export function getEnv() {
+export function getEnv () {
   return this.fetch({
     method: 'get',
     url: 'api/v1/getEnvironment.html'
   })
 }
 
-export function getRecommendStrategy() {
+export function getRecommendStrategy () {
   return this.fetch({
     url: 'api/dict/recommendStrategy.html'
   })

@@ -139,7 +139,7 @@ export default {
           {
             label: '是否禁用',
             prop: 'disabled',
-            formatter: function(row) {
+            formatter: function (row) {
               if (row.disabled === 0) {
                 return '否'
               } else if (row.disabled === 1) {
@@ -235,7 +235,7 @@ export default {
         this.fetchData()
       })
     },
-    editData() {
+    editData () {
       if (this.$isAllowEdit(this.selected)) {
         this.$emit('open-add-page', this.selected[0])
       }

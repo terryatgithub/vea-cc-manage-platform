@@ -1,4 +1,4 @@
-export function tabInsertionTaskGetList(params) {
+export function tabInsertionTaskGetList (params) {
   return this.fetch({
     url: 'api/v1/tabForceInsert/pageList.html',
     params

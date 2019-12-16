@@ -25,7 +25,7 @@ export default {
     MyDraftsPolicy,
     PolicyManageInfo
   },
-  data() {
+  data () {
     return {
       isShowList: true,
       id: undefined,
@@ -41,7 +41,7 @@ export default {
       this.mode = 'list'
       this.version = undefined
     },
-    handleRead(row) {
+    handleRead (row) {
       this.id = row.policyId
       this.mode = 'read'
       this.version = row.currentVersion

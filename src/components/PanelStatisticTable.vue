@@ -15,7 +15,7 @@ export default {
     Table,
     'vue-lazy-component': VueLazyComponent
   },
-  data() {
+  data () {
     return {
       clickUvTable: {
         props: {
@@ -146,10 +146,10 @@ export default {
       const rs = this.toPercent(Math.abs(decimal))
       return rs + (decimal > 0 ? ' ↑' : ' ↓')
     },
-    getDateday(date) {
+    getDateday (date) {
       return date.split('-').pop()
     },
-    getPanelSimpleBrowseData() {
+    getPanelSimpleBrowseData () {
       this.$service.getPanelSimpleBrowseData({ id: this.panelID, days: 3 }).then(data => {
         const rows = data.rows[0].data
         let clickUvData = []
@@ -197,7 +197,7 @@ export default {
       })
     },
     // 懒加载组件
-    init() {
+    init () {
       if (this.clickUvTable.data.length !== 0) {
         return
       }

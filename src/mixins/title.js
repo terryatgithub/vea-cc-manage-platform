@@ -8,7 +8,7 @@ const titleMap = {
 export default {
   props: ['titlePrefix'],
   computed: {
-    title() {
+    title () {
       const mode = this.mode
       const resourceName = this.resourceName || ''
       const title = mode === 'replicate'

@@ -28,7 +28,7 @@ export default {
     LayoutInfoList,
     LayoutInfo
   },
-  data() {
+  data () {
     return {
       mode: 'list',
       isShowList: true,
@@ -39,22 +39,22 @@ export default {
     }
   },
   methods: {
-    handleCreate() {
+    handleCreate () {
       this.mode = 'create'
       this.id = undefined
       this.isShowList = false
     },
-    handleEdit(row) {
+    handleEdit (row) {
       this.id = row.layoutId
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(row) {
+    handleRead (row) {
       this.id = row.layoutId
       this.mode = 'read'
       this.isShowList = false
     },
-    handleDelete(selected) {
+    handleDelete (selected) {
       this.$service
         .getLayoutInforBatchDel({
           id: selected.map(item => item.layoutId).join(',')
@@ -71,7 +71,7 @@ export default {
         this.version = undefined
       }
     },
-    goBack() {
+    goBack () {
       this.isShowList = true
       this.mode = 'list'
       this.version = undefined

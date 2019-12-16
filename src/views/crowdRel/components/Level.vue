@@ -45,7 +45,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       itemToAdd: {
       }
@@ -53,7 +53,7 @@ export default {
   },
   props: ['levels', 'items', 'maxDepth'],
   methods: {
-    handleAddItem(levelIndex) {
+    handleAddItem (levelIndex) {
       this.$emit('item-add', this.itemToAdd[levelIndex])
     }
   }

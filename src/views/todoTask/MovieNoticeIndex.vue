@@ -48,7 +48,7 @@ export default {
     PageContentWrapper,
     PanelInfo
   },
-  data() {
+  data () {
     return {
       filter: {
       },
@@ -130,10 +130,10 @@ export default {
     }
   },
   methods: {
-    goBack() {
+    goBack () {
       this.isShowList = true
     },
-    handleRead(itemTitle) {
+    handleRead (itemTitle) {
       let start = itemTitle.indexOf('[') + 1
       let end = itemTitle.indexOf(']')
       let paramPannel = itemTitle.slice(start, end).split(',')
@@ -148,10 +148,10 @@ export default {
         version
       }
     },
-    handlePreviewPanelEnd() {
+    handlePreviewPanelEnd () {
       this.activePage = 'movie_list'
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
@@ -160,7 +160,7 @@ export default {
       }
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -168,7 +168,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -179,7 +179,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.getMoviePageList(filter).then(data => {
         this.pagination.total = data.total
@@ -187,7 +187,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       keyword: _.o.string.other('form', {
         component: 'Input',

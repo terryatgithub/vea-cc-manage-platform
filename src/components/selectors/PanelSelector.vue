@@ -84,7 +84,7 @@
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
 import BaseSelector from '../BaseSelector'
 export default {
-  data() {
+  data () {
     const panelStatusOptions = this.$consts.statusOptions.filter(item => {
       return [3, 4, 7].indexOf(item.value) > -1
     })
@@ -135,7 +135,7 @@ export default {
           {
             label: '业务分类',
             width: 100,
-            render: function(h, scope) {
+            render: function (h, scope) {
               return this.pannelCategoryOptionsIndexed[scope.row.pannelCategory]
             }.bind(this)
           },
@@ -152,7 +152,7 @@ export default {
           },
           {
             label: '状态',
-            render: function(h, scope) {
+            render: function (h, scope) {
               return this.$consts.statusText[scope.row.pannelStatus]
             }.bind(this)
           },
@@ -182,18 +182,18 @@ export default {
     BaseSelector
   },
   methods: {
-    handleSelectStart() {
+    handleSelectStart () {
       this.$emit('select-start')
       this.fetchData()
     },
-    handleSelectCancel() {
+    handleSelectCancel () {
       this.$refs.wrapper.handleSelectCancel()
     },
-    handleSelectEnd(data) {
+    handleSelectEnd (data) {
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         idPrefix: this.$consts.idPrefix,
         pannelType: 1,
@@ -206,18 +206,18 @@ export default {
         resourceIsNull: true
       }
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleResetFilter() {
+    handleResetFilter () {
       this.filter = this.genDefaultFilter()
       this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       const pagination = this.pagination
       if (pagination) {
@@ -234,7 +234,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.$service.getDictType({ type: 'businessType' }).then(data => {
       this.panelCategoryOptions = data.map(item => {
         return {

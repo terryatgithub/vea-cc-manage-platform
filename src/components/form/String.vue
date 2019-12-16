@@ -9,7 +9,7 @@
 import formItemMixin from './formItemMixin'
 export default {
   mixins: [formItemMixin],
-  data() {
+  data () {
     return {
 
     }

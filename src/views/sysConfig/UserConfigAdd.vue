@@ -56,7 +56,7 @@ export default {
     default: null
   },
   //  prop: ['editId'],
-  data() {
+  data () {
     return {
       title: null,
       dictEnNameList: null,
@@ -95,12 +95,12 @@ export default {
     }
   },
   methods: {
-    userConfigBusinessType() {
+    userConfigBusinessType () {
       this.$service.getDictType({ type: 'businessType' }).then(data => {
         this.dictEnNameList = data
       })
     },
-    submitBtn() {
+    submitBtn () {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service
@@ -111,7 +111,7 @@ export default {
         }
       })
     },
-    getEditData() {
+    getEditData () {
       this.$service.userConfigEdit({ id: this.editId }).then(data => {
         Object.keys(this.form).forEach(v => {
           if (v === 'disabled') {
@@ -122,7 +122,7 @@ export default {
         })
       })
     },
-    getDepts() {
+    getDepts () {
       return this.$service.getDepts().then(data => {
         this.departmentList = data
         console.log(data)
@@ -132,7 +132,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.userConfigBusinessType()
     this.getDepts()
     if (this.editId !== null && this.editId !== undefined) {

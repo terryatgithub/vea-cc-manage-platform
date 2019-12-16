@@ -22,7 +22,7 @@ export default {
     initialStatus: Number // 无历史版本的初始状态
   },
 
-  data() {
+  data () {
     return {
       isShowHistory: true,
       historyList: [],
@@ -31,7 +31,7 @@ export default {
   },
 
   computed: {
-    statusName() {
+    statusName () {
       return this.$numToAuditStatus(
         this.currentVersion === ''
           ? this.initialStatus
@@ -41,14 +41,14 @@ export default {
   },
 
   methods: {
-    changeVersion(versionAndStatus) {
+    changeVersion (versionAndStatus) {
       versionAndStatus = versionAndStatus.split('_')
       this.$emit('change', {
         version: versionAndStatus[0],
         status: parseInt(versionAndStatus[1])
       })
     },
-    getHistoryList() {
+    getHistoryList () {
       return this.$service
         .getHistoryList({ id: this.id, type: this.type })
         .then(data => {
@@ -77,7 +77,7 @@ export default {
         })
     }
   },
-  created() {
+  created () {
     this.getHistoryList().then(() => {
       this.$emit('getHistoryList', this.historyList)
     })

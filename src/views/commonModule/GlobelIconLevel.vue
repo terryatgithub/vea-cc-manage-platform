@@ -39,7 +39,7 @@ export default {
     OrderInput,
     ContentWrapper
   },
-  data() {
+  data () {
     return {
       tab: {
         cornerIconId: undefined,
@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     // 初始化表格
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.getGlobalMgrList(filter).then(data => {
         console.log(data)
@@ -85,7 +85,7 @@ export default {
         this.tab.pannelList = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.idPrefix = '10' // 10:酷开数据;11:其他地方。默认酷开
@@ -94,7 +94,7 @@ export default {
       }
       return filter
     },
-    handleChangePannelOrderStart(currentPannelIndex, order) {
+    handleChangePannelOrderStart (currentPannelIndex, order) {
       if (order !== '') {
         order = parseInt(order)
         const pannelList = this.tab.pannelList
@@ -111,7 +111,7 @@ export default {
         }
       }
     },
-    handleChangePannelOrderEnd(pannelIndex) {
+    handleChangePannelOrderEnd (pannelIndex) {
       if (this.currentPannelIndex === pannelIndex) {
         const newIndex = this.currentPannelOrder - 1
         const oldIndex = pannelIndex
@@ -128,7 +128,7 @@ export default {
       }
     },
     // 查询
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
@@ -138,7 +138,7 @@ export default {
       this.fetchData()
     },
     // 重置
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -147,17 +147,17 @@ export default {
       this.fetchData()
     },
     // 表格操作
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.cornerIconId)
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.cornerIconId
       })
       this.updateTableSelected()
     },
-    handleAllRowSelectionChange(value) {
+    handleAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
@@ -165,11 +165,11 @@ export default {
         this.table.selected = []
       }
     },
-    handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -180,7 +180,7 @@ export default {
       }, [])
     },
     // 角标分类
-    getCornerTypes() {
+    getCornerTypes () {
       return this.$service.getCornerTypes().then(data => {
         data.forEach(element => {
           this.globalTypes[element.typeName] = element.typeId
@@ -189,7 +189,7 @@ export default {
       })
     },
     // 角标类别
-    getIconAttributes() {
+    getIconAttributes () {
       return this.$service.getIconAttributes().then(data => {
         data.attributes.forEach(element => {
           this.attributeTypes[element.attributeName] = element.attributeCode
@@ -198,7 +198,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       typeId: _.o.enum(this.globalTypes).other('form', {
         component: 'Select',

@@ -541,7 +541,7 @@ export default {
     AnalyzeDmpDataDialog,
     SubscribeVideos
   },
-  data() {
+  data () {
     const extend = {
       grid: {
         top: '10%',
@@ -558,7 +558,7 @@ export default {
         // triggerEvent: true,
         axisLabel: {
           rotate: 45,
-          formatter: function(val) {
+          formatter: function (val) {
             let mark = val.indexOf('(')
             if (mark === -1) {
               return val
@@ -699,7 +699,7 @@ export default {
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
-    resourceName() {
+    resourceName () {
       return this.currentPanelDataType === 3 ? '业务专辑' : '版块'
     },
     // eslint-disable-next-line
@@ -724,21 +724,21 @@ export default {
       }
       return 'multiple'
     },
-    currentPanelDataType() {
+    currentPanelDataType () {
       const panel = this.pannel
       if (panel.pannelGroupId) {
         return panel.panelGroupType
       }
       return this.panelDataType
     },
-    isPanelCommonOrVideo() {
+    isPanelCommonOrVideo () {
       const panelGroupCategory = this.pannel.panelGroupCategory
       return panelGroupCategory === 31 || panelGroupCategory === 67
     },
-    isReplica() {
+    isReplica () {
       return this.mode === 'replicate' || this.pannel.duplicateVersion === 'yes'
     },
-    isSelectMultiResource() {
+    isSelectMultiResource () {
       const selectedLayout = this.selectedLayout.layoutJsonParsed
       if (
         selectedLayout &&
@@ -760,7 +760,7 @@ export default {
         return pictureSize
       }
     },
-    panelResourceIds() {
+    panelResourceIds () {
       const ids = []
       const contentTypeMap = {
         movie: true,
@@ -768,9 +768,9 @@ export default {
         shopping: false,
         app: false
       }
-      this.pannel.pannelList.forEach(function(item) {
-        item.contentList.forEach(function(blockItem) {
-          blockItem.videoContentList.forEach(function(videoItem) {
+      this.pannel.pannelList.forEach(function (item) {
+        item.contentList.forEach(function (blockItem) {
+          blockItem.videoContentList.forEach(function (videoItem) {
             const videoContentType = videoItem.videoContentType
             const id = videoItem.extraValue1 || ''
             if (id && contentTypeMap[videoContentType]) {
@@ -781,7 +781,7 @@ export default {
       })
       return ids
     },
-    isShowTagsField() {
+    isShowTagsField () {
       const pannelList = this.pannel.pannelList
       let isShow = !!this.selectedLayout
       for (
@@ -804,7 +804,7 @@ export default {
       }
       return isShow
     },
-    couldSetReleaseTime() {
+    couldSetReleaseTime () {
       const mode = this.mode
       const currentVersion = this.pannel.currentVersion
       const isCreatingOrCopying = mode === 'create' || mode === 'copy'
@@ -829,17 +829,17 @@ export default {
     }
   },
   watch: {
-    isShowfocusImgUrl(val) {
+    isShowfocusImgUrl (val) {
       if (val === false) {
         this.pannel.focusImgUrl = ''
       }
     },
-    'pannel.focusShape': function(val) {
+    'pannel.focusShape': function (val) {
       if (val === 1) {
         this.isShowfocusImgUrl = false
       }
     },
-    'pannel.parentType': function(val) {
+    'pannel.parentType': function (val) {
       if (val === 'group') {
         this.pannel.showTitle = 1
       }
@@ -874,7 +874,7 @@ export default {
       const rs = this.toPercent(Math.abs(decimal))
       return rs + (decimal > 0 ? ' ↑' : ' ↓')
     },
-    handleChartData(chartData) {
+    handleChartData (chartData) {
       return {
         title: chartData.title,
         unit: chartData.unit,
@@ -882,14 +882,14 @@ export default {
         rows: chartData.data
       }
     },
-    handleChartSettings(chartData) {
+    handleChartSettings (chartData) {
       return {
         labelMap: {
           y: chartData.title
         }
       }
     },
-    handleChartExtend(chartData) {
+    handleChartExtend (chartData) {
       const yAxis = {
         axisLabel: {
           formatter: '{value}%'
@@ -907,7 +907,7 @@ export default {
     handleChartEvents (index, mode) {
       let _this = this
       return {
-        click: function(e) {
+        click: function (e) {
           const h = _this.$createElement
           if (e.componentType === 'xAxis' && mode === 'edit') {
             let xIndex = _this.panelChartDataArr[index].data.findIndex(item => {
@@ -933,7 +933,7 @@ export default {
         }
       }
     },
-    handleBatchAddTag() {
+    handleBatchAddTag () {
       this.showAddTagDialog = true
       this.$sendEvent({
         type: 'panel_tag',
@@ -942,11 +942,11 @@ export default {
         }
       })
     },
-    handleBatchAddTagEnd() {
+    handleBatchAddTagEnd () {
       this.getSharedTags()
       this.showAddTagDialog = false
     },
-    handleInputTagWeight(weight, originWeight, tag) {
+    handleInputTagWeight (weight, originWeight, tag) {
       this.$sendEvent({
         type: 'tag_weight',
         payload: {
@@ -964,7 +964,7 @@ export default {
           tag.tagWeight = originWeight
         })
     },
-    getSharedTags() {
+    getSharedTags () {
       const panelId = this.pannel.pannelGroupId
       const resourceIds = this.panelResourceIds
       const isNoResources = resourceIds && resourceIds.length === 0
@@ -979,7 +979,7 @@ export default {
         })
       }
     },
-    handleFocusConfigChange(val) {
+    handleFocusConfigChange (val) {
       if (this.isResetingData) {
         return
       }
@@ -999,7 +999,7 @@ export default {
           '周六',
           '周日'
         ]
-        pannel.pannelList = pannelList.map(function(item, index) {
+        pannel.pannelList = pannelList.map(function (item, index) {
           item.pannelTitle = titles[index]
           item.panelIsFocus = 0
           return item
@@ -1013,14 +1013,14 @@ export default {
         while (count-- > 0) {
           this.addPannel()
         }
-        pannel.pannelList = pannelList.map(function(item, index) {
+        pannel.pannelList = pannelList.map(function (item, index) {
           item.pannelTitle = '时间段分组'
           return item
         })
         this.updateAllPosition()
       }
     },
-    fetchData(version) {
+    fetchData (version) {
       return this.$service.panelGetDetail({ id: this.id, version }).then(data => {
         this.setPanelInfoData(data)
       })
@@ -1034,7 +1034,7 @@ export default {
         return result
       }, [])
     },
-    handleSelectVersion() {
+    handleSelectVersion () {
       const pannel = this.pannel
       window.location.href =
         this.urls.copy_pannel +
@@ -1043,7 +1043,7 @@ export default {
         '&version=' +
         pannel.currentVersion
     },
-    handleCopy(status) {
+    handleCopy (status) {
       this.pannel.panelGroupType = this.copyToPanelDataType
       const STATUS = this.$consts.status
       if (status === STATUS.waiting) {
@@ -1079,7 +1079,7 @@ export default {
         item.contentList = []
       })
     },
-    handleSelectLayoutEnd(layout, blockCount) {
+    handleSelectLayoutEnd (layout, blockCount) {
       // 切换布局之后，如果含有用排行榜填充的，清空所有版块内容
       const panelIndexListUsingRanking = this.getPanelIndexListUsingRanking()
       panelIndexListUsingRanking.forEach(index => {
@@ -1115,14 +1115,14 @@ export default {
       })
       // 如果选择的是不含价格的布局，要删除所有价格信息
       if (layout.layoutJsonParsed.contents[0].type !== 'Mall') {
-        this.pannel.pannelList.forEach(function(item) {
-          item.contentList.forEach(function(cItem) {
+        this.pannel.pannelList.forEach(function (item) {
+          item.contentList.forEach(function (cItem) {
             ;[]
               .concat(
                 cItem.videoContentList || [],
                 cItem.specificContentList || []
               )
-              .forEach(function(vItem) {
+              .forEach(function (vItem) {
                 vItem.price = undefined
                 vItem.secKillPrice = undefined
               })
@@ -1138,12 +1138,12 @@ export default {
       // 清除异形焦点
       this.pannel.focusImgUrl = ''
     },
-    handleSelectAlienFocusEnd(item) {
+    handleSelectAlienFocusEnd (item) {
       this.pannel.focusImgUrl = item.pictureUrl
     },
 
     // 设置版块内容
-    handleClickBlock(index) {
+    handleClickBlock (index) {
       const pannel = this.pannel
       if (this.isFillWithRanking) {
         return this.$message.error('使用排行榜填充的版块里的推荐位不能查看或编辑')
@@ -1166,11 +1166,11 @@ export default {
       this.currentBlockIndex = index
       this.activePage = 'block_content'
     },
-    handleSetBlockContentCancle() {
+    handleSetBlockContentCancle () {
       this.activePage = 'panel_info'
       this.getSharedTags()
     },
-    handleSetBlockContentEnd(param) {
+    handleSetBlockContentEnd (param) {
       const activePannelIndex = +this.activePannelIndex
       const activePannel = this.pannel.pannelList[activePannelIndex]
       const selectedResources = activePannel.selectedResources || []
@@ -1256,14 +1256,14 @@ export default {
         insertAfter: activePannel.selectedResources.length + 1
       })
     },
-    handleSelectResourceEnd(selectedResources) {
+    handleSelectResourceEnd (selectedResources) {
       const resourceSelector = this.$refs.resourceSelector
       const pannel = this.pannel
       const activePannelIndex = +this.activePannelIndex
       const activePannel = pannel.pannelList[activePannelIndex]
       // 获取当前已有内容的推荐位数量
       let blockNotEmptyCount = 0
-      activePannel.contentList.forEach(function(item) {
+      activePannel.contentList.forEach(function (item) {
         const videoContentList = item.videoContentList
         if (videoContentList && videoContentList.length > 0) {
           blockNotEmptyCount++
@@ -1275,7 +1275,7 @@ export default {
         cancelButtonText: '取消',
         inputPlaceholder:
           '当前已填充 ' + blockNotEmptyCount + ' 个， 默认为从第1位开始填充',
-        inputValidator: function(value) {
+        inputValidator: function (value) {
           if (value !== null && !RegExp(/^[0-9]*[1-9][0-9]*$/).test(value)) {
             return '请正确填写位置'
           }
@@ -1326,7 +1326,7 @@ export default {
         // 定义一个标识，在填充的时候，填充最合适尺寸的图片
         shouldFindFitestPicture: true
       })
-        .map(function(item) {
+        .map(function (item) {
           return {
             contentPosition: null,
             blockMallPosition: null,
@@ -1388,14 +1388,14 @@ export default {
       this.updatePosition()
       this.getSharedTags()
     },
-    handleRemoveTab(indexString) {
+    handleRemoveTab (indexString) {
       this.$confirm('确认删除该子版块?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(
-          function() {
+          function () {
             const pannelList = this.pannel.pannelList
             if (pannelList.length === 1) {
               return this.$message({
@@ -1412,11 +1412,11 @@ export default {
             }
           }.bind(this)
         )
-        .catch(function(e) {
+        .catch(function (e) {
           console.log(e)
         })
     },
-    handleAddTab() {
+    handleAddTab () {
       const validateBlocksRes = this.validateBlocks()
       if (validateBlocksRes.emptyBlock) {
         return this.$message({
@@ -1433,7 +1433,7 @@ export default {
         panelIsFocus: 0
       }
     },
-    addPannel() {
+    addPannel () {
       const pannelList = this.pannel.pannelList
       const pannel = {
         rankIsOpen: 0,
@@ -1448,9 +1448,9 @@ export default {
       this.blockCountList.push(this.blockCount)
       pannelList.push(pannel)
     },
-    handleSetDefaultActiveTab() {
+    handleSetDefaultActiveTab () {
       const activePannelIndex = +this.activePannelIndex
-      this.pannel.pannelList.forEach(function(item, index) {
+      this.pannel.pannelList.forEach(function (item, index) {
         if (activePannelIndex === index) {
           item.panelIsFocus = 1
         } else {
@@ -1459,7 +1459,7 @@ export default {
       })
     },
 
-    handlePanelGroupCategoryChange(val) {
+    handlePanelGroupCategoryChange (val) {
       this.$confirm('切换业务类型将清空推荐位内容, 确定切换?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -1478,21 +1478,21 @@ export default {
         )
         .catch(() => {})
     },
-    handlePannelResourceChange(val) {
+    handlePannelResourceChange (val) {
       this.$confirm('切换内容源将清空推荐位内容, 确定切换?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(
-          function() {
+          function () {
             this.pannel.pannelResource = val
             this.clearBlocks()
           }.bind(this)
         )
         .catch(() => {})
     },
-    handleInputParentType(parentType) {
+    handleInputParentType (parentType) {
       this.$confirm('切换版块类型将清空推荐位内容, 确定切换?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -1535,7 +1535,7 @@ export default {
         .catch((e) => { console.log(e) })
     },
 
-    handleSetPanelGroupInfoStart(index) {
+    handleSetPanelGroupInfoStart (index) {
       const panel = this.pannel.pannelList[index]
       this.activePanelGroup = {
         index: index,
@@ -1546,10 +1546,10 @@ export default {
         panelIsFocus: panel.panelIsFocus
       }
     },
-    handleSetPanelGroupInfoCancel() {
+    handleSetPanelGroupInfoCancel () {
       this.activePanelGroup = undefined
     },
-    handleSetPanelGroupInfoEnd() {
+    handleSetPanelGroupInfoEnd () {
       const groupInfo = this.activePanelGroup
       const index = groupInfo.index
       const panelList = this.pannel.pannelList
@@ -1577,10 +1577,10 @@ export default {
       this.activePanelGroup = undefined
       this.updateAllPosition()
     },
-    setPanelDefaultFocus(index) {
+    setPanelDefaultFocus (index) {
       const panelList = this.pannel.pannelList
       const panel = panelList[index]
-      panelList.forEach(function(item) {
+      panelList.forEach(function (item) {
         item.panelIsFocus = 0
       })
       panel.panelIsFocus = 1
@@ -1594,7 +1594,7 @@ export default {
         })
         .catch(() => {})
     },
-    clearBlocks(index) {
+    clearBlocks (index) {
       const pannel = this.pannel
       const pannelList = pannel.pannelList
       const doClear = (i) => {
@@ -1612,13 +1612,13 @@ export default {
       }
       this.updateAllPosition()
     },
-    updateAllPosition() {
+    updateAllPosition () {
       let i = this.pannel.pannelList.length
       while (--i >= 0) {
         this.updatePosition(i)
       }
     },
-    updatePosition(index) {
+    updatePosition (index) {
       const selectedLayout = this.selectedLayout
       if (!selectedLayout) {
         return
@@ -1658,10 +1658,10 @@ export default {
       const layoutHeight =
         lastBlock.y + (lastBlockResize.height || lastBlock.height)
 
-      const calculateFactory = function() {
+      const calculateFactory = function () {
         if (type === 'Expander' && originBlockCount === 2) {
           const space = layoutJsonParsed.extra.space
-          return function(n) {
+          return function (n) {
             // 复制第 2 个推荐位
             const targetBlock = blocks[1]
             const resize = targetBlock.resize
@@ -1694,7 +1694,7 @@ export default {
           }
         } else if (type === 'Expander') {
           const space = layoutJsonParsed.extra.space
-          return function(n) {
+          return function (n) {
             const times = Math.floor(n / originBlockCount) - 1
             const index = n % originBlockCount
             const targetBlock = blocks[index]
@@ -1731,7 +1731,7 @@ export default {
           // 布局信息里没有这个信息，这里硬编码40
           const space = 40
           // 计算第 n 个推荐位的信息
-          return function(n) {
+          return function (n) {
             // 整个布局已经扩展过几次
             const times = Math.ceil(n / originBlockCount) - 1
             // 当前对应的是原始布局的哪个推挤位
@@ -1788,7 +1788,7 @@ export default {
 
       // 检查重复
       const resourceIndexed = {}
-      const selectedBlocksAndResources = blocks.map(function(item, index) {
+      const selectedBlocksAndResources = blocks.map(function (item, index) {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
@@ -1837,7 +1837,7 @@ export default {
         })
 
         // 如果推荐位带标题，则强制显示标题
-        ;[].concat(contentList, specificContentList).forEach(function(cItem) {
+        ;[].concat(contentList, specificContentList).forEach(function (cItem) {
           if (item.title_info) {
             cItem.showTitle = 1
             cItem.forceTitle = true
@@ -1880,7 +1880,7 @@ export default {
       }
     },
 
-    handleDragBlock(oldIndex, newIndex) {
+    handleDragBlock (oldIndex, newIndex) {
       if (this.isFillWithRanking) {
         return this.$message.error('排行榜填充的推荐位不支持自定义位置')
       }
@@ -1896,7 +1896,7 @@ export default {
     },
 
     // 移除某个推荐位
-    handleRemoveBlock(index) {
+    handleRemoveBlock (index) {
       // 重新计算 block
       const activePannelIndex = +this.activePannelIndex
       const activePannel = this.pannel.pannelList[activePannelIndex]
@@ -1911,7 +1911,7 @@ export default {
       this.updatePosition()
       this.getSharedTags()
     },
-    getFormData() {
+    getFormData () {
       const data = JSON.parse(JSON.stringify(this.pannel))
       const mode = this.mode
       if (mode === 'replicate') {
@@ -1932,15 +1932,15 @@ export default {
         panelList[i].contentList = selectedBlocksAndResources
       }
     },
-    parseDataToApi(data) {
+    parseDataToApi (data) {
       const panelDataType = this.currentPanelDataType
       const layout = this.selectedLayout
       const pannel = JSON.parse(JSON.stringify(data))
 
       pannel.panelGroupType = panelDataType
-      pannel.pannelList = data.pannelList.map(function(item) {
+      pannel.pannelList = data.pannelList.map(function (item) {
         let hasSpecific = false
-        const itemContentList = item.contentList.map(function(_contentItem) {
+        const itemContentList = item.contentList.map(function (_contentItem) {
           const titleInfo = _contentItem.titleInfo
           const resize = _contentItem.resize
           const mallResize = _contentItem.mallResize
@@ -1986,7 +1986,7 @@ export default {
           }
           // 去除辅助字段, 转换数据结构
           ;[].concat(contentItem.videoContentList || [], contentItem.specificContentList || [])
-            .forEach(function(item) {
+            .forEach(function (item) {
               item.forceTitle = undefined
               item.picturePreset = undefined
               const appParamsList = item.appParams
@@ -2045,7 +2045,7 @@ export default {
 
       // 时间段默认落焦
       if (pannel.focusConfig === 'timeSlot') {
-        const defaultFocusIndex = pannel.pannelList.findIndex(function(item) {
+        const defaultFocusIndex = pannel.pannelList.findIndex(function (item) {
           return item.panelIsFocus === 1
         })
         if (defaultFocusIndex === -1) {
@@ -2055,7 +2055,7 @@ export default {
 
       return pannel
     },
-    validate(pannel, callback) {
+    validate (pannel, callback) {
       const cb = (err) => {
         if (!err) {
           callback()
@@ -2218,7 +2218,7 @@ export default {
       }
       cb()
     },
-    validateBlocks() {
+    validateBlocks () {
       const pannelList = this.pannel.pannelList
       const focusConfig = this.pannel.focusConfig
       const pannelTitleIndex = {}
@@ -2332,7 +2332,7 @@ export default {
         focusIndex
       }
     },
-    handleSaveDraft() {
+    handleSaveDraft () {
       const data = this.getFormData()
       data.isTiming = undefined
       data.releaseTime = undefined
@@ -2341,7 +2341,7 @@ export default {
         this.upsertPanelInfo(data)
       })
     },
-    handleSubmitAudit(timing) {
+    handleSubmitAudit (timing) {
       const data = this.getFormData()
       data.pannelStatus = this.$consts.status.waiting
       this.validate(data, () => {
@@ -2358,7 +2358,7 @@ export default {
         }
       })
     },
-    upsertPanelInfo(data) {
+    upsertPanelInfo (data) {
       // 使用 v6 布局重新计算 contentPosition
       this.makeCompatibleV6(data)
       this.$service
@@ -2367,14 +2367,14 @@ export default {
           this.$emit('upsert-end')
         })
     },
-    resetingData(cb) {
+    resetingData (cb) {
       this.isResetingData = true
       cb()
       this.$nextTick(() => {
         this.isResetingData = false
       })
     },
-    setPanelInfoData(panelInit) {
+    setPanelInfoData (panelInit) {
       this.resetingData(() => {
         const initData = panelInit
         const pannel = this.pannel
@@ -2385,11 +2385,11 @@ export default {
 
         if (firstPannel) {
           firstPannel.contentList = firstPannel.contentList || []
-          this.blockCountList = pannelList.map(function(item) {
+          this.blockCountList = pannelList.map(function (item) {
             return item.contentList.length
           })
-          pannel.pannelList = pannelList.map(function(item) {
-            item.contentList = item.contentList.map(function(contentItem) {
+          pannel.pannelList = pannelList.map(function (item) {
+            item.contentList = item.contentList.map(function (contentItem) {
               contentItem.contentPosition = JSON.parse(
                 contentItem.contentPosition
               )
@@ -2444,7 +2444,7 @@ export default {
         this.getSharedTags()
       })
     },
-    clickBlock() {
+    clickBlock () {
       const { initGroupIndex, initBlockIndex } = this
       if (initGroupIndex !== undefined) {
         this.activePannelIndex = initGroupIndex
@@ -2453,7 +2453,7 @@ export default {
         this.handleClickBlock(initBlockIndex)
       }
     },
-    getSimpleBrowseData() {
+    getSimpleBrowseData () {
       this.$service.getPanelSimpleBrowseData({ id: this.id }).then(data => {
         const panelUVCTR = data.rows[0].data[0] ? data.rows[0].data[0].uvctr : 'N/A'
         this.panelUVCTR = panelUVCTR
@@ -2462,7 +2462,7 @@ export default {
       })
     },
     // 点击板块数据展示折线图
-    handlePanelDataClick() {
+    handlePanelDataClick () {
       this.isCollapseData = !this.isCollapseData
       if (this.panelChartDataArr.length !== 0) {
         return
@@ -2503,7 +2503,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.mode = this.initMode || 'create'
     this.$service.getDictType({ type: 'businessType', isFilter: 1 }).then(data => {
       this.businessTypeEnums = data.map(item => {
@@ -2518,7 +2518,7 @@ export default {
       this.getSimpleBrowseData()
     }
   },
-  mounted() {
+  mounted () {
     if (this.id) {
       this.fetchData(this.version).then(() => {
         this.clickBlock()

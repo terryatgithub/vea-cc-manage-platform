@@ -51,14 +51,14 @@ export default {
     }
   },
   watch: {
-    showDialog(val) {
+    showDialog (val) {
       if (val === false) {
         this.$emit('cancel')
       }
     }
   },
   methods: {
-    judgeTask() {
+    judgeTask () {
       this.$refs.submitForm.validate((valid) => {
         if (valid) {
           const isTiming = this.submitForm.isTiming
@@ -74,7 +74,7 @@ export default {
         }
       })
     },
-    submitTask() {
+    submitTask () {
       const submitForm = this.submitForm
       this.$emit('submit', {
         isTiming: submitForm.isTiming,

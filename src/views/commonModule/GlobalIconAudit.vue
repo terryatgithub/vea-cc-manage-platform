@@ -27,7 +27,7 @@ export default {
 //   props: {
 //     idStr: Number //自增ID
 //   },
-  data() {
+  data () {
     return {
       auditForm: {
         auditFlag: '4', // 审核状态
@@ -41,7 +41,7 @@ export default {
     }
   },
   methods: {
-    onSubmit(auditForm) {
+    onSubmit (auditForm) {
       this.$refs.auditForm.validate((valid) => {
         if (valid) {
           const auditFormObj = this.auditForm
@@ -49,13 +49,13 @@ export default {
         }
       })
     },
-    cancle(auditForm) {
+    cancle (auditForm) {
       this.$refs.auditForm.resetFields()
       const close = false
       this.$emit('cancle', close)
     }
   },
-  created() {
+  created () {
   }
 }
 </script>

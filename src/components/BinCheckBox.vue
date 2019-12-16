@@ -12,7 +12,7 @@
 export default {
   props: ['value', 'label', 'disabled', 'isNegative'],
   computed: {
-    boolValue() {
+    boolValue () {
       const value = this.value
       if (this.isNegative !== undefined) {
         // 如果是否定，将自动取相反
@@ -22,7 +22,7 @@ export default {
     }
   },
   methods: {
-    handleInputValue(value) {
+    handleInputValue (value) {
       value = this.isNegative !== undefined
         ? value
           ? 0 : 1

@@ -69,7 +69,7 @@ export default {
     RemoteSelectorWrapper
   },
   props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled', 'resource'],
-  data() {
+  data () {
     return {
       collapseActiveItems: ['relPicture'],
       materialTypes: {}, // 素材类型
@@ -110,7 +110,7 @@ export default {
     }
   },
   methods: {
-    getDefaultFilter() {
+    getDefaultFilter () {
       const filter = {
         pictureStatus: 4
       }
@@ -119,24 +119,24 @@ export default {
       }
       return filter
     },
-    handleRowSelectionChange(row, index) {
+    handleRowSelectionChange (row, index) {
       this.selectedCollection = 'normal'
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
     },
-    onFilterChange() {
+    onFilterChange () {
       this.handleFilterChangeDebounce()
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -145,7 +145,7 @@ export default {
       return { ...filter }
     },
     // 获取数据
-    fetchData() {
+    fetchData () {
       this.table.selected = undefined
       const filter = this.parseFilter()
       const pictureResolution = this.pictureResolution
@@ -161,33 +161,33 @@ export default {
         this.table.data = data.rows
       })
     },
-    getMaterialTypes() {
+    getMaterialTypes () {
       return this.$service.getMaterialTypes().then(data => {
         data.forEach(item => {
           this.materialTypes[item.dictCnName] = item.dictId
         })
       })
     },
-    handleSelectStart() {
+    handleSelectStart () {
       if (!this.filterSchema) {
         this.initFilterSchema()
       }
       this.getPresetPictures()
       this.fetchData()
     },
-    handleSelectEnd() {
+    handleSelectEnd () {
       const selectedCollection = this.selectedCollection
       const table = selectedCollection === 'preset' ? this.presetTable : this.table
       const { data, selected } = table
       this.$emit('select-end', data[selected])
       this.table.selected = undefined
     },
-    handlePresetTableRowSelectionChange(row, index) {
+    handlePresetTableRowSelectionChange (row, index) {
       this.selectedCollection = 'preset'
       this.presetTable.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
     },
-    getPresetPictures() {
+    getPresetPictures () {
       const resource = this.resource
       const mapPictures = (items) => items.map((item) => {
         return {
@@ -325,7 +325,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     this.handleFilterChangeDebounce = debounce(this.handleFilterChange, 500)
   }
 }

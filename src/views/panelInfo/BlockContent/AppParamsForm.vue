@@ -65,7 +65,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     const validateKey = (rule, value, cb) => {
       if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
         return cb(new Error('请勿输入特殊或空白字符'))
@@ -132,7 +132,7 @@ export default {
 
     },
     dowhatOptions: {
-      default() {
+      default () {
         return [
           {
             label: 'startActivity',
@@ -150,7 +150,7 @@ export default {
       }
     },
     bywhatOptions: {
-      default() {
+      default () {
         return [
           {
             label: 'action',
@@ -172,10 +172,10 @@ export default {
     value: 'setInputValue'
   },
   methods: {
-    formProp(key) {
+    formProp (key) {
       return (this.propPrefix || '') + key
     },
-    genDefaultValue() {
+    genDefaultValue () {
       return {
         packagename: undefined,
         versioncode: undefined,
@@ -185,25 +185,25 @@ export default {
         params: []
       }
     },
-    setInputValue(val) {
+    setInputValue (val) {
       if (val !== this.inputValue) {
         this.inputValue = Object.assign(this.genDefaultValue(), val)
       }
     },
-    emitInputValue(val) {
+    emitInputValue (val) {
       this.$emit('input', this.inputValue)
     },
-    handleAddParam() {
+    handleAddParam () {
       this.inputValue.params.push({
         key: undefined,
         value: undefined
       })
     },
-    handleRemoveParam(index) {
+    handleRemoveParam (index) {
       this.inputValue.params.splice(index, 1)
     }
   },
-  created() {
+  created () {
     if (this.value) {
       this.setInputValue(this.value)
     }

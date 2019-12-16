@@ -32,7 +32,7 @@ import RemoteSelectorWrapper from '../SelectorWrapper'
 import BaseSelector from '../BaseSelector'
 import _ from 'gateschema'
 export default {
-  data() {
+  data () {
     return {
       options: [],
       pagination: {
@@ -103,7 +103,7 @@ export default {
     BaseSelector
   },
   methods: {
-    handleSelectStart() {
+    handleSelectStart () {
       this.$emit('select-start')
       if (!this.isLive) {
         this.handleResetFilter()
@@ -111,29 +111,29 @@ export default {
         this.fetchData()
       }
     },
-    handleSelectCancel() {
+    handleSelectCancel () {
       this.$refs.wrapper.handleSelectCancel()
     },
-    handleSelectEnd(data) {
+    handleSelectEnd (data) {
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         homepageModel: this.homepageModel
       }
     },
-    handleFilterChange(filter) {
+    handleFilterChange (filter) {
       this.filter = JSON.parse(JSON.stringify(filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleResetFilter() {
+    handleResetFilter () {
       this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = JSON.parse(JSON.stringify(this.filter))
       const pagination = this.pagination
       if (pagination) {
@@ -146,7 +146,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       homepageId: _.o.string.other('form', {
         component: 'Input',

@@ -41,7 +41,7 @@ export default {
     }, // 版本
     hasHistory: {
       type: Boolean,
-      default() {
+      default () {
         return true
       }
     },
@@ -50,17 +50,17 @@ export default {
     menuElId: String, // 菜单elId
     notContainBtn: {
       type: Array,
-      default() {
+      default () {
         return []
       }
     }
   },
   watch: {
-    version: function(newV, oldV) {
+    version: function (newV, oldV) {
       this.getAuditDetailButton()
     }
   },
-  data() {
+  data () {
     return {
       actions: {},
       auditDialog: false,
@@ -76,7 +76,7 @@ export default {
     }
   },
   methods: {
-    submitAuditMessage() {
+    submitAuditMessage () {
       this.$refs.auditForm.validate(valid => {
         if (valid) {
           this.$service
@@ -97,7 +97,7 @@ export default {
         }
       })
     },
-    promiseAll() {
+    promiseAll () {
       let params = {
         resourceId: this.id,
         version: this.version,
@@ -129,7 +129,7 @@ export default {
         this.actions = action
       })
     },
-    getAuditDetailButton() {
+    getAuditDetailButton () {
       if (this.hasHistory) {
         this.promiseAll()
       } else {
@@ -151,17 +151,17 @@ export default {
         })
       }
     },
-    edit() {
+    edit () {
       this.$emit('go-edit-Page')
     },
-    delete() {
+    delete () {
       this.$emit('delete-item')
     },
-    audit() {
+    audit () {
       // 审核
       this.auditDialog = true
     },
-    unaudit() {
+    unaudit () {
       if (window.confirm('真的要撤销审核吗？')) {
         this.$service
           .revokedAudit(
@@ -179,11 +179,11 @@ export default {
       }
     },
     // 创建副本
-    copy() {
+    copy () {
       this.$emit('copy')
     },
     // 上架
-    shelves() {
+    shelves () {
       let params = {
         id: this.id,
         version: this.version,
@@ -194,7 +194,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     if (this.status === 5) { // 审核不通过
       this.notContainBtn.push('edit', 'delete')
     }

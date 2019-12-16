@@ -40,7 +40,7 @@ export default {
     ButtonGroupForListPage
   },
 
-  data() {
+  data () {
     return {
       filterSchema: null,
       filter: {
@@ -135,7 +135,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.sysDeptPageList(filter).then(data => {
@@ -143,7 +143,7 @@ export default {
         this.table.data = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -152,17 +152,17 @@ export default {
       return filter
     },
     // 新增页面
-    addDep() {
+    addDep () {
       this.$emit('open-add-page', null)
     },
     // 编辑页面
-    editData() {
+    editData () {
       if (this.$isAllowEdit(this.selected)) {
         this.$emit('open-add-page', this.selected[0])
       }
     },
     // 表单重设
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -170,7 +170,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (type === 'query') {
         if (this.pagination) {
@@ -182,7 +182,7 @@ export default {
     /**
      * 批量删除
      */
-    batchDel() {
+    batchDel () {
       if (this.selected.length === 0) {
         this.$message('请选择再删除')
         return
@@ -203,17 +203,17 @@ export default {
     /**
      * 行选择操作
      */
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.deptId)
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.deptId
       })
       this.updateTableSelected()
     },
-    handleAllRowSelectionChange(value) {
+    handleAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
@@ -221,11 +221,11 @@ export default {
         this.table.selected = []
       }
     },
-    handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -237,7 +237,7 @@ export default {
     }
   },
 
-  created() {
+  created () {
     let filterSchema = _.map({
       deptName: _.o.string.other('form', {
         placeholder: '部门名称'

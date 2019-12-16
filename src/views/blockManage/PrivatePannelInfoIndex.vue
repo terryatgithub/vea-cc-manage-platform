@@ -28,7 +28,7 @@ export default {
     PrivatePannelInfoList,
     PrivatePannelInfo
   },
-  data() {
+  data () {
     return {
       isShowList: true,
       id: undefined,
@@ -45,28 +45,28 @@ export default {
         this.version = undefined
       }
     },
-    handleCreate() {
+    handleCreate () {
       this.id = undefined
       this.mode = 'create'
       this.isShowList = false
     },
-    handleEdit(item) {
+    handleEdit (item) {
       this.id = item.pannelGroupId
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(item, version) {
+    handleRead (item, version) {
       this.id = item.pannelGroupId
       this.mode = 'read'
       this.version = version
       this.isShowList = false
     },
-    handleCopy(item) {
+    handleCopy (item) {
       this.id = item.pannelGroupId
       this.mode = 'copy'
       this.isShowList = false
     },
-    handleDelete(selected) {
+    handleDelete (selected) {
       this.$service
         .privatePanelRemove({
           id: selected.map(item => item.pannelGroupId).join(',')

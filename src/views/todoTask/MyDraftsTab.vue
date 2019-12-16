@@ -19,7 +19,7 @@ export default {
     Table,
     ContentWrapper
   },
-  data() {
+  data () {
     return {
       filter: {
         sort: undefined,
@@ -81,10 +81,10 @@ export default {
     }
   },
   methods: {
-    handleRead(row) {
+    handleRead (row) {
       this.$emit('read', row)
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.taskId)) {
         if (type === 'query') {
@@ -95,7 +95,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined,
@@ -104,7 +104,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -115,7 +115,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       filter.resourceType = 'tab'
       this.$service.todoTaskPageList(filter).then(data => {
@@ -124,7 +124,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       taskId: _.o.string.other('form', {
         component: 'Input',

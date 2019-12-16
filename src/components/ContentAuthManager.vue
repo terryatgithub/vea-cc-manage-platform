@@ -44,7 +44,7 @@ export default {
   components: {
     Table
   },
-  data() {
+  data () {
     return {
       showManagementDialog: false,
       showManageButton: false,
@@ -69,14 +69,14 @@ export default {
           },
           {
             label: '查看',
-            render: function(h, params) {
+            render: function (h, params) {
               return h('el-checkbox', {
                 props: {
                   disabled: this.isDisableRow(params.row),
                   value: !!params.row.browser
                 },
                 on: {
-                  input: function(val) {
+                  input: function (val) {
                     params.row.browser = val ? 1 : 0
                   }
                 }
@@ -85,14 +85,14 @@ export default {
           },
           {
             label: '编辑',
-            render: function(h, params) {
+            render: function (h, params) {
               return h('el-checkbox', {
                 props: {
                   disabled: this.isDisableRow(params.row),
                   value: !!params.row.edit
                 },
                 on: {
-                  input: function(val) {
+                  input: function (val) {
                     params.row.edit = val ? 1 : 0
                   }
                 }
@@ -101,14 +101,14 @@ export default {
           },
           {
             label: '删除',
-            render: function(h, params) {
+            render: function (h, params) {
               return h('el-checkbox', {
                 props: {
                   disabled: this.isDisableRow(params.row),
                   value: !!params.row.delete
                 },
                 on: {
-                  input: function(val) {
+                  input: function (val) {
                     params.row.delete = val ? 1 : 0
                   }
                 }
@@ -121,14 +121,14 @@ export default {
   },
   props: ['resourceId', 'resourceType', 'menuElid'],
   methods: {
-    isDisableRow(row) {
+    isDisableRow (row) {
       return this.currentUserId === this.ownerId && row.userId === this.currentUserId
     },
-    handleOpenAuthManagement() {
+    handleOpenAuthManagement () {
       this.getUsers()
       this.showManagementDialog = true
     },
-    handleAddUser(selected) {
+    handleAddUser (selected) {
       const user = selected.row
       this.keyword = ''
       this.table.data.push({
@@ -141,44 +141,44 @@ export default {
         delete: 0
       })
     },
-    handleSearch(keyword, cb) {
+    handleSearch (keyword, cb) {
       if (keyword) {
         this.$service
           .userConfigPageList({ keyword: keyword })
-          .then(function(data) {
-            const userExistsIndexed = this.table.data.reduce(function(result, item) {
+          .then(function (data) {
+            const userExistsIndexed = this.table.data.reduce(function (result, item) {
               result[item.userId] = true
               return result
             }, {})
-            const users = data.rows.map(function(item) {
+            const users = data.rows.map(function (item) {
               return {
                 userId: item.userId,
                 value: item.loginName + '(' + item.email + ')',
                 row: item
               }
-            }).filter(function(item) {
+            }).filter(function (item) {
               return !userExistsIndexed[item.userId]
             })
             cb(users)
           }.bind(this))
-          .catch(function() {
+          .catch(function () {
             cb()
           })
       }
     },
-    getUsers() {
+    getUsers () {
       // 从服务器获取用户列表
       this.$service.getResourceContentAuthList({
         resourceId: this.resourceId,
         resourceType: this.resourceType,
         menuElid: this.menuElid
-      }).then(function(data) {
+      }).then(function (data) {
         this.currentUserId = data.currentUserId
         this.ownerId = data.ownerId
         this.table.data = data.userContentAuthList
       }.bind(this))
     },
-    updateUserAuth(row, type, val) {
+    updateUserAuth (row, type, val) {
       const originVal = row[type]
       row[type] = val
       const data = {
@@ -193,12 +193,12 @@ export default {
           }
         ]
       }
-      this.$service.upsertResourceContentAuthList(data, '保存成功').catch(function() {
+      this.$service.upsertResourceContentAuthList(data, '保存成功').catch(function () {
         row[type] = originVal
       })
     },
-    handleSave() {
-      const userContentAuthList = this.table.data.reduce(function(result, item) {
+    handleSave () {
+      const userContentAuthList = this.table.data.reduce(function (result, item) {
         if (item.browser || item.edit || item.delete) {
           result.push({
             userId: item.userId,
@@ -217,13 +217,13 @@ export default {
       this.$service.upsertResourceContentAuthList(data, '保存成功')
     }
   },
-  created() {
+  created () {
     if (this.resourceId) {
       this.$service.getUserContentAuth({
         resourceId: this.resourceId,
         resourceType: this.resourceType,
         menuElid: this.menuElid
-      }).then(function(data) {
+      }).then(function (data) {
         if (data.enableContentAuth && data.contentAuth.contentAuthSetting) {
           this.showManageButton = true
         }

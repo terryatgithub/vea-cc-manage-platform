@@ -94,7 +94,7 @@ export default {
     ContentWrapper,
     ButtonGroupForListPage
   },
-  data() {
+  data () {
     return {
       resourceType: 'blockInfo',
       pluginType: [],
@@ -197,14 +197,14 @@ export default {
     }
   },
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.pluginId,
         menuElId: 'multiFunctionBlock',
         type: 'systemPlugin'
       })
     },
-    getPluginType() {
+    getPluginType () {
       this.$service
         .getPluginType({ pluginParentType: this.filter.pluginParentType })
         .then(data => {
@@ -212,7 +212,7 @@ export default {
         })
     },
     // 获取table数据
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.getMultiBlockList(filter).then(data => {
         this.pagination.total = data.total
@@ -220,24 +220,24 @@ export default {
       })
     },
     // 获取功能父分类
-    getPluginParentTypes() {
+    getPluginParentTypes () {
       this.$service.getPluginParentTypes().then(data => {
         this.parentTypes = data
       })
     },
-    handleFilterChange() {
+    handleFilterChange () {
       if (this.$validateId(this.filter.pluginId)) {
         this.pagination.currentPage = 1
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
       }
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -246,7 +246,7 @@ export default {
       return filter
     }
   },
-  created() {
+  created () {
     this.getPluginParentTypes()
     this.fetchData()
   }

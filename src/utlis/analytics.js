@@ -8,6 +8,6 @@ import Vue from 'vue'
  *    }
  * }
  */
-Vue.prototype.$sendEvent = function sendEvent(data) {
+Vue.prototype.$sendEvent = function sendEvent (data) {
   this.$service.sendEvent(data)
 }

@@ -30,22 +30,22 @@ export default {
     }
   },
   methods: {
-    handleCreate() {
+    handleCreate () {
       this.mode = 'create'
       this.id = undefined
       this.isShowList = false
     },
-    handleEdit(row) {
+    handleEdit (row) {
       this.id = row.commonOnclickId
       this.mode = 'edit'
       this.isShowList = false
     },
-    handleRead(row) {
+    handleRead (row) {
       this.id = row.commonOnclickId
       this.mode = 'read'
       this.isShowList = false
     },
-    handleDelete(selected) {
+    handleDelete (selected) {
       this.$service
         .commonOnclickInfoDelete({
           id: selected.map(item => item.commonOnclickId).join(',')
@@ -62,7 +62,7 @@ export default {
         this.version = undefined
       }
     },
-    goBack() {
+    goBack () {
       this.isShowList = true
       this.mode = 'list'
       this.version = undefined

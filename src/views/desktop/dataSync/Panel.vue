@@ -121,20 +121,20 @@ export default {
   },
 
   methods: {
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         keyword: 'pannel',
         subCategoryArray: '1'
       }
     },
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.desktopGetDataSyncList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -142,7 +142,7 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
@@ -153,7 +153,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       console.log(this.dataList)
       if (this.dataList) {
         this.filter = Object.assign({}, this.dataList.filter)
@@ -165,7 +165,7 @@ export default {
       this.fetchData()
     }
   },
-  created() {
+  created () {
     this.fetchData()
   }
 

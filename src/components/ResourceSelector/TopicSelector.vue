@@ -37,7 +37,7 @@ export default {
   components: {
     BaseSelector
   },
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -86,7 +86,7 @@ export default {
             prop: 'dataSign',
             label: '专题类别',
             width: '200',
-            formatter: function(row) {
+            formatter: function (row) {
               if (row.dataSign === 'parentTopic') {
                 return '大专题'
               } else if (row.dataSign === 'childTopic') {
@@ -107,12 +107,12 @@ export default {
   },
   props: ['isLive', 'selectionType'],
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     }
   },
   methods: {
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         resType: 'operation',
         dataType: 'topic',
@@ -121,7 +121,7 @@ export default {
         title: undefined // 专题名称
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const filter = Object.assign({}, this.efficientFilter)
       if (pagination) {
@@ -130,18 +130,18 @@ export default {
       }
       return filter
     },
-    handleFilterChange() {
+    handleFilterChange () {
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(data => {
         this.pagination.total = data.total

@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       selected: [],
       selectedIndex: {},
@@ -34,7 +34,7 @@ export default {
     }
   },
   methods: {
-    getTagsByParentCode(parentCode) {
+    getTagsByParentCode (parentCode) {
       if (this.cache[parentCode]) {
         return this.cache[parentCode]
       }
@@ -43,7 +43,7 @@ export default {
         this.$set(this.tags, parentCode, data.rows)
       })
     },
-    handleSelectTag(tag, index) {
+    handleSelectTag (tag, index) {
       const tagCode = tag.tagCode
       const levels = this.levels.slice(0, index + 1)
       const selected = this.selected
@@ -73,15 +73,15 @@ export default {
         this.$emit('get-tag-nodes', this.selected)
       }
     },
-    handleRemoveTag(tag) {
+    handleRemoveTag (tag) {
       this.selected = this.selected.filter(item => item !== tag)
       this.selectedIndex[tag.tagCode] = undefined
       this.$emit('get-tag-nodes', this.selected)
     },
-    genLevel(parentId, activeId) {
+    genLevel (parentId, activeId) {
       return { parentId, activeId }
     },
-    toChineseNumber(number) {
+    toChineseNumber (number) {
       const chnNumChar = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九']
       const chnUnitChar = ['', '十', '百', '千', '万']
       let unit = 0
@@ -94,7 +94,7 @@ export default {
       return result.replace(/零+/, '零').replace(/.+零$/, '')
     }
   },
-  created() {
+  created () {
     this.getTagsByParentCode('-1')
   }
 }

@@ -27,7 +27,7 @@
 export default {
   props: ['version', 'status', 'versionList'],
   methods: {
-    handleSelectVersion(version) {
+    handleSelectVersion (version) {
       this.$emit('select-version', version)
     }
   }

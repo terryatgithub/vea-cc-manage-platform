@@ -197,7 +197,7 @@ export default {
 
   watch: {
     selected: {
-      handler(newVal, oldVal) {
+      handler (newVal, oldVal) {
         const table = this.table
         let rows = []
         table.data.map(tableRow => {
@@ -216,19 +216,19 @@ export default {
   },
 
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.pannelGroupId,
         menuElId: 'pannelInfo',
         type: 'pannel'
       })
     },
-    genDefaultFilter() {
+    genDefaultFilter () {
       return {
         idPrefix: this.$consts.idPrefix
       }
     },
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       if (this.dataList) {
         this.$service.panelDataList(filter).then(data => {
@@ -242,7 +242,7 @@ export default {
         })
       }
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -250,7 +250,7 @@ export default {
       }
       return filter
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.pannelId)) {
         if (type === 'query') {
@@ -261,7 +261,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       console.log(this.dataList)
       if (this.dataList) {
         this.filter = Object.assign({}, this.dataList.filter)
@@ -272,14 +272,14 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    getBusinessType() {
+    getBusinessType () {
       return this.$service.getDictType({ type: 'businessType' }).then(data => {
         data.forEach((item) => {
           this.businessType[item.dictCnName] = item.dictId
         })
       })
     },
-    handleToggleCollect(row) {
+    handleToggleCollect (row) {
       if (row.collected) {
         this.$service.collectCancel({ type: 'pannel', data: { resourceId: row.pannelGroupId } }, '取消收藏成功')
           .then(() => {
@@ -293,7 +293,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     const filterSchema = _.map({
       pannelCategory: _.o.enum(this.businessType).other('form', {
         placeholder: '业务分类',

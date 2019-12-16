@@ -7,7 +7,7 @@
 <script>
 export default {
   computed: {
-    isKeepAlive() {
+    isKeepAlive () {
       const meta = this.$route.meta
       return meta && meta.isCache !== false
     }

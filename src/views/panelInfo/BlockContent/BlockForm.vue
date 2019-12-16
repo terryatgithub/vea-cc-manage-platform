@@ -521,7 +521,7 @@ export default {
     InputPositiveInt,
     RecommendStreamSelector
   },
-  data() {
+  data () {
     const isReadonly = this.isReadonly
     const checkMannulVersionCode = (rule, value, callback) => {
       // 当为教育资源时 保证所填值为空或大于7位
@@ -534,7 +534,7 @@ export default {
         callback()
       }
     }
-    const checkWebpageUrl = function(rule, value, callback) {
+    const checkWebpageUrl = function (rule, value, callback) {
       if (!value) {
         callback(new Error('请输入网页地址'))
       } else if (
@@ -558,7 +558,7 @@ export default {
       }
     }
     const re = /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/
-    const checkPrice = function(rule, value, callback) {
+    const checkPrice = function (rule, value, callback) {
       if (!re.test(value)) {
         value === 0 && value !== ''
           ? callback()
@@ -570,7 +570,7 @@ export default {
       }
     }
 
-    const checkSecKill = function(rule, value, callback) {
+    const checkSecKill = function (rule, value, callback) {
       var re = /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/
       // if (!re.test(value)) {
       //     callback(new Error('请输入数字'));
@@ -630,7 +630,7 @@ export default {
         ],
         title: [
           {
-            validator: function(_, value, cb) {
+            validator: function (_, value, cb) {
               if (this.contentForm.showTitle && value.trim() === '') {
                 cb(new Error('请输入标题'))
               } else {
@@ -647,7 +647,7 @@ export default {
         alternativePictureUrl: [
           { required: true, message: '请选择替补海报', trigger: 'blur' },
           {
-            validator: function(_, pictureUrl, cb) {
+            validator: function (_, pictureUrl, cb) {
               if (pictureUrl && pictureUrl.slice(-4).toLowerCase() === 'webp') {
                 cb(new Error('替补海报不能选择动图'))
               } else {
@@ -693,20 +693,20 @@ export default {
     'checkCrowd'
   ],
   computed: {
-    isSpecific() {
+    isSpecific () {
       return this.contentType === 'specific'
     },
-    currentResourceId() {
+    currentResourceId () {
       return this.contentForm.extraValue1
     },
-    isReadonly() {
+    isReadonly () {
       return this.mode === 'read'
     },
-    resolution() {
+    resolution () {
       const data = this.data
       return [data.blockInfo.width, data.blockInfo.height]
     },
-    postSize() {
+    postSize () {
       const blockInfo = this.data.blockInfo || {}
       const width = blockInfo.width || 200
       const height = blockInfo.height || 200
@@ -733,17 +733,17 @@ export default {
         }
       }
     },
-    isMall() {
+    isMall () {
       return this.data.blockInfo.type === 'Mall'
     },
-    shouldHaveBackupPicture() {
+    shouldHaveBackupPicture () {
       const contentForm = this.contentForm
       const pictureUrl = contentForm.pictureUrl
       return (
         contentForm.coverType !== 'block' && !this.isNormalPicture(pictureUrl)
       )
     },
-    coverTypeEnums() {
+    coverTypeEnums () {
       const enums = [
         {
           label: '媒体资源',
@@ -779,7 +779,7 @@ export default {
   },
 
   watch: {
-    isShowConfigBg(bool) {
+    isShowConfigBg (bool) {
       if (!bool) {
         this.contentForm.bgParams = {
           id: '',
@@ -790,7 +790,7 @@ export default {
     }
   },
   methods: {
-    handleAddTagStart() {
+    handleAddTagStart () {
       this.showBlockTagDialog = true
       this.$sendEvent({
         type: 'video_content_tag',
@@ -809,7 +809,7 @@ export default {
         }
       }
     },
-    genParams(openMode) {
+    genParams (openMode) {
       return {
         openMode: openMode || 'app',
         webpageUrl: '',
@@ -827,7 +827,7 @@ export default {
         params: [{ key: '', value: '' }]
       }
     },
-    handleUpload(file, fileItem) {
+    handleUpload (file, fileItem) {
       this.$refs.upload.fileList = [fileItem]
       fileItem.status = 'uploading'
       this.$service
@@ -857,24 +857,24 @@ export default {
           fileItem.message = '网络错误'
         })
     },
-    handleRemovePicture(fileItem) {
+    handleRemovePicture (fileItem) {
       this.$refs.upload.handleRemove(fileItem)
       this.contentForm.redundantParams.pictureUrl = ''
     },
-    handleSelectTabEnd(result) {
+    handleSelectTabEnd (result) {
       const selected = result
       if (selected) {
         this.$set(this.contentForm.redundantParams, 'tabId', selected.tabId + '')
         this.$set(this.contentForm.redundantParams, 'tabType', selected.tabType + '')
       }
     },
-    handleSelectCrowdStart() {
+    handleSelectCrowdStart () {
       this.showCrowdSelector = true
     },
-    handleSelectCrowdCancel() {
+    handleSelectCrowdCancel () {
       this.showCrowdSelector = false
     },
-    handleSelectCrowdEnd(policy, crowd) {
+    handleSelectCrowdEnd (policy, crowd) {
       const existsIndex = this.checkCrowd(crowd)
       if (existsIndex !== undefined) {
         this.$message({
@@ -897,17 +897,17 @@ export default {
         this.showCrowdSelector = false
       }
     },
-    handleOpenModeChange(val) {
+    handleOpenModeChange (val) {
       this.contentForm.redundantParams = this.genParams(val)
       this.contentForm.appParams = []
     },
-    handleWebPageTypeChange(val) {
+    handleWebPageTypeChange (val) {
       // eslint-disable-next-line
       this.contentForm.redundantParams.versioncode = val == '1'
         ? '1'
         : '102007'
     },
-    handleSelectMediaEnd(resources) {
+    handleSelectMediaEnd (resources) {
       const selectedResult = getSelectedResource(resources)
       const selectedType = selectedResult.selectedType
       const selected = selectedResult.selected[0]
@@ -917,13 +917,13 @@ export default {
       setMediaContent(this.contentForm, { partner, selectedType, selected, selectedEpisode, blockSize })
       this.$refs.resourceSelector.clearSelected()
     },
-    handleSelectAppEnd(resources) {
+    handleSelectAppEnd (resources) {
       setAppContent(this.contentForm, resources.app[0])
     },
-    handleSelectGoodEnd(resources) {
+    handleSelectGoodEnd (resources) {
       setGoodContent(this.contentForm, resources.good[0])
     },
-    handleSelectClickEventEnd(data) {
+    handleSelectClickEventEnd (data) {
       const clickEvent = data[0]
       const { packagename, versioncode, dowhat, bywhat, byvalue, params: paramsStr, exception } = clickEvent
       const contentForm = this.contentForm
@@ -950,10 +950,10 @@ export default {
         exception
       })
     },
-    isNormalPicture(pictureUrl) {
+    isNormalPicture (pictureUrl) {
       return !pictureUrl || pictureUrl.slice(-4).toLowerCase() !== 'webp'
     },
-    handleSelectCornerIconEnd(icon, position) {
+    handleSelectCornerIconEnd (icon, position) {
       const cornerIcon = {
         cornerIconId: icon.cornerIconId,
         position: position,
@@ -961,19 +961,19 @@ export default {
       }
       this.$set(this.contentForm.cornerList, position, cornerIcon)
     },
-    handleRemoveCornerIcon(position) {
+    handleRemoveCornerIcon (position) {
       this.$set(this.contentForm.cornerList, position, {})
     },
-    handleSelectPostEnd(post) {
+    handleSelectPostEnd (post) {
       this.contentForm.pictureUrl = post.pictureUrl
     },
-    handleSelectBackupPostEnd(post) {
+    handleSelectBackupPostEnd (post) {
       this.contentForm.alternativePictureUrl = post.pictureUrl
     },
-    handleSelectBgEnd(post) {
+    handleSelectBgEnd (post) {
       this.contentForm.bgImgUrl = post.pictureUrl
     },
-    handleSelectBgMediaEnd(resources) {
+    handleSelectBgMediaEnd (resources) {
       const selectedResult = getSelectedResource(resources)
       const selectedType = selectedResult.selectedType
       const selected = selectedResult.selected[0]
@@ -1029,14 +1029,14 @@ export default {
       }
       contentForm.bgType = 'res'
     },
-    handleRemoveBgMedia() {
+    handleRemoveBgMedia () {
       const contentForm = this.contentForm
       contentForm.bgParams = {
         id: ''
       }
       contentForm.bgType = ''
     },
-    handleSelectBlockEnd(resources) {
+    handleSelectBlockEnd (resources) {
       const selectedFunc = resources.func[0]
       const selectedBroadcast = resources.broadcast[0]
       if (selectedFunc) {
@@ -1062,7 +1062,7 @@ export default {
       }
       this.$refs.blockSelector.clearSelected()
     },
-    validate(data, cb) {
+    validate (data, cb) {
       const contentForm = this.contentForm
       this.$refs.contentForm.validate((valid) => {
         if (valid) {
@@ -1091,7 +1091,7 @@ export default {
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
     }
   },
-  mounted() {
+  mounted () {
     const contentForm = this.contentForm
     const redundantParams = contentForm.redundantParams
     if (redundantParams.openMode === 'picture' && redundantParams.pictureUrl) {

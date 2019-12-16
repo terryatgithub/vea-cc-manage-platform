@@ -3,7 +3,7 @@ import axios from 'axios'
  * 版面管理 -> Tab版面管理
  */
 // 分页
-export function tabInfoList(params) {
+export function tabInfoList (params) {
   return this.fetch({
     url: 'api/v1/tab/pageList.html',
     params
@@ -29,7 +29,7 @@ export function tabInfoList(params) {
 /**
  * 版面管理 -> 业务版面
  */
-export function getTabType(data) {
+export function getTabType (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/dict/getTypes/tab/tabType.html',
@@ -39,7 +39,7 @@ export function getTabType(data) {
 /**
  * 版面管理 -> 影片详情页
  */
-export function getMediaResourceInfo(params) {
+export function getMediaResourceInfo (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/getMediaResourceInfoToPanel.html',
@@ -48,7 +48,7 @@ export function getMediaResourceInfo(params) {
   })
 }
 // 分页
-export function filmDetailPageList(data) {
+export function filmDetailPageList (data) {
   return this.fetch({
     method: 'post',
     url: 'api/filmDetailPage/pageList.html',
@@ -56,7 +56,7 @@ export function filmDetailPageList(data) {
   })
 }
 // 保存
-export function saveFilmDetailPage(data) {
+export function saveFilmDetailPage (data) {
   return this.fetch({
     method: 'post',
     url: 'api/filmDetailPage/save.html',
@@ -64,7 +64,7 @@ export function saveFilmDetailPage(data) {
   })
 }
 // 删除
-export function removeFilmDetailPage(params) {
+export function removeFilmDetailPage (params) {
   return this.fetch({
     method: 'get',
     url: 'api/filmDetailPage/remove.html',
@@ -72,14 +72,14 @@ export function removeFilmDetailPage(params) {
   })
 }
 
-export function tabIconList() {
+export function tabIconList () {
   return this.fetch({
     method: 'get',
     url: 'api/v1/tab/getIconList.html'
   })
 }
 
-export function tabInfoGet(params) {
+export function tabInfoGet (params) {
   const id = params.id
   if (!/^\d+$/.test(id)) {
     return this.getThirdpartTabInfoDetail(params)
@@ -91,7 +91,7 @@ export function tabInfoGet(params) {
   })
 }
 
-export function tabInfoGetBase(params) {
+export function tabInfoGetBase (params) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/tab/getSimpleInfo.html',
@@ -99,7 +99,7 @@ export function tabInfoGetBase(params) {
   })
 }
 
-export function tabInfoUpsert(data) {
+export function tabInfoUpsert (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/tab/save.html',
@@ -107,7 +107,7 @@ export function tabInfoUpsert(data) {
   })
 }
 
-export function tabInfoRemove(data) {
+export function tabInfoRemove (data) {
   return this.fetch({
     method: 'post',
     url: 'api/v1/tab/remove.html',
@@ -116,7 +116,7 @@ export function tabInfoRemove(data) {
 }
 
 // 编辑
-export function editFilmDetailPage(params) {
+export function editFilmDetailPage (params) {
   return this.fetch({
     method: 'get',
     url: 'api/filmDetailPage/edit.html',
@@ -126,7 +126,7 @@ export function editFilmDetailPage(params) {
   })
 }
 // 预览
-export function reviewFilmDetailPage(params) {
+export function reviewFilmDetailPage (params) {
   return this.fetch({
     method: 'get',
     url: 'api/filmDetailPage/preview.html',
@@ -136,7 +136,7 @@ export function reviewFilmDetailPage(params) {
   })
 }
 
-export function getVipButtonSource(params) {
+export function getVipButtonSource (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/tvos/getVipButtonSource.html',
@@ -144,7 +144,7 @@ export function getVipButtonSource(params) {
   })
 }
 
-export function getTabSimpleBrowseData(params) {
+export function getTabSimpleBrowseData (params) {
   return axios({
     method: 'get',
     url: 'api/v1/dataShow/tab/getSimpleBrowseData.html',
@@ -154,7 +154,7 @@ export function getTabSimpleBrowseData(params) {
   })
 }
 
-export function getTabChartData(params) {
+export function getTabChartData (params) {
   return this.fetch({
     method: 'get',
     url: 'api/v1/dataShow/tab/getChartData.html',
@@ -162,7 +162,7 @@ export function getTabChartData(params) {
   })
 }
 
-export function getThirdpartTabInfoDetail(params) {
+export function getThirdpartTabInfoDetail (params) {
   const id = params.id
   const [from, type] = id.split('-')
   return this.fetch({
@@ -175,7 +175,7 @@ export function getThirdpartTabInfoDetail(params) {
   })
 }
 
-export function updateThirdPartTabAuditType(params) {
+export function updateThirdPartTabAuditType (params) {
   const id = params.id
   const [from] = id.split('-')
   return this.fetch({
@@ -188,7 +188,7 @@ export function updateThirdPartTabAuditType(params) {
   })
 }
 
-export function updateThirdPartTabAudit(params) {
+export function updateThirdPartTabAudit (params) {
   const id = params.id
   const [from] = id.split('-')
   return this.fetch({

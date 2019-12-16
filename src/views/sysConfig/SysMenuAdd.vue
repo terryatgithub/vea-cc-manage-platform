@@ -61,7 +61,7 @@ export default {
     IconSelect
   },
   //  prop: ['editId'],
-  data() {
+  data () {
     return {
       title: null,
       showIcon: false,
@@ -107,17 +107,17 @@ export default {
     }
   },
   methods: {
-    selectIcon() {
+    selectIcon () {
       this.showIcon = true
     },
-    goBack() {
+    goBack () {
       this.showIcon = false
     },
-    getIcon(iconName, name) {
+    getIcon (iconName, name) {
       this.form.iconClass = iconName
       this.showIcon = false
     },
-    submitBtn() {
+    submitBtn () {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$service
@@ -128,7 +128,7 @@ export default {
         }
       })
     },
-    getEditData() {
+    getEditData () {
       this.$service.editSysMenu({ id: this.editId }).then(data => {
         Object.keys(this.form).forEach(v => {
           if (v === 'disabled') {
@@ -140,7 +140,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     if (this.editId !== null && this.editId !== undefined) {
       this.title = '编辑'
       this.form.menuId = this.editId

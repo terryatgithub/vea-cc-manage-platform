@@ -44,7 +44,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       showDialog: true,
       timeSlotError: '',
@@ -65,10 +65,10 @@ export default {
   },
   props: ['mode', 'info', 'panelList', 'focusConfig'],
   methods: {
-    handleSetCancel() {
+    handleSetCancel () {
       this.$emit('set-cancel')
     },
-    handleSetEnd() {
+    handleSetEnd () {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$emit('set-end')
@@ -80,7 +80,7 @@ export default {
         }
       })
     },
-    timeSlotValidator(rule, _, cb) {
+    timeSlotValidator (rule, _, cb) {
       const panelList = this.panelList
       const info = this.info
       const currentIndex = info.index

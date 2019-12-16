@@ -8,7 +8,7 @@ export default {
   props: {
     maxHeight: String
   },
-  data() {
+  data () {
     return {
 
     }

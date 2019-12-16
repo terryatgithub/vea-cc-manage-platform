@@ -137,7 +137,7 @@ export default {
     RemoteSelectorWrapper,
     SourceSelector
   },
-  data() {
+  data () {
     return {
       tabTypeOptions,
       tabTypeIndexed,
@@ -191,20 +191,20 @@ export default {
           {
             label: '版面属性',
             width: 120,
-            render: function(h, scope) {
+            render: function (h, scope) {
               return this.tabTypeIndexed[scope.row.tabType]
             }.bind(this)
           },
           {
             label: '版面分类',
             width: 150,
-            render: function(h, scope) {
+            render: function (h, scope) {
               return this.tabCategoryOptionsIndexed[scope.row.tabCategory]
             }.bind(this)
           },
           {
             label: '状态',
-            render: function(h, scope) {
+            render: function (h, scope) {
               return this.tabStatusOptionsIndexed[scope.row.tabStatus]
             }.bind(this)
           },
@@ -244,16 +244,16 @@ export default {
     'table.data': 'updateTableSelected'
   },
   methods: {
-    handleSingleRow(row, index) {
+    handleSingleRow (row, index) {
       // 单行选择
       this.$refs.dialog.showDialog = false
       this.table.selected = index
       this.$emit('select-end', row)
     },
-    setSelected() {
+    setSelected () {
       this.selected = this.initSelected || []
     },
-    handleSelectStart() {
+    handleSelectStart () {
       this.$emit('select-start')
       if (!this.isLive) {
         // 如果每次选择都重新获取数
@@ -263,10 +263,10 @@ export default {
         this.handleFilterReset()
       }
     },
-    handleSelectEnd() {
+    handleSelectEnd () {
       this.$emit('select-end', this.selected.slice())
     },
-    getDefaultFilter() {
+    getDefaultFilter () {
       const { idPrefix } = this.$consts
       return {
         idPrefix: idPrefix !== '10' ? idPrefix : undefined,
@@ -278,18 +278,18 @@ export default {
         tabResource: undefined
       }
     },
-    handleFilterChange() {
+    handleFilterChange () {
       if (this.$validateId(this.filter.tabId)) {
         this.pagination.currentPage = 1
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.handleFilterChange()
     },
-    getFilter() {
+    getFilter () {
       const filter = JSON.parse(JSON.stringify(this.filter))
       const pagination = this.pagination
       filter.page = pagination.currentPage
@@ -306,34 +306,34 @@ export default {
       }
       return filter
     },
-    fetchData() {
+    fetchData () {
       this.$service.tabInfoList(this.getFilter()).then(data => {
         this.table.data = data.rows
         this.pagination.total = data.total
       })
     },
-    handleTableRowSelectionChange(item, index) {
+    handleTableRowSelectionChange (item, index) {
       this.selected = [item]
       this.table.selected = index
     },
-    handleTableRowSelectionAdd(targetItem) {
+    handleTableRowSelectionAdd (targetItem) {
       this.selected = this.selected.concat(targetItem)
       this.updateTableSelected()
     },
-    handleTableRowSelectionRemove(targetItem) {
+    handleTableRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item[ID] !== targetItem[ID]
       })
       this.updateTableSelected()
     },
-    handleTableAllRowSelectionChange(value) {
+    handleTableAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleTableRowSelectionAdd)
       } else {
         this.table.data.forEach(this.handleTableRowSelectionRemove)
       }
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected.map(item => item[ID])
       table.selected = table.data.reduce((result, item, index) => {
@@ -344,7 +344,7 @@ export default {
       }, [])
     }
   },
-  created() {
+  created () {
     this.$service.getDictType({ type: 'businessType' }).then(data => {
       this.tabCategoryOptions = data
       this.tabCategoryOptionsIndexed = data.reduce((result, item) => {

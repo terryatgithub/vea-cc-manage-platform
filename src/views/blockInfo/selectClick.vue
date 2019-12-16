@@ -29,7 +29,7 @@ export default {
     Table,
     ContentWrapper
   },
-  data() {
+  data () {
     return {
       filter: {
         sort: undefined,
@@ -71,11 +71,11 @@ export default {
     }
   },
   methods: {
-    rowClick(params) {
+    rowClick (params) {
       this.$emit('row-click', params)
     },
     /** 获取数据 */
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getClickData(filter).then(data => {
@@ -83,11 +83,11 @@ export default {
         this.table.data = data.rows
       })
     },
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.commonOnclickId)
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.commonOnclickId
       })
@@ -97,11 +97,11 @@ export default {
     //   this.table.selected = index
     //     this.$emit('clcik',value)
     // },
-    handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -111,7 +111,7 @@ export default {
         return result
       }, [])
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.commonOnclickId)) {
         if (type === 'query') {
@@ -122,7 +122,7 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         sort: undefined,
         order: undefined
@@ -130,7 +130,7 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -139,7 +139,7 @@ export default {
       return filter
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       commonOnclickId: _.o.string.other('form', {
         component: 'Input',

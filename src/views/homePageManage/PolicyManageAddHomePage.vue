@@ -79,7 +79,7 @@ export default {
   watch: {
     'form.useABTest': 'handleToggleABTest'
   },
-  data() {
+  data () {
     return {
       form: {},
       dialogVisible: true,
@@ -96,7 +96,7 @@ export default {
     }
   },
   methods: {
-    addHomePageClose() {
+    addHomePageClose () {
       this.$emit('add-home-page-close')
     },
     /** 添加定向首页方案 */
@@ -206,7 +206,7 @@ export default {
     //   //   ? $basePath + '/homepageInfo/dataList.html?homepageModel=child&&homepageStatusArray=4&&homepageResource=tencent'
     //   //   : $basePath + '/homepageInfo/dataList.html?homepageModel=normal&&homepageStatusArray=4&&homepageResource=tencent'
     // },
-    rowClick(row) {
+    rowClick (row) {
       if (this.useABTestHomePage !== undefined) {
         this.useABTestHomePage.homepageId = row.homepageId
         this.useABTestHomePage.homepageStatus = row.homepageStatus
@@ -219,21 +219,21 @@ export default {
       }
       this.showHomePageDialogVisible = false
     },
-    handleSelectCrowdStart() {
+    handleSelectCrowdStart () {
       const attribute = JSON.parse(JSON.stringify(this.form.attribute || {}))
       this.selectedPolicyIds = attribute.crowdPolicyIds || []
       this.selectedCrowdIds = attribute.crowdIds || []
       this.showSelectCrowdDialog = true
     },
-    handleSelectHomePageStart(item) {
+    handleSelectHomePageStart (item) {
       this.useABTestHomePage = item
       this.showHomePageDialogVisible = true
     },
-    handleSelectCrowdCancel() {
+    handleSelectCrowdCancel () {
       this.showSelectCrowdDialog = false
     },
     /** 选择人群 */
-    handleSelectCrowdEnd(policy, crowd) {
+    handleSelectCrowdEnd (policy, crowd) {
       // const specialNormalHp = this.specialNormalHp
       // const specialChildHp = this.specialChildHp
       // let length
@@ -279,18 +279,18 @@ export default {
 
       this.showSelectCrowdDialog = false
     },
-    isContainCrowdName(crowdId) {
+    isContainCrowdName (crowdId) {
       return this.selectedCrowds.some((item) => {
         return item.attribute.crowdIds[0] === crowdId
       })
     },
-    getSelectedCrowdNames(specialItem) {
+    getSelectedCrowdNames (specialItem) {
       console.log(specialItem)
       const attribute = specialItem.attribute || {}
       const crowdsIndexed = this.crowdsIndexed
       const crowdIds = attribute.crowdIds
       if (crowdIds) {
-        return crowdIds.map(function(item) {
+        return crowdIds.map(function (item) {
           if (crowdsIndexed[item]) {
             return crowdsIndexed[item].label
           } else {
@@ -300,14 +300,14 @@ export default {
       }
     },
     /** 删除测试组 */
-    handleRemoveTestItem(item) {
+    handleRemoveTestItem (item) {
       const testHomeList = this.form.testHomeList
       testHomeList.splice(testHomeList.indexOf(item), 1)
     },
-    handleAddTestItem() {
+    handleAddTestItem () {
       this.form.testHomeList.push(this.getInitTestItem())
     },
-    getInitTestItem() {
+    getInitTestItem () {
       return {
         distributeModel: undefined,
         homepageId: undefined,
@@ -315,12 +315,12 @@ export default {
         homepageStatus: undefined
       }
     },
-    handleToggleABTest(isOn) {
+    handleToggleABTest (isOn) {
       if (isOn && this.form.testHomeList.length === 0) {
         this.handleAddTestItem()
       }
     },
-    getInitSpecialNormal() {
+    getInitSpecialNormal () {
       return {
         homepageId: undefined,
         homepageVersion: '',
@@ -332,7 +332,7 @@ export default {
         testHomeList: []
       }
     },
-    getInitSpecialChild() {
+    getInitSpecialChild () {
       return {
         homepageId: undefined,
         homepageVersion: '',
@@ -344,7 +344,7 @@ export default {
         testHomeList: []
       }
     },
-    setFormData() {
+    setFormData () {
       if (JSON.stringify(this.editHomePageData) !== '{}') {
         const data = cloneDeep(this.editHomePageData)
         if (data.testHomeList && data.testHomeList.length > 0) {
@@ -354,7 +354,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.form =
       this.itemType === 'child'
         ? this.getInitSpecialChild()

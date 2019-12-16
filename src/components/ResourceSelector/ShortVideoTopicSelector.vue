@@ -24,7 +24,7 @@ export default {
   components: {
     BaseSelector
   },
-  data() {
+  data () {
     return {
       pagination: {
         currentPage: 1,
@@ -64,12 +64,12 @@ export default {
   },
   props: ['isLive', 'selectionType', 'source', 'disablePartner'],
   computed: {
-    selected() {
+    selected () {
       return this.$refs.baseSelector.selected.slice()
     }
   },
   methods: {
-    getDefaultFilter() {
+    getDefaultFilter () {
       return {
         type: undefined,
         topicName: undefined,
@@ -77,7 +77,7 @@ export default {
         status: this.$consts.status.accepted
       }
     },
-    getFilter() {
+    getFilter () {
       const pagination = this.pagination
       const filter = Object.assign({}, this.filter)
       filter.code = filter.id
@@ -87,16 +87,16 @@ export default {
       }
       return filter
     },
-    handleFilterChange(filter) {
+    handleFilterChange (filter) {
       this.filter = filter
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    fetchData() {
+    fetchData () {
       const filter = this.getFilter()
       this.$service.topicGetList(filter).then(result => {
         this.pagination.total = result.total
@@ -104,7 +104,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     const filterSchema = _.map({
       topicName: _.o.string.other('form', {
         component: 'Input',

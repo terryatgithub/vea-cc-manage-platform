@@ -41,7 +41,7 @@ export default {
     ContentWrapper,
     ButtonGroupForListPage
   },
-  data() {
+  data () {
     return {
       resourceType: 'policy',
       filter: {
@@ -178,7 +178,7 @@ export default {
     }
   },
   methods: {
-    handleOpenContentAuthManager(row) {
+    handleOpenContentAuthManager (row) {
       this.$refs.contentCard.handleShowContentAuthManager({
         id: row.policyId,
         type: 'policy',
@@ -186,7 +186,7 @@ export default {
       })
     },
     // 查询
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) {
         this.filter = filter
       }
@@ -196,13 +196,13 @@ export default {
       this.fetchData()
     },
     // 重置
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
       }
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -210,7 +210,7 @@ export default {
       }
       return filter
     },
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getTestPolicyManagePageList(filter).then(data => {
@@ -218,7 +218,7 @@ export default {
         this.table.data = data.rows
       })
     },
-    expandItem(item) {
+    expandItem (item) {
       if (item.children) {
         return [item, ...item.children]
       }
@@ -265,7 +265,7 @@ export default {
       }, [])
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       policyId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
         component: 'InputPositiveInt',

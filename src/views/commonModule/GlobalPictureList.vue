@@ -91,7 +91,7 @@ export default {
     GlobalPictureBatchAudit,
     CardList
   },
-  data() {
+  data () {
     return {
       resourceType: 'picture',
       checkAll: false,
@@ -220,7 +220,7 @@ export default {
     }
   },
   methods: {
-    submitAudit() {
+    submitAudit () {
       const auditForm = this.auditForm
       const waiting = this.$consts.status.waiting
       this.$refs.auditForm.validate(valid => {
@@ -238,7 +238,7 @@ export default {
         }
       })
     },
-    handleChange(value, direction, movedKeys) {
+    handleChange (value, direction, movedKeys) {
       var str = []
       for (var i = 0; i < value.length; i++) {
         str.push(['roleIds', value[i]])
@@ -248,7 +248,7 @@ export default {
     /**
      * 批量审核
      */
-    batchAudit() {
+    batchAudit () {
       if (this.selected.length === 0) {
         return this.$message.error('请选择再审批')
       }
@@ -264,11 +264,11 @@ export default {
       }
       this.auditDialogVisible = true
     },
-    reviewPic(row) {
+    reviewPic (row) {
       this.reviewPicUrl = row.pictureUrl
       this.picDialogVisible = true
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) { this.filter = filter }
       if (this.$validateId(this.filter.pictureId)) {
         if (type === 'query') {
@@ -279,13 +279,13 @@ export default {
         this.fetchData()
       }
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
       }
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -296,7 +296,7 @@ export default {
     /**
      * 获取数据
      */
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getMaterialPageList(filter).then(data => {
@@ -308,7 +308,7 @@ export default {
     /**
      * 得到部门列表
      */
-    getMaterialTypes() {
+    getMaterialTypes () {
       return this.$service.getDictType({ type: 'materialType' }).then(data => {
         data.forEach(element => {
           this.materialTypes[element.dictCnName] = element.dictId
@@ -316,7 +316,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     let filterSchema = _.map({
       pictureId: _.o.string.other('form', {
         component: 'Input',

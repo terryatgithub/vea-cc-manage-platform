@@ -35,7 +35,7 @@ export default {
     Table,
     ContentWrapper
   },
-  data() {
+  data () {
     return {
       resourceType: 'crowdRel',
       filter: {},
@@ -64,14 +64,14 @@ export default {
     }
   },
   methods: {
-    fetchData() {
+    fetchData () {
       const filter = this.parseFilter()
       this.$service.crowdRelList(filter).then(data => {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
     },
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -80,7 +80,7 @@ export default {
       return filter
     },
     // 查询
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) {
         this.filter = filter
       }
@@ -94,13 +94,13 @@ export default {
       }
     },
     // 重置
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {}
       this.pagination.currentPage = 1
       this.fetchData()
     }
   },
-  created() {
+  created () {
     this.fetchData()
   }
 }

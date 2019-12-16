@@ -13,31 +13,31 @@ export default {
     pageName: String,
     notContainBtns: {
       type: Array,
-      default: function() {
+      default: function () {
         return []
       }
     }
   },
-  data() {
+  data () {
     return {
       actions: {}
     }
   },
   methods: {
-    add() {
+    add () {
       this.$emit('add')
     },
-    edit() {
+    edit () {
       this.$emit('edit')
     },
-    delete() {
+    delete () {
       this.$emit('delete')
     },
-    batchAudit() {
+    batchAudit () {
       this.$emit('batch-audit')
     }
   },
-  created() {
+  created () {
     this.$service.getButtonGroupForPageList(this.pageName).then(data => {
       let action = {}
       data.filter((item) => {

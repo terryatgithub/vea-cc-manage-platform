@@ -25,7 +25,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       selected: undefined,
       options: []
@@ -33,17 +33,17 @@ export default {
   },
   props: ['value'],
   methods: {
-    handleClose() {
+    handleClose () {
       this.selected = undefined
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.$emit('select-cancel')
       }.bind(this))
     },
-    handleSelectEnd() {
+    handleSelectEnd () {
       this.$emit('select-end', this.selected)
     }
   },
-  created() {
+  created () {
     this.$service.tabIconList().then((data) => {
       this.options = data.rows
     })

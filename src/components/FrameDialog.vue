@@ -14,14 +14,14 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
 
     }
   },
   props: ['url'],
   methods: {
-    handleClose() {
+    handleClose () {
       this.$emit('close')
     }
   }

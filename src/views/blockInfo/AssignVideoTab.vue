@@ -123,7 +123,7 @@ export default {
     ResourceSelector,
     GlobalPictureSelector
   },
-  data() {
+  data () {
     return {
       isVisiablePosterSelector: false,
       currentSelectPic: undefined, // 当前选择的图片海报
@@ -142,7 +142,7 @@ export default {
   props: {
     value: {
       type: Object,
-      default() {
+      default () {
         return {
           id: undefined,
           mediaResourceId: undefined,
@@ -164,13 +164,13 @@ export default {
     source: String,
     'input-tags': {
       type: Array,
-      default() {
+      default () {
         return []
       }
     },
     disabled: {
       type: Boolean,
-      default() {
+      default () {
         return false
       }
     }
@@ -178,7 +178,7 @@ export default {
 
   watch: {
     value: {
-      handler: function(val) {
+      handler: function (val) {
         this.$emit('input', val)
       },
       deep: true,
@@ -197,7 +197,7 @@ export default {
     // }
   },
   methods: {
-    genPicInfoList() {
+    genPicInfoList () {
       return {
         pictureResolution: '',
         pictureUrl: '',
@@ -205,13 +205,13 @@ export default {
         pictureStatus: undefined
       }
     },
-    handleDelPoster(index) {
+    handleDelPoster (index) {
       if (this.disabled) {
         return
       }
       this.value.picInfoList[index].pictureUrl = undefined
     },
-    computePicStyle(width, height) {
+    computePicStyle (width, height) {
       return {
         width: width / 2 + 'px',
         height: height / 2 + 'px'
@@ -223,14 +223,14 @@ export default {
     handleSelectPostEnd (selected, index) {
       this.value.picInfoList[index].pictureUrl = selected.pictureUrl
     },
-    handlePicClick(index) {
+    handlePicClick (index) {
       if (this.disabled) {
         return
       }
       this.isVisiablePosterSelector = true
       this.currentPicIndex = index
     },
-    computeResolution() {
+    computeResolution () {
       const { currentPicIndex, inputTags } = this
       return inputTags[currentPicIndex].width + '*' + inputTags[currentPicIndex].height
     }

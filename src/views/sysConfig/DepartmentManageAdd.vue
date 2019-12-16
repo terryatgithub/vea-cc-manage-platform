@@ -53,7 +53,7 @@ export default {
     default: null
   },
 
-  data() {
+  data () {
     return {
       title: null,
       pidList: [],
@@ -84,7 +84,7 @@ export default {
 
   methods: {
     // 保存表单信息
-    submitBtn() {
+    submitBtn () {
       this.$refs.form.validate(valid => {
         if (valid) {
           const data = this.formData
@@ -97,12 +97,12 @@ export default {
         }
       })
     },
-    getDepts() {
+    getDepts () {
       return this.$service.getDepts().then(data => {
         this.pidList = data
       })
     },
-    getEditData() {
+    getEditData () {
       this.$service.sysDeptDetailInfo({ id: this.editId }).then(data => {
         Object.keys(this.formData).forEach(v => {
           if (v === 'disabled') {
@@ -115,7 +115,7 @@ export default {
     }
   },
 
-  created() {
+  created () {
     this.getDepts()
     if (this.editId) {
       this.title = '编辑'

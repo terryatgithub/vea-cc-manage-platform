@@ -36,7 +36,7 @@ export default {
     TabInfo
   },
   props: ['row'],
-  data() {
+  data () {
     return {
       id: undefined,
       mode: 'read',
@@ -48,7 +48,7 @@ export default {
     goBack () {
       this.$emit('go-back')
     },
-    handleUpsertEnd() {
+    handleUpsertEnd () {
       this.$emit('upsert-end')
     }
   },

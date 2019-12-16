@@ -352,7 +352,7 @@ export default {
 
     GlobalPictureSelector
   },
-  data() {
+  data () {
     return {
       form: null,
       showCrowdSelector: false,
@@ -395,7 +395,7 @@ export default {
         picture: [
           {
             trigger: 'change',
-            validator: function(_, value, cb) {
+            validator: function (_, value, cb) {
               cb(
                 value && value.length > 0 ? undefined : new Error('请上传图片')
               )
@@ -409,7 +409,7 @@ export default {
         tab: [
           {
             trigger: 'change',
-            validator: function(_, value, cb) {
+            validator: function (_, value, cb) {
               cb(value ? undefined : new Error('请选择版面'))
             }
           },
@@ -422,7 +422,7 @@ export default {
           { required: true, message: '请填入点击次数' },
           { type: 'number', message: '请填入数字' },
           {
-            validator: function(_, value, cb) {
+            validator: function (_, value, cb) {
               if (/^[1-9][0-9]*$/.test(value)) {
                 cb()
               } else {
@@ -449,12 +449,12 @@ export default {
   },
   props: ['mode', 'plugin', 'pluginList', 'pluginType', 'parentType', 'source'],
   computed: {
-    versionHasTitle() {
+    versionHasTitle () {
       return this.pluginType === 'REFERENCE_MOVIE_VIP'
     }
   },
   methods: {
-    validate(cb) {
+    validate (cb) {
       const currentForm = this.$refs.form
       if (currentForm) {
         currentForm.validate((valid) => {
@@ -471,7 +471,7 @@ export default {
         cb()
       }
     },
-    handlePluginChange(val) {
+    handlePluginChange (val) {
       this.form = val
       const $form = this.$refs.form
       if ($form) {
@@ -479,17 +479,17 @@ export default {
       }
     },
     /** 弹框选择素材 */
-    handleSelectPosterEnd(data) {
+    handleSelectPosterEnd (data) {
       this.form.poster = {
         pictureId: data.pictureId,
         pictureStatus: data.pictureStatus,
         pictureUrl: data.pictureUrl
       }
     },
-    handleSelectClickStart() {
+    handleSelectClickStart () {
       this.showClickSelector = true
     },
-    handleSelectClickEnd(data) {
+    handleSelectClickEnd (data) {
       this.showClickSelector = false
       let params = JSON.parse(data.params)
       let keys = Object.keys(params)
@@ -512,7 +512,7 @@ export default {
       this.form.onclick = o
     },
     /** 打开方式 */
-    handleChangeOpenMode(item, openMode) {
+    handleChangeOpenMode (item, openMode) {
       this.$refs['form'].clearValidate()
       item.openMode = openMode
       if (openMode === 'webpage') {
@@ -525,7 +525,7 @@ export default {
         item.onclick = {}
       }
     },
-    handleUploadSuccess(response) {
+    handleUploadSuccess (response) {
       if (response.success) {
         const item = this.form
         this.$set(item.onclick, 'picture', [
@@ -538,20 +538,20 @@ export default {
         this.$message(response.msg)
       }
     },
-    handleUploadRemove(index) {
+    handleUploadRemove (index) {
       const item = this.form
       item.onclick.picture = []
     },
-    handleSelectTabEnd(tab, item) {
+    handleSelectTabEnd (tab, item) {
       this.$set(item.onclick, 'tab', tab)
     },
-    handleSelectCrowdStart() {
+    handleSelectCrowdStart () {
       this.showCrowdSelector = true
     },
-    handleSelectCrowdCancel() {
+    handleSelectCrowdCancel () {
       this.showCrowdSelector = false
     },
-    handleSelectCrowdEnd(policy, crowd) {
+    handleSelectCrowdEnd (policy, crowd) {
       const currentItem = this.form
       const dmpPolicyId = policy.value
       const dmpPolicyName = policy.label
@@ -576,20 +576,20 @@ export default {
         })
       }
     },
-    parseMinToStr(min) {
+    parseMinToStr (min) {
       const hours = Math.floor(min / 60)
       const mins = min % 60
       const hoursStr = hours > 9 ? '' + hours : '0' + hours
       const minsStr = mins > 9 ? '' + mins : '0' + mins
       return hoursStr + ':' + minsStr
     },
-    handleTime() {},
-    handleSelectFocusImgEnd(data) {
+    handleTime () {},
+    handleSelectFocusImgEnd (data) {
       this.$set(this.form.extendInfo, 'focusImgUrl', data.pictureUrl)
     },
-    selectImgSubmit() {}
+    selectImgSubmit () {}
   },
-  created() {
+  created () {
     this.$watch('plugin', this.handlePluginChange, {
       immediate: true
     })

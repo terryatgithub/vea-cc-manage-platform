@@ -48,7 +48,7 @@ export default {
   components: {
     VeLine
   },
-  data() {
+  data () {
     this.markLine = {
       data: [
         {
@@ -84,7 +84,7 @@ export default {
       xAxis: {
         axisLabel: {
           rotate: 45,
-          formatter: function(val) {
+          formatter: function (val) {
             let mark = val.indexOf('(')
             if (mark === -1) {
               return val
@@ -115,7 +115,7 @@ export default {
     id: Number,
     show: {
       type: Boolean,
-      default() {
+      default () {
         return false
       }
     },
@@ -132,7 +132,7 @@ export default {
   },
 
   watch: {
-    show() {
+    show () {
       this.visible = this.show
     }
   },
@@ -154,7 +154,7 @@ export default {
         this.allTitles = data.rows
       })
     },
-    handleChartData(chartData) {
+    handleChartData (chartData) {
       return {
         title: chartData.title,
         unit: chartData.unit,
@@ -162,14 +162,14 @@ export default {
         rows: chartData.data
       }
     },
-    handleChartSettings(chartData) {
+    handleChartSettings (chartData) {
       return {
         labelMap: {
           y: chartData.title
         }
       }
     },
-    handleChartExtend(chartData) {
+    handleChartExtend (chartData) {
       const yAxis = {
         axisLabel: {
           formatter: '{value}%'
@@ -183,7 +183,7 @@ export default {
         : extend
     }
   },
-  mounted() {
+  mounted () {
 
   }
 }

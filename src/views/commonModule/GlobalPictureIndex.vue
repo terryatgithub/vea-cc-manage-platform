@@ -25,7 +25,7 @@ export default {
     GlobalPictureUpsert,
     GlobalPictureList
   },
-  data() {
+  data () {
     return {
       isShowList: true,
       editId: null,
@@ -33,25 +33,25 @@ export default {
     }
   },
   methods: {
-    goBack() {
+    goBack () {
       this.isShowList = true
     },
-    handleCreate(item) {
+    handleCreate (item) {
       this.editId = undefined
       this.isShowList = false
       this.mode = 'create'
     },
-    handleEdit(item) {
+    handleEdit (item) {
       this.editId = item.pictureId
       this.isShowList = false
       this.mode = 'edit'
     },
-    handleRead(item) {
+    handleRead (item) {
       this.editId = item.pictureId
       this.mode = 'read'
       this.isShowList = false
     },
-    handleDelete(selected) {
+    handleDelete (selected) {
       this.$service
         .materialBatchDelete({
           id: selected.map(item => item.pictureId).join(',')
@@ -63,7 +63,7 @@ export default {
     /**
      * 打开列表页面
      */
-    openListPage() {
+    openListPage () {
       this.isShowList = true
       this.$refs.list.fetchData() // 更新页面
     }

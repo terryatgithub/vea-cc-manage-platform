@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       options: []
     }
@@ -31,7 +31,7 @@ export default {
       const value = this.value
       const options = this.options
       if (value !== undefined && options) {
-        const selected = options.find(function(item) {
+        const selected = options.find(function (item) {
           return item.value === value
         })
         if (selected) {
@@ -43,9 +43,9 @@ export default {
   props: ['value', 'isRead', 'disabled'],
   methods: {
   },
-  created() {
+  created () {
     this.$service.getDictType({ type: 'appIdType' }).then((data) => {
-      this.options = data.map(function(item) {
+      this.options = data.map(function (item) {
         return {
           label: item.dictCnName,
           value: +item.dictEnName

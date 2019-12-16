@@ -118,7 +118,7 @@ export default {
     ContentWrapper,
     ButtonGroupForListPage
   },
-  data: function() {
+  data: function () {
     return {
       filter: {},
       filterSchema: _.map({
@@ -315,7 +315,7 @@ export default {
     }
   },
   methods: {
-    parseFilter() {
+    parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
@@ -323,10 +323,10 @@ export default {
       }
       return filter
     },
-    handleCreate() {
+    handleCreate () {
       this.$emit('open-add-page', null)
     },
-    handleBatchDelete() {
+    handleBatchDelete () {
       if (this.selected.length === 0) {
         this.$message('请选择再删除')
         return
@@ -344,12 +344,12 @@ export default {
           })
       })
     },
-    editData() {
+    editData () {
       if (this.$isAllowEdit(this.selected)) {
         this.$emit('open-add-page', this.selected[0])
       }
     },
-    handleFilterChange(type, filter) {
+    handleFilterChange (type, filter) {
       if (filter) {
         this.filter = filter
       }
@@ -360,24 +360,24 @@ export default {
       }
       this.fetchData()
     },
-    handleFilterReset() {
+    handleFilterReset () {
       this.filter = {
         roleName: undefined
       }
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleRowSelectionAdd(targetItem) {
+    handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem.roleId)
       this.updateTableSelected()
     },
-    handleRowSelectionRemove(targetItem) {
+    handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item !== targetItem.roleId
       })
       this.updateTableSelected()
     },
-    handleAllRowSelectionChange(value) {
+    handleAllRowSelectionChange (value) {
       if (value) {
         this.table.data.forEach(this.handleRowSelectionAdd)
       } else {
@@ -385,11 +385,11 @@ export default {
         this.table.selected = []
       }
     },
-    handleAllRowSelectionRemove() {
+    handleAllRowSelectionRemove () {
       this.selected = []
       this.table.selected = []
     },
-    updateTableSelected() {
+    updateTableSelected () {
       const table = this.table
       const newSelectedIndex = this.selected
       table.selected = table.data.reduce((result, item, index) => {
@@ -399,11 +399,11 @@ export default {
         return result
       }, [])
     },
-    handleCheckAllChange(val) {
+    handleCheckAllChange (val) {
       this.checkAllValue = val
       this.isIndeterminate = false
       const keys = this.dataItems
-      function checkAll(data) {
+      function checkAll (data) {
         data.forEach(item => {
           keys.forEach(key => {
             if (item[key] !== '-1') {
@@ -417,13 +417,13 @@ export default {
       }
       checkAll(this.AuthList)
     },
-    updateAuth() {
+    updateAuth () {
       const self = this
       const roleId = this.roleId
       const keys = this.dataItems
       const accessItemToRunId = this.accessItemToRunId
       const menuIds = []
-      function checkSelect(data) {
+      function checkSelect (data) {
         data.forEach(item => {
           keys.forEach((key, index) => {
             if (item[key] === '1') {
@@ -447,11 +447,11 @@ export default {
           },
           '设置成功'
         )
-        .then(function() {
+        .then(function () {
           self.setAuthDialogVisible = false
         })
     },
-    setAuth({ row }) {
+    setAuth ({ row }) {
       this.$service.getAuthList({ roleId: row.roleId }).then(data => {
         console.log(data)
         this.setAuthDialogVisible = true
@@ -459,7 +459,7 @@ export default {
         this.roleId = row.roleId
       })
     },
-    fetchPolicies(roleId) {
+    fetchPolicies (roleId) {
       this.$service
         .getTaglist({ roleId: roleId, type: 'crowdPolicy' })
         .then(data => {
@@ -474,24 +474,24 @@ export default {
           })
         })
     },
-    handleSelectCrowd(crowd) {
+    handleSelectCrowd (crowd) {
       crowd.disable = crowd.disable === 1 ? 0 : 1
     },
-    handleSetAuthOfCrowd({ row }) {
+    handleSetAuthOfCrowd ({ row }) {
       this.showAuthOfCrowdDialog = true
       this.policies = []
       this.roleId = row.roleId
       this.fetchPolicies(row.roleId)
     },
-    handleSaveAuth() {
+    handleSaveAuth () {
       const self = this
       const roleId = this.roleId
       const crowdIds = []
       const policyIds = []
       const policies = this.policies
-      policies.forEach(function(policyItem) {
+      policies.forEach(function (policyItem) {
         let disablePolicy = true
-        policyItem.crowds.forEach(function(crowdItem) {
+        policyItem.crowds.forEach(function (crowdItem) {
           if (crowdItem.disable === 1) {
             crowdIds.push(crowdItem.value)
           } else {
@@ -521,18 +521,18 @@ export default {
           },
           '设置成功'
         )
-        .then(function() {
+        .then(function () {
           self.showAuthOfCrowdDialog = false
         })
     },
-    sysRoleView({ row }) {
+    sysRoleView ({ row }) {
       this.viewUserDialogVisible = true
       let id = row.roleId
       this.$service.userRoleList({ roleId: id }).then(data => {
         this.userRoleData = data
       })
     },
-    fetchData() {
+    fetchData () {
       this.handleAllRowSelectionRemove()
       const filter = this.parseFilter()
       this.$service.getRoleList(filter).then(data => {
@@ -541,7 +541,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     const accessListSorted = this.accessList.sort((prev, next) => {
       return prev.runId > next.runId ? 1 : -1
     })
