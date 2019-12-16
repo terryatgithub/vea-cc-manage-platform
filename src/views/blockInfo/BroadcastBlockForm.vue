@@ -227,8 +227,7 @@
         <el-radio-group
           :value="normalForm.sign"
           @input="handleChangeSign"
-          :disabled="isManualSetResource"
-        >
+          :disabled="isManualSetResource">
           <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
           <template v-if="normalForm.clickType === 'detail'">
             <el-radio label="manualResource" :disabled="disabled">跳转其他播放资源</el-radio>
@@ -394,7 +393,7 @@ export default {
     handleInputClickType (val) {
       const normalForm = this.normalForm
       normalForm.clickType = val
-      normalForm.sign = 'autoSet'
+      this.handleChangeSign('autoSet')
     },
     handleSelectClickEventStart () {
       this.onclickEventVisible = true
