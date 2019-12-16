@@ -213,13 +213,14 @@
         </el-card>
       </el-form-item>
       <el-form-item label="点击跳转" v-if="isGroupModel">
-        <el-radio-group v-model="normalForm.clickType">
+        <el-radio-group :value="normalForm.clickType" @input="handleInputClickType">
           <el-radio label="detail" :disabled="disabled" v-show="!normalForm.shortVideoSwitch">点击进详情页</el-radio>
           <el-radio
             v-show="couldFullscreen"
             label="play-fullscreen"
-            :disabled="disabled"
-          >点击直接全屏播放</el-radio>
+            :disabled="disabled">
+            点击直接全屏播放
+          </el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="点击事件" prop="sign" v-if="isGroupModel">
@@ -229,8 +230,10 @@
           :disabled="isManualSetResource"
         >
           <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
-          <el-radio label="manualResource" :disabled="disabled">跳转其他播放资源</el-radio>
-          <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
+          <template v-if="normalForm.clickType === 'detail'">
+            <el-radio label="manualResource" :disabled="disabled">跳转其他播放资源</el-radio>
+            <el-radio label="manualSet" :disabled="disabled">手动设置</el-radio>
+          </template>
         </el-radio-group>
       </el-form-item>
       <el-form-item label prop="clickParams">
@@ -388,6 +391,11 @@ export default {
       }
       return isReadonly
     },
+    handleInputClickType (val) {
+      const normalForm = this.normalForm
+      normalForm.clickType = val
+      normalForm.sign = 'autoSet'
+    },
     handleSelectClickEventStart () {
       this.onclickEventVisible = true
     },
@@ -534,6 +542,7 @@ export default {
       }
       if (bool) {
         normalForm.clickType = 'play-fullscreen'
+        normalForm.sign = 'autoSet'
       } else {
         normalForm.clickType = 'detail'
       }
