@@ -247,8 +247,8 @@
                                         <el-select
                                             :value="ad.value"
                                             @input="handleUpdateSwitch(ad, $event)">
-                                            <el-option label="开" :value="0"></el-option>
-                                            <el-option label="关" :value="1"></el-option>
+                                            <el-option label="关" :value="0"></el-option>
+                                            <el-option label="开" :value="1"></el-option>
                                             <el-option label="不显示福气值的进度条UI,但要提交视频播放时长数据" :value="2"></el-option>
                                         </el-select>
                                     </el-form-item>
