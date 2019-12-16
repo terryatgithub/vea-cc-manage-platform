@@ -1,19 +1,15 @@
 <template>
   <div v-if="isShow" class="table-box">
-    <vue-lazy-component @init="init">
-      <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
-      <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
-    </vue-lazy-component>
+    <Table :data="clickUvTable.data" :props="clickUvTable.props" :header="clickUvTable.header" :selection-type="clickUvTable.selectionType"/>
+    <Table :data="uvctrTable.data" :props="uvctrTable.props" :header="uvctrTable.header" :selection-type="uvctrTable.selectionType"/>
   </div>
 </template>
 <script>
-import { component as VueLazyComponent } from '@xunlei/vue-lazy-component'
 import { Table } from 'admin-toolkit'
 
 export default {
   components: {
-    Table,
-    'vue-lazy-component': VueLazyComponent
+    Table
   },
   data () {
     return {
@@ -195,16 +191,10 @@ export default {
         this.clickUvTable.data = clickUvData.reverse()
         this.uvctrTable.data = uvctrData.reverse()
       })
-    },
-    // 懒加载组件
-    init () {
-      if (this.clickUvTable.data.length !== 0) {
-        return
-      }
-      this.$watch('panelID', this.getPanelSimpleBrowseData, {
-        immediate: true
-      })
     }
+  },
+  created () {
+    this.getPanelSimpleBrowseData()
   }
 }
 </script>
