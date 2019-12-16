@@ -541,7 +541,7 @@ export default {
       }
       if (bool) {
         normalForm.clickType = 'play-fullscreen'
-        normalForm.sign = 'autoSet'
+        this.handleChangeSign('autoSet')
       } else {
         normalForm.clickType = 'detail'
       }
