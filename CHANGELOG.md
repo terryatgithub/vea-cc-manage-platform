@@ -101,3 +101,17 @@ All notable changes to this project will be documented in this file.
 
 ### Removed   
 - 普通策略和测试策略中去掉儿童模式定向首页方案
+
+## 1.10.0  
+### Added  
+- 添加详情活动页广告位开关  
+- 添加15+5广告位开关  
+### Changed  
+- 优化版面里版块加载  
+- 优化版面数据统计显示  
+- DMP人群选择器分页显示，支持搜索      
+- 布局支持下载    
+### Fixed  
+- 布局名称添加长度限制  
+- 推荐位改变打开方式时，清空应用参数  
+- 轮播推荐位，全屏只能跳转到本播放资源  
