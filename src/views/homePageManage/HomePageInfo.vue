@@ -304,29 +304,30 @@ export default {
     },
     tabGroupTableHeader () {
       const header = [
-        {
-          label: '置底',
-          align: 'center',
-          render: (h, { $index, row }) => {
-            if (this.mode === 'read') {
-              return row.tabIsForeverLast ? '是' : ''
-            }
-            return h(
-              'el-checkbox',
-              {
-                props: {
-                  value: !!row.tabIsForeverLast
-                },
-                on: {
-                  input: val => {
-                    this.handleSetTabAlwaysLast($index, val)
-                  }
-                }
-              },
-              ''
-            )
-          }
-        },
+        // 2019-12-19 取消置底
+        // {
+        //   label: '置底',
+        //   align: 'center',
+        //   render: (h, { $index, row }) => {
+        //     if (this.mode === 'read') {
+        //       return row.tabIsForeverLast ? '是' : ''
+        //     }
+        //     return h(
+        //       'el-checkbox',
+        //       {
+        //         props: {
+        //           value: !!row.tabIsForeverLast
+        //         },
+        //         on: {
+        //           input: val => {
+        //             this.handleSetTabAlwaysLast($index, val)
+        //           }
+        //         }
+        //       },
+        //       ''
+        //     )
+        //   }
+        // },
         {
           label: '版面ID',
           prop: 'tabId'
