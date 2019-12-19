@@ -1938,7 +1938,7 @@ export default {
       const pannel = JSON.parse(JSON.stringify(data))
 
       pannel.panelGroupType = panelDataType
-      pannel.pannelList = data.pannelList.map(function (item) {
+      pannel.pannelList = pannel.pannelList.map(function (item) {
         let hasSpecific = false
         const itemContentList = item.contentList.map(function (_contentItem) {
           const titleInfo = _contentItem.titleInfo
