@@ -45,6 +45,7 @@
           v-if="!isManualSetResource && normalResourceBtn==='播放资源' && !disabled "
           :selectors="resourceOptionsNormalForm"
           :is-live="false"
+          :id-type="1"
           selection-type="single"
           @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
         >

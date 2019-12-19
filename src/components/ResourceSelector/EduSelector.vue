@@ -255,7 +255,7 @@ export default {
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
     }
   },
-  props: ['isLive', 'selectionType'],
+  props: ['isLive', 'selectionType', 'idType'],
   methods: {
     handleCollapseChange () {
       setTimeout(() => {
@@ -285,7 +285,8 @@ export default {
         areas: '', // 地区
         yearStart: undefined, // 开始年代
         yearEnd: undefined, // 结束年代
-        businessType: 1 // 业务线类型:0影视, 1教育
+        businessType: 1, // 业务线类型:0影视, 1教育
+        idType: this.idType
       }
     },
     getFilter () {

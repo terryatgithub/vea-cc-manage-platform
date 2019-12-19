@@ -23,6 +23,7 @@
             :disable-partner="disablePartner"
             :source="source"
             :selection-type="selectionType"
+            :id-type="idType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <app-selector
@@ -39,6 +40,7 @@
             ref="edu-selector"
             :source="source"
             :selection-type="selectionType"
+            :id-type="idType"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <pptv-selector
@@ -245,6 +247,7 @@ export default {
     source: String,
     businessType: Number,
     disablePartner: Boolean,
+    idType: Number,
     selectors: {
       type: Array,
       default () {

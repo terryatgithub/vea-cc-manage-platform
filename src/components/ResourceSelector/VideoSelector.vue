@@ -328,7 +328,7 @@ export default {
         .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     }
   },
-  props: ['isLive', 'disablePartner', 'selection-type', 'source'],
+  props: ['isLive', 'disablePartner', 'selection-type', 'source', 'idType'],
   watch: {
     'filter.partner': 'onPartnerChange',
     'filter.sources': 'onSourceChange',
@@ -456,7 +456,8 @@ export default {
         directors: '', // 导演
         actors: '', // 主演
         areas: '', // 地区
-        tagCodes: [[]]
+        tagCodes: [[]],
+        idType: this.idType
       }
     },
     getFilter () {
