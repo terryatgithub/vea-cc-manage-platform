@@ -57,6 +57,7 @@
               </div>
               <BlockForm
                 v-if="activeType === 'normal'"
+                :key="`active_index_${activeIndex}`"
                 ref="normalBlockForm"
                 @click.stop
                 @cover-type-change="handleCoverTypeChange"
