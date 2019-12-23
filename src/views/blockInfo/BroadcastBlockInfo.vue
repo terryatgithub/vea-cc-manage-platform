@@ -66,6 +66,7 @@
           :source="source"
           :selectors="resourceOptions"
           :is-live="false"
+          :id-type="1"
           style="float: right;"
           selection-type="multiple"
           @select-end="handleSelectNormalmultipleResourceEnd"
