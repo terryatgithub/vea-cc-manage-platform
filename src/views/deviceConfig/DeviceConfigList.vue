@@ -9,6 +9,13 @@
           @filter-change="handleFilterChange"
           @filter-reset="handleFilterReset"
         >
+          <a class="el-button el-button--primary el-button--small export-btn" target="_blank" :href="exportUrl">
+            导出当前数据
+          </a>
+          <ButtonGroupForListPage
+            pageName="deviceConfig"
+            @edit="handleEdit">
+          </ButtonGroupForListPage>
           <Table
             :props="table.props"
             :header="table.header"
@@ -67,6 +74,7 @@ import { ContentWrapper, Table } from 'admin-toolkit'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import BaseList from '@/components/BaseList'
+import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 
 export default {
   extends: BaseList,
@@ -74,7 +82,8 @@ export default {
     Table,
     ContentWrapper,
     PageWrapper,
-    PageContentWrapper
+    PageContentWrapper,
+    ButtonGroupForListPage
   },
   data () {
     return {
@@ -83,6 +92,10 @@ export default {
       showEditDialog: false,
       editingRow: null,
       filter: {
+        model: '',
+        chip: '',
+        ramSize: '',
+        autoPlay: ''
       },
       autoPlayText: {
         0: '否',
@@ -154,32 +167,19 @@ export default {
           {
             label: '修改人',
             prop: 'modifierName'
-          },
-          {
-            label: '操作',
-            width: '140',
-            fixed: 'right',
-            render: (h, { row }) => {
-              return (
-                <div>
-                  <el-button type="text" onClick={(event) => {
-                    event.stopPropagation()
-                    this.handleEdit(row)
-                  }}>
-                    修改
-                  </el-button>
-                </div>
-              )
-            }
           }
         ],
         data: [],
         selected: [],
-        selectionType: 'none'
+        selectionType: 'multiple'
       }
     }
   },
   computed: {
+    exportUrl () {
+      const { model = '', chip = '', ramSize = '', autoPlay = '' } = this.filter
+      return `api/v1/deviceConfig/download.html?model=${model}&chip=${chip}&ramSize=${ramSize}&autoPlay=${autoPlay}`
+    }
   },
   methods: {
     handleFilterChange (type, filter) {
@@ -193,8 +193,7 @@ export default {
     },
     // 重置
     handleFilterReset () {
-      this.filter = {
-      }
+      this.filter = {}
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -206,9 +205,17 @@ export default {
       }
       return filter
     },
-    handleEdit (row) {
+    handleEdit () {
+      const table = this.table
+      const selected = table.selected
+      if (selected.length === 0) {
+        return this.$message.error('请选择一条数据')
+      }
+      if (selected.length > 1) {
+        return this.$message.error('只能选择一条数据进行编辑')
+      }
       this.showEditDialog = true
-      this.editingRow = JSON.parse(JSON.stringify(row))
+      this.editingRow = JSON.parse(JSON.stringify(table.data[selected[0]]))
     },
     handleSave () {
       this.$refs.form.validate((valid) => {
@@ -276,4 +283,11 @@ export default {
   }
 }
 </script>
-<style lang = 'stylus' scoped></style>
+<style lang='stylus' scoped>
+.export-btn
+  position absolute
+  top 40px
+  right 10px
+  text-decoration none
+</style>
+
