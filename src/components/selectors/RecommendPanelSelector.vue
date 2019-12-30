@@ -136,7 +136,8 @@ export default {
         panelGroupName: undefined,
         panelGroupTitle: undefined,
         panelGroupCategory: undefined,
-        source: undefined
+        source: undefined,
+        flag: 1
       }
     },
     handleFilterChange () {
