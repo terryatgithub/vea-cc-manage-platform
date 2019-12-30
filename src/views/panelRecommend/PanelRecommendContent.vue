@@ -143,8 +143,9 @@ export default {
   created () {
     this.mode = this.initMode
     this.fetchData(this.version)
-    this.getRecommendStreamSignOptions().then((result) => {
-      this.recommendStreamSignOptions = result
+    this.getRecommendStreamSignOptions().then((result = []) => {
+      // 不显示精选
+      this.recommendStreamSignOptions = result.filter(item => item.label !== '精选')
     })
   }
 
