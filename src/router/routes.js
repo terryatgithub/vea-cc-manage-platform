@@ -47,6 +47,7 @@ import FramePage from '../views/FramePage'
 import CrowdRel from '../views/crowdRel/Index.vue'
 import PanelRecommend from '../views/panelRecommend/PanelRecommendIndex.vue'
 import AssignVideoRecom from '../views/blockInfo/AssignVideoRecomIndex.vue'
+import DeviceConfig from '../views/deviceConfig/DeviceConfigIndex.vue'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
 
@@ -554,6 +555,24 @@ const children = [
           title: '详情页广告位',
 
           tagId: 'filmDetailAdBit'
+        }
+      }
+    ]
+  },
+  {
+    path: 'deviceConfig',
+    name: 'deviceConfig',
+    component: Wrapper,
+    meta: { title: '小窗自动播放配置'},
+    children: [
+      {
+        name: 'deviceConfig',
+        path: '/deviceConfig',
+        component: DeviceConfig,
+        meta: {
+          title: '小窗自动播放配置',
+
+          tagId: 'deviceConfig'
         }
       }
     ]

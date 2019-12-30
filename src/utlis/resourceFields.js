@@ -64,5 +64,8 @@ export default {
   },
   panelRecommend: {
     id: 'panelGroupId'
+  },
+  deviceConfig: {
+    id: 'id'
   }
 }

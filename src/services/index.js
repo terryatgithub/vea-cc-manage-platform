@@ -37,6 +37,7 @@ import * as topicConfig from './topicConfig'
 import * as mall from './mall'
 import * as analytics from './analytics'
 import * as tabInsertionTask from './tabInsertionTask'
+import * as deviceConfig from './deviceConfig'
 
 const service = {
   state: {},
@@ -78,7 +79,8 @@ const service = {
   ...topicConfig,
   ...mall,
   ...analytics,
-  ...tabInsertionTask
+  ...tabInsertionTask,
+  ...deviceConfig
 }
 
 export default function install (Vue) {

@@ -165,7 +165,10 @@ const routerMap = {
   panelRecommendCoreData: 'panelRecommendCoreData',
   panelRecommendFeedback: 'panelRecommendFeedback',
   // 儿童策略
-  childPolicy: 'childPolicy'
+  childPolicy: 'childPolicy',
+
+  // 
+  deviceConfig: 'deviceConfig'
 }
 
 const iconMap = {
@@ -268,7 +271,9 @@ const iconMap = {
   // 版块个性化推荐反馈
   panelRecommendFeedback: 'el-icon-message',
 
-  childPolicy: 'el-icon-s-check'
+  childPolicy: 'el-icon-s-check',
+  homeConfig: 'el-icon-setting',
+  deviceConfig: 'el-icon-s-tools'
 }
 
 export default {
