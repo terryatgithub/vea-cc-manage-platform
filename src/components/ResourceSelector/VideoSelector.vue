@@ -253,19 +253,19 @@ export default {
             width: '105',
             fixed: 'right',
             render: (h, { row }) => {
-              const ccVideoSourceEntities = row.ccVideoSourceEntities || []
-              const entity = ccVideoSourceEntities[0]
-              if (entity && entity.currentSegment > 1 && entity.thirdSource === this.efficientFilter.sources) {
-                return h('el-button', {
-                  on: {
-                    'click': (event) => {
-                      event.stopPropagation()
-                      this.handleSelectEpisode(row)
-                    }
-
+              // const ccVideoSourceEntities = row.ccVideoSourceEntities || []
+              // const entity = ccVideoSourceEntities[0]
+              // if (entity && entity.currentSegment > 1 && entity.thirdSource === this.efficientFilter.sources) {
+              return h('el-button', {
+                on: {
+                  'click': (event) => {
+                    event.stopPropagation()
+                    this.handleSelectEpisode(row)
                   }
-                }, '选择单集')
-              }
+
+                }
+              }, '选择单集')
+              // }
             }
           }
         ],

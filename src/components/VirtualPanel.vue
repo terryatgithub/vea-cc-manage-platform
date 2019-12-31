@@ -5,26 +5,29 @@
             'cc-virtual-pannel--show-title': showTitle
         }"
     :style="pannelStyle">
-      <div v-for="(block, index) in blockItems" :key="index">
+      <div v-for="(block, index) in blockItems" :key="`${block.content.vContentId}-${index}`">
         <el-popover
           placement="top"
           trigger="hover"
-          :disabled="!showChartBtn"
+          :disabled="!(showChartBtn || showExchangeTool)"
           popper-class="show-chart-popper">
           <!-- 看数据按钮 -->
-          <div>
+          <div v-if="showChartBtn">
             <el-button
               type="success"
               v-if="blocks[index].vcId != -101"
               class="analyze-data--btn"
-              @click.stop="handleAnalyzeSimpleData(index)"
-            >整体数据</el-button>
+              @click.stop="handleAnalyzeSimpleData(index)">
+              整体数据
+           </el-button>
             <el-button
               type="success"
               v-if="block.specificContentList && block.specificContentList.length !== 0"
               class="analyze-data--btn"
-              @click.stop="handleAnalyzeDmpData(index)"
-            >DMP</el-button><br v-if="block.specificContentList && block.specificContentList.length !== 0"/>
+              @click.stop="handleAnalyzeDmpData(index)">
+              DMP
+            </el-button>
+            <br v-if="block.specificContentList && block.specificContentList.length !== 0"/>
             <!-- <el-button
               type="success"
               class="analyze-data--btn"
@@ -37,6 +40,22 @@
               @click.stop="handleAnalyzeDmpData(index, true)"
             >DMP实时数据</el-button> -->
           </div>
+          <!-- 交换 -->
+          <div v-if="showExchangeTool">
+              <el-button
+                type="success"
+                :class="disableExchangeTool ? 'is-disabled el-button--disabled' : ''"
+                @click.stop="$emit('copy-block', index)">
+                复制
+              </el-button>
+              <el-button
+                type="success"
+                :class="disableExchangeTool ? 'is-disabled el-button--disabled' : ''"
+                @click.stop="$emit('exchange-block', index)">
+                交换
+              </el-button>
+          </div>
+
           <!-- 内容 -->
           <div
             slot="reference"
@@ -49,9 +68,15 @@
                       'cc-virtual-pannel__block': true,
                       'cc-virtual-pannel__block--duplicated': block.duplicated
                   }"
-            :style="block.style"
-          >
-            <img referrerpolicy="no-referrer" loading="lazy" class="cc-virtual-pannel__block-post" v-if="block.img" :src="block.img">
+            :style="block.style">
+            <img
+              referrerpolicy="no-referrer"
+              loading="lazy"
+              class="cc-virtual-pannel__block-post"
+              v-if="block.img"
+              :src="block.img"
+              :key="block.img"
+            />
 
             <template v-for="(corner, index) in block.cornerList">
               <img
@@ -128,7 +153,7 @@ export default {
     }
   },
 
-  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn'],
+  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn', 'showExchangeTool', 'disableExchangeTool'],
   watch: {
     blocks: 'computeBlockItems'
   },

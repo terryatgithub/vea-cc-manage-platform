@@ -41,6 +41,16 @@ export function panelUpsert (data) {
     }
   })
 }
+export function panelUpsertSilent (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/panel/save.html',
+    useLoading: false,
+    data: {
+      jsonStr: JSON.stringify(data)
+    }
+  })
+}
 export function panelRemove (data) {
   return this.fetch({
     method: 'post',

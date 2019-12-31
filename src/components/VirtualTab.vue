@@ -16,7 +16,6 @@
 */
 <template>
   <div
-    v-if="show"
     :class="{
             'cc-virtual-tab': true,
             'collapse-all': isDragging,
@@ -34,6 +33,7 @@
 
     <template v-for="(panelItem, index) in panels">
       <div
+        v-if="show"
         :key="'panel-' + index"
         :class="{
           'tab-placeholder': true,
@@ -150,7 +150,18 @@
                       :panel="panelData[item.id]"
                       :ratio="ratio"
                       :active="item.activeIndex"
+                      :show-exchange-tool="showExchangeTool"
                       :show-title="showTitle"
+                      @copy-block="handleCopyBlock({
+                        panelGroupId: item.id,
+                        groupIndex: arguments[0],
+                        blockIndex: arguments[1]
+                      })"
+                      @exchange-block="handleExchangeBlock({
+                        panelGroupId: item.id,
+                        groupIndex: arguments[0],
+                        blockIndex: arguments[1]
+                      })"
                       @activate="handleActivate(item, $event)"
                       @click-block="handleClickBlock({
                         index: index,
@@ -233,6 +244,17 @@
                     :active="panel.activeIndex"
                     :ratio="ratio"
                     :show-title="showTitle"
+                    :show-exchange-tool="showExchangeTool"
+                    @copy-block="handleCopyBlock({
+                      panelGroupId: panelItem.panel.id,
+                      groupIndex: arguments[0],
+                      blockIndex: arguments[1]
+                    })"
+                    @exchange-block="handleExchangeBlock({
+                      panelGroupId: panelItem.panel.id,
+                      groupIndex: arguments[0],
+                      blockIndex: arguments[1]
+                    })"
                     @activate="handleActivate(panelItem.panel, $event)"
                     @click-block="handleClickBlock({
                       index: index,
@@ -263,8 +285,8 @@
         @dragenter="handleDragEnter"
         @dragleave="handleDragLeave"
         @dragover="handleDragOver"
-        @drop="handleDrop($event, {type: 'NORMAL', index:index})"
-      ></div>
+        @drop="handleDrop($event, {type: 'NORMAL', index:index})">
+      </div>
     </template>
   </div>
 </template>
@@ -398,7 +420,7 @@ export default {
       STATUS_TEXT: this.$consts.statusText
     }
   },
-  props: ['panels', 'ratio', 'width', 'panelData', 'showTitle', 'readOnly'],
+  props: ['panels', 'ratio', 'width', 'panelData', 'showTitle', 'readOnly', 'showExchangeTool'],
   methods: {
     refresh () {
       this.show = false
@@ -508,6 +530,12 @@ export default {
     },
     handleShowAllPanels (index) {
       this.$emit('show-all-panel', index)
+    },
+    handleCopyBlock (options) {
+      this.$emit('copy-block', options)
+    },
+    handleExchangeBlock (options) {
+      this.$emit('exchange-block', options)
     }
   }
 }

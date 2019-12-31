@@ -1,5 +1,5 @@
 <template>
-  <PageWrapper ref="pageWrapper" class="tab-info-wrapper">
+  <PageWrapper v-loading="loading" :element-loading-text="loadingText" ref="pageWrapper" class="tab-info-wrapper">
     <PageContentWrapper v-show="activePage === 'tab_info'">
       <ContentCard :title="title" @go-back="$emit('go-back')">
         <CommonContent
@@ -258,11 +258,10 @@
                 <el-form-item label="选择版块" v-if="tabInfo.hasSubTab === 0">
                   <div
                     class="tab-info__virtual-tab-menu"
-                    :style="{visibility: isPanelDragging ? 'hidden' : 'visible'}"
-                  >
+                    :style="{visibility: isPanelDragging ? 'hidden' : 'visible'}">
                     <Affix
                       relative-element-selector=".tab-info__virtual-tab"
-                      scroll-container-selector=".el-main"
+                      scroll-container-selector=".page-content-wrapper"
                       style="width: 725px; display: inline-block;background: #fff; z-index: 1;"
                       :offset="{ top: 128, bottom: 50 }"
                     >
@@ -284,6 +283,21 @@
                       </el-dropdown>
                       <el-button class="marginL" type="primary" plain @click="handleToggleAllPanel(false)">展开所有</el-button>
                       <el-button type="primary" plain @click="handleToggleAllPanel(true)">收起所有</el-button>
+                      <el-button type="primary" :disabled="panelsModified.length === 0" @click="handleSubmitBlockExchange">提交推荐位移动</el-button>
+                    </Affix>
+                  </div>
+                  <div class="block-exchange-wrapper">
+                    <Affix
+                      relative-element-selector=".tab-info__virtual-tab"
+                      scroll-container-selector=".page-content-wrapper"
+                      :offset="{ top: 110, bottom: 0 }">
+                      <BlockExchangeCenter
+                        v-show="blocksToExchange.length > 0"
+                        @activate="activeBlockIndex = $event"
+                        @remove="handleRemoveBlock"
+                        :active='activeBlockIndex'
+                        :panel-data="panelListIndexed" :blocks="blocksToExchange"
+                      />
                     </Affix>
                   </div>
                   <cc-virtual-tab
@@ -303,6 +317,9 @@
                     @drag-end="handleDragEnd"
                     @show-all-panel="handleShowAllPanels"
                     @lazy-init="handleLazyInit"
+                    :show-exchange-tool="true"
+                    @copy-block="handleCopyBlock"
+                    @exchange-block="handleExchangeBlock"
                     :panels="tabInfo.pannelList"
                     :panel-data="panelListIndexed"
                     :width="725"
@@ -653,12 +670,26 @@
                   <div class="tab-info__virtual-tab-menu">
                     <Affix
                       relative-element-selector=".tab-info__virtual-tab"
-                      scroll-container-selector=".el-main"
+                      scroll-container-selector=".page-content-wrapper"
                       style="width: 725px; display: inline-block;background: #fff; z-index: 1;"
-                      :offset="{ top: 128, bottom: 50 }"
-                    >
+                      :offset="{ top: 140, bottom: 50 }">
                       <el-button @click="handleToggleAllPanel(false)">展开所有</el-button>
                       <el-button @click="handleToggleAllPanel(true)">收起所有</el-button>
+                      <el-button type="primary" :disabled="panelsModified.length === 0" @click="handleSubmitBlockExchange">提交推荐位移动</el-button>
+                    </Affix>
+                  </div>
+                  <div class="block-exchange-wrapper">
+                    <Affix
+                      relative-element-selector=".tab-info__virtual-tab"
+                      scroll-container-selector=".page-content-wrapper"
+                      :offset="{ top: 110, bottom: 0 }">
+                      <BlockExchangeCenter
+                        v-show="blocksToExchange.length > 0"
+                        @activate="activeBlockIndex = $event"
+                        @remove="handleRemoveBlock"
+                        :active='activeBlockIndex'
+                        :panel-data="panelListIndexed" :blocks="blocksToExchange"
+                      />
                     </Affix>
                   </div>
                   <cc-virtual-tab
@@ -672,6 +703,9 @@
                     @uncollapse="handleChangeCollapseState"
                     @show-all-panel="handleShowAllPanels"
                     @lazy-init="handleLazyInit"
+                    :show-exchange-tool="true"
+                    @copy-block="handleCopyBlock"
+                    @exchange-block="handleExchangeBlock"
                     :read-only="true"
                     :width="725"
                     :ratio="0.315"
@@ -862,7 +896,10 @@ import RecommendPanelSelector from '@/components/selectors/RecommendPanelSelecto
 import VeLine from 'v-charts/lib/line.common'
 import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/markPoint'
+import BlockExchangeCenter from './BlockExchangeCenter'
+import { cloneDeep } from 'lodash'
 
+const PANEL_CACHE = {}
 export default {
   name: 'TabInfo',
   mixins: [titleMixin],
@@ -890,7 +927,8 @@ export default {
     InputMinute,
     RecommendStreamSignSelector,
     RecommendPanelSelector,
-    VeLine
+    VeLine,
+    BlockExchangeCenter
   },
   data () {
     this.markLine = {
@@ -977,6 +1015,8 @@ export default {
     }
 
     return {
+      loading: false,
+      loadingText: '',
       UVCTR: {
         value: '',
         dailyGrowth: '',
@@ -1073,6 +1113,10 @@ export default {
       panelListIndexed: {},
       vipEnums: [],
       vipEnumsData: [],
+      activeBlockIndex: undefined,
+      blocksToExchange: [
+      ],
+      panelsModified: [],
       tabInfo: {
         tabId: undefined,
         currentVersion: undefined,
@@ -1289,6 +1333,141 @@ export default {
     'tabInfo.tabResource': 'getVipButtonSource'
   },
   methods: {
+    handleRemoveBlock (index) {
+      const activeBlockIndex = this.activeBlockIndex
+      this.activeBlockIndex = index > activeBlockIndex
+        ? activeBlockIndex
+        : activeBlockIndex === index
+          ? 0
+          : activeBlockIndex - 1
+      this.blocksToExchange.splice(index, 1)
+    },
+    handleCopyBlock ({ panelGroupId, groupIndex, blockIndex }) {
+      /**
+       * {
+       *   panelGroupId
+       *   groupIndex
+       *   blockIndex
+       * }
+       */
+      const blocksToExchange = this.blocksToExchange
+      const key = `${panelGroupId}-${groupIndex}-${blockIndex}`
+      const block = {
+        key,
+        panelGroupId,
+        groupIndex,
+        blockIndex
+      }
+      const index = blocksToExchange.findIndex(item => item.key === key)
+      if (index > -1) {
+        this.activeBlockIndex = index
+      } else {
+        blocksToExchange.unshift(block)
+        this.activeBlockIndex = 0
+      }
+    },
+    handleExchangeBlock (blockA) {
+      const { panelListIndexed, activeBlockIndex, blocksToExchange } = this
+      const blockB = blocksToExchange[activeBlockIndex]
+      if (!blockB) {
+        return this.$message.error('请先选择要交换的推荐位')
+      }
+      const blockAKey = `${blockA.panelGroupId}-${blockA.groupIndex}-${blockA.blockIndex}`
+      const blockBKey = `${blockB.panelGroupId}-${blockB.groupIndex}-${blockB.blockIndex}`
+      if (blockAKey === blockBKey) {
+        return this.$message.error('复制的推荐位与交换的推荐位是同一个推荐位')
+      }
+
+      const groupA = panelListIndexed[blockA.panelGroupId].panelList[blockA.groupIndex]
+      const groupB = panelListIndexed[blockB.panelGroupId].panelList[blockB.groupIndex]
+      const blockAContentParsed = groupA.blocks[blockA.blockIndex]
+      const blockBContentParsed = groupB.blocks[blockB.blockIndex]
+
+      // 校验推荐流
+      const blockAHasSetRec = blockAContentParsed.videoContentList.some(item => item.flagSetRec === 1)
+      const blockBHasSetRec = blockBContentParsed.videoContentList.some(item => item.flagSetRec === 1)
+      if (blockAHasSetRec || blockBHasSetRec) {
+        const blockAContentPosition = blockAContentParsed.contentPosition
+        const blockBContentPosition = blockBContentParsed.contentPosition
+        const blockASize = blockAContentPosition.width + '*' + blockAContentPosition.height
+        const blockBSize = blockBContentPosition.width + '*' + blockBContentPosition.height
+        if (blockASize !== blockBSize) {
+          const errorPrefix = blockAHasSetRec ? '交换的推荐位设置了推荐流' : '复制的推荐位设置了推荐流'
+          return this.$message.error(`交换失败, ${errorPrefix}, 两个推荐位的尺寸不一致`)
+        }
+      }
+      // 交换处理过的响应式数据
+      const tempVideoContentListParsed = blockAContentParsed.videoContentList
+      blockAContentParsed.videoContentList = blockBContentParsed.videoContentList.slice()
+      blockBContentParsed.videoContentList = tempVideoContentListParsed.slice()
+      const tempSpecificContentListParsed = blockAContentParsed.specificContentList
+      blockAContentParsed.specificContentList = blockBContentParsed.specificContentList.slice()
+      blockBContentParsed.specificContentList = tempSpecificContentListParsed.slice()
+      groupA.blocks = groupA.blocks.slice()
+      groupB.blocks = groupB.blocks.slice()
+
+      // 交换真正的版块数据
+      const blockAContent = PANEL_CACHE[blockA.panelGroupId].pannelList[blockA.groupIndex].contentList[blockA.blockIndex]
+      const blockBContent = PANEL_CACHE[blockB.panelGroupId].pannelList[blockB.groupIndex].contentList[blockB.blockIndex]
+      const tempVideoContentList = blockAContent.videoContentList
+      blockAContent.videoContentList = blockBContent.videoContentList.slice()
+      blockBContent.videoContentList = tempVideoContentList.slice()
+      const tempSpecificContentList = blockAContent.specificContentList
+      blockAContent.specificContentList = blockBContent.specificContentList.slice()
+      blockBContent.specificContentList = tempSpecificContentList.slice()
+
+      // 记录本次交换
+      const panelsModified = this.panelsModified || []
+      const panelGroupIdA = blockA.panelGroupId
+      const panelGroupIdB = blockB.panelGroupId
+      if (!panelsModified.includes(panelGroupIdA)) {
+        panelsModified.push(panelGroupIdA)
+      }
+      if (!panelsModified.includes(panelGroupIdB)) {
+        panelsModified.push(panelGroupIdB)
+      }
+
+      // 交换后删除交换区里的版块
+      this.handleRemoveBlock(activeBlockIndex)
+    },
+    handleSubmitBlockExchange () {
+      // 提交版块修改, 从修改的版块列表中拿一个出来提交
+      const panelListIndexed = this.panelListIndexed
+      const panelsModified = this.panelsModified
+      const panelGroupId = panelsModified[0]
+      if (panelGroupId) {
+        this.loading = true
+        this.loadingText = `正在提交版块 ${panelGroupId}, 还有 ${panelsModified.length - 1} 个待提交...`
+        const panel = cloneDeep(PANEL_CACHE[panelGroupId])
+        const STATUS = this.STATUS
+        if (panel.pannelList[0].pannelStatus === STATUS.accepted) {
+          // 已经审核成功的，创建副本
+          panel.currentVersion = ''
+          panel.pannelList.forEach(item => {
+            item.pannelStatus = STATUS.draft
+          })
+        }
+        return this.$service
+          .panelUpsertSilent(panel, '保存成功')
+          .then(() => {
+            // 移除已经提交成功的
+            this.panelsModified.splice(0, 1)
+            this.updatePanelVersion(panelListIndexed[panelGroupId], () => {
+              this.loadPanelDetail(panelListIndexed[panelGroupId])
+            })
+            // 递归
+            return this.handleSubmitBlockExchange()
+          })
+          .catch(() => {
+            // 提交出错
+            this.loading = false
+            this.$message.error('提交出现错误，请重新提交')
+          })
+      }
+      // 提交完毕
+      this.loading = false
+      this.$message.success('版块移动提交成功')
+    },
     handleLazyInit (item) {
       const panel = this.panelListIndexed[item.id]
       this.loadPanelDetail(panel)
@@ -1695,6 +1874,9 @@ export default {
           // 接口没状态吗。。。
           return
         }
+        // 缓存原始版块内容，用于提交修改的时候提交
+        PANEL_CACHE[panelDetail.pannelGroupId] = cloneDeep(panelDetail)
+
         const originPanelList = panelDetail.pannelList || []
         const panelList = originPanelList.map(
           function (item) {
@@ -1709,15 +1891,12 @@ export default {
         )
         delete panelDetail.currentVersion
         delete panelDetail.duplicateVersion
-        this.panelListIndexed[panel.pannelGroupId] = Object.assign(
-          {},
-          panel,
-          panelDetail,
-          {
-            panelList: panelList,
-            pannelStatus: panelDetail.pannelList[0].pannelStatus
-          }
-        )
+        this.panelListIndexed[id] = {
+          ...panel,
+          ...panelDetail,
+          panelList: panelList,
+          pannelStatus: panelDetail.pannelList[0].pannelStatus
+        }
       })
     },
     updatePanelVersion (panel, cb) {
@@ -1901,6 +2080,7 @@ export default {
       }
     },
     getPanelBlocks (panel) {
+      panel = JSON.parse(JSON.stringify(panel))
       const parentType = panel.parentType
       const layoutJson = JSON.parse(panel.layoutInfo.layoutJson8)
       const type = layoutJson.type
@@ -2027,33 +2207,16 @@ export default {
         }
       }
 
-      // 检查重复
-      const resourceIndexed = {}
       const blocksWithResources = blocks.map(function (item, index) {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
-        const content = contentList[0]
         // 有 extraValue1 才判断重复
-        if (content && content.extraValue1) {
-          const id = content.extraValue1 + (content.extraValue5 || '')
-          const duplicatedItem = resourceIndexed[id]
-          if (duplicatedItem) {
-            duplicatedItem.duplicated = true
-            resource.duplicated = true
-          } else {
-            resource.duplicated = false
-            resourceIndexed[id] = resource
-          }
-        } else {
-          resource.duplicated = false
-        }
         resource.videoContentList = contentList
         resource.contentPosition = Object.assign({}, item, {
           resize: undefined
         })
         resource.titleInfo = item.title_info
         resource.resize = item.resize
-        resource.isExtra = item.isExtra
         return resource
       })
       return blocksWithResources
@@ -2665,6 +2828,7 @@ export default {
     fetchData (version) {
       this.$service.tabInfoGet({ id: this.id, version }).then(data => {
         this.setTabInfo(data)
+        this.blocksToExchange = []
         this.$refs.virtualTab.refresh()
       })
     },
@@ -2862,4 +3026,10 @@ export default {
   >>> .el-form-item
     margin-bottom 0
     display inline-block
+
+.block-exchange-wrapper
+  position absolute
+  top 35px
+  left -180px
+  height 100%
 </style>

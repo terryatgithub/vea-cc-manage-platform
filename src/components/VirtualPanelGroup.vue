@@ -8,7 +8,11 @@
             <cc-virtual-panel
               :blocks="item.blocks"
               :ratio="ratio"
+              @copy-block="handleCopyBlock(index, $event)"
+              @exchange-block="handleExchangeBlock(index, $event)"
               :show-title="showTitle"
+              :show-exchange-tool="showExchangeTool"
+              :disable-exchange-tool="disableExchangeTool"
               @click-block="handleClickBlock(index, $event)"
             ></cc-virtual-panel>
           </el-tab-pane>
@@ -17,8 +21,12 @@
       <cc-virtual-panel
         v-else
         :blocks="panel.panelList[0].blocks"
+        @copy-block="handleCopyBlock(0, $event)"
+        @exchange-block="handleExchangeBlock(0, $event)"
         :ratio="ratio"
         :show-title="showTitle"
+        :show-exchange-tool="showExchangeTool"
+        :disable-exchange-tool="disableExchangeTool"
         @click-block="handleClickBlock(0, $event)"
       ></cc-virtual-panel>
     </template>
@@ -38,10 +46,42 @@ export default {
   components: {
     'cc-virtual-panel': VirtualPanel
   },
-  props: ['panel', 'ratio', 'active', 'showTitle'],
+  props: ['panel', 'ratio', 'active', 'showTitle', 'showExchangeTool'],
+  computed: {
+    disableExchangeTool () {
+      return this.isForbiddenType || this.isForbiddenStatus
+    },
+    isForbiddenType () {
+      const panel = this.panel
+      const parentType = panel.parentType
+      const isRankingPanel = panel.pannelList[0].rankIsOpen === 1
+      return parentType === 'function' || parentType === 'subscribe' || isRankingPanel
+    },
+    isForbiddenStatus () {
+      const status = this.panel.pannelStatus
+      return !(status === 1 || status === 2)
+    },
+    errorMsg () {
+      return this.isForbiddenStatus
+        ? '只有审核通过和草稿状态的版块支持移动待'
+        : '不能移动排行榜版块、预约版块、功能版块里的推荐位'
+    }
+  },
   methods: {
     handleClickBlock (panelIndex, blockIndex) {
       this.$emit('click-block', panelIndex, blockIndex)
+    },
+    handleCopyBlock (groupIndex, blockIndex) {
+      if (this.disableExchangeTool) {
+        return this.$message.error(this.errorMsg)
+      }
+      this.$emit('copy-block', groupIndex, blockIndex)
+    },
+    handleExchangeBlock (groupIndex, blockIndex) {
+      if (this.disableExchangeTool) {
+        return this.$message.error(this.errorMsg)
+      }
+      this.$emit('exchange-block', groupIndex, blockIndex)
     }
   }
 }
