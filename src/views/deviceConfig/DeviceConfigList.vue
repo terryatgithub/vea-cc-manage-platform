@@ -92,10 +92,10 @@ export default {
       showEditDialog: false,
       editingRow: null,
       filter: {
-        model: '',
-        chip: '',
-        ramSize: '',
-        autoPlay: ''
+        model: undefined,
+        chip: undefined,
+        ramSize: undefined,
+        autoPlay: undefined
       },
       autoPlayText: {
         0: '否',
@@ -251,7 +251,7 @@ export default {
       }),
       ramSize: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '内存大小，例如 4g, 768m',
+        placeholder: '内存大小,如4g',
         label: ' ',
         clearable: true
       }),
