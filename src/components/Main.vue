@@ -167,7 +167,6 @@ const routerMap = {
   // 儿童策略
   childPolicy: 'childPolicy',
 
-  // 
   deviceConfig: 'deviceConfig'
 }
 

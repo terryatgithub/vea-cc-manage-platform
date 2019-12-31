@@ -290,4 +290,3 @@ export default {
   right 10px
   text-decoration none
 </style>
-
