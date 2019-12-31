@@ -290,7 +290,7 @@
                     <Affix
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".page-content-wrapper"
-                      :offset="{ top: 110, bottom: 0 }">
+                      :offset="{ top: 110, bottom: 20 }">
                       <BlockExchangeCenter
                         v-show="blocksToExchange.length > 0"
                         @activate="activeBlockIndex = $event"
@@ -317,7 +317,7 @@
                     @drag-end="handleDragEnd"
                     @show-all-panel="handleShowAllPanels"
                     @lazy-init="handleLazyInit"
-                    :show-exchange-tool="true"
+                    :show-exchange-tool="showExchangeTool"
                     @copy-block="handleCopyBlock"
                     @exchange-block="handleExchangeBlock"
                     :panels="tabInfo.pannelList"
@@ -682,7 +682,7 @@
                     <Affix
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".page-content-wrapper"
-                      :offset="{ top: 110, bottom: 0 }">
+                      :offset="{ top: 110, bottom: 20 }">
                       <BlockExchangeCenter
                         v-show="blocksToExchange.length > 0"
                         @activate="activeBlockIndex = $event"
@@ -703,7 +703,7 @@
                     @uncollapse="handleChangeCollapseState"
                     @show-all-panel="handleShowAllPanels"
                     @lazy-init="handleLazyInit"
-                    :show-exchange-tool="true"
+                    :show-exchange-tool="showExchangeTool"
                     @copy-block="handleCopyBlock"
                     @exchange-block="handleExchangeBlock"
                     :read-only="true"
@@ -813,8 +813,17 @@
     </PageContentWrapper>
 
     <PageContentWrapper v-if="activePage === 'panel_preview'">
+      <MarkPanelInfo
+        v-if="panelPreview.parentType === 'function'"
+        :title-prefix="title"
+        :init-mode="panelPreview.initMode"
+        :id="panelPreview.id"
+        :version="panelPreview.version"
+        @upsert-end="handlePreviewPanelEnd"
+        @go-back="handlePreviewPanelEnd"
+      />
       <PrivatePanelInfo
-        v-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1"
+        v-else-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1"
         :title-prefix="title"
         :init-mode="panelPreview.initMode"
         :id="panelPreview.id"
@@ -889,6 +898,7 @@ import titleMixin from '@/mixins/title'
 import OrderableTable from '@/components/OrderableTable'
 import PanelInfo from '../panelInfo/PanelInfo'
 import PrivatePanelInfo from '../blockManage/PrivatePannelInfo'
+import MarkPanelInfo from '../blockManage/MarkPanelInfo'
 import InputMinute from '@/components/InputMinute'
 import RecommendStreamSignSelector from '@/components/selectors/RecommendStreamSign'
 import InputPositiveInt from '@/components/InputPositiveInt'
@@ -924,6 +934,7 @@ export default {
     PageContentWrapper,
     PanelInfo,
     PrivatePanelInfo,
+    MarkPanelInfo,
     InputMinute,
     RecommendStreamSignSelector,
     RecommendPanelSelector,
@@ -1327,6 +1338,9 @@ export default {
       const tabInfo = this.tabInfo
       const isSpecTab = tabInfo.tabType === 2
       return !isSpecTab
+    },
+    showExchangeTool () {
+      return true
     }
   },
   watch: {
@@ -1431,13 +1445,20 @@ export default {
       this.handleRemoveBlock(activeBlockIndex)
     },
     handleSubmitBlockExchange () {
+      this.doSubmitBlockExchange().then(() => {
+        // 提交完毕
+        this.loading = false
+        this.$message.success('版块移动提交成功')
+      })
+    },
+    doSubmitBlockExchange () {
       // 提交版块修改, 从修改的版块列表中拿一个出来提交
       const panelListIndexed = this.panelListIndexed
       const panelsModified = this.panelsModified
       const panelGroupId = panelsModified[0]
       if (panelGroupId) {
         this.loading = true
-        this.loadingText = `正在提交版块 ${panelGroupId}, 还有 ${panelsModified.length - 1} 个待提交...`
+        this.loadingText = `正在提交推荐位移动, 当前版块 ${panelGroupId}, 还有 ${panelsModified.length - 1} 个待提交...`
         const panel = cloneDeep(PANEL_CACHE[panelGroupId])
         const STATUS = this.STATUS
         if (panel.pannelList[0].pannelStatus === STATUS.accepted) {
@@ -1448,7 +1469,7 @@ export default {
           })
         }
         return this.$service
-          .panelUpsertSilent(panel, '保存成功')
+          .panelUpsertSilent(panel)
           .then(() => {
             // 移除已经提交成功的
             this.panelsModified.splice(0, 1)
@@ -1456,7 +1477,7 @@ export default {
               this.loadPanelDetail(panelListIndexed[panelGroupId])
             })
             // 递归
-            return this.handleSubmitBlockExchange()
+            return this.doSubmitBlockExchange()
           })
           .catch(() => {
             // 提交出错
@@ -1464,9 +1485,11 @@ export default {
             this.$message.error('提交出现错误，请重新提交')
           })
       }
-      // 提交完毕
-      this.loading = false
-      this.$message.success('版块移动提交成功')
+      return Promise.resolve()
+    },
+    clearBlockExchangeState () {
+      this.panelsModified = []
+      this.blocksToExchange = []
     },
     handleLazyInit (item) {
       const panel = this.panelListIndexed[item.id]
@@ -1615,6 +1638,11 @@ export default {
             */
     },
     handlePreviewPanel (panel) {
+      const panelGroupId = panel.panelId
+      const modified = this.panelsModified.includes(panelGroupId)
+      if (modified) {
+        return this.$message.warning('该版块有未提交的推荐位移动，请先提交推荐位移动')
+      }
       const row = this.panelListIndexed[panel.panelId]
       const version = row.duplicateVersion || row.currentVersion
       this.activePage = 'panel_preview'
@@ -1623,6 +1651,7 @@ export default {
         initMode: 'read',
         id: row.pannelGroupId,
         dataType: row.pannelType,
+        parentType: row.parentType,
         version
       }
     },
@@ -1649,10 +1678,18 @@ export default {
       const panelStatus = panelData.pannelStatus
       const STATUS = this.STATUS
 
+      // 检查是否包含修改
+      const panelGroupId = panelData.pannelGroupId
+      const modified = this.panelsModified.includes(panelGroupId)
+      if (modified) {
+        return this.$message.warning('该版块有未提交的推荐位移动，请先提交推荐位移动')
+      }
+
       const isJiangSu = idPrefix === '11'
       const panelPreview = {
         panel: panelData,
         dataType: panelData.pannelType,
+        parentType: panelData.parentType,
         initMode: 'read',
         id: panelData.pannelGroupId,
         version: panelData.currentVersion,
@@ -1710,6 +1747,7 @@ export default {
         tabSelector.handleRemoteSelectClear()
       }
       this.tabInfo.pannelList = []
+      this.clearBlockExchangeState()
     },
     handleClose () {},
     handleSelectTitleIcon (type, post) {
@@ -2820,15 +2858,18 @@ export default {
       this.setRecommendStreamSignPanelCount()
     },
     upsertTabInfo (tabInfo) {
-      const formData = this.parseTabInfo(tabInfo)
-      this.$service.tabInfoUpsert(formData, '操作成功').then(() => {
-        this.$emit('upsert-end')
-      })
+      const doUpsert = () => {
+        const formData = this.parseTabInfo(tabInfo)
+        this.$service.tabInfoUpsert(formData, '操作成功').then(() => {
+          this.$emit('upsert-end')
+        })
+      }
+      this.doSubmitBlockExchange().then(doUpsert)
     },
     fetchData (version) {
       this.$service.tabInfoGet({ id: this.id, version }).then(data => {
         this.setTabInfo(data)
-        this.blocksToExchange = []
+        this.clearBlockExchangeState()
         this.$refs.virtualTab.refresh()
       })
     },
@@ -2867,6 +2908,7 @@ export default {
     handleModeChange (mode) {
       if (mode === 'edit' || mode === 'copy' || mode === 'replicate') {
         this.isCollapseBase = true
+        this.clearBlockExchangeState()
       }
     },
     handleInputRecommendFlag (val) {
@@ -2881,6 +2923,7 @@ export default {
       this.tabInfo.hasSubTab = val ? 1 : 0
       // 含有二级版面的，没有推荐
       this.tabInfo.panelRecommendConfig.enableRecommend = 0
+      this.clearBlockExchangeState()
     },
     setRecommendStreamSignPanelCount () {
       const tabInfo = this.tabInfo
@@ -3032,4 +3075,5 @@ export default {
   top 35px
   left -180px
   height 100%
+  overflow auto
 </style>

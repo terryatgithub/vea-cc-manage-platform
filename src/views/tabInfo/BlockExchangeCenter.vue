@@ -46,10 +46,9 @@ export default {
   padding 0 5px
 .block-item-list
   width 100%
-  height 400px
   padding 5px 10px
   box-sizing border-box
-  overflow auto
+  overflow visible
 .block-item
   position relative
   width 100%

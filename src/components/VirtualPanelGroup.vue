@@ -59,7 +59,7 @@ export default {
     },
     isForbiddenStatus () {
       const status = this.panel.pannelStatus
-      return !(status === 1 || status === 2)
+      return !(status === 2 || status === 4)
     },
     errorMsg () {
       return this.isForbiddenStatus
