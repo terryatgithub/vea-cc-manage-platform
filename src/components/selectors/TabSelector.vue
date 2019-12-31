@@ -307,7 +307,7 @@ export default {
       return filter
     },
     fetchData () {
-      this.$service.tabInfoList(this.getFilter()).then(data => {
+      this.$service.tabInfoDataList(this.getFilter()).then(data => {
         this.table.data = data.rows
         this.pagination.total = data.total
       })

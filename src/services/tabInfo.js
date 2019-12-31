@@ -2,10 +2,18 @@ import axios from 'axios'
 /**
  * 版面管理 -> Tab版面管理
  */
-// 分页
+// 含有权限过滤
 export function tabInfoList (params) {
   return this.fetch({
     url: 'api/v1/tab/pageList.html',
+    params
+  })
+}
+
+// 无权限过滤
+export function tabInfoDataList (params) {
+  return this.fetch({
+    url: 'api/v1/tab/dataList.html',
     params
   })
 }
