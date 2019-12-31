@@ -1,5 +1,5 @@
 <template>
-  <PageWrapper v-loading="loading" :element-loading-text="loadingText" ref="pageWrapper" class="tab-info-wrapper">
+  <PageWrapper v-loading="loading" :element-loading-text="loadingText" ref="pageWrapper" class="tab-info-wrapper" data-test-id="tab-info">
     <PageContentWrapper v-show="activePage === 'tab_info'">
       <ContentCard :title="title" @go-back="$emit('go-back')">
         <CommonContent
@@ -260,6 +260,7 @@
                     class="tab-info__virtual-tab-menu"
                     :style="{visibility: isPanelDragging ? 'hidden' : 'visible'}">
                     <Affix
+                      v-if="showAffix"
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".page-content-wrapper"
                       style="width: 725px; display: inline-block;background: #fff; z-index: 1;"
@@ -288,6 +289,7 @@
                   </div>
                   <div class="block-exchange-wrapper">
                     <Affix
+                      v-if="showAffix"
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".page-content-wrapper"
                       :offset="{ top: 110, bottom: 20 }">
@@ -669,6 +671,7 @@
                 <el-form-item label="选择版块" v-if="tabInfo.hasSubTab === 0">
                   <div class="tab-info__virtual-tab-menu">
                     <Affix
+                      v-if="showAffix"
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".page-content-wrapper"
                       style="width: 725px; display: inline-block;background: #fff; z-index: 1;"
@@ -680,6 +683,7 @@
                   </div>
                   <div class="block-exchange-wrapper">
                     <Affix
+                      v-if="showAffix"
                       relative-element-selector=".tab-info__virtual-tab"
                       scroll-container-selector=".page-content-wrapper"
                       :offset="{ top: 110, bottom: 20 }">
@@ -1028,6 +1032,7 @@ export default {
     return {
       loading: false,
       loadingText: '',
+      showAffix: true,
       UVCTR: {
         value: '',
         dailyGrowth: '',
@@ -1346,7 +1351,16 @@ export default {
   watch: {
     'tabInfo.tabResource': 'getVipButtonSource'
   },
+  activated () {
+    this.resetAffix()
+  },
   methods: {
+    resetAffix () {
+      this.showAffix = false
+      this.$nextTick(() => {
+        this.showAffix = true
+      })
+    },
     handleRemoveBlock (index) {
       const activeBlockIndex = this.activeBlockIndex
       this.activeBlockIndex = index > activeBlockIndex
