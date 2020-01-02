@@ -344,7 +344,7 @@
           <el-form-item key="webpageUrl" label="网页地址" prop="redundantParams.webpageUrl" :rules="contentRule.webpageUrl">
             <el-input v-model.trim="contentForm.redundantParams.webpageUrl" :disabled="isReadonly"></el-input>
           </el-form-item>
-          <el-form-item key="webpage-versioncode" label="应用版本号" prop="redundantParams.versioncode" :rules="[{required: true, message: '请输入版本号', trigger: 'blur'}]">
+          <el-form-item key="webpage-versioncode" label="应用版本号" prop="redundantParams.versioncode" :rules="contentRule.versioncode">
             <el-input
               v-model.trim="contentForm.redundantParams.versioncode"
               :disabled="isReadonly"
@@ -665,7 +665,32 @@ export default {
           }
         ],
         attributeInfo: [{ validator: checkAttributeInfo, trigger: 'blur' }],
-        versionCode: [{ validator: checkMannulVersionCode, trigger: 'blur' }],
+        versionCode: [
+          {
+            validator: (rule, val, cb) => {
+              if (!/^(-1|\d*)$/.test(val)) {
+                return cb(new Error('应用版本号只能是数字或者-1'))
+              }
+              cb()
+            }
+          },
+          {
+            validator: checkMannulVersionCode, trigger: 'blur'
+          }
+        ],
+        versioncode: [
+          {
+            required: true, message: '请输入版本号', trigger: 'blur'
+          },
+          {
+            validator: (rule, val, cb) => {
+              if (!/^(-1|\d*)$/.test(val)) {
+                return cb(new Error('应用版本号只能是数字或者-1'))
+              }
+              cb()
+            }
+          }
+        ],
         price: [{ required: true, validator: checkPrice, trigger: 'blur' }],
         secKillPrice: [
           { required: false, validator: checkSecKill, trigger: 'blur' }

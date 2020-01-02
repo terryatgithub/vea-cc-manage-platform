@@ -477,6 +477,16 @@ export default {
         ],
         thirdIdOrPackageName: [
           { required: true, message: '请填选择资源', trigger: 'blur' }
+        ],
+        versionCode: [
+          {
+            validator: (rule, val, cb) => {
+              if (!/^(-1|\d*)$/.test(val)) {
+                return cb(new Error('应用版本号只能是数字或者-1'))
+              }
+              cb()
+            }
+          }
         ]
       },
       currentIndex: 0,

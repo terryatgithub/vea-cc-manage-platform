@@ -384,7 +384,15 @@ export default {
           { required: true, message: '请填写网页地址', trigger: 'blur' }
         ],
         webpageAppVersion: [
-          { required: true, message: '请填写应用版本号', trigger: 'blur' }
+          { required: true, message: '请填写应用版本号', trigger: 'blur' },
+          {
+            validator: (rule, val, cb) => {
+              if (!/^(-1|\d*)$/.test(val)) {
+                return cb(new Error('应用版本号只能是数字或者-1'))
+              }
+              cb()
+            }
+          }
         ],
         videoName: [
           { required: true, message: '请填写视频名称', trigger: 'blur' }

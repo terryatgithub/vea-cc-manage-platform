@@ -100,7 +100,15 @@ export default {
           { required: true, message: '请输入应用包名', trigger: 'blur' }
         ],
         versioncode: [
-          { required: true, message: '请输入应用版本号', trigger: 'blur' }
+          { required: true, message: '请输入应用版本号', trigger: 'blur' },
+          {
+            validator: (rule, val, cb) => {
+              if (!/^(-1|\d*)$/.test(val)) {
+                return cb(new Error('应用版本号只能是数字或者-1'))
+              }
+              cb()
+            }
+          }
         ],
         dowhat: [
           { required: true, message: '请选择启动动作', trigger: 'blur' }
