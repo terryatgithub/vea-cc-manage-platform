@@ -180,6 +180,22 @@ const streamTypeGroupOption = [
       {
         label: '少儿',
         value: 'child'
+      },
+      {
+        label: '春节电影',
+        value: 'T001'
+      },
+      {
+        label: '春节电视剧',
+        value: 'T002'
+      },
+      {
+        label: '春节教育',
+        value: 'T003'
+      },
+      {
+        label: '春节游戏',
+        value: 'T004'
       }
     ]
   }
@@ -262,7 +278,14 @@ export default {
     },
     streamType () {
       const typeIndex = {
-        normal: '普通', child: '少儿', movie: '电影', series: '电视剧'
+        normal: '普通',
+        child: '少儿',
+        movie: '电影',
+        series: '电视剧',
+        T001: '春节电影',
+        T002: '春节电视剧',
+        T003: '春节教育',
+        T004: '春节游戏'
       }
       return typeIndex[this.basicForm.type]
     }
