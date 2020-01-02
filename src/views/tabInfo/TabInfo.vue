@@ -2104,11 +2104,11 @@ export default {
         // 删除组
         const id = this.getPanelIdByIndex(index, 0)
         const panelData = this.panelListIndexed[id]
-        msg = '是否确定删除版块组 ' + panelData.pannelGroupRemark
+        msg = '是否确定删除版块组 ' + panelData.pannelName
       } else {
         const id = this.getPanelIdByIndex(index, crowdIndex)
         const panelData = this.panelListIndexed[id]
-        msg = '是否确定删除版块 ' + panelData.pannelGroupRemark
+        msg = '是否确定删除版块 ' + panelData.pannelName
       }
       this.$confirm(msg)
         .then(
