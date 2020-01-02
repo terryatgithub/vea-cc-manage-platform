@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import _ from '../../utlis/gateschema'
+import _ from '../../utils/gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
 import BaseSelector from '../BaseSelector'
 export default {

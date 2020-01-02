@@ -1,4 +1,4 @@
-import resourceFields from '../utlis/resourceFields'
+import resourceFields from '../utils/resourceFields'
 export default {
   data () {
     return {

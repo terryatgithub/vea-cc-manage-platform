@@ -1,4 +1,4 @@
-import consts from '../utlis/consts'
+import consts from '../utils/consts'
 export function getVersionList (params) {
   return this.fetch({
     method: 'get',

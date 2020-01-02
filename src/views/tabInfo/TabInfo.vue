@@ -881,7 +881,7 @@
 </template>
 
 <script>
-import { getAppIDByTabCategory } from '../../utlis/bizUtil'
+import { getAppIDByTabCategory } from '../../utils/bizUtil'
 import JDTabInfo from './JDTabInfo'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'

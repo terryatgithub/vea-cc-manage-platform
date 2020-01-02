@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import adminBase from 'admin-base'
-import './utlis/plugins'
+import './utils/plugins'
 import App from './App.vue'
 import router from './router/index'
 import '@/assets/global.styl'
