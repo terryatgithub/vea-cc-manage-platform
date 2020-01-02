@@ -1362,13 +1362,24 @@ export default {
       })
     },
     handleRemoveBlock (index) {
-      const activeBlockIndex = this.activeBlockIndex
-      this.activeBlockIndex = index > activeBlockIndex
-        ? activeBlockIndex
-        : activeBlockIndex === index
-          ? 0
-          : activeBlockIndex - 1
-      this.blocksToExchange.splice(index, 1)
+      const blocksToExchange = this.blocksToExchange
+      if (typeof index === 'object') {
+        const block = index
+        index = blocksToExchange.findIndex(item => {
+          return item.panelGroupId === block.panelGroupId &&
+            item.groupIndex === block.groupIndex &&
+            item.blockIndex === block.blockIndex
+        })
+      }
+      if (index >= 0) {
+        const activeBlockIndex = this.activeBlockIndex
+        this.activeBlockIndex = index > activeBlockIndex
+          ? activeBlockIndex
+          : activeBlockIndex === index
+            ? 0
+            : activeBlockIndex - 1
+        blocksToExchange.splice(index, 1)
+      }
     },
     handleCopyBlock ({ panelGroupId, groupIndex, blockIndex }) {
       /**
@@ -1456,7 +1467,8 @@ export default {
       }
 
       // 交换后删除交换区里的版块
-      this.handleRemoveBlock(activeBlockIndex)
+      this.handleRemoveBlock(blockA)
+      this.handleRemoveBlock(blockB)
     },
     handleSubmitBlockExchange () {
       this.doSubmitBlockExchange().then(() => {
@@ -1700,13 +1712,14 @@ export default {
       }
 
       const isJiangSu = idPrefix === '11'
+      const version = panelData.duplicateVersion || panelData.currentVersion
       const panelPreview = {
         panel: panelData,
         dataType: panelData.pannelType,
         parentType: panelData.parentType,
         initMode: 'read',
         id: panelData.pannelGroupId,
-        version: panelData.currentVersion,
+        version,
         initGroupIndex: undefined,
         initBlockIndex: undefined
       }
