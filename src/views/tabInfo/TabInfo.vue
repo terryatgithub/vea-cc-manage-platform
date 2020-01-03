@@ -1972,19 +1972,13 @@ export default {
       })
     },
     updatePanelVersion (panel, cb) {
-      const { currentVersion, duplicateVersion, parentType } = panel
-      const panelStatus = panel.pannelList[0].pannelStatus
       this.$service.panelPageList({
         pannelType: panel.pannelType,
         pannelId: panel.pannelGroupId
       }).then(data => {
         const result = data.rows[0]
-        // 如果版本变了，或者状态变了，或者类型变了，或者开了排行榜, 则移除
-        if (duplicateVersion !== result.duplicateVersion ||
-          currentVersion !== result.currentVersion ||
-          panelStatus !== result.pannelList[0].pannelStatus ||
-          parentType !== result.parentType ||
-          result.pannelList[0].rankIsOpen === 1) {
+        // 最后修改时间变了，移除中转站的内容
+        if (panel.lastUpdateDate !== result.lastUpdateDate) {
           this.handleRemoveBlockByPanelGroupId(panel.pannelGroupId)
         }
         panel.currentVersion = result.currentVersion
