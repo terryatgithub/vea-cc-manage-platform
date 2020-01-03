@@ -1481,7 +1481,6 @@ export default {
       this.doSubmitBlockExchange().then(() => {
         // 提交完毕
         this.loading = false
-        this.$message.success('版块移动提交成功')
       })
     },
     doSubmitBlockExchange () {
@@ -1506,6 +1505,7 @@ export default {
           .then(() => {
             // 移除已经提交成功的
             this.panelsModified.splice(0, 1)
+            this.$message.success(`版块 ${panelGroupId} 提交成功`)
             this.updatePanelVersion(panelListIndexed[panelGroupId], () => {
               this.loadPanelDetail(panelListIndexed[panelGroupId])
             })
@@ -1515,7 +1515,7 @@ export default {
           .catch(() => {
             // 提交出错
             this.loading = false
-            this.$message.error('提交出现错误，请重新提交')
+            this.$message.error(`版块 ${panelGroupId} 提交出现错误，请重新提交`)
           })
       }
       return Promise.resolve()
