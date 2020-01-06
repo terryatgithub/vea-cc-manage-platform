@@ -101,21 +101,24 @@
                 @shadow-drag-end.native="handleDragEnd"
                 :panel="getPanelInfo(item)">
                 <template slot-scope="{panel: panel}">
-                  <template v-if="!readOnly">
-                    <i
-                      title="删除"
-                      @click="handleRemovePanel(index, crowdIndex)"
-                      class="tab-placeholder__panel-remove el-icon-close">
-                    </i>
-                    <a
-                      v-if="panelItem.crowdPanels.length === 1"
-                      @click="$emit('toggle-type', index)"
-                      class="btn-crowd btn-crowd--unset">
-                      取消定向
-                    </a>
-                    <a v-else class="btn-crowd btn-crowd--disabled" title="请将版块移出版块组，再取消定向">取消定向</a>
-                  </template>
-
+                  <div class="panel-tools">
+                    <!-- <a class="panel-tools-btn" @click="">撤销修改</a>
+                    <a class="panel-tools-btn" @click="">提交修改</a> -->
+                    <template v-if="!readOnly">
+                      <a
+                        v-if="panelItem.crowdPanels.length === 1"
+                        @click="$emit('toggle-type', index)"
+                        class="panel-tools-btn">
+                        取消定向
+                      </a>
+                      <a v-else class="panel-tools-btn panel-tools-btn--disabled" title="请将版块移出版块组，再取消定向">取消定向</a>
+                      <i
+                        title="删除"
+                        @click="handleRemovePanel(index, crowdIndex)"
+                        class="panel-tools-btn panel-tools-btn--remove el-icon-close">
+                      </i>
+                    </template>
+                  </div>
                   <div class="tab-plcacholder-info">
                     <div class="tab-placeholder-info__link" @click="handleOpenPanel(panel)">
                       <vue-lazy-component @before-init="$emit('lazy-init', item)">
@@ -209,14 +212,18 @@
               }"
               :panel="getPanelInfo(panelItem.panel)">
               <template slot-scope="{panel: panel}">
-                <template v-if="!readOnly">
-                  <i
-                    title="删除"
-                    @click="handleRemovePanel(index)"
-                    class="tab-placeholder__panel-remove el-icon-close">
-                  </i>
-                  <a class="btn-crowd btn-crowd--set" @click="$emit('toggle-type', index)">设置定向</a>
-                </template>
+                <div class="panel-tools">
+                  <!-- <a class="panel-tools-btn" @click="">撤销修改</a>
+                  <a class="panel-tools-btn" @click="">提交修改</a> -->
+                  <template v-if="!readOnly">
+                    <a class="panel-tools-btn btn-crowd--set" @click="$emit('toggle-type', index)">设置定向</a>
+                    <i
+                      title="删除"
+                      @click="handleRemovePanel(index)"
+                      class="panel-tools-btn panel-tools-btn--remove el-icon-close">
+                    </i>
+                  </template>
+                </div>
                 <div class="tab-plcacholder-info">
                   <div class="tab-placeholder-info__link" @click="handleOpenPanel(panel)">
                     <vue-lazy-component @before-init="$emit('lazy-init', panelItem.panel)">
@@ -617,13 +624,6 @@ export default {
   background: #f3f3f3;
   min-height: 200px;
 }
-.cc-virtual-tab .tab-placeholder__panel-remove {
-  position: absolute;
-  top: 11px;
-  right: 10px;
-  color: #ccc;
-  cursor: pointer;
-}
 .cc-virtual-tab .panel-status--waiting {
   color: red;
 }
@@ -661,16 +661,27 @@ export default {
   background: #ccc;
 }
 
-.cc-virtual-tab .btn-crowd {
+.cc-virtual-tab  .panel-tools {
   position: absolute;
   top: 5px;
-  right: 35px;
+  right: 0px;
+  font-size: 10px;
+  cursor: pointer;
+  display: inline-block
+}
+.cc-virtual-tab .panel-tools .panel-tools-btn {
+  display: inline-block;
   border: 1px solid #ccc;
   padding: 5px 10px;
   font-size: 10px;
   cursor: pointer;
+  margin-right: 7px;
 }
-.cc-virtual-tab .btn-crowd--disabled {
+.cc-virtual-tab .panel-tools .panel-tools-btn--remove {
+  border: none;
+  margin-right: 0;
+}
+.cc-virtual-tab .panel-tools .panel-tools-btn--disabled {
   color: #ccc;
   cursor: not-allowed;
 }

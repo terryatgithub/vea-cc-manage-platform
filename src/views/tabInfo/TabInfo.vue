@@ -285,6 +285,9 @@
                       <el-button class="marginL" type="primary" plain @click="handleToggleAllPanel(false)">展开所有</el-button>
                       <el-button type="primary" plain @click="handleToggleAllPanel(true)">收起所有</el-button>
                       <el-button type="primary" :disabled="panelsModified.length === 0" @click="handleSubmitBlockExchange">提交推荐位移动</el-button>
+                      <el-button type="primary" :disabled="blockExchangeHistory.length === 0" @click="handleRevertBlockExchange">
+                        撤销上次推荐位移动 {{ blockExchangeHistory.length > 0 ? `(${blockExchangeHistory.length})` : '' }}
+                      </el-button>
                     </Affix>
                   </div>
                   <div class="block-exchange-wrapper">
@@ -679,6 +682,9 @@
                       <el-button @click="handleToggleAllPanel(false)">展开所有</el-button>
                       <el-button @click="handleToggleAllPanel(true)">收起所有</el-button>
                       <el-button type="primary" :disabled="panelsModified.length === 0" @click="handleSubmitBlockExchange">提交推荐位移动</el-button>
+                      <el-button type="primary" :disabled="blockExchangeHistory.length === 0" @click="handleRevertBlockExchange">
+                        撤销上次推荐位移动 {{ blockExchangeHistory.length > 0 ? `(${blockExchangeHistory.length})` : '' }}
+                      </el-button>
                     </Affix>
                   </div>
                   <div class="block-exchange-wrapper">
@@ -911,7 +917,7 @@ import VeLine from 'v-charts/lib/line.common'
 import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/markPoint'
 import BlockExchangeCenter from './BlockExchangeCenter'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, uniq } from 'lodash'
 
 const PANEL_CACHE = {}
 export default {
@@ -1132,6 +1138,7 @@ export default {
       activeBlockIndex: undefined,
       blocksToExchange: [
       ],
+      blockExchangeHistory: [],
       panelsModified: [],
       tabInfo: {
         tabId: undefined,
@@ -1413,15 +1420,34 @@ export default {
       }
     },
     handleExchangeBlock (blockA) {
-      const { panelListIndexed, activeBlockIndex, blocksToExchange } = this
+      const { activeBlockIndex, blocksToExchange } = this
       const blockB = blocksToExchange[activeBlockIndex]
       if (!blockB) {
         return this.$message.error('请先选择要交换的推荐位')
       }
+      const result = this.doExchangeBlock(blockA, blockB)
+      if (result) {
+        // 记录本次交换
+        const panelsModified = this.panelsModified || []
+        const panelGroupIdA = blockA.panelGroupId
+        const panelGroupIdB = blockB.panelGroupId
+        panelsModified.push(panelGroupIdA)
+        panelsModified.push(panelGroupIdB)
+        // 添加交换历史
+        this.blockExchangeHistory.push({ blockA, blockB })
+
+        // 交换后删除交换区里的版块
+        this.handleRemoveBlock(blockA)
+        this.handleRemoveBlock(blockB)
+      }
+    },
+    doExchangeBlock (blockA, blockB) {
+      const { panelListIndexed } = this
       const blockAKey = `${blockA.panelGroupId}-${blockA.groupIndex}-${blockA.blockIndex}`
       const blockBKey = `${blockB.panelGroupId}-${blockB.groupIndex}-${blockB.blockIndex}`
       if (blockAKey === blockBKey) {
-        return this.$message.error('复制的推荐位与交换的推荐位是同一个推荐位')
+        this.$message.error('复制的推荐位与交换的推荐位是同一个推荐位')
+        return false
       }
 
       const groupA = panelListIndexed[blockA.panelGroupId].panelList[blockA.groupIndex]
@@ -1439,7 +1465,8 @@ export default {
         const blockBSize = blockBContentPosition.width + '*' + blockBContentPosition.height
         if (blockASize !== blockBSize) {
           const errorPrefix = blockAHasSetRec ? '交换的推荐位设置了推荐流' : '复制的推荐位设置了推荐流'
-          return this.$message.error(`交换失败, ${errorPrefix}, 两个推荐位的尺寸不一致`)
+          this.$message.error(`交换失败, ${errorPrefix}, 两个推荐位的尺寸不一致`)
+          return false
         }
       }
       // 交换处理过的响应式数据
@@ -1462,22 +1489,14 @@ export default {
       blockAContent.specificContentList = blockBContent.specificContentList.slice()
       blockBContent.specificContentList = tempSpecificContentList.slice()
 
-      // 记录本次交换
-      const panelsModified = this.panelsModified || []
-      const panelGroupIdA = blockA.panelGroupId
-      const panelGroupIdB = blockB.panelGroupId
-      if (!panelsModified.includes(panelGroupIdA)) {
-        panelsModified.push(panelGroupIdA)
-      }
-      if (!panelsModified.includes(panelGroupIdB)) {
-        panelsModified.push(panelGroupIdB)
-      }
-
-      // 交换后删除交换区里的版块
-      this.handleRemoveBlock(blockA)
-      this.handleRemoveBlock(blockB)
+      return true
     },
     handleSubmitBlockExchange () {
+      // 清除提交记录
+      this.clearBlockExchangeHistory()
+      // 已修改版块去重
+      this.panelsModified = uniq(this.panelsModified)
+      // 开始逐个提交
       this.doSubmitBlockExchange().then(() => {
         // 提交完毕
         this.loading = false
@@ -1504,7 +1523,7 @@ export default {
           .panelUpsertSilent(panel)
           .then(() => {
             // 移除已经提交成功的
-            this.panelsModified.splice(0, 1)
+            this.panelsModified = panelsModified.filter(id => id !== panelGroupId)
             this.$message.success(`版块 ${panelGroupId} 提交成功`)
             this.updatePanelVersion(panelListIndexed[panelGroupId], () => {
               this.loadPanelDetail(panelListIndexed[panelGroupId])
@@ -1520,9 +1539,21 @@ export default {
       }
       return Promise.resolve()
     },
+    handleRevertBlockExchange () {
+      const { panelsModified, blockExchangeHistory } = this
+      if (blockExchangeHistory.length > 0) {
+        this.panelsModified = panelsModified.slice(0, panelsModified.length - 2)
+        const lastExchange = blockExchangeHistory.pop()
+        this.doExchangeBlock(lastExchange.blockB, lastExchange.blockA)
+      }
+    },
     clearBlockExchangeState () {
       this.panelsModified = []
       this.blocksToExchange = []
+      this.clearBlockExchangeHistory()
+    },
+    clearBlockExchangeHistory () {
+      this.blockExchangeHistory = []
     },
     handleLazyInit (item) {
       const panel = this.panelListIndexed[item.id]
@@ -2123,22 +2154,28 @@ export default {
     handleRemovePanel (index, crowdIndex) {
       const panelList = this.tabInfo.pannelList
       const panelItem = panelList[index]
-      let msg
+      let msg, panelIds
       if (crowdIndex === undefined && panelItem.type === 'SPEC') {
         // 删除组
         const id = this.getPanelIdByIndex(index, 0)
         const panelData = this.panelListIndexed[id]
         msg = '是否确定删除版块组 ' + panelData.pannelName
+        panelIds = panelItem.crowdPanels.map(item => item.id)
       } else {
         const id = this.getPanelIdByIndex(index, crowdIndex)
         const panelData = this.panelListIndexed[id]
         msg = '是否确定删除版块 ' + panelData.pannelName
+        panelIds = [id]
       }
       this.$confirm(msg)
         .then(
           function () {
             this.doRemovePanel(index, crowdIndex)
             this.updateDuplicates()
+            // 被移除的修改不用提交
+            this.panelsModified = this.panelsModified.filter(id => !panelIds.includes(id))
+            // 清除改动历史
+            this.clearBlockExchangeHistory()
           }.bind(this)
         )
         .catch(function () {})
@@ -3074,6 +3111,9 @@ export default {
   display: inline-block;
   vertical-align: top;
 }
+.tab-info__virtual-tab >>> .cc-virtual-pannel__block:hover {
+  border: 2px solid #409EFF;
+}
 </style>
 
 <style lang="stylus" scoped>
@@ -3114,4 +3154,5 @@ export default {
   left -180px
   height 100%
   overflow auto
+
 </style>
