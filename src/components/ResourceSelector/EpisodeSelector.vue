@@ -98,10 +98,11 @@ export default {
             render: (createElement, { row }) => {
               return createElement('img', {
                 attrs: {
-                  src: row.thumb,
+                  referrerpolicy: 'no-referrer',
                   width: '50px',
                   height: '50px',
-                  class: 'imgs'
+                  class: 'imgs',
+                  src: row.thumb
                 }
               })
             }
