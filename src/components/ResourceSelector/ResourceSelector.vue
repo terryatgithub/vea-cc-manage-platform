@@ -2,6 +2,7 @@
   <RemoteSelectorWrapper
     ref="wrapper"
     custom-class="resource-selector"
+    :disabled="disabled"
     @select-start="handleSelectStart">
     <div class="resource-selector__header" slot="title">
       <template v-for="item in SELECTORS" >
@@ -244,6 +245,10 @@ export default {
     }
   },
   props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     source: String,
     businessType: Number,
     disablePartner: Boolean,

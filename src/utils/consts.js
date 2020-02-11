@@ -163,6 +163,23 @@ const panelTypeOptions = [
 ]
 const panelTypeText = optionsToText(panelTypeOptions)
 
+const panelFillTypeOptions = [
+  {
+    label: '运营手动填充',
+    value: 1
+  },
+  {
+    label: '用排行榜填充',
+    value: 2
+  },
+  {
+    label: '用影片筛选规则填充',
+    value: 3
+  }
+]
+
+const panelFillTypeText = optionsToText(panelFillTypeOptions)
+
 const panelFocusOptions = [
   {
     label: '面落焦',
@@ -252,6 +269,8 @@ export default {
   panelFocusText,
   panelTypeOptions,
   panelTypeText,
+  panelFillTypeOptions,
+  panelFillTypeText,
 
   cornerIconPositionOptions,
   cornerIconPositionEnums,

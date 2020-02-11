@@ -129,168 +129,216 @@
                   <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
                 </el-form-item>
                 <div v-show="pannel.parentType !== 'subscribe'">
-                  <el-form-item label="版块布局" required>
-                    <LayoutSelector ref="layoutSelector" @select-end="handleSelectLayoutEnd">
-                      <el-button @click.stop="handleSelectLayoutStart" type="primary" plain >选择布局</el-button>
-                    </LayoutSelector>
-                    <span
-                      class="marginL"
-                      v-if="selectedLayout"
-                    >(已选择: {{ selectedLayout.layoutName }})</span>
-                    <BinCheckBox class="marginL" label="设置前端推荐位底色透明" v-model="pannel.lucenyFlag" />
-                  </el-form-item>
-                  <el-form-item label="落焦形式" required>
+                  <el-form-item label="板块内容来源" v-if="pannel.parentType === 'normal'">
                     <CommonSelector
-                      v-model="pannel.focusShape"
-                      :options="$consts.panelFocusOptions"
-                      placeholder="请选择"
-                    />
-                    <BinCheckBox v-model="isShowfocusImgUrl" v-show="pannel.focusShape === 0" label="设置异形焦点" />
+                      type='radio'
+                      :value="pannel.pannelList[0].fillType"
+                      @input="handleInputFillType"
+                      :options="$consts.panelFillTypeOptions"/>
                   </el-form-item>
-                  <el-form-item label="异形焦点" v-if="isShowfocusImgUrl && (pannel.focusShape === 0)">
-                    <el-button v-show="!selectedLayout" :disabled="!selectedLayout">选择异形焦点(请先选择布局)</el-button>
-                    <GlobalPictureSelector
-                      v-show="selectedLayout"
-                      title="选择异形焦点"
-                      :picture-resolution="alienFocusResolution"
-                      @select-end="handleSelectAlienFocusEnd"
-                    />
-                    <div>
-                      <img
-                        v-if="pannel.focusImgUrl"
-                        :src="pannel.focusImgUrl"
-                        style="margin-top: 10px; width: 200px; border: 1px solid #eee"
-                      >
-                    </div>
-                  </el-form-item>
-                  <el-form-item v-if="!pannel.pannelGroupId" v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                    <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight}}</el-tag>
-                  </el-form-item>
-                  <el-form-item v-else v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                    <div class="media-tag-list">
-                      <div
-                        v-for="(item, index) in sharedTags"
-                        :key="index"
-                        class="media-tag-list__item">
-                        {{ item.tagName }}
-                        <el-input-number :max="1.5" :min="0.5" @change="handleInputTagWeight(arguments[0], arguments[1], item)" v-model="item.tagWeight" :step="0.1" />
+                  <!-- 运营手动填充 -->
+                  <template v-if="pannel.pannelList[0].fillType === 1">
+                    <el-form-item label="版块布局" required>
+                      <LayoutSelector ref="layoutSelector" @select-end="handleSelectLayoutEnd">
+                        <el-button @click.stop="handleSelectLayoutStart" type="primary" plain >选择布局</el-button>
+                      </LayoutSelector>
+                      <span
+                        class="marginL"
+                        v-if="selectedLayout"
+                      >(已选择: {{ selectedLayout.layoutName }})</span>
+                      <BinCheckBox class="marginL" label="设置前端推荐位底色透明" v-model="pannel.lucenyFlag" />
+                    </el-form-item>
+                    <el-form-item label="落焦形式" required>
+                      <CommonSelector
+                        v-model="pannel.focusShape"
+                        :options="$consts.panelFocusOptions"
+                        placeholder="请选择"
+                      />
+                      <BinCheckBox v-model="isShowfocusImgUrl" v-show="pannel.focusShape === 0" label="设置异形焦点" />
+                    </el-form-item>
+                    <el-form-item label="异形焦点" v-if="isShowfocusImgUrl && (pannel.focusShape === 0)">
+                      <el-button v-show="!selectedLayout" :disabled="!selectedLayout">选择异形焦点(请先选择布局)</el-button>
+                      <GlobalPictureSelector
+                        v-show="selectedLayout"
+                        title="选择异形焦点"
+                        :picture-resolution="alienFocusResolution"
+                        @select-end="handleSelectAlienFocusEnd"
+                      />
+                      <div>
+                        <img
+                          v-if="pannel.focusImgUrl"
+                          :src="pannel.focusImgUrl"
+                          style="margin-top: 10px; width: 200px; border: 1px solid #eee"
+                        >
                       </div>
-                    </div>
-                  </el-form-item>
-                  <el-form-item v-show="isShowTagsField"  class="tag-list" label="资源批量打标签">
-                    <el-button type="primary" plain @click="handleBatchAddTag">
-                      批量打标签
-                    </el-button>
-                  </el-form-item>
-                  <el-form-item label="批量填充">
-                    <span v-show="!selectedLayout">
-                      请先选择布局
-                    </span>
-                    <div v-show="selectedLayout">
-                      <template>
-                        <ResourceSelector
-                          ref="resourceSelector"
-                          :selectors="mediaResourceSelectors"
-                          :is-live="false"
-                          :disable-partner="!!pannel.pannelResource"
-                          selection-type="multiple"
-                          :source="pannel.pannelResource"
-                          :business-type="pannel.panelGroupCategory"
-                          @select-end="handleSelectResourceEnd">
-                          <el-button type="primary" plain @click.stop="handleSelectResourceStart">选择资源</el-button>
-                        </ResourceSelector>
-                        <ResourceSelector
-                          class="margin-left-10"
-                          v-if="canFillWithRanking"
-                          ref="rankingSelector"
-                          :selectors="['ranking']"
-                          :is-live="false"
-                          :disable-partner="!!pannel.pannelResource"
-                          selection-type="single"
-                          :source="pannel.pannelResource"
-                          :business-type="pannel.panelGroupCategory"
-                          @select-end="handleSelectRankingEnd">
-                            <el-button type="primary" plain @click.stop="handleSelectRankingStart">
+                    </el-form-item>
+                    <el-form-item v-if="!pannel.pannelGroupId" v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+                      <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight}}</el-tag>
+                    </el-form-item>
+                    <el-form-item v-else v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+                      <div class="media-tag-list">
+                        <div
+                          v-for="(item, index) in sharedTags"
+                          :key="index"
+                          class="media-tag-list__item">
+                          {{ item.tagName }}
+                          <el-input-number :max="1.5" :min="0.5" @change="handleInputTagWeight(arguments[0], arguments[1], item)" v-model="item.tagWeight" :step="0.1" />
+                        </div>
+                      </div>
+                    </el-form-item>
+                    <el-form-item v-show="isShowTagsField"  class="tag-list" label="资源批量打标签">
+                      <el-button type="primary" plain @click="handleBatchAddTag">
+                        批量打标签
+                      </el-button>
+                    </el-form-item>
+                    <el-form-item label="批量填充">
+                      <span v-show="!selectedLayout">
+                        请先选择布局
+                      </span>
+                      <div v-show="selectedLayout">
+                        <template>
+                          <ResourceSelector
+                            ref="resourceSelector"
+                            :selectors="mediaResourceSelectors"
+                            :is-live="false"
+                            :disable-partner="!!pannel.pannelResource"
+                            selection-type="multiple"
+                            :source="pannel.pannelResource"
+                            :business-type="pannel.panelGroupCategory"
+                            @select-end="handleSelectResourceEnd">
+                            <el-button type="primary" plain @click.stop="handleSelectResourceStart">选择资源</el-button>
+                          </ResourceSelector>
+                          <ResourceSelector
+                            class="margin-left-10"
+                            v-if="canFillWithRanking"
+                            ref="rankingSelector"
+                            :selectors="['ranking']"
+                            :is-live="false"
+                            :disable-partner="!!pannel.pannelResource"
+                            selection-type="single"
+                            :source="pannel.pannelResource"
+                            :business-type="pannel.panelGroupCategory"
+                            @select-end="handleSelectRankingEnd">
+                              <el-button type="primary" plain @click.stop="handleSelectRankingStart">
+                                选择排行榜
+                              </el-button>
+                          </ResourceSelector>
+                          <el-tooltip
+                            v-else
+                            effect="dark"
+                            placement="top">
+                            <div slot="content">
+                              使用排行榜，布局必须满足：标题布局、不带价格、只有一行、
+                              <br/>
+                              每个推荐位都是 260*364、推荐位数量 6~11 个
+                              <br />
+                              目前只支持业务类型为 不限、教育、影视
+                            </div>
+                            <el-button class="is-disabled" type="primary" plain>
                               选择排行榜
                             </el-button>
-                        </ResourceSelector>
-                        <el-tooltip
+                          </el-tooltip>
+                          <el-button class="btn-clear-current-blocks" @click="handleClearCurrentBlocks" type="primary" plain>
+                            清空当前版块推荐位
+                          </el-button>
+                        </template>
+                      </div>
+                      <div v-if="pannel.parentType === 'group'" style="float:right">
+                        <el-button
+                          type="primary"
+                          @click="handleSetDefaultActiveTab"
+                          :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''">
+                          设置默认落焦
+                        </el-button>
+                        <el-button
+                          type="primary"
+                          @click="handleAddTab"
+                          :disabled="pannel.pannelList.length >= 10">
+                          添加分组
+                        </el-button>
+                      </div>
+                      <div class="pannel-blocks">
+                        <template v-if="pannel.parentType === 'group'">
+                          <el-tabs
+                            :value="activePannelIndex + ''"
+                            @input="activePannelIndex = +$event"
+                            type="card"
+                            closable
+                            @tab-remove="handleRemoveTab"
+                          >
+                            <el-tab-pane
+                              v-for="(item, index) in pannel.pannelList"
+                              :key="index"
+                              :name="index.toString()"
+                            >
+                              <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
+                                {{ (item.pannelTitle || '').trim() || "双击修改" }}
+                                {{
+                                item.panelIsFocus && pannel.focusConfig === ""
+                                ? "(默认落焦)"
+                                : ""
+                                }}
+                              </span>
+                              <VirtualPanel
+                                :blocks="item.contentList"
+                                :mode="mode"
+                                @drag="handleDragBlock"
+                                @remove-block="handleRemoveBlock"
+                                @click-block="handleClickBlock"
+                              ></VirtualPanel>
+                            </el-tab-pane>
+                          </el-tabs>
+                        </template>
+
+                        <VirtualPanel
                           v-else
-                          effect="dark"
-                          placement="top">
-                          <div slot="content">
-                            使用排行榜，布局必须满足：标题布局、不带价格、只有一行、
-                            <br/>
-                            每个推荐位都是 260*364、推荐位数量 6~11 个
-                            <br />
-                            目前只支持业务类型为 不限、教育、影视
-                          </div>
-                          <el-button class="is-disabled" type="primary" plain>
+                          :blocks="pannel.pannelList[0].contentList"
+                          :mode="mode"
+                          @drag="handleDragBlock"
+                          @remove-block="handleRemoveBlock"
+                          @click-block="handleClickBlock"
+                        ></VirtualPanel>
+                      </div>
+                    </el-form-item>
+                  </template>
+                  <!-- 用排行榜填充 -->
+                  <template v-if="pannel.pannelList[0].fillType === 2">
+                    <el-form-item label="展示影片数量">
+                      <InputPositiveInt :value="pannel.pannelList[0].filmNum" @input="handleInputFilmNum" style="width:100px"/>
+                      <span class="video-num-tip">影片数量必须>=5</span>
+                    </el-form-item>
+                    <el-form-item label="选择排行榜">
+                      <ResourceSelector
+                        ref="rankingFillSelector"
+                        :selectors="['ranking']"
+                        :is-live="false"
+                        :disable-partner="!!pannel.pannelResource"
+                        selection-type="single"
+                        :source="pannel.pannelResource"
+                        :business-type="pannel.panelGroupCategory"
+                        :disabled="!pannel.pannelList[0].filmNum || pannel.pannelList[0].filmNum < 5"
+                        @select-end="handleSelectRankingEnd($event, 'rank')">
+                          <el-button
+                            type="primary"
+                            :disabled="!pannel.pannelList[0].filmNum || pannel.pannelList[0].filmNum < 5"
+                            plain >
                             选择排行榜
                           </el-button>
-                        </el-tooltip>
-                        <el-button class="btn-clear-current-blocks" @click="handleClearCurrentBlocks" type="primary" plain>
-                          清空当前版块推荐位
-                        </el-button>
-                      </template>
-                    </div>
-                    <div v-if="pannel.parentType === 'group'" style="float:right">
-                      <el-button
-                        type="primary"
-                        @click="handleSetDefaultActiveTab"
-                        :disabled="(!!pannel.pannelList[activePannelIndex].panelIsFocus) || pannel.focusConfig != ''">
-                        设置默认落焦
-                      </el-button>
-                      <el-button
-                        type="primary"
-                        @click="handleAddTab"
-                        :disabled="pannel.pannelList.length >= 10">
-                        添加分组
-                      </el-button>
-                    </div>
-                    <div class="pannel-blocks">
-                      <template v-if="pannel.parentType === 'group'">
-                        <el-tabs
-                          :value="activePannelIndex + ''"
-                          @input="activePannelIndex = +$event"
-                          type="card"
-                          closable
-                          @tab-remove="handleRemoveTab"
-                        >
-                          <el-tab-pane
-                            v-for="(item, index) in pannel.pannelList"
-                            :key="index"
-                            :name="index.toString()"
-                          >
-                            <span slot="label" @dblclick="handleSetPanelGroupInfoStart(index)">
-                              {{ (item.pannelTitle || '').trim() || "双击修改" }}
-                              {{
-                              item.panelIsFocus && pannel.focusConfig === ""
-                              ? "(默认落焦)"
-                              : ""
-                              }}
-                            </span>
-                            <VirtualPanel
-                              :blocks="item.contentList"
-                              :mode="mode"
-                              @drag="handleDragBlock"
-                              @remove-block="handleRemoveBlock"
-                              @click-block="handleClickBlock"
-                            ></VirtualPanel>
-                          </el-tab-pane>
-                        </el-tabs>
-                      </template>
-
+                      </ResourceSelector>
+                    </el-form-item>
+                    <el-form-item label="推荐位" v-if="pannel.pannelList[0].contentList.length !== 0">
                       <VirtualPanel
-                        v-else
-                        :blocks="pannel.pannelList[0].contentList"
+                        class="pannel-blocks"
                         :mode="mode"
-                        @drag="handleDragBlock"
-                        @remove-block="handleRemoveBlock"
+                        :blocks="pannel.pannelList[0].contentList"
                         @click-block="handleClickBlock"
                       ></VirtualPanel>
-                    </div>
-                  </el-form-item>
+                    </el-form-item>
+                  </template>
+                  <template v-if="pannel.pannelList[0].fillType === 3">
+                    <el-form-item label="配置影片筛选规则">
+                    </el-form-item>
+                  </template>
                 </div>
                 <el-form-item v-show="pannel.parentType === 'subscribe'" label="预约影片">
                   <ResourceSelector
@@ -381,25 +429,37 @@
                 <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
                   <div>{{pannel.groupTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
                 </el-form-item>
+                <el-form-item v-if="pannel.parentType === 'normal'" label="板块内容来源">
+                  {{$consts.panelFillTypeText[pannel.pannelList[0].fillType]}}
+                </el-form-item>
                 <div v-show="pannel.parentType !== 'subscribe'">
-                  <el-form-item label="版块布局" v-if="selectedLayout">
-                    <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
-                  </el-form-item>
-                  <el-form-item label="落焦形式" required>
-                    {{ $consts.panelFocusText[pannel.focusShape] }}
-                  </el-form-item>
-                  <el-form-item label="异形焦点" v-if="isShowfocusImgUrl && (pannel.focusShape === 0)">
-                    <div>
-                      <img
-                        v-if="pannel.focusImgUrl"
-                        :src="pannel.focusImgUrl"
-                        style="margin-top: 10px; width: 200px; border: 1px solid #eee"
-                      >
-                    </div>
-                  </el-form-item>
-                  <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
-                    <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
-                  </el-form-item>
+                  <template v-if="pannel.pannelList[0].fillType === 1">
+                    <el-form-item label="版块布局" v-if="selectedLayout">
+                      <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
+                    </el-form-item>
+                    <el-form-item label="落焦形式" required>
+                      {{ $consts.panelFocusText[pannel.focusShape] }}
+                    </el-form-item>
+                    <el-form-item label="异形焦点" v-if="isShowfocusImgUrl && (pannel.focusShape === 0)">
+                      <div>
+                        <img
+                          v-if="pannel.focusImgUrl"
+                          :src="pannel.focusImgUrl"
+                          style="margin-top: 10px; width: 200px; border: 1px solid #eee"
+                        >
+                      </div>
+                    </el-form-item>
+                    <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
+                      <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
+                    </el-form-item>
+                  </template>
+                  <template v-if="pannel.pannelList[0].fillType === 2">
+                    <el-form-item label="展示影片数量">
+                      {{pannel.pannelList[0].filmNum}}
+                    </el-form-item>
+                    <el-form-item label="选择排行榜">
+                    </el-form-item>
+                  </template>
                   <el-form-item label="推荐位">
                     <div class="pannel-blocks pannel-blocks--read">
                       <template v-if="pannel.parentType === 'group'">
@@ -518,6 +578,7 @@ import SubscribeVideos from './SubscribeVideos'
 import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking } from './panelInfoUtil'
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
   mixins: [titleMixin],
   components: {
@@ -539,7 +600,8 @@ export default {
     VeLine,
     AnalyzeSimpleDataDialog,
     AnalyzeDmpDataDialog,
-    SubscribeVideos
+    SubscribeVideos,
+    InputPositiveInt
   },
   data () {
     const extend = {
@@ -665,16 +727,7 @@ export default {
         focusConfig: '', // '', week
         currentVersion: '',
 
-        pannelList: [
-          {
-            rankIsOpen: 0,
-            rankChildId: undefined,
-            pannelTitle: '',
-            panelIsFocus: 0,
-            contentList: [],
-            selectedResources: []
-          }
-        ]
+        pannelList: []
       },
       isShowfocusImgUrl: false,
       blockList: [],
@@ -847,6 +900,18 @@ export default {
     'pannel.focusConfig': 'handleFocusConfigChange'
   },
   methods: {
+    genPannel () {
+      return {
+        rankIsOpen: 0,
+        rankChildId: undefined,
+        pannelTitle: '',
+        panelIsFocus: 0,
+        contentList: [],
+        selectedResources: [],
+        fillType: 1,
+        filmNum: undefined
+      }
+    },
     handleToggleFillWithRanking (val) {
       const panelList = this.pannel.pannelList
       const activePannelIndex = +this.activePannelIndex
@@ -1203,11 +1268,18 @@ export default {
         this.$refs.rankingSelector.$refs.wrapper.handleSelectStart()
       }
     },
-    handleSelectRankingEnd (selectedResources) {
+    handleSelectRankingEnd (selectedResources, panelFillWay = 'normal') {
       const pannel = this.pannel
       const activePannelIndex = +this.activePannelIndex
       const activePannel = pannel.pannelList[activePannelIndex]
-      const blockCount = this.blockCountList[activePannelIndex]
+      const blockCount = panelFillWay !== 'rank' ? this.blockCountList[activePannelIndex] : this.pannel.pannelList[0].filmNum
+      // 排行榜填充添加布局
+      if (panelFillWay === 'rank') {
+        this.$service.getLayoutInforById({ id: 109 }).then((layout) => {
+          layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
+          this.handleSelectLayoutEnd(layout, blockCount)
+        })
+      }
       // 获取排行榜资源
       const ranking = selectedResources.ranking[0]
       const businessType = this.pannel.panelGroupCategory
@@ -1229,6 +1301,10 @@ export default {
           selectedResources,
           isFillWithRanking: true
         })
+        // if (panelFillWay === 'rank') {
+        //   const delIndex = this.pannel.pannelList[0].contentList.length
+        //   this.pannel.pannelList[0].contentList.splice(delIndex - 1, 1)
+        // }
       })
     },
     handleSelectResourceStart () {
@@ -1511,6 +1587,8 @@ export default {
           // 清空推荐位内容
           this.clearBlocks()
           this.pannel.parentType = parentType
+          // 清空板块内容来源
+          pannel.pannelList[0].fillType = 1
           switch (true) {
             case parentType === 'normal':
               pannel.focusConfig = ''
@@ -2501,6 +2579,15 @@ export default {
           }
         })
       }
+    },
+    handleInputFillType (val) {
+      this.pannel.pannelList = []
+      this.pannel.pannelList.push(this.genPannel())
+      this.pannel.pannelList[0].fillType = val
+    },
+    handleInputFilmNum (val) {
+      this.pannel.pannelList[0].contentList = []
+      this.pannel.pannelList[0].filmNum = val
     }
   },
   created () {
@@ -2517,6 +2604,7 @@ export default {
     if (this.mode === 'edit' || this.mode === 'replicate' || this.mode === 'copy' || this.mode === 'read') {
       this.getSimpleBrowseData()
     }
+    this.pannel.pannelList.push(this.genPannel())
   },
   mounted () {
     if (this.id) {
@@ -2592,4 +2680,9 @@ export default {
   color #409EFF
   background #ecf5ff
   border-color #b3d8ff
+.video-num-tip
+  margin-left 10px
+  color red
+  font-size 10px
+  font-weight bold
 </style>
