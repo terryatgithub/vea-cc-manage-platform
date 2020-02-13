@@ -116,7 +116,7 @@
                 <span>内容配置</span>
               </div>
 
-              <el-form ref="form" :model="pannel" label-width="120px">
+              <el-form ref="form" :model="pannel" label-width="150px">
                 <el-form-item v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe'" label="版块标题" required>
                   <el-input
                     style="width: 300px"
@@ -337,7 +337,27 @@
                   </template>
                   <template v-if="pannel.pannelList[0].fillType === 3">
                     <el-form-item label="配置影片筛选规则">
+                      <ConfigureFilmFilterRule :source="pannel.pannelResource"/>
                     </el-form-item>
+                    <el-form-item label="选择布局">
+                      <el-radio-group>
+                        <el-radio class="layout-radio" :label="1">一行竖图，推荐位下方展示标题<i class="el-icon-question" @click="handleShowLayout(1)"/></el-radio>
+                        <el-radio class="layout-radio" :label="2">一行竖图，推荐位内展示标题<i class="el-icon-question" @click="handleShowLayout(2)"/></el-radio>
+                        <el-radio class="layout-radio" :label="3">三横图+三横图<i class="el-icon-question" @click="handleShowLayout(3)"/></el-radio>
+                        <el-radio class="layout-radio" :label="4">四横图+四横图<i class="el-icon-question" @click="handleShowLayout(4)"/></el-radio>
+                        <el-radio class="layout-radio" :label="5">三横图+六竖图<i class="el-icon-question" @click="handleShowLayout(5)"/></el-radio>
+                      </el-radio-group>
+                    </el-form-item>
+                    <!-- 预览图片 -->
+                    <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="40%">
+                      <div class="pics">
+                        <img v-if="reviewPicUrl === 1" style="width: 100%" src="../../assets/images/panelFillLayout1.png"/>
+                        <img v-if="reviewPicUrl === 2" style="width: 100%" src="../../assets/images/panelFillLayout2.png"/>
+                        <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
+                        <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
+                        <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
+                      </div>
+                    </el-dialog>
                   </template>
                 </div>
                 <el-form-item v-show="pannel.parentType === 'subscribe'" label="预约影片">
@@ -579,6 +599,7 @@ import { genResourceContentList, genRankingContentList, genSubscribeContentList,
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import InputPositiveInt from '@/components/InputPositiveInt'
+import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
 export default {
   mixins: [titleMixin],
   components: {
@@ -601,7 +622,8 @@ export default {
     AnalyzeSimpleDataDialog,
     AnalyzeDmpDataDialog,
     SubscribeVideos,
-    InputPositiveInt
+    InputPositiveInt,
+    ConfigureFilmFilterRule
   },
   data () {
     const extend = {
@@ -747,7 +769,10 @@ export default {
       isResetingData: false,
       // 允许开排行榜的业务类型
       // 不限，教育 支持排行榜
-      allowRankBusinessTypes: [67, 60, 31]
+      allowRankBusinessTypes: [67, 60, 31],
+
+      picDialogVisible: false,
+      reviewPicUrl: undefined
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -2588,6 +2613,10 @@ export default {
     handleInputFilmNum (val) {
       this.pannel.pannelList[0].contentList = []
       this.pannel.pannelList[0].filmNum = val
+    },
+    handleShowLayout (seq) {
+      this.reviewPicUrl = seq
+      this.picDialogVisible = true
     }
   },
   created () {
@@ -2685,4 +2714,6 @@ export default {
   color red
   font-size 10px
   font-weight bold
+.layout-radio
+  margin 0 30px 10px 0
 </style>

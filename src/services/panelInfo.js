@@ -236,3 +236,28 @@ export function getVideoDmpCrowds (params) {
     params
   })
 }
+
+// 影片筛选规则
+export function getFilmFilterPartnerSource (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tvos/getPartnerSource',
+    params
+  })
+}
+
+export function getFilmFilterOptions (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tvos/getCondition',
+    params
+  })
+}
+
+export function getFilmFilterResult (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tvos/getMediaBlockVideoList',
+    params
+  })
+}
