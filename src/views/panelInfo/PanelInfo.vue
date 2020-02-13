@@ -340,7 +340,7 @@
                       <ConfigureFilmFilterRule :source="pannel.pannelResource"/>
                     </el-form-item>
                     <el-form-item label="选择布局">
-                      <el-radio-group>
+                      <el-radio-group style="margin-top: 10px;">
                         <el-radio class="layout-radio" :label="1">一行竖图，推荐位下方展示标题<i class="el-icon-question" @click="handleShowLayout(1)"/></el-radio>
                         <el-radio class="layout-radio" :label="2">一行竖图，推荐位内展示标题<i class="el-icon-question" @click="handleShowLayout(2)"/></el-radio>
                         <el-radio class="layout-radio" :label="3">三横图+三横图<i class="el-icon-question" @click="handleShowLayout(3)"/></el-radio>

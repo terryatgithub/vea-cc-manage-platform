@@ -23,7 +23,7 @@
       <div v-else-if="stepCount === 1">
         <div class="step-title">第二步：选择影视业务筛选条件</div>
         <div>(1) 影片分类</div>
-        <el-checkbox-group v-model="movieFilterForm.types" class="margin-bottom-20 items-group">
+        <el-checkbox-group v-model="movieFilterForm.categorys" class="margin-bottom-20 items-group">
           <el-checkbox
             v-for="filmType in filmTypeOptions"
             :key="filmType.value"
@@ -102,7 +102,7 @@
         <div>(8) 创建时间</div>
         <el-row :gutter="1" style="width: 100%" class="margin-bottom-20">
           <el-col :span="8">
-            <el-select v-model="createdTimeSelect" @change="handleRestFilmTime">
+            <el-select v-model="createdTimeSelect" @change="handleResetFilmTime">
               <el-option :value="1" label="时间段选择"></el-option>
               <el-option :value="2" label="最近x个月"></el-option>
             </el-select>
@@ -145,6 +145,99 @@
       </div>
       <div v-else-if="stepCount === 2">
         <div class="step-title">第三步：选择教育业务筛选条件</div>
+        <div>(1) 影片分类</div>
+        <el-checkbox-group v-model="eduFilterForm.teachCategory" class="margin-bottom-20 items-group">
+          <el-checkbox
+            v-for="teachCategory in teachCategoryOptions"
+            :key="teachCategory.value"
+            :label="teachCategory.value"
+           >{{teachCategory.label}}</el-checkbox>
+        </el-checkbox-group>
+        <div>(2) 影片标签&nbsp;
+          <el-radio-group v-model="eduFilterForm.tagsRelation">
+            <el-radio :label="1">或</el-radio>
+            <el-radio :label="2">且</el-radio>
+          </el-radio-group>
+        </div>
+        <div>(3) CP名</div>
+        <div class="margin-bottom-20">
+          <el-tag
+            v-for="(company, index) in eduFilterForm.company"
+            :key="index"
+            closable
+            @close="handleDeleteTag(eduFilterForm.company, index)">
+            {{company}}
+          </el-tag>
+          <el-input
+            class="input-new-tag"
+            v-if="inputVisible.company"
+            v-model="inputTagValue"
+            ref="companyTagInput"
+            size="small"
+            @keyup.enter.native="handleTagInputConfirm(eduFilterForm.company, 'company')"
+            @blur="handleTagInputConfirm(eduFilterForm.company, 'company')"
+          >
+          </el-input>
+          <el-button v-else class="button-new-tag" size="small" @click="showTagInput('company')">+ New Tag</el-button>
+        </div>
+        <div>(4) 地区</div>
+        <el-checkbox-group v-model="eduFilterForm.teachCategory" class="margin-bottom-20 items-group">
+          <el-checkbox
+            v-for="teachArea in teachAreaOptions"
+            :key="teachArea.value"
+            :label="teachArea.value"
+           >{{teachArea.label}}</el-checkbox>
+        </el-checkbox-group>
+        <div>(5) 教育媒资特点</div>
+        <el-radio-group
+          v-model="eduFilterForm.teachFeatures"
+          class="margin-bottom-20"
+          style="margin-top: 10px"
+        >
+          <el-radio :label="undefined">未定义</el-radio>
+          <el-radio :label="1">仅选取绘本</el-radio>
+          <el-radio :label="2">仅选取有声读物</el-radio>
+          <el-radio :label="3">仅选取视频内容</el-radio>
+        </el-radio-group>
+        <div>(6) 创建时间</div>
+        <el-row :gutter="1" style="width: 100%" class="margin-bottom-20">
+          <el-col :span="8">
+            <el-select v-model="eduCreatedTimeSelect" @change="handleResetEduTime">
+              <el-option :value="1" label="时间段选择"></el-option>
+              <el-option :value="2" label="最近x个月"></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="16">
+            <el-date-picker
+              v-if="eduCreatedTimeSelect === 1"
+              v-model="eduFilterForm.teachCreatedTime"
+              type="daterange"
+              align="right"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions">
+            </el-date-picker>
+            <div v-else>
+              <InputPositiveInt v-model="movieFilterForm.teachCreatedMonthTime" style="width: 100px"/>
+              <span>个月</span>
+            </div>
+          </el-col>
+        </el-row>
+        <div>(7) 热度</div>
+        <el-row :gutter="1" class="margin-bottom-20">
+          <el-col :span="8">
+            <el-select v-model="eduFeverSelect">
+              <el-option :value="1" label="一月热度"></el-option>
+              <el-option :value="2" label="一周热度"></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="16">
+            Top<InputPositiveInt style="width: 100px" v-model="eduFilterForm.feverTop"/>
+            <span class="tip-text">填写6及以上整数</span>
+          </el-col>
+        </el-row>
         <div>
           <el-button type="primary" @click="handleStepBack">上一步</el-button>
           <el-button type="primary" @click="handleThreeStepNext">下一步</el-button>
@@ -181,11 +274,12 @@ export default {
       stepStack: [],
       sourceList: [],
       sourceListOptions: [],
+      // 第二步
       filmTypeOptions: [],
       filmAreaOptions: [],
       filmPayTypeOptions: [],
       movieFilterForm: {
-        types: [],
+        categorys: [],
         tagsRelation: 1,
         tags: [],
         actors: [],
@@ -197,12 +291,31 @@ export default {
         createdMonthTime: undefined,
         feverTop: undefined
       },
+      createdTimeSelect: 1,
+      feverSelect: 1,
+      // 第三部
+      teachCategoryOptions: [],
+      teachAreaOptions: [],
+      teachFeatureOptions: [],
+      eduFilterForm: {
+        teachCategory: [],
+        tagsRelation: 1,
+        teachTagCodes: [],
+        company: [],
+        teachAreas: [],
+        teachFeatures: undefined,
+        teachCreatedTime: undefined,
+        teachCreatedMonthTime: undefined,
+        feverTop: undefined
+      },
+      eduCreatedTimeSelect: 1,
+      eduFeverSelect: 1,
       inputVisible: {
         actor: false,
-        director: false
+        director: false,
+        company: false
       },
       inputTagValue: '',
-      createdTimeSelect: 1,
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -230,7 +343,6 @@ export default {
           }
         }]
       },
-      feverSelect: 1,
       isMovieFilter: true,
       isEduFilter: false,
       filmFilterCount: 0,
@@ -269,11 +381,10 @@ export default {
         this.stepCount++
         this.$service.getFilmFilterOptions({ businessType: 0, type: 'vod' }).then(result => {
           const rs = JSON.parse(result.slice(7, -1))
-          console.log('rs', rs)
-          this.filmTypeOptions = rs.vod.contentTypes.map(item => {
+          this.filmTypeOptions = rs.vod.categoryList.map(item => {
             return {
-              label: item.contentType,
-              value: item.contentTypeId
+              label: item.categoryName,
+              value: item.categoryId
             }
           })
           this.filmAreaOptions = rs.vod.areas.map(item => {
@@ -297,6 +408,19 @@ export default {
     },
     stepIntoEduBusiness () {
       this.$service.getFilmFilterOptions({ businessType: 1, type: 'vod' }).then(result => {
+        const rs = JSON.parse(result.slice(7, -1))
+        this.teachCategoryOptions = rs.vod.teachCategory.map(item => {
+          return {
+            label: item.tagCnName,
+            value: item.tagId
+          }
+        })
+        this.teachAreaOptions = rs.vod.areas.map(item => {
+          return {
+            label: item.tagCnName,
+            value: item.tagCnName
+          }
+        })
       })
     },
     handleTwoStepNext () {
@@ -311,6 +435,7 @@ export default {
       } else {
         this.stepCount += 2
       }
+      this.scrollTop()
     },
     handleThreeStepNext () {
       this.stepStack.push(this.stepCount)
@@ -318,9 +443,16 @@ export default {
     },
     handleStepBack () {
       this.stepCount = this.stepStack.pop()
+      this.scrollTop()
     },
     handleStepEnd () {
       this.isVisibleDialog = false
+    },
+    scrollTop () {
+      this.$nextTick(() => {
+        var container = this.$el.querySelector('.el-dialog__wrapper')
+        container.scrollTop = 0
+      })
     },
     handleDeleteTag (target, index) {
       target.splice(index, 1)
@@ -339,9 +471,13 @@ export default {
         this.$refs[refName].$refs.input.focus()
       })
     },
-    handleRestFilmTime () {
+    handleResetFilmTime () {
       this.movieFilterForm.createdTime = undefined
       this.movieFilterForm.createdMonthTime = undefined
+    },
+    handleResetEduTime () {
+      this.eduFilterForm.teachCreatedTime = undefined
+      this.movieFilterForm.teachCreatedMonthTime = undefined
     }
   },
   created () {}
