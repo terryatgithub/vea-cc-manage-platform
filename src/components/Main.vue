@@ -118,6 +118,7 @@ const routerMap = {
   albumPannelInfo: 'albumPannelInfo',
   markPanel: 'markPanel',
   pannelInfo: 'pannelInfo',
+  ruleCreatePanel: 'ruleCreatePanel',
   privatePannelInfo: 'privatePannelInfo',
   commonOnclickInfo: 'commonOnclickInfo',
   globalCornerIcon: 'globalCornerIcon',

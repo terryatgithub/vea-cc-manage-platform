@@ -7,6 +7,7 @@ import SysPlugin from '../views/blockInfo/SysPluginIndex'
 import AlbumPannelInfo from '../views/blockManage/AlbumPannelInfoIndex'
 import MarkPanel from '../views/blockManage/MarkPanelIndex'
 import PannelInfo from '../views/panelInfo/PannelInfoIndex'
+import RuleCreatePanel from '../views/panelInfo/RuleCreatePanel'
 import PrivatePannelInfo from '../views/blockManage/PrivatePannelInfoIndex'
 import CommonOnclickInfo from '../views/commonModule/CommonOnclickInfoIndex'
 import GlobalCornerIcon from '../views/commonModule/GlobalCornerIconIndex'
@@ -195,6 +196,12 @@ const children = [
         path: '/pannelInfo/view.html',
         component: PannelInfo,
         meta: { title: '常规运营', tagId: 'pannelInfo' }
+      },
+      {
+        name: 'ruleCreatePanel',
+        path: '/ruleCreatePanel/view.html',
+        component: RuleCreatePanel,
+        meta: { title: '筛选规则版块管理', tagId: 'ruleCreatePanel' }
       },
       {
         name: 'markPanel',
@@ -563,7 +570,7 @@ const children = [
     path: 'deviceConfig',
     name: 'deviceConfig',
     component: Wrapper,
-    meta: { title: '小窗自动播放配置'},
+    meta: { title: '小窗自动播放配置' },
     children: [
       {
         name: 'deviceConfig',

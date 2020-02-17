@@ -35,6 +35,11 @@
             <el-radio :label="1">或</el-radio>
             <el-radio :label="2">且</el-radio>
           </el-radio-group>
+          <el-button plain type="primary" @click="handleAddFilmTagStart">打标签</el-button>
+          <TagFrame
+            v-if="showBlockTagDialog"
+            @close="showBlockTagDialog = false">
+          </TagFrame>
         </div>
         <div>(3) 演员</div>
         <div class="margin-bottom-20">
@@ -262,9 +267,11 @@
 
 <script>
 import InputPositiveInt from '@/components/InputPositiveInt'
+import TagFrame from './TagFrame'
 export default {
   components: {
-    InputPositiveInt
+    InputPositiveInt,
+    TagFrame
   },
   props: ['source'],
   data () {
@@ -274,6 +281,7 @@ export default {
       stepStack: [],
       sourceList: [],
       sourceListOptions: [],
+      showBlockTagDialog: false,
       // 第二步
       filmTypeOptions: [],
       filmAreaOptions: [],
@@ -293,7 +301,7 @@ export default {
       },
       createdTimeSelect: 1,
       feverSelect: 1,
-      // 第三部
+      // 第三步
       teachCategoryOptions: [],
       teachAreaOptions: [],
       teachFeatureOptions: [],
@@ -351,7 +359,6 @@ export default {
   },
   methods: {
     handleOpenDialog () {
-      this.$service.getFilmFilterPartnerSource()
       this.$service.getFilmFilterPartnerSource({ partnerName: this.$consts.sourceToPartner[this.source] }).then(data => {
         this.sourceListOptions = data.rows[0].source_List.map(item => {
           return {
@@ -418,7 +425,7 @@ export default {
         this.teachAreaOptions = rs.vod.areas.map(item => {
           return {
             label: item.tagCnName,
-            value: item.tagCnName
+            value: item.tagEnName
           }
         })
       })
@@ -478,6 +485,9 @@ export default {
     handleResetEduTime () {
       this.eduFilterForm.teachCreatedTime = undefined
       this.movieFilterForm.teachCreatedMonthTime = undefined
+    },
+    handleAddFilmTagStart () {
+      this.showBlockTagDialog = true
     }
   },
   created () {}
