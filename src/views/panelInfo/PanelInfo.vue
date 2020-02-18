@@ -2117,7 +2117,25 @@ export default {
             timeSlot = startTime + ',' + endTime
           }
         }
-
+        // 媒资筛选pannelType = 10，自动化pannelType = 11
+        let pannelType
+        if (pannel.pannelType !== 11) {
+          const fillType = item.fillType
+          // item.pannelType 有可能有值 7, 如果是定向版块
+          if (hasSpecific) {
+            pannelType = 7
+          } else {
+            pannelType = panelDataType
+          }
+          // 排行榜填充、筛选规则填充
+          if (fillType === 2) {
+            pannelType = 2
+          }
+          if (fillType === 3) {
+            pannelType = 10
+          }
+        }
+        // 自动化板块
         return {
           pannelStatus: pannel.pannelStatus,
           pannelId: item.pannelId,
@@ -2125,8 +2143,7 @@ export default {
           pannelName: pannel.pannelName,
           pannelTitle: item.pannelTitle,
           pannelResource: pannel.pannelResource,
-          // item.pannelType 有可能有值 7, 如果是定向版块
-          pannelType: hasSpecific ? 7 : panelDataType,
+          pannelType,
           showTitle: pannel.showTitle,
           flagIs4k: pannel.flagIs4k,
           layoutId: layout.layoutId,
@@ -2135,7 +2152,8 @@ export default {
           focusShape: pannel.focusShape,
           contentList: itemContentList,
           rankIsOpen: item.rankIsOpen,
-          rankChildId: item.rankChildId
+          rankChildId: item.rankChildId,
+          fillType: item.fillType
         }
       })
       delete pannel.pannelName

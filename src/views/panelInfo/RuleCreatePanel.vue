@@ -18,7 +18,12 @@
           <FormString v-model="filter.pannelStatus" placeholder="板块状态"/>
           <FormString v-model="filter.pannelName" placeholder="板块名称"/>
           <FormString v-model="filter.pannelId" placeholder="板块ID"/>
-          <FormString v-model="filter.pannelResource" placeholder="板块内容源"/>
+          <FormEnum
+            placeholder="板块内容源"
+            v-model="filter.pannelResource"
+            :options="$consts.sourceOptions"
+            clearable>
+          </FormEnum>
           <br/>
           <FormEnum
             type="radio"

@@ -32,8 +32,8 @@
         </el-checkbox-group>
         <div>(2) 影片标签&nbsp;
           <el-radio-group v-model="movieFilterForm.tagsRelation">
-            <el-radio :label="1">或</el-radio>
-            <el-radio :label="2">且</el-radio>
+            <el-radio :label="0">或</el-radio>
+            <el-radio :label="1">且</el-radio>
           </el-radio-group>
           <el-button plain type="primary" @click="handleAddFilmTagStart">打标签</el-button>
           <TagFrame
@@ -160,8 +160,8 @@
         </el-checkbox-group>
         <div>(2) 影片标签&nbsp;
           <el-radio-group v-model="eduFilterForm.tagsRelation">
-            <el-radio :label="1">或</el-radio>
-            <el-radio :label="2">且</el-radio>
+            <el-radio :label="0">或</el-radio>
+            <el-radio :label="1">且</el-radio>
           </el-radio-group>
         </div>
         <div>(3) CP名</div>
@@ -289,7 +289,7 @@ export default {
       movieFilterForm: {
         categorys: [],
         tagsRelation: 1,
-        tags: [],
+        tagCodes: [],
         actors: [],
         directors: [],
         areas: [],
@@ -441,18 +441,95 @@ export default {
         this.stepCount++
       } else {
         this.stepCount += 2
+        this.handleGetFilterResult()
       }
       this.scrollTop()
     },
     handleThreeStepNext () {
       this.stepStack.push(this.stepCount)
       this.stepCount++
+      this.handleGetFilterResult()
     },
     handleStepBack () {
       this.stepCount = this.stepStack.pop()
       this.scrollTop()
     },
+    handleGetFilterResult (homeOrderType) {
+      const { isMovieFilter, isEduFilter, sourceList, movieFilterForm, eduFilterForm } = this
+      let params = {
+        sources: sourceList.join(','),
+        homeOrderType
+      }
+      // 参数填写-影视筛选
+      let movieParams = {}
+      if (isMovieFilter) {
+        const movieTagSign = ['@', '#'][movieFilterForm.tagsRelation]
+        movieParams = {
+          categorys: movieFilterForm.categorys.join(','),
+          tagCodes: movieFilterForm.tagCodes.join(movieTagSign),
+          actors: movieFilterForm.actors.join(','),
+          directors: movieFilterForm.directors.join(','),
+          areas: movieFilterForm.areas.join(','),
+          payTypes: movieFilterForm.payTypes.join(','),
+          videoFeatures: movieFilterForm.videoFeatures.join(',')
+        }
+        const createdTimeSelect = this.createdTimeStart
+        if (createdTimeSelect === 1 && movieFilterForm.createdTime.length !== 0) {
+          movieParams.createdTimeStart = movieFilterForm.createdTime[0]
+          movieParams.createdTimeEnd = movieFilterForm.createdTime[1]
+        } else {
+          movieParams.recentMonths = movieFilterForm.createdMonthTime
+        }
+        const feverSelect = this.feverSelect
+        if (feverSelect === 1) {
+          movieParams.monthHotTop = movieFilterForm.feverTop
+        } else {
+          movieParams.weekHotTop = movieFilterForm.feverTop
+        }
+      }
+      // 参数填写-教育筛选
+      let eduParams = {}
+      if (isEduFilter) {
+        const eduTagSign = ['@', '#'][eduFilterForm.tagsRelation]
+        eduParams = {
+          teachCategory: eduFilterForm.teachCategory.join(','),
+          company: eduFilterForm.company.join(','),
+          teachTagCodes: eduFilterForm.teachTagCodes.join(eduTagSign),
+          teachAreas: eduFilterForm.teachAreas.join(','),
+          teachFeatures: eduFilterForm.teachFeatures.join(',')
+        }
+        const createdTimeSelect = this.teachCreatedTime
+        if (createdTimeSelect === 1 && eduFilterForm.createdTime.length !== 0) {
+          eduParams.teachCreatedTimeStart = eduFilterForm.teachCreatedTime[0]
+          eduParams.teachCreatedTimeEnd = eduFilterForm.teachCreatedTime[1]
+        } else {
+          eduParams.teachRecentMonths = eduFilterForm.teachCreatedMonthTime
+        }
+        const eduFeverSelect = this.eduFeverSelect
+        if (eduFeverSelect === 1) {
+          eduParams.teachMonthHotTop = eduFilterForm.feverTop
+        } else {
+          eduParams.teachWeekHotTop = eduFilterForm.feverTop
+        }
+      }
+      // 请求服务
+      if (isMovieFilter && isEduFilter) {
+        Object.assign(params, movieParams)
+        Object.assign(params, eduParams)
+      } else if (isMovieFilter) {
+        Object.assign(params, movieParams)
+      } else {
+        Object.assign(params, eduParams)
+      }
+      this.$service.getFilmFilterResult(params).then(rs => {
+        this.filmFilterCount = rs.data.total
+        // 第四步结束
+        if (homeOrderType) {
+        }
+      })
+    },
     handleStepEnd () {
+      this.handleGetFilterResult(this.homeOrderType)
       this.isVisibleDialog = false
     },
     scrollTop () {
