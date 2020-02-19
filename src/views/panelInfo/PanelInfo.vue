@@ -337,16 +337,36 @@
                   </template>
                   <template v-if="pannel.pannelList[0].fillType === 3">
                     <el-form-item label="配置影片筛选规则">
-                      <ConfigureFilmFilterRule :source="pannel.pannelResource"/>
+                      <ConfigureFilmFilterRule
+                        :source="pannel.pannelResource"
+                        style="display: inline-block;"
+                        @get-filter-result="handleGetFilterResult"/>
+                      <el-button
+                        type="text"
+                        v-if="pannel.pannelList[0].mediaRuleDesc"
+                        style="margin-left: 10px"
+                        @click="showMiaRuleDesc(pannel.pannelList[0].mediaRuleDesc)"
+                      >查看规则
+                      </el-button>
                     </el-form-item>
                     <el-form-item label="选择布局">
-                      <el-radio-group style="margin-top: 10px;">
-                        <el-radio class="layout-radio" :label="1">一行竖图，推荐位下方展示标题<i class="el-icon-question" @click="handleShowLayout(1)"/></el-radio>
-                        <el-radio class="layout-radio" :label="2">一行竖图，推荐位内展示标题<i class="el-icon-question" @click="handleShowLayout(2)"/></el-radio>
-                        <el-radio class="layout-radio" :label="3">三横图+三横图<i class="el-icon-question" @click="handleShowLayout(3)"/></el-radio>
-                        <el-radio class="layout-radio" :label="4">四横图+四横图<i class="el-icon-question" @click="handleShowLayout(4)"/></el-radio>
-                        <el-radio class="layout-radio" :label="5">三横图+六竖图<i class="el-icon-question" @click="handleShowLayout(5)"/></el-radio>
+                      <el-radio-group style="margin-top: 10px;" v-model="mediaRuleLayout" @change="handleChangeMediaLayout">
+                        <el-radio
+                          class="layout-radio"
+                          v-for="mediaLayout in mediaRuleLayoutOptions"
+                          :key="mediaLayout.dictEnName"
+                          :label="mediaLayout.dictEnName">
+                          {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictEnName)"/>
+                        </el-radio>
                       </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="推荐位" v-if="pannel.pannelList[0].contentList.length !== 0">
+                      <VirtualPanel
+                        class="pannel-blocks"
+                        :mode="mode"
+                        :blocks="pannel.pannelList[0].contentList"
+                        @click-block="handleClickBlock"
+                      ></VirtualPanel>
                     </el-form-item>
                     <!-- 预览图片 -->
                     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="40%">
@@ -595,7 +615,8 @@ import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
 
 import SubscribeVideos from './SubscribeVideos'
 
-import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking } from './panelInfoUtil'
+import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking,
+  genMediaRuleContentList } from './panelInfoUtil'
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import InputPositiveInt from '@/components/InputPositiveInt'
@@ -772,7 +793,9 @@ export default {
       allowRankBusinessTypes: [67, 60, 31],
 
       picDialogVisible: false,
-      reviewPicUrl: undefined
+      reviewPicUrl: undefined,
+      mediaRuleLayoutOptions: [],
+      mediaRuleLayout: '1'
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -934,7 +957,8 @@ export default {
         contentList: [],
         selectedResources: [],
         fillType: 1,
-        filmNum: undefined
+        filmNum: undefined,
+        mediaRuleDesc: undefined
       }
     },
     handleToggleFillWithRanking (val) {
@@ -1241,6 +1265,9 @@ export default {
       if (pannel.parentType === 'subscribe') {
         return this.$message.error('预约版块里的推荐位不可以查看或编辑详情')
       }
+      if (pannel.pannelList[0].fillType === 3) {
+        return this.$message.error('影片筛选规则的推荐位不能查看或编辑')
+      }
       const selectedLayout = this.selectedLayout
       const activePannelIndex = +this.activePannelIndex
       const selectedResources =
@@ -1405,15 +1432,19 @@ export default {
     insertResources ({ insertAfter = 1, selectedResources, isFillWithRanking }) {
       const pannel = this.pannel
       const parentType = pannel.parentType
-      const fillType = parentType === 'subscribe'
+      let fillType = parentType === 'subscribe'
         ? 'subscribe'
         : isFillWithRanking
           ? 'ranking'
           : 'normal'
+      if (pannel.pannelList[0].fillType === 3) {
+        fillType = 'mediaRule'
+      }
       const genMethodMap = {
         subscribe: genSubscribeContentList,
         ranking: genRankingContentList,
-        normal: genResourceContentList
+        normal: genResourceContentList,
+        mediaRule: genMediaRuleContentList
       }
       const activePannelIndex = +this.activePannelIndex
       const activePannel = pannel.pannelList[activePannelIndex]
@@ -2633,8 +2664,51 @@ export default {
       this.pannel.pannelList[0].filmNum = val
     },
     handleShowLayout (seq) {
-      this.reviewPicUrl = seq
+      this.reviewPicUrl = parseInt(seq)
       this.picDialogVisible = true
+    },
+    handleGetFilterResult (result) {
+      const { mediaRule, filteredFilm, hasEdu, mediaRuleDesc } = result
+      this.filteredFilm = filteredFilm
+      const currentPannel = this.pannel.pannelList[0]
+      currentPannel.mediaRule = mediaRule
+      currentPannel.hasEdu = hasEdu
+      currentPannel.mediaFilmNum = filteredFilm ? filteredFilm.total : 0
+      currentPannel.mediaRuleDesc = mediaRuleDesc
+      // 根据返回结果填充推荐位
+      const { mediaRuleLayout } = this
+      this.$service.getLayoutInforById({ id: mediaRuleLayout }).then((layout) => {
+        layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
+        this.handleSelectLayoutEnd(layout, currentPannel.mediaFilmNum)
+        // 填充内容
+        return this.insertResources({
+          selectedResources: filteredFilm.rows
+        })
+      })
+    },
+    showMiaRuleDesc (desc) {
+      const h = this.$createElement
+      this.$msgbox({
+        title: '筛选规则',
+        message: h('p', {
+          style: 'white-space: pre'
+        }, desc),
+        confirmButtonText: '确定',
+        dangerouslyUseHTMLString: true
+      }).catch(() => {})
+    },
+    handleChangeMediaLayout (val) {
+      const currentPannel = this.pannel.pannelList[0]
+      const count = currentPannel.contentList.length
+      this.$service.getLayoutInforById({ id: val }).then((layout) => {
+        layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
+        this.handleSelectLayoutEnd(layout, count)
+        if (currentPannel.mediaRuleDesc) {
+          return this.insertResources({
+            selectedResources: this.filteredFilm.rows
+          })
+        }
+      })
     }
   },
   created () {
@@ -2652,6 +2726,10 @@ export default {
       this.getSimpleBrowseData()
     }
     this.pannel.pannelList.push(this.genPannel())
+    // 影片筛选规则填充
+    this.$service.getMediaRuleLayout().then(data => {
+      this.mediaRuleLayoutOptions = data
+    })
   },
   mounted () {
     if (this.id) {

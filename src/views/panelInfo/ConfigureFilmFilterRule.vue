@@ -118,6 +118,7 @@
               v-model="movieFilterForm.createdTime"
               type="daterange"
               align="right"
+              value-format="yyyy-MM-dd"
               unlink-panels
               range-separator="至"
               start-placeholder="开始日期"
@@ -219,6 +220,7 @@
               type="daterange"
               align="right"
               unlink-panels
+              value-format="yyyy-MM-dd"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -268,6 +270,24 @@
 <script>
 import InputPositiveInt from '@/components/InputPositiveInt'
 import TagFrame from './TagFrame'
+const homeOrderTypeOptions = [
+  {
+    label: '创建时间排序',
+    value: 1
+  },
+  {
+    label: '热度排序',
+    value: 2
+  },
+  {
+    label: '创建时间+热度排序（优先热度）',
+    value: 3
+  },
+  {
+    label: '创建时间+热度排序（优先时间）',
+    value: 4
+  }
+]
 export default {
   components: {
     InputPositiveInt,
@@ -295,7 +315,7 @@ export default {
         areas: [],
         payTypes: [],
         videoFeatures: [],
-        createdTime: undefined,
+        createdTime: [],
         createdMonthTime: undefined,
         feverTop: undefined
       },
@@ -311,8 +331,8 @@ export default {
         teachTagCodes: [],
         company: [],
         teachAreas: [],
-        teachFeatures: undefined,
-        teachCreatedTime: undefined,
+        teachFeatures: [],
+        teachCreatedTime: [],
         teachCreatedMonthTime: undefined,
         feverTop: undefined
       },
@@ -354,7 +374,8 @@ export default {
       isMovieFilter: true,
       isEduFilter: false,
       filmFilterCount: 0,
-      homeOrderType: 1
+      homeOrderType: 1,
+      homeOrderTypeOptions
     }
   },
   methods: {
@@ -377,6 +398,10 @@ export default {
         return item === 'teach'
       })
       this.isEduFilter = eduIndex !== -1
+      if (this.isEduFilter) {
+        this.$message.error('暂不支持教育筛选规则，期待下一期哦^-^')
+        return
+      }
       // 不含影视业务跳过第二步
       if (this.isEduFilter && sourceList.length === 1) {
         this.isMovieFilter = false
@@ -473,7 +498,7 @@ export default {
           payTypes: movieFilterForm.payTypes.join(','),
           videoFeatures: movieFilterForm.videoFeatures.join(',')
         }
-        const createdTimeSelect = this.createdTimeStart
+        const createdTimeSelect = this.createdTimeSelect
         if (createdTimeSelect === 1 && movieFilterForm.createdTime.length !== 0) {
           movieParams.createdTimeStart = movieFilterForm.createdTime[0]
           movieParams.createdTimeEnd = movieFilterForm.createdTime[1]
@@ -498,7 +523,7 @@ export default {
           teachAreas: eduFilterForm.teachAreas.join(','),
           teachFeatures: eduFilterForm.teachFeatures.join(',')
         }
-        const createdTimeSelect = this.teachCreatedTime
+        const createdTimeSelect = this.eduCreatedTimeSelect
         if (createdTimeSelect === 1 && eduFilterForm.createdTime.length !== 0) {
           eduParams.teachCreatedTimeStart = eduFilterForm.teachCreatedTime[0]
           eduParams.teachCreatedTimeEnd = eduFilterForm.teachCreatedTime[1]
@@ -521,10 +546,18 @@ export default {
       } else {
         Object.assign(params, eduParams)
       }
-      this.$service.getFilmFilterResult(params).then(rs => {
-        this.filmFilterCount = rs.data.total
+      this.$service.getFilmFilterResult2(params).then(rs => {
+        this.filmFilterCount = rs.data ? rs.data.total : 0
         // 第四步结束
         if (homeOrderType) {
+          // 规则描述
+          const mediaRuleDesc = this.parseRuleDesc()
+          this.$emit('get-filter-result', {
+            mediaRule: params,
+            filteredFilm: rs.data,
+            hasEdu: this.isEduFilter ? 1 : 0,
+            mediaRuleDesc
+          })
         }
       })
     },
@@ -565,6 +598,67 @@ export default {
     },
     handleAddFilmTagStart () {
       this.showBlockTagDialog = true
+    },
+    parseRuleDesc () {
+      const { sourceList, sourceListOptions, isMovieFilter, isEduFilter, movieFilterForm, eduFilterForm } = this
+      const parseRuleLabel = function (arr, valueArr, linkSign) {
+        return valueArr.map(value => {
+          // eslint-disable-next-line eqeqeq
+          const obj = arr.find(item => { return item.value == value })
+          return obj.label
+        }).join(linkSign)
+      }
+      let desc = '内容源：' + parseRuleLabel(sourceListOptions, sourceList, ' || ') + '\n'
+      desc += '\n'
+      // 影视描述
+      if (isMovieFilter) {
+        const { filmTypeOptions, filmAreaOptions, filmPayTypeOptions } = this
+        const { categorys, tagsRelation, tagCodes, actors, directors, areas, payTypes, videoFeatures,
+          createdTime, createdMonthTime, feverTop } = movieFilterForm
+        desc += '影视业务规则：\n'
+        categorys.length !== 0 && (desc += '分类：' + parseRuleLabel(filmTypeOptions, categorys, '、') + '\n')
+        tagCodes.length !== 0 && (desc += '标签：' + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
+        actors.length !== 0 && (desc += '演员：' + actors.join('、') + '\n')
+        directors.length !== 0 && (desc += '导演：' + directors.join('、'))
+        areas.length !== 0 && (desc += '地区：' + parseRuleLabel(filmAreaOptions, areas, '、') + '\n')
+        payTypes.length !== 0 && (desc += '付费类型：' + parseRuleLabel(filmPayTypeOptions, payTypes, '、') + '\n')
+        videoFeatures.length !== 0 && (desc += '视频特点：' +
+          parseRuleLabel([{ label: '4k', value: 1 }, { label: '杜比', value: 2 }], videoFeatures, '、') + '\n')
+        const createdTimeSelect = this.createdTimeSelect
+        if (createdTimeSelect === 1 && movieFilterForm.createdTime.length !== 0) {
+          desc += '新度：' + createdTime.join('、') + '\n'
+        } else {
+          createdMonthTime && (desc += '新度：最近' + createdMonthTime + '个月' + '\n')
+        }
+        const feverSelect = this.feverSelect
+        feverTop && (desc += '热度：' + feverSelect === 1 ? ('一月热度Top' + feverTop) : ('一周热度Top' + feverTop) + '\n')
+        desc += '\n'
+      }
+      // 教育描述
+      if (isEduFilter) {
+        const { teachCategoryOptions, teachAreaOptions } = this
+        const { teachCategory, tagsRelation, teachTagCodes, company, teachAreas,
+          teachFeatures, teachCreatedTime, teachRecentMonths, feverTop } = eduFilterForm
+        desc += '教育业务规则：\n'
+        teachCategory.length !== 0 && (desc += parseRuleLabel(teachCategoryOptions, teachCategory, '、') + '\n')
+        teachTagCodes.length !== 0 && (desc += '标签：' + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
+        company.length !== 0 && (desc += 'CP名：' + company.join('、') + '\n')
+        teachAreas.length !== 0 && (desc += '地区：' + parseRuleLabel(teachAreaOptions, teachAreas, '、') + '\n')
+        teachFeatures.length !== 0 && (desc += '视频特点：' +
+          parseRuleLabel([{ label: '绘本', value: 1 }, { label: '有声读物', value: 2 }, { label: '视频内容', value: 3 }], teachFeatures, '、') + '\n')
+        const createdTimeSelect = this.eduCreatedTimeSelect
+        if (createdTimeSelect === 1 && eduFilterForm.createdTime.length !== 0) {
+          desc += '新度：' + teachCreatedTime.join('、') + '\n'
+        } else {
+          teachRecentMonths && (desc += '新度：最近' + teachRecentMonths + '个月' + '\n')
+        }
+        const eduFeverSelect = this.eduFeverSelect
+        feverTop && (desc += '热度：' + eduFeverSelect === 1 ? ('一月热度Top' + feverTop) : ('一周热度Top' + feverTop) + '\n')
+        desc += '\n'
+      }
+      const { homeOrderTypeOptions, homeOrderType } = this
+      desc += '排序规则：' + parseRuleLabel(homeOrderTypeOptions, [homeOrderType], '')
+      return desc
     }
   },
   created () {}

@@ -373,6 +373,17 @@ export function genMediaContentList (resources, contentPreset, selectType) {
   })
   return contentList
 }
+export function genMediaRuleContentList (resourcesList, contentPreset) {
+  const contentList = resourcesList.map(item => {
+    const content = genDefaultContentForm(contentPreset)
+    setMediaContent(content, {
+      selectedType: item.businessType === 0 ? 'video' : 'edu',
+      selected: item
+    })
+    return content
+  })
+  return contentList
+}
 export function genAppContentList (resources, contentPreset) {
   const selected = resources.app || []
   const contentList = selected.map(item => {
