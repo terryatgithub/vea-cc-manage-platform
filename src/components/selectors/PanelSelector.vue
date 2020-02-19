@@ -65,6 +65,17 @@
           </el-form-item>
 
           <el-form-item>
+            <el-select v-model="filter.fillType" placeholder="版块内容来源">
+              <el-option
+                v-for="(item, index) in fillTypeOptions"
+                :key="index"
+                :value="item.value"
+                :label="item.label"
+              />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item>
             <el-select v-model="filter.idPrefix" placeholder="数据来源">
               <el-option label="酷开" value="10"></el-option>
               <el-option label="江苏广电" value="11"></el-option>
@@ -111,6 +122,7 @@ export default {
           value: 'function'
         }
       ],
+      fillTypeOptions: [],
       pagination: {
         currentPage: 1,
         pageSize: 15,
@@ -203,7 +215,8 @@ export default {
         pannelStatus: undefined,
         parentType: undefined,
         pannelResource: undefined,
-        resourceIsNull: true
+        resourceIsNull: true,
+        fillType: undefined
       }
     },
     handleFilterChange () {
@@ -247,6 +260,14 @@ export default {
         result[item.value] = item.label
         return result
       }, {})
+    })
+    this.$service.getMediaFillType().then(data => {
+      this.fillTypeOptions = data.map(item => {
+        return {
+          label: item.dictCnName,
+          value: parseInt(item.dictEnName)
+        }
+      })
     })
   }
 }

@@ -191,7 +191,8 @@ export default {
         selected: [],
         selectionType: 'multiple'
       },
-      selected: []
+      selected: [],
+      fillTypeEnums: {}
     }
   },
 
@@ -279,6 +280,13 @@ export default {
         })
       })
     },
+    getFillType () {
+      return this.$service.getMediaFillType().then(data => {
+        data.forEach(item => {
+          this.fillTypeEnums[item.dictCnName] = item.dictEnName
+        })
+      })
+    },
     handleToggleCollect (row) {
       if (row.collected) {
         this.$service.collectCancel({ type: 'pannel', data: { resourceId: row.pannelGroupId } }, '取消收藏成功')
@@ -338,6 +346,11 @@ export default {
         placeholder: '版块类别',
         component: 'Select',
         clearable: true
+      }),
+      fillType: _.o.enum(this.fillTypeEnums).other('form', {
+        placeholder: '版块内容来源',
+        component: 'Select',
+        clearable: true
       })
     })
       .other('form', {
@@ -370,7 +383,9 @@ export default {
       })
     }
     this.getBusinessType().then(() => {
-      this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
+      this.getFillType().then(() => {
+        this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
+      })
     })
     // 影片详情页中的版块
     const dataList = this.dataList

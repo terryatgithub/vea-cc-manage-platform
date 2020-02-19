@@ -16,14 +16,14 @@
             clearable>
           </FormEnum>
           <FormEnum
-            placeholder="板块内容来源"
+            placeholder="版块内容来源"
             v-model="filter.fillType"
             :options="fillTypeOptions"/>
-          <FormString v-model="filter.pannelStatus" placeholder="板块状态"/>
-          <FormString v-model="filter.pannelName" placeholder="板块名称"/>
-          <FormString v-model="filter.pannelId" placeholder="板块ID"/>
+          <FormString v-model="filter.pannelStatus" placeholder="版块状态"/>
+          <FormString v-model="filter.pannelName" placeholder="版块名称"/>
+          <FormString v-model="filter.pannelId" placeholder="版块ID"/>
           <FormEnum
-            placeholder="板块内容源"
+            placeholder="版块内容源"
             v-model="filter.pannelResource"
             :options="$consts.sourceOptions"
             clearable>
@@ -120,10 +120,10 @@ export default {
         header: [
           {
             prop: 'pannelGroupId',
-            label: '板块ID'
+            label: '版块ID'
           },
           {
-            label: '板块名称',
+            label: '版块名称',
             'show-overflow-tooltip': true,
             render: (createElement, { row }) => {
               return createElement('el-button', {
@@ -141,7 +141,7 @@ export default {
           },
           {
             prop: 'pannelStatus',
-            label: '板块状态',
+            label: '版块状态',
             formatter: (row) => {
               const status = row.pannelStatus
               const currentVersion = row.currentVersion
@@ -157,10 +157,11 @@ export default {
           },
           {
             label: '筛选规则',
-            'show-overflow-tooltip': true,
-            formatter: (row) => {
+            render: (h, { row }) => {
               const mediaRuleDesc = row.pannelList[0] ? row.pannelList[0].mediaRuleDesc : undefined
-              return mediaRuleDesc
+              return h('div', {
+                style: { 'white-space': 'pre' }
+              }, mediaRuleDesc)
             }
           },
           {
