@@ -15,10 +15,6 @@
             :options="zeroOneOptions"
             clearable>
           </FormEnum>
-          <FormEnum
-            placeholder="版块内容来源"
-            v-model="filter.fillType"
-            :options="fillTypeOptions"/>
           <FormString v-model="filter.pannelStatus" placeholder="版块状态"/>
           <FormString v-model="filter.pannelName" placeholder="版块名称"/>
           <FormString v-model="filter.pannelId" placeholder="版块ID"/>
@@ -236,14 +232,6 @@ export default {
     }
   },
   created () {
-    this.$service.getMediaFillType().then(data => {
-      this.fillTypeOptions = data.map(item => {
-        return {
-          label: item.dictCnName,
-          value: parseInt(item.dictEnName)
-        }
-      })
-    })
     this.fetchData()
   }
 
