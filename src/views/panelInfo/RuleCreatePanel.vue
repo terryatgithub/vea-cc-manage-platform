@@ -103,6 +103,7 @@ export default {
   },
   data () {
     return {
+      resourceType: 'ruleCreatePanel',
       filter: this.getDefaultFilter(),
       pagination: {
         currentPage: 1
@@ -118,8 +119,21 @@ export default {
             label: '板块ID'
           },
           {
-            prop: 'pannelGroupRemark',
-            label: '板块名称'
+            label: '板块名称',
+            'show-overflow-tooltip': true,
+            render: (createElement, { row }) => {
+              return createElement('el-button', {
+                attrs: {
+                  type: 'text'
+                },
+                on: {
+                  click: (event) => {
+                    event.stopPropagation()
+                    this.handleRead(row)
+                  }
+                }
+              }, row.pannelGroupRemark)
+            }
           },
           {
             prop: 'pannelStatus',
@@ -139,6 +153,7 @@ export default {
           },
           {
             label: '筛选规则',
+            'show-overflow-tooltip': true,
             formatter: (row) => {
               const mediaRuleDesc = row.pannelList[0] ? row.pannelList[0].mediaRuleDesc : undefined
               return mediaRuleDesc
