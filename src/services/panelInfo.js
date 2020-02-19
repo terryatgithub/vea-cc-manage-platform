@@ -270,6 +270,14 @@ export function getMediaRuleLayout (params) {
   })
 }
 
+export function getMediaFillType (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dict/getTypes/fillType.html',
+    params
+  })
+}
+
 export function getFilmFilterResult2 (params) {
   return Promise.resolve({
     data: {

@@ -619,7 +619,7 @@ export default {
         categorys.length !== 0 && (desc += '分类：' + parseRuleLabel(filmTypeOptions, categorys, '、') + '\n')
         tagCodes.length !== 0 && (desc += '标签：' + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
         actors.length !== 0 && (desc += '演员：' + actors.join('、') + '\n')
-        directors.length !== 0 && (desc += '导演：' + directors.join('、'))
+        directors.length !== 0 && (desc += '导演：' + directors.join('、') + '\n')
         areas.length !== 0 && (desc += '地区：' + parseRuleLabel(filmAreaOptions, areas, '、') + '\n')
         payTypes.length !== 0 && (desc += '付费类型：' + parseRuleLabel(filmPayTypeOptions, payTypes, '、') + '\n')
         videoFeatures.length !== 0 && (desc += '视频特点：' +

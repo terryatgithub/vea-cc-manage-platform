@@ -15,6 +15,10 @@
             :options="zeroOneOptions"
             clearable>
           </FormEnum>
+          <FormEnum
+            placeholder="板块内容来源"
+            v-model="filter.fillType"
+            :options="fillTypeOptions"/>
           <FormString v-model="filter.pannelStatus" placeholder="板块状态"/>
           <FormString v-model="filter.pannelName" placeholder="板块名称"/>
           <FormString v-model="filter.pannelId" placeholder="板块ID"/>
@@ -171,7 +175,8 @@ export default {
         ]
       },
       filmNumOptions,
-      zeroOneOptions
+      zeroOneOptions,
+      fillTypeOptions: []
     }
   },
 
@@ -230,6 +235,14 @@ export default {
     }
   },
   created () {
+    this.$service.getMediaFillType().then(data => {
+      this.fillTypeOptions = data.map(item => {
+        return {
+          label: item.dictCnName,
+          value: parseInt(item.dictEnName)
+        }
+      })
+    })
     this.fetchData()
   }
 
