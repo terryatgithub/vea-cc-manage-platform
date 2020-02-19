@@ -324,6 +324,7 @@
                             plain >
                             选择排行榜
                           </el-button>
+                          <el-tag style="margin-left: 10px" v-if="pannel.pannelList[0].rankName">{{pannel.pannelList[0].rankName}}</el-tag>
                       </ResourceSelector>
                     </el-form-item>
                     <el-form-item label="推荐位" v-if="pannel.pannelList[0].contentList.length !== 0">
@@ -498,6 +499,7 @@
                       {{pannel.pannelList[0].filmNum}}
                     </el-form-item>
                     <el-form-item label="选择排行榜">
+                      {{pannel.pannelList[0].rankName}}
                     </el-form-item>
                   </template>
                   <el-form-item label="推荐位">
@@ -958,7 +960,8 @@ export default {
         selectedResources: [],
         fillType: 1,
         filmNum: undefined,
-        mediaRuleDesc: undefined
+        mediaRuleDesc: undefined,
+        rankName: undefined
       }
     },
     handleToggleFillWithRanking (val) {
@@ -1331,6 +1334,7 @@ export default {
           layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
           this.handleSelectLayoutEnd(layout, blockCount)
         })
+        pannel.pannelList[0].rankName = selectedResources.ranking[0].title
       }
       // 获取排行榜资源
       const ranking = selectedResources.ranking[0]

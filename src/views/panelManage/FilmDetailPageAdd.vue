@@ -438,6 +438,10 @@ export default {
           {
             pannelGroupId: '-1003',
             pannelGroupRemark: '相关明星'
+          },
+          {
+            pannelGroupId: '-1004',
+            pannelGroupRemark: '系列剧'
           }
         ]
       }
