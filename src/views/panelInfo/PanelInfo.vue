@@ -369,6 +369,15 @@
                         @click-block="handleClickBlock"
                       ></VirtualPanel>
                     </el-form-item>
+                    <el-form-item label="干预">
+                      <el-button type="primary" @click="handleAddIntervene">添加干预</el-button>
+                      <VirtualPanel
+                        class="pannel-blocks"
+                        :mode="mode"
+                        :blocks="pannel.pannelList[0].interveneContentList"
+                        @click-block="handleClickBlock"
+                      ></VirtualPanel>
+                    </el-form-item>
                     <!-- 预览图片 -->
                     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="40%">
                       <div class="pics">
@@ -957,6 +966,7 @@ export default {
         pannelTitle: '',
         panelIsFocus: 0,
         contentList: [],
+        interveneContentList: [],
         selectedResources: [],
         fillType: 1,
         filmNum: undefined,
@@ -2713,6 +2723,25 @@ export default {
           })
         }
       })
+    },
+    handleAddIntervene () {
+      const currentPannel = this.pannel.pannelList[0]
+      if (!currentPannel.mediaRuleDesc) {
+        return this.$message.error('请先配置影片筛选规则')
+      }
+    },
+    genDefaultInterveneContent () {
+      return {
+        contentPosition: {
+          height: 346,
+          loop: 'true',
+          resize: undefined,
+          type: 'Block',
+          width: 247,
+          x: 0,
+          y: 0
+        }
+      }
     }
   },
   created () {

@@ -18,7 +18,7 @@
         </el-tag>
       </div>
     </div>
-    <el-button size="mini" type="primary" @click="handleAddTagStart(tags.length)">+且</el-button>
+    <el-button v-if="!hiddenExtend" size="mini" type="primary" @click="handleAddTagStart(tags.length)">+且</el-button>
 
     <PanelTagSelector
       v-if="showPanelTagsDialog"
@@ -41,7 +41,13 @@ export default {
       tags: [[]]
     }
   },
-  props: ['value'],
+  props: {
+    value: Array,
+    hiddenExtend: {
+      type: Boolean,
+      default: false
+    }
+  },
   methods: {
     reset () {
       this.tags = [[]]
@@ -53,6 +59,7 @@ export default {
         }
         return result
       }, [])
+      this.$emit('get-tag-entity', this.tags)
       this.$emit('input', tagCodes)
     },
     handleRemoveTag (listIndex, index) {

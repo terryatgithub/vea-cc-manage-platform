@@ -9,7 +9,7 @@
       @open="handleOpenDialog"
       @closed="handleCloseDialog"
     >
-      <div v-if="stepCount === 0">
+      <div v-show="stepCount === 0">
         <div class="step-title">第一步：选择内容源</div>
         <el-checkbox-group v-model="sourceList" class="items-group">
           <el-checkbox
@@ -20,7 +20,7 @@
         </el-checkbox-group>
         <el-button type="primary" @click="handleOneStepNext" :disabled="sourceList.length === 0">进入第二步</el-button>
       </div>
-      <div v-else-if="stepCount === 1">
+      <div v-show="stepCount === 1">
         <div class="step-title">第二步：选择影视业务筛选条件</div>
         <div>(1) 影片分类</div>
         <el-checkbox-group v-model="movieFilterForm.categorys" class="margin-bottom-20 items-group">
@@ -35,11 +35,12 @@
             <el-radio :label="0">或</el-radio>
             <el-radio :label="1">且</el-radio>
           </el-radio-group>
-          <el-button plain type="primary" @click="handleAddFilmTagStart">打标签</el-button>
-          <TagFrame
-            v-if="showBlockTagDialog"
-            @close="showBlockTagDialog = false">
-          </TagFrame>
+          <TagLogicFilter
+            class="margin-bottom-20"
+            hiddenExtend
+            :value="movieFilterForm.tagCodes"
+            @input="handleInputMovieTag"
+            @get-tag-entity="handleGetMovieTagEntity"/>
         </div>
         <div>(3) 演员</div>
         <div class="margin-bottom-20">
@@ -149,7 +150,7 @@
           <el-button type="primary" @click="handleTwoStepNext">下一步</el-button>
         </div>
       </div>
-      <div v-else-if="stepCount === 2">
+      <div v-show="stepCount === 2">
         <div class="step-title">第三步：选择教育业务筛选条件</div>
         <div>(1) 影片分类</div>
         <el-checkbox-group v-model="eduFilterForm.teachCategory" class="margin-bottom-20 items-group">
@@ -164,6 +165,12 @@
             <el-radio :label="0">或</el-radio>
             <el-radio :label="1">且</el-radio>
           </el-radio-group>
+          <TagLogicFilter
+            class="margin-bottom-20"
+            hiddenExtend
+            :value="eduFilterForm.teachTagCodes"
+            @input="handleInputEduTag"
+            @get-tag-entity="handleGetEduTagEntity"/>
         </div>
         <div>(3) CP名</div>
         <div class="margin-bottom-20">
@@ -189,8 +196,8 @@
         <div>(4) 地区</div>
         <el-checkbox-group v-model="eduFilterForm.teachCategory" class="margin-bottom-20 items-group">
           <el-checkbox
-            v-for="teachArea in teachAreaOptions"
-            :key="teachArea.value"
+            v-for="(teachArea, index) in teachAreaOptions"
+            :key="index"
             :label="teachArea.value"
            >{{teachArea.label}}</el-checkbox>
         </el-checkbox-group>
@@ -200,7 +207,6 @@
           class="margin-bottom-20"
           style="margin-top: 10px"
         >
-          <el-radio :label="undefined">未定义</el-radio>
           <el-radio :label="1">仅选取绘本</el-radio>
           <el-radio :label="2">仅选取有声读物</el-radio>
           <el-radio :label="3">仅选取视频内容</el-radio>
@@ -250,7 +256,7 @@
           <el-button type="primary" @click="handleThreeStepNext">下一步</el-button>
         </div>
       </div>
-      <div v-else>
+      <div v-show="stepCount === 3">
         <div class="step-title">第四步：设置排序规则（{{filmFilterCount}}部影片）</div>
         <el-radio-group v-model="homeOrderType">
           <el-radio :label="1" class="order-radio">创建时间排序（越新的排越前面）</el-radio>
@@ -269,7 +275,7 @@
 
 <script>
 import InputPositiveInt from '@/components/InputPositiveInt'
-import TagFrame from './TagFrame'
+import TagLogicFilter from '@/components/ResourceSelector/TagLogicFilter'
 const homeOrderTypeOptions = [
   {
     label: '创建时间排序',
@@ -291,7 +297,7 @@ const homeOrderTypeOptions = [
 export default {
   components: {
     InputPositiveInt,
-    TagFrame
+    TagLogicFilter
   },
   props: ['source'],
   data () {
@@ -301,14 +307,13 @@ export default {
       stepStack: [],
       sourceList: [],
       sourceListOptions: [],
-      showBlockTagDialog: false,
       // 第二步
       filmTypeOptions: [],
       filmAreaOptions: [],
       filmPayTypeOptions: [],
       movieFilterForm: {
         categorys: [],
-        tagsRelation: 1,
+        tagsRelation: 0,
         tagCodes: [],
         actors: [],
         directors: [],
@@ -327,7 +332,7 @@ export default {
       teachFeatureOptions: [],
       eduFilterForm: {
         teachCategory: [],
-        tagsRelation: 1,
+        tagsRelation: 0,
         teachTagCodes: [],
         company: [],
         teachAreas: [],
@@ -412,20 +417,20 @@ export default {
         this.stepStack.push(this.stepCount)
         this.stepCount++
         this.$service.getFilmFilterOptions({ businessType: 0, type: 'vod' }).then(result => {
-          const rs = JSON.parse(result.slice(7, -1))
-          this.filmTypeOptions = rs.vod.categoryList.map(item => {
+          const rs = JSON.parse(result.replace('result(', '').replace(/\)*$/, ''))
+          this.filmTypeOptions = (rs.vod.categoryList || []).map(item => {
             return {
               label: item.categoryName,
               value: item.categoryId
             }
           })
-          this.filmAreaOptions = rs.vod.areas.map(item => {
+          this.filmAreaOptions = (rs.vod.areas || []).map(item => {
             return {
               label: item.tagCnName,
               value: item.tagCnName
             }
           })
-          this.filmPayTypeOptions = rs.vod.payTypes.map(item => {
+          this.filmPayTypeOptions = (rs.vod.payTypes || []).map(item => {
             return {
               label: item.tagCnName,
               value: item.tagEnName
@@ -440,17 +445,17 @@ export default {
     },
     stepIntoEduBusiness () {
       this.$service.getFilmFilterOptions({ businessType: 1, type: 'vod' }).then(result => {
-        const rs = JSON.parse(result.slice(7, -1))
-        this.teachCategoryOptions = rs.vod.teachCategory.map(item => {
+        const rs = JSON.parse(result.replace('result(', '').replace(/\)*$/, ''))
+        this.teachCategoryOptions = (rs.vod.teachCategory || []).map(item => {
           return {
             label: item.tagCnName,
             value: item.tagId
           }
         })
-        this.teachAreaOptions = rs.vod.areas.map(item => {
+        this.teachAreaOptions = (rs.vod.areas || []).map(item => {
           return {
             label: item.tagCnName,
-            value: item.tagEnName
+            value: item.tagCnName
           }
         })
       })
@@ -524,7 +529,7 @@ export default {
           teachFeatures: eduFilterForm.teachFeatures.join(',')
         }
         const createdTimeSelect = this.eduCreatedTimeSelect
-        if (createdTimeSelect === 1 && eduFilterForm.createdTime.length !== 0) {
+        if (createdTimeSelect === 1 && eduFilterForm.teachCreatedTime.length !== 0) {
           eduParams.teachCreatedTimeStart = eduFilterForm.teachCreatedTime[0]
           eduParams.teachCreatedTimeEnd = eduFilterForm.teachCreatedTime[1]
         } else {
@@ -596,9 +601,6 @@ export default {
       this.eduFilterForm.teachCreatedTime = undefined
       this.movieFilterForm.teachCreatedMonthTime = undefined
     },
-    handleAddFilmTagStart () {
-      this.showBlockTagDialog = true
-    },
     parseRuleDesc () {
       const { sourceList, sourceListOptions, isMovieFilter, isEduFilter, movieFilterForm, eduFilterForm } = this
       const parseRuleLabel = function (arr, valueArr, linkSign) {
@@ -612,12 +614,12 @@ export default {
       desc += '\n'
       // 影视描述
       if (isMovieFilter) {
-        const { filmTypeOptions, filmAreaOptions, filmPayTypeOptions } = this
+        const { filmTypeOptions, filmAreaOptions, filmPayTypeOptions, movieCodeTagDesc } = this
         const { categorys, tagsRelation, tagCodes, actors, directors, areas, payTypes, videoFeatures,
           createdTime, createdMonthTime, feverTop } = movieFilterForm
         desc += '影视业务规则：\n'
         categorys.length !== 0 && (desc += '分类：' + parseRuleLabel(filmTypeOptions, categorys, '、') + '\n')
-        tagCodes.length !== 0 && (desc += '标签：' + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
+        tagCodes.length !== 0 && (desc += '标签：' + movieCodeTagDesc + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
         actors.length !== 0 && (desc += '演员：' + actors.join('、') + '\n')
         directors.length !== 0 && (desc += '导演：' + directors.join('、') + '\n')
         areas.length !== 0 && (desc += '地区：' + parseRuleLabel(filmAreaOptions, areas, '、') + '\n')
@@ -636,18 +638,18 @@ export default {
       }
       // 教育描述
       if (isEduFilter) {
-        const { teachCategoryOptions, teachAreaOptions } = this
+        const { teachCategoryOptions, teachAreaOptions, eduCodeTagDesc } = this
         const { teachCategory, tagsRelation, teachTagCodes, company, teachAreas,
           teachFeatures, teachCreatedTime, teachRecentMonths, feverTop } = eduFilterForm
         desc += '教育业务规则：\n'
         teachCategory.length !== 0 && (desc += parseRuleLabel(teachCategoryOptions, teachCategory, '、') + '\n')
-        teachTagCodes.length !== 0 && (desc += '标签：' + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
+        teachTagCodes.length !== 0 && (desc += '标签：' + eduCodeTagDesc + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
         company.length !== 0 && (desc += 'CP名：' + company.join('、') + '\n')
         teachAreas.length !== 0 && (desc += '地区：' + parseRuleLabel(teachAreaOptions, teachAreas, '、') + '\n')
         teachFeatures.length !== 0 && (desc += '视频特点：' +
           parseRuleLabel([{ label: '绘本', value: 1 }, { label: '有声读物', value: 2 }, { label: '视频内容', value: 3 }], teachFeatures, '、') + '\n')
         const createdTimeSelect = this.eduCreatedTimeSelect
-        if (createdTimeSelect === 1 && eduFilterForm.createdTime.length !== 0) {
+        if (createdTimeSelect === 1 && eduFilterForm.teachCreatedTime.length !== 0) {
           desc += '新度：' + teachCreatedTime.join('、') + '\n'
         } else {
           teachRecentMonths && (desc += '新度：最近' + teachRecentMonths + '个月' + '\n')
@@ -659,6 +661,18 @@ export default {
       const { homeOrderTypeOptions, homeOrderType } = this
       desc += '排序规则：' + parseRuleLabel(homeOrderTypeOptions, [homeOrderType], '')
       return desc
+    },
+    handleGetMovieTagEntity (entity) {
+      this.movieCodeTagDesc = entity[0].map(item => { return item.tagCnName }).join('、')
+    },
+    handleInputMovieTag (val) {
+      this.movieFilterForm.tagCodes = val[0].split(',')
+    },
+    handleGetEduTagEntity (entity) {
+      this.eduCodeTagDesc = entity[0].map(item => { return item.tagCnName }).join('、')
+    },
+    handleInputEduTag (val) {
+      this.eduFilterForm.teachTagCodes = val[0].split(',')
     }
   },
   created () {}

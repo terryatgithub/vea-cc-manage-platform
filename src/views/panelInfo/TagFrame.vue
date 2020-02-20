@@ -16,7 +16,6 @@ export default {
   computed: {
     url () {
       const ids = this.ids || []
-      debugger
       const server = /^(127|172)/.test(location.host)
         ? 'http://dev-mgr-media.tc.cc0808.com'
         : 'http://mgr.media.tc.skysrt.com'
