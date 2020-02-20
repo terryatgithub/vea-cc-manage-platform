@@ -1,6 +1,6 @@
 <template>
   <ContentCard class="content">
-    <ab-list-layout :pagination="pagination">
+    <ab-list-layout :pagination="pagination" @pagingation-change="fetchData">
       <div slot="filter">
         <DataForm :model="filter" :inline="true">
           <FormEnum
