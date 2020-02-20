@@ -507,7 +507,7 @@
                     <el-form-item label="展示影片数量">
                       {{pannel.pannelList[0].filmNum}}
                     </el-form-item>
-                    <el-form-item label="选择排行榜">
+                    <el-form-item label="选用排行榜">
                       {{pannel.pannelList[0].rankName}}
                     </el-form-item>
                   </template>
@@ -2198,7 +2198,17 @@ export default {
           contentList: itemContentList,
           rankIsOpen: item.rankIsOpen,
           rankChildId: item.rankChildId,
-          fillType: item.fillType
+          fillType: item.fillType,
+          // 排行榜填充
+          filmNum: item.fillType === 2 ? item.filmNum : undefined,
+          rankName: item.fillType === 2 ? item.rankName : undefined,
+          // 筛选规则填充
+          mediaRule: item.fillType === 3 ? item.mediaRule : undefined,
+          mediaRuleDesc: item.fillType === 3 ? item.mediaRuleDesc : undefined,
+          hasEdu: item.fillType === 3 ? item.hasEdu : undefined,
+          hasIntervene: item.fillType === 3 ? item.hasIntervene : undefined,
+          mediaFilmNum: item.fillType === 3 ? item.mediaFilmNum : undefined,
+          interveneContentList: item.fillType === 3 ? item.interveneContentList : undefined
         }
       })
       delete pannel.pannelName
@@ -2675,7 +2685,8 @@ export default {
     },
     handleInputFilmNum (val) {
       this.pannel.pannelList[0].contentList = []
-      this.pannel.pannelList[0].filmNum = val
+      this.pannel.pannelList[0].filmNum = parseInt(val)
+      this.pannel.pannelList[0].rankName = undefined
     },
     handleShowLayout (seq) {
       this.reviewPicUrl = parseInt(seq)
