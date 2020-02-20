@@ -189,6 +189,7 @@ const iconMap = {
   multiFunctionBlock: 'el-icon-cc-control',
   sysPlugin: 'el-icon-cc-minus-square',
   mediaAutomation: 'el-icon-cc-tag',
+  ruleCreatePanel: 'el-icon-cc-bankuaiguanli',
 
   blockInfo: 'el-icon-cc-appstore',
   blockManage: 'el-icon-cc-border',
