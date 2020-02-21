@@ -375,7 +375,9 @@
                         class="pannel-blocks"
                         :mode="mode"
                         :blocks="pannel.pannelList[0].interveneContentList"
-                        @click-block="handleClickBlock"
+                        :isNotShowPositionInfo="true"
+                        @click-block="handleClickInterveneBlock"
+                        @remove-block="handleRemoveIntervene"
                       ></VirtualPanel>
                     </el-form-item>
                     <!-- 预览图片 -->
@@ -582,6 +584,19 @@
           :hide-title-options="!!blockContentProps.blockInfo.title_info"
           @cancel="handleSetBlockContentCancle"
           @save="handleSetBlockContentEnd"
+        />
+      </PageContentWrapper>
+
+      <PageContentWrapper v-if="activePage == 'block_content__intervene'">
+        <BlockContent
+          :mode="mode"
+          :data="blockContentProps"
+          :source="pannel.pannelResource"
+          :pannel="pannel.pannelList[0]"
+          :pannel-group-id="pannel.pannelGroupId"
+          :hide-title-options="!!blockContentProps.blockInfo.title_info"
+          @cancel="handleSetInterveneBlockContentCancle"
+          @save="handleSetInterveneBlockContentEnd"
         />
       </PageContentWrapper>
 
@@ -1296,6 +1311,27 @@ export default {
       this.currentBlockIndex = index
       this.activePage = 'block_content'
     },
+    // 设置干预推荐位内容
+    handleClickInterveneBlock (index) {
+      const pannel = this.pannel
+      const selectedResources =
+        this.pannel.pannelList[0].interveneContentList || []
+      this.blockContentProps = {
+        layoutType: 'Panel',
+        pannelParentType: pannel.parentType,
+        pannelCategory: this.pannel.panelGroupCategory,
+        block: selectedResources[index],
+        blockInfo: {},
+        pannelResource: this.pannel.pannelResource
+      }
+      this.activePage = 'block_content__intervene'
+    },
+    handleSetInterveneBlockContentCancle () {
+      this.activePage = 'panel-info'
+    },
+    handleSetInterveneBlockContentEnd (param) {
+
+    },
     handleSetBlockContentCancle () {
       this.activePage = 'panel_info'
       this.getSharedTags()
@@ -1367,10 +1403,6 @@ export default {
           selectedResources,
           isFillWithRanking: true
         })
-        // if (panelFillWay === 'rank') {
-        //   const delIndex = this.pannel.pannelList[0].contentList.length
-        //   this.pannel.pannelList[0].contentList.splice(delIndex - 1, 1)
-        // }
       })
     },
     handleSelectResourceStart () {
@@ -2206,7 +2238,7 @@ export default {
           mediaRule: item.fillType === 3 ? item.mediaRule : undefined,
           mediaRuleDesc: item.fillType === 3 ? item.mediaRuleDesc : undefined,
           hasEdu: item.fillType === 3 ? item.hasEdu : undefined,
-          hasIntervene: item.fillType === 3 ? item.hasIntervene : undefined,
+          hasIntervene: item.fillType === 3 ? (item.interveneContentList.length !== 0 ? 1 : 0) : undefined,
           mediaFilmNum: item.fillType === 3 ? item.mediaFilmNum : undefined,
           interveneContentList: item.fillType === 3 ? item.interveneContentList : undefined
         }
@@ -2701,10 +2733,11 @@ export default {
       currentPannel.mediaFilmNum = filteredFilm ? filteredFilm.total : 0
       currentPannel.mediaRuleDesc = mediaRuleDesc
       // 根据返回结果填充推荐位
+      const fillCount = currentPannel.mediaFilmNum > 30 ? 30 : currentPannel.mediaFilmNum
       const { mediaRuleLayout } = this
       this.$service.getLayoutInforById({ id: mediaRuleLayout }).then((layout) => {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-        this.handleSelectLayoutEnd(layout, currentPannel.mediaFilmNum)
+        this.handleSelectLayoutEnd(layout, fillCount)
         // 填充内容
         return this.insertResources({
           selectedResources: filteredFilm.rows
@@ -2737,9 +2770,10 @@ export default {
     },
     handleAddIntervene () {
       const currentPannel = this.pannel.pannelList[0]
-      if (!currentPannel.mediaRuleDesc) {
-        return this.$message.error('请先配置影片筛选规则')
-      }
+      // if (!currentPannel.mediaRuleDesc) {
+      //   return this.$message.error('请先配置影片筛选规则')
+      // }
+      currentPannel.interveneContentList.push(this.genDefaultInterveneContent())
     },
     genDefaultInterveneContent () {
       return {
@@ -2748,10 +2782,19 @@ export default {
           loop: 'true',
           resize: undefined,
           type: 'Block',
-          width: 247,
-          x: 0,
+          width: 260,
+          x: 0 + this.pannel.pannelList[0].interveneContentList.length * 300,
           y: 0
-        }
+        },
+        isExtra: true
+      }
+    },
+    handleRemoveIntervene (index) {
+      const interveneContentList = this.pannel.pannelList[0].interveneContentList
+      this.pannel.pannelList[0].interveneContentList.splice(index, 1)
+      const len = interveneContentList.length
+      for (let i = index; i < len; i++) {
+        interveneContentList[i].contentPosition -= 300
       }
     }
   },

@@ -259,10 +259,10 @@
       <div v-show="stepCount === 3">
         <div class="step-title">第四步：设置排序规则（{{filmFilterCount}}部影片）</div>
         <el-radio-group v-model="homeOrderType">
-          <el-radio :label="1" class="order-radio">创建时间排序（越新的排越前面）</el-radio>
-          <el-radio :label="2" class="order-radio">热度排序（越热的排越前面）</el-radio>
-          <el-radio :label="3" class="order-radio">创建时间+热度排序（优先热度排序）</el-radio>
-          <el-radio :label="4" class="order-radio">创建时间+热度排序（优先时间排序）</el-radio>
+          <el-radio :label="0" class="order-radio">创建时间排序（越新的排越前面）</el-radio>
+          <el-radio :label="1" class="order-radio">热度排序（越热的排越前面）</el-radio>
+          <el-radio :label="2" class="order-radio">创建时间+热度排序（优先热度排序）</el-radio>
+          <el-radio :label="3" class="order-radio">创建时间+热度排序（优先时间排序）</el-radio>
         </el-radio-group>
         <div>
           <el-button type="primary" @click="handleStepBack">上一步</el-button>
@@ -279,19 +279,19 @@ import TagLogicFilter from '@/components/ResourceSelector/TagLogicFilter'
 const homeOrderTypeOptions = [
   {
     label: '创建时间排序',
-    value: 1
+    value: 0
   },
   {
     label: '热度排序',
-    value: 2
+    value: 1
   },
   {
     label: '创建时间+热度排序（优先热度）',
-    value: 3
+    value: 2
   },
   {
     label: '创建时间+热度排序（优先时间）',
-    value: 4
+    value: 3
   }
 ]
 export default {
@@ -379,7 +379,7 @@ export default {
       isMovieFilter: true,
       isEduFilter: false,
       filmFilterCount: 0,
-      homeOrderType: 1,
+      homeOrderType: 0,
       homeOrderTypeOptions
     }
   },
@@ -488,7 +488,9 @@ export default {
       const { isMovieFilter, isEduFilter, sourceList, movieFilterForm, eduFilterForm } = this
       let params = {
         sources: sourceList.join(','),
-        homeOrderType
+        homeOrderType,
+        page: 1,
+        rows: 30
       }
       // 参数填写-影视筛选
       let movieParams = {}
@@ -551,10 +553,10 @@ export default {
       } else {
         Object.assign(params, eduParams)
       }
-      this.$service.getFilmFilterResult2(params).then(rs => {
+      this.$service.getFilmFilterResult(params).then(rs => {
         this.filmFilterCount = rs.data ? rs.data.total : 0
         // 第四步结束
-        if (homeOrderType) {
+        if (homeOrderType !== undefined) {
           // 规则描述
           const mediaRuleDesc = this.parseRuleDesc()
           this.$emit('get-filter-result', {

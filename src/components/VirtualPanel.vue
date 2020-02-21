@@ -96,7 +96,7 @@
               />
             </template>
 
-            <div class="cc-virtual-pannel__block-base-info">
+            <div class="cc-virtual-pannel__block-base-info" v-if="!isNotShowPositionInfo">
               <span class="seq-num">{{ block.content.vContentId || (index + 1) }}</span>
               <span class="size-mark">{{ block.width }}*{{ block.height }}</span>
             </div>
@@ -153,7 +153,7 @@ export default {
     }
   },
 
-  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn', 'showExchangeTool', 'disableExchangeTool'],
+  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn', 'showExchangeTool', 'disableExchangeTool', 'isNotShowPositionInfo'],
   watch: {
     blocks: 'computeBlockItems'
   },
