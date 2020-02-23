@@ -371,14 +371,13 @@
                     </el-form-item>
                     <el-form-item label="干预">
                       <el-button type="primary" @click="handleAddIntervene">添加干预</el-button>
-                      <VirtualPanel
+                      <VirtualIntervenePanel
                         class="pannel-blocks"
                         :mode="mode"
                         :blocks="pannel.pannelList[0].interveneContentList"
-                        :isNotShowPositionInfo="true"
                         @click-block="handleClickInterveneBlock"
                         @remove-block="handleRemoveIntervene"
-                      ></VirtualPanel>
+                      ></VirtualIntervenePanel>
                     </el-form-item>
                     <!-- 预览图片 -->
                     <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="40%">
@@ -590,11 +589,11 @@
       <PageContentWrapper v-if="activePage == 'block_content__intervene'">
         <BlockContent
           :mode="mode"
-          :data="blockContentProps"
+          :data="blockConetentInterveneProps"
           :source="pannel.pannelResource"
           :pannel="pannel.pannelList[0]"
           :pannel-group-id="pannel.pannelGroupId"
-          :hide-title-options="!!blockContentProps.blockInfo.title_info"
+          :hide-title-options="!!blockConetentInterveneProps.blockInfo.title_info"
           @cancel="handleSetInterveneBlockContentCancle"
           @save="handleSetInterveneBlockContentEnd"
         />
@@ -621,6 +620,7 @@ import ContentCard from '@/components/ContentCard'
 import CommonContent from '@/components/CommonContent'
 import titleMixin from '@/mixins/title'
 import VirtualPanel from '@/components/VirtualPanel'
+import VirtualIntervenePanel from '@/components/VirtualIntervenePanel'
 import SourceRadioSelector from '@/components/SourceRadioSelector'
 import LayoutSelector from '@/components/selectors/LayoutSelector'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
@@ -657,6 +657,7 @@ export default {
     CommonContent,
     CommonSelector,
     VirtualPanel,
+    VirtualIntervenePanel,
     SourceRadioSelector,
     LayoutSelector,
     GlobalPictureSelector,
@@ -773,6 +774,7 @@ export default {
 
       // 设置推荐位内容窗口
       blockContentProps: {},
+      blockConetentInterveneProps: {},
       // 版块类型，1-常规版块，2-排行榜，3-业务专辑，4-智能推荐版块，5-专属影院版块，6-影片详情页，7-定向版块等
       pannelType: 1,
 
@@ -805,6 +807,7 @@ export default {
       businessTypeEnums: [],
 
       currentBlockIndex: undefined,
+      currentInterveneBlockIndex: undefined,
       // 当前激活的分组 pannel 的索引值
       activePannelIndex: '0',
       activePanelGroup: undefined,
@@ -1314,9 +1317,10 @@ export default {
     // 设置干预推荐位内容
     handleClickInterveneBlock (index) {
       const pannel = this.pannel
+      this.currentInterveneBlockIndex = index
       const selectedResources =
         this.pannel.pannelList[0].interveneContentList || []
-      this.blockContentProps = {
+      this.blockConetentInterveneProps = {
         layoutType: 'Panel',
         pannelParentType: pannel.parentType,
         pannelCategory: this.pannel.panelGroupCategory,
@@ -1327,10 +1331,22 @@ export default {
       this.activePage = 'block_content__intervene'
     },
     handleSetInterveneBlockContentCancle () {
-      this.activePage = 'panel-info'
+      this.activePage = 'panel_info'
     },
     handleSetInterveneBlockContentEnd (param) {
-
+      // param.intervenePos = 2
+      const activePannel = this.pannel.pannelList[0]
+      const currentInterveneBlockIndex = this.currentInterveneBlockIndex
+      // const selectedResources = activePannel.selectedResources || []
+      // const resource = Object.assign(param)
+      // selectedResources.splice(2, 0, resource)
+      // this.updatePosition()
+      // activePannel.interveneContentList
+      activePannel.interveneContentList[currentInterveneBlockIndex].videoContentList = param.videoContentList
+      activePannel.interveneContentList[currentInterveneBlockIndex].specificContentList = param.specificContentList
+      this.$nextTick(() => {
+        this.activePage = 'panel_info'
+      })
     },
     handleSetBlockContentCancle () {
       this.activePage = 'panel_info'
@@ -1373,7 +1389,7 @@ export default {
       const pannel = this.pannel
       const activePannelIndex = +this.activePannelIndex
       const activePannel = pannel.pannelList[activePannelIndex]
-      const blockCount = panelFillWay !== 'rank' ? this.blockCountList[activePannelIndex] : this.pannel.pannelList[0].filmNum
+      const blockCount = panelFillWay !== 'rank' ? this.blockCountList[activePannelIndex] : (this.pannel.pannelList[0].filmNum + 1)
       // 排行榜填充添加布局
       if (panelFillWay === 'rank') {
         this.$service.getLayoutInforById({ id: 109 }).then((layout) => {
@@ -2116,8 +2132,8 @@ export default {
       const panelDataType = this.currentPanelDataType
       const layout = this.selectedLayout
       const pannel = JSON.parse(JSON.stringify(data))
-
-      pannel.panelGroupType = panelDataType
+      // 媒资规则的panelGroupType=10
+      pannel.panelGroupType = pannel.pannelList[0].fillType !== 3 ? panelDataType : 10
       pannel.pannelList = pannel.pannelList.map(function (item) {
         let hasSpecific = false
         const itemContentList = item.contentList.map(function (_contentItem) {
@@ -2777,16 +2793,10 @@ export default {
     },
     genDefaultInterveneContent () {
       return {
-        contentPosition: {
-          height: 346,
-          loop: 'true',
-          resize: undefined,
-          type: 'Block',
-          width: 260,
-          x: 0 + this.pannel.pannelList[0].interveneContentList.length * 300,
-          y: 0
-        },
-        isExtra: true
+        isExtra: true,
+        videoContentList: [],
+        specificContentList: [],
+        intervenePos: undefined
       }
     },
     handleRemoveIntervene (index) {
