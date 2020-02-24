@@ -88,7 +88,7 @@
           </el-form-item> -->
         </el-form>
       </el-collapse-item>
-      <el-collapse-item v-show="contentForm.coverType !== 'block'" title="精细化定向内容" name="specific">
+      <el-collapse-item v-if="!isInterveneBlock" v-show="contentForm.coverType !== 'block'" title="精细化定向内容" name="specific">
         <el-row class="added-contents-wrapper" :gutter="8">
           <component :is="mode === 'read' ? 'div': 'draggable'"
             class="added-contents-list"
@@ -160,7 +160,7 @@ export default {
       specificContentList: []
     }
   },
-  props: ['mode', 'data', 'source', 'pannel', 'hideTitleOptions', 'pannelGroupId'],
+  props: ['mode', 'data', 'source', 'pannel', 'hideTitleOptions', 'pannelGroupId', 'isInterveneBlock'],
   computed: {
     title () {
       if (this.mode === 'read') {

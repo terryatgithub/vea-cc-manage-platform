@@ -592,6 +592,7 @@
       <PageContentWrapper v-if="activePage == 'block_content__intervene'">
         <BlockContent
           :mode="mode"
+          :isInterveneBlock="true"
           :data="blockConetentInterveneProps"
           :source="pannel.pannelResource"
           :pannel="pannel.pannelList[0]"
@@ -2217,8 +2218,8 @@ export default {
         }
         // 媒资筛选pannelType = 10，自动化pannelType = 11
         let pannelType
+        const fillType = item.fillType
         if (pannel.pannelType !== 11) {
-          const fillType = item.fillType
           // item.pannelType 有可能有值 7, 如果是定向版块
           if (hasSpecific) {
             pannelType = 7
@@ -2233,6 +2234,17 @@ export default {
             pannelType = 10
           }
         }
+        // 干预设置interveneContentList
+        const contentListCopy = JSON.parse(JSON.stringify(itemContentList))
+        const interveneContentList = item.interveneContentList.map(item => {
+          const intervenePos = item.intervenePos
+          const content = contentListCopy[intervenePos - 1]
+          content.intervenePos = intervenePos
+          content.videoContent = content.videoContentList
+          delete content.videoContentList
+          delete content.specificContentList
+          return content
+        })
         // 自动化板块
         return {
           pannelStatus: pannel.pannelStatus,
@@ -2253,15 +2265,15 @@ export default {
           rankChildId: item.rankChildId,
           fillType: item.fillType,
           // 排行榜填充
-          filmNum: item.fillType === 2 ? item.filmNum : undefined,
-          rankName: item.fillType === 2 ? item.rankName : undefined,
+          filmNum: fillType === 2 ? item.filmNum : undefined,
+          rankName: fillType === 2 ? item.rankName : undefined,
           // 筛选规则填充
-          mediaRule: item.fillType === 3 ? item.mediaRule : undefined,
-          mediaRuleDesc: item.fillType === 3 ? item.mediaRuleDesc : undefined,
-          hasEdu: item.fillType === 3 ? item.hasEdu : undefined,
-          hasIntervene: item.fillType === 3 ? (item.interveneContentList.length !== 0 ? 1 : 0) : undefined,
-          mediaFilmNum: item.fillType === 3 ? item.mediaFilmNum : undefined,
-          interveneContentList: item.fillType === 3 ? item.interveneContentList : undefined
+          mediaRule: fillType === 3 ? item.mediaRule : undefined,
+          mediaRuleDesc: fillType === 3 ? item.mediaRuleDesc : undefined,
+          hasEdu: fillType === 3 ? item.hasEdu : undefined,
+          hasIntervene: fillType === 3 ? (item.interveneContentList.length !== 0 ? 1 : 0) : undefined,
+          mediaFilmNum: fillType === 3 ? item.mediaFilmNum : undefined,
+          interveneContentList: fillType === 3 ? interveneContentList : undefined
         }
       })
       delete pannel.pannelName
@@ -2443,6 +2455,18 @@ export default {
           pannel.parentType === 'group'
         ) {
           return cb(Error('请选择默认落焦'))
+        }
+      }
+      // 验证影片筛选规则
+      const activePannel = pannel.pannelList[0]
+      const fillType = activePannel.fillType
+      if (fillType === 3) {
+        const interveneContentList = activePannel.interveneContentList
+        const error = interveneContentList.some(item => {
+          return !item.intervenePos || item.videoContentList.length === 0
+        })
+        if (error) {
+          return cb(Error('干预推荐位信息不完整！'))
         }
       }
       cb()
@@ -2804,7 +2828,6 @@ export default {
     },
     genDefaultInterveneContent () {
       return {
-        isExtra: true,
         videoContentList: [],
         specificContentList: [],
         intervenePos: ''
