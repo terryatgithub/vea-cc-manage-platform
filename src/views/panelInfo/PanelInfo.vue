@@ -553,6 +553,28 @@
                       ></VirtualPanel>
                     </div>
                   </el-form-item>
+                  <el-form-item label="布局">
+                    <div class="media-layout-pics">
+                      <img v-if="reviewPicUrl === 1" style="width: 100%" src="../../assets/images/panelFillLayout1.png"/>
+                      <img v-if="reviewPicUrl === 2" style="width: 100%" src="../../assets/images/panelFillLayout2.png"/>
+                      <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
+                      <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
+                      <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="干预位">
+                    <VirtualIntervenePanel
+                      class="pannel-blocks"
+                      style="display: flex;"
+                      :mode="mode"
+                      :disabled="true"
+                      :maxCount="interveneMaxCount"
+                      :blocks="pannel.pannelList[0].interveneContentList"
+                      @click-block="handleClickInterveneBlock"
+                      @remove-block="handleRemoveIntervene"
+                      @end-intervene-input="handleEndIntervenePos"
+                    ></VirtualIntervenePanel>
+                  </el-form-item>
                 </div>
                 <el-form-item v-show="pannel.parentType === 'subscribe'" label="预约影片">
                   <SubscribeVideos
@@ -2240,7 +2262,7 @@ export default {
           const intervenePos = item.intervenePos
           const content = contentListCopy[intervenePos - 1]
           content.intervenePos = intervenePos
-          content.videoContent = content.videoContentList
+          content.videoContent = content.videoContentList[0]
           delete content.videoContentList
           delete content.specificContentList
           return content
@@ -2666,6 +2688,12 @@ export default {
                 })
               return contentItem
             })
+            item.interveneContentList = (item.interveneContentList || []).map(interveneContent => {
+              return {
+                intervenePos: interveneContent.intervenePos,
+                videoContentList: [].concat(interveneContent.videoContent)
+              }
+            })
             if (item.timeSlot) {
               const timeSlot = item.timeSlot.split(',')
               item.startTime = new Date(timeSlot[0])
@@ -2690,6 +2718,11 @@ export default {
             pannel.lucenyFlag = firstBlock.lucenyFlag
             pannel.focusImgUrl = firstBlock.focusImgUrl
             this.isShowfocusImgUrl = firstBlock.focusImgUrl
+          }
+          // 规则筛选
+          const fillType = firstPannel.fillType
+          if (fillType === 3) {
+            this.reviewPicUrl = parseInt(firstPannel.layoutId)
           }
         }
         this.pannel = cloneDeep(pannel)
@@ -2985,4 +3018,8 @@ export default {
   font-weight bold
 .layout-radio
   margin 0 30px 10px 0
+.media-layout-pics
+  width 400px
+  border 1px solid #ccc
+  padding 10px
 </style>

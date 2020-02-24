@@ -8,6 +8,7 @@
         <InputPositiveInt
           ref="posInput"
           :value="block.intervenePos"
+          :disabled="disabled"
           @input="handleInputValue($event, index)"
           @blur="$emit('end-intervene-input', index)"
           style="width: 50px"/>
@@ -38,6 +39,10 @@ export default {
     maxCount: {
       type: Number,
       default: 10
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
