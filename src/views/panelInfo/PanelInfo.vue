@@ -373,10 +373,13 @@
                       <el-button type="primary" @click="handleAddIntervene">添加干预</el-button>
                       <VirtualIntervenePanel
                         class="pannel-blocks"
+                        style="display: flex;"
                         :mode="mode"
+                        :maxCount="interveneMaxCount"
                         :blocks="pannel.pannelList[0].interveneContentList"
                         @click-block="handleClickInterveneBlock"
                         @remove-block="handleRemoveIntervene"
+                        @end-intervene-input="handleEndIntervenePos"
                       ></VirtualIntervenePanel>
                     </el-form-item>
                     <!-- 预览图片 -->
@@ -829,6 +832,10 @@ export default {
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
+    interveneMaxCount () {
+      const mediaRuleLayout = this.mediaRuleLayout
+      return [10, 10, 6, 8, 9][mediaRuleLayout]
+    },
     resourceName () {
       return this.currentPanelDataType === 3 ? '业务专辑' : '版块'
     },
@@ -1334,16 +1341,14 @@ export default {
       this.activePage = 'panel_info'
     },
     handleSetInterveneBlockContentEnd (param) {
-      // param.intervenePos = 2
       const activePannel = this.pannel.pannelList[0]
       const currentInterveneBlockIndex = this.currentInterveneBlockIndex
-      // const selectedResources = activePannel.selectedResources || []
-      // const resource = Object.assign(param)
-      // selectedResources.splice(2, 0, resource)
-      // this.updatePosition()
-      // activePannel.interveneContentList
-      activePannel.interveneContentList[currentInterveneBlockIndex].videoContentList = param.videoContentList
-      activePannel.interveneContentList[currentInterveneBlockIndex].specificContentList = param.specificContentList
+      const interveneContent = activePannel.interveneContentList[currentInterveneBlockIndex]
+      interveneContent.videoContentList = param.videoContentList
+      interveneContent.specificContentList = param.specificContentList
+      if (interveneContent.intervenePos) {
+        this.updateInterveneResources()
+      }
       this.$nextTick(() => {
         this.activePage = 'panel_info'
       })
@@ -2733,7 +2738,7 @@ export default {
     },
     handleInputFilmNum (val) {
       this.pannel.pannelList[0].contentList = []
-      this.pannel.pannelList[0].filmNum = parseInt(val)
+      this.pannel.pannelList[0].filmNum = val === '' ? '' : parseInt(val)
       this.pannel.pannelList[0].rankName = undefined
     },
     handleShowLayout (seq) {
@@ -2744,7 +2749,7 @@ export default {
       const { mediaRule, filteredFilm, hasEdu, mediaRuleDesc } = result
       this.filteredFilm = filteredFilm
       const currentPannel = this.pannel.pannelList[0]
-      currentPannel.mediaRule = mediaRule
+      currentPannel.mediaRule = JSON.stringify(mediaRule)
       currentPannel.hasEdu = hasEdu
       currentPannel.mediaFilmNum = filteredFilm ? filteredFilm.total : 0
       currentPannel.mediaRuleDesc = mediaRuleDesc
@@ -2783,6 +2788,12 @@ export default {
           })
         }
       })
+      currentPannel.interveneContentList.forEach(item => {
+        if (item.intervenePos > this.interveneMaxCount) {
+          item.intervenePos = ''
+        }
+      })
+      this.updateInterveneResources()
     },
     handleAddIntervene () {
       const currentPannel = this.pannel.pannelList[0]
@@ -2796,16 +2807,58 @@ export default {
         isExtra: true,
         videoContentList: [],
         specificContentList: [],
-        intervenePos: undefined
+        intervenePos: ''
       }
     },
     handleRemoveIntervene (index) {
-      const interveneContentList = this.pannel.pannelList[0].interveneContentList
       this.pannel.pannelList[0].interveneContentList.splice(index, 1)
-      const len = interveneContentList.length
-      for (let i = index; i < len; i++) {
-        interveneContentList[i].contentPosition -= 300
+      this.updateInterveneResources()
+    },
+    handleEndIntervenePos (index) {
+      const activePannel = this.pannel.pannelList[0]
+      const interveneContent = activePannel.interveneContentList[index]
+      // 不允许重复的intervenePos
+      const currentIntervenePos = interveneContent.intervenePos
+      const isRepeat = activePannel.interveneContentList.some((item, cIndex) => {
+        return cIndex !== index && item.intervenePos === currentIntervenePos
+      })
+      if (currentIntervenePos !== '' && isRepeat) {
+        interveneContent.intervenePos = ''
+        return this.$message.error('干预位置重复!')
       }
+      // 推荐位没有资源
+      if (interveneContent.videoContentList.length === 0) {
+        return
+      }
+      // 推荐位有资源
+      this.updateInterveneResources()
+    },
+    updateInterveneResources () {
+      const activePannel = this.pannel.pannelList[0]
+      const count = activePannel.contentList.length
+      const mediaRuleLayout = this.mediaRuleLayout
+      this.$service.getLayoutInforById({ id: mediaRuleLayout }).then((layout) => {
+        layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
+        this.handleSelectLayoutEnd(layout, count)
+        if (activePannel.mediaRuleDesc) {
+          this.insertResources({
+            selectedResources: this.filteredFilm.rows
+          })
+        }
+        // 插入干预位
+        const interveneContentList = activePannel.interveneContentList
+        interveneContentList.forEach(item => {
+          if (item.intervenePos && item.videoContentList.length !== 0) {
+            const insertBlockIndex = item.intervenePos - 1
+            const resource = {
+              videoContentList: item.videoContentList,
+              specificContentList: item.specificContentList
+            }
+            activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
+          }
+        })
+        this.updatePosition()
+      })
     }
   },
   created () {
