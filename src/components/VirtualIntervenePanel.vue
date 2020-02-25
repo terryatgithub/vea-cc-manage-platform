@@ -12,7 +12,7 @@
           @input="handleInputValue($event, index)"
           @blur="$emit('end-intervene-input', index)"
           style="width: 50px"/>
-        <i class="el-icon-circle-close intervene-remove-icon" @click.stop="$emit('remove-block', index)" />
+        <i v-if="!disabled" class="el-icon-circle-close intervene-remove-icon" @click.stop="$emit('remove-block', index)" />
       </div>
       <div class="intervene-block" @click="handleClickBlock(index)">
         <img

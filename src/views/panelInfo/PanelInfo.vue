@@ -2723,6 +2723,7 @@ export default {
           const fillType = firstPannel.fillType
           if (fillType === 3) {
             this.reviewPicUrl = parseInt(firstPannel.layoutId)
+            this.mediaRuleLayout = parseInt(firstPannel.layoutId)
           }
         }
         this.pannel = cloneDeep(pannel)
@@ -2854,9 +2855,9 @@ export default {
     },
     handleAddIntervene () {
       const currentPannel = this.pannel.pannelList[0]
-      // if (!currentPannel.mediaRuleDesc) {
-      //   return this.$message.error('请先配置影片筛选规则')
-      // }
+      if (!currentPannel.mediaRuleDesc) {
+        return this.$message.error('请先配置影片筛选规则')
+      }
       currentPannel.interveneContentList.push(this.genDefaultInterveneContent())
     },
     genDefaultInterveneContent () {
@@ -2897,23 +2898,27 @@ export default {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
         this.handleSelectLayoutEnd(layout, count)
         if (activePannel.mediaRuleDesc) {
-          this.insertResources({
-            selectedResources: this.filteredFilm.rows
+          this.$service.getFilmFilterResult(JSON.parse(activePannel.mediaRule)).then(rs => {
+            this.filteredFilm = rs.data
+            activePannel.mediaFilmNum = rs.data ? rs.data.total : 0
+            this.insertResources({
+              selectedResources: this.filteredFilm.rows
+            })
+            // 插入干预位
+            const interveneContentList = activePannel.interveneContentList
+            interveneContentList.forEach(item => {
+              if (item.intervenePos && item.videoContentList.length !== 0) {
+                const insertBlockIndex = item.intervenePos - 1
+                const resource = {
+                  videoContentList: item.videoContentList,
+                  specificContentList: item.specificContentList
+                }
+                activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
+              }
+            })
+            this.updatePosition()
           })
         }
-        // 插入干预位
-        const interveneContentList = activePannel.interveneContentList
-        interveneContentList.forEach(item => {
-          if (item.intervenePos && item.videoContentList.length !== 0) {
-            const insertBlockIndex = item.intervenePos - 1
-            const resource = {
-              videoContentList: item.videoContentList,
-              specificContentList: item.specificContentList
-            }
-            activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
-          }
-        })
-        this.updatePosition()
       })
     }
   },
