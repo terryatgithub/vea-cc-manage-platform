@@ -553,7 +553,7 @@ export default {
       } else {
         Object.assign(params, eduParams)
       }
-      this.$service.getFilmFilterResult(params).then(rs => {
+      return this.$service.getFilmFilterResult(params).then(rs => {
         this.filmFilterCount = rs.data ? rs.data.total : 0
         // 第四步结束
         if (homeOrderType !== undefined) {
@@ -569,8 +569,9 @@ export default {
       })
     },
     handleStepEnd () {
-      this.handleGetFilterResult(this.homeOrderType)
-      this.isVisibleDialog = false
+      this.handleGetFilterResult(this.homeOrderType).then(() => {
+        this.isVisibleDialog = false
+      })
     },
     scrollTop () {
       this.$nextTick(() => {
@@ -665,16 +666,16 @@ export default {
       return desc
     },
     handleGetMovieTagEntity (entity) {
-      this.movieCodeTagDesc = entity[0].map(item => { return item.tagCnName }).join('、')
+      this.movieCodeTagDesc = (entity[0] || []).map(item => { return item.tagCnName }).join('、')
     },
     handleInputMovieTag (val) {
-      this.movieFilterForm.tagCodes = val[0].split(',')
+      this.movieFilterForm.tagCodes = (val[0] || '').split(',')
     },
     handleGetEduTagEntity (entity) {
-      this.eduCodeTagDesc = entity[0].map(item => { return item.tagCnName }).join('、')
+      this.eduCodeTagDesc = (entity[0] || []).map(item => { return item.tagCnName }).join('、')
     },
     handleInputEduTag (val) {
-      this.eduFilterForm.teachTagCodes = val[0].split(',')
+      this.eduFilterForm.teachTagCodes = (val[0] || '').split(',')
     }
   },
   created () {}

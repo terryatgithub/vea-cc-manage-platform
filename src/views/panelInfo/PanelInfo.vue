@@ -303,11 +303,11 @@
                   </template>
                   <!-- 用排行榜填充 -->
                   <template v-if="pannel.pannelList[0].fillType === 2">
-                    <el-form-item label="展示影片数量">
+                    <el-form-item label="展示影片数量" required>
                       <InputPositiveInt :value="pannel.pannelList[0].filmNum" @input="handleInputFilmNum" style="width:100px"/>
                       <span class="video-num-tip">影片数量必须在5~10之间</span>
                     </el-form-item>
-                    <el-form-item label="选择排行榜">
+                    <el-form-item label="选择排行榜" required>
                       <ResourceSelector
                         ref="rankingFillSelector"
                         :selectors="['ranking']"
@@ -338,7 +338,7 @@
                     </el-form-item>
                   </template>
                   <template v-if="pannel.pannelList[0].fillType === 3">
-                    <el-form-item label="配置影片筛选规则">
+                    <el-form-item label="配置影片筛选规则" required>
                       <ConfigureFilmFilterRule
                         :source="pannel.pannelResource"
                         style="display: inline-block;"
@@ -2363,7 +2363,24 @@ export default {
       if (parentType === 'group' && pannel.groupTitle.length > 45) {
         return cb(Error('版块标题长度不能大于 45 个字符'))
       }
-
+      // 排行榜填充、筛选规则填充
+      const activePannel = pannel.pannelList[0]
+      const fillType = activePannel.fillType
+      if (fillType === 2 && (!activePannel.filmNum || !this.selectedLayout)) {
+        return cb(Error('请填写影片数量，并填充排行榜'))
+      }
+      if (fillType === 3) {
+        if (!activePannel.mediaRule) {
+          return cb(Error('请配置筛选规则，并选择一种你需要的布局'))
+        }
+        const interveneContentList = activePannel.interveneContentList
+        const error = interveneContentList.some(item => {
+          return !item.intervenePos || item.videoContentList.length === 0
+        })
+        if (error) {
+          return cb(Error('干预推荐位信息不完整！'))
+        }
+      }
       if (!this.selectedLayout) {
         return cb(Error('请选择布局'))
       }
@@ -2487,18 +2504,6 @@ export default {
           pannel.parentType === 'group'
         ) {
           return cb(Error('请选择默认落焦'))
-        }
-      }
-      // 验证影片筛选规则
-      const activePannel = pannel.pannelList[0]
-      const fillType = activePannel.fillType
-      if (fillType === 3) {
-        const interveneContentList = activePannel.interveneContentList
-        const error = interveneContentList.some(item => {
-          return !item.intervenePos || item.videoContentList.length === 0
-        })
-        if (error) {
-          return cb(Error('干预推荐位信息不完整！'))
         }
       }
       cb()

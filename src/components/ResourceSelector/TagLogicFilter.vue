@@ -65,7 +65,7 @@ export default {
     handleRemoveTag (listIndex, index) {
       const list = this.tags[listIndex]
       list.splice(index, 1)
-      if (list.length === 0) {
+      if (list.length === 0 && listIndex !== 0) {
         this.tags.splice(listIndex, 1)
       }
       this.emitInput()
