@@ -129,7 +129,7 @@
                   <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
                 </el-form-item>
                 <div v-show="pannel.parentType !== 'subscribe'">
-                  <el-form-item label="板块内容来源" v-if="pannel.parentType === 'normal'">
+                  <el-form-item label="版块内容来源" v-if="pannel.parentType === 'normal'">
                     <CommonSelector
                       type='radio'
                       :value="pannel.pannelList[0].fillType"
@@ -857,7 +857,7 @@ export default {
   computed: {
     interveneMaxCount () {
       const mediaRuleLayout = this.mediaRuleLayout
-      return [10, 10, 6, 8, 9][mediaRuleLayout]
+      return [10, 10, 6, 8, 9][mediaRuleLayout - 1]
     },
     resourceName () {
       return this.currentPanelDataType === 3 ? '业务专辑' : '版块'
@@ -1710,9 +1710,17 @@ export default {
           function () {
             this.pannel.pannelResource = val
             this.clearBlocks()
+            this.clearMediaInfo()
           }.bind(this)
         )
         .catch(() => {})
+    },
+    clearMediaInfo () {
+      const activePannel = this.pannel.pannelList[0]
+      const fillType = activePannel.fillType
+      if (fillType !== 1) {
+        this.handleInputFillType(fillType)
+      }
     },
     handleInputParentType (parentType) {
       this.$confirm('切换版块类型将清空推荐位内容, 确定切换?', '提示', {
@@ -2790,9 +2798,13 @@ export default {
       }
     },
     handleInputFillType (val) {
+      this.selectedLayout = null
+      const oldPannel = this.pannel.pannelList[0]
+      const pannelTitle = oldPannel.pannelTitle
       this.pannel.pannelList = []
       this.pannel.pannelList.push(this.genPannel())
       this.pannel.pannelList[0].fillType = val
+      this.pannel.pannelList[0].pannelTitle = pannelTitle
     },
     handleInputFilmNum (val) {
       this.pannel.pannelList[0].contentList = []
