@@ -12,7 +12,8 @@
           :rules="rules.source"
           prop="source"
           type="radio"
-          v-model="form.source"
+          :value="form.source"
+          @input="handleChangeSource"
           :options="$consts.sourceOptions"/>
         <DataString label="任务名称" :rules="rules.taskName" prop="taskName" v-model="form.taskName" />
         <DataAny label="版面" :rules="rules.tabId" prop="tabId" >
@@ -94,6 +95,11 @@ export default {
     }
   },
   methods: {
+    handleChangeSource (val) {
+      const form = this.form
+      form.source = val
+      form.tabId = undefined
+    },
     handleSelectTabEnd (tabInfo) {
       this.form.tabId = tabInfo.tabId
     },
