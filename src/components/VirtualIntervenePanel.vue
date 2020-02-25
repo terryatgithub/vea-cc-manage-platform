@@ -69,6 +69,9 @@ export default {
       this.$emit('remove-block', index)
     },
     handleClickBlock (index) {
+      if (this.disabled) {
+        return
+      }
       this.$emit('click-block', index)
     },
     handleInputValue (val, index) {
