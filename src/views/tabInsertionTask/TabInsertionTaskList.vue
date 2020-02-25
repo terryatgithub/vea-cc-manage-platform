@@ -201,6 +201,7 @@ export default {
       }
     },
     handleFilter () {
+      this.pagination.currentPage = 1
       this.effictientFilter = cloneDeep(this.filter)
       this.fetchData()
     },
