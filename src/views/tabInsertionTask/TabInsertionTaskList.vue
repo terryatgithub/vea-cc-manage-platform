@@ -1,7 +1,8 @@
 <template>
   <ContentCard>
     <ListLayout
-      :pagination="pagination">
+      :pagination="pagination"
+      @pagingation-change="fetchData">
       <el-form :inline="true"  slot="filter">
         <el-form-item >
           <el-select v-model="filter.enableTask" clearable placeholder="开启状态">
