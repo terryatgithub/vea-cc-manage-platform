@@ -102,7 +102,7 @@
             </div>
 
             <span
-              v-if="block.isExtra"
+              v-if="block.isExtra && !isNotExtra"
               class="cc-virtual-pannel__block-remove"
               @click.stop="handleRemoveBlock(index)"
             >x</span>
@@ -153,7 +153,7 @@ export default {
     }
   },
 
-  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn', 'showExchangeTool', 'disableExchangeTool'],
+  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn', 'showExchangeTool', 'disableExchangeTool', 'isNotExtra'],
   watch: {
     blocks: 'computeBlockItems'
   },

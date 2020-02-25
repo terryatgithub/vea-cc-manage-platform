@@ -305,7 +305,7 @@
                   <template v-if="pannel.pannelList[0].fillType === 2">
                     <el-form-item label="展示影片数量">
                       <InputPositiveInt :value="pannel.pannelList[0].filmNum" @input="handleInputFilmNum" style="width:100px"/>
-                      <span class="video-num-tip">影片数量必须>=5</span>
+                      <span class="video-num-tip">影片数量必须在5~10之间</span>
                     </el-form-item>
                     <el-form-item label="选择排行榜">
                       <ResourceSelector
@@ -320,7 +320,7 @@
                         @select-end="handleSelectRankingEnd($event, 'rank')">
                           <el-button
                             type="primary"
-                            :disabled="!pannel.pannelList[0].filmNum || pannel.pannelList[0].filmNum < 5"
+                            :disabled="!pannel.pannelList[0].filmNum || pannel.pannelList[0].filmNum < 5 || pannel.pannelList[0].filmNum > 10"
                             plain >
                             选择排行榜
                           </el-button>
@@ -331,6 +331,7 @@
                       <VirtualPanel
                         class="pannel-blocks"
                         :mode="mode"
+                        :isNotExtra="true"
                         :blocks="pannel.pannelList[0].contentList"
                         @click-block="handleClickBlock"
                       ></VirtualPanel>
@@ -364,6 +365,7 @@
                     <el-form-item label="推荐位" v-if="pannel.pannelList[0].contentList.length !== 0">
                       <VirtualPanel
                         class="pannel-blocks"
+                        :isNotExtra="true"
                         :mode="mode"
                         :blocks="pannel.pannelList[0].contentList"
                         @click-block="handleClickBlock"
@@ -2295,7 +2297,7 @@ export default {
           rankChildId: item.rankChildId,
           fillType: item.fillType,
           // 排行榜填充
-          filmNum: fillType === 2 ? item.filmNum : undefined,
+          filmNum: fillType === 2 ? (itemContentList.length - 1) : undefined,
           rankName: fillType === 2 ? item.rankName : undefined,
           // 筛选规则填充
           mediaRule: fillType === 3 ? item.mediaRule : undefined,
