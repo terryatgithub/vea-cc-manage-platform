@@ -833,7 +833,7 @@
         @go-back="handlePreviewPanelEnd"
       />
       <PrivatePanelInfo
-        v-else-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1"
+        v-else-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1 && panelPreview.fillType !== 3"
         :title-prefix="title"
         :init-mode="panelPreview.initMode"
         :id="panelPreview.id"
@@ -1709,6 +1709,8 @@ export default {
       }
       const row = this.panelListIndexed[panel.panelId]
       const version = row.duplicateVersion || row.currentVersion
+      const panelData = this.panelListIndexed[panel.panelId]
+      const fillType = panelData.pannelList[0].fillType
       this.activePage = 'panel_preview'
       this.panelPreview = {
         panel: row,
@@ -1716,7 +1718,8 @@ export default {
         id: row.pannelGroupId,
         dataType: row.pannelType,
         parentType: row.parentType,
-        version
+        version,
+        fillType
       }
     },
     handlePreviewPanelEnd () {
@@ -1751,6 +1754,7 @@ export default {
 
       const isJiangSu = idPrefix === '11'
       const version = panelData.duplicateVersion || panelData.currentVersion
+      const fillType = panelData.pannelList[0].fillType
       const panelPreview = {
         panel: panelData,
         dataType: panelData.pannelType,
@@ -1759,7 +1763,8 @@ export default {
         id: panelData.pannelGroupId,
         version,
         initGroupIndex: undefined,
-        initBlockIndex: undefined
+        initBlockIndex: undefined,
+        fillType
       }
       switch (true) {
         case isJiangSu && panelData.pannelGroupId.toString().indexOf(10) === 0:

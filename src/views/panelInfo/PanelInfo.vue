@@ -623,7 +623,7 @@
           :source="pannel.pannelResource"
           :pannel="pannel.pannelList[0]"
           :pannel-group-id="pannel.pannelGroupId"
-          :hide-title-options="!!blockConetentInterveneProps.blockInfo.title_info"
+          :hide-title-options="true"
           @cancel="handleSetInterveneBlockContentCancle"
           @save="handleSetInterveneBlockContentEnd"
         />
