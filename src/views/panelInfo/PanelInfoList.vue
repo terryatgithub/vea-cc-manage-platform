@@ -116,6 +116,12 @@ export default {
             }
           },
           {
+            label: '版块内容来源',
+            formatter: (row) => {
+              return this.$consts.panelFillTypeText[row.pannelList[0].fillType]
+            }
+          },
+          {
             label: '待审核副本',
             width: '100',
             render: (h, { row }) => {

@@ -169,6 +169,12 @@ export default {
             }.bind(this)
           },
           {
+            label: '版块内容来源',
+            render: function (h, scope) {
+              return this.$consts.panelFillTypeText[scope.row.pannelList[0].fillType]
+            }.bind(this)
+          },
+          {
             prop: 'lastUpdateDate',
             label: '更新时间',
             width: 190

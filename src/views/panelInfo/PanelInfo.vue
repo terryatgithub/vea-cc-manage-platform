@@ -2849,7 +2849,7 @@ export default {
       this.$msgbox({
         title: '筛选规则',
         message: h('p', {
-          style: 'white-space: pre'
+          style: 'white-space: pre-line'
         }, desc),
         confirmButtonText: '确定',
         dangerouslyUseHTMLString: true

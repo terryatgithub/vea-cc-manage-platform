@@ -15,7 +15,12 @@
             :options="zeroOneOptions"
             clearable>
           </FormEnum>
-          <FormString v-model="filter.pannelStatus" placeholder="版块状态"/>
+          <FormEnum
+            placeholder="版块状态"
+            v-model="filter.pannelStatus"
+            :options="$consts.statusOptions"
+            clearable>
+          </FormEnum>
           <FormString v-model="filter.pannelName" placeholder="版块名称"/>
           <FormString v-model="filter.pannelId" placeholder="版块ID"/>
           <FormEnum
@@ -156,7 +161,7 @@ export default {
             render: (h, { row }) => {
               const mediaRuleDesc = row.pannelList[0] ? row.pannelList[0].mediaRuleDesc : undefined
               return h('div', {
-                style: { 'white-space': 'pre' }
+                style: { 'white-space': 'pre-line' }
               }, mediaRuleDesc)
             }
           },
