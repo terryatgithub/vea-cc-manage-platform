@@ -266,7 +266,7 @@
         </el-radio-group>
         <div>
           <el-button type="primary" @click="handleStepBack">上一步</el-button>
-          <el-button type="primary" @click="handleStepEnd">完成</el-button>
+          <el-button type="primary" @click="handleStepEnd" :disabled="filmFilterCount < 20" title="影片数量少于20，无法创建版块">完成</el-button>
         </div>
       </div>
     </el-dialog>
@@ -490,7 +490,7 @@ export default {
         sources: sourceList.join(','),
         homeOrderType,
         page: 1,
-        rows: 30
+        rows: 20
       }
       // 参数填写-影视筛选
       let movieParams = {}
@@ -555,6 +555,9 @@ export default {
       }
       return this.$service.getFilmFilterResult(params).then(rs => {
         this.filmFilterCount = rs.data ? rs.data.total : 0
+        if (this.filmFilterCount < 20) {
+          return this.$message.error(`该筛选规则仅获取${this.filmFilterCount}部影片，少于20部，不可创建版块影片数量少于20，无法创建版块`)
+        }
         // 第四步结束
         if (homeOrderType !== undefined) {
           // 规则描述

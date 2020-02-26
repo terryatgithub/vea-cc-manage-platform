@@ -2225,11 +2225,13 @@ export default {
               item.picturePreset = undefined
               const appParamsList = item.appParams
               if (appParamsList) {
-                const appParamsObj = appParamsList.reduce((result, item) => {
-                  result[item.key] = item.value
-                  return result
-                }, {})
-                item.appParams = JSON.stringify(appParamsObj)
+                if (typeof (appParamsList) !== 'string') {
+                  const appParamsObj = appParamsList.reduce((result, item) => {
+                    result[item.key] = item.value
+                    return result
+                  }, {})
+                  item.appParams = JSON.stringify(appParamsObj)
+                }
               }
             })
 
@@ -2267,11 +2269,12 @@ export default {
           }
         }
         // 干预设置interveneContentList
+        debugger
         const contentListCopy = JSON.parse(JSON.stringify(itemContentList))
-        const interveneContentList = item.interveneContentList.map(item => {
-          const intervenePos = item.intervenePos
+        const interveneContentList = item.interveneContentList.map(interveneContent => {
+          const intervenePos = interveneContent.intervenePos
           const content = contentListCopy[intervenePos - 1]
-          content.intervenePos = intervenePos
+          content.intervenePos = parseInt(intervenePos)
           content.videoContent = content.videoContentList[0]
           delete content.videoContentList
           delete content.specificContentList
@@ -2738,7 +2741,7 @@ export default {
           const fillType = firstPannel.fillType
           if (fillType === 3) {
             this.reviewPicUrl = parseInt(firstPannel.layoutId)
-            this.mediaRuleLayout = parseInt(firstPannel.layoutId)
+            this.mediaRuleLayout = firstPannel.layoutId.toString()
           }
         }
         this.pannel = cloneDeep(pannel)
@@ -2831,11 +2834,10 @@ export default {
       currentPannel.mediaFilmNum = filteredFilm ? filteredFilm.total : 0
       currentPannel.mediaRuleDesc = mediaRuleDesc
       // 根据返回结果填充推荐位
-      const fillCount = currentPannel.mediaFilmNum > 30 ? 30 : currentPannel.mediaFilmNum
       const { mediaRuleLayout } = this
       this.$service.getLayoutInforById({ id: mediaRuleLayout }).then((layout) => {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-        this.handleSelectLayoutEnd(layout, fillCount)
+        this.handleSelectLayoutEnd(layout, 20)
         // 填充内容
         return this.insertResources({
           selectedResources: filteredFilm.rows
@@ -2855,14 +2857,12 @@ export default {
     },
     handleChangeMediaLayout (val) {
       const currentPannel = this.pannel.pannelList[0]
-      const count = currentPannel.contentList.length
       this.$service.getLayoutInforById({ id: val }).then((layout) => {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-        this.handleSelectLayoutEnd(layout, count)
-        if (currentPannel.mediaRuleDesc) {
-          return this.insertResources({
-            selectedResources: this.filteredFilm.rows
-          })
+        // 前两种填充20个，其他的和布局个数相同
+        if (currentPannel.mediaRule) {
+          this.handleSelectLayoutEnd(layout, 20)
+          this.updateInterveneResources()
         }
       })
       currentPannel.interveneContentList.forEach(item => {
@@ -2870,7 +2870,6 @@ export default {
           item.intervenePos = ''
         }
       })
-      this.updateInterveneResources()
     },
     handleAddIntervene () {
       const currentPannel = this.pannel.pannelList[0]
@@ -2896,7 +2895,8 @@ export default {
       // 不允许重复的intervenePos
       const currentIntervenePos = interveneContent.intervenePos
       const isRepeat = activePannel.interveneContentList.some((item, cIndex) => {
-        return cIndex !== index && item.intervenePos === currentIntervenePos
+        // eslint-disable-next-line
+        return cIndex !== index && item.intervenePos == currentIntervenePos
       })
       if (currentIntervenePos !== '' && isRepeat) {
         interveneContent.intervenePos = ''
@@ -2906,16 +2906,19 @@ export default {
       if (interveneContent.videoContentList.length === 0) {
         return
       }
+      // 按干预顺序排序
+      activePannel.interveneContentList.sort((a, b) => {
+        return a.intervenePos - b.intervenePos
+      })
       // 推荐位有资源
       this.updateInterveneResources()
     },
     updateInterveneResources () {
       const activePannel = this.pannel.pannelList[0]
-      const count = activePannel.contentList.length
       const mediaRuleLayout = this.mediaRuleLayout
       this.$service.getLayoutInforById({ id: mediaRuleLayout }).then((layout) => {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-        this.handleSelectLayoutEnd(layout, count)
+        this.handleSelectLayoutEnd(layout, 20)
         if (activePannel.mediaRuleDesc) {
           this.$service.getFilmFilterResult(JSON.parse(activePannel.mediaRule)).then(rs => {
             this.filteredFilm = rs.data
