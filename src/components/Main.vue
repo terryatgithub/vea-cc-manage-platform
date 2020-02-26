@@ -27,6 +27,9 @@
         <span role="presentation" class="el-breadcrumb__separator">/</span>
         <Breadcrumb class="breadcrumb" :items="breadcrumb" />
         <div class="user-info">
+          <a href="http://wiki.skyoss.com/pages/viewpage.action?pageId=33481206" target="_blank">
+            <el-button type="danger" style="margin-right: 10px;">不好用，我要反馈</el-button>
+          </a>
           <el-dropdown :hide-on-click="false" @command="handleDropdownCommand">
             <span class="el-dropdown-link">
               <i class="el-icon-cc-user"></i>
