@@ -555,28 +555,30 @@
                       ></VirtualPanel>
                     </div>
                   </el-form-item>
-                  <el-form-item label="布局">
-                    <div class="media-layout-pics">
-                      <img v-if="reviewPicUrl === 1" style="width: 100%" src="../../assets/images/panelFillLayout1.png"/>
-                      <img v-if="reviewPicUrl === 2" style="width: 100%" src="../../assets/images/panelFillLayout2.png"/>
-                      <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
-                      <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
-                      <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
-                    </div>
-                  </el-form-item>
-                  <el-form-item label="干预位">
-                    <VirtualIntervenePanel
-                      class="pannel-blocks"
-                      style="display: flex;"
-                      :mode="mode"
-                      :disabled="true"
-                      :maxCount="interveneMaxCount"
-                      :blocks="pannel.pannelList[0].interveneContentList"
-                      @click-block="handleClickInterveneBlock"
-                      @remove-block="handleRemoveIntervene"
-                      @end-intervene-input="handleEndIntervenePos"
-                    ></VirtualIntervenePanel>
-                  </el-form-item>
+                  <template v-if="pannel.pannelList[0].fillType === 3">
+                    <el-form-item label="布局">
+                      <div class="media-layout-pics">
+                        <img v-if="reviewPicUrl === 1" style="width: 100%" src="../../assets/images/panelFillLayout1.png"/>
+                        <img v-if="reviewPicUrl === 2" style="width: 100%" src="../../assets/images/panelFillLayout2.png"/>
+                        <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
+                        <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
+                        <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
+                      </div>
+                    </el-form-item>
+                    <el-form-item label="干预位">
+                      <VirtualIntervenePanel
+                        class="pannel-blocks"
+                        style="display: flex;"
+                        :mode="mode"
+                        :disabled="true"
+                        :maxCount="interveneMaxCount"
+                        :blocks="pannel.pannelList[0].interveneContentList"
+                        @click-block="handleClickInterveneBlock"
+                        @remove-block="handleRemoveIntervene"
+                        @end-intervene-input="handleEndIntervenePos"
+                      ></VirtualIntervenePanel>
+                    </el-form-item>
+                  </template>
                 </div>
                 <el-form-item v-show="pannel.parentType === 'subscribe'" label="预约影片">
                   <SubscribeVideos
@@ -2269,7 +2271,6 @@ export default {
           }
         }
         // 干预设置interveneContentList
-        debugger
         const contentListCopy = JSON.parse(JSON.stringify(itemContentList))
         const interveneContentList = item.interveneContentList.map(interveneContent => {
           const intervenePos = interveneContent.intervenePos
@@ -2826,23 +2827,12 @@ export default {
       this.picDialogVisible = true
     },
     handleGetFilterResult (result) {
-      const { mediaRule, filteredFilm, hasEdu, mediaRuleDesc } = result
-      this.filteredFilm = filteredFilm
+      const { mediaRule, hasEdu, mediaRuleDesc } = result
       const currentPannel = this.pannel.pannelList[0]
       currentPannel.mediaRule = JSON.stringify(mediaRule)
       currentPannel.hasEdu = hasEdu
-      currentPannel.mediaFilmNum = filteredFilm ? filteredFilm.total : 0
       currentPannel.mediaRuleDesc = mediaRuleDesc
-      // 根据返回结果填充推荐位
-      const { mediaRuleLayout } = this
-      this.$service.getLayoutInforById({ id: mediaRuleLayout }).then((layout) => {
-        layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-        this.handleSelectLayoutEnd(layout, 20)
-        // 填充内容
-        return this.insertResources({
-          selectedResources: filteredFilm.rows
-        })
-      })
+      this.updateInterveneResources()
     },
     showMiaRuleDesc (desc) {
       const h = this.$createElement
@@ -2857,19 +2847,12 @@ export default {
     },
     handleChangeMediaLayout (val) {
       const currentPannel = this.pannel.pannelList[0]
-      this.$service.getLayoutInforById({ id: val }).then((layout) => {
-        layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-        // 前两种填充20个，其他的和布局个数相同
-        if (currentPannel.mediaRule) {
-          this.handleSelectLayoutEnd(layout, 20)
-          this.updateInterveneResources()
-        }
-      })
       currentPannel.interveneContentList.forEach(item => {
         if (item.intervenePos > this.interveneMaxCount) {
           item.intervenePos = ''
         }
       })
+      this.updateInterveneResources()
     },
     handleAddIntervene () {
       const currentPannel = this.pannel.pannelList[0]
@@ -2910,7 +2893,6 @@ export default {
       activePannel.interveneContentList.sort((a, b) => {
         return a.intervenePos - b.intervenePos
       })
-      // 推荐位有资源
       this.updateInterveneResources()
     },
     updateInterveneResources () {
@@ -2920,9 +2902,13 @@ export default {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
         this.handleSelectLayoutEnd(layout, 20)
         if (activePannel.mediaRuleDesc) {
+          this.clearBlocks()
           this.$service.getFilmFilterResult(JSON.parse(activePannel.mediaRule)).then(rs => {
             this.filteredFilm = rs.data
             activePannel.mediaFilmNum = rs.data ? rs.data.total : 0
+            if (activePannel.mediaFilmNum < 20) {
+              return this.$message.error('筛选影片数量不足20， 请重新配置筛选规则')
+            }
             this.insertResources({
               selectedResources: this.filteredFilm.rows
             })

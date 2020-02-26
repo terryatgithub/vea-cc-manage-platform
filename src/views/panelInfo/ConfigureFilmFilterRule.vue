@@ -38,6 +38,7 @@
           <TagLogicFilter
             class="margin-bottom-20"
             hiddenExtend
+            ref="movieTagLogicFilter"
             :value="movieFilterForm.tagCodes"
             @input="handleInputMovieTag"
             @get-tag-entity="handleGetMovieTagEntity"/>
@@ -168,6 +169,7 @@
           <TagLogicFilter
             class="margin-bottom-20"
             hiddenExtend
+            ref="eduTagLogicFilter"
             :value="eduFilterForm.teachTagCodes"
             @input="handleInputEduTag"
             @get-tag-entity="handleGetEduTagEntity"/>
@@ -396,6 +398,8 @@ export default {
     },
     handleCloseDialog () {
       Object.assign(this.$data, this.$options.data())
+      this.$refs.movieTagLogicFilter.tags = [[]]
+      this.$refs.eduTagLogicFilter.tags = [[]]
     },
     handleOneStepNext () {
       const sourceList = this.sourceList
@@ -564,7 +568,6 @@ export default {
           const mediaRuleDesc = this.parseRuleDesc()
           this.$emit('get-filter-result', {
             mediaRule: params,
-            filteredFilm: rs.data,
             hasEdu: this.isEduFilter ? 1 : 0,
             mediaRuleDesc
           })

@@ -79,6 +79,7 @@ export default {
     },
     goBack () {
       this.isShowList = true
+      this.$refs.list.fetchData()
       this.mode = 'list'
       this.version = undefined
     }
