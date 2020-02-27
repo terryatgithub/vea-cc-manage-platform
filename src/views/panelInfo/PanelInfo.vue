@@ -623,7 +623,7 @@
           :source="pannel.pannelResource"
           :pannel="pannel.pannelList[0]"
           :pannel-group-id="pannel.pannelGroupId"
-          :hide-title-options="true"
+          :hide-title-options="mediaRuleLayout !== '1'"
           @cancel="handleSetInterveneBlockContentCancle"
           @save="handleSetInterveneBlockContentEnd"
         />
@@ -2852,7 +2852,9 @@ export default {
           item.intervenePos = ''
         }
       })
-      this.updateInterveneResources()
+      if (currentPannel.mediaRule) {
+        this.updateInterveneResources()
+      }
     },
     handleAddIntervene () {
       const currentPannel = this.pannel.pannelList[0]
@@ -2889,10 +2891,6 @@ export default {
       if (interveneContent.videoContentList.length === 0) {
         return
       }
-      // 按干预顺序排序
-      activePannel.interveneContentList.sort((a, b) => {
-        return a.intervenePos - b.intervenePos
-      })
       this.updateInterveneResources()
     },
     updateInterveneResources () {
@@ -2911,6 +2909,10 @@ export default {
             }
             this.insertResources({
               selectedResources: this.filteredFilm.rows
+            })
+            // 按干预顺序排序
+            activePannel.interveneContentList.sort((a, b) => {
+              return a.intervenePos - b.intervenePos
             })
             // 插入干预位
             const interveneContentList = activePannel.interveneContentList
