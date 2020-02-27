@@ -130,11 +130,14 @@
                 </el-form-item>
                 <div v-show="pannel.parentType !== 'subscribe'">
                   <el-form-item label="版块内容来源" v-if="pannel.parentType === 'normal'">
-                    <CommonSelector
-                      type='radio'
-                      :value="pannel.pannelList[0].fillType"
-                      @input="handleInputFillType"
-                      :options="$consts.panelFillTypeOptions"/>
+                    <el-radio-group :value="pannel.pannelList[0].fillType" @input="handleInputFillType"">
+                      <el-radio
+                        v-for="fillType in $consts.panelFillTypeOptions"
+                        :key="fillType.value"
+                        :label="fillType.value">
+                        {{fillType.label}}
+                      </el-radio>
+                    </el-radio-group>
                   </el-form-item>
                   <!-- 运营手动填充 -->
                   <template v-if="pannel.pannelList[0].fillType === 1">
@@ -2169,12 +2172,13 @@ export default {
       }
     },
     parseDataToApi (data) {
+      var that = this
       const panelDataType = this.currentPanelDataType
       const layout = this.selectedLayout
       const pannel = JSON.parse(JSON.stringify(data))
       // 媒资规则的panelGroupType=10
       pannel.panelGroupType = pannel.pannelList[0].fillType !== 3 ? panelDataType : 10
-      pannel.pannelList = pannel.pannelList.map(function (item) {
+      pannel.pannelList = pannel.pannelList.map(item => {
         let hasSpecific = false
         const itemContentList = item.contentList.map(function (_contentItem) {
           const titleInfo = _contentItem.titleInfo
@@ -2309,7 +2313,8 @@ export default {
           hasEdu: fillType === 3 ? item.hasEdu : undefined,
           hasIntervene: fillType === 3 ? (item.interveneContentList.length !== 0 ? 1 : 0) : undefined,
           mediaFilmNum: fillType === 3 ? item.mediaFilmNum : undefined,
-          interveneContentList: fillType === 3 ? interveneContentList : undefined
+          interveneContentList: fillType === 3 ? interveneContentList : undefined,
+          partner: fillType === 3 ? that.$consts.sourceToPartner[pannel.pannelResource] : undefined
         }
       })
       delete pannel.pannelName
