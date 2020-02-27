@@ -338,19 +338,6 @@
                     </el-form-item>
                   </template>
                   <template v-if="pannel.pannelList[0].fillType === 3">
-                    <el-form-item label="配置影片筛选规则" required>
-                      <ConfigureFilmFilterRule
-                        :source="pannel.pannelResource"
-                        style="display: inline-block;"
-                        @get-filter-result="handleGetFilterResult"/>
-                      <el-button
-                        type="text"
-                        v-if="pannel.pannelList[0].mediaRuleDesc"
-                        style="margin-left: 10px"
-                        @click="showMiaRuleDesc(pannel.pannelList[0].mediaRuleDesc)"
-                      >查看规则
-                      </el-button>
-                    </el-form-item>
                     <el-form-item label="选择布局">
                       <el-radio-group style="margin-top: 10px;" v-model="mediaRuleLayout" @change="handleChangeMediaLayout">
                         <el-radio
@@ -361,6 +348,19 @@
                           {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictEnName)"/>
                         </el-radio>
                       </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="配置影片筛选规则" required>
+                      <ConfigureFilmFilterRule
+                        :source="pannel.pannelResource"
+                        style="display: inline-block;"
+                        @get-filter-result="handleGetFilterResult"/>
+                      <el-button
+                        type="text"
+                        v-if="pannel.pannelList[0].mediaRuleDesc"
+                        style="margin-left: 10px"
+                        @click="showMediaRuleDesc(pannel.pannelList[0].mediaRuleDesc)"
+                      >查看规则
+                      </el-button>
                     </el-form-item>
                     <el-form-item label="推荐位" v-if="pannel.pannelList[0].contentList.length !== 0">
                       <VirtualPanel
@@ -517,6 +517,14 @@
                       {{pannel.pannelList[0].rankName}}
                     </el-form-item>
                   </template>
+                  <el-form-item v-if="pannel.pannelList[0].fillType === 3" label="筛选规则描述">
+                    <el-button
+                      type="text"
+                      @click="showMediaRuleDesc(pannel.pannelList[0].mediaRuleDesc)"
+                    >查看规则
+                    </el-button>
+                    <el-button type="text" @click="handleCopyMediaRule">复制规则json</el-button>
+                  </el-form-item>
                   <el-form-item label="推荐位">
                     <div class="pannel-blocks pannel-blocks--read">
                       <template v-if="pannel.parentType === 'group'">
@@ -623,7 +631,7 @@
           :source="pannel.pannelResource"
           :pannel="pannel.pannelList[0]"
           :pannel-group-id="pannel.pannelGroupId"
-          :hide-title-options="mediaRuleLayout !== '1'"
+          :hide-title-options="mediaRuleLayout === '1'"
           @cancel="handleSetInterveneBlockContentCancle"
           @save="handleSetInterveneBlockContentEnd"
         />
@@ -1368,6 +1376,7 @@ export default {
       this.activePage = 'panel_info'
     },
     handleSetInterveneBlockContentEnd (param) {
+      debugger
       const activePannel = this.pannel.pannelList[0]
       const currentInterveneBlockIndex = this.currentInterveneBlockIndex
       const interveneContent = activePannel.interveneContentList[currentInterveneBlockIndex]
@@ -2834,7 +2843,7 @@ export default {
       currentPannel.mediaRuleDesc = mediaRuleDesc
       this.updateInterveneResources()
     },
-    showMiaRuleDesc (desc) {
+    showMediaRuleDesc (desc) {
       const h = this.$createElement
       this.$msgbox({
         title: '筛选规则',
@@ -2847,11 +2856,13 @@ export default {
     },
     handleChangeMediaLayout (val) {
       const currentPannel = this.pannel.pannelList[0]
-      currentPannel.interveneContentList.forEach(item => {
-        if (item.intervenePos > this.interveneMaxCount) {
-          item.intervenePos = ''
-        }
-      })
+      // 切换布局清空干预位
+      currentPannel.interveneContentList = []
+      // currentPannel.interveneContentList.forEach(item => {
+      //   if (item.intervenePos > this.interveneMaxCount) {
+      //     item.intervenePos = ''
+      //   }
+      // })
       if (currentPannel.mediaRule) {
         this.updateInterveneResources()
       }
@@ -2930,6 +2941,11 @@ export default {
           })
         }
       })
+    },
+    handleCopyMediaRule () {
+      navigator.clipboard.writeText(this.pannel.pannelList[0].mediaRule)
+        .then(() => this.$message.success('复制成功'))
+        .catch(() => this.$message.error('复制失败'))
     }
   },
   created () {

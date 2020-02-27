@@ -16,6 +16,7 @@
             </el-select>
             <div v-if="mode !== 'read'">
               <ResourceSelector
+                v-if="!isInterveneBlock"
                 ref="resourceSelector"
                 :is-live="false"
                 :disable-partner="!!source"
@@ -341,6 +342,9 @@ export default {
       })
     },
     handleAddContent (contentType) {
+      if (this.isInterveneBlock) {
+        return this.$message.error('干预推荐位仅允许添加一个资源')
+      }
       this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
         if (!err) {
           const contentList = this[contentType + 'ContentList']
@@ -604,7 +608,7 @@ export default {
           content.bgParams = JSON.stringify(content.bgParams)
         }
 
-        delete content.picturePreset
+        // delete content.picturePreset
         delete content.redundantParams
         return content
       }
