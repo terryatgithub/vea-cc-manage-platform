@@ -564,15 +564,6 @@
                     </div>
                   </el-form-item>
                   <template v-if="pannel.pannelList[0].fillType === 3">
-                    <el-form-item label="布局">
-                      <div class="media-layout-pics">
-                        <img v-if="reviewPicUrl === 1" style="width: 100%" src="../../assets/images/panelFillLayout1.png"/>
-                        <img v-if="reviewPicUrl === 2" style="width: 100%" src="../../assets/images/panelFillLayout2.png"/>
-                        <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
-                        <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
-                        <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
-                      </div>
-                    </el-form-item>
                     <el-form-item label="干预位">
                       <VirtualIntervenePanel
                         class="pannel-blocks"
@@ -1376,11 +1367,11 @@ export default {
       this.activePage = 'panel_info'
     },
     handleSetInterveneBlockContentEnd (param) {
-      debugger
       const activePannel = this.pannel.pannelList[0]
       const currentInterveneBlockIndex = this.currentInterveneBlockIndex
       const interveneContent = activePannel.interveneContentList[currentInterveneBlockIndex]
       interveneContent.videoContentList = param.videoContentList
+      interveneContent.videoContentList[0].shouldFindFitestPicture = true
       interveneContent.specificContentList = param.specificContentList
       if (interveneContent.intervenePos) {
         this.updateInterveneResources()
@@ -2943,9 +2934,14 @@ export default {
       })
     },
     handleCopyMediaRule () {
-      navigator.clipboard.writeText(this.pannel.pannelList[0].mediaRule)
-        .then(() => this.$message.success('复制成功'))
-        .catch(() => this.$message.error('复制失败'))
+      const input = document.createElement('input')
+      document.body.appendChild(input)
+      input.setAttribute('value', this.pannel.pannelList[0].mediaRule)
+      input.select()
+      if (document.execCommand('copy')) {
+        this.$message.success('复制成功')
+      }
+      document.body.removeChild(input)
     }
   },
   created () {

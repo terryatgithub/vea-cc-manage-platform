@@ -1,6 +1,6 @@
 <template>
   <ContentCard class="content">
-    <ab-list-layout :pagination="pagination" @pagingation-change="fetchData">
+    <ab-list-layout :pagination="pagination" @pagingation-change="handlePaginationChange">
       <div slot="filter">
         <DataForm :model="filter" :inline="true">
           <FormEnum
@@ -183,8 +183,8 @@ export default {
   },
 
   methods: {
-    fetchData () {
-      const filter = cloneDeep(this.parseFilter())
+    fetchData (type) {
+      const filter = cloneDeep(this.parseFilter(type))
       const { mediaFilmNumStart, mediaFilmNumEnd } = this.parseFilmNum(filter.filmNumSelect)
       delete filter.filmNumSelect
       filter.mediaFilmNumStart = mediaFilmNumStart
@@ -194,10 +194,13 @@ export default {
         this.table.data = data.rows
       })
     },
-    parseFilter () {
+    handlePaginationChange () {
+      this.fetchData('pagination')
+    },
+    parseFilter (type) {
       const { filter, pagination } = this
       if (pagination) {
-        filter.page = pagination.currentPage
+        filter.page = type === 'pagination' ? pagination.currentPage : 1
         filter.rows = pagination.pageSize
       }
       return filter

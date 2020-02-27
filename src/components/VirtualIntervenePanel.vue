@@ -105,7 +105,6 @@ export default {
   cursor pointer
   position relative
 .block-post
-  height 100%
   width 100%
 .intervene-input--wrapper
   margin 5px 0

@@ -467,7 +467,7 @@ export default {
     parseContentList (contentList) {
       contentList = JSON.parse(JSON.stringify(contentList))
 
-      function parse (content) {
+      const parse = function (content) {
         const coverType = content.coverType
         let onclick = ''
         let params = ''
@@ -608,10 +608,11 @@ export default {
           content.bgParams = JSON.stringify(content.bgParams)
         }
 
-        // delete content.picturePreset
-        delete content.redundantParams
+        if (this.isInterveneBlock) {
+          delete content.redundantParams
+        }
         return content
-      }
+      }.bind(this)
       return contentList.map(parse)
     },
     checkCrowd (crowd) {
