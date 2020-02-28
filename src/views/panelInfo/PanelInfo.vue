@@ -2914,20 +2914,23 @@ export default {
       this.updateInterveneResources()
     },
     updateInterveneResources () {
-      const activePannel = this.pannel.pannelList[0]
+      const pannel = this.pannel
+      const activePannel = pannel.pannelList[0]
       const mediaRuleLayout = this.mediaRuleLayout
       this.$service.getLayoutInforById({ id: mediaRuleLayout }).then((layout) => {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
         this.handleSelectLayoutEnd(layout, 20)
+        const mediaRuleObj = JSON.parse(activePannel.mediaRule)
         if (activePannel.mediaRuleDesc) {
           this.clearBlocks()
-          this.$service.getFilmFilterResult(JSON.parse(activePannel.mediaRule)).then(rs => {
-            const _partner = this.$consts.sourceToPartner[this.pannel.pannelResource]
-            this.filteredFilm = rs.data
-            activePannel.mediaFilmNum = rs.data ? rs.data.total : 0
-            this.filteredFilm.forEach(film => {
+          const _partner = this.$consts.sourceToPartner[pannel.pannelResource]
+          this.$service.getFilmFilterResult(mediaRuleObj).then(rs => {
+            (rs.data.rows || []).forEach(film => {
               film._partner = _partner
             })
+            this.filteredFilm = rs.data
+            activePannel.mediaFilmNum = rs.data ? rs.data.total : 0
+            debugger
             if (activePannel.mediaFilmNum < 20) {
               return this.$message.error('筛选影片数量不足20， 请重新配置筛选规则')
             }
