@@ -997,10 +997,8 @@ export default {
       const panelGroupCategory = this.pannel.panelGroupCategory
       const panelFillTypeOptions = this.$consts.panelFillTypeOptions
       if ([67, 60, 31].indexOf(panelGroupCategory) === -1) {
-        this.handleInputFillType(1)
         return panelFillTypeOptions.slice(0, 1)
       } else if (panelGroupCategory !== 31) {
-        this.handleInputFillType(1)
         return panelFillTypeOptions.slice(0, 2)
       } else {
         return [].concat(panelFillTypeOptions)
@@ -2882,6 +2880,13 @@ export default {
         return this.$message.error('请先配置影片筛选规则')
       }
       currentPannel.interveneContentList.push(this.genDefaultInterveneContent())
+      this.scollBottom()
+    },
+    scollBottom () {
+      this.$nextTick(() => {
+        const contentCard = this.$el.querySelector('.page-content-wrapper')
+        contentCard.scrollTop = contentCard.scrollHeight
+      })
     },
     genDefaultInterveneContent () {
       return {
@@ -2930,7 +2935,6 @@ export default {
             })
             this.filteredFilm = rs.data
             activePannel.mediaFilmNum = rs.data ? rs.data.total : 0
-            debugger
             if (activePannel.mediaFilmNum < 20) {
               return this.$message.error('筛选影片数量不足20， 请重新配置筛选规则')
             }
@@ -2953,10 +2957,27 @@ export default {
                 activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
               }
             })
+            // 修复插入干预位引起的pictureurl横竖图变化问题
+            if (mediaRuleLayout === '5' && interveneContentList.length !== 0) {
+              this.updateSelectedResourcesPic(0)
+            }
             this.updatePosition()
           })
         }
       })
+    },
+    updateSelectedResourcesPic (currentPannelIndex) {
+      let { blocks, selectedBlocksAndResources } = this.getBlocksAndResources(currentPannelIndex)
+      const currentPannel = this.pannel.pannelList[currentPannelIndex]
+      blocks.forEach((item, index) => {
+        const firstContent = selectedBlocksAndResources[index] || {}
+        const picturePreset = firstContent.videoContentList[0].picturePreset || []
+        if (picturePreset.length !== 0) {
+          const size = [item.width, item.height]
+          firstContent.videoContentList[0].pictureUrl = getMatchedPictureUrl(size, picturePreset)
+        }
+      })
+      currentPannel.contentList = selectedBlocksAndResources
     },
     handleCopyMediaRule () {
       const input = document.createElement('input')
