@@ -130,9 +130,9 @@
                 </el-form-item>
                 <div v-show="pannel.parentType !== 'subscribe'">
                   <el-form-item label="版块内容来源" v-if="pannel.parentType === 'normal'">
-                    <el-radio-group :value="pannel.pannelList[0].fillType" @input="handleInputFillType"">
+                    <el-radio-group :value="pannel.pannelList[0].fillType" @input="handleInputFillType">
                       <el-radio
-                        v-for="fillType in $consts.panelFillTypeOptions"
+                        v-for="fillType in fillTypeOptions"
                         :key="fillType.value"
                         :label="fillType.value">
                         {{fillType.label}}
@@ -992,6 +992,19 @@ export default {
       const validBusinessType = allowRankBusinessTypes.includes(pannel.panelGroupCategory)
       const validLayout = isValidLayoutForRanking(activePannel.contentList)
       return validBusinessType && validLayout
+    },
+    fillTypeOptions () {
+      const panelGroupCategory = this.pannel.panelGroupCategory
+      const panelFillTypeOptions = this.$consts.panelFillTypeOptions
+      if ([67, 60, 31].indexOf(panelGroupCategory) === -1) {
+        this.handleInputFillType(1)
+        return panelFillTypeOptions.slice(0, 1)
+      } else if (panelGroupCategory !== 31) {
+        this.handleInputFillType(1)
+        return panelFillTypeOptions.slice(0, 2)
+      } else {
+        return [].concat(panelFillTypeOptions)
+      }
     }
   },
   watch: {
@@ -2909,8 +2922,12 @@ export default {
         if (activePannel.mediaRuleDesc) {
           this.clearBlocks()
           this.$service.getFilmFilterResult(JSON.parse(activePannel.mediaRule)).then(rs => {
+            const _partner = this.$consts.sourceToPartner[this.pannel.pannelResource]
             this.filteredFilm = rs.data
             activePannel.mediaFilmNum = rs.data ? rs.data.total : 0
+            this.filteredFilm.forEach(film => {
+              film._partner = _partner
+            })
             if (activePannel.mediaFilmNum < 20) {
               return this.$message.error('筛选影片数量不足20， 请重新配置筛选规则')
             }

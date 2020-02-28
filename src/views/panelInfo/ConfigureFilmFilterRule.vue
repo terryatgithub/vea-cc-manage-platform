@@ -264,7 +264,7 @@
           <el-radio :label="0" class="order-radio">创建时间排序（越新的排越前面）</el-radio>
           <el-radio :label="1" class="order-radio">热度排序（越热的排越前面）</el-radio>
           <el-radio :label="2" class="order-radio">创建时间+热度排序（优先热度排序）</el-radio>
-          <el-radio :label="3" class="order-radio">创建时间+热度排序（优先时间排序）</el-radio>
+          <el-radio :label="3" class="order-radio">创建时间+热度排序（优先创建时间排序）</el-radio>
         </el-radio-group>
         <div>
           <el-button type="primary" @click="handleStepBack">上一步</el-button>
@@ -292,7 +292,7 @@ const homeOrderTypeOptions = [
     value: 2
   },
   {
-    label: '创建时间+热度排序（优先时间）',
+    label: '创建时间+热度排序（优先创建时间）',
     value: 3
   }
 ]
