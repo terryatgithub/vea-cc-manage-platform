@@ -71,6 +71,7 @@
                 :pannel-group-id="pannelGroupId"
                 :content-form="contentForm"
                 :hide-title-options="hideTitleOptions"
+                :is-intervene-block="isInterveneBlock"
               />
             </div>
           </el-form-item>
@@ -129,6 +130,7 @@
           :pannel="pannel"
           :content-form="contentForm"
           :hide-title-options="hideTitleOptions"
+          :is-intervene-block="isInterveneBlock"
         />
       </el-collapse-item>
     </el-collapse>

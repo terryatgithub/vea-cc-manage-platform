@@ -224,7 +224,7 @@
         </GlobalPictureSelector>
       </el-form-item>
 
-      <template v-if="contentForm.coverType === 'media'">
+      <template v-if="contentForm.coverType === 'media' && !isInterveneBlock">
         <el-form-item label="配置高清背景图和视频">
           <el-switch
             :disabled="isReadonly"
@@ -429,7 +429,7 @@
           </div>
         </template>
       </template>
-      <el-form-item label="开启个性化推荐" v-if="contentForm.coverType !== 'block'">
+      <el-form-item label="开启个性化推荐" v-if="contentForm.coverType !== 'block' && !isInterveneBlock">
         <el-switch
           :disabled="isReadonly"
           :value="!!contentForm.flagSetRec"
@@ -462,7 +462,7 @@
       <template v-if="contentType === 'normal'">
         <el-form-item
           label="设置广告位"
-          v-if="data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (contentForm.coverType === 'media' || contentForm.coverType === 'app' || contentForm.coverType === 'custom')"
+          v-if="!isInterveneBlock && data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (contentForm.coverType === 'media' || contentForm.coverType === 'app' || contentForm.coverType === 'custom')"
           prop="flagIsSetad"
         >
           <el-radio-group v-model="contentForm.flagIsSetad" :disabled="isReadonly">
@@ -715,7 +715,8 @@ export default {
     'pannel',
     'pannelGroupId',
     'hideTitleOptions',
-    'checkCrowd'
+    'checkCrowd',
+    'isInterveneBlock'
   ],
   computed: {
     isSpecific () {
