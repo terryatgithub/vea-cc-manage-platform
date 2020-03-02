@@ -1367,12 +1367,16 @@ export default {
       this.currentInterveneBlockIndex = index
       const selectedResources =
         this.pannel.pannelList[0].interveneContentList || []
+      if (!selectedResources[index].intervenePos) {
+        return this.$message('为了匹配海报尺寸，请先确定干预位置哦！')
+      }
+      const currentIntervenePos = selectedResources[index].intervenePos
       this.blockConetentInterveneProps = {
         layoutType: 'Panel',
         pannelParentType: pannel.parentType,
         pannelCategory: this.pannel.panelGroupCategory,
         block: selectedResources[index],
-        blockInfo: {},
+        blockInfo: this.blockList[0][currentIntervenePos - 1],
         pannelResource: this.pannel.pannelResource
       }
       this.activePage = 'block_content__intervene'
@@ -2832,6 +2836,7 @@ export default {
       this.pannel.pannelList.push(this.genPannel())
       this.pannel.pannelList[0].fillType = val
       this.pannel.pannelList[0].pannelTitle = pannelTitle
+      this.pannel.panelGroupType = val === 3 ? 10 : 1
     },
     handleInputFilmNum (val) {
       this.pannel.pannelList[0].contentList = []
