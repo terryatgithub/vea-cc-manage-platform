@@ -1001,7 +1001,8 @@ export default {
       } else if (panelGroupCategory !== 31) {
         return panelFillTypeOptions.slice(0, 2)
       } else {
-        return [].concat(panelFillTypeOptions)
+        return panelFillTypeOptions.slice(0, 2)
+        // return [].concat(panelFillTypeOptions)
       }
     }
   },
