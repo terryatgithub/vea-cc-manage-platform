@@ -1236,6 +1236,10 @@ export default {
         pannel.currentVersion
     },
     handleCopy (status) {
+      const fillType = this.pannel.pannelList[0].fillType
+      if (fillType === 3 && this.copyToPanelDataType === 3) {
+        return this.$message.error('影片筛选规则的版块不能复制到业务专辑哦！')
+      }
       this.pannel.panelGroupType = this.copyToPanelDataType
       const STATUS = this.$consts.status
       if (status === STATUS.waiting) {
