@@ -395,6 +395,9 @@
                         <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
                         <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
                         <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
+                        <img v-if="reviewPicUrl === 6" style="width: 100%" src="../../assets/images/panelFillLayout6.png"/>
+                        <img v-if="reviewPicUrl === 7" style="width: 100%" src="../../assets/images/panelFillLayout7.png"/>
+                        <img v-if="reviewPicUrl === 8" style="width: 100%" src="../../assets/images/panelFillLayout8.png"/>
                       </div>
                     </el-dialog>
                   </template>
@@ -625,7 +628,7 @@
           :source="pannel.pannelResource"
           :pannel="pannel.pannelList[0]"
           :pannel-group-id="pannel.pannelGroupId"
-          :hide-title-options="mediaRuleLayout === '1'"
+          :hide-title-options="mediaRuleLayout % 2 === 0"
           @cancel="handleSetInterveneBlockContentCancle"
           @save="handleSetInterveneBlockContentEnd"
         />
@@ -863,7 +866,7 @@ export default {
   computed: {
     interveneMaxCount () {
       const mediaRuleLayout = this.mediaRuleLayout
-      return [10, 10, 6, 8, 9][mediaRuleLayout - 1]
+      return [10, 10, 6, 6, 8, 8, 9, 9][mediaRuleLayout - 1]
     },
     resourceName () {
       return this.currentPanelDataType === 3 ? '业务专辑' : '版块'
@@ -1002,6 +1005,13 @@ export default {
         return panelFillTypeOptions.slice(0, 2)
       } else {
         return [].concat(panelFillTypeOptions)
+      }
+    },
+    reviewPicUrlSrc () {
+      if (this.reviewPicUrlSrc) {
+        return require('../../assets/images/panelFillLayout' + this.reviewPicUrl + '.png')
+      } else {
+        return undefined
       }
     }
   },
@@ -2967,7 +2977,7 @@ export default {
               }
             })
             // 修复插入干预位引起的pictureurl横竖图变化问题
-            if (mediaRuleLayout === '5' && interveneContentList.length !== 0) {
+            if ((mediaRuleLayout === '9' || mediaRuleLayout === '10') && interveneContentList.length !== 0) {
               this.updateSelectedResourcesPic(0)
             }
             this.updatePosition()
