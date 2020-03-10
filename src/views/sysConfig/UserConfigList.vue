@@ -69,6 +69,7 @@ export default {
   },
   data () {
     return {
+      canEdit: false,
       depts: {}, // 部门
       roleData: [], // 全部数据
       roleValue: [], // 右边数据
@@ -168,10 +169,31 @@ export default {
             label: '操作',
             width: '200',
             fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              setRole: '设置角色',
-              setData: '数据权限'
-            })
+            render: (h, { row }) => {
+              if (this.canEdit) {
+                const setRole = h('el-button', {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.setRole({ row })
+                    }
+                  }
+                }, '设置角色')
+                const setData = h('el-button', {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.setData({ row })
+                    }
+                  }
+                }, '数据权限')
+                return h('div', [setRole, setData])
+              }
+            }
           }
         ],
         data: [],
@@ -194,6 +216,7 @@ export default {
       var data3 = []
       this.roleDialogVisible = true
       this.user = row.userId
+      this.roleData = []
       this.$service.getNotRolesByUserId(object).then(data => {
         this.data1 = data
         this.$service.getRolesByUserId(object).then(data => {
@@ -435,6 +458,9 @@ export default {
       this.filterSchema = filterSchema
     })
     this.fetchData()
+    this.$service.getButtonGroupForPageList('sysUser').then(data => {
+      this.canEdit = data.some(item => item.runComm === 'edit')
+    })
   } }
 </script>
 <style lang = 'stylus' scoped>

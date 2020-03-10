@@ -120,6 +120,7 @@ export default {
   },
   data: function () {
     return {
+      canEdit: false,
       filter: {},
       filterSchema: _.map({
         roleName: _.o.string.other('form', {
@@ -158,6 +159,9 @@ export default {
             prop: 'seq',
             sortable: true,
             render: (h, { row }) => {
+              if (!this.canEdit) {
+                return row.seq
+              }
               return h('el-input', {
                 props: {
                   value: row.seq,
@@ -202,11 +206,48 @@ export default {
             label: '操作',
             fixed: 'right',
             width: '350',
-            render: utils.component.createOperationRender(this, {
-              setAuth: '设置权限',
-              handleSetAuthOfCrowd: '设置人群权限',
-              sysRoleView: '查看用户'
-            })
+            render: (h, { row }) => {
+              const setAuth = h('el-button', {
+                attrs: {
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.setAuth({ row })
+                  }
+                }
+              }, '设置权限')
+
+              const setAuthOfCrowd = h('el-button', {
+                attrs: {
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.handleSetAuthOfCrowd({ row })
+                  }
+                }
+              }, '设置人群权限')
+
+              const sysRoleView = h('el-button', {
+                attrs: {
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.sysRoleView({ row })
+                  }
+                }
+              }, '查看用户')
+
+              const btns = [sysRoleView]
+
+              if (this.canEdit) {
+                btns.unshift(setAuthOfCrowd)
+                btns.unshift(setAuth)
+              }
+              return h('div', null, btns)
+            }
           }
         ],
         data: [],
@@ -554,6 +595,9 @@ export default {
     )
     this.dataItems = accessListSorted.map(item => item.value)
     this.fetchData()
+    this.$service.getButtonGroupForPageList('sysRole').then(data => {
+      this.canEdit = data.some(item => item.runComm === 'edit')
+    })
   }
 }
 </script>

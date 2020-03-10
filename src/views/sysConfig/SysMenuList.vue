@@ -57,6 +57,7 @@ export default {
   },
   data () {
     return {
+      canEdit: false,
       filter: {
         sort: undefined,
         order: undefined
@@ -115,11 +116,22 @@ export default {
           },
           {
             label: '菜单目录',
-            prop: 'modle'
+            prop: 'modle',
+            render (h, { row }) {
+              const text = {
+                0: '收起',
+                1: '展开',
+                3: '媒资菜单'
+              }
+              return text[row.modle]
+            }
           },
           {
             label: '禁用',
-            prop: 'disabled'
+            prop: 'disabled',
+            render (h, { row }) {
+              return row.disabled ? '是' : '否'
+            }
           },
           {
             label: '父菜单ID',
@@ -128,9 +140,21 @@ export default {
           {
             label: '操作',
             fixed: 'right',
-            render: utils.component.createOperationRender(this, {
-              setData: '设置操作'
-            })
+            render: (h, { row }) => {
+              if (!this.canEdit) {
+                return
+              }
+              return h('el-button', {
+                attrs: {
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.setData({ row })
+                  }
+                }
+              }, '设置操作')
+            }
           }
         ],
         data: [],
@@ -362,7 +386,7 @@ export default {
       }),
       elid: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID'
+        placeholder: '元素ID'
       }),
       tabId: _.o.string.other('form', {
         component: 'Input',
@@ -405,6 +429,9 @@ export default {
     this.filterSchema = filterSchema
     this.fetchData()
     this.getSysMenuInfo()
+    this.$service.getButtonGroupForPageList('sysMenu').then(data => {
+      this.canEdit = data.some(item => item.runComm === 'edit')
+    })
   }
 }
 </script>

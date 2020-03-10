@@ -78,13 +78,13 @@
       <span>
         <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
           <el-form-item label="旧密码" prop="oldpwd">
-            <el-input v-model="form.oldpwd" placeholder="旧密码"></el-input>
+            <el-input type="password" v-model="form.oldpwd" placeholder="旧密码"></el-input>
           </el-form-item>
           <el-form-item label="新密码" prop="newpwd">
-            <el-input v-model="form.newpwd" placeholder="旧密码"></el-input>
+            <el-input type="password" v-model="form.newpwd" placeholder="新密码"></el-input>
           </el-form-item>
           <el-form-item label="确认新密码" prop="newpwd2">
-            <el-input v-model="form.newpwd2" placeholder="旧密码"></el-input>
+            <el-input type="password" v-model="form.newpwd2" placeholder="确认密码"></el-input>
           </el-form-item>
         </el-form>
       </span>
@@ -381,6 +381,10 @@ export default {
     modifyPwdSave () {
       this.$refs.form.validate(valid => {
         if (valid) {
+          const { oldpwd, newpwd } = this.form
+          if (oldpwd === newpwd) {
+            return this.$message.error('新密码和旧密码不能一样')
+          }
           this.$service.modifyPwd(this.form, '修改成功').then(data => {
             this.modifyDialogVisible = false
             this.$logout().then(() => {

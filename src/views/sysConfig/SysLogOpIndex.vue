@@ -156,15 +156,22 @@ export default {
       document.body.removeChild(textArea)
     },
     handleFilterChange (type, filter) {
-      if (filter) { this.filter = filter }
-      if (this.$validateId(this.filter.id)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
+      if (filter) {
+        const reg = /^[0-9]*$/
+        if (filter.id && !reg.test(filter.id)) {
+          return this.$message.error('id 应该为一个数字')
         }
-        this.fetchData()
+        if (filter.userId && !reg.test(filter.userId)) {
+          return this.$message.error('操作着ID 应该为一个数字')
+        }
+        this.filter = filter
       }
+      if (type === 'query') {
+        if (this.pagination) {
+          this.pagination.currentPage = 1
+        }
+      }
+      this.fetchData()
     },
     handleFilterReset () {
       this.filter = {
@@ -221,7 +228,7 @@ export default {
       }),
       elapsedTime: _.o.string.other('form', {
         component: 'Input',
-        placeholder: '操作耗时'
+        placeholder: '操作时间'
       }),
       createTime: _.o.string.other('form', {
         component: 'Input',

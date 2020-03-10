@@ -34,9 +34,9 @@
       </el-form-item>
       <el-form-item label="菜单目录" prop="modle">
         <!-- <el-input v-model="form.modle"></el-input> -->
-        <el-radio v-model="form.modle" label="0">收起</el-radio>
-        <el-radio v-model="form.modle" label="1">展开</el-radio>
-        <el-radio v-model="form.modle" label="3">媒资菜单</el-radio>
+        <el-radio v-model="form.modle" :label="0">收起</el-radio>
+        <el-radio v-model="form.modle" :label="1">展开</el-radio>
+        <el-radio v-model="form.modle" :label="3">媒资菜单</el-radio>
       </el-form-item>
       <el-form-item label="是否禁用" prop="disabled">
         <el-radio v-model="form.disabled" label="0">否</el-radio>

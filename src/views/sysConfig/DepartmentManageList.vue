@@ -42,6 +42,7 @@ export default {
 
   data () {
     return {
+      canEdit: false,
       filterSchema: null,
       filter: {
         sort: undefined,
@@ -100,6 +101,9 @@ export default {
             width: 100,
             sortable: true,
             render: (h, { row }) => {
+              if (!this.canEdit) {
+                return row.seq
+              }
               return h(Input, {
                 ref: 'input',
                 props: { value: row.seq },
@@ -278,6 +282,9 @@ export default {
     })
     this.filterSchema = filterSchema
     this.fetchData()
+    this.$service.getButtonGroupForPageList('sysDept').then(data => {
+      this.canEdit = data.some(item => item.runComm === 'edit')
+    })
   }
 }
 </script>
