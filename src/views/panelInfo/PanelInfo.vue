@@ -2977,7 +2977,7 @@ export default {
               }
             })
             // 修复插入干预位引起的pictureurl横竖图变化问题
-            if ((mediaRuleLayout === '9' || mediaRuleLayout === '10') && interveneContentList.length !== 0) {
+            if ((mediaRuleLayout === '7' || mediaRuleLayout === '8') && interveneContentList.length !== 0) {
               this.updateSelectedResourcesPic(0)
             }
             this.updatePosition()
