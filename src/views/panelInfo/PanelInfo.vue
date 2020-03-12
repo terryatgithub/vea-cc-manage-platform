@@ -130,7 +130,7 @@
                 </el-form-item>
                 <div v-show="pannel.parentType !== 'subscribe'">
                   <el-form-item label="版块内容来源" v-if="pannel.parentType === 'normal'">
-                    <el-radio-group :value="pannel.pannelList[0].fillType" @input="handleInputFillType">
+                    <el-radio-group :value="pannelFillType" @input="handleInputFillType">
                       <el-radio
                         v-for="fillType in fillTypeOptions"
                         :key="fillType.value"
@@ -140,7 +140,7 @@
                     </el-radio-group>
                   </el-form-item>
                   <!-- 运营手动填充 -->
-                  <template v-if="pannel.pannelList[0].fillType === 1">
+                  <template v-if="pannelFillType === 1">
                     <el-form-item label="版块布局" required>
                       <LayoutSelector ref="layoutSelector" @select-end="handleSelectLayoutEnd">
                         <el-button @click.stop="handleSelectLayoutStart" type="primary" plain >选择布局</el-button>
@@ -305,7 +305,7 @@
                     </el-form-item>
                   </template>
                   <!-- 用排行榜填充 -->
-                  <template v-if="pannel.pannelList[0].fillType === 2">
+                  <template v-if="pannelFillType === 2">
                     <el-form-item label="展示影片数量" required>
                       <InputPositiveInt :value="pannel.pannelList[0].filmNum" @input="handleInputFilmNum" style="width:100px"/>
                       <span class="video-num-tip">影片数量必须在5~10之间</span>
@@ -340,7 +340,7 @@
                       ></VirtualPanel>
                     </el-form-item>
                   </template>
-                  <template v-if="pannel.pannelList[0].fillType === 3">
+                  <template v-if="pannelFillType === 3">
                     <el-form-item label="选择布局">
                       <el-radio-group style="margin-top: 10px;" v-model="mediaRuleLayout" @change="handleChangeMediaLayout">
                         <el-radio
@@ -381,7 +381,7 @@
                         style="display: flex;"
                         :mode="mode"
                         :maxCount="interveneMaxCount"
-                        :blocks="pannel.pannelList[0].interveneContentList"
+                        :blocks="interveneContentList"
                         @click-block="handleClickInterveneBlock"
                         @remove-block="handleRemoveIntervene"
                         @end-intervene-input="handleEndIntervenePos"
@@ -492,10 +492,10 @@
                   <div>{{pannel.groupTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
                 </el-form-item>
                 <el-form-item v-if="pannel.parentType === 'normal'" label="板块内容来源">
-                  {{$consts.panelFillTypeText[pannel.pannelList[0].fillType]}}
+                  {{$consts.panelFillTypeText[pannelFillType]}}
                 </el-form-item>
                 <div v-show="pannel.parentType !== 'subscribe'">
-                  <template v-if="pannel.pannelList[0].fillType === 1">
+                  <template v-if="pannelFillType === 1">
                     <el-form-item label="版块布局" v-if="selectedLayout">
                       <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
                     </el-form-item>
@@ -515,7 +515,7 @@
                       <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
                     </el-form-item>
                   </template>
-                  <template v-if="pannel.pannelList[0].fillType === 2">
+                  <template v-if="pannelFillType === 2">
                     <el-form-item label="展示影片数量">
                       {{pannel.pannelList[0].filmNum}}
                     </el-form-item>
@@ -523,7 +523,7 @@
                       {{pannel.pannelList[0].rankName}}
                     </el-form-item>
                   </template>
-                  <el-form-item v-if="pannel.pannelList[0].fillType === 3" label="筛选规则描述">
+                  <el-form-item v-if="pannelFillType === 3" label="筛选规则描述">
                     <el-button
                       type="text"
                       @click="showMediaRuleDesc(pannel.pannelList[0].mediaRuleDesc)"
@@ -569,7 +569,7 @@
                       ></VirtualPanel>
                     </div>
                   </el-form-item>
-                  <template v-if="pannel.pannelList[0].fillType === 3">
+                  <template v-if="pannelFillType === 3">
                     <el-form-item label="干预位">
                       <VirtualIntervenePanel
                         class="pannel-blocks"
@@ -577,7 +577,7 @@
                         :mode="mode"
                         :disabled="true"
                         :maxCount="interveneMaxCount"
-                        :blocks="pannel.pannelList[0].interveneContentList"
+                        :blocks="interveneContentList"
                         @click-block="handleClickInterveneBlock"
                         @remove-block="handleRemoveIntervene"
                         @end-intervene-input="handleEndIntervenePos"
@@ -1013,6 +1013,12 @@ export default {
       } else {
         return undefined
       }
+    },
+    interveneContentList () {
+      return this.pannel.pannelList[0] ? (this.pannel.pannelList[0].interveneContentList || []) : []
+    },
+    pannelFillType () {
+      return this.pannel.pannelList[0] ? (this.pannel.pannelList[0].fillType || 1) : 1
     }
   },
   watch: {
@@ -1693,14 +1699,7 @@ export default {
     },
     addPannel () {
       const pannelList = this.pannel.pannelList
-      const pannel = {
-        rankIsOpen: 0,
-        rankChildId: undefined,
-        pannelTitle: undefined,
-        panelIsFocus: 0,
-        selectedResources: [],
-        contentList: []
-      }
+      const pannel = this.genPannel()
       const index = pannelList.length
       this.activePannelIndex = index.toString()
       this.blockCountList.push(this.blockCount)
@@ -2305,7 +2304,7 @@ export default {
         }
         // 干预设置interveneContentList
         const contentListCopy = JSON.parse(JSON.stringify(itemContentList))
-        const interveneContentList = item.interveneContentList.map(interveneContent => {
+        const interveneContentList = (item.interveneContentList || []).map(interveneContent => {
           const intervenePos = interveneContent.intervenePos
           const content = contentListCopy[intervenePos - 1]
           content.intervenePos = parseInt(intervenePos)
@@ -2411,7 +2410,7 @@ export default {
         if (!activePannel.mediaRule) {
           return cb(Error('请配置筛选规则，并选择一种你需要的布局'))
         }
-        const interveneContentList = activePannel.interveneContentList
+        const interveneContentList = activePannel.interveneContentList || []
         const error = interveneContentList.some(item => {
           return !item.intervenePos || item.videoContentList.length === 0
         })
@@ -2923,7 +2922,7 @@ export default {
       const interveneContent = activePannel.interveneContentList[index]
       // 不允许重复的intervenePos
       const currentIntervenePos = interveneContent.intervenePos
-      const isRepeat = activePannel.interveneContentList.some((item, cIndex) => {
+      const isRepeat = (activePannel.interveneContentList || []).some((item, cIndex) => {
         // eslint-disable-next-line
         return cIndex !== index && item.intervenePos == currentIntervenePos
       })
@@ -2965,7 +2964,7 @@ export default {
               return a.intervenePos - b.intervenePos
             })
             // 插入干预位
-            const interveneContentList = activePannel.interveneContentList
+            const interveneContentList = activePannel.interveneContentList || []
             interveneContentList.forEach(item => {
               if (item.intervenePos && item.videoContentList.length !== 0) {
                 const insertBlockIndex = item.intervenePos - 1
