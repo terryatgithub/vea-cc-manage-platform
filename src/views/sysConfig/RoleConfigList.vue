@@ -110,7 +110,7 @@
 </template>
 <script>
 import _ from 'gateschema'
-import { ContentWrapper, Table, utils } from 'admin-toolkit'
+import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 export default {
   components: {
