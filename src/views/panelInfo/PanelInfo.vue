@@ -1021,7 +1021,7 @@ export default {
     },
     pannelFillType () {
       const firstPanel = this.pannel.pannelList[0] || {}
-      const pannelFillType = firstPanel.pannelFillType || 1
+      const pannelFillType = firstPanel.fillType || 1
       return pannelFillType
     }
   },
