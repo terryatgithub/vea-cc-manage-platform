@@ -1015,10 +1015,14 @@ export default {
       }
     },
     interveneContentList () {
-      return this.pannel.pannelList[0] ? (this.pannel.pannelList[0].interveneContentList || []) : []
+      const firstPanel = this.pannel.pannelList[0] || {}
+      const interveneContentList = firstPanel.interveneContentList || []
+      return interveneContentList
     },
     pannelFillType () {
-      return this.pannel.pannelList[0] ? (this.pannel.pannelList[0].fillType || 1) : 1
+      const firstPanel = this.pannel.pannelList[0] || {}
+      const pannelFillType = firstPanel.pannelFillType || 1
+      return pannelFillType
     }
   },
   watch: {
