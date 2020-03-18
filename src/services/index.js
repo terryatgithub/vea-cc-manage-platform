@@ -38,6 +38,7 @@ import * as mall from './mall'
 import * as analytics from './analytics'
 import * as tabInsertionTask from './tabInsertionTask'
 import * as deviceConfig from './deviceConfig'
+import * as policyGroup from './policyGroup'
 
 const service = {
   state: {},
@@ -80,7 +81,8 @@ const service = {
   ...mall,
   ...analytics,
   ...tabInsertionTask,
-  ...deviceConfig
+  ...deviceConfig,
+  ...policyGroup
 }
 
 export default function install (Vue) {

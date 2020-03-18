@@ -144,9 +144,9 @@ export default {
       this.updateTableSelected()
     },
     handleTableRowSelectionRemove (targetItem) {
-      const ID = this.idField
+      const getId = this.getId
       this.selected = this.selected.filter(item => {
-        return item[ID] !== targetItem[ID]
+        return getId(item) !== getId(targetItem)
       })
       this.updateTableSelected()
     },
@@ -158,11 +158,11 @@ export default {
       }
     },
     updateTableSelected () {
-      const ID = this.idField
+      const getId = this.getId
       const table = this.table
-      const newSelectedIndex = this.selected.map(item => item[ID])
+      const newSelectedIndex = this.selected.map(item => getId(item))
       const tableSelected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item[ID]) > -1) {
+        if (newSelectedIndex.indexOf(getId(item)) > -1) {
           result.push(index)
         }
         return result
@@ -181,6 +181,14 @@ export default {
     handleRowDblClick () {
       if (this.selectEndOnDblClick && this.selectionType === 'single') {
         this.handleSelectEnd()
+      }
+    },
+    getId (item) {
+      const ID = this.idField
+      if (typeof ID === 'function') {
+        return ID(item)
+      } else {
+        return item[ID]
       }
     }
   },

@@ -147,6 +147,28 @@ const partnerOptions = [
 const partnerText = optionsToText(partnerOptions)
 const partnerEnums = optionsToEnums(partnerOptions)
 
+const platformOptions = [
+  {
+    label: '腾讯',
+    value: 'tencent'
+  },
+  {
+    label: '爱奇艺',
+    value: 'yinhe'
+  },
+  {
+    label: '优酷',
+    value: 'youku'
+  },
+  {
+    label: '优朋',
+    value: 'voole'
+  }
+]
+
+const platformText = optionsToText(platformOptions)
+const platformEnums = optionsToEnums(platformOptions)
+
 const panelTypeOptions = [
   {
     label: '普通版块',
@@ -287,5 +309,9 @@ export default {
   optionsToEnums,
   optionsToText,
 
-  sourcePrefix
+  sourcePrefix,
+
+  platformOptions,
+  platformText,
+  platformEnums
 }

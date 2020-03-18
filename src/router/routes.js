@@ -60,6 +60,9 @@ const PanelRecommendFeedback = () => import('../views/panelRecommend/PanelRecomm
 
 const ChildPolicy = () => import('../views/homePageManage/child-policy/ChildPolicyManageIndex')
 
+const Policy = () => import('../views/policy/PolicyIndex.vue')
+const TestPolicy = () => import('../views/policy/TestPolicyIndex.vue')
+
 /** */
 const children = [
   {
@@ -129,6 +132,18 @@ const children = [
         path: '/policyConf/view.html',
         component: PolicyManage,
         meta: { title: '策略管理', tagId: 'policyConf' }
+      },
+      {
+        name: 'policyGroup',
+        path: '/policyGroup/view.html',
+        component: Policy,
+        meta: { title: '保底策略', tagId: 'policyGroup' }
+      },
+      {
+        name: 'testPolicyGroup',
+        path: '/testPolicyGroup/view.html',
+        component: TestPolicy,
+        meta: { title: '定向策略', tagId: 'testPolicyGroup' }
       },
       {
         name: 'testPolicyConf',

@@ -67,5 +67,8 @@ export default {
   },
   deviceConfig: {
     id: 'id'
+  },
+  policyGroup: {
+    id: 'id'
   }
 }

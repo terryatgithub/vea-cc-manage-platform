@@ -87,7 +87,8 @@ const deleteUrlMap = {
   topic: 'api/v1/topic/delHistory.html',
   topicConfig: 'api/v1/topicConfig/delHistory.html',
   mediaAutomation: 'api/v1/mediaAutomation/delHistory.html',
-  icon: 'api/v1/cornerIcon/remove.html'
+  icon: 'api/v1/cornerIcon/remove.html',
+  policyGroup: 'api/v1/policyGroup/delHistory.html'
 }
 export function deleteVersion (data) {
   return this.fetch({
@@ -108,7 +109,8 @@ const RESOURCE_DELETE_URL_MAP = {
   topic: 'api/v1/topic/remove.html',
   topicConfig: 'api/v1/topicConfig/remove.html',
   mediaAutomation: '/v1/mediaAutomation/remove.html',
-  icon: 'api/v1/cornerIcon/remove.html'
+  icon: 'api/v1/cornerIcon/remove.html',
+  policyGroup: 'api/v1/policyGroup/remove.html'
 }
 
 export function deleteResource (data) {

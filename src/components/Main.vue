@@ -171,7 +171,10 @@ const routerMap = {
   // 儿童策略
   childPolicy: 'childPolicy',
 
-  deviceConfig: 'deviceConfig'
+  deviceConfig: 'deviceConfig',
+
+  testPolicyGroup: 'testPolicyGroup',
+  policyGroup: 'policyGroup'
 }
 
 const iconMap = {
@@ -277,7 +280,10 @@ const iconMap = {
 
   childPolicy: 'el-icon-s-check',
   homeConfig: 'el-icon-setting',
-  deviceConfig: 'el-icon-s-tools'
+  deviceConfig: 'el-icon-s-tools',
+
+  policyGroup: 'el-icon-cc-fork',
+  testPolicyGroup: 'el-icon-cc-branches'
 }
 
 export default {
