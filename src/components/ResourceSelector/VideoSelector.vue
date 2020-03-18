@@ -60,7 +60,7 @@
               <CommonSelector v-model="filter.videoFormat" :options="videoFormatEnums"  />
             </el-form-item>
             <el-form-item label="内容标签">
-              <CommonSelector v-model="filter.contentTag" :options="contentTagEnums"  />
+              <CommonSelector :filterable="true" v-model="filter.contentTag" :options="contentTagEnums"  />
             </el-form-item>
             <el-form-item label="排序方式">
               <el-select v-model="filter.orderBy" size="small" style="width: 120px;">

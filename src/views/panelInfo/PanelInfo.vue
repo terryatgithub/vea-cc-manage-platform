@@ -7,6 +7,7 @@
             ref="commonContent"
             :mode="mode"
             :resource-info="resourceInfo"
+            :is-frozen="isFrozen"
             @replicate="mode = 'replicate'"
             @edit="mode = 'edit'"
             @unaudit="$emit('upsert-end')"
@@ -52,7 +53,7 @@
 
                 <el-form-item
                   label="内容源"
-                  v-if="isPanelCommonOrVideo">
+                  v-if="hasSource">
                   <SourceRadioSelector
                     :value="pannel.pannelResource"
                     @input="handlePannelResourceChange"
@@ -206,6 +207,7 @@
                             :is-live="false"
                             :disable-partner="!!pannel.pannelResource"
                             selection-type="multiple"
+                            :init-active-selector="initActiveResoruceSelector"
                             :source="pannel.pannelResource"
                             :business-type="pannel.panelGroupCategory"
                             @select-end="handleSelectResourceEnd">
@@ -433,7 +435,7 @@
 
                 <el-form-item
                   label="内容源"
-                  v-if="isPanelCommonOrVideo"
+                  v-if="hasSource"
                 >
                   {{ $consts.sourceText[pannel.pannelResource] }}
                 </el-form-item>
@@ -682,6 +684,7 @@ import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import InputPositiveInt from '@/components/InputPositiveInt'
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
+import { FROZEN_IDS } from './frozen'
 export default {
   mixins: [titleMixin],
   components: {
@@ -871,6 +874,9 @@ export default {
     resourceName () {
       return this.currentPanelDataType === 3 ? '业务专辑' : '版块'
     },
+    isFrozen () {
+      return FROZEN_IDS.includes(this.pannel.pannelGroupId)
+    },
     // eslint-disable-next-line
     resourceInfo() {
       const panel = this.pannel
@@ -900,8 +906,9 @@ export default {
       }
       return this.panelDataType
     },
-    isPanelCommonOrVideo () {
+    hasSource () {
       const panelGroupCategory = this.pannel.panelGroupCategory
+      // 影视，不限 是分源的
       return panelGroupCategory === 31 || panelGroupCategory === 67
     },
     isReplica () {
@@ -1023,6 +1030,13 @@ export default {
       const firstPanel = this.pannel.pannelList[0] || {}
       const pannelFillType = firstPanel.fillType || 1
       return pannelFillType
+    },
+    // eslint-disable-next-line
+    initActiveResoruceSelector () {
+      const panelGroupCategory = this.pannel.panelGroupCategory
+      if (panelGroupCategory === 60 || panelGroupCategory === 65) {
+        return 'edu'
+      }
     }
   },
   watch: {
@@ -1729,7 +1743,7 @@ export default {
         .then(() => {
           const panel = this.pannel
           panel.panelGroupCategory = val
-          if (this.isPanelCommonOrVideo) {
+          if (this.hasSource) {
             panel.pannelResource = 'o_tencent'
           } else {
             panel.pannelResource = ''
@@ -2458,7 +2472,7 @@ export default {
 
         const isPanelGroup = pannel.parentType === 'group'
 
-        if (this.isPanelCommonOrVideo) {
+        if (this.hasSource) {
           if (!pannel.pannelResource) {
             return cb(Error('请选择内容源'))
           }

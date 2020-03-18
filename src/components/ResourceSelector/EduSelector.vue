@@ -16,7 +16,7 @@
       <el-collapse-item title="查询条件" name="1">
         <el-form @keypress.enter.native="handleFilterChange" class="search-form" :inline="true" v-model="filter" label-width="72px">
           <el-form-item label="内容商">
-            <CommonSelector v-model="filter.contentProviders" :options="contentProviderEnums" />
+            <CommonSelector :filterable="true" v-model="filter.contentProviders" :options="contentProviderEnums" />
           </el-form-item>
           <el-form-item label="教育分类">
             <CommonSelector :value="filter.teachTypes" @input="handleTeachTypesChange" :options="teachTypeEnums" />

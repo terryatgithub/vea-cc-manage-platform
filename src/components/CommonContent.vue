@@ -49,7 +49,7 @@
           />
 
           <ContentButtonGroup
-            v-if="resourceInfo.id"
+            v-if="resourceInfo.id && !isFrozen"
             :resource-info="resourceInfo"
             :options="buttonGroupOptions"
             @copy="$emit('replicate')"
@@ -145,6 +145,9 @@ export default {
     },
     validateMethod: {
       type: Function
+    },
+    isFrozen: {
+
     }
   },
   watch: {

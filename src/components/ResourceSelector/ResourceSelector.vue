@@ -253,6 +253,7 @@ export default {
     businessType: Number,
     disablePartner: Boolean,
     idType: Number,
+    initActiveSelector: {},
     selectors: {
       type: Array,
       default () {
@@ -280,7 +281,7 @@ export default {
     },
     handleSelectStart () {
       this.shouldAutoFetch = (this.autoFetchSelectors || []).slice()
-      this.handleActivateSelector(this.selectors[0])
+      this.handleActivateSelector(this.initActiveSelector || this.selectors[0])
     },
     handleActivateSelector (name) {
       this.activeSelector = name

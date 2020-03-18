@@ -9,11 +9,18 @@ export default {
     'table.data': 'clearSelected'
   },
   methods: {
+    checkAction (data, action, cb) {
+      cb()
+    },
     handleRead (item, version) {
-      this.$emit('read', item, version)
+      this.checkAction(item, 'read', () => {
+        this.$emit('read', item, version)
+      })
     },
     handleCreate () {
-      this.$emit('create')
+      this.checkAction(null, 'create', () => {
+        this.$emit('create')
+      })
     },
     handleEdit () {
       const length = this.selected.length
@@ -37,47 +44,49 @@ export default {
       const status = item[field.status]
       const STATUS = this.$consts.status
 
-      if (resourceType === 'tabInfo') {
-        if (item.tabType === 4) {
-          return this.$message({
-            type: 'error',
-            message: '第三方版面不能编辑'
-          })
+      this.checkAction(item, 'edit', () => {
+        if (resourceType === 'tabInfo') {
+          if (item.tabType === 4) {
+            return this.$message({
+              type: 'error',
+              message: '第三方版面不能编辑'
+            })
+          }
         }
-      }
 
-      if (['clickEvent'].indexOf(resourceType) === -1) {
-        // 除了个别, 其他资源都需要验证 idPrefix
-        if (id.toString().slice(0, 2) !== idPrefix) {
-          return this.$message({
-            type: 'error',
-            message: '无权限编辑该记录'
-          })
+        if (['clickEvent'].indexOf(resourceType) === -1) {
+          // 除了个别, 其他资源都需要验证 idPrefix
+          if (id.toString().slice(0, 2) !== idPrefix) {
+            return this.$message({
+              type: 'error',
+              message: '无权限编辑该记录'
+            })
+          }
         }
-      }
 
-      if (['crowdRel', 'panelRecommend'].indexOf(resourceType) > -1) {
-        // 有些资源审核通过也可以编辑。。
-        return this.$emit('edit', item)
-      }
+        if (['crowdRel', 'panelRecommend'].indexOf(resourceType) > -1) {
+          // 有些资源审核通过也可以编辑。。
+          return this.$emit('edit', item)
+        }
 
-      if (['sysPlugin', 'picture', 'layout', 'cornerIcon', 'cornerIconType', 'clickEvent'].indexOf(resourceType) > -1) {
-        // 有些资源在待审核状态也能编辑
-        if (status === STATUS.accepted) {
-          return this.$message({
-            type: 'error',
-            message: '该状态不允许编辑'
-          })
+        if (['sysPlugin', 'picture', 'layout', 'cornerIcon', 'cornerIconType', 'clickEvent'].indexOf(resourceType) > -1) {
+          // 有些资源在待审核状态也能编辑
+          if (status === STATUS.accepted) {
+            return this.$message({
+              type: 'error',
+              message: '该状态不允许编辑'
+            })
+          }
+        } else {
+          if (status !== STATUS.draft && status !== STATUS.rejected) {
+            return this.$message({
+              type: 'error',
+              message: '该状态不允许编辑'
+            })
+          }
         }
-      } else {
-        if (status !== STATUS.draft && status !== STATUS.rejected) {
-          return this.$message({
-            type: 'error',
-            message: '该状态不允许编辑'
-          })
-        }
-      }
-      this.$emit('edit', item)
+        this.$emit('edit', item)
+      })
     },
     handleDelete () {
       const resourceType = this.resourceType
@@ -89,32 +98,37 @@ export default {
           message: '未选中记录'
         })
       }
-      if (resourceType === 'tabInfo') {
-        const thirdPartTab = selected.find(item => item.tabType === 4)
-        if (thirdPartTab) {
-          return this.$message({
-            type: 'error',
-            message: `${thirdPartTab.tabName} 为第三方版面，不能删除`
-          })
+
+      this.checkAction(selected, 'delete', () => {
+        if (resourceType === 'tabInfo') {
+          const thirdPartTab = selected.find(item => item.tabType === 4)
+          if (thirdPartTab) {
+            return this.$message({
+              type: 'error',
+              message: `${thirdPartTab.tabName} 为第三方版面，不能删除`
+            })
+          }
         }
-      }
-      this.$confirm('确认要删除选中对记录？')
-        .then(() => {
-          this.$emit('delete', selected)
-        })
-        .catch(() => {})
+        this.$confirm('确认要删除选中对记录？')
+          .then(() => {
+            this.$emit('delete', selected)
+          })
+          .catch(() => {})
+      })
     },
     handleCopy (row) {
       const resourceType = this.resourceType
-      if (resourceType === 'tabInfo') {
-        if (row.tabType === 4) {
-          return this.$message({
-            type: 'error',
-            message: '第三方版面不能复制'
-          })
+      this.checkAction(row, 'copy', () => {
+        if (resourceType === 'tabInfo') {
+          if (row.tabType === 4) {
+            return this.$message({
+              type: 'error',
+              message: '第三方版面不能复制'
+            })
+          }
         }
-      }
-      this.$emit('copy', row)
+        this.$emit('copy', row)
+      })
     },
     handleRowSelectionAdd (targetItem) {
       this.selected.push(targetItem)
