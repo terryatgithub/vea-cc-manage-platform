@@ -684,7 +684,7 @@ import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import InputPositiveInt from '@/components/InputPositiveInt'
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
-import { FROZEN_IDS } from './frozen'
+import { isFrozen } from './frozen'
 export default {
   mixins: [titleMixin],
   components: {
@@ -875,7 +875,7 @@ export default {
       return this.currentPanelDataType === 3 ? '业务专辑' : '版块'
     },
     isFrozen () {
-      return FROZEN_IDS.includes(this.pannel.pannelGroupId)
+      return isFrozen(this.pannel)
     },
     // eslint-disable-next-line
     resourceInfo() {

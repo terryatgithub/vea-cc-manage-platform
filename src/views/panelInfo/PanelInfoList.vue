@@ -34,7 +34,7 @@ import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
-import { FROZEN_IDS } from './frozen'
+import { isFrozen } from './frozen'
 export default {
   extends: BaseList,
   components: {
@@ -225,12 +225,10 @@ export default {
 
   methods: {
     checkAction (row, action, cb) {
-      if (FROZEN_IDS.length > 0) {
-        const items = Array.isArray(row) ? row : [row]
-        const frozenItem = items.find(item => FROZEN_IDS.includes(item.pannelGroupId))
-        if (['edit', 'delete', 'copy'].includes(action) && frozenItem) {
-          return this.$message.error(`版块 ${frozenItem.pannelGroupId} 为保留版块，不能进行当前操作`)
-        }
+      const items = Array.isArray(row) ? row : [row]
+      const frozenItem = items.find(isFrozen)
+      if (['edit', 'delete', 'copy'].includes(action) && frozenItem) {
+        return this.$message.error(`版块 ${frozenItem.pannelGroupRemark} 为保留版块，不能进行当前操作`)
       }
       cb()
     },
