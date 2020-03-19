@@ -79,14 +79,14 @@
             </div>
           </DataAny>
           <template v-if="isTestPolicyGroup">
-            <DataAny label="MAC地址">
+            <DataAny label="MAC地址" :rules="rules.mac">
               <div slot="edit" class="form-item-mac">
                 <InputMac
                   v-for="(item, index) in policy.mac"
                   :key="index"
                   v-model="policy.mac[index]"
                   :form-prop="`mac.${index}`">
-                  <i @click="handleDelMac(index)" class="el-icon-circle-close" />
+                  <i v-show="policy.mac.length > 1" @click="handleDelMac(index)" class="el-icon-circle-close" />
                 </InputMac>
                 <el-button @click="handleAddMac" type="primary"><i class="el-icon-plus" /></el-button>
               </div>
@@ -158,12 +158,15 @@ export default {
         homepageId: [
           { required: true, message: '请选择首页方案', trigger: 'blur' }
         ],
+        mac: [
+          { required: true, message: '请填写 mac', trigger: 'blur' }
+        ],
         homepageVersion: [
           {
             validator: (rule, value, cb) => {
-              const regExp = /^\d+$/
+              const regExp = /^[0-9]{7}$/
               if (value && !regExp.test(value)) {
-                return cb(new Error('格式不正确，应该是一个数字'))
+                return cb(new Error('格式不正确，应该 7 位数字'))
               }
               cb()
             }
@@ -196,7 +199,14 @@ export default {
     },
     homepageVersion () {
       const { homepageVerStart = '', homepageVerEnd = '' } = this.policy
-      return `${homepageVerStart} ~ ${homepageVerEnd}`
+      if (homepageVerStart && homepageVerEnd) {
+        return `${homepageVerStart} ~ ${homepageVerEnd}`
+      } else if (homepageVerStart) {
+        return `>= ${homepageVerStart}`
+      } else if (homepageVerEnd) {
+        return `<= ${homepageVerEnd}`
+      }
+      return ''
     }
   },
   methods: {
@@ -385,9 +395,13 @@ export default {
       })
     },
     parseDataToApi (data) {
-      const isReplica = this.isReplica
+      const mode = this.mode
       data.normalHomepage = undefined
-      if (isReplica) {
+      if (mode === 'replicate') {
+        data.currentVersion = ''
+      }
+      if (mode === 'copy') {
+        data.id = undefined
         data.currentVersion = ''
       }
       data.mac = data.mac.map(item => item.replace(/(^\s*)|(\s*$)/g, '')).filter(item => item).join(',')
