@@ -34,6 +34,30 @@
         />
       </el-form-item>
 
+      <template v-if="contentForm.coverType === 'maskLife'">
+        <el-form-item label="生活方式资源选择" prop="coverType">
+          <CommonSelector
+            :disabled="isReadonly"
+            type="radio"
+            :value="contentForm.maskLifeInfo.lifeType"
+            @input="handleInputMaskLifeType"
+            :options="MASK_LIFE_TYPE_OPTIONS"
+          />
+        </el-form-item>
+        <el-form-item label="选择视频资源" v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.video">
+          <MaskVideoSelector selection-type="single"/>
+        </el-form-item>
+        <el-form-item label="选择视频资源" v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.authorMain">
+          <MaskAuthorSelector selection-type="single" />
+        </el-form-item>
+        <el-form-item label="选择视频资源" v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.authorCategory">
+          <KnowledgeTagSelector
+            selection-type="single"
+          />
+        </el-form-item>
+
+      </template>
+
       <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'media'">
         <ResourceSelector
           ref="resourceSelector"
@@ -499,10 +523,23 @@ import CrowdSelector from '@/components/CrowdSelector.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 import ClickEventSelector from '@/components/selectors/ClickEventSelector'
 import TagFrame from '../TagFrame'
-import { getSelectedResource, setMediaContent, setAppContent, setGoodContent } from '../panelInfoUtil'
+import {
+  getSelectedResource,
+  setMediaContent,
+  setAppContent,
+  setGoodContent,
+  MASK_LIFE_TYPE_OPTIONS,
+  MASK_LIFE_TYPES,
+  MASK_LIFE_RECOMMEND_TYPES,
+  MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
+  genDefaultMaskLifeInfo
+} from '../panelInfoUtil'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
 import Params from '@/components/Params'
+import KnowledgeTagSelector from '@/components/mask/KnowledgeTagSelector/KnowledgeTagSelector'
+import MaskAuthorSelector from '@/components/mask/AuthorSelector'
+import MaskVideoSelector from '@/components/mask/VideoSelector'
 export default {
   components: {
     Upload,
@@ -519,7 +556,10 @@ export default {
     AppParamsRead,
     TagFrame,
     InputPositiveInt,
-    RecommendStreamSelector
+    RecommendStreamSelector,
+    KnowledgeTagSelector,
+    MaskAuthorSelector,
+    MaskVideoSelector
   },
   data () {
     const isReadonly = this.isReadonly
@@ -585,6 +625,8 @@ export default {
       }
     }
     return {
+      MASK_LIFE_TYPE_OPTIONS,
+      MASK_LIFE_TYPES,
       showCrowdSelector: false,
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
@@ -791,6 +833,10 @@ export default {
           label: '推荐位管理',
           value: 'block',
           disabled: this.isMall
+        },
+        {
+          label: '生活方式资源',
+          value: 'maskLife'
         }
       ]
 
@@ -816,6 +862,11 @@ export default {
     }
   },
   methods: {
+    handleInputMaskLifeType (lifeType) {
+      this.contentForm.maskLifeInfo = genDefaultMaskLifeInfo({
+        lifeType
+      })
+    },
     handleAddTagStart () {
       this.showBlockTagDialog = true
       this.$sendEvent({

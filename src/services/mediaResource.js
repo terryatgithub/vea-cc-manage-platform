@@ -30,6 +30,41 @@ export function mediaGetTagList (params) {
   }).then(({ data }) => data)
 }
 
+export function mediaGetInterestList (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tvos/getMediaCategoryList.html',
+    params
+  }).then(({ data }) => data)
+}
+export function mediaGetAuthorList (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tvos/getMediaAuthorList.html',
+    params
+  }).then(({ data }) => {
+    data = data || {}
+    return {
+      rows: data.authors || [],
+      total: data.total,
+      page: data.pageIndex
+    }
+  })
+}
+export function mediaGetVideoList (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tvos/getMediaBriefVideoList.html',
+    params
+  }).then(({ data }) => {
+    data = data || {}
+    return {
+      rows: data.videos || [],
+      total: data.total,
+      page: data.pageIndex
+    }
+  })
+}
 export function mediaGetRankingInfoVideoList (params) {
   // 如果是业务分类是教育，则使用腾讯源
   if (params.businessType === 60) {

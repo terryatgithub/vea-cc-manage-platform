@@ -1,3 +1,48 @@
+export const MASK_LIFE_TYPE_OPTIONS = [
+  {
+    label: '跳转到视频列表页',
+    value: 'video'
+  },
+  {
+    label: '拉起到作者主页',
+    value: 'authorMain'
+  },
+  {
+    label: '拉起到作者分类页',
+    value: 'authorCategory'
+  },
+  {
+    label: '正常启动',
+    value: 'launch'
+  }
+]
+export const MASK_LIFE_TYPES = {
+  video: 'video',
+  authorMain: 'authorMain',
+  authorCategory: 'authorCategory',
+  launch: 'launch'
+}
+export const MASK_LIFE_RECOMMEND_TYPE_OPTIONS = [
+  {
+    label: '随心看视频流',
+    value: 'recommend'
+  },
+  {
+    label: '知识视频流',
+    value: 'category'
+  },
+  {
+    label: '作者视频流',
+    value: 'author'
+  }
+]
+
+export const MASK_LIFE_RECOMMEND_TYPES = {
+  recommend: 'recommend',
+  category: 'category',
+  author: 'author'
+}
+
 export function getMatchedPictureUrl (blockSize, imgList) {
   let maxMatchingValue = -99999
   let url
@@ -321,9 +366,32 @@ export function genDefaultContentForm (preset) {
     bgType: '',
     // 应用参数
     appParams: [],
+    // 生活方式
+    maskLifeInfo: genDefaultMaskLifeInfo(),
     ...preset
   }
 }
+
+export function genDefaultMaskLifeInfo (preset) {
+  return {
+    /**
+    video-跳转视频列表页
+    authorMain-跳转作者主页
+    authorCategory-作者分类
+    launch-正常启动
+    */
+    lifeType: 'launch',
+    videoId: '', // 视频资源id
+    authorId: '', // 作者id
+    authorName: '', // 作者名称，用于前端显示
+    categoryId: '', // 知识id
+    categoryName: '', // 知识名称，用于前端显示
+    recommendType: 'recommend', // category, author
+    filterValue: '',
+    ...preset
+  }
+}
+
 export function getDefaultParams () {
   return {
     openMode: 'app',
