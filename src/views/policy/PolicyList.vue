@@ -122,6 +122,14 @@ export default {
           }
         },
         {
+          label: '关联首页方案',
+          width: 150,
+          render: (h, { row }) => {
+            const normalHomepage = row.normalHomepage || {}
+            return `${normalHomepage.homepageName}(${normalHomepage.homepageId})`
+          }
+        },
+        {
           label: '机型/机芯',
           prop: 'chip',
           render: (h, { row }) => {

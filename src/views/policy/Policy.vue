@@ -65,14 +65,14 @@
                   @select-end="handleSelectHomepageEnd" selection-type="single" />
                 <span v-if="policy.homepageId" class="tip">
                   已选择：
-                  <el-tag class="el-tag">
+                  <el-tag style="cursor: pointer" class="el-tag" @click.native="showHomePageDetail(policy.normalHomepage)">
                     {{ policy.normalHomepage.homepageName }}
                   </el-tag>
                 </span>
             </div>
             <div slot="read">
               <span v-if="policy.homepageId" class="tip">
-                <el-tag class="el-tag">
+                <el-tag style="cursor: pointer" class="el-tag" @click.native="showHomePageDetail(policy.normalHomepage)">
                   {{ policy.normalHomepage.homepageName }}
                 </el-tag>
               </span>
@@ -115,6 +115,16 @@
         </CommonContent>
       </ContentCard>
     </PageContentWrapper>
+    <PageContentWrapper v-if="activePage === 'showHomePageDetail'">
+      <HomePageInfo
+        :id="homePageId"
+        init-mode="read"
+        :version="homePageVersion"
+        :title-prefix="title"
+        @upsert-end="activePage = 'policy'"
+        @go-back="activePage = 'policy'"
+      />
+    </PageContentWrapper>
   </PageWrapper>
 </template>
 
@@ -124,6 +134,7 @@ import PageContentWrapper from '@/components/PageContentWrapper'
 import CommonContent from '@/components/CommonContent.vue'
 import titleMixin from '@/mixins/title'
 import { cloneDeep } from 'lodash'
+import HomePageInfo from '../homePageManage/HomePageInfo'
 import ModelChipSelector from '@/components/selectors/ModelChipSelector'
 import HomepageSelector from '@/components/selectors/HomepageSelector'
 import InputMac from '@/components/InputMac'
@@ -135,6 +146,7 @@ export default {
     CommonContent,
     ModelChipSelector,
     HomepageSelector,
+    HomePageInfo,
     InputMac
   },
   props: ['initMode', 'id', 'version', 'policyGroupCategory'],
@@ -210,6 +222,11 @@ export default {
     }
   },
   methods: {
+    showHomePageDetail (homepage) {
+      this.homePageId = homepage.homepageId
+      this.homePageVersion = homepage.currentVersion
+      this.activePage = 'showHomePageDetail'
+    },
     genDefaultPolicy () {
       return {
         id: undefined,
@@ -260,7 +277,8 @@ export default {
       policy.homepageId = item.homepageId
       policy.normalHomepage = {
         homepageId: item.homepageId,
-        homepageName: item.homepageName
+        homepageName: item.homepageName,
+        currentVersion: item.currentVersion
       }
     },
     clearModelChipAndHomepage () {
