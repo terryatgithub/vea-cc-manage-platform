@@ -249,7 +249,7 @@ export default {
       if (count > 3) {
         info = `${count}个`
       } else {
-        info = rlsModelChipList.map(item => h('div', `${item.model}-${item.chip}`))
+        info = rlsModelChipList.map(item => h('div', `${item.model}_${item.chip}`))
       }
       return h('div', null, info)
     },

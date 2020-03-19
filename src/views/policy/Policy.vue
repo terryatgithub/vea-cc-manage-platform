@@ -300,6 +300,11 @@ export default {
       policy.rlsModelChipList = rlsModelChipList.concat(appendList)
       policy.platform = platform
       let htmlMsg = ''
+      const showMsg = (msg) => {
+        if (msg) {
+          this.$alert(htmlMsg, { title: '添加成功', dangerouslyUseHTMLString: true, confirmButtonText: '知道了' })
+        }
+      }
       if (existsList.length > 0) {
         htmlMsg += `
           <div>以下机型机芯已存在本策略中，无法添加</div>
@@ -316,10 +321,10 @@ export default {
               <div>${alertModelChipList.join(' , ')}</div>
             `
           }
-          this.$alert(htmlMsg, { title: '添加成功', dangerouslyUseHTMLString: true, confirmButtonText: '知道了' })
+          showMsg(htmlMsg)
         })
       } else {
-        this.$alert(htmlMsg, { title: '添加成功', dangerouslyUseHTMLString: true, confirmButtonText: '知道了' })
+        showMsg(htmlMsg)
       }
     },
     // handleSelectPolicyEnd (selected, options) {
@@ -361,6 +366,15 @@ export default {
     handleSaveDraft () {
       const data = cloneDeep(this.policy)
       data.status = this.$consts.status.draft
+      this.validate(data, () => {
+        this.upsert(this.parseDataToApi(data))
+      })
+    },
+    handleCopy (status) {
+      const data = cloneDeep(this.policy)
+      data.id = undefined
+      data.status = status
+      data.currentVersion = ''
       this.validate(data, () => {
         this.upsert(this.parseDataToApi(data))
       })

@@ -67,7 +67,7 @@ export default {
       this.isShowList = false
     },
     handleDelete (selected) {
-      this.$service.tabInfoRemove({
+      this.$service.policyGroupRemove({
         id: selected.map(item => item[ID_FIELD]).join(',')
       }, '删除成功')
         .then(() => {

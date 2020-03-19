@@ -181,6 +181,9 @@ export default {
           this.$service.addChipAndModel(this.form, '添加成功').then(data => {
             this.fetchData()
             this.form = this.genDefaultFormData()
+            this.$nextTick(() => {
+              this.$refs.form.clearValidate()
+            })
           })
         }
       })

@@ -69,6 +69,7 @@ export default {
     id: 'id'
   },
   policyGroup: {
-    id: 'id'
+    id: 'id',
+    status: 'status'
   }
 }
