@@ -218,7 +218,7 @@ export default {
         },
         {
           label: '操作',
-          width: 180,
+          width: 80,
           fixed: 'right',
           render: (h, { row }) => {
             return h('div', [
@@ -238,6 +238,7 @@ export default {
 
       const mac = {
         label: 'mac',
+        width: '130',
         render: (h, { row }) => {
           return this.getMacInfo(h, row)
         }

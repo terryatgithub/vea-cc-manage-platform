@@ -15,8 +15,8 @@
       v-if="!isShowList"
       :content-props="contentProps"
       :id="id"
-      :policyGroupCategory="1"
       :init-mode="mode"
+      :init-policy-group-category="1"
       :version="version"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack"/>

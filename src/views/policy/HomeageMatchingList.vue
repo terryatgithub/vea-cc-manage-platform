@@ -1,5 +1,7 @@
 <template>
   <TabPage>
+  <PageWrapper>
+    <PageContentWrapper v-show="activePage == 'matching'">
       <ContentCard title="主页匹配">
         <div slot="actions"></div>
         <el-row :gutter="20">
@@ -51,20 +53,43 @@
             </el-form>
           </el-col>
           <el-col :span="16">
-            <pre class="result-viwer">{{ matchResult }}</pre>
+            <pre class="result-viwer">{{ matchResultStr }}</pre>
+            <div >
+              <el-button v-show="matchResult.policy_id" @click="handlePreviewPolicy(matchResult.policy_id)" type="primary">预览策略（{{ matchResult.policy_id }}）</el-button>
+              <el-button v-show="matchResult.homepage_id" @click="handlePreviewHomepage(matchResult.homepage_id)" type="primary">预览首页方案（{{ matchResult.homepage_id }}）</el-button>
+            </div>
           </el-col>
         </el-row>
       </ContentCard>
+    </PageContentWrapper>
+    <PageContentWrapper v-if="activePage == 'policy'">
+      <Policy :id="policyId" init-mode="read" @upsert-end="activePage = 'matching'" @go-back="activePage = 'matching'"/>
+    </PageContentWrapper>
+    <PageContentWrapper v-if="activePage == 'homepage'">
+      <HomePageInfo :id="homepageId" init-mode="read" @upsert-end="activePage = 'matching'" @go-back="activePage = 'matching'" />
+    </PageContentWrapper>
+  </PageWrapper>
   </TabPage>
 </template>
 <script>
 import TabPage from '@/components/TabPage'
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
+import HomePageInfo from '../homePageManage/HomePageInfo'
+import Policy from './Policy'
 export default {
   components: {
-    TabPage
+    TabPage,
+    Policy,
+    HomePageInfo,
+    PageWrapper,
+    PageContentWrapper
   },
   data () {
     return {
+      activePage: 'matching',
+      homepageId: undefined,
+      policyId: undefined,
       matchResult: '',
       fModeOptions: [
         {
@@ -136,6 +161,15 @@ export default {
       }
     }
   },
+  computed: {
+    // eslint-disable-next-line
+    matchResultStr () {
+      const matchResult = this.matchResult
+      if (matchResult) {
+        return JSON.stringify(matchResult, undefined, 2)
+      }
+    }
+  },
   methods: {
     genDefaultFilter () {
       return {
@@ -154,7 +188,7 @@ export default {
       this.$refs.form.validate((valid) => {
         if (valid) {
           this.$service.homepageMatchingList(this.filter).then((result) => {
-            this.matchResult = JSON.stringify(result, undefined, 2)
+            this.matchResult = result
           })
         } else {
           this.$message.error('请把表单填写完整')
@@ -167,6 +201,14 @@ export default {
         this.$refs.form.clearValidate()
       })
       this.matchResult = ''
+    },
+    handlePreviewHomepage (id) {
+      this.activePage = 'homepage'
+      this.homepageId = id
+    },
+    handlePreviewPolicy (id) {
+      this.activePage = 'policy'
+      this.policyId = id
     }
   }
 }

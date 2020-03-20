@@ -149,7 +149,7 @@ export default {
     HomePageInfo,
     InputMac
   },
-  props: ['initMode', 'id', 'version', 'policyGroupCategory'],
+  props: ['initMode', 'id', 'version', 'initPolicyGroupCategory'],
   data () {
     return {
       mode: 'create',
@@ -185,7 +185,6 @@ export default {
           }
         ]
       }
-
     }
   },
   computed: {
@@ -202,6 +201,9 @@ export default {
         }
       }
       return result
+    },
+    policyGroupCategory () {
+      return this.policy.policyGroupCategory
     },
     isReplica () {
       return this.mode === 'replicate' || this.policy.duplicateVersion === 'yes'
@@ -231,7 +233,7 @@ export default {
       return {
         id: undefined,
         currentVersion: '',
-        policyGroupCategory: this.policyGroupCategory,
+        policyGroupCategory: this.initPolicyGroupCategory || 1,
         policyGroupName: '',
         platform: '',
         homepageId: undefined,
@@ -447,6 +449,7 @@ export default {
   },
   created () {
     this.mode = this.initMode || 'create'
+    this.policy.policyGroupCategory = this.initPolicyGroupCategory || 1
     if (this.id) {
       this.fetchData(this.version)
     }
