@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 // import './theme/coocaa-red/index.css'
 import './bus'
 import shadowDrag from '@/directives/shadowDrag'
+import FormAutoComplete from '@/utils/FormAutoComplete'
 
 import AppState from '@william17/vue-app-state'
 
@@ -34,6 +35,7 @@ Vue.use(VCharts)
 Vue.use(ElementUI)
 Vue.use(AppState)
 Vue.use(service)
+Vue.use(FormAutoComplete)
 Vue.component('GateSchemaForm', GateSchemaForm)
 Vue.component('ContentCard', ContentCard)
 

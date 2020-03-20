@@ -34,3 +34,10 @@ export function policyGroupRemove (data) {
     data
   })
 }
+
+export function homepageMatchingList (params) {
+  return this.fetch({
+    url: 'api/v1/policyGroup/matchHomepage.html',
+    params
+  })
+}

@@ -436,7 +436,7 @@ export default {
         data.id = undefined
         data.currentVersion = ''
       }
-      data.mac = data.mac.map(item => item.replace(/(^\s*)|(\s*$)/g, '')).filter(item => item).join(',')
+      data.mac = data.mac.filter(item => item).join(',')
       return data
     },
     upsert (data) {
@@ -467,7 +467,7 @@ export default {
       display inline-block
       margin-right 10px
     .el-input
-      width 200px
+      width 220px
     .el-input__inner
       padding-right 20px
   .el-icon-circle-close

@@ -1,6 +1,6 @@
 <template>
  <el-form-item :prop="formProp" :rules="rules.mac">
-    <el-input :value="value" @input="$emit('input', $event)" placeholder="mac地址, 12位字母/数字"></el-input>
+    <el-input :value="value" @input="$emit('input', $event)" placeholder="mac地址, 12 位[0-9a-fA-F]字符"></el-input>
     <slot></slot>
  </el-form-item>
 
@@ -15,7 +15,6 @@ export default {
         mac: [
           {
             validator: (rule, value, cb) => {
-              value = value.replace(/(^\s*)|(\s*$)/g, '') // 去掉空格
               const reg = /^[0-9a-fA-F]{12}$/
               const macList = this.macList || []
               if (!reg.test(value)) {

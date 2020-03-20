@@ -63,6 +63,8 @@ const ChildPolicy = () => import('../views/homePageManage/child-policy/ChildPoli
 const Policy = () => import('../views/policy/PolicyIndex.vue')
 const TestPolicy = () => import('../views/policy/TestPolicyIndex.vue')
 
+const HomeageMatchingList = () => import('../views/policy/HomeageMatchingList')
+
 /** */
 const children = [
   {
@@ -153,6 +155,15 @@ const children = [
           title: '测试策略',
 
           tagId: 'testPolicyConf'
+        }
+      },
+      {
+        name: 'matchHomepage',
+        path: '/matchHomepage.html',
+        component: HomeageMatchingList,
+        meta: {
+          title: '主页匹配首页',
+          tagId: 'matchHomepage'
         }
       }
     ]

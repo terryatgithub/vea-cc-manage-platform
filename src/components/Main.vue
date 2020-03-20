@@ -174,7 +174,8 @@ const routerMap = {
   deviceConfig: 'deviceConfig',
 
   testPolicyGroup: 'testPolicyGroup',
-  policyGroup: 'policyGroup'
+  policyGroup: 'policyGroup',
+  matchHomepage: 'matchHomepage'
 }
 
 const iconMap = {
@@ -283,7 +284,8 @@ const iconMap = {
   deviceConfig: 'el-icon-s-tools',
 
   policyGroup: 'el-icon-cc-fork',
-  testPolicyGroup: 'el-icon-cc-branches'
+  testPolicyGroup: 'el-icon-cc-branches',
+  matchHomepage: 'el-icon-cc-pic-center'
 }
 
 export default {
