@@ -175,7 +175,7 @@ export default {
       }, 0)
     },
     setTableHeight () {
-      this.tableHeight = this.$refs.selectorContent.clientHeight + 'px'
+      this.tableHeight = this.$refs.selectorContent.scrollHeight + 'px'
       this.$refs.table.$refs.table.doLayout()
     },
     handleRowDblClick () {
@@ -191,6 +191,9 @@ export default {
         return item[ID]
       }
     }
+  },
+  activated () {
+    this.setTableHeight()
   },
   created () {
     // 保存一个引用
