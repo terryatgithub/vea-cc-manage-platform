@@ -45,15 +45,29 @@
           />
         </el-form-item>
         <el-form-item label="选择视频资源" v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.video">
-          <MaskVideoSelector selection-type="single"/>
+          <MaskVideoSelector
+            title="选择视频"
+            selection-type="single"
+            @select-end="handleSelectMaskVideoEnd"/>
+            <span v-show="maskLifeInfo.videoId"> 已选择: {{ maskLifeInfo.videoId }}  <i @click="handleRemoveMaskVideo" class="el-icon-close btn-remove-icon" /></span>
         </el-form-item>
-        <el-form-item label="选择视频资源" v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.authorMain">
-          <MaskAuthorSelector selection-type="single" />
+        <el-form-item
+          label="选择视频资源"
+          v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.authorMain"
+          prop="maskLifeInfo.authorId"
+          :rules="contentRule.authorId">
+          <MaskAuthorSelector
+            title="生活方式作者选择"
+            selection-type="single"
+            @select-end="handleSelectAuthorEnd"/>
+          <span v-show="maskLifeInfo.authorId"> 已选择: {{ maskLifeInfo.authorName }} ({{ maskLifeInfo.authorId }}) </span>
         </el-form-item>
         <el-form-item label="选择视频资源" v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.authorCategory">
           <KnowledgeTagSelector
+            title="选择分类"
             selection-type="single"
-          />
+            @select-end="handleSelectKnowledgeTagEnd"/>
+          <span v-show="maskLifeInfo.categoryId"> 已选择: {{ maskLifeInfo.categoryName }} ({{ maskLifeInfo.categoryId }}) <i @click="handleRemoveKnowledgeTag" class="el-icon-close btn-remove-icon" /></span>
         </el-form-item>
 
       </template>
@@ -744,7 +758,10 @@ export default {
         'mediaAutomationBlockRls.refreshCal': [
           { required: true, message: '当开关开启时必填', trigger: 'blur' }
         ],
-        'bgParams.id': [{ required: true, message: '当开关开启时必填' }]
+        'bgParams.id': [{ required: true, message: '当开关开启时必填' }],
+        authorId: [
+          { required: true, message: '请选择生活方式作者', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -761,6 +778,9 @@ export default {
     'isInterveneBlock'
   ],
   computed: {
+    maskLifeInfo () {
+      return this.contentForm.maskLifeInfo
+    },
     isSpecific () {
       return this.contentType === 'specific'
     },
@@ -862,6 +882,52 @@ export default {
     }
   },
   methods: {
+    handleSelectMaskVideoEnd (video) {
+      const item = video[0]
+      const contentForm = this.contentForm
+      const maskLifeInfo = contentForm.maskLifeInfo
+      contentForm.maskLifeInfo = genDefaultMaskLifeInfo({
+        lifeType: maskLifeInfo.lifeType,
+        videoId: item.coocaaBVId
+      })
+      contentForm.title = item.title
+      contentForm.pictureUrl = item.thumb
+    },
+    handleRemoveMaskVideo () {
+      const maskLifeInfo = this.maskLifeInfo
+      this.contentForm.maskLifeInfo = genDefaultMaskLifeInfo({
+        lifeType: maskLifeInfo.lifeType
+      })
+    },
+    handleSelectAuthorEnd (author) {
+      const item = author[0]
+      const contentForm = this.contentForm
+      const maskLifeInfo = contentForm.maskLifeInfo
+      contentForm.maskLifeInfo = genDefaultMaskLifeInfo({
+        lifeType: maskLifeInfo.lifeType,
+        authorId: item.userId,
+        authorName: item.userName
+      })
+      contentForm.title = item.userName
+      contentForm.pictureUrl = item.userThumb
+    },
+    handleRemoveKnowledgeTag () {
+      const maskLifeInfo = this.maskLifeInfo
+      this.contentForm.maskLifeInfo = genDefaultMaskLifeInfo({
+        lifeType: maskLifeInfo.lifeType
+      })
+    },
+    handleSelectKnowledgeTagEnd (category) {
+      const item = category[0]
+      const contentForm = this.contentForm
+      const maskLifeInfo = contentForm.maskLifeInfo
+      contentForm.maskLifeInfo = genDefaultMaskLifeInfo({
+        lifeType: maskLifeInfo.lifeType,
+        categoryId: item.tagCode,
+        categoryName: item.tagCnName,
+        filterValue: item.filterValue
+      })
+    },
     handleInputMaskLifeType (lifeType) {
       this.contentForm.maskLifeInfo = genDefaultMaskLifeInfo({
         lifeType
@@ -1348,4 +1414,7 @@ $width = 100px;
     right -12px
 .flash-count-input
   width 100px !important
+.btn-remove-icon
+  color red
+  cursor pointer
 </style>

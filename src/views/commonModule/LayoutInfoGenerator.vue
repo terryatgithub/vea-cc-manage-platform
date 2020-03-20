@@ -23,7 +23,8 @@
       </el-form-item>
       <el-form-item label="附加条件">
         <el-checkbox v-model="dynamicValidateForm.hasPrice">价格</el-checkbox>
-        <el-checkbox v-model="dynamicValidateForm.lengthwiseIs" @change="changeLayout">纵向扩展布局</el-checkbox>
+        <el-checkbox :value="dynamicValidateForm.lengthwiseIs" @input="handleToggleLengthwise">纵向扩展布局</el-checkbox>
+        <el-checkbox :value="dynamicValidateForm.isExpander" @input="handleToggleExpander">横向扩展布局</el-checkbox>
       </el-form-item>
       <el-form-item
         v-for="(row, index) in dynamicValidateForm.rows"
@@ -42,8 +43,9 @@
                 v-for="(v,index) in blockCount"
                 :key="index"
                 :label="(index+1)+'块'"
-                :value="index+1"
-              >{{index+1}}块</el-option>
+                :value="index+1">
+                {{ index + 1 }} 块
+              </el-option>
             </el-select>
           </el-col>
         </el-form-item>
@@ -92,7 +94,7 @@
         <el-button type="primary" @click="handlePreviewLayout">预览布局</el-button>
         <el-button type="primary" @click="handleGenLayoutEnd">生成布局</el-button>
         <el-button type="primary" @click="handleDownloadLayout">导出布局文件</el-button>
-        <el-button type="primary" v-if="!dynamicValidateForm.lengthwiseIs" @click="handleAddRow">添加行数</el-button>
+        <el-button type="primary" v-if="canHasMultiRow" @click="handleAddRow">添加行数</el-button>
         <el-button @click="handleResetForm" type="primary">重置</el-button>
       </el-form-item>
     </el-form>
@@ -120,9 +122,9 @@ export default {
         rows: [this.genRow()],
         spacing: this.layoutSpacing || 40,
         hasPrice: false,
-        lengthwiseIs: false // 是否纵向扩展布局
+        lengthwiseIs: false, // 是否纵向扩展布局
+        isExpander: false
       },
-      blockCount: 6, // 块数
       totalWidth: this.layoutWidth || 1760,
       titleHeight: 58, // 标题占用的高度
       priceHeight: 52, // 价格占用的高度
@@ -133,7 +135,42 @@ export default {
       layoutForPreview: this.genDefaultLayout()
     }
   },
+  computed: {
+    blockCount () {
+      if (this.dynamicValidateForm.isExpander) {
+        return 2
+      }
+      return 6
+    },
+    canHasMultiRow () {
+      const { isExpander, lengthwiseIs } = this.dynamicValidateForm
+      return !(isExpander || lengthwiseIs)
+    }
+  },
   methods: {
+    handleToggleExpander (val) {
+      const form = this.dynamicValidateForm
+      const rows = form.rows || []
+      if (val) {
+        form.lengthwiseIs = false
+      }
+      form.isExpander = val
+      form.rows = rows.slice(0, 1)
+      const firstRow = form.rows[0]
+      if (val && firstRow && firstRow.blockNum > 2) {
+        firstRow.blockNum = 1
+        this.setBlockWidth(firstRow)
+      }
+    },
+    handleToggleLengthwise (val) {
+      const form = this.dynamicValidateForm
+      const rows = form.rows || []
+      if (val) {
+        form.isExpander = false
+      }
+      form.lengthwiseIs = val
+      form.rows = rows.slice(0, 1)
+    },
     handleGenLayoutEnd () {
       this.validateAndGenLayout(layout => {
         this.$emit('gen-end', {
@@ -164,7 +201,7 @@ export default {
     genLayout () {
       const layoutVersion = this.layoutVersion || 'v8'
       const rowNames = ['A', 'B', 'C', 'D']
-      const { rows, hasPrice, spacing, lengthwiseIs } = this.dynamicValidateForm
+      const { rows, hasPrice, spacing, lengthwiseIs, isExpander } = this.dynamicValidateForm
       const lastRowIndex = rows.length - 1
       // 生成标题
       const fileName = rows.reduce((fileName, row, rowIndex) => {
@@ -232,13 +269,29 @@ export default {
         return result
       }, { height: 0, contents: [] }).contents
 
+      const layoutType = isExpander
+        ? 'Expander'
+        : lengthwiseIs
+          ? 'Lengthwise'
+          : 'Panel'
+
       const layout = {
         fileName,
         content: {
-          type: lengthwiseIs ? 'Lengthwise' : 'Panel',
+          type: layoutType,
           contents,
           parents: '',
           version: layoutVersion
+        }
+      }
+
+      if (layoutType === 'Expander') {
+        const firstBlock = layout.content.contents[0]
+        layout.content.extra = {
+          width: firstBlock.width,
+          height: firstBlock.resize ? firstBlock.resize.height : firstBlock.height,
+          orientation: 0,
+          space: 40
         }
       }
       return layout
