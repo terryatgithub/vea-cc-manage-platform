@@ -1,63 +1,77 @@
 <template>
-  <ContentCard ref="contentCard" class="content">
-    <ContentWrapper :pagination="pagination" @filter-change="fetchData">
-      <el-form
-        inline ref="form"
-        v-model="filter"
-        @keypress.enter.native.prevent="handleFilterChange"
-        @submit.native.prevent="handleFilterChange">
-        <el-form-item>
-          <InputPositiveInt name="id" autocomplete="on" v-model="filter.id" placeholder="策略组ID" />
-        </el-form-item>
-        <el-form-item>
-          <el-input name="policyGroupName" autocomplete="on" v-model="filter.policyGroupName" placeholder="策略组名称" />
-        </el-form-item>
-        <el-form-item>
-          <el-input name="model" autocomplete="on" v-model="filter.model" placeholder="机型" />
-        </el-form-item>
-        <el-form-item>
-          <el-input name="chip" autocomplete="on" v-model="filter.chip" placeholder="机芯" />
-        </el-form-item>
-        <el-form-item>
-          <InputPositiveInt name="homepageId" autocomplete="on" v-model="filter.homepageId" placeholder="首页方案ID" />
-        </el-form-item>
-        <el-form-item>
-          <el-select v-model="filter.status" placeholder="状态">
-            <el-option
-              v-for="item in $consts.statusOptions"
-              :key="item.label"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item v-if="policyGroupCategory === 2">
-          <el-input name="mac" autocomplete="on" v-model="filter.mac" placeholder="MAC" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" native-type="submit">查询</el-button>
-          <el-button  @click="handleFilterReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-       <ButtonGroupForListPage
-        pageName='tab'
-        @add="handleCreate"
-        @edit="handleEdit"
-        @delete="handleDelete">
-      </ButtonGroupForListPage>
-      <Table
-        :props="table.props"
-        :header="tableHeader"
-        :data="table.data"
-        :selected="table.selected"
-        :selection-type="table.selectionType"
-        :select-on-row-click="true"
-        @row-selection-add="handleRowSelectionAdd"
-        @row-selection-remove="handleRowSelectionRemove"
-        @all-row-selection-change="handleAllRowSelectionChange"
+  <PageWrapper>
+    <PageContentWrapper v-show="activePage == 'policy'">
+      <ContentCard ref="contentCard" class="content">
+        <ContentWrapper :pagination="pagination" @filter-change="fetchData">
+          <el-form
+            inline ref="form"
+            v-model="filter"
+            @keypress.enter.native.prevent="handleFilterChange"
+            @submit.native.prevent="handleFilterChange">
+            <el-form-item>
+              <InputPositiveInt name="id" autocomplete="on" v-model="filter.id" placeholder="策略组ID" />
+            </el-form-item>
+            <el-form-item>
+              <el-input name="policyGroupName" autocomplete="on" v-model="filter.policyGroupName" placeholder="策略组名称" />
+            </el-form-item>
+            <el-form-item>
+              <el-input name="model" autocomplete="on" v-model="filter.model" placeholder="机型" />
+            </el-form-item>
+            <el-form-item>
+              <el-input name="chip" autocomplete="on" v-model="filter.chip" placeholder="机芯" />
+            </el-form-item>
+            <el-form-item>
+              <InputPositiveInt name="homepageId" autocomplete="on" v-model="filter.homepageId" placeholder="首页方案ID" />
+            </el-form-item>
+            <el-form-item>
+              <el-select v-model="filter.status" placeholder="状态">
+                <el-option
+                  v-for="item in $consts.statusOptions"
+                  :key="item.label"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="policyGroupCategory === 2">
+              <el-input name="mac" autocomplete="on" v-model="filter.mac" placeholder="MAC" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" native-type="submit">查询</el-button>
+              <el-button  @click="handleFilterReset">重置</el-button>
+            </el-form-item>
+          </el-form>
+          <ButtonGroupForListPage
+            pageName='tab'
+            @add="handleCreate"
+            @edit="handleEdit"
+            @delete="handleDelete">
+          </ButtonGroupForListPage>
+          <Table
+            :props="table.props"
+            :header="tableHeader"
+            :data="table.data"
+            :selected="table.selected"
+            :selection-type="table.selectionType"
+            :select-on-row-click="true"
+            @row-selection-add="handleRowSelectionAdd"
+            @row-selection-remove="handleRowSelectionRemove"
+            @all-row-selection-change="handleAllRowSelectionChange"
+          />
+        </ContentWrapper>
+      </ContentCard>
+    </PageContentWrapper>
+    <PageContentWrapper v-if="activePage === 'showHomePageDetail'">
+      <HomePageInfo
+        :id="homePageId"
+        init-mode="read"
+        :version="homePageVersion"
+        :title-prefix="title"
+        @upsert-end="activePage = 'policy'"
+        @go-back="activePage = 'policy'"
       />
-    </ContentWrapper>
-  </ContentCard>
+    </PageContentWrapper>
+</PageWrapper>
 </template>
 
 <script>
@@ -65,17 +79,26 @@ import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import InputPositiveInt from '@/components/InputPositiveInt'
+import HomePageInfo from '../homePageManage/HomePageInfo'
+import PageWrapper from '@/components/PageWrapper'
+import PageContentWrapper from '@/components/PageContentWrapper'
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
     Table,
     ButtonGroupForListPage,
-    InputPositiveInt
+    InputPositiveInt,
+    PageWrapper,
+    PageContentWrapper,
+    HomePageInfo
   },
 
   data () {
     return {
+      activePage: 'policy',
+      homePageId: undefined,
+      homePageVersion: undefined,
       resourceType: 'policyGroup',
       selected: [],
       filter: this.genDefaultFilter(),
@@ -93,6 +116,11 @@ export default {
     }
   },
   computed: {
+    title () {
+      return this.policyGroupCategory === 2
+        ? '定向策略'
+        : '保底策略'
+    },
     tableHeader () {
       const policyGroupCategory = this.policyGroupCategory
       const header = [
@@ -126,7 +154,20 @@ export default {
           width: 150,
           render: (h, { row }) => {
             const normalHomepage = row.normalHomepage || {}
-            return `${normalHomepage.homepageName}(${normalHomepage.homepageId})`
+            return h(
+              'el-button',
+              {
+                attrs: {
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.showHomePageDetail(row.normalHomepage)
+                  }
+                }
+              },
+              `${normalHomepage.homepageName}(${normalHomepage.homepageId})`
+            )
           }
         },
         {
@@ -211,6 +252,11 @@ export default {
   },
   props: ['policyGroupCategory'],
   methods: {
+    showHomePageDetail (homepage) {
+      this.homePageId = homepage.homepageId
+      this.homePageVersion = homepage.currentVersion
+      this.activePage = 'showHomePageDetail'
+    },
     genDefaultFilter () {
       return {
         id: '',

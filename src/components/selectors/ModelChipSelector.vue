@@ -145,7 +145,7 @@ export default {
     },
     genDefaultFormData () {
       return {
-        platform: this.platform || 'tencent',
+        platform: undefined,
         model: undefined,
         chip: undefined
       }

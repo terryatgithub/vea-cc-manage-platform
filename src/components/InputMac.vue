@@ -16,10 +16,10 @@ export default {
           {
             validator: (rule, value, cb) => {
               value = value.replace(/(^\s*)|(\s*$)/g, '') // 去掉空格
-              const reg = /^[a-zA-Z0-9]{12}$/
+              const reg = /^[0-9a-fA-F]{12}$/
               const macList = this.macList || []
               if (!reg.test(value)) {
-                return cb(new Error('请输入12位字母数字组成的MAC地址'))
+                return cb(new Error('请输入 12 位[0-9a-fA-F]字符'))
               }
               if (macList.length > 1 && macList.filter(item => item === value).length > 1) {
                 return cb(new Error('当前 mac 已存在'))
