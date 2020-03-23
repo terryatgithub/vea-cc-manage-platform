@@ -537,7 +537,8 @@
                     <div class="pannel-blocks pannel-blocks--read">
                       <template v-if="pannel.parentType === 'group'">
                         <el-tabs
-                          v-model="activePannelIndex"
+                          :value="activePannelIndex + ''"
+                          @input="activePannelIndex = +$event"
                           type="card"
                         >
                           <el-tab-pane

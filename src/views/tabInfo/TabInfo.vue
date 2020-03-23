@@ -1743,6 +1743,7 @@ export default {
       const panel = this.getPanelByIndex(index, crowdIndex)
       const panelData = this.panelListIndexed[panel.id]
       const panelStatus = panelData.pannelStatus
+      const panelGroupType = panelData.panelGroupType
       const STATUS = this.STATUS
 
       // 检查是否包含修改
@@ -1769,6 +1770,11 @@ export default {
       switch (true) {
         case isJiangSu && panelData.pannelGroupId.toString().indexOf(10) === 0:
           // 江苏泰州的不能编辑酷开(10)这边的
+          break
+        case panelGroupType === 12:
+          // 酷开幸福榜单，不支持编辑和创建副本
+          panelPreview.initGroupIndex = activeIndex
+          panelPreview.initBlockIndex = blockIndex
           break
         case panelStatus === STATUS.draft:
           // 如果是草稿，直接修改

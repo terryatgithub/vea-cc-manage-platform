@@ -56,7 +56,8 @@ export default {
       const parentType = panel.parentType
       const isRankingPanel = panel.pannelList[0].rankIsOpen === 1
       const isMediaRulePanel = panel.pannelList[0].fillType === 3
-      return parentType === 'function' || parentType === 'subscribe' || isRankingPanel || isMediaRulePanel
+      const isCoocaaRanking = panel.panelGroupType === 12
+      return parentType === 'function' || parentType === 'subscribe' || isRankingPanel || isMediaRulePanel || isCoocaaRanking
     },
     isForbiddenStatus () {
       const status = this.panel.pannelStatus
@@ -65,7 +66,7 @@ export default {
     errorMsg () {
       return this.isForbiddenStatus
         ? '只有审核通过和草稿状态的版块支持移动待'
-        : '不能移动排行榜版块、影片规则筛选版块、预约版块、功能版块里的推荐位'
+        : '不能移动排行榜版块、影片规则筛选版块、预约版块、功能版块、酷开幸福榜里的推荐位'
     }
   },
   methods: {
