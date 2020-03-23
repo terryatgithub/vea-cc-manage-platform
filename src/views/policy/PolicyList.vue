@@ -42,7 +42,7 @@
             </el-form-item>
           </el-form>
           <ButtonGroupForListPage
-            pageName='tab'
+            pageName='policyGroup'
             @add="handleCreate"
             @edit="handleEdit"
             @delete="handleDelete">
@@ -96,6 +96,7 @@ export default {
 
   data () {
     return {
+      canAdd: false,
       activePage: 'policy',
       homePageId: undefined,
       homePageVersion: undefined,
@@ -221,17 +222,19 @@ export default {
           width: 80,
           fixed: 'right',
           render: (h, { row }) => {
-            return h('div', [
-              h('el-button', {
-                props: { type: 'text' },
-                on: {
-                  click: (event) => {
-                    event.stopPropagation()
-                    this.handleCopy(row)
+            if (this.canAdd) {
+              return h('div', [
+                h('el-button', {
+                  props: { type: 'text' },
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleCopy(row)
+                    }
                   }
-                }
-              }, '复制')
-            ])
+                }, '复制')
+              ])
+            }
           }
         }
       ]
@@ -322,6 +325,9 @@ export default {
   },
   created () {
     this.fetchData()
+    this.$service.getButtonGroupForPageList('policyGroup').then(data => {
+      this.canAdd = data.some(item => item.runComm === 'add')
+    })
   }
 }
 </script>

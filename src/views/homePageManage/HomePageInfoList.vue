@@ -81,6 +81,7 @@ export default {
   },
   data () {
     return {
+      canAdd: false,
       resourceType: 'homepage',
       activePage: 'homepage_list',
       showChipDialog: false,
@@ -215,7 +216,7 @@ export default {
             fixed: 'right',
             render: (h, { row }) => {
               return h('div', [
-                h('el-button', {
+                (this.canAdd) && h('el-button', {
                   props: {
                     type: 'text'
                   },
@@ -365,6 +366,9 @@ export default {
       })
     this.filterSchema = filterSchema
     this.fetchData()
+    this.$service.getButtonGroupForPageList('homepage').then(data => {
+      this.canAdd = data.some(item => item.runComm === 'add')
+    })
     // this.getSysMenuInfo();
   }
 }
