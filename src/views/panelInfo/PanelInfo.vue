@@ -2286,6 +2286,10 @@ export default {
                   item.appParams = JSON.stringify(appParamsObj)
                 }
               }
+              const maskLifeInfo = item.maskLifeInfo
+              if (maskLifeInfo) {
+                maskLifeInfo.videoInfo = undefined
+              }
             })
 
           delete contentItem.mallResize

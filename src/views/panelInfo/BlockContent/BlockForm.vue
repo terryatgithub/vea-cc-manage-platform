@@ -46,29 +46,98 @@
         </el-form-item>
         <el-form-item label="选择视频资源" v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.video">
           <MaskVideoSelector
+            v-show="!isReadonly"
             title="选择视频"
             selection-type="single"
             @select-end="handleSelectMaskVideoEnd"/>
-            <span v-show="maskLifeInfo.videoId"> 已选择: {{ maskLifeInfo.videoId }}  <i @click="handleRemoveMaskVideo" class="el-icon-close btn-remove-icon" /></span>
+            <span v-show="maskLifeInfo.videoId">
+              已选择: {{ maskLifeInfo.videoId }}
+              <i v-show="!isReadonly" @click="handleRemoveMaskVideo" class="el-icon-close btn-remove-icon" />
+            </span>
         </el-form-item>
         <el-form-item
           label="选择视频资源"
           v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.authorMain"
           prop="maskLifeInfo.authorId"
+          key="authorId"
           :rules="contentRule.authorId">
           <MaskAuthorSelector
-            title="生活方式作者选择"
+            v-if="!isReadonly"
+            title="选择作者"
             selection-type="single"
             @select-end="handleSelectAuthorEnd"/>
           <span v-show="maskLifeInfo.authorId"> 已选择: {{ maskLifeInfo.authorName }} ({{ maskLifeInfo.authorId }}) </span>
         </el-form-item>
-        <el-form-item label="选择视频资源" v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.authorCategory">
+        <el-form-item
+          label="选择视频资源"
+          key="category"
+          v-if="contentForm.maskLifeInfo.lifeType === MASK_LIFE_TYPES.authorCategory">
           <KnowledgeTagSelector
-            title="选择分类"
+            v-if="!isReadonly"
+            title="选择知识"
             selection-type="single"
             @select-end="handleSelectKnowledgeTagEnd"/>
-          <span v-show="maskLifeInfo.categoryId"> 已选择: {{ maskLifeInfo.categoryName }} ({{ maskLifeInfo.categoryId }}) <i @click="handleRemoveKnowledgeTag" class="el-icon-close btn-remove-icon" /></span>
+          <span v-show="maskLifeInfo.categoryId">
+            已选择: {{ maskLifeInfo.categoryName }} ({{ maskLifeInfo.categoryId }})
+            <i v-show="!isReadonly" @click="handleRemoveKnowledgeTag" class="el-icon-close btn-remove-icon" />
+          </span>
         </el-form-item>
+        <template v-if="maskLifeInfo.lifeType === 'video'">
+          <el-form-item label="视频点击跳转">
+            <el-radio-group
+              :disabled="isReadonly"
+              :value="maskLifeInfo.recommendType"
+              @input="handleInputRecommendType">
+              <el-radio
+                v-for="item in MASK_LIFE_RECOMMEND_TYPE_OPTIONS"
+                :key="item.value"
+                :label="item.value">
+                {{ item.label }}
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+            label="知识"
+            key="rec-category"
+            v-if="maskLifeInfo.recommendType === MASK_LIFE_RECOMMEND_TYPES.category"
+            prop="maskLifeInfo.categoryId"
+            :rules="contentRule.categoryId">
+            <template v-if="maskLifeInfo.videoId">
+              <el-select
+                :disabled="isReadonly"
+                :value="maskLifeInfo.categoryId"
+                @input="handleInputRecommendCategory(maskLifeInfo, $event)"
+                @visible-change="initVideoInfo(maskLifeInfo)">
+                <el-option
+                  v-for="item in getCategoryOptions(maskLifeInfo)"
+                  :key="item.value"
+                  :value="item.value"
+                  :label="item.label" />
+              </el-select>
+            </template>
+            <template v-else>
+              <KnowledgeTagSelector
+                v-if="!isReadonly"
+                title="选择知识"
+                selection-type="single"
+                @select-end="handleSelectRecommendKnowledgeTagEnd"/>
+              <span v-show="maskLifeInfo.categoryId"> 已选择: {{ maskLifeInfo.categoryName }} ({{ maskLifeInfo.categoryId }})</span>
+            </template>
+          </el-form-item>
+          <el-form-item
+            label="作者"
+            key="rec-author"
+            v-if="!maskLifeInfo.videoId && maskLifeInfo.recommendType === MASK_LIFE_RECOMMEND_TYPES.author"
+            prop="maskLifeInfo.authorId"
+            :rules="contentRule.authorId">
+            <MaskAuthorSelector
+              v-if="!isReadonly"
+              title="选择作者"
+              selection-type="single"
+              @select-end="handleSelectRecommendAuthorEnd"/>
+            <span v-show="maskLifeInfo.authorId"> 已选择: {{ maskLifeInfo.authorName }} ({{ maskLifeInfo.authorId }}) </span>
+          </el-form-item>
+        </template>
 
       </template>
 
@@ -147,7 +216,7 @@
         >落焦不显示副标题</el-checkbox>
       </el-form-item>
       <el-form-item label="单集副标题" prop="singleSubTitle">
-        <el-input v-model.trim="contentForm.singleSubTitle" :disabled="isReadonly"></el-input>有单集副标题时，优先显示单集副标题
+        <el-input v-model.trim="contentForm.singleSubTitle" :disabled="isReadonly"></el-input> 有单集副标题时，优先显示单集副标题
       </el-form-item>
 
       <el-form-item label="内容海报" prop="pictureUrl" v-if="contentForm.coverType !== 'block'">
@@ -546,7 +615,8 @@ import {
   MASK_LIFE_TYPES,
   MASK_LIFE_RECOMMEND_TYPES,
   MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
-  genDefaultMaskLifeInfo
+  genDefaultMaskLifeInfo,
+  getVideoInfo
 } from '../panelInfoUtil'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
@@ -641,6 +711,8 @@ export default {
     return {
       MASK_LIFE_TYPE_OPTIONS,
       MASK_LIFE_TYPES,
+      MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
+      MASK_LIFE_RECOMMEND_TYPES,
       showCrowdSelector: false,
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
@@ -760,7 +832,10 @@ export default {
         ],
         'bgParams.id': [{ required: true, message: '当开关开启时必填' }],
         authorId: [
-          { required: true, message: '请选择生活方式作者', trigger: 'blur' }
+          { required: true, message: '请选择作者', trigger: 'blur' }
+        ],
+        categoryId: [
+          { required: true, message: '请选择知识', trigger: 'blur' }
         ]
       }
     }
@@ -882,13 +957,95 @@ export default {
     }
   },
   methods: {
+    initVideoInfo (maskLifeInfo) {
+      if (!maskLifeInfo.videoInfo) {
+        this.getVideoInfoById(maskLifeInfo.videoId)
+          .then(videoInfo => {
+            this.$set(maskLifeInfo, 'videoInfo', videoInfo)
+          })
+      }
+    },
+    handleInputRecommendCategory (maskLifeInfo, val) {
+      const categoryOptions = this.getCategoryOptions(maskLifeInfo)
+      const selected = categoryOptions.find(item => item.value === val)
+      maskLifeInfo.categoryId = selected.value
+      maskLifeInfo.categoryName = selected.label
+      maskLifeInfo.filterValue = selected.filterValue
+    },
+    getCategoryOptions (maskLifeInfo) {
+      const videoInfo = maskLifeInfo.videoInfo
+      if (videoInfo) {
+        return videoInfo.categoryOptions
+      } else {
+        return [
+          {
+            label: maskLifeInfo.categoryName,
+            value: maskLifeInfo.categoryId,
+            filterValue: maskLifeInfo.filterValue
+          }
+        ]
+      }
+    },
+    getVideoInfoById (coocaaBVId) {
+      return this.$service.mediaGetVideoList({ coocaaBVId }).then(data => {
+        const video = data.rows[0]
+        if (video) {
+          return getVideoInfo(video)
+        }
+      })
+    },
+    handleInputRecommendType (val) {
+      const contentForm = this.contentForm
+      const maskLifeInfo = contentForm.maskLifeInfo
+      const { videoId, videoInfo } = maskLifeInfo
+      const originRecommendType = maskLifeInfo.recommendType
+      maskLifeInfo.recommendType = val
+      if (videoId && (val === MASK_LIFE_RECOMMEND_TYPES.category || val === MASK_LIFE_RECOMMEND_TYPES.author)) {
+        if (!videoInfo) {
+          this.getVideoInfoById(videoId)
+            .then(videoInfo => {
+              maskLifeInfo.videoInfo = videoInfo
+            })
+            .catch(() => {
+              this.$message.error('或者视频信息视频，请重新设置视频点击跳转方式')
+              maskLifeInfo.recommendType = originRecommendType
+            })
+        }
+      }
+      switch (val) {
+        case MASK_LIFE_RECOMMEND_TYPES.recommend:
+          Object.assign(maskLifeInfo, {
+            categoryName: '',
+            categoryId: '',
+            filterValue: '',
+            authorId: '',
+            authorName: ''
+          })
+          break
+        case MASK_LIFE_RECOMMEND_TYPES.category:
+          Object.assign(maskLifeInfo, {
+            authorId: '',
+            authorName: ''
+          })
+          break
+        case MASK_LIFE_RECOMMEND_TYPES.author:
+          Object.assign(maskLifeInfo, {
+            categoryName: '',
+            categoryId: '',
+            filterValue: ''
+          })
+          break
+      }
+    },
     handleSelectMaskVideoEnd (video) {
       const item = video[0]
       const contentForm = this.contentForm
       const maskLifeInfo = contentForm.maskLifeInfo
       contentForm.maskLifeInfo = genDefaultMaskLifeInfo({
         lifeType: maskLifeInfo.lifeType,
-        videoId: item.coocaaBVId
+        videoId: item.coocaaBVId,
+        recommendType: MASK_LIFE_RECOMMEND_TYPES.recommend,
+        videoInfo: getVideoInfo(item)
       })
       contentForm.title = item.title
       contentForm.pictureUrl = item.thumb
@@ -896,7 +1053,8 @@ export default {
     handleRemoveMaskVideo () {
       const maskLifeInfo = this.maskLifeInfo
       this.contentForm.maskLifeInfo = genDefaultMaskLifeInfo({
-        lifeType: maskLifeInfo.lifeType
+        lifeType: maskLifeInfo.lifeType,
+        recommendType: MASK_LIFE_RECOMMEND_TYPES.recommend
       })
     },
     handleSelectAuthorEnd (author) {
@@ -926,6 +1084,21 @@ export default {
         categoryId: item.tagCode,
         categoryName: item.tagCnName,
         filterValue: item.filterValue
+      })
+    },
+    handleSelectRecommendKnowledgeTagEnd (category) {
+      const item = category[0]
+      Object.assign(this.maskLifeInfo, {
+        categoryId: item.tagCode,
+        categoryName: item.tagCnName,
+        filterValue: item.filterValue
+      })
+    },
+    handleSelectRecommendAuthorEnd (author) {
+      const item = author[0]
+      Object.assign(this.maskLifeInfo, {
+        authorId: item.userId,
+        authorName: item.userName
       })
     },
     handleInputMaskLifeType (lifeType) {

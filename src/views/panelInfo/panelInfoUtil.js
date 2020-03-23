@@ -43,6 +43,24 @@ export const MASK_LIFE_RECOMMEND_TYPES = {
   author: 'author'
 }
 
+export function getVideoInfo (video) {
+  let { category = '', categoryName = '', filterValue = '' } = video
+  category = category.split(',')
+  categoryName = categoryName.split(',')
+  filterValue = filterValue.split(',')
+  const categoryOptions = category.map((value, index) => {
+    return {
+      label: categoryName[index],
+      filterValue: filterValue[index],
+      value
+    }
+  })
+  return {
+    categoryOptions,
+    authorId: video.userId
+  }
+}
+
 export function getMatchedPictureUrl (blockSize, imgList) {
   let maxMatchingValue = -99999
   let url
@@ -330,6 +348,11 @@ export function chopSubTitle (title) {
 }
 
 export function genDefaultContentForm (preset) {
+  preset = preset || {}
+
+  const initMaskLifeInfo = preset.maskLifeInfo
+  delete preset.maskLifeInfo
+
   return {
     coverType: 'media',
     title: '',
@@ -372,7 +395,7 @@ export function genDefaultContentForm (preset) {
     // 应用参数
     appParams: [],
     // 生活方式
-    maskLifeInfo: genDefaultMaskLifeInfo(),
+    maskLifeInfo: genDefaultMaskLifeInfo(initMaskLifeInfo),
     ...preset
   }
 }
@@ -393,6 +416,7 @@ export function genDefaultMaskLifeInfo (preset) {
     categoryName: '', // 知识名称，用于前端显示
     recommendType: 'recommend', // category, author
     filterValue: '',
+    videoInfo: null,
     ...preset
   }
 }
