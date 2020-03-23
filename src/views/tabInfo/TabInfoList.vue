@@ -106,6 +106,7 @@ export default {
 
   data () {
     return {
+      canAdd: false,
       resourceType: 'tabInfo',
       selected: [],
       tabTypeOption: [
@@ -256,7 +257,7 @@ export default {
             fixed: 'right',
             render: (h, { row }) => {
               return h('div', [
-                h('el-button', {
+                this.canAdd && h('el-button', {
                   props: { type: 'text' },
                   on: {
                     click: (event) => {
@@ -397,6 +398,9 @@ export default {
       this.fetchData()
     })
     this.getBusinessType()
+    this.$service.getButtonGroupForPageList('tab').then(data => {
+      this.canAdd = data.some(item => item.runComm === 'add')
+    })
   }
 }
 </script>

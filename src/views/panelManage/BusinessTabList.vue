@@ -43,6 +43,7 @@ export default {
 
   data () {
     return {
+      canAdd: false,
       resourceType: 'tabInfo',
       tabTypeOption: [
         { label: '第三方版面', value: '4' },
@@ -208,7 +209,7 @@ export default {
     },
     createOperationRender (obj) {
       return (h, { row }) => {
-        let btn1 = h('el-button',
+        let btn1 = this.canAdd && h('el-button',
           {
             props: {
               type: 'text'
@@ -382,6 +383,9 @@ export default {
       this.fetchData()
     })
     this.getBusinessType()
+    this.$service.getButtonGroupForPageList('businessTab').then(data => {
+      this.canAdd = data.some(item => item.runComm === 'add')
+    })
   }
 }
 </script>
