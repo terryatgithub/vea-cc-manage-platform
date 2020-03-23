@@ -33,6 +33,9 @@
           <el-form-item label="内容标签">
             <CommonSelector v-model="filter.contentTag" :options="contentTagEnums" placeholder="请选择" />
           </el-form-item>
+          <el-form-item label="资源形态">
+            <CommonSelector v-model="filter.contentForm" :options="contentFormEnums" placeholder="请选择" />
+          </el-form-item>
           <el-form-item label="课程名称">
             <el-input v-model="filter.title" size="small"></el-input>
           </el-form-item>
@@ -253,6 +256,27 @@ export default {
     segmentTagEnums () {
       return (this.conditionList.segmentTag || [])
         .map(({ tagCnName, tagEnName }) => ({ label: tagCnName, value: tagEnName }))
+    },
+    contentFormEnums () {
+      // 内容形式 0-不限；1-视频 ；2-绘本；3-听故事
+      return [
+        {
+          label: '不限',
+          value: 0
+        },
+        {
+          label: '视频',
+          value: 1
+        },
+        {
+          label: '绘本',
+          value: 2
+        },
+        {
+          label: '听故事',
+          value: 3
+        }
+      ]
     }
   },
   props: ['isLive', 'selectionType', 'idType'],
@@ -274,6 +298,7 @@ export default {
         videoTypes: undefined, // 内容分类
         payTypes: undefined, // 付费类型
         contentTag: undefined, // 内容标签
+        contentForm: undefined, // 资源形态
         orderBy: undefined, // 排序方式
         order: 'desc', // 排序方式 asc:升序，desc：降序，默认降序
         title: undefined, // 课程标题

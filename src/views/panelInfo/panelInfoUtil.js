@@ -172,7 +172,12 @@ export function setMediaContent (contentForm, options) {
   } else if (selectedType === 'edu') {
     // 教育中心
     contentForm.contentType = 3
-    contentForm.videoContentType = 'edu'
+    // 如果是绘本或者故事
+    if ([2, 3].includes(selected.contentForm)) {
+      contentForm.videoContentType = 'eduProduct'
+    } else {
+      contentForm.videoContentType = 'edu'
+    }
     contentForm.extraValue1 = '_otx_' + selected.coocaaVId
     contentForm.platformId = selected.source
     contentForm.pictureUrl =
