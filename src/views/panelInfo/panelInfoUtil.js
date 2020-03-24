@@ -57,7 +57,8 @@ export function getVideoInfo (video) {
   })
   return {
     categoryOptions,
-    authorId: video.userId
+    authorId: video.userId,
+    authorName: video.userName
   }
 }
 
