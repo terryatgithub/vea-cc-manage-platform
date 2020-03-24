@@ -2965,7 +2965,7 @@ export default {
       const mediaRuleLayout = this.mediaRuleLayout
       this.$service.getLayoutInforById({ id: mediaRuleLayout }).then((layout) => {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-        this.handleSelectLayoutEnd(layout, 20)
+        this.handleSelectLayoutEnd(layout, 12)
         const mediaRuleObj = JSON.parse(activePannel.mediaRule)
         if (activePannel.mediaRuleDesc) {
           this.clearBlocks()
@@ -2976,8 +2976,8 @@ export default {
             })
             this.filteredFilm = rs.data
             activePannel.mediaFilmNum = rs.data ? rs.data.total : 0
-            if (activePannel.mediaFilmNum < 20) {
-              return this.$message.error('筛选影片数量不足20， 请重新配置筛选规则')
+            if (activePannel.mediaFilmNum < 12) {
+              return this.$message.error('筛选影片数量不足12， 请重新配置筛选规则')
             }
             this.insertResources({
               selectedResources: this.filteredFilm.rows

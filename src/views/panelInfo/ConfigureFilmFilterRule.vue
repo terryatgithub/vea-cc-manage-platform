@@ -268,7 +268,7 @@
         </el-radio-group>
         <div>
           <el-button type="primary" @click="handleStepBack">上一步</el-button>
-          <el-button type="primary" @click="handleStepEnd" :disabled="filmFilterCount < 20" title="影片数量少于20，无法创建版块">完成</el-button>
+          <el-button type="primary" @click="handleStepEnd" :disabled="filmFilterCount < 12" title="影片数量少于12，无法创建版块">完成</el-button>
         </div>
       </div>
     </el-dialog>
@@ -334,7 +334,7 @@ export default {
       teachFeatureOptions: [],
       eduFilterForm: {
         teachCategory: [],
-        tagsRelation: 0,
+        tagsRelation: 1,
         teachTagCodes: [],
         company: [],
         teachAreas: [],
@@ -559,8 +559,8 @@ export default {
       }
       return this.$service.getFilmFilterResult(params).then(rs => {
         this.filmFilterCount = rs.data ? rs.data.total : 0
-        if (this.filmFilterCount < 20) {
-          return this.$message.error(`该筛选规则仅获取${this.filmFilterCount}部影片，少于20部，不可创建版块影片数量少于20，无法创建版块`)
+        if (this.filmFilterCount < 12) {
+          return this.$message.error(`该筛选规则仅获取${this.filmFilterCount}部影片，少于12部，不可创建版块影片数量少于12，无法创建版块`)
         }
         // 第四步结束
         if (homeOrderType !== undefined) {
