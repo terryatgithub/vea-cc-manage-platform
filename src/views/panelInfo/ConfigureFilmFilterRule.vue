@@ -315,7 +315,7 @@ export default {
       filmPayTypeOptions: [],
       movieFilterForm: {
         categorys: [],
-        tagsRelation: 0,
+        tagsRelation: 1,
         tagCodes: [],
         actors: [],
         directors: [],
@@ -494,7 +494,7 @@ export default {
         sources: sourceList.join(','),
         homeOrderType,
         page: 1,
-        rows: 20
+        rows: 12
       }
       // 参数填写-影视筛选
       let movieParams = {}

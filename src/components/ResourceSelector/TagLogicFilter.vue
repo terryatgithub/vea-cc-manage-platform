@@ -10,7 +10,7 @@
         </el-button>
         <el-tag
           v-for="(tag, index) in tagList"
-          :key="tag.tagCode"
+          :key="`${tag.tagCode}-${index}`"
           type="primary"
           :closable="true"
           @close="handleRemoveTag(listIndex, index)">
