@@ -1005,6 +1005,9 @@ export default {
           this.getVideoInfoById(videoId)
             .then(videoInfo => {
               maskLifeInfo.videoInfo = videoInfo
+              if (val === MASK_LIFE_RECOMMEND_TYPES.author) {
+                maskLifeInfo.authorId = videoInfo.authorId
+              }
             })
             .catch(() => {
               this.$message.error('或者视频信息视频，请重新设置视频点击跳转方式')
