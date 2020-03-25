@@ -359,8 +359,10 @@
                       @select-end="handleSelectBgEnd"
                       picture-resolution="1920*1080"
                     />
-                    <div class="image-preview-wrapper" v-if="tabInfo.alumbTabBg">
-                      <img class="image-preview" :src="tabInfo.alumbTabBg">
+                    <div>
+                      <div class="image-preview-wrapper" v-if="tabInfo.alumbTabBg">
+                        <img class="image-preview" :src="tabInfo.alumbTabBg">
+                      </div>
                     </div>
                   </el-form-item>
                   <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg">
@@ -370,17 +372,17 @@
                       :query-long-poster="1"
                     />
                     <span class="remarks marginL">备注：长图下最多支持6个版块</span>
-                    <div
-                      class="image-preview-wrapper image-preview-wrapper--long"
-                      v-if="tabInfo.alumbTabLongBg"
-                    >
-                      <img class="image-preview" :src="tabInfo.alumbTabLongBg">
-                      <i
-                        title="移除"
-                        @click="tabInfo.alumbTabLongBg = undefined"
-                        class="el-icon el-icon-close"
-                      ></i>
-                    </div>
+                    <div>
+                      <div
+                        class="image-preview-wrapper image-preview-wrapper--long"
+                        v-if="tabInfo.alumbTabLongBg">
+                        <img class="image-preview" :src="tabInfo.alumbTabLongBg">
+                        <i
+                          title="移除"
+                          @click="tabInfo.alumbTabLongBg = undefined"
+                          class="el-icon el-icon-close"></i>
+                      </div>
+                      </div>
                   </el-form-item>
                   <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
                     <el-switch
@@ -733,14 +735,18 @@
                   </el-form-item>
 
                   <el-form-item label="专题版面大背景" prop="alumbTabBg">
-                    <div class="image-preview-wrapper" v-if="tabInfo.alumbTabBg">
-                      <img class="image-preview" :src="tabInfo.alumbTabBg">
+                    <div>
+                      <div class="image-preview-wrapper" v-if="tabInfo.alumbTabBg">
+                        <img class="image-preview" :src="tabInfo.alumbTabBg">
+                      </div>
                     </div>
                   </el-form-item>
 
                   <el-form-item label="专题版面长图背景" prop="alumbTabLongBg">
-                    <div class="image-preview-wrapper" v-if="tabInfo.alumbTabLongBg">
-                      <img class="image-preview" :src="tabInfo.alumbTabLongBg">
+                    <div>
+                      <div class="image-preview-wrapper" v-if="tabInfo.alumbTabLongBg">
+                        <img class="image-preview" :src="tabInfo.alumbTabLongBg">
+                      </div>
                     </div>
                   </el-form-item>
 
@@ -1301,7 +1307,7 @@ export default {
       }
     },
     isReplicate () {
-      return this.mode === 'replicate'
+      return this.mode === 'replicate' || this.tabInfo.duplicateVersion === 'yes'
     },
     rules () {
       return {
@@ -2937,7 +2943,8 @@ export default {
         imgOnFocus: tabTitleIcons.focus_img_url,
         imgOnSelected: tabTitleIcons.selected_img_url,
         vipButtonSourceId: tabExtArr.vipButtonSourceId,
-        panelRecommendConfig: panelRecommendConfig
+        panelRecommendConfig: panelRecommendConfig,
+        duplicateVersion: data.duplicateVersion
       })
 
       this.updateDuplicates()
@@ -3130,11 +3137,12 @@ export default {
 <style lang="stylus" scoped>
 .image-preview-wrapper
   position: relative
+  display: inline-block
   max-width: 400px
   .el-icon-close
     position: absolute
-    top: 5px
-    left: 5px
+    top: 10px
+    right: -15px
     cursor: pointer
     color: red
 .image-preview
