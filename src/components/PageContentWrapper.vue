@@ -20,7 +20,7 @@ export default {
   overflow-y auto
   top 0
 .page-content-wrapper
-    >>> .el-input__inner,
+    >>> .el-input,
     >>> .el-select,
     >>> .el-textarea
         max-width 450px

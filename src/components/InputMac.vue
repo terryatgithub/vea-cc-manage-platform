@@ -1,6 +1,6 @@
 <template>
  <el-form-item :prop="formProp" :rules="rules.mac">
-    <el-input :value="value" @input="$emit('input', $event)" placeholder="mac地址, 12 位[0-9a-fA-F]字符"></el-input>
+    <el-input :value="value" @input="$emit('input', $event)" placeholder="mac地址, 12 位[0-9a-fA-F]字符" clearable></el-input>
     <slot></slot>
  </el-form-item>
 
@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  props: ['value', 'formProp', 'macList'],
+  props: ['value', 'formProp', 'macList', 'clearable'],
   data () {
     return {
       rules: {

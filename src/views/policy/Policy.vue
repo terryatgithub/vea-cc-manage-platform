@@ -20,6 +20,7 @@
             label="策略组名称"
             v-model="policy.policyGroupName"
             :rules="rules.policyGroupName"
+            :clearable="true"
             prop="policyGroupName">
           </DataString>
           <DataAny
@@ -79,13 +80,15 @@
             </div>
           </DataAny>
           <template v-if="isTestPolicyGroup">
-            <DataAny label="MAC地址" :rules="rules.mac">
+            <DataAny label="MAC地址" :rules="rules.mac" >
               <div slot="edit" class="form-item-mac">
                 <InputMac
+                  style="margin-bottom: 0"
                   v-for="(item, index) in policy.mac"
                   :key="index"
                   v-model="policy.mac[index]"
-                  :form-prop="`mac.${index}`">
+                  :form-prop="`mac.${index}`"
+                  clearable>
                   <i v-show="policy.mac.length > 1" @click="handleDelMac(index)" class="el-icon-circle-close" />
                 </InputMac>
                 <el-button @click="handleAddMac" type="primary"><i class="el-icon-plus" /></el-button>
@@ -98,12 +101,12 @@
             </DataAny>
             <DataAny label="主页版本" >
               <div slot="edit" class="homepage-version">
-                <el-form-item :rules="rules.homepageVersion" prop="homepageVerStart">
-                  <el-input v-model="policy.homepageVerStart" placeholder="最小版本"></el-input>
+                <el-form-item :rules="rules.homepageVersion" prop="homepageVerStart" style="margin-bottom: 0">
+                  <el-input v-model="policy.homepageVerStart" placeholder="最小版本" clearable></el-input>
                 </el-form-item>
                 -
-                <el-form-item :rules="rules.homepageVersion" prop="homepageVerEnd">
-                  <el-input v-model="policy.homepageVerEnd" placeholder="最大版本"></el-input>
+                <el-form-item :rules="rules.homepageVersion" prop="homepageVerEnd" style="margin-bottom: 0">
+                  <el-input v-model="policy.homepageVerEnd" placeholder="最大版本" clearable></el-input>
                 </el-form-item>
               </div>
               <div slot="read">
@@ -111,6 +114,29 @@
               </div>
             </DataAny>
           </template>
+          <DataString
+            :readonly="isRead || isReplica"
+            label="屏幕尺寸"
+            prop="screenSize"
+            :rules="rules.screenSize"
+            v-model.number="policy.screenSize"
+            placeholder="屏幕尺寸, 正整数，例如 60"
+            :clearable="true">
+          </DataString>
+          <DataAny key="tcVersion" label="整机版本" :readonly="isRead || isReplica" >
+            <div slot="edit" class="homepage-version">
+              <el-form-item :rules="rules.tcVersion" prop="tcVersionStart">
+                <el-input v-model="policy.tcVersionStart" placeholder="最小版本" clearable></el-input>
+              </el-form-item>
+              -
+              <el-form-item :rules="rules.tcVersion" prop="tcVersionEnd">
+                <el-input v-model="policy.tcVersionEnd" placeholder="最大版本" clearable></el-input>
+              </el-form-item>
+            </div>
+            <div slot="read">
+              {{ tcVersion }}
+            </div>
+          </DataAny>
         </DataForm>
         </CommonContent>
       </ContentCard>
@@ -183,6 +209,29 @@ export default {
               cb()
             }
           }
+        ],
+        tcVersion: [
+          { required: true, message: '不能为空', trigger: 'blur' },
+          {
+            validator: (rule, value, cb) => {
+              const regExp = /^[0-9]{1,9}$/
+              if (!regExp.test(value)) {
+                return cb(new Error('格式应为不超过 9 位的数字'))
+              }
+              cb()
+            }
+          }
+        ],
+        screenSize: [
+          {
+            validator: (rule, value, cb) => {
+              const reg = /^[1-9]\d*$/
+              if (value !== '' && !reg.test(value)) {
+                return cb(new Error('屏幕尺寸应该为一个正整数'))
+              }
+              cb()
+            }
+          }
         ]
       }
     }
@@ -205,6 +254,9 @@ export default {
     policyGroupCategory () {
       return this.policy.policyGroupCategory
     },
+    isRead () {
+      return this.mode === 'read'
+    },
     isReplica () {
       return this.mode === 'replicate' || this.policy.duplicateVersion === 'yes'
     },
@@ -219,6 +271,17 @@ export default {
         return `>= ${homepageVerStart}`
       } else if (homepageVerEnd) {
         return `<= ${homepageVerEnd}`
+      }
+      return ''
+    },
+    tcVersion () {
+      const { tcVersionStart = '', tcVersionEnd = '' } = this.policy
+      if (tcVersionStart && tcVersionEnd) {
+        return `${tcVersionStart} ~ ${tcVersionEnd}`
+      } else if (tcVersionStart) {
+        return `>= ${tcVersionStart}`
+      } else if (tcVersionEnd) {
+        return `<= ${tcVersionEnd}`
       }
       return ''
     }
@@ -241,9 +304,11 @@ export default {
         },
         homepageVerEnd: '',
         homepageVerStart: '',
+        tcVersionStart: 0,
+        tcVersionEnd: 999999999,
+        screenSize: '',
         mac: [''],
         rlsModelChipList: [],
-        screenSize: '',
         status: 2,
         duplicateVersion: ''
       }
