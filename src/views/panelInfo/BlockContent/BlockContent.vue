@@ -320,6 +320,9 @@ export default {
           this.specificContentList = []
         }
       }
+      if (coverType === 'maskLife') {
+        contentForm.videoContentType = 'maskLife'
+      }
       this.$set(contentList, activeIndex, contentForm)
     },
     handleRemoveContent (index, contentType) {

@@ -1,5 +1,6 @@
 import consts from '../utils/consts'
-export function getVersionList (params) {
+export function getVersionList (params = {}) {
+  params.rows = params.rows || 100
   return this.fetch({
     method: 'get',
     url: 'api/v1/hvi/historyList.html',

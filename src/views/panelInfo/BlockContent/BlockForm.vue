@@ -1000,16 +1000,28 @@ export default {
       const { videoId, videoInfo } = maskLifeInfo
       const originRecommendType = maskLifeInfo.recommendType
       maskLifeInfo.recommendType = val
+
       if (videoId && (val === MASK_LIFE_RECOMMEND_TYPES.category || val === MASK_LIFE_RECOMMEND_TYPES.author)) {
         if (!videoInfo) {
+          // 如果没有视频信息，要去获取
           this.getVideoInfoById(videoId)
             .then(videoInfo => {
               maskLifeInfo.videoInfo = videoInfo
+              if (val === MASK_LIFE_RECOMMEND_TYPES.author) {
+                maskLifeInfo.authorId = videoInfo.authorId
+                maskLifeInfo.authorName = videoInfo.authorName
+              }
             })
             .catch(() => {
               this.$message.error('或者视频信息视频，请重新设置视频点击跳转方式')
               maskLifeInfo.recommendType = originRecommendType
             })
+        } else {
+          // 有的话，直接拿来用
+          if (val === MASK_LIFE_RECOMMEND_TYPES.author) {
+            maskLifeInfo.authorId = videoInfo.authorId
+            maskLifeInfo.authorName = videoInfo.authorName
+          }
         }
       }
       switch (val) {
