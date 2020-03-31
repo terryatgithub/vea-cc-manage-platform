@@ -309,7 +309,11 @@
                   <!-- 用排行榜填充 -->
                   <template v-if="pannelFillType === 2">
                     <el-form-item label="展示影片数量" required>
-                      <InputPositiveInt :value="pannel.pannelList[0].filmNum" @input="handleInputFilmNum" style="width:100px"/>
+                      <InputPositiveInt
+                        :value="pannel.pannelList[0].filmNum"
+                        @input="handleInputFilmNum"
+                        @blur="handleBlurFilmNum"
+                        style="width:100px"/>
                       <span class="video-num-tip">影片数量必须在5~10之间</span>
                     </el-form-item>
                     <el-form-item label="选择排行榜" required>
@@ -2875,9 +2879,24 @@ export default {
       this.pannel.panelGroupType = val === 3 ? 10 : 1
     },
     handleInputFilmNum (val) {
-      this.pannel.pannelList[0].contentList = []
+      // this.pannel.pannelList[0].contentList = []
       this.pannel.pannelList[0].filmNum = val === '' ? '' : parseInt(val)
-      this.pannel.pannelList[0].rankName = undefined
+      // this.pannel.pannelList[0].rankName = undefined
+    },
+    handleBlurFilmNum () {
+      const firstPannel = this.pannel.pannelList[0] || {}
+      const filmNum = firstPannel.filmNum
+      if (filmNum < 5 || filmNum > 10) {
+        firstPannel.filmNum = undefined
+        return this.$message.error('影片数量必须在5~10之间')
+      }
+      // 已选择排行榜填充资源
+      if (firstPannel.rankChildId) {
+        const selectedResources = {
+          ranking: [{ code: firstPannel.rankChildId, id: firstPannel.rankChildId }]
+        }
+        this.handleSelectRankingEnd(selectedResources, 'rank')
+      }
     },
     handleShowLayout (seq) {
       this.reviewPicUrl = parseInt(seq)
