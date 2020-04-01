@@ -63,7 +63,8 @@
       </ContentCard>
     </PageContentWrapper>
     <PageContentWrapper v-if="activePage == 'policy'">
-      <Policy :id="policyId" init-mode="read" @upsert-end="activePage = 'matching'" @go-back="activePage = 'matching'"/>
+      <ChildPolicy v-if="policyPattern === 'child'" :id="policyId" init-mode="read" @upsert-end="activePage = 'matching'" @go-back="activePage = 'matching'"/>
+      <Policy v-else :id="policyId" init-mode="read" @upsert-end="activePage = 'matching'" @go-back="activePage = 'matching'"/>
     </PageContentWrapper>
     <PageContentWrapper v-if="activePage == 'homepage'">
       <HomePageInfo :id="homepageId" init-mode="read" @upsert-end="activePage = 'matching'" @go-back="activePage = 'matching'" />
@@ -77,10 +78,12 @@ import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import HomePageInfo from '../homePageManage/HomePageInfo'
 import Policy from './Policy'
+import ChildPolicy from '../homePageManage/child-policy/ChildPolicyInfo'
 export default {
   components: {
     TabPage,
     Policy,
+    ChildPolicy,
     HomePageInfo,
     PageWrapper,
     PageContentWrapper
@@ -90,6 +93,7 @@ export default {
       activePage: 'matching',
       homepageId: undefined,
       policyId: undefined,
+      policyPattern: undefined,
       matchResult: '',
       fModeOptions: [
         {
@@ -187,7 +191,10 @@ export default {
       this.matchResult = ''
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.$service.homepageMatchingList(this.filter).then((result) => {
+          const filter = this.filter
+          const policyPattern = filter.pattern
+          this.$service.homepageMatchingList(filter).then((result) => {
+            this.policyPattern = policyPattern
             this.matchResult = result
           })
         } else {
