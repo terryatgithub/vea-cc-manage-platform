@@ -55,6 +55,7 @@ export default {
         '带标题': 1,
         '不带标题': 0
       },
+      layoutTypeText: {},
       filter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {},
@@ -92,11 +93,7 @@ export default {
             prop: 'layoutType',
             width: '80',
             render: (createElement, { row }) => {
-              if (row.layoutType === 1) {
-                return '主页6.0'
-              } else {
-                return '影视V2'
-              }
+              return this.layoutTypeText[row.layoutType]
             }
           },
           {
@@ -206,6 +203,15 @@ export default {
         this.pagination.total = data.total
         this.table.data = data.rows
       })
+    },
+    fetchLayoutTypeOptions () {
+      this.$service.getDictType({ type: 'layoutType' }).then(layoutTypeOptions => {
+        this.layoutTypeOptions = layoutTypeOptions
+        this.layoutTypeText = layoutTypeOptions.reduce((result, item) => {
+          result[item.dictId] = item.dictCnName
+          return result
+        }, {})
+      })
     }
   },
   created () {
@@ -245,6 +251,7 @@ export default {
       }
     })
     this.filterSchema = filterSchema
+    this.fetchLayoutTypeOptions()
     this.fetchData()
   }
 }
