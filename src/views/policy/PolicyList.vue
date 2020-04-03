@@ -92,8 +92,7 @@ export default {
     InputPositiveInt,
     PageWrapper,
     PageContentWrapper,
-    HomePageInfo,
-    ClickCopy
+    HomePageInfo
   },
 
   data () {
@@ -176,6 +175,7 @@ export default {
         {
           label: '机型/机芯',
           prop: 'chip',
+          width: '140',
           render: (h, { row }) => {
             const chipItems = this.getModelChipInfo(h, row)
             const copyContent = (row.rlsModelChipList || []).map(item => `${item.model}_${item.chip}`).join('\n')
@@ -237,7 +237,7 @@ export default {
         },
         {
           label: '操作',
-          width: 130,
+          width: 60,
           fixed: 'right',
           render: (h, { row }) => {
             const actions = []
