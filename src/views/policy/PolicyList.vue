@@ -178,7 +178,7 @@ export default {
           width: '140',
           render: (h, { row }) => {
             const chipItems = this.getModelChipInfo(h, row)
-            const copyContent = (row.rlsModelChipList || []).map(item => `${item.model}_${item.chip}`).join('\n')
+            const copyContent = (row.rlsModelChipList || []).map(item => `${item.model}_${item.chip}`).join('\r\n')
             const copyChipBtn = h(ClickCopy, {
               style: {
                 position: 'absolute',
