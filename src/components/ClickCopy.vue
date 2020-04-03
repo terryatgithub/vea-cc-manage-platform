@@ -21,12 +21,13 @@ export default {
       if (navigator.clipboard) {
         return navigator.clipboard.writeText(content)
       } else if (document.execCommand) {
-        const input = document.createElement('input')
-        document.body.appendChild(input)
-        input.setAttribute('value', content)
-        input.select()
+        const textarea = document.createElement('textarea')
+        textarea.value = content
+        document.body.appendChild(textarea)
+        textarea.focus()
+        textarea.select()
         const result = document.execCommand('copy')
-        document.body.removeChild(input)
+        document.body.removeChild(textarea)
         // eslint-disable-next-line
         return result ? Promise.resolve() : Promise.reject()
       }
