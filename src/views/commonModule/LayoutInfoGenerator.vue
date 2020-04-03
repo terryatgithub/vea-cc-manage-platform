@@ -37,17 +37,16 @@
           :rules="[
              { required: true, message: '请选择行数', trigger: 'blur' }
           ]">
-          <el-col :span="9">
-            <el-select v-model="row.blockNum" placeholder="请选择" @change="setBlockWidth(row)">
-              <el-option
-                v-for="(v,index) in blockCount"
-                :key="index"
-                :label="(index+1)+'块'"
-                :value="index+1">
-                {{ index + 1 }} 块
-              </el-option>
-            </el-select>
-          </el-col>
+          <el-select
+            v-model="row.blockNum" placeholder="请选择" @change="setBlockWidth(row)">
+            <el-option
+              v-for="(v,index) in blockCount"
+              :key="index"
+              :label="(index+1)+'块'"
+              :value="index+1">
+              {{ index + 1 }} 块
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item
           :prop="'rows.' + index+ '.height'"
@@ -140,7 +139,7 @@ export default {
       if (this.dynamicValidateForm.isExpander) {
         return 2
       }
-      return 6
+      return 8
     },
     canHasMultiRow () {
       const { isExpander, lengthwiseIs } = this.dynamicValidateForm
@@ -435,7 +434,7 @@ export default {
     right: 20px
 .el-form-item__select
   >>> input
-    width: 150px
+    width: 100px
 .el-form-item__block-width span
   min-width: 50px
 .el-form-item__delete
