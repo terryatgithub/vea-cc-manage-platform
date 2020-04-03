@@ -140,7 +140,7 @@ export default {
       if (this.dynamicValidateForm.isExpander) {
         return 2
       }
-      return 6
+      return 8
     },
     canHasMultiRow () {
       const { isExpander, lengthwiseIs } = this.dynamicValidateForm
