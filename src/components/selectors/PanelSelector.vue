@@ -25,7 +25,7 @@
             </el-select>
           </el-form-item>
           <el-form-item >
-            <el-input v-model="filter.pannelId" placeholder="版块ID"></el-input>
+            <InputPositiveInt v-model="filter.pannelId" placeholder="版块ID"></InputPositiveInt>
           </el-form-item>
           <el-form-item >
             <el-input v-model="filter.pannelName" placeholder="版块名称"></el-input>
@@ -94,7 +94,13 @@
 <script>
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
 import BaseSelector from '../BaseSelector'
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
+  components: {
+    RemoteSelectorWrapper,
+    BaseSelector,
+    InputPositiveInt
+  },
   data () {
     const panelStatusOptions = this.$consts.statusOptions.filter(item => {
       return [3, 4, 7].indexOf(item.value) > -1
@@ -195,10 +201,6 @@ export default {
     }
   },
   props: ['isLive', 'source', 'selectionType'],
-  components: {
-    RemoteSelectorWrapper,
-    BaseSelector
-  },
   methods: {
     handleSelectStart () {
       this.$emit('select-start')

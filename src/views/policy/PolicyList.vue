@@ -82,6 +82,7 @@ import InputPositiveInt from '@/components/InputPositiveInt'
 import HomePageInfo from '../homePageManage/HomePageInfo'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
+import ClickCopy from '@/components/ClickCopy'
 export default {
   extends: BaseList,
   components: {
@@ -91,7 +92,8 @@ export default {
     InputPositiveInt,
     PageWrapper,
     PageContentWrapper,
-    HomePageInfo
+    HomePageInfo,
+    ClickCopy
   },
 
   data () {
@@ -175,7 +177,23 @@ export default {
           label: '机型/机芯',
           prop: 'chip',
           render: (h, { row }) => {
-            return this.getModelChipInfo(h, row)
+            const chipItems = this.getModelChipInfo(h, row)
+            const copyContent = (row.rlsModelChipList || []).map(item => `${item.model}_${item.chip}`).join('\n')
+            const copyChipBtn = h(ClickCopy, {
+              style: {
+                position: 'absolute',
+                top: '2px',
+                right: 0
+              },
+              props: {
+                content: copyContent
+              }
+            }, [
+              h('el-button', {
+                props: { type: 'text', icon: 'el-icon-copy-document' } }, '')
+            ])
+
+            return h('div', null, [ chipItems, copyChipBtn ])
           }
         },
         {
@@ -219,22 +237,23 @@ export default {
         },
         {
           label: '操作',
-          width: 80,
+          width: 130,
           fixed: 'right',
           render: (h, { row }) => {
+            const actions = []
             if (this.canAdd) {
-              return h('div', [
-                h('el-button', {
-                  props: { type: 'text' },
-                  on: {
-                    click: (event) => {
-                      event.stopPropagation()
-                      this.handleCopy(row)
-                    }
+              actions.push(h('el-button', {
+                props: { type: 'text' },
+                on: {
+                  click: (event) => {
+                    event.stopPropagation()
+                    this.handleCopy(row)
                   }
-                }, '复制')
-              ])
+                }
+              }, '复制'))
             }
+
+            return h('div', null, actions)
           }
         }
       ]

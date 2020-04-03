@@ -9,7 +9,7 @@
     <div slot="filter">
       <el-form :inline="true">
         <el-form-item label="布局ID">
-          <el-input v-model="filter.layoutId"></el-input>
+          <InputPositiveInt v-model="filter.layoutId"></InputPositiveInt>
         </el-form-item>
         <el-form-item label="布局名称">
           <el-input v-model="filter.layoutName"></el-input>
@@ -96,6 +96,7 @@
 import { Table } from 'admin-toolkit'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 import LayoutRead from '@/components/LayoutBlock'
+import InputPositiveInt from '@/components/InputPositiveInt'
 
 const idField = 'layoutId'
 
@@ -103,7 +104,8 @@ export default {
   components: {
     Table,
     RemoteSelectorWrapper,
-    LayoutRead
+    LayoutRead,
+    InputPositiveInt
   },
   data () {
     return {

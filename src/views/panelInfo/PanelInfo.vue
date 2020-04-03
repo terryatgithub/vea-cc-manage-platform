@@ -535,7 +535,9 @@
                       @click="showMediaRuleDesc(pannel.pannelList[0].mediaRuleDesc)"
                     >查看规则
                     </el-button>
-                    <el-button type="text" @click="handleCopyMediaRule">复制规则json</el-button>
+                    <ClickCopy :content="pannel.pannelList[0].mediaRule">
+                      <el-button type="text">复制规则json</el-button>
+                    </ClickCopy>
                   </el-form-item>
                   <el-form-item label="推荐位">
                     <div class="pannel-blocks pannel-blocks--read">
@@ -689,6 +691,7 @@ import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import InputPositiveInt from '@/components/InputPositiveInt'
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
+import ClickCopy from '@/components/ClickCopy'
 import { isFrozen } from './frozen'
 export default {
   mixins: [titleMixin],
@@ -714,7 +717,8 @@ export default {
     AnalyzeDmpDataDialog,
     SubscribeVideos,
     InputPositiveInt,
-    ConfigureFilmFilterRule
+    ConfigureFilmFilterRule,
+    ClickCopy
   },
   data () {
     const extend = {
@@ -3038,16 +3042,6 @@ export default {
         }
       })
       currentPannel.contentList = selectedBlocksAndResources
-    },
-    handleCopyMediaRule () {
-      const input = document.createElement('input')
-      document.body.appendChild(input)
-      input.setAttribute('value', this.pannel.pannelList[0].mediaRule)
-      input.select()
-      if (document.execCommand('copy')) {
-        this.$message.success('复制成功')
-      }
-      document.body.removeChild(input)
     }
   },
   created () {

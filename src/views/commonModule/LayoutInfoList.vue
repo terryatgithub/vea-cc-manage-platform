@@ -216,6 +216,10 @@ export default {
   },
   created () {
     let filterSchema = _.map({
+      layoutId: _.o.oneOf([_.number, _.value('')]).$msg('请输入数字').other('form', {
+        component: 'Input',
+        placeholder: '布局ID'
+      }),
       layoutName: _.o.string.other('form', {
         component: 'Input',
         placeholder: '布局名称'
@@ -234,7 +238,7 @@ export default {
       })
     }).other('form', {
       cols: {
-        item: 5,
+        item: 4,
         label: 0,
         wrapper: 20
       },
