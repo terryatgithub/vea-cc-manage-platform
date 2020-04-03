@@ -434,7 +434,7 @@ export default {
     right: 20px
 .el-form-item__select
   >>> input
-    width: 100px
+    width: 98px
 .el-form-item__block-width span
   min-width: 50px
 .el-form-item__delete
