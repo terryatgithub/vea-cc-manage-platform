@@ -197,6 +197,11 @@ export default {
           }
         },
         {
+          label: '屏幕尺寸',
+          prop: 'screenSize',
+          width: '70'
+        },
+        {
           label: '版本/状态',
           prop: 'tabStatus',
           formatter: row => {
