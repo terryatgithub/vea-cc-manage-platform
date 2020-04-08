@@ -309,6 +309,7 @@ export default {
             pannelStatus: undefined,
             showTitle: undefined,
             flagIs4k: 0,
+            fillType: 4, // 填充类型为 用推荐流填充
             // layoutId: undefined,
             //  panelIsFocus: undefined,
             //   focusShape: undefined,
