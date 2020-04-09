@@ -115,7 +115,6 @@
             </div>
           </DataAny>
           <DataString
-            :readonly="isRead || isReplica"
             label="屏幕尺寸"
             prop="screenSize"
             :rules="rules.screenSize"
@@ -123,7 +122,7 @@
             placeholder="屏幕尺寸, 正整数，例如 60"
             :clearable="true">
           </DataString>
-          <DataAny key="tcVersion" label="整机版本" :readonly="isRead || isReplica" >
+          <DataAny key="tcVersion" label="整机版本">
             <div slot="edit" class="homepage-version">
               <el-form-item :rules="rules.tcVersion" prop="tcVersionStart">
                 <el-input v-model="policy.tcVersionStart" placeholder="最小版本" clearable></el-input>
