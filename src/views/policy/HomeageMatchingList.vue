@@ -43,6 +43,9 @@
               <el-form-item label="主页版本" prop="homepageVersion">
                 <el-input autocomplete="on" name="homepageVersion" v-model="filter.homepageVersion" placeholder="主页版本" clearable></el-input>
               </el-form-item>
+              <el-form-item label="整机版本" prop="tcVersion">
+                <el-input autocomplete="on" name="tcVersion" v-model="filter.tcVersion" placeholder="整机版本" clearable></el-input>
+              </el-form-item>
               <el-form-item label="设备ID" prop="devId">
                 <el-input autocomplete="on" name="devId" v-model="filter.devId" placeholder="设备ID" clearable></el-input>
               </el-form-item>
@@ -161,6 +164,17 @@ export default {
               cb()
             }
           }
+        ],
+        tcVersion: [
+          {
+            validator: (rule, value, cb) => {
+              const regExp = /^[0-9]{1,9}$/
+              if (value && !regExp.test(value)) {
+                return cb(new Error('格式应为不超过 9 位的数字'))
+              }
+              cb()
+            }
+          }
         ]
       }
     }
@@ -184,6 +198,7 @@ export default {
         mac: '',
         screenSize: '',
         homepageVersion: '',
+        tcVersion: '',
         devId: ''
       }
     },
