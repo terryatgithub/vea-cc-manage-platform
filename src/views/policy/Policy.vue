@@ -99,21 +99,21 @@
                 </el-tag>
               </div>
             </DataAny>
-            <DataAny label="主页版本" >
-              <div slot="edit" class="homepage-version">
-                <el-form-item :rules="rules.homepageVersion" prop="homepageVerStart" style="margin-bottom: 0">
-                  <el-input v-model="policy.homepageVerStart" placeholder="最小版本" clearable></el-input>
-                </el-form-item>
-                -
-                <el-form-item :rules="rules.homepageVersion" prop="homepageVerEnd" style="margin-bottom: 0">
-                  <el-input v-model="policy.homepageVerEnd" placeholder="最大版本" clearable></el-input>
-                </el-form-item>
-              </div>
-              <div slot="read">
-                {{ homepageVersion }}
-              </div>
-            </DataAny>
           </template>
+          <DataAny label="主页版本" >
+            <div slot="edit" class="homepage-version">
+              <el-form-item :rules="rules.homepageVersion" prop="homepageVerStart" style="margin-bottom: 0">
+                <el-input v-model="policy.homepageVerStart" placeholder="最小版本" clearable></el-input>
+              </el-form-item>
+              -
+              <el-form-item :rules="rules.homepageVersion" prop="homepageVerEnd" style="margin-bottom: 0">
+                <el-input v-model="policy.homepageVerEnd" placeholder="最大版本" clearable></el-input>
+              </el-form-item>
+            </div>
+            <div slot="read">
+              {{ homepageVersion }}
+            </div>
+          </DataAny>
           <DataString
             :readonly="isRead || isReplica"
             label="屏幕尺寸"
