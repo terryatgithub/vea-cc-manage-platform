@@ -27,11 +27,24 @@
       <el-form-item label="资源类别" prop="coverType">
         <CommonSelector
           :disabled="isReadonly"
-          type="radio"
+          type="radio-button"
           :value="contentForm.coverType"
           @input="$emit('cover-type-change', $event)"
           :options="coverTypeEnums"
         />
+      </el-form-item>
+
+      <el-form-item label="广电直播app资源选择" prop="gdLiveAppType">
+        <CommonSelector
+          :disabled="isReadonly"
+          type="radio"
+          :value="contentForm.gdLiveAppType"
+          @input="handleInputGDLiveAppType"
+          :options="GD_LIVE_APP_TYPE_OPTIONS"
+        />
+      </el-form-item>
+      <el-form-item label="频道选择">
+        <GDChannelSelector @select-end="handleSelectGDChannelEnd"></GDChannelSelector>
       </el-form-item>
 
       <template v-if="contentForm.coverType === 'maskLife'">
@@ -615,6 +628,8 @@ import {
   MASK_LIFE_TYPES,
   MASK_LIFE_RECOMMEND_TYPES,
   MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
+  GD_LIVE_APP_TYPE_OPTIONS,
+  GD_LIVE_APP_TYPES,
   genDefaultMaskLifeInfo,
   getVideoInfo
 } from '../panelInfoUtil'
@@ -624,6 +639,7 @@ import Params from '@/components/Params'
 import KnowledgeTagSelector from '@/components/mask/KnowledgeTagSelector/KnowledgeTagSelector'
 import MaskAuthorSelector from '@/components/mask/AuthorSelector'
 import MaskVideoSelector from '@/components/mask/VideoSelector'
+import GDChannelSelector from '@/components/selectors/GDChannelSelector'
 export default {
   components: {
     Upload,
@@ -643,7 +659,8 @@ export default {
     RecommendStreamSelector,
     KnowledgeTagSelector,
     MaskAuthorSelector,
-    MaskVideoSelector
+    MaskVideoSelector,
+    GDChannelSelector
   },
   data () {
     const isReadonly = this.isReadonly
@@ -713,6 +730,7 @@ export default {
       MASK_LIFE_TYPES,
       MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
       MASK_LIFE_RECOMMEND_TYPES,
+      GD_LIVE_APP_TYPE_OPTIONS,
       showCrowdSelector: false,
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
@@ -932,6 +950,10 @@ export default {
         {
           label: '生活方式资源',
           value: 'maskLife'
+        },
+        {
+          label: '广电直播app',
+          value: 'guangdianApp'
         }
       ]
 
@@ -957,6 +979,12 @@ export default {
     }
   },
   methods: {
+    handleInputGDLiveAppType (val) {
+
+    },
+    handleSelectGDChannelEnd (selected) {
+      console.log(selected)
+    },
     initVideoInfo (maskLifeInfo) {
       if (!maskLifeInfo.videoInfo) {
         this.getVideoInfoById(maskLifeInfo.videoId)

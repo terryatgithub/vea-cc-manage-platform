@@ -43,6 +43,22 @@ export const MASK_LIFE_RECOMMEND_TYPES = {
   author: 'author'
 }
 
+export const GD_LIVE_APP_TYPE_OPTIONS = [
+  {
+    label: '启动到频道',
+    value: 'channel'
+  },
+  {
+    label: '正常启动',
+    value: 'normal'
+  }
+]
+
+export const GD_LIVE_APP_TYPES = {
+  channel: 'channel',
+  normal: 'normal'
+}
+
 export function getVideoInfo (video) {
   let { category = '', categoryName = '', filterValue = '' } = video
   category = category.split(',')

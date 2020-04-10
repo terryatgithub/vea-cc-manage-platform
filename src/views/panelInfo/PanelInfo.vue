@@ -122,8 +122,8 @@
                   <el-input
                     style="width: 300px"
                     v-model="pannel.pannelList[0].pannelTitle"
-                    placeholder="请输入版块标题"
-                  ></el-input>
+                    placeholder="请输入版块标题">
+                  </el-input>
                   <BinCheckBox label="前端不显示标题" v-model="pannel.showTitle" is-negative />
                 </el-form-item>
                 <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
@@ -213,7 +213,8 @@
                             @select-end="handleSelectResourceEnd">
                             <el-button type="primary" plain @click.stop="handleSelectResourceStart">选择资源</el-button>
                           </ResourceSelector>
-                          <ResourceSelector
+                          <!-- 选择排行榜 -->
+                          <!-- <ResourceSelector
                             class="margin-left-10"
                             v-if="canFillWithRanking"
                             ref="rankingSelector"
@@ -242,7 +243,8 @@
                             <el-button class="is-disabled" type="primary" plain>
                               选择排行榜
                             </el-button>
-                          </el-tooltip>
+                          </el-tooltip> -->
+                          <!-- /选择排行榜 -->
                           <el-button class="btn-clear-current-blocks" @click="handleClearCurrentBlocks" type="primary" plain>
                             清空当前版块推荐位
                           </el-button>
@@ -309,13 +311,14 @@
                   <!-- 用排行榜填充 -->
                   <template v-if="pannelFillType === 2">
                     <el-form-item label="展示影片数量" required>
-                      <InputPositiveInt
+                      <CommonSelector
+                        type="radio-button"
                         :value="pannel.pannelList[0].filmNum"
                         @input="handleInputFilmNum"
-                        @blur="handleBlurFilmNum"
-                        style="width:100px"/>
-                      <span class="video-num-tip">影片数量必须在5~10之间</span>
+                        :options="filmNumOptions">
+                      </CommonSelector>
                     </el-form-item>
+
                     <el-form-item label="选择排行榜" required>
                       <ResourceSelector
                         ref="rankingFillSelector"
@@ -393,20 +396,50 @@
                         @end-intervene-input="handleEndIntervenePos"
                       ></VirtualIntervenePanel>
                     </el-form-item>
-                    <!-- 预览图片 -->
-                    <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="40%">
-                      <div class="pics">
-                        <img v-if="reviewPicUrl === 1" style="width: 100%" src="../../assets/images/panelFillLayout1.png"/>
-                        <img v-if="reviewPicUrl === 2" style="width: 100%" src="../../assets/images/panelFillLayout2.png"/>
-                        <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
-                        <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
-                        <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
-                        <img v-if="reviewPicUrl === 6" style="width: 100%" src="../../assets/images/panelFillLayout6.png"/>
-                        <img v-if="reviewPicUrl === 7" style="width: 100%" src="../../assets/images/panelFillLayout7.png"/>
-                        <img v-if="reviewPicUrl === 8" style="width: 100%" src="../../assets/images/panelFillLayout8.png"/>
-                      </div>
-                    </el-dialog>
                   </template>
+
+                  <template v-if="pannelFillType === 4">
+                    <el-form-item label="选择布局">
+                      <el-radio-group style="margin-top: 10px;" v-model="mediaRuleLayout" @change="handleChangeMediaLayout">
+                        <el-radio
+                          class="layout-radio"
+                          v-for="mediaLayout in mediaRuleLayoutOptions"
+                          :key="mediaLayout.dictEnName"
+                          :label="mediaLayout.dictEnName">
+                          {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictEnName)"/>
+                        </el-radio>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="选择推荐流" required>
+                    </el-form-item>
+                    <el-form-item label="干预">
+                      <el-button type="primary" @click="handleAddIntervene">添加干预</el-button>
+                      <VirtualIntervenePanel
+                        class="pannel-blocks"
+                        style="display: flex;"
+                        :mode="mode"
+                        :maxCount="interveneMaxCount"
+                        :blocks="interveneContentList"
+                        @click-block="handleClickInterveneBlock"
+                        @remove-block="handleRemoveIntervene"
+                        @end-intervene-input="handleEndIntervenePos"
+                      ></VirtualIntervenePanel>
+                    </el-form-item>
+                  </template>
+
+                  <!-- 预览图片 -->
+                  <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="40%">
+                    <div class="pics">
+                      <img v-if="reviewPicUrl === 1" style="width: 100%" src="../../assets/images/panelFillLayout1.png"/>
+                      <img v-if="reviewPicUrl === 2" style="width: 100%" src="../../assets/images/panelFillLayout2.png"/>
+                      <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
+                      <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
+                      <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
+                      <img v-if="reviewPicUrl === 6" style="width: 100%" src="../../assets/images/panelFillLayout6.png"/>
+                      <img v-if="reviewPicUrl === 7" style="width: 100%" src="../../assets/images/panelFillLayout7.png"/>
+                      <img v-if="reviewPicUrl === 8" style="width: 100%" src="../../assets/images/panelFillLayout8.png"/>
+                    </div>
+                  </el-dialog>
                 </div>
                 <el-form-item v-show="pannel.parentType === 'subscribe'" label="预约影片">
                   <ResourceSelector
@@ -693,6 +726,15 @@ import InputPositiveInt from '@/components/InputPositiveInt'
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
 import ClickCopy from '@/components/ClickCopy'
 import { isFrozen } from './frozen'
+/**
+ * 干预推荐位
+ * 需要先选布局和设置位置，因为要确定海报尺寸
+ * 在更新位置后要更新海报
+ * 在改变布局后，清除内容
+ *
+ * 每次更改干预推荐位相关信息之后，改变版块推荐位内容
+ *
+ */
 export default {
   mixins: [titleMixin],
   components: {
@@ -880,6 +922,14 @@ export default {
       const mediaRuleLayout = this.mediaRuleLayout
       return [10, 10, 6, 6, 8, 8, 9, 9][mediaRuleLayout - 1]
     },
+    filmNumOptions () {
+      return Array.apply(null, { length: 6 }).map((_, index) => {
+        return {
+          label: index + 5,
+          value: index + 5
+        }
+      })
+    },
     resourceName () {
       return this.currentPanelDataType === 3 ? '业务专辑' : '版块'
     },
@@ -1015,13 +1065,14 @@ export default {
     fillTypeOptions () {
       const panelGroupCategory = this.pannel.panelGroupCategory
       const panelFillTypeOptions = this.$consts.panelFillTypeOptions
-      if ([67, 60, 31].indexOf(panelGroupCategory) === -1) {
-        return panelFillTypeOptions.slice(0, 1)
-      } else if (panelGroupCategory !== 31) {
-        return panelFillTypeOptions.slice(0, 2)
-      } else {
-        return [].concat(panelFillTypeOptions)
+
+      if (panelGroupCategory === 31) {
+        return panelFillTypeOptions
       }
+      if ([67, 60].includes(panelGroupCategory)) {
+        return panelFillTypeOptions.slice(0, 2)
+      }
+      return panelFillTypeOptions.slice(0, 1)
     },
     reviewPicUrlSrc () {
       if (this.reviewPicUrlSrc) {
@@ -1067,7 +1118,7 @@ export default {
     'pannel.focusConfig': 'handleFocusConfigChange'
   },
   methods: {
-    genPannel () {
+    genPannel (preset) {
       return {
         rankIsOpen: 0,
         rankChildId: undefined,
@@ -1079,7 +1130,8 @@ export default {
         fillType: 1,
         filmNum: undefined,
         mediaRuleDesc: undefined,
-        rankName: undefined
+        rankName: undefined,
+        ...preset
       }
     },
     handleToggleFillWithRanking (val) {
@@ -2874,30 +2926,22 @@ export default {
     },
     handleInputFillType (val) {
       this.selectedLayout = null
-      const oldPannel = this.pannel.pannelList[0]
-      const pannelTitle = oldPannel.pannelTitle
-      this.pannel.pannelList = []
-      this.pannel.pannelList.push(this.genPannel())
-      this.pannel.pannelList[0].fillType = val
-      this.pannel.pannelList[0].pannelTitle = pannelTitle
-      this.pannel.panelGroupType = val === 3 ? 10 : 1
+      const panelGroup = this.pannel
+      const panel = this.genPannel({
+        pannelTitle: panelGroup.pannelList[0].pannelTitle,
+        fillType: val,
+        panelGroupType: val === 3 ? 10 : 1,
+        filmNum: val === 2 ? 6 : undefined
+      })
+      panelGroup.pannelList = [panel]
     },
     handleInputFilmNum (val) {
-      // this.pannel.pannelList[0].contentList = []
-      this.pannel.pannelList[0].filmNum = val === '' ? '' : parseInt(val)
-      // this.pannel.pannelList[0].rankName = undefined
-    },
-    handleBlurFilmNum () {
-      const firstPannel = this.pannel.pannelList[0] || {}
-      const filmNum = firstPannel.filmNum
-      if (filmNum < 5 || filmNum > 10) {
-        firstPannel.filmNum = undefined
-        return this.$message.error('影片数量必须在5~10之间')
-      }
+      const firstPanel = this.pannel.pannelList[0] || {}
+      firstPanel.filmNum = val
       // 已选择排行榜填充资源
-      if (firstPannel.rankChildId) {
+      if (firstPanel.rankChildId) {
         const selectedResources = {
-          ranking: [{ code: firstPannel.rankChildId, id: firstPannel.rankChildId }]
+          ranking: [{ code: firstPanel.rankChildId, id: firstPanel.rankChildId }]
         }
         this.handleSelectRankingEnd(selectedResources, 'rank')
       }

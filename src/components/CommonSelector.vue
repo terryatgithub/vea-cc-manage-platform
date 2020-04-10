@@ -1,16 +1,17 @@
 <template>
   <el-radio-group
-    v-if="type === 'radio'"
+    v-if="type === 'radio' || type === 'radio-button'"
     :value="value"
     @input="$emit('input', $event)"
     :disabled="disabled">
-      <el-radio
+      <component
+        :is="radioComponent"
         v-for="(item, key) in options"
         :disabled="item.disabled"
         :key="key"
         :label="item.value">
         {{ item.label }}
-      </el-radio>
+      </component>
   </el-radio-group>
 
   <el-select
@@ -36,7 +37,12 @@
 
 <script>
 export default {
-  props: ['type', 'options', 'disabled', 'value', 'placeholder', 'filterable', 'allowCreate']
+  props: ['type', 'options', 'disabled', 'value', 'placeholder', 'filterable', 'allowCreate'],
+  computed: {
+    radioComponent () {
+      return this.type === 'radio-button' ? 'el-radio-button' : 'el-radio'
+    }
+  }
 }
 </script>
 
