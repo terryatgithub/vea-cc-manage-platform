@@ -144,7 +144,8 @@ import CommonSelector from '@/components/CommonSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import {
   genDefaultContentForm,
-  genResourceContentList
+  genResourceContentList,
+  genDefaultTvLiveInfo
 } from '../panelInfoUtil'
 export default {
   components: {
@@ -322,6 +323,10 @@ export default {
       }
       if (coverType === 'maskLife') {
         contentForm.videoContentType = 'maskLife'
+      }
+      if (coverType === 'tvLive') {
+        contentForm.tvLiveInfo = genDefaultTvLiveInfo()
+        contentForm.videoContentType = 'tvLive'
       }
       this.$set(contentList, activeIndex, contentForm)
     },

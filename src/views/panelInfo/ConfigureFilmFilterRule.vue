@@ -494,7 +494,7 @@ export default {
         sources: sourceList.join(','),
         homeOrderType,
         page: 1,
-        rows: 12
+        rows: 30
       }
       // 参数填写-影视筛选
       let movieParams = {}

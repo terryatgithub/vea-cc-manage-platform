@@ -24,22 +24,20 @@
         @select-end="handleSelectEnd">
         <div slot="filter">
           <el-form :inline="true" :model="filter" @keypress.enter.native.prevent="handleFilterChange">
-            <el-form-item >
-              <el-select
-                placeholder="省份"
-                v-model="filter.provincesCode"
-                filterable
-                clearable>
-                <el-option
-                  v-for="item in provinceOptions"
-                  :key="item.value"
-                  :value="item.value"
-                  :label="item.label">
-                </el-option>
-              </el-select>
+            <el-form-item>
+              <InputPositiveInt v-model="filter.id" clearable placeholder="ID"></InputPositiveInt>
             </el-form-item>
             <el-form-item>
-              <el-input v-model.trim="filter.ccChannelTitle" clearable placeholder="聚合频道名"></el-input>
+              <el-input v-model="filter.name" placeholder="名称" clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-select v-model="filter.type" placeholder="类型" clearable>
+                <el-option v-for="item in $consts.blockRecStreamTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleFilterChange">查询</el-button>
@@ -55,6 +53,7 @@
 <script>
 import RemoteSelectorWrapper from '../SelectorWrapper'
 import BaseSelector from '../BaseSelector'
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
   data () {
     return {
@@ -68,26 +67,66 @@ export default {
       effectiveFilter: this.genDefaultFilter(),
       filterSchema: null,
       table: {
-        data: [],
-        selected: [],
+        props: {},
         header: [
           {
-            label: '聚合频道ID',
-            prop: 'ccChannelId'
+            label: 'ID',
+            prop: 'id',
+            sortable: true,
+            width: '100px',
+            fixed: 'left'
           },
           {
-            label: '聚合频道名',
-            prop: 'ccChannelTitle'
+            label: '指定影片推荐流名称',
+            prop: 'name',
+            fixed: 'left'
           },
           {
-            label: '聚合之中的省份',
-            prop: 'provincesName'
+            label: '内容源',
+            prop: 'source',
+            render: (h, { row }) => {
+              return this.$consts.sourceTextWithNone[row.source]
+            }
+          },
+          {
+            label: '源状态',
+            prop: 'openStatus',
+            render: (h, { row }) => {
+              return ['关闭', '开启'][row.openStatus]
+            }
+          },
+          {
+            label: '流类型',
+            prop: 'type',
+            formatter: row => {
+              return this.$consts.blockRecStreamTypeText[row.type] || '普通'
+            }
+          },
+          {
+            label: '版本/状态',
+            prop: 'status',
+            formatter: (row) => {
+              const status = row.status
+              const currentVersion = row.currentVersion
+              return currentVersion + '/' + this.$consts.statusText[status]
+            }
+          },
+          {
+            label: '影片数量',
+            prop: 'videoNum'
+          },
+          {
+            label: '已屏蔽影片数量',
+            prop: 'disableVideoNum'
+          },
+          {
+            label: '图片海报尺寸',
+            prop: 'picSize'
           }
         ],
-        selectionType: 'single',
-        props: {
-          'tooltip-effect': 'dark'
-        }
+        data: [],
+        selected: [],
+        selectionType: 'multiple'
       }
     }
   },
@@ -96,16 +135,20 @@ export default {
   },
   components: {
     RemoteSelectorWrapper,
-    BaseSelector
+    BaseSelector,
+    InputPositiveInt
   },
   methods: {
     getId (item) {
-      return item.ccChannelId
+      return item.id
     },
     genDefaultFilter () {
       return {
-        ccChannelTitle: '',
-        provincesCode: ''
+        openStatus: 1,
+        id: '',
+        name: '',
+        type: '',
+        source: this.source
       }
     },
     handleSelectStart () {
@@ -152,19 +195,17 @@ export default {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
-      this.$service.mediaGetGDChannelList(filter).then(data => {
+      this.$service.getMediaAutomationList(filter).then(data => {
         this.pagination.total = data.total
+        data.rows = data.rows.map(item => {
+          item.picSize = item.picSize.join(',')
+          return item
+        })
         this.table.data = data.rows
-      })
-    },
-    getProvinceOptions () {
-      this.$service.mediaGetChannelProvinceOptions().then(result => {
-        this.provinceOptions = result
       })
     }
   },
   created () {
-    this.getProvinceOptions()
   }
 }
 </script>

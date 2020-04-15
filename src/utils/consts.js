@@ -204,6 +204,13 @@ const panelFillTypeOptions = [
   }
 ]
 
+const panelFillTypes = {
+  manual: 1,
+  ranking: 2,
+  mediaRule: 3,
+  recStream: 4
+}
+
 const panelFillTypeText = optionsToText(panelFillTypeOptions)
 
 const panelFocusOptions = [
@@ -267,6 +274,59 @@ const idPrefixOptions = [
 ]
 const idPrefixEnums = optionsToEnums(idPrefixOptions)
 
+const blockRecStreamTypeOptions = [
+  {
+    label: '普通',
+    value: 'normal'
+  },
+  {
+    label: '少儿',
+    value: 'child'
+  },
+  {
+    label: '电影',
+    value: 'movie'
+  },
+  {
+    label: '电视剧',
+    value: 'series'
+  }
+]
+const blockRecStreamTypeText = optionsToText(blockRecStreamTypeOptions)
+
+const panelCoverTypeOptions = [
+  {
+    label: '媒体资源',
+    value: 'media'
+  },
+  {
+    label: '应用圈',
+    value: 'app'
+  },
+  {
+    label: '自定义',
+    value: 'custom'
+  },
+  {
+    label: '商品',
+    value: 'mall'
+  },
+  {
+    label: '推荐位管理',
+    value: 'block'
+  },
+  {
+    label: '生活方式资源',
+    value: 'maskLife'
+  },
+  {
+    label: '广电直播app',
+    value: 'tvLive'
+  }
+]
+
+const panelCoverTypeText = optionsToText(panelCoverTypeOptions)
+
 export default {
   status,
   statusText,
@@ -297,6 +357,7 @@ export default {
   panelTypeText,
   panelFillTypeOptions,
   panelFillTypeText,
+  panelFillTypes,
 
   cornerIconPositionOptions,
   cornerIconPositionEnums,
@@ -317,5 +378,11 @@ export default {
 
   platformOptions,
   platformText,
-  platformEnums
+  platformEnums,
+
+  blockRecStreamTypeOptions,
+  blockRecStreamTypeText,
+
+  panelCoverTypeOptions,
+  panelCoverTypeText
 }

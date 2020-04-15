@@ -500,8 +500,8 @@ export default {
     fetchData () {
       const filter = this.getFilter()
       this.$service.getMediaVideoInfos(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+        this.pagination.total = data.total || 0
+        this.table.data = data.rows || []
         this.setPartner(this.table.data, this.filter.partner)
       })
     },

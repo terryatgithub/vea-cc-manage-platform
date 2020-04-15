@@ -43,7 +43,7 @@ export const MASK_LIFE_RECOMMEND_TYPES = {
   author: 'author'
 }
 
-export const GD_LIVE_APP_TYPE_OPTIONS = [
+export const GD_LIVE_CLICK_TYPE_OPTIONS = [
   {
     label: '启动到频道',
     value: 'channel'
@@ -54,7 +54,7 @@ export const GD_LIVE_APP_TYPE_OPTIONS = [
   }
 ]
 
-export const GD_LIVE_APP_TYPES = {
+export const GD_LIVE_CLICK_TYPES = {
   channel: 'channel',
   normal: 'normal'
 }
@@ -76,6 +76,16 @@ export function getVideoInfo (video) {
     authorId: video.userId,
     authorName: video.userName
   }
+}
+
+export function getMatchedPictureUrlByRotation (blockSize, imgList) {
+  let targetImg = imgList[0] || {}
+  if (imgList.length > 1) {
+    const [w, h] = blockSize
+    const rotation = w > h ? 'v' : 'h'
+    targetImg = imgList.find(item => item.style === rotation) || targetImg
+  }
+  return targetImg.url
 }
 
 export function getMatchedPictureUrl (blockSize, imgList) {
@@ -414,6 +424,17 @@ export function genDefaultContentForm (preset) {
     appParams: [],
     // 生活方式
     maskLifeInfo: genDefaultMaskLifeInfo(initMaskLifeInfo),
+    // 广电APK
+    tvLiveInfo: undefined,
+    ...preset
+  }
+}
+
+export function genDefaultTvLiveInfo (preset) {
+  return {
+    clickType: GD_LIVE_CLICK_TYPES.channel,
+    categoryId: undefined,
+    channelId: undefined,
     ...preset
   }
 }

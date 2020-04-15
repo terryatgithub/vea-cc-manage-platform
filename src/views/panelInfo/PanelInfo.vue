@@ -213,38 +213,6 @@
                             @select-end="handleSelectResourceEnd">
                             <el-button type="primary" plain @click.stop="handleSelectResourceStart">选择资源</el-button>
                           </ResourceSelector>
-                          <!-- 选择排行榜 -->
-                          <!-- <ResourceSelector
-                            class="margin-left-10"
-                            v-if="canFillWithRanking"
-                            ref="rankingSelector"
-                            :selectors="['ranking']"
-                            :is-live="false"
-                            :disable-partner="!!pannel.pannelResource"
-                            selection-type="single"
-                            :source="pannel.pannelResource"
-                            :business-type="pannel.panelGroupCategory"
-                            @select-end="handleSelectRankingEnd">
-                              <el-button type="primary" plain @click.stop="handleSelectRankingStart">
-                                选择排行榜
-                              </el-button>
-                          </ResourceSelector>
-                          <el-tooltip
-                            v-else
-                            effect="dark"
-                            placement="top">
-                            <div slot="content">
-                              使用排行榜，布局必须满足：标题布局、不带价格、只有一行、
-                              <br/>
-                              每个推荐位都是 260*364、推荐位数量 6~11 个
-                              <br />
-                              目前只支持业务类型为 不限、教育、影视
-                            </div>
-                            <el-button class="is-disabled" type="primary" plain>
-                              选择排行榜
-                            </el-button>
-                          </el-tooltip> -->
-                          <!-- /选择排行榜 -->
                           <el-button class="btn-clear-current-blocks" @click="handleClearCurrentBlocks" type="primary" plain>
                             清空当前版块推荐位
                           </el-button>
@@ -349,19 +317,21 @@
                       ></VirtualPanel>
                     </el-form-item>
                   </template>
-                  <template v-if="pannelFillType === 3">
+                  <template v-if="pannelFillType === 3 || pannelFillType === 4">
                     <el-form-item label="选择布局">
-                      <el-radio-group style="margin-top: 10px;" v-model="mediaRuleLayout" @change="handleChangeMediaLayout">
+                      <el-radio-group style="margin-top: 10px;"
+                        :value="selectedLayoutId"
+                        @input="handleInputLayoutId">
                         <el-radio
                           class="layout-radio"
                           v-for="mediaLayout in mediaRuleLayoutOptions"
                           :key="mediaLayout.dictEnName"
-                          :label="mediaLayout.dictEnName">
+                          :label="+mediaLayout.dictEnName">
                           {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictEnName)"/>
                         </el-radio>
                       </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="配置影片筛选规则" required>
+                    <el-form-item v-if="pannelFillType === $consts.panelFillTypes.mediaRule" label="配置影片筛选规则" required>
                       <ConfigureFilmFilterRule
                         :source="pannel.pannelResource"
                         style="display: inline-block;"
@@ -374,7 +344,21 @@
                       >查看规则
                       </el-button>
                     </el-form-item>
-                    <el-form-item label="推荐位" v-if="pannel.pannelList[0].contentList.length !== 0">
+                    <el-form-item v-if="pannelFillType === $consts.panelFillTypes.recStream" label="选择推荐流" required>
+                      <BlockRecStreamSelector
+                        title="选择影片推荐流"
+                        selection-type="single"
+                        :source="pannel.pannelResource"
+                        @select-end="handleSelectBlockRecStreamEnd">
+                      </BlockRecStreamSelector>
+                      <template v-if="firstPanel.mediaAutomationPanelRls">
+                        已选择: <el-tag>
+                          {{ firstPanel.mediaAutomationPanelRls.mediaAutomationId }}
+                          ({{ firstPanel.mediaAutomationPanelRls.mediaAutomationName }})
+                        </el-tag>
+                      </template>
+                    </el-form-item>
+                    <el-form-item label="推荐位" v-if="pannelFillType === $consts.panelFillTypes.mediaRule && firstPanel.contentList.length > 0">
                       <VirtualPanel
                         class="pannel-blocks"
                         :isNotExtra="true"
@@ -384,36 +368,7 @@
                       ></VirtualPanel>
                     </el-form-item>
                     <el-form-item label="干预">
-                      <el-button type="primary" @click="handleAddIntervene">添加干预</el-button>
-                      <VirtualIntervenePanel
-                        class="pannel-blocks"
-                        style="display: flex;"
-                        :mode="mode"
-                        :maxCount="interveneMaxCount"
-                        :blocks="interveneContentList"
-                        @click-block="handleClickInterveneBlock"
-                        @remove-block="handleRemoveIntervene"
-                        @end-intervene-input="handleEndIntervenePos"
-                      ></VirtualIntervenePanel>
-                    </el-form-item>
-                  </template>
-
-                  <template v-if="pannelFillType === 4">
-                    <el-form-item label="选择布局">
-                      <el-radio-group style="margin-top: 10px;" v-model="mediaRuleLayout" @change="handleChangeMediaLayout">
-                        <el-radio
-                          class="layout-radio"
-                          v-for="mediaLayout in mediaRuleLayoutOptions"
-                          :key="mediaLayout.dictEnName"
-                          :label="mediaLayout.dictEnName">
-                          {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictEnName)"/>
-                        </el-radio>
-                      </el-radio-group>
-                    </el-form-item>
-                    <el-form-item label="选择推荐流" required>
-                    </el-form-item>
-                    <el-form-item label="干预">
-                      <el-button type="primary" @click="handleAddIntervene">添加干预</el-button>
+                      <el-button type="primary" :disabled="!selectedLayout" @click="handleAddIntervene">添加干预</el-button>
                       <VirtualIntervenePanel
                         class="pannel-blocks"
                         style="display: flex;"
@@ -670,7 +625,7 @@
           :source="pannel.pannelResource"
           :pannel="pannel.pannelList[0]"
           :pannel-group-id="pannel.pannelGroupId"
-          :hide-title-options="mediaRuleLayout % 2 === 0"
+          :hide-title-options="selectedLayoutId % 2 === 0"
           @cancel="handleSetInterveneBlockContentCancle"
           @save="handleSetInterveneBlockContentEnd"
         />
@@ -704,6 +659,7 @@ import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import BlockContent from './BlockContent/BlockContent'
 import CommonSelector from '@/components/CommonSelector'
 import BinCheckBox from '@/components/BinCheckBox'
+import BlockRecStreamSelector from '@/components/selectors/BlockRecStreamSelector'
 
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import PanelGroupInfoSetter from './PanelGroupInfoSetter'
@@ -735,6 +691,7 @@ import { isFrozen } from './frozen'
  * 每次更改干预推荐位相关信息之后，改变版块推荐位内容
  *
  */
+const DEFAULT_MEDIA_RULE_LAYOUT_ID = 1
 export default {
   mixins: [titleMixin],
   components: {
@@ -758,6 +715,7 @@ export default {
     AnalyzeSimpleDataDialog,
     AnalyzeDmpDataDialog,
     SubscribeVideos,
+    BlockRecStreamSelector,
     InputPositiveInt,
     ConfigureFilmFilterRule,
     ClickCopy
@@ -850,6 +808,7 @@ export default {
         rejected: 5
       },
       showResourceSelector: false,
+      selectedLayoutId: undefined,
       selectedLayout: null,
       // 推荐位个数
       // 经过计算(和扩展) 的布局信息,
@@ -912,15 +871,15 @@ export default {
 
       picDialogVisible: false,
       reviewPicUrl: undefined,
-      mediaRuleLayoutOptions: [],
-      mediaRuleLayout: '1'
+      mediaRuleLayoutOptions: []
+      // mediaRuleLayout: '1'
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
     interveneMaxCount () {
-      const mediaRuleLayout = this.mediaRuleLayout
-      return [10, 10, 6, 6, 8, 8, 9, 9][mediaRuleLayout - 1]
+      const selectedLayoutId = this.selectedLayoutId
+      return [10, 10, 6, 6, 8, 8, 9, 9][selectedLayoutId - 1]
     },
     filmNumOptions () {
       return Array.apply(null, { length: 6 }).map((_, index) => {
@@ -1097,6 +1056,15 @@ export default {
       if (panelGroupCategory === 60 || panelGroupCategory === 65) {
         return 'edu'
       }
+    },
+    panelGroup () {
+      return this.pannel
+    },
+    panelList () {
+      return this.panelGroup.pannelList
+    },
+    firstPanel () {
+      return this.panelList[0]
     }
   },
   watch: {
@@ -1118,6 +1086,13 @@ export default {
     'pannel.focusConfig': 'handleFocusConfigChange'
   },
   methods: {
+    handleSelectBlockRecStreamEnd (selected) {
+      const { id, name } = selected[0]
+      this.firstPanel.mediaAutomationPanelRls = {
+        mediaAutomationId: id,
+        mediaAutomationName: name
+      }
+    },
     genPannel (preset) {
       return {
         rankIsOpen: 0,
@@ -1131,6 +1106,7 @@ export default {
         filmNum: undefined,
         mediaRuleDesc: undefined,
         rankName: undefined,
+        mediaAutomationPanelRls: undefined,
         ...preset
       }
     },
@@ -1332,8 +1308,11 @@ export default {
     },
     handleCopy (status) {
       const fillType = this.pannel.pannelList[0].fillType
-      if (fillType === 3 && this.copyToPanelDataType === 3) {
-        return this.$message.error('影片筛选规则的版块不能复制到业务专辑哦！')
+      const copyToPanelDataType = this.copyToPanelDataType
+      const panelFillTypes = this.$consts.panelFillTypes
+      const invalidFilltype = [panelFillTypes.mediaRule, panelFillTypes.recStream]
+      if (copyToPanelDataType === 3 && invalidFilltype.includes(fillType)) {
+        return this.$message.error('影片筛选规则或推荐流填充的版块不能复制到业务专辑哦！')
       }
       this.pannel.panelGroupType = this.copyToPanelDataType
       const STATUS = this.$consts.status
@@ -1475,10 +1454,13 @@ export default {
         pannelParentType: pannel.parentType,
         pannelCategory: this.pannel.panelGroupCategory,
         block: selectedResources[index],
-        blockInfo: this.blockList[0][currentIntervenePos - 1],
+        blockInfo: this.getBlockInfo(currentIntervenePos - 1),
         pannelResource: this.pannel.pannelResource
       }
       this.activePage = 'block_content__intervene'
+    },
+    getBlockInfo (index) {
+      return this.blockList[0][index]
     },
     handleSetInterveneBlockContentCancle () {
       this.activePage = 'panel_info'
@@ -1809,6 +1791,7 @@ export default {
           } else {
             panel.pannelResource = ''
           }
+          this.handleInputFillType(this.$consts.panelFillTypes.manual)
           this.clearBlocks()
         }
         )
@@ -2138,17 +2121,24 @@ export default {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
-        const idFieldMap = {
-          media: 'extraValue1',
-          block: 'vContentId',
-          mall: 'extraValue1'
+        const getIdByCoverType = (coverType, content) => {
+          switch (coverType) {
+            case 'media':
+              return content.extraValue1
+            case 'block':
+              return content.vContentId
+            case 'mall':
+              return content.extraValue1
+            case 'tvLive':
+              return content.tvLiveInfo.channelId
+          }
         }
         // 有 extraValue1 才判断重复, 自定义不判断
         contentList.forEach((content, contentIndex) => {
           const coverType = content.coverType
-          const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall'
+          const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall' || coverType === 'tvLive'
           if (shouldCheck) {
-            let id = content[idFieldMap[coverType]]
+            let id = getIdByCoverType(coverType, content)
             if (id) {
               // 单集的 extraValue1 相同，可能有 extraValue4 或 extraValue5
               id = id + (content.extraValue4 || '') + (content.extraValue5 || '')
@@ -2847,6 +2837,7 @@ export default {
           const layout = firstPannel.layoutInfo
           layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
           this.selectedLayout = layout
+          this.selectedLayoutId = layout.layoutId
 
           const firstBlock = firstPannel.contentList[0]
           if (firstBlock) {
@@ -2858,7 +2849,6 @@ export default {
           const fillType = firstPannel.fillType
           if (fillType === 3) {
             this.reviewPicUrl = parseInt(firstPannel.layoutId)
-            this.mediaRuleLayout = firstPannel.layoutId.toString()
           }
         }
         this.pannel = cloneDeep(pannel)
@@ -2925,15 +2915,20 @@ export default {
       }
     },
     handleInputFillType (val) {
+      this.selectedLayoutId = undefined
       this.selectedLayout = null
       const panelGroup = this.pannel
+      const panelFillTypes = this.$consts.panelFillTypes
       const panel = this.genPannel({
         pannelTitle: panelGroup.pannelList[0].pannelTitle,
         fillType: val,
-        panelGroupType: val === 3 ? 10 : 1,
-        filmNum: val === 2 ? 6 : undefined
+        panelGroupType: val === panelFillTypes.mediaRule ? 10 : 1,
+        filmNum: val === panelFillTypes.ranking ? 6 : undefined
       })
       panelGroup.pannelList = [panel]
+      if (val === panelFillTypes.mediaRule || val === panelFillTypes.recStream) {
+        this.handleInputLayoutId(DEFAULT_MEDIA_RULE_LAYOUT_ID)
+      }
     },
     handleInputFilmNum (val) {
       const firstPanel = this.pannel.pannelList[0] || {}
@@ -2969,24 +2964,26 @@ export default {
         dangerouslyUseHTMLString: true
       }).catch(() => {})
     },
-    handleChangeMediaLayout (val) {
+    handleInputLayoutId (id) {
       const currentPannel = this.pannel.pannelList[0]
       // 切换布局清空干预位
       currentPannel.interveneContentList = []
-      // currentPannel.interveneContentList.forEach(item => {
-      //   if (item.intervenePos > this.interveneMaxCount) {
-      //     item.intervenePos = ''
-      //   }
-      // })
-      if (currentPannel.mediaRule) {
-        this.updateInterveneResources()
-      }
+      // 获取布局信息，然后更新推荐位内容
+      this.selectedLayoutId = id
+      this.$service.getLayoutInforById({ id }).then((layout) => {
+        layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
+        this.selectedLayout = layout
+        this.handleSelectLayoutEnd(layout, 12)
+        if (currentPannel.mediaRule) {
+          this.updateInterveneResources()
+        }
+      })
     },
     handleAddIntervene () {
       const currentPannel = this.pannel.pannelList[0]
-      if (!currentPannel.mediaRuleDesc) {
-        return this.$message.error('请先配置影片筛选规则')
-      }
+      // if (!currentPannel.mediaRuleDesc) {
+      //   return this.$message.error('请先配置影片筛选规则')
+      // }
       currentPannel.interveneContentList.push(this.genDefaultInterveneContent())
       this.scollBottom()
     },
@@ -3029,50 +3026,46 @@ export default {
     updateInterveneResources () {
       const pannel = this.pannel
       const activePannel = pannel.pannelList[0]
-      const mediaRuleLayout = this.mediaRuleLayout
-      this.$service.getLayoutInforById({ id: mediaRuleLayout }).then((layout) => {
-        layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-        this.handleSelectLayoutEnd(layout, 12)
+      const selectedLayoutId = this.selectedLayoutId
+      this.clearBlocks()
+      if (activePannel.mediaRuleDesc) {
         const mediaRuleObj = JSON.parse(activePannel.mediaRule)
-        if (activePannel.mediaRuleDesc) {
-          this.clearBlocks()
-          const _partner = this.$consts.sourceToPartner[pannel.pannelResource]
-          this.$service.getFilmFilterResult(mediaRuleObj).then(rs => {
-            (rs.data.rows || []).forEach(film => {
-              film._partner = _partner
-            })
-            this.filteredFilm = rs.data
-            activePannel.mediaFilmNum = rs.data ? rs.data.total : 0
-            if (activePannel.mediaFilmNum < 12) {
-              return this.$message.error('筛选影片数量不足12， 请重新配置筛选规则')
-            }
-            this.insertResources({
-              selectedResources: this.filteredFilm.rows
-            })
-            // 按干预顺序排序
-            activePannel.interveneContentList.sort((a, b) => {
-              return a.intervenePos - b.intervenePos
-            })
-            // 插入干预位
-            const interveneContentList = activePannel.interveneContentList || []
-            interveneContentList.forEach(item => {
-              if (item.intervenePos && item.videoContentList.length !== 0) {
-                const insertBlockIndex = item.intervenePos - 1
-                const resource = {
-                  videoContentList: item.videoContentList,
-                  specificContentList: item.specificContentList
-                }
-                activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
-              }
-            })
-            // 修复插入干预位引起的pictureurl横竖图变化问题
-            if ((mediaRuleLayout === '7' || mediaRuleLayout === '8') && interveneContentList.length !== 0) {
-              this.updateSelectedResourcesPic(0)
-            }
-            this.updatePosition()
+        const _partner = this.$consts.sourceToPartner[pannel.pannelResource]
+        this.$service.getFilmFilterResult(mediaRuleObj).then(rs => {
+          (rs.data.rows || []).forEach(film => {
+            film._partner = _partner
           })
-        }
-      })
+          this.filteredFilm = rs.data
+          activePannel.mediaFilmNum = rs.data ? rs.data.total : 0
+          if (activePannel.mediaFilmNum < 12) {
+            return this.$message.error('筛选影片数量不足12， 请重新配置筛选规则')
+          }
+          this.insertResources({
+            selectedResources: this.filteredFilm.rows
+          })
+          // 按干预顺序排序
+          activePannel.interveneContentList.sort((a, b) => {
+            return a.intervenePos - b.intervenePos
+          })
+          // 插入干预位
+          const interveneContentList = activePannel.interveneContentList || []
+          interveneContentList.forEach(item => {
+            if (item.intervenePos && item.videoContentList.length !== 0) {
+              const insertBlockIndex = item.intervenePos - 1
+              const resource = {
+                videoContentList: item.videoContentList,
+                specificContentList: item.specificContentList
+              }
+              activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
+            }
+          })
+          // 修复插入干预位引起的pictureurl横竖图变化问题
+          if ((selectedLayoutId === '7' || selectedLayoutId === '8') && interveneContentList.length !== 0) {
+            this.updateSelectedResourcesPic(0)
+          }
+          this.updatePosition()
+        })
+      }
     },
     updateSelectedResourcesPic (currentPannelIndex) {
       let { blocks, selectedBlocksAndResources } = this.getBlocksAndResources(currentPannelIndex)

@@ -30,22 +30,29 @@
           type="radio-button"
           :value="contentForm.coverType"
           @input="$emit('cover-type-change', $event)"
-          :options="coverTypeEnums"
+          :disabledItems="disabledCoverTypes"
+          :hiddenItems="hiddenCoverTypes"
+          :options="$consts.panelCoverTypeOptions"
         />
       </el-form-item>
 
-      <el-form-item label="广电直播app资源选择" prop="gdLiveAppType">
-        <CommonSelector
-          :disabled="isReadonly"
-          type="radio"
-          :value="contentForm.gdLiveAppType"
-          @input="handleInputGDLiveAppType"
-          :options="GD_LIVE_APP_TYPE_OPTIONS"
-        />
-      </el-form-item>
-      <el-form-item label="频道选择">
-        <GDChannelSelector @select-end="handleSelectGDChannelEnd"></GDChannelSelector>
-      </el-form-item>
+      <div key="tvLive" v-if="contentForm.coverType === 'tvLive'">
+        <el-form-item label="广电直播app资源选择" prop="tvLiveInfo">
+          <CommonSelector
+            :disabled="isReadonly"
+            type="radio"
+            :value="contentForm.tvLiveInfo.clickType"
+            @input="handleInputGDLiveClickType"
+            :options="GD_LIVE_CLICK_TYPE_OPTIONS"
+          />
+        </el-form-item>
+        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.channel" prop="tvLiveInfo.channelId" label="频道选择">
+          <GDChannelSelector v-if="!isReadonly" title="选择频道" @select-end="handleSelectGDChannelEnd" selection-type="single"></GDChannelSelector>
+          <template v-if="contentForm.tvLiveInfo.channelId">
+            已选择: <el-tag>{{ contentForm.tvLiveInfo.channelId }}</el-tag>
+          </template>
+        </el-form-item>
+      </div>
 
       <template v-if="contentForm.coverType === 'maskLife'">
         <el-form-item label="生活方式资源选择" prop="coverType">
@@ -154,7 +161,7 @@
 
       </template>
 
-      <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'media'">
+      <el-form-item key="coverTypeMedia" label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'media'">
         <ResourceSelector
           ref="resourceSelector"
           v-if="!isReadonly"
@@ -170,7 +177,7 @@
         <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
         <el-button v-show="!isReadonly && contentForm.extraValue1" plain type="primary" @click="handleAddTagStart">打标签</el-button>
       </el-form-item>
-      <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
+      <el-form-item key="coverTypeApp"  label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
         <ResourceSelector
           ref="resourceSelector"
           v-if="!isReadonly"
@@ -186,7 +193,7 @@
         <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
       </el-form-item>
 
-      <el-form-item label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'mall'">
+      <el-form-item key="coverTypeMall" label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'mall'">
         <ResourceSelector
           ref="resourceSelector"
           v-if="!isReadonly"
@@ -628,10 +635,12 @@ import {
   MASK_LIFE_TYPES,
   MASK_LIFE_RECOMMEND_TYPES,
   MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
-  GD_LIVE_APP_TYPE_OPTIONS,
-  GD_LIVE_APP_TYPES,
+  GD_LIVE_CLICK_TYPE_OPTIONS,
+  GD_LIVE_CLICK_TYPES,
   genDefaultMaskLifeInfo,
-  getVideoInfo
+  getVideoInfo,
+  genDefaultTvLiveInfo,
+  getMatchedPictureUrlByRotation
 } from '../panelInfoUtil'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
@@ -730,7 +739,8 @@ export default {
       MASK_LIFE_TYPES,
       MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
       MASK_LIFE_RECOMMEND_TYPES,
-      GD_LIVE_APP_TYPE_OPTIONS,
+      GD_LIVE_CLICK_TYPE_OPTIONS,
+      GD_LIVE_CLICK_TYPES,
       showCrowdSelector: false,
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
@@ -854,6 +864,9 @@ export default {
         ],
         categoryId: [
           { required: true, message: '请选择知识', trigger: 'blur' }
+        ],
+        'tvLiveInfo.channelId': [
+          { required: true, message: '请选择频道', trigger: 'blur' }
         ]
       }
     }
@@ -924,46 +937,11 @@ export default {
         contentForm.coverType !== 'block' && !this.isNormalPicture(pictureUrl)
       )
     },
-    coverTypeEnums () {
-      const enums = [
-        {
-          label: '媒体资源',
-          value: 'media'
-        },
-        {
-          label: '应用圈',
-          value: 'app'
-        },
-        {
-          label: '自定义',
-          value: 'custom'
-        },
-        {
-          label: '商品',
-          value: 'mall'
-        },
-        {
-          label: '推荐位管理',
-          value: 'block',
-          disabled: this.isMall
-        },
-        {
-          label: '生活方式资源',
-          value: 'maskLife'
-        },
-        {
-          label: '广电直播app',
-          value: 'guangdianApp'
-        }
-      ]
-
-      if (this.contentType === 'specific') {
-        return enums.filter(
-          item => item.value !== 'block'
-        )
-      }
-
-      return enums
+    disabledCoverTypes () {
+      return this.isMall ? ['block'] : []
+    },
+    hiddenCoverTypes () {
+      return this.contentType === 'specific' ? ['block'] : []
     }
   },
 
@@ -979,11 +957,21 @@ export default {
     }
   },
   methods: {
-    handleInputGDLiveAppType (val) {
-
+    handleInputGDLiveClickType (val) {
+      this.contentForm.tvLiveInfo = genDefaultTvLiveInfo({
+        clickType: val
+      })
     },
     handleSelectGDChannelEnd (selected) {
-      console.log(selected)
+      const { categoryIds = '', ccChannelId, ccChannelTitle, images } = selected[0]
+      const categoryIdArr = categoryIds.split(',')
+      const blockSize = this.resolution
+      const contentForm = this.contentForm
+      const tvLiveInfo = contentForm.tvLiveInfo
+      tvLiveInfo.categoryId = categoryIdArr[0]
+      tvLiveInfo.channelId = ccChannelId
+      contentForm.title = ccChannelTitle
+      contentForm.pictureUrl = getMatchedPictureUrlByRotation(blockSize, images)
     },
     initVideoInfo (maskLifeInfo) {
       if (!maskLifeInfo.videoInfo) {
