@@ -2129,14 +2129,12 @@ export default {
               return content.vContentId
             case 'mall':
               return content.extraValue1
-            case 'tvLive':
-              return content.tvLiveInfo.channelId
           }
         }
         // 有 extraValue1 才判断重复, 自定义不判断
         contentList.forEach((content, contentIndex) => {
           const coverType = content.coverType
-          const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall' || coverType === 'tvLive'
+          const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall'
           if (shouldCheck) {
             let id = getIdByCoverType(coverType, content)
             if (id) {
