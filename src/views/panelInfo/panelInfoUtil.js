@@ -274,7 +274,8 @@ export function setMediaContent (contentForm, options) {
       ? (contentForm.videoContentType = 'bigTopic')
       : (contentForm.videoContentType = 'topic')
     contentForm.extraValue1 = selected.id + ''
-    contentForm.pictureUrl = selected.picture
+    contentForm.pictureUrl =
+      getMatchedPictureUrl(blockSize, selected.imageInfoList) || selected.picture
     contentForm.title = selected.title
     contentForm.subTitle = chopSubTitle(selected.subTitle)
     contentForm.singleSubTitle = ''

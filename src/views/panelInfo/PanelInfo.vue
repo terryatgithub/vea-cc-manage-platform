@@ -368,7 +368,7 @@
                       ></VirtualPanel>
                     </el-form-item>
                     <el-form-item label="插入">
-                      <el-button type="primary" :disabled="!selectedLayout" @click="handleAddIntervene">添加插入</el-button>
+                      <el-button type="primary" :disabled="!selectedLayout" @click="handleAddIntervene">添加</el-button>
                       <VirtualIntervenePanel
                         class="pannel-blocks"
                         style="display: flex;"

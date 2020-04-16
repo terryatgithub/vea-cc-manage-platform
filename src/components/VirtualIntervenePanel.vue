@@ -77,7 +77,7 @@ export default {
       if (val !== '' && (val < 1 || val > maxCount)) {
         const ref = this.$refs.posInput[index]
         ref.inputValue = oldVal
-        return this.$message.error(`干预位置必须在1~${maxCount}之间`)
+        return this.$message.error(`插入位置必须在1~${maxCount}之间`)
       } else {
         this.blocks[index].intervenePos = val
       }
