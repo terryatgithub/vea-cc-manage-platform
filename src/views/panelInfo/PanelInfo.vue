@@ -367,8 +367,8 @@
                         @click-block="handleClickBlock"
                       ></VirtualPanel>
                     </el-form-item>
-                    <el-form-item label="干预">
-                      <el-button type="primary" :disabled="!selectedLayout" @click="handleAddIntervene">添加干预</el-button>
+                    <el-form-item label="插入">
+                      <el-button type="primary" :disabled="!selectedLayout" @click="handleAddIntervene">添加插入</el-button>
                       <VirtualIntervenePanel
                         class="pannel-blocks"
                         style="display: flex;"
@@ -567,7 +567,7 @@
                     </div>
                   </el-form-item>
                   <template v-if="pannelFillType === 3">
-                    <el-form-item label="干预位">
+                    <el-form-item label="插入位">
                       <VirtualIntervenePanel
                         class="pannel-blocks"
                         style="display: flex;"
@@ -683,12 +683,12 @@ import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
 import ClickCopy from '@/components/ClickCopy'
 import { isFrozen } from './frozen'
 /**
- * 干预推荐位
+ * 插入推荐位
  * 需要先选布局和设置位置，因为要确定海报尺寸
  * 在更新位置后要更新海报
  * 在改变布局后，清除内容
  *
- * 每次更改干预推荐位相关信息之后，改变版块推荐位内容
+ * 每次更改插入推荐位相关信息之后，改变版块推荐位内容
  *
  */
 const DEFAULT_MEDIA_RULE_LAYOUT_ID = 1
@@ -1439,14 +1439,14 @@ export default {
       this.currentBlockIndex = index
       this.activePage = 'block_content'
     },
-    // 设置干预推荐位内容
+    // 设置插入推荐位内容
     handleClickInterveneBlock (index) {
       const pannel = this.pannel
       this.currentInterveneBlockIndex = index
       const selectedResources =
         this.pannel.pannelList[0].interveneContentList || []
       if (!selectedResources[index].intervenePos) {
-        return this.$message('为了匹配海报尺寸，请先确定干预位置哦！')
+        return this.$message('为了匹配海报尺寸，请先确定插入位置哦！')
       }
       const currentIntervenePos = selectedResources[index].intervenePos
       this.blockConetentInterveneProps = {
@@ -2373,7 +2373,7 @@ export default {
             pannelType = 10
           }
         }
-        // 干预设置interveneContentList
+        // 插入设置interveneContentList
         const contentListCopy = JSON.parse(JSON.stringify(itemContentList))
         const interveneContentList = (item.interveneContentList || []).map(interveneContent => {
           const intervenePos = interveneContent.intervenePos
@@ -2486,7 +2486,7 @@ export default {
           return !item.intervenePos || item.videoContentList.length === 0
         })
         if (error) {
-          return cb(Error('干预推荐位信息不完整！'))
+          return cb(Error('插入推荐位信息不完整！'))
         }
       }
       if (!this.selectedLayout) {
@@ -2964,7 +2964,7 @@ export default {
     },
     handleInputLayoutId (id) {
       const currentPannel = this.pannel.pannelList[0]
-      // 切换布局清空干预位
+      // 切换布局清空插入位
       currentPannel.interveneContentList = []
       // 获取布局信息，然后更新推荐位内容
       this.selectedLayoutId = id
@@ -2979,9 +2979,11 @@ export default {
     },
     handleAddIntervene () {
       const currentPannel = this.pannel.pannelList[0]
-      // if (!currentPannel.mediaRuleDesc) {
-      //   return this.$message.error('请先配置影片筛选规则')
-      // }
+      const fillType = this.pannelFillType
+      const panelFillTypes = this.$consts.panelFillTypes
+      if (fillType === panelFillTypes.mediaRule && !currentPannel.mediaRuleDesc) {
+        return this.$message.error('请先配置影片筛选规则')
+      }
       currentPannel.interveneContentList.push(this.genDefaultInterveneContent())
       this.scollBottom()
     },
@@ -3013,7 +3015,7 @@ export default {
       })
       if (currentIntervenePos !== '' && isRepeat) {
         interveneContent.intervenePos = ''
-        return this.$message.error('干预位置重复!')
+        return this.$message.error('插入位置重复!')
       }
       // 推荐位没有资源
       if (interveneContent.videoContentList.length === 0) {
@@ -3041,11 +3043,11 @@ export default {
           this.insertResources({
             selectedResources: this.filteredFilm.rows
           })
-          // 按干预顺序排序
+          // 按插入顺序排序
           activePannel.interveneContentList.sort((a, b) => {
             return a.intervenePos - b.intervenePos
           })
-          // 插入干预位
+          // 插入位
           const interveneContentList = activePannel.interveneContentList || []
           interveneContentList.forEach(item => {
             if (item.intervenePos && item.videoContentList.length !== 0) {
@@ -3057,7 +3059,7 @@ export default {
               activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
             }
           })
-          // 修复插入干预位引起的pictureurl横竖图变化问题
+          // 修复插入位引起的pictureurl横竖图变化问题
           if ((selectedLayoutId === '7' || selectedLayoutId === '8') && interveneContentList.length !== 0) {
             this.updateSelectedResourcesPic(0)
           }

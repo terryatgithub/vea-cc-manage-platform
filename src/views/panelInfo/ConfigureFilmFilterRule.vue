@@ -106,6 +106,15 @@
           <el-checkbox label="1">具有4k</el-checkbox>
           <el-checkbox label="2">具有杜比</el-checkbox>
         </el-checkbox-group>
+        <!-- <div>(7) 长短片区分<span>左边是我们计算长短片区分，右边是第三方给到到的</span></div>
+        <el-checkbox-group v-model="" class="margin-bottom-20">
+          <el-checkbox
+            v-for="item in filmContentTypeOptions"
+            :key="item.value"
+            :label="item.value">
+            {{item.label}}
+          </el-checkbox>
+        </el-checkbox-group> -->
         <div>(8) 创建时间</div>
         <el-row :gutter="1" style="width: 100%" class="margin-bottom-20">
           <el-col :span="8">
@@ -313,6 +322,7 @@ export default {
       filmTypeOptions: [],
       filmAreaOptions: [],
       filmPayTypeOptions: [],
+      filmContentTypeOptions: [],
       movieFilterForm: {
         categorys: [],
         tagsRelation: 1,
@@ -422,6 +432,7 @@ export default {
         this.stepCount++
         this.$service.getFilmFilterOptions({ businessType: 0, type: 'vod' }).then(result => {
           const rs = JSON.parse(result.replace('result(', '').replace(/\)*$/, ''))
+          const { contentTypes = [] } = rs.vod || {}
           this.filmTypeOptions = (rs.vod.categoryList || []).map(item => {
             return {
               label: item.categoryName,
@@ -438,6 +449,12 @@ export default {
             return {
               label: item.tagCnName,
               value: item.tagEnName
+            }
+          })
+          this.filmContentTypeOptions = contentTypes.map((item) => {
+            return {
+              label: item.contentType,
+              value: item.contentTypeId
             }
           })
         })
