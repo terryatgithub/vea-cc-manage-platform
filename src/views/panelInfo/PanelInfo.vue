@@ -62,7 +62,7 @@
                 </el-form-item>
 
                 <el-form-item label="版块名称" required>
-                  <el-input v-model.trim="pannel.pannelName"></el-input>
+                  <el-input v-model.trim="pannel.pannelName" clearable></el-input>
                 </el-form-item>
 
                 <el-form-item label="版块分类" required>
@@ -120,6 +120,7 @@
               <el-form ref="form" :model="pannel" label-width="150px">
                 <el-form-item v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe'" label="版块标题" required>
                   <el-input
+                    clearable
                     style="width: 300px"
                     v-model="pannel.pannelList[0].pannelTitle"
                     placeholder="请输入版块标题">
@@ -127,7 +128,7 @@
                   <BinCheckBox label="前端不显示标题" v-model="pannel.showTitle" is-negative />
                 </el-form-item>
                 <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
-                  <el-input v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
+                  <el-input clearable v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
                 </el-form-item>
                 <div v-show="pannel.parentType !== 'subscribe'">
                   <el-form-item label="版块内容来源" v-if="pannel.parentType === 'normal'">

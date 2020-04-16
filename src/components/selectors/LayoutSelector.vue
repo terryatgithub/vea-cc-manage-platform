@@ -9,13 +9,13 @@
     <div slot="filter">
       <el-form :inline="true">
         <el-form-item label="布局ID">
-          <InputPositiveInt v-model="filter.layoutId"></InputPositiveInt>
+          <InputPositiveInt v-model="filter.layoutId" clearable></InputPositiveInt>
         </el-form-item>
         <el-form-item label="布局名称">
-          <el-input v-model="filter.layoutName"></el-input>
+          <el-input v-model="filter.layoutName" clearable></el-input>
         </el-form-item>
         <el-form-item label="布局分类">
-          <el-select v-model="filter.layoutType" clearable>
+          <el-select v-model="filter.layoutType" clearable filterable>
             <el-option
               v-for="item in layoutTypeOptions"
               :key="item.dictId"
@@ -25,7 +25,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="布局标题">
-          <el-select v-model="filter.layoutIsTitle" clearable>
+          <el-select v-model="filter.layoutIsTitle" clearable filterable>
             <el-option :value="0" label="不带标题"></el-option>
             <el-option :value="1" label="带标题"></el-option>
           </el-select>
@@ -58,7 +58,7 @@
           :rules="formBlockRules"
         >
           <el-form-item label="推荐位个数" prop="count">
-            <el-input ref="blockCount" @keypress.prevent.stop v-model.number="formBlock.count" :placeholder="blockCountPlaceholder"></el-input>
+            <el-input ref="blockCount" @keypress.prevent.stop v-model.number="formBlock.count" clearable :placeholder="blockCountPlaceholder"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">

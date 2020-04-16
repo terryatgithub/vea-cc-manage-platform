@@ -7,7 +7,7 @@
         @close="handleSetCancel">
         <el-form @keypress.enter.native.stop.prevent="handleSetEnd" ref="form" label-width="140px" :model="info" :rules="rules">
           <el-form-item label="标题" prop="title">
-            <el-input :disabled="mode === 'read'"  v-model="info.title" />
+            <el-input :disabled="mode === 'read'"  v-model="info.title" clearable />
           </el-form-item>
           <template v-if="focusConfig === 'timeSlot'">
             <el-form-item label="时间段" class="time-slot" prop="startTime">

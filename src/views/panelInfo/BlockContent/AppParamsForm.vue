@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-form-item label="应用包名" :prop="formProp('packagename')" :rules="rules.packagename">
-      <el-input v-model.trim="inputValue.packagename"></el-input>
+      <el-input v-model.trim="inputValue.packagename" clearable></el-input>
     </el-form-item>
     <el-form-item label="应用版本号" :prop="formProp('versioncode')" :rules="rules.versioncode">
-      <el-input v-model.trim="inputValue.versioncode"></el-input>
+      <el-input v-model.trim="inputValue.versioncode" clearable></el-input>
     </el-form-item>
     <el-form-item label="启动动作" :prop="formProp('dowhat')" :rules="rules.dowhat">
       <el-select v-model="inputValue.dowhat">
@@ -29,10 +29,10 @@
       </el-select>
     </el-form-item>
     <el-form-item label="启动参数" :prop="formProp('byvalue')" :rules="rules.byvalue">
-      <el-input type="textarea" v-model.trim="inputValue.byvalue"></el-input>
+      <el-input type="textarea" v-model.trim="inputValue.byvalue" clearable></el-input>
     </el-form-item>
     <el-form-item label="数据配置" prop="formProp('data')">
-      <el-input v-model.trim="inputValue.data"></el-input>
+      <el-input v-model.trim="inputValue.data" clearable></el-input>
     </el-form-item>
     <el-form-item label="扩展参数">
       <div class="app-extend-params" v-for="(param, index) in inputValue.params" :key="index">
@@ -42,7 +42,7 @@
           :prop="formProp('params.' + index + '.key')"
           :rules="rules.params.key"
         >
-          <el-input v-model.trim="param.key"></el-input>
+          <el-input v-model.trim="param.key" clearable></el-input>
         </el-form-item>
         <el-form-item
           label="value:"
@@ -50,7 +50,7 @@
           :prop="formProp('params.' + index + '.value')"
           :rules="rules.params.value"
         >
-          <el-input v-model.trim="param.value"></el-input>
+          <el-input v-model.trim="param.value" clearable></el-input>
         </el-form-item>
         <a class="app-params__remove-param" @click="handleRemoveParam(index)">
           <i class="el-icon-minus"></i>

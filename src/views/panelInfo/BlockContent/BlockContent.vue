@@ -75,19 +75,6 @@
               />
             </div>
           </el-form-item>
-          <!-- <el-form-item label="应用版本号" prop="versionCode" v-if="normalContentWrapper.props.coverType === 'media'">
-            <el-input v-model.trim="normalContentWrapper.props.versionCode" :disabled="mode === 'read'"></el-input>
-          </el-form-item>
-          <el-form-item
-            label="设置广告位"
-            v-if="data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (normalContentWrapper.props.coverType === 'media' || normalContentWrapper.props.coverType === 'app' || normalContentWrapper.props.coverType === 'custom')"
-            prop="flagIsSetad"
-          >
-            <el-radio-group v-model="normalContentWrapper.props.flagIsSetad" :disabled="mode === 'read'">
-              <el-radio :label="0">否</el-radio>
-              <el-radio :label="1">是</el-radio>
-            </el-radio-group>
-          </el-form-item> -->
         </el-form>
       </el-collapse-item>
       <el-collapse-item v-if="!isInterveneBlock" v-show="contentForm.coverType !== 'block'" title="精细化定向内容" name="specific">
