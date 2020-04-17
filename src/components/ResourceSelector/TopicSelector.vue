@@ -13,7 +13,7 @@
     @select-end="$emit('select-end')">
     <el-form slot="filter" :inline="true" v-model="filter" label-width="72px">
       <el-form-item label="专题类别">
-        <el-select v-model="filter.levelType" clearable>
+        <el-select filterable clearable v-model="filter.levelType" clearable>
           <el-option
             v-for="option in options"
             :key="option.label"
@@ -23,7 +23,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="专题名称">
-        <el-input v-model="filter.title"/>
+        <el-input filterable clearable v-model="filter.title"/>
       </el-form-item>
       <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
       <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>

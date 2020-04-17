@@ -11,6 +11,56 @@
     @select-end="handleSelectEnd"
     @select-start="handleSelectStart"
     :disabled="disabled">
+    <div slot="filter">
+      <el-form :model="filter" ref="filter" label-width="0px" :inline="true">
+        <el-form-item label="">
+          <InputPositiveInt v-model="filter.pictureId" placeholder="ID" clearable></InputPositiveInt>
+        </el-form-item>
+        <el-form-item label="">
+          <el-input v-model="filter.pictureName" placeholder="素材名称" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="">
+         <el-select v-model="filter.pictureCategory" filterable clearable placeholder="素材类别">
+           <el-option v-for="item in materialTypeOptions"
+             :key="item.value"
+             :label="item.label"
+             :value="item.value">
+           </el-option>
+         </el-select>
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="filter.pictureStatus" filterable placeholder="审核状态">
+            <el-option v-for="item in pictureStatusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="filter.resolutionTolerance" filterable clearable placeholder="尺寸容忍度">
+            <el-option v-for="item in resolutionToleranceOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="$consts.idPrefix !== '10'" label="">
+          <el-select v-model="filter.idPrefix" clearable filterable placeholder="数据来源">
+            <el-option v-for="item in $consts.idPrefixOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+         <el-form-item>
+          <el-button type="primary" @click="handleFilterChange">查询</el-button>
+          <el-button @click="handleFilterReset">重置</el-button>
+        </el-form-item>
+      </el-form>
+     </div>
     <el-collapse
       v-if="presetTable.data.length > 0"
       slot="prepend"
@@ -59,25 +109,46 @@
 </template>
 
 <script>
-import _ from 'gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 import { CardList } from 'admin-toolkit'
 import { debounce } from 'lodash'
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
   components: {
     CardList,
-    RemoteSelectorWrapper
+    RemoteSelectorWrapper,
+    InputPositiveInt
   },
   props: ['title', 'pictureResolution', 'queryLongPoster', 'disabled', 'resource'],
   data () {
+    const $status = this.$consts.status
     return {
       collapseActiveItems: ['relPicture'],
-      materialTypes: {}, // 素材类型
-      pictureStatus: {
-        // 状态
-        审核通过: 1,
-        待审核: 2
-      },
+      materialTypeOptions: [],
+      pictureStatusOptions: [
+        {
+          label: '审核通过',
+          value: $status.accepted
+        },
+        {
+          label: '待审核',
+          value: $status.waiting
+        }
+      ],
+      resolutionToleranceOptions: [
+        {
+          label: '10%',
+          value: 10
+        },
+        {
+          label: '30%',
+          value: 30
+        },
+        {
+          label: '50%',
+          value: 50
+        }
+      ],
       picDialogVisible: false, // 预览图片弹出框
       auditDialogVisible: false, // 审核弹出框
       reviewPicUrl: null,
@@ -163,8 +234,11 @@ export default {
     },
     getMaterialTypes () {
       return this.$service.getMaterialTypes().then(data => {
-        data.forEach(item => {
-          this.materialTypes[item.dictCnName] = item.dictId
+        this.materialTypeOptions = data.map(item => {
+          return {
+            label: item.dictCnName,
+            value: item.dictId
+          }
         })
       })
     },
@@ -232,97 +306,7 @@ export default {
       }
     },
     initFilterSchema () {
-      const $status = this.$consts.status
-      let filterSchema = _.map({
-        pictureId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
-          label: '',
-          component: 'InputPositiveInt',
-          placeholder: 'ID',
-          cols: {
-            item: 3,
-            label: 0,
-            wrapper: 23
-          }
-        }),
-        pictureName: _.o.string.other('form', {
-          label: '',
-          component: 'Input',
-          placeholder: '素材名称',
-          cols: {
-            item: 3,
-            label: 0,
-            wrapper: 23
-          }
-        }),
-        pictureCategory: _.o.enum(this.materialTypes).other('form', {
-          label: '',
-          component: 'Select',
-          placeholder: '素材类别',
-          cols: {
-            item: 3,
-            label: 0,
-            wrapper: 23
-          }
-        }),
-        pictureStatus: _.o.enum({
-          '审核通过': $status.accepted,
-          '待审核': $status.waiting
-        }).other('form', {
-          label: '',
-          component: 'Select',
-          placeholder: '审核状态',
-          cols: {
-            item: 3,
-            label: 0,
-            wrapper: 23
-          }
-        }),
-        resolutionTolerance: _.o.enum({
-          '10%': 10,
-          '30%': 30,
-          '50%': 50
-        }).other('form', {
-          label: '',
-          component: 'Select',
-          placeholder: '尺寸容忍度',
-          clearable: true,
-          cols: {
-            item: 3,
-            label: 0,
-            wrapper: 23
-          }
-        })
-      }).other('form', {
-        layout: 'inline',
-        footer: {
-          cols: {
-            item: 3,
-            label: 0,
-            wrapper: 23
-          },
-          showSubmit: true,
-          submitText: '查询',
-          showReset: true,
-          resetText: '重置'
-        }
-      })
-      if (this.$consts.idPrefix !== '10') {
-        filterSchema.map({
-          idPrefix: _.o.enum(this.$consts.idPrefixEnums).other('form', {
-            label: ' ',
-            placeholder: '数据来源',
-            component: 'Select',
-            layout: 'inline',
-            cols: {
-              item: 3,
-              wrapper: 18
-            }
-          })
-        })
-      }
-      this.getMaterialTypes().then(() => {
-        this.filterSchema = filterSchema
-      })
+      this.getMaterialTypes()
     }
   },
   created () {

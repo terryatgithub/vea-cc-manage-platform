@@ -17,53 +17,55 @@
       <el-collapse-item title="查询条件" name="1">
         <el-form @keypress.enter.native="handleFilterChange" :inline="true" :model="filter" class="search-form" label-width="80px">
           <el-form-item label="渠道">
-            <CommonSelector v-model="filter.partner" :disabled="disablePartner" :options="$consts.partnerOptions" />
+            <CommonSelector filterable v-model="filter.partner" :disabled="disablePartner" :options="$consts.partnerOptions" />
           </el-form-item>
           <el-form-item label="内容源">
-            <CommonSelector v-model="filter.sources" :options="sourceEnums" />
+            <CommonSelector filterable v-model="filter.sources" :options="sourceEnums" />
           </el-form-item>
           <el-form-item v-show="filter.sources === 'tencent'" label="牌照">
-            <CommonSelector v-model="filter.license" :options="licenseEnums" clearable />
+            <CommonSelector filterable v-model="filter.license" :options="licenseEnums" clearable />
           </el-form-item>
           <el-form-item label="频道类型">
-            <CommonSelector v-model="filter.category" :options="categoryEnums"  />
+            <CommonSelector filterable v-model="filter.category" :options="categoryEnums" clearable  />
           </el-form-item>
           <el-form-item label="影片类型">
-            <CommonSelector v-model="filter.videoTypes" :options="videoTypeEnums"  />
+            <CommonSelector filterable v-model="filter.videoTypes" :options="videoTypeEnums" clearable  />
           </el-form-item>
           <el-form-item label="付费类型">
-            <CommonSelector v-model="filter.payTypes" :options="payTypeEnums"  />
+            <CommonSelector filterable  v-model="filter.payTypes" :options="payTypeEnums" clearable  />
           </el-form-item>
           <el-form-item label="标题">
-            <el-input v-model="filter.title"></el-input>
+            <el-input clearable v-model="filter.title"></el-input>
           </el-form-item>
           <el-form-item label="素材类型">
-            <CommonSelector v-model="filter.contentTypes" :options="contentTypeEnums"  />
+            <CommonSelector filterable  v-model="filter.contentTypes" :options="contentTypeEnums" clearable />
           </el-form-item>
           <el-form-item label="年代">
             <el-input
               size="small"
+              clearable
               v-model="filter.yearStart"
               @blur="yearStartListen"
-              style="width: 70px;"
+              style="width: 75px;"
             ></el-input>
             -
             <el-input
               size="small"
+              clearable
               v-model="filter.yearEnd"
               @blur="yearEndListen"
-              style="width: 70px;"
+              style="width: 75px;"
             ></el-input>
           </el-form-item>
           <span v-show="isMore">
             <el-form-item label="影片格式">
-              <CommonSelector v-model="filter.videoFormat" :options="videoFormatEnums"  />
+              <CommonSelector filterable clearable v-model="filter.videoFormat" :options="videoFormatEnums"  />
             </el-form-item>
             <el-form-item label="内容标签">
-              <CommonSelector :filterable="true" v-model="filter.contentTag" :options="contentTagEnums"  />
+              <CommonSelector filterable clearable v-model="filter.contentTag" :options="contentTagEnums"  />
             </el-form-item>
             <el-form-item label="排序方式">
-              <el-select v-model="filter.orderBy" size="small" style="width: 120px;">
+              <el-select filterable clearable v-model="filter.orderBy" size="small" style="width: 120px;">
                 <el-option label="请选择" value></el-option>
                 <el-option
                   v-for="order in conditionList.orderBy"
@@ -82,13 +84,13 @@
 
             </el-form-item>
             <el-form-item label="导演">
-              <CommonSelector v-model="filter.directors" placeholder="请选择/输入" filterable allow-create :options="directorEnums"  />
+              <CommonSelector clearable v-model="filter.directors" placeholder="请选择/输入" filterable allow-create :options="directorEnums"  />
             </el-form-item>
             <el-form-item label="主演">
-              <CommonSelector v-model="filter.actors" placeholder="请选择/输入" filterable allow-create :options="actiorEnums"  />
+              <CommonSelector clearable v-model="filter.actors" placeholder="请选择/输入" filterable allow-create :options="actiorEnums"  />
             </el-form-item>
             <el-form-item label="地区">
-              <CommonSelector v-model="filter.areas" placeholder="请选择/输入" filterable allow-create :options="areaEnums"  />
+              <CommonSelector clearable v-model="filter.areas" placeholder="请选择/输入" filterable allow-create :options="areaEnums"  />
             </el-form-item>
             <el-form-item label="影片标签" style="display: block">
               <TagLogicFilter ref="tagLogicFilter" v-model="filter.tagCodes" />

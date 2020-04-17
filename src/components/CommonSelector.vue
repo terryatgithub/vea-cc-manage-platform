@@ -23,6 +23,7 @@
     :disabled="disabled"
     :placeholder="placeholder || '请选择'"
     :filterable="filterable"
+    :clearable="clearable"
     :allow-create="allowCreate">
     <template v-for="(item, key) in options">
       <el-option
@@ -46,6 +47,7 @@ export default {
     value: null,
     placeholder: null,
     filterable: null,
+    clearable: null,
     allowCreate: null,
     disabledItems: {
       type: Array,

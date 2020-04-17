@@ -16,46 +16,44 @@
       <el-collapse-item title="查询条件" name="1">
         <el-form @keypress.enter.native="handleFilterChange" class="search-form" :inline="true" v-model="filter" label-width="72px">
           <el-form-item label="内容商">
-            <CommonSelector :filterable="true" v-model="filter.contentProviders" :options="contentProviderEnums" />
+            <CommonSelector filterable clearable v-model="filter.contentProviders" :options="contentProviderEnums" />
           </el-form-item>
           <el-form-item label="教育分类">
-            <CommonSelector :value="filter.teachTypes" @input="handleTeachTypesChange" :options="teachTypeEnums" />
+            <CommonSelector filterable clearable :value="filter.teachTypes" @input="handleTeachTypesChange" :options="teachTypeEnums" />
           </el-form-item>
           <el-form-item label="年级年龄">
-            <CommonSelector v-model="filter.gradeList" :options="gradeEnums" placeholder="请选择" />
+            <CommonSelector filterable clearable v-model="filter.gradeList" :options="gradeEnums" placeholder="请选择" />
           </el-form-item>
           <el-form-item label="内容分类">
-            <CommonSelector v-model="filter.videoTypes" :options="videoTypeEnums" placeholder="请选择" />
+            <CommonSelector filterable clearable v-model="filter.videoTypes" :options="videoTypeEnums" placeholder="请选择" />
           </el-form-item>
           <el-form-item label="付费类型">
-            <CommonSelector v-model="filter.payTypes" :options="payTypeEnums" placeholder="请选择" />
+            <CommonSelector filterable clearable v-model="filter.payTypes" :options="payTypeEnums" placeholder="请选择" />
           </el-form-item>
           <el-form-item label="内容标签">
-            <CommonSelector v-model="filter.contentTag" :options="contentTagEnums" placeholder="请选择" />
+            <CommonSelector filterable clearable v-model="filter.contentTag" :options="contentTagEnums" placeholder="请选择" />
           </el-form-item>
           <el-form-item label="资源形态">
-            <CommonSelector v-model="filter.contentForm" :options="contentFormEnums" placeholder="请选择" />
+            <CommonSelector filterable clearable v-model="filter.contentForm" :options="contentFormEnums" placeholder="请选择" />
           </el-form-item>
           <el-form-item label="课程名称">
-            <el-input v-model="filter.title" size="small"></el-input>
+            <el-input clearable v-model="filter.title" size="small"></el-input>
           </el-form-item>
           <span v-show="isMore">
             <el-form-item label="课程版本">
-              <CommonSelector v-model="filter.courseVersion" :options="courseVersionEnums" placeholder="请选择" />
+              <CommonSelector filterable clearable v-model="filter.courseVersion" :options="courseVersionEnums" placeholder="请选择" />
             </el-form-item>
             <el-form-item label="集数">
-              <CommonSelector v-model="filter.segmentTag" :options="segmentTagEnums" placeholder="请选择" />
+              <CommonSelector filterable clearable v-model="filter.segmentTag" :options="segmentTagEnums" placeholder="请选择" />
             </el-form-item>
             <el-form-item label="是否全集">
-              <el-select filterable v-model="filter.updateStatus" size="small">
-                <el-option label="请选择/输入" value></el-option>
+              <el-select filterable clearable v-model="filter.updateStatus" size="small">
                 <el-option label="不限" :value="0"></el-option>
                 <el-option label="是" :value="1"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="同步时间">
-              <el-select filterable v-model="filter.synDate" size="small">
-                <el-option label="请选择/输入" value></el-option>
+              <el-select filterable clearable v-model="filter.synDate" size="small">
                 <el-option label="7天" :value="7" size="small"></el-option>
                 <el-option label="15天" :value="15" size="small"></el-option>
                 <el-option label="1个月" :value="30" size="small"></el-option>
@@ -64,10 +62,10 @@
               </el-select>
             </el-form-item>
             <el-form-item label="动漫明星">
-              <el-input v-model="filter.cartoonStar" size="small"></el-input>
+              <el-input clearable v-model="filter.cartoonStar" size="small"></el-input>
             </el-form-item>
             <el-form-item label="地区">
-              <el-select v-model="filter.areas" filterable allow-create size="small">
+              <el-select v-model="filter.areas" filterable clearable allow-create size="small">
                 <el-option
                   v-for="area in conditionList.areas"
                   :key="area.tagId"
@@ -79,20 +77,22 @@
             <el-form-item label="年代">
               <el-input
                 size="small"
+                clearable
                 v-model="filter.yearStart"
                 @blur="yearStartListen"
-                style="width: 48px;"
+                style="width: 72px;"
               ></el-input>
               -
               <el-input
                 size="small"
+                clearable
                 v-model="filter.yearEnd"
                 @blur="yearEndListen"
-                style="width: 48px;"
+                style="width: 72px;"
               ></el-input>
             </el-form-item>
             <el-form-item label="排序方式">
-              <el-select v-model="filter.orderBy" size="small" style="width: 85px;">
+              <el-select filterable clearable v-model="filter.orderBy" size="small" style="width: 120px;">
                 <el-option
                   v-for="order in conditionList.orderBy"
                   :key="order.tagId"

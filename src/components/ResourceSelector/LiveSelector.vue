@@ -13,10 +13,10 @@
     @select-end="$emit('select-end')">
     <el-form slot="filter" :inline="true" v-model="filter" label-width="72px">
       <el-form-item label="内容源">
-        <SourceSelector v-model="filter.source" :freeze="source ? true : false" />
+        <SourceSelector filterable v-model="filter.source" :freeze="source ? true : false" />
       </el-form-item>
       <el-form-item label="资源类型">
-        <el-select v-model="filter.nodeType">
+        <el-select filterable v-model="filter.nodeType">
           <el-option
             v-for="option in options.nodeType"
             :key="option.label"
@@ -26,8 +26,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="内容类型">
-        <el-select v-model="filter.cateid">
-          <el-option label="请选择" value></el-option>
+        <el-select filterable clearable v-model="filter.cateid">
           <el-option
             v-for="option in options.cateid"
             :key="option.label"
@@ -37,7 +36,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="内容搜索">
-        <el-input v-model="filter.title"></el-input>
+        <el-input clearable filterable v-model="filter.title"></el-input>
       </el-form-item>
       <div style="text-align: center">
         <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>

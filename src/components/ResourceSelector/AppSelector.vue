@@ -7,22 +7,44 @@
     :table="table"
     :pagination="pagination"
     :filter="filter"
-    :filter-schema="filterSchema"
+    :filter-schema="null"
     :select-end-on-dbl-click="true"
     @pagination-change="fetchData"
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')">
-  </BaseSelector>
+    <el-form
+      slot="filter"
+      :model="filter"
+      label-width="80px"
+      :inline="true"
+      @reset.native.prevent="handleFilterReset"
+      @submit.native.prevent="handleFilterChange">
+      <el-form-item label="">
+        <InputPositiveInt clearable placeholder="应用ID" v-model="filter.appId"></InputPositiveInt>
+      </el-form-item>
+      <el-form-item label="">
+        <el-input clearable v-model.trim="filter.appName" placeholder="应用名称"></el-input>
+      </el-form-item>
+      <el-form-item label="">
+        <el-input clearable v-model.trim="filter.appPackageName" placeholder="应用包名"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" native-type="submit">查询</el-button>
+        <el-button native-type="reset">重置</el-button>
+      </el-form-item>
+    </el-form>
+   </BaseSelector>
 </template>
 
 <script>
-import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
   components: {
-    BaseSelector
+    BaseSelector,
+    InputPositiveInt
   },
   data () {
     return {
@@ -31,6 +53,7 @@ export default {
         pageSize: 15
       },
       filter: this.genDefaultFilter(),
+      efficientFilter: this.genDefaultFilter(),
       filterSchema: null,
       table: {
         props: {},
@@ -85,19 +108,20 @@ export default {
     },
     getFilter () {
       const pagination = this.pagination
-      const filter = Object.assign({}, this.filter)
+      const filter = this.efficientFilter
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
       return filter
     },
-    handleFilterChange (filter) {
-      this.filter = filter
+    handleFilterChange () {
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.fetchData()
     },
     handleFilterReset () {
       this.filter = this.genDefaultFilter()
+      this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -110,42 +134,6 @@ export default {
     }
   },
   created () {
-    let filterSchema = _.map({
-      appId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
-        component: 'Input',
-        placeholder: '应用ID',
-        label: ' '
-      }),
-      appName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '应用名称',
-        label: ' '
-      }),
-      appPackageName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '应用包名',
-        label: ' '
-      })
-    }).other('form', {
-      cols: {
-        item: 4,
-        label: 1,
-        wrapper: 23
-      },
-      layout: 'inline',
-      footer: {
-        cols: {
-          item: 3,
-          label: 1,
-          wrapper: 23
-        },
-        showSubmit: true,
-        submitText: '查询',
-        showReset: true,
-        resetText: '重置'
-      }
-    })
-    this.filterSchema = filterSchema
   }
 }
 </script>

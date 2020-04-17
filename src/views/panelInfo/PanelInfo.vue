@@ -155,11 +155,12 @@
                     </el-form-item>
                     <el-form-item label="落焦形式" required>
                       <CommonSelector
+                        type="radio-button"
                         v-model="pannel.focusShape"
                         :options="$consts.panelFocusOptions"
                         placeholder="请选择"
                       />
-                      <BinCheckBox v-model="isShowfocusImgUrl" v-show="pannel.focusShape === 0" label="设置异形焦点" />
+                      <BinCheckBox style="margin-left: 25px" v-model="isShowfocusImgUrl" v-show="pannel.focusShape === 0" label="设置异形焦点" />
                     </el-form-item>
                     <el-form-item label="异形焦点" v-if="isShowfocusImgUrl && (pannel.focusShape === 0)">
                       <el-button v-show="!selectedLayout" :disabled="!selectedLayout">选择异形焦点(请先选择布局)</el-button>
@@ -717,7 +718,6 @@ export default {
     AnalyzeDmpDataDialog,
     SubscribeVideos,
     BlockRecStreamSelector,
-    InputPositiveInt,
     ConfigureFilmFilterRule,
     ClickCopy
   },

@@ -8,17 +8,31 @@
     :pagination="pagination"
     :select-end-on-dbl-click="true"
     :filter="filter"
-    :filter-schema="filterSchema"
+    :filter-schema="null"
     @pagination-change="fetchData"
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
     @select-end="$emit('select-end')">
+    <el-form
+      slot="filter"
+      :model="filter"
+      label-width="80px"
+      :inline="true"
+      @reset.native.prevent="handleFilterReset"
+      @submit.native.prevent="handleFilterChange">
+      <el-form-item label="">
+        <el-input clearable v-model.trim="filter.keyword" placeholder="商品名称/ID"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" native-type="submit">查询</el-button>
+        <el-button native-type="reset">重置</el-button>
+      </el-form-item>
+    </el-form>
   </BaseSelector>
 </template>
 
 <script>
-import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
 export default {
   components: {
@@ -31,6 +45,7 @@ export default {
         pageSize: 15
       },
       filter: this.getDefaultFilter(),
+      efficientFilter: this.getDefaultFilter(),
       filterSchema: null,
       table: {
         props: {},
@@ -89,7 +104,7 @@ export default {
     },
     getFilter () {
       const pagination = this.pagination
-      const filter = Object.assign({}, this.filter)
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       filter.code = filter.id
       if (pagination) {
         filter.page = pagination.currentPage
@@ -97,12 +112,13 @@ export default {
       }
       return filter
     },
-    handleFilterChange (filter) {
-      this.filter = filter
+    handleFilterChange () {
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.fetchData()
     },
     handleFilterReset () {
       this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -115,32 +131,6 @@ export default {
     }
   },
   created () {
-    const filterSchema = _.map({
-      keyword: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '商品名称/ID',
-        label: ' '
-      })
-    }).other('form', {
-      cols: {
-        item: 3,
-        label: 1,
-        wrapper: 23
-      },
-      layout: 'inline',
-      footer: {
-        cols: {
-          item: 5,
-          label: 1,
-          wrapper: 23
-        },
-        showSubmit: true,
-        submitText: '查询',
-        showReset: true,
-        resetText: '重置'
-      }
-    })
-    this.filterSchema = filterSchema
   }
 }
 </script>

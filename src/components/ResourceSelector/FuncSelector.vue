@@ -13,13 +13,36 @@
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
-    @select-end="$emit('select-end')"
-  ></BaseSelector>
+    @select-end="$emit('select-end')">
+    <el-form
+      slot="filter"
+      :model="filter"
+      label-width="80px"
+      :inline="true"
+      @reset.native.prevent="handleFilterReset"
+      @submit.native.prevent="handleFilterChange">
+      <el-form-item label="">
+        <InputPositiveInt clearable placeholder="功能ID" v-model="filter.pluginId"></InputPositiveInt>
+      </el-form-item>
+      <el-form-item label="">
+        <el-input clearable v-model.trim="filter.pluginName" placeholder="功能名称"></el-input>
+      </el-form-item>
+      <el-form-item label="">
+        <CommonSelector  filterable v-model="filter.source" :options="sourceOptions" placeholder="内容源" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" native-type="submit">查询</el-button>
+        <el-button native-type="reset">重置</el-button>
+      </el-form-item>
+    </el-form>
+  </BaseSelector>
 </template>
 
 <script>
 import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
+import CommonSelector from '@/components/CommonSelector'
+import InputPositiveInt from '@/components/InputPositiveInt'
 const sourceValueMap = {
   '': '0',
   'o_tencent': '1',
@@ -28,7 +51,9 @@ const sourceValueMap = {
 }
 export default {
   components: {
-    BaseSelector
+    BaseSelector,
+    CommonSelector,
+    InputPositiveInt
   },
   data () {
     return {
@@ -37,6 +62,7 @@ export default {
         pageSize: 15
       },
       filter: this.getDefaultFilter(),
+      efficientFilter: this.getDefaultFilter(),
       filterSchema: null,
       table: {
         props: {},
@@ -130,7 +156,7 @@ export default {
     },
     getFilter () {
       const pagination = this.pagination
-      const filter = Object.assign({}, this.filter)
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       filter.code = filter.id
       if (pagination) {
         filter.page = pagination.currentPage
@@ -138,12 +164,13 @@ export default {
       }
       return filter
     },
-    handleFilterChange (filter) {
-      this.filter = filter
+    handleFilterChange () {
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.fetchData()
     },
     handleFilterReset () {
       this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
@@ -157,49 +184,14 @@ export default {
   },
   created () {
     const source = this.source
-    let sourceOptions = this.$consts.sourceOptionsWithEmpty
+    let sourceOptions = JSON.parse(JSON.stringify(this.$consts.sourceOptionsWithEmpty))
     if (source) {
       sourceOptions = sourceOptions.filter(item => item.value === source || item.value === '')
     }
-    const sourceEnums = sourceOptions.reduce((result, item) => {
-      result[item.label] = sourceValueMap[item.value]
-      return result
-    }, {})
-    const filterSchema = _.map({
-      pluginId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
-        component: 'Input',
-        placeholder: '功能ID',
-        label: ' '
-      }),
-      pluginName: _.o.string.other('form', {
-        placeholder: '功能名称',
-        label: ' '
-      }),
-      source: _.o.enum(sourceEnums).other('form', {
-        component: 'Select',
-        placeholder: '内容源',
-        label: ' '
-      })
-    }).other('form', {
-      cols: {
-        item: 3,
-        label: 1,
-        wrapper: 23
-      },
-      layout: 'inline',
-      footer: {
-        cols: {
-          item: 3,
-          label: 1,
-          wrapper: 23
-        },
-        showSubmit: true,
-        submitText: '查询',
-        showReset: true,
-        resetText: '重置'
-      }
+    sourceOptions.forEach(item => {
+      item.value = sourceValueMap[item.value] 
     })
-    this.filterSchema = filterSchema
+    this.sourceOptions = sourceOptions
   }
 }
 </script>

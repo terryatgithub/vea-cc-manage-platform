@@ -13,10 +13,10 @@
     @select-end="$emit('select-end')">
     <el-form slot="filter" :inline="true" v-model="filter" label-width="72px">
       <el-form-item label="资源类型">
-        <CommonSelector v-model="filter.pType" :options="pTypeEnums" />
+        <CommonSelector  filterable v-model="filter.pType" :options="pTypeEnums" />
       </el-form-item>
       <el-form-item label="内容搜索">
-        <el-input v-model="filter.pTitle"/>
+        <el-input clearable v-model="filter.pTitle"/>
       </el-form-item>
       <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
       <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
