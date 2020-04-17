@@ -20,10 +20,10 @@
         @select-end="handleSelectEnd">
         <el-form slot="filter" @keypress.enter.native.prevent="handleFilterChange" :inline="true" v-model="filter">
           <el-form-item >
-            <el-input v-model="filter.title" placeholder="视频标题"></el-input>
+            <el-input clearable v-model="filter.title" placeholder="视频标题"></el-input>
           </el-form-item>
           <el-form-item v-if="!userId">
-            <el-input v-model="filter.userName" placeholder="作者名称"></el-input>
+            <el-input clearable v-model="filter.userName" placeholder="作者名称"></el-input>
           </el-form-item>
           <el-form-item v-if="!categoryId" >
             <KnowledgeTagSelector selection-type="single" @select-end="handleSetFilterCategory($event)">

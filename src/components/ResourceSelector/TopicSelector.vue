@@ -13,7 +13,7 @@
     @select-end="$emit('select-end')">
     <el-form slot="filter" :inline="true" v-model="filter" label-width="72px">
       <el-form-item label="专题类别">
-        <el-select filterable clearable v-model="filter.levelType" clearable>
+        <el-select filterable clearable v-model="filter.levelType">
           <el-option
             v-for="option in options"
             :key="option.label"

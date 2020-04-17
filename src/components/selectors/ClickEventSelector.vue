@@ -12,7 +12,7 @@
         :selection-type="selectionType || 'single'"
         :table="table"
         :filter="filter"
-        :filter-schema="filterSchema"
+        :filter-schema="null"
         :pagination="pagination"
         :select-end-on-dbl-click="true"
         @pagination-change="fetchData"
@@ -20,6 +20,24 @@
         @filter-reset="handleResetFilter"
         @select-cancel="handleSelectCancel"
         @select-end="handleSelectEnd">
+        <el-form
+          slot="filter"
+          :model="filter"
+          label-width="80px"
+          :inline="true"
+          @reset.native.prevent="handleResetFilter"
+          @submit.native.prevent="handleFilterChange">
+          <el-form-item label="">
+            <InputPositiveInt clearable placeholder="ID" v-model="filter.commonOnclickId"></InputPositiveInt>
+          </el-form-item>
+          <el-form-item label="">
+            <el-input clearable v-model.trim="filter.onlickName" placeholder="点击事件名称"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" native-type="submit">查询</el-button>
+            <el-button native-type="reset">重置</el-button>
+          </el-form-item>
+        </el-form>
       </BaseSelector>
     </template>
     <slot></slot>
@@ -27,10 +45,15 @@
 </template>
 
 <script>
-import _ from '../../utils/gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper'
 import BaseSelector from '../BaseSelector'
+import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
+  components: {
+    InputPositiveInt,
+    RemoteSelectorWrapper,
+    BaseSelector
+  },
   data () {
     return {
       pagination: {
@@ -38,8 +61,8 @@ export default {
         pageSize: 15,
         total: 0
       },
-      filter: {
-      },
+      filter: this.getDefaultFilter(),
+      efficientFilter: this.getDefaultFilter(),
       filterSchema: null,
       table: {
         props: {},
@@ -75,10 +98,6 @@ export default {
     }
   },
   props: ['isLive', 'source', 'selectionType'],
-  components: {
-    RemoteSelectorWrapper,
-    BaseSelector
-  },
   methods: {
     handleSelectStart () {
       this.$emit('select-start')
@@ -93,20 +112,24 @@ export default {
     },
     getDefaultFilter () {
       return {
+        commonOnclickId: undefined,
+        onlickName: undefined
       }
     },
-    handleFilterChange (filter) {
-      this.filter = filter
+    handleFilterChange () {
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.pagination.currentPage = 1
       this.fetchData()
     },
     handleResetFilter () {
       this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter () {
-      const { filter, pagination } = this
+      const { pagination } = this
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
@@ -122,34 +145,6 @@ export default {
     }
   },
   created () {
-    let filterSchema = _.map({
-      commonOnclickId: _.o.oneOf([_.value(''), _.number]).$msg('请输入数字').other('form', {
-        component: 'Input',
-        placeholder: 'ID'
-      }),
-      onlickName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '点击事件名称'
-      })
-    }).other('form', {
-      cols: {
-        item: 6,
-        label: 0,
-        wrapper: 20
-      },
-      layout: 'inline',
-      footer: {
-        cols: {
-          label: 0,
-          wrapper: 24
-        },
-        showSubmit: true,
-        submitText: '查询',
-        showReset: true,
-        resetText: '重置'
-      }
-    })
-    this.filterSchema = filterSchema
     this.fetchData()
   }
 }

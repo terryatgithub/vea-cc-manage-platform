@@ -680,7 +680,6 @@ import { genResourceContentList, genRankingContentList, genSubscribeContentList,
   genMediaRuleContentList } from './panelInfoUtil'
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
-import InputPositiveInt from '@/components/InputPositiveInt'
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
 import ClickCopy from '@/components/ClickCopy'
 import { isFrozen } from './frozen'

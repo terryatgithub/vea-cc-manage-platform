@@ -36,7 +36,6 @@
 </template>
 
 <script>
-import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
 import InputPositiveInt from '@/components/InputPositiveInt'
 export default {

@@ -39,7 +39,6 @@
 </template>
 
 <script>
-import _ from 'gateschema'
 import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
 import InputPositiveInt from '@/components/InputPositiveInt'
@@ -189,7 +188,7 @@ export default {
       sourceOptions = sourceOptions.filter(item => item.value === source || item.value === '')
     }
     sourceOptions.forEach(item => {
-      item.value = sourceValueMap[item.value] 
+      item.value = sourceValueMap[item.value]
     })
     this.sourceOptions = sourceOptions
   }

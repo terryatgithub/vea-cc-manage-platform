@@ -20,10 +20,10 @@
         @select-end="handleSelectEnd">
         <el-form slot="filter" @keypress.enter.native.prevent="handleFilterChange"  :inline="true" v-model="filter">
           <el-form-item >
-            <el-input v-model="filter.userId" placeholder="作者ID"></el-input>
+            <el-input clearable v-model="filter.userId" placeholder="作者ID"></el-input>
           </el-form-item>
           <el-form-item >
-            <el-input v-model="filter.userName" placeholder="作者名称"></el-input>
+            <el-input clearable v-model="filter.userName" placeholder="作者名称"></el-input>
           </el-form-item>
           <el-button type="primary" @click="handleFilterChange">查询</el-button>
           <el-button type="warning" @click="handleResetFilter">重置</el-button>

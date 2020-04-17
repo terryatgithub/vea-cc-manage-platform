@@ -9,15 +9,17 @@
     :hide-submit="selectedClose"
   >
     <div slot="filter">
-      <el-form :inline="true" class="searchform">
-        <el-form-item class="el-col el-col-6">
-          <el-input v-model="filter.tabId" placeholder="ID" title="ID"></el-input>
+      <el-form :inline="true"
+        @submit.native.prevent="handleFilterChange"
+        @reset.native.prevent="handleFilterReset">
+        <el-form-item>
+          <el-input clearable v-model="filter.tabId" placeholder="ID" title="ID"></el-input>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <el-input v-model="filter.tabName" placeholder="版面名称" title="版面名称"></el-input>
+        <el-form-item style="width: 220px">
+          <el-input clearable style="width: 220px" v-model="filter.tabName" placeholder="版面名称" title="版面名称"></el-input>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <el-select v-model="filter.tabCategory" :clearable="true" placeholder="版面分类" title="版面分类">
+        <el-form-item>
+          <el-select filterable clearable v-model="filter.tabCategory" placeholder="版面分类" title="版面分类">
             <el-option
               v-for="(item, index) in tabCategoryOptions"
               :key="index"
@@ -27,8 +29,8 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :clearable="true" class="el-col el-col-6">
-          <el-select v-model="filter.tabType" placeholder="版面属性" clearable title="版面属性">
+        <el-form-item>
+          <el-select filterable clearable v-model="filter.tabType" placeholder="版面属性" title="版面属性">
             <el-option
               v-for="(item, index) in tabTypeOptions"
               :key="index"
@@ -54,11 +56,11 @@
           </el-select>
         </el-form-item> -->
 
-        <el-form-item v-if="source === undefined" class="el-col el-col-6">
+        <el-form-item v-if="source === undefined">
           <SourceSelector v-model="filter.tabResource" placeholder="内容源" title="内容源"/>
         </el-form-item>
 
-        <el-form-item v-show="$consts.idPrefix != '10'" class="el-col el-col-6">
+        <el-form-item v-show="$consts.idPrefix != '10'">
           <el-select v-model="filter.idPrefix" placeholder="数据来源" title="数据来源">
             <el-option
               v-for="item in $consts.idPrefixOptions"
@@ -69,8 +71,8 @@
           </el-select>
         </el-form-item>
         <el-form-item class="el-form-item-submit">
-          <el-button type="primary" @click="handleFilterChange">查询</el-button>
-          <el-button @click="handleFilterReset">重置</el-button>
+          <el-button type="primary" native-type="submit">查询</el-button>
+          <el-button native-type="reset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
