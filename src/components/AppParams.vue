@@ -104,7 +104,7 @@ export default {
           { required: true, message: '请输入应用版本号', trigger: 'blur' },
           {
             validator: (rule, val, cb) => {
-              if (!/^(-1|\d*)$/.test(val)) {
+              if (val && !/^(-1|\d*)$/.test(val)) {
                 return cb(new Error('应用版本号只能是数字或者-1'))
               }
               cb()

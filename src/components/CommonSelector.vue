@@ -2,24 +2,25 @@
   <el-radio-group
     v-if="type === 'radio' || type === 'radio-button'"
     :value="value"
-    @input="$emit('input', $event)"
+    @input="handleInput"
     :disabled="disabled">
       <template v-for="(item, key) in options">
         <component
-          v-if="!hiddenItems.includes(item.value)"
+          v-if="!hiddenItems.includes(item[valueKey])"
           :is="radioComponent"
-          :disabled="item.disabled || disabledItems.includes(item.value)"
+          :disabled="item.disabled || disabledItems.includes(item[valueKey])"
           :key="key"
-          :label="item.value">
-          {{ item.label }}
+          :label="item[valueKey]">
+          {{ item[labelKey] }}
         </component>
       </template>
   </el-radio-group>
 
   <el-select
     v-else
+    ref="elSelect"
     :value="value"
-    @input="$emit('input', $event)"
+    @input="handleInput"
     :disabled="disabled"
     :placeholder="placeholder || '请选择'"
     :filterable="filterable"
@@ -27,11 +28,11 @@
     :allow-create="allowCreate">
     <template v-for="(item, key) in options">
       <el-option
-        v-if="!hiddenItems.includes(item.value)"
-        :disabled="item.disabled || disabledItems.includes(item.value)"
+        v-if="!hiddenItems.includes(item[valueKey])"
+        :disabled="item.disabled || disabledItems.includes(item[valueKey])"
         :key="key"
-        :label="item.label"
-        :value="item.value">
+        :label="item[labelKey]"
+        :value="item[valueKey]">
       </el-option>
     </template>
   </el-select>
@@ -60,11 +61,37 @@ export default {
       default () {
         return []
       }
+    },
+    labelKey: {
+      type: String,
+      default () {
+        return 'label'
+      }
+    },
+    valueKey: {
+      type: String,
+      default () {
+        return 'value'
+      }
     }
   },
   computed: {
     radioComponent () {
       return this.type === 'radio-button' ? 'el-radio-button' : 'el-radio'
+    }
+  },
+  methods: {
+    handleInput (val) {
+      if (val !== this.value) {
+        this.$emit('input', val)
+        // fix el-select
+        const elSelect = this.$refs.elSelect
+        if (elSelect) {
+          this.$nextTick(() => {
+            elSelect.blur()
+          })
+        }
+      }
     }
   }
 }

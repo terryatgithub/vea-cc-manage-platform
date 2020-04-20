@@ -27,7 +27,7 @@
                 ref="blockForm"
                 :rules="rules"
                 :model="block"
-                label-width="140px">
+                label-width="150px">
                 <el-form-item
                   label="系统功能名称"
                   prop="pluginInfo.pluginName"
@@ -44,34 +44,36 @@
                   v-show="block.pluginInfo.pluginParentType !== 'builtIn'"
                   label="类型"
                   prop="pluginInfo.pluginParentType"
-                  :rules="rules.pluginInfo.pluginParentType"
-                >
-                  <el-select
+                  :rules="rules.pluginInfo.pluginParentType">
+                  <CommonSelector
                     class="plugin-parent-type-selector"
+                    filterable
+                    v-input-confirm="{
+                      title: '提示',
+                      message: '切换类型将清空版本等相关数据，确定切换？',
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }"
+                    :no-input-confirm="!block.pluginInfo.pluginParentType"
                     :value="block.pluginInfo.pluginParentType"
-                    @input="handleChangePluginParentType"
+                    :options="pluginParentTypes"
+                    labelKey="dictCnName"
+                    valueKey="dictEnName"
+                    @input="handleInputPluginParentType"
                     :disabled="mode === 'edit' || mode === 'replicate'"
-                    placeholder="请选择"
-                  >
-                    <el-option
-                      v-for="item in pluginParentTypes"
-                      :key="item.id"
-                      :label="item.dictCnName"
-                      :value="item.dictEnName"
-                    ></el-option>
-                  </el-select>
+                    placeholder="请选择">
+                  </CommonSelector>
                 </el-form-item>
                 <el-form-item
-                  v-if="pluginParentType !== 'secKill'"
+                  v-if="block.pluginInfo.pluginParentType !== 'builtIn' && pluginParentType !== 'secKill'"
                   label="内容源"
                   prop="pluginInfo.source"
-                  :rules="rules.pluginInfo.source"
-                >
+                  :rules="rules.pluginInfo.source">
                   <el-radio-group
                     :value="block.pluginInfo.source"
                     @input="handleChangeSource"
-                    :disabled="isDisabledSource"
-                  >
+                    :disabled="isDisabledSource">
                     <el-radio
                       v-for="(item, key) in $consts.sourceNumberOptions"
                       :key="key"
@@ -92,24 +94,38 @@
                 <!--end-->
                 <el-form-item
                   v-if="pluginParentType !== 'sign' && pluginTypes.length > 0"
+                  filterable
                   label="多功能推荐位类型"
                   prop="pluginInfo.pluginType"
                   :rules="rules.pluginInfo.pluginType"
                 >
-                  <el-select
-                    class="plugin-type-selector"
+                  <CommonSelector
+                    style="width: 300px"
+                    filterable
+                    v-input-confirm="{
+                      title: '提示',
+                      message: '切换类型将清空版本等相关数据，确定切换？',
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }"
+                    :no-input-confirm="!block.pluginInfo.pluginType"
                     :value="block.pluginInfo.pluginType"
-                    @input="handleChangePluginType"
-                    placeholder="请选择"
-                    style="width: 300px; max-width: 300px"
-                  >
-                    <el-option
-                      v-for="item in pluginTypes"
-                      :key="item.dictId"
-                      :label="item.dictCnName"
-                      :value="item.dictEnName"
-                    ></el-option>
-                  </el-select>
+                    :options="pluginTypes"
+                    labelKey="dictCnName"
+                    valueKey="dictEnName"
+                    @input="handleInputPluginType"
+                    :disabled="mode === 'edit' || mode === 'replicate'"
+                    placeholder="请选择">
+                  </CommonSelector>
+                </el-form-item>
+                <el-form-item v-if="pluginParentType === 'builtIn'" label="关联版面">
+                  <TabSelector @select-end="handleSelectRelatedTabsEnd"></TabSelector>
+                  <div v-if="block.pluginInfo.rlsTabs" class="related-tabs">
+                    <el-tag v-for="item in block.pluginInfo.rlsTabs" :key="item.tabId" closable @close="handleRemoveRelatedTab(item)">
+                      {{ item.tabName }}
+                    </el-tag>
+                  </div>
                 </el-form-item>
                 <div v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title" :rules="rules.title">
@@ -189,9 +205,10 @@
                   prop="pluginInfo.pluginParentType"
                 >{{ pluginParentTypeText }}</el-form-item>
                 <el-form-item
-                  v-if="pluginParentType !== 'secKill'"
-                  label="内容源"
-                >{{ $consts.sourceNumberText[block.pluginInfo.source] }}</el-form-item>
+                  v-if="block.pluginInfo.pluginParentType !== 'builtIn' && pluginParentType !== 'secKill'"
+                  label="内容源">
+                  {{ $consts.sourceNumberText[block.pluginInfo.source] }}
+                </el-form-item>
                 <div v-if="pluginParentType === 'sign'">
                   <el-form-item
                     label="标记推荐位类型"
@@ -201,8 +218,12 @@
                 <el-form-item
                   v-if="pluginParentType !== 'sign' && pluginTypes.length > 0 && pluginTypeText"
                   label="多功能推荐位类型"
-                  prop="pluginInfo.pluginType"
-                >{{ pluginTypeText }}</el-form-item>
+                  prop="pluginInfo.pluginType">
+                  {{ pluginTypeText }}
+                </el-form-item>
+                <el-form-item v-if="pluginParentType === 'builtIn'" label="关联版面">
+
+                </el-form-item>
 
                 <template v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title">{{ block.helper.title }}</el-form-item>
@@ -258,6 +279,8 @@ import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import InputMinute from '@/components/InputMinute'
 import Params from './Params'
+import TabSelector from '@/components/selectors/TabSelector'
+import CommonSelector from '@/components/CommonSelector'
 const PARENT_TYPES = {
   sign: 'sign', // 标记推荐位
   multi: 'multi',
@@ -272,7 +295,9 @@ export default {
     PageWrapper,
     PageContentWrapper,
     InputMinute,
-    Params
+    Params,
+    TabSelector,
+    CommonSelector
   },
   props: ['id', 'initMode', 'version', 'contentProps'],
   data () {
@@ -323,7 +348,8 @@ export default {
           enableEdit: 1,
           // 系统功能状态，2-草稿，3-待审核，4-审核通过，5-审核不通过
           pluginStatus: undefined,
-          refreshTime: this.contentProps.menuElId === 'sysPlugin' ? 240 : ''
+          refreshTime: this.contentProps.menuElId === 'sysPlugin' ? 240 : '',
+          rlsTabs: []
         },
         rlsInfo: []
       },
@@ -433,6 +459,30 @@ export default {
   },
   watch: {},
   methods: {
+    handleRemoveRelatedTab ({ tabId }) {
+      const pluginInfo = this.block.pluginInfo
+      pluginInfo.rlsTabs = pluginInfo.rlsTabs.filter(item => item.tabId !== tabId)
+    },
+    handleSelectRelatedTabsEnd (selected) {
+      const pluginInfo = this.block.pluginInfo
+      const originTabs = pluginInfo.rlsTabs || []
+      const originTabsIndexed = originTabs.reduce((result, item) => {
+        result[item.tabId] = item
+        return result
+      }, {})
+      const selectedTagsIndexed = selected.reduce((result, item) => {
+        result[item.tabId] = item
+        return result
+      }, {})
+      const mergedTabsIndexed = { ...originTabsIndexed, ...selectedTagsIndexed }
+      const rlsTabs = Object.keys(mergedTabsIndexed).map(tabId => {
+        return {
+          tabId,
+          tabName: mergedTabsIndexed[tabId].tabName
+        }
+      })
+      this.$set(pluginInfo, 'rlsTabs', rlsTabs)
+    },
     getVersionTitle (item) {
       return `${item.title}${item.subTitle ? (' | ' + item.subTitle) : ''}`
     },
@@ -571,30 +621,13 @@ export default {
         })
     },
     /** 类型选择——父类 */
-    handleChangePluginParentType (val) {
+    handleInputPluginParentType (val) {
       this.$refs['blockForm'].clearValidate()
-      const originType = this.block.pluginInfo.pluginParentType
-      const confirmOK = function () {
-        this.pluginTypes = []
-        this.setPluginParentType(val)
-        this.getPluginTypes(val)
-        if (val === 'secKill') {
-          this.setPluginType('REFERENCE_MALL_SECKILL')
-        }
-      }.bind(this)
-
-      if (originType && originType !== val) {
-        this.$confirm('切换类型将清空版本等相关数据，确定切换？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
-          .then(confirmOK)
-          .catch(function (e) {
-            throw e
-          })
-      } else if (!originType) {
-        confirmOK()
+      this.pluginTypes = []
+      this.setPluginParentType(val)
+      this.getPluginTypes(val)
+      if (val === 'secKill') {
+        this.setPluginType('REFERENCE_MALL_SECKILL')
       }
     },
     setPluginParentType (val) {
@@ -610,47 +643,28 @@ export default {
       helper.appParams = []
     },
     /** 多功能推荐位类型 */
-    handleChangePluginType (val) {
+    handleInputPluginType (val) {
       this.$refs['blockForm'].clearValidate()
-      const originType = this.block.pluginInfo.pluginType
-      const confirmOK = function () {
-        this.setPluginType(val)
-      }.bind(this)
-      if (originType && originType !== val) {
-        this.$confirm('切换类型将清空版本等相关数据，确定切换？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
-          .then(confirmOK)
-          .catch(function () {})
-      } else if (!originType) {
-        confirmOK()
-      }
+      this.setPluginType(val)
     },
     setPluginType (val) {
       const block = this.block
       const helper = block.helper
       this.getPluginVersions(val)
-        .then(
-          function (versions) {
-            block.pluginInfo.pluginType = val
-            helper.title = ''
-            helper.subTitle = ''
-            block.rlsInfo = versions.map(
-              function (item) {
-                return this.genRlsInfo(
-                  {
-                    label: item.dictCnName,
-                    dataType: +item.dictEnName
-                  },
-                  val
-                )
-              }.bind(this)
-            )
-            this.currentIndex = 0
-          }.bind(this)
-        )
+        .then((versions) => {
+          block.pluginInfo.pluginType = val
+          helper.title = ''
+          helper.subTitle = ''
+          block.rlsInfo = versions.map((item) => {
+            return this.genRlsInfo(
+              {
+                label: item.dictCnName,
+                dataType: +item.dictEnName
+              },
+              val)
+          })
+          this.currentIndex = 0
+        })
         .then(function () {})
     },
     genRlsInfo (preset, pluginType) {
@@ -666,7 +680,7 @@ export default {
       if (this.pluginParentType === PARENT_TYPES.multi) {
         appParams = []
       }
-      return Object.assign(
+      const result = Object.assign(
         {
           openMode: 'app',
           pluginDataId: undefined,
@@ -686,6 +700,34 @@ export default {
         { extendInfo: extendInfo },
         preset
       )
+
+      // 如果是话题 PK, 自动填充相关参数
+      if (pluginType === 'REFERENCE_VOTE') {
+        Object.assign(result, {
+          openMode: 'app',
+          appParams: [
+            {
+              key: 'activeId',
+              value: ''
+            }
+          ],
+          onclick: {
+            packagename: 'com.tianci.movieplatform',
+            versioncode: '-1',
+            dowhat: 'startActivity',
+            bywhat: 'action',
+            byvalue: 'coocaa.intent.movie.ranking',
+            params: [
+              {
+                key: 'rankingCode',
+                value: '23'
+              }
+            ]
+          }
+        })
+      }
+
+      return result
     },
     selectSubmit () {},
     clickSubmit () {},
@@ -827,6 +869,7 @@ export default {
         }
       }
       this.block = { ...this.block, ...block }
+      console.log('block', this.block)
     },
     parseData (data) {
       const helper = data.helper
@@ -1068,4 +1111,6 @@ export default {
   text-overflow ellipsis
   white-space nowrap
   overflow hidden
+.related-tabs >>> .el-tag
+  margin-right 10px
 </style>

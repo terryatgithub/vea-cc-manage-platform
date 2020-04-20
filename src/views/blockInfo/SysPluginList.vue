@@ -2,14 +2,46 @@
   <ContentCard ref="contentCard" class="content">
     <ContentWrapper
       :filter="filter"
-      :filterSchema="filterSchema"
+      :filterSchema="null"
       :pagination="pagination"
-      @filter-change="handleFilterChange"
-      @filter-reset="handleFilterReset"
-    >
+      @filter-change="fetchData">
+      <el-form :inline="true"
+        @submit.native.prevent="handleFilterChange"
+        @reset.native.prevent="handleFilterReset">
+        <el-form-item>
+          <InputPositiveInt clearable v-model="filter.pluginId" placeholder="状态栏ID" title="状态栏ID"></InputPositiveInt>
+        </el-form-item>
+        <el-form-item>
+          <el-input clearable v-model="filter.pluginName" placeholder="状态栏名称" title="状态栏名称"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-select filterable clearable v-model="filter.channel" placeholder="频道" title="频道">
+            <el-option
+              v-for="(item, index) in channelOptions"
+              :key="index"
+              :value="item.value"
+              :label="item.label"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select filterable clearable v-model="filter.pluginStatus" placeholder="状态" title="状态">
+            <el-option
+              v-for="(item, index) in $consts.statusOptions"
+              :key="index"
+              :value="item.value"
+              :label="item.label"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item class="el-form-item-submit">
+          <el-button type="primary" native-type="submit">查询</el-button>
+          <el-button native-type="reset">重置</el-button>
+        </el-form-item>
+      </el-form>
       <ButtonGroupForListPage
-      pageName="sysPlugin"
-       @edit="handleEdit">
+        pageName="sysPlugin"
+        @edit="handleEdit">
       </ButtonGroupForListPage>
       <Table
         :props="table.props"
@@ -26,20 +58,39 @@
   </ContentCard>
 </template>
 <script>
-import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+import InputPositiveInt from '@/components/InputPositiveInt'
 import { ContentWrapper, Table } from 'admin-toolkit'
 export default {
   extends: BaseList,
   components: {
     Table,
     ContentWrapper,
-    ButtonGroupForListPage
+    ButtonGroupForListPage,
+    InputPositiveInt
   },
   data () {
     return {
       resourceType: 'sysPlugin',
+      channelOptions: [
+        {
+          label: '影视',
+          value: 'movie'
+        },
+        {
+          label: '体育',
+          value: 'sport'
+        },
+        {
+          label: '教育',
+          value: 'edu'
+        },
+        {
+          label: '少儿',
+          value: 'child'
+        }
+      ],
       channel: {
         影视: 'movie',
         体育: 'sport',
@@ -49,20 +100,18 @@ export default {
       filterSchema: null,
       pagination: {},
       selected: [],
-      filter: {
-        sort: undefined,
-        order: undefined
-      },
+      filter: this.genDefaultFilter(),
+      efficientFilter: this.genDefaultFilter(),
       table: {
         props: {},
         header: [
           {
-            label: 'ID',
+            label: '状态栏ID',
             prop: 'pluginId',
-            width: '70'
+            width: '100'
           },
           {
-            label: '功能名称',
+            label: '状态栏名称',
             prop: 'pluginName',
             render: (createElement, { row }) => {
               return createElement(
@@ -86,6 +135,7 @@ export default {
             label: '待审核的版本',
             prop: 'duplicateVersion',
             sortable: true,
+            width: 140,
             render: (h, { row }) => {
               return h(
                 'el-button',
@@ -104,23 +154,28 @@ export default {
               )
             }
           },
-          {
-            label: '内容源',
-            prop: 'source',
-            render: (createElement, { row }) => {
-              return this.$consts.sourceNumberText[row.source]
-            }
-          },
+          // {
+          //   label: '内容源',
+          //   prop: 'source',
+          //   render: (createElement, { row }) => {
+          //     return this.$consts.sourceNumberText[row.source]
+          //   }
+          // },
           {
             label: '状态',
             prop: 'pluginStatus',
+            width: 140,
             render: (createElement, { row }) => {
               return this.$consts.statusText[row.pluginStatus]
             }
           },
           {
+            label: '版面'
+          },
+          {
             label: '频道',
             prop: 'channel',
+            width: 120,
             render: (createElement, { row }) => {
               switch (row.channel) {
                 case 'movie':
@@ -169,40 +224,34 @@ export default {
         type: 'systemPlugin'
       })
     },
-    /**
-     * 获取数据
-     */
+    genDefaultFilter () {
+      return {
+        pluginId: '',
+        pluginName: '',
+        pluginStatus: ''
+      }
+    },
     fetchData () {
       const filter = this.parseFilter()
       this.$service.getSysPlugin(filter).then(data => {
-        console.log(data)
         this.pagination.total = data.total
         this.table.data = data.rows
       })
     },
-    // 查询
     handleFilterChange (type, filter) {
-      if (filter) { this.filter = filter }
-      if (this.$validateId(this.filter.pluginId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
-        }
-        this.fetchData()
-      }
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
+      this.pagination.currentPage = 1
+      this.fetchData()
     },
-    // 重置
     handleFilterReset () {
-      this.filter = {
-        sort: undefined,
-        order: undefined
-      }
+      this.filter = this.genDefaultFilter()
+      this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
     parseFilter () {
-      const { filter, pagination } = this
+      const { pagination } = this
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
@@ -211,46 +260,6 @@ export default {
     }
   },
   created () {
-    let filterSchema = _.map({
-      pluginId: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: 'ID'
-      }),
-      pluginName: _.o.string.other('form', {
-        component: 'Input',
-        placeholder: '功能名称'
-      }),
-      source: _.o.enum(this.$consts.sourceNumberEnums).other('form', {
-        component: 'Select',
-        placeholder: '内容源'
-      }),
-      channel: _.o.enum(this.channel).other('form', {
-        component: 'Select',
-        placeholder: '频道'
-      }),
-      pluginStatus: _.o.enum(this.$consts.statusEnums).other('form', {
-        component: 'Select',
-        placeholder: '状态'
-      })
-    }).other('form', {
-      cols: {
-        item: 6,
-        label: 0,
-        wrapper: 20
-      },
-      layout: 'inline',
-      footer: {
-        cols: {
-          label: 0,
-          wrapper: 24
-        },
-        showSubmit: true,
-        submitText: '查询',
-        showReset: true,
-        resetText: '重置'
-      }
-    })
-    this.filterSchema = filterSchema
     this.fetchData()
   }
 }

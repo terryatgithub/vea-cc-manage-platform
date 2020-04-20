@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 // import './theme/coocaa-red/index.css'
 import './bus'
 import shadowDrag from '@/directives/shadowDrag'
+import inputConfirm from '@/directives/input-confirm'
 import FormAutoComplete from '@/utils/FormAutoComplete'
 
 import AppState from '@william17/vue-app-state'
@@ -48,4 +49,5 @@ Vue.component('DataEnumList', DataEnumList)
 Vue.component('DataAny', DataAny)
 
 Vue.directive('shadow-drag', shadowDrag)
+Vue.directive('input-confirm', inputConfirm)
 Vue.prototype.$consts = constants
