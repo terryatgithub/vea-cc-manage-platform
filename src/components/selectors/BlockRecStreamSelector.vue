@@ -144,11 +144,8 @@ export default {
     },
     genDefaultFilter () {
       return {
-        openStatus: 1,
-        id: '',
-        name: '',
-        type: '',
-        source: this.source
+        recId: '',
+        recName: ''
       }
     },
     handleSelectStart () {
@@ -195,7 +192,7 @@ export default {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
-      this.$service.getMediaAutomationList(filter).then(data => {
+      this.$service.getBlockRecList(filter).then(data => {
         this.pagination.total = data.total
         data.rows = data.rows.map(item => {
           item.picSize = item.picSize.join(',')

@@ -39,6 +39,7 @@ import * as analytics from './analytics'
 import * as tabInsertionTask from './tabInsertionTask'
 import * as deviceConfig from './deviceConfig'
 import * as policyGroup from './policyGroup'
+import * as bigdata from './bigdata'
 
 const service = {
   state: {},
@@ -82,7 +83,8 @@ const service = {
   ...analytics,
   ...tabInsertionTask,
   ...deviceConfig,
-  ...policyGroup
+  ...policyGroup,
+  ...bigdata
 }
 
 export default function install (Vue) {
