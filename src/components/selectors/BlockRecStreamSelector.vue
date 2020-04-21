@@ -25,19 +25,10 @@
         <div slot="filter">
           <el-form :inline="true" :model="filter" @keypress.enter.native.prevent="handleFilterChange">
             <el-form-item>
-              <InputPositiveInt v-model="filter.id" clearable placeholder="ID"></InputPositiveInt>
+              <InputPositiveInt v-model="filter.recId" clearable placeholder="推荐流ID"></InputPositiveInt>
             </el-form-item>
             <el-form-item>
-              <el-input v-model="filter.name" placeholder="名称" clearable></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-select v-model="filter.type" placeholder="类型" clearable>
-                <el-option v-for="item in $consts.blockRecStreamTypeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+              <el-input v-model="filter.recName" placeholder="推荐流名称" clearable></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleFilterChange">查询</el-button>
@@ -70,58 +61,28 @@ export default {
         props: {},
         header: [
           {
-            label: 'ID',
-            prop: 'id',
+            label: '推荐流ID',
+            prop: 'recId',
             sortable: true,
             width: '100px',
             fixed: 'left'
           },
           {
-            label: '指定影片推荐流名称',
-            prop: 'name',
+            label: '推荐流名称',
+            prop: 'recName',
             fixed: 'left'
           },
           {
-            label: '内容源',
-            prop: 'source',
-            render: (h, { row }) => {
-              return this.$consts.sourceTextWithNone[row.source]
-            }
+            label: '推荐流分类',
+            prop: 'recCategory'
           },
           {
-            label: '源状态',
-            prop: 'openStatus',
-            render: (h, { row }) => {
-              return ['关闭', '开启'][row.openStatus]
-            }
+            label: '推荐来源平台类型',
+            prop: 'platformType'
           },
           {
-            label: '流类型',
-            prop: 'type',
-            formatter: row => {
-              return this.$consts.blockRecStreamTypeText[row.type] || '普通'
-            }
-          },
-          {
-            label: '版本/状态',
-            prop: 'status',
-            formatter: (row) => {
-              const status = row.status
-              const currentVersion = row.currentVersion
-              return currentVersion + '/' + this.$consts.statusText[status]
-            }
-          },
-          {
-            label: '影片数量',
-            prop: 'videoNum'
-          },
-          {
-            label: '已屏蔽影片数量',
-            prop: 'disableVideoNum'
-          },
-          {
-            label: '图片海报尺寸',
-            prop: 'picSize'
+            label: '用户标识类型',
+            prop: 'flag'
           }
         ],
         data: [],
@@ -194,10 +155,6 @@ export default {
       }
       this.$service.getBlockRecList(filter).then(data => {
         this.pagination.total = data.total
-        data.rows = data.rows.map(item => {
-          item.picSize = item.picSize.join(',')
-          return item
-        })
         this.table.data = data.rows
       })
     }

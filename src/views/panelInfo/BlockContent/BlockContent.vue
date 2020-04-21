@@ -340,7 +340,7 @@ export default {
     },
     handleAddContent (contentType) {
       if (this.isInterveneBlock) {
-        return this.$message.error('干预推荐位仅允许添加一个资源')
+        return this.$message.error('插入推荐位仅允许添加一个资源')
       }
       this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
         if (!err) {

@@ -10,7 +10,7 @@
             clearable>
           </FormEnum>
           <FormEnum
-            placeholder="是否运营干预"
+            placeholder="是否运营插入"
             v-model="filter.hasIntervene"
             :options="zeroOneOptions"
             clearable>
@@ -150,7 +150,7 @@ export default {
             }
           },
           {
-            label: '是否运营干预',
+            label: '是否运营插入',
             formatter: (row) => {
               const hasIntervene = row.pannelList[0] ? row.pannelList[0].hasIntervene : undefined
               return ['否', '是'][hasIntervene]

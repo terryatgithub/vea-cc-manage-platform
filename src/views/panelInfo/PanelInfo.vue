@@ -353,10 +353,10 @@
                         :source="pannel.pannelResource"
                         @select-end="handleSelectBlockRecStreamEnd">
                       </BlockRecStreamSelector>
-                      <template v-if="firstPanel.mediaAutomationPanelRls">
+                      <template v-if="firstPanel.recStreamPanelRls">
                         已选择: <el-tag>
-                          {{ firstPanel.mediaAutomationPanelRls.mediaAutomationId }}
-                          ({{ firstPanel.mediaAutomationPanelRls.mediaAutomationName }})
+                          {{ firstPanel.recStreamPanelRls.recId }}
+                          ({{ firstPanel.recStreamPanelRls.recName }})
                         </el-tag>
                       </template>
                     </el-form-item>
@@ -1087,10 +1087,10 @@ export default {
   },
   methods: {
     handleSelectBlockRecStreamEnd (selected) {
-      const { id, name } = selected[0]
-      this.firstPanel.mediaAutomationPanelRls = {
-        mediaAutomationId: id,
-        mediaAutomationName: name
+      const { recId, recName } = selected[0]
+      this.firstPanel.recStreamPanelRls = {
+        recId,
+        recName
       }
     },
     genPannel (preset) {
@@ -1106,7 +1106,7 @@ export default {
         filmNum: undefined,
         mediaRuleDesc: undefined,
         rankName: undefined,
-        mediaAutomationPanelRls: undefined,
+        recStreamPanelRls: undefined,
         ...preset
       }
     },
