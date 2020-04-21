@@ -197,11 +197,11 @@ const panelFillTypeOptions = [
   {
     label: '用影片筛选规则填充',
     value: 3
-  },
-  {
-    label: '用推荐流填充',
-    value: 4
   }
+  // {
+  //   label: '用推荐流填充',
+  //   value: 4
+  // }
 ]
 
 const panelFillTypes = {
