@@ -13,7 +13,7 @@
       :visible.sync="showDialog"
       :append-to-body="true">
       <div slot="title">
-        <slot name="title"> {{ title }}</slot>
+        <slot name="title"> {{ title }} </slot>
       </div>
       <slot name="content" :is-show="showDialog">
         <div class="remote-selector-main">
@@ -32,7 +32,9 @@
             </slot>
           </div>
           <div class="remote-selector-main__content">
+            <slot name="before-item-list"></slot>
             <slot name="item-list"></slot>
+            <slot name="after-item-list"></slot>
           </div>
           <slot name="footer">
             <div class="remote-selector-main__footer">
@@ -171,6 +173,7 @@ export default {
   display flex
   flex-direction column
 .remote-selector-main__content
+  position relative
   overflow auto
   margin 10px 0
   border-top 1px solid #EBEEF5

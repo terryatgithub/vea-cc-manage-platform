@@ -1,13 +1,13 @@
 <template>
   <remote-selector-wrapper
     ref="wrapper"
-    class="layout-selector"
+    customClass="layout-selector--global"
     :disabled="disabled"
     :title="title || '选择布局'"
     @select-start="handleSelectStart"
   >
     <div slot="filter">
-      <el-form :inline="true">
+      <el-form @submit.native.prevent="handleFilter" @reset.native.prevent="handleResetFilter" :inline="true">
         <el-form-item label="布局ID">
           <InputPositiveInt v-model="filter.layoutId" clearable></InputPositiveInt>
         </el-form-item>
@@ -30,14 +30,11 @@
             <el-option :value="1" label="带标题"></el-option>
           </el-select>
         </el-form-item>
+        <el-button type="primary" native-type="submit">查询</el-button>
+        <el-button type="warning" native-type="reset">重置</el-button>
       </el-form>
-      <div class="filter-form__actions">
-        <el-button type="primary" @click="handleFilter">查询</el-button>
-        <el-button type="warning" @click="handleResetFilter">重置</el-button>
-      </div>
     </div>
-
-    <div slot="item-list">
+    <div slot="item-list" class="item-list--table">
       <Table
         :data="table.data"
         :header="table.header"
@@ -46,9 +43,41 @@
         :selection-type="selectionType || table.selectionType"
         :select-on-row-click="true"
         @row-dblclick="handleRowDblClick"
-        @row-selection-change="handleTableRowSelectionChange"
-      ></Table>
+        @row-selection-change="handleTableRowSelectionChange">
+      </Table>
+    </div>
+    <div slot="after-item-list" class="item-list--common">
+      <el-tag
+        class="common-layout-item"
+        v-for="item in videoCommonLayouts"
+        @click="handleSelectCommonLayout(item.value)"
+        :key="item.value">
+        {{ item.label }}({{ item.value }})
+      </el-tag>
+      <hr class="common-layout-divide" />
+      <el-tag
+        class="common-layout-item"
+        v-for="item in eduCommonLayouts"
+        @click="handleSelectCommonLayout(item.value)"
+        :key="item.value">
+        {{ item.label }}({{ item.value }})
+      </el-tag>
+    </div>
 
+    <el-pagination
+      slot="pagination"
+      @size-change="pagination.rows = $event"
+      @current-change="pagination.page = $event"
+      :current-page="pagination.page"
+      :page-sizes="[15, 20, 30]"
+      :page-size="pagination.rows"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="pagination.total"
+    ></el-pagination>
+
+    <div slot="actions">
+      <el-button type="primary" @click="handleSelectEnd">确定</el-button>
+      <el-button @click="$refs.wrapper.handleSelectCancel()">取消</el-button>
       <!--拓展布局的个数-->
       <el-dialog title="请输入预置推荐位个数" :visible.sync="showBlockCountDialog" :append-to-body="true">
         <el-form
@@ -70,22 +99,6 @@
         <LayoutRead :content="previewContent" :content-width="600">
         </LayoutRead>
       </el-dialog>
-    </div>
-
-    <el-pagination
-      slot="pagination"
-      @size-change="pagination.rows = $event"
-      @current-change="pagination.page = $event"
-      :current-page="pagination.page"
-      :page-sizes="[15, 20, 30]"
-      :page-size="pagination.rows"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="pagination.total"
-    ></el-pagination>
-
-    <div slot="actions">
-      <el-button type="primary" @click="handleSelectEnd">确定</el-button>
-      <el-button @click="$refs.wrapper.handleSelectCancel()">取消</el-button>
     </div>
 
     <slot></slot>
@@ -186,7 +199,9 @@ export default {
         ],
         selectionType: 'single'
       },
-      selected: []
+      selected: [],
+      videoCommonLayouts: null,
+      eduCommonLayouts: null
     }
   },
   props: ['title', 'selectionType', 'disabled'],
@@ -252,27 +267,49 @@ export default {
     handleSelectStart () {
       this.formBlock = { count: undefined }
       this.handleResetFilter()
+      this.getCommonLayouts()
+    },
+    handleSelectCommonLayout (id) {
+      this.$service.getLayoutInforById({ id }).then((layout) => {
+        if (layout.layoutStatus !== this.$consts.status.accepted) {
+          return this.$message.error('当前布局不是 审核通过 状态, 请选择另外一个')
+        }
+        this.doSelectEnd(layout)
+      }).catch((e) => {
+        this.$message.error('获取布局信息失败，请重新选择')
+      })
     },
     handleSelectEnd () {
       const selected = this.selected[0]
       if (selected) {
-        const layoutJsonParsed = JSON.parse(selected.layoutJson8)
-        const type = layoutJsonParsed.type
-        selected.layoutJsonParsed = layoutJsonParsed
-        this.selectedLayout = selected
-        if (type === 'Expander' || type === 'Lengthwise') {
-          this.showBlockCountDialog = true
-          this.$nextTick(() => {
-            this.$refs.blockCount.focus()
-          })
-        } else {
-          this.emitSelectEnd()
-        }
+        this.doSelectEnd(selected)
       } else {
         this.$message({
           message: '请选择一条记录',
           type: 'warning'
         })
+      }
+    },
+    resetBlockForm () {
+      const blockCountForm = this.$refs.blockCountForm
+      if (blockCountForm) {
+        blockCountForm.clearValidate()
+        this.formBlock.count = undefined
+      }
+    },
+    doSelectEnd (selected) {
+      const layoutJsonParsed = JSON.parse(selected.layoutJson8)
+      const type = layoutJsonParsed.type
+      selected.layoutJsonParsed = layoutJsonParsed
+      this.selectedLayout = selected
+      if (type === 'Expander' || type === 'Lengthwise') {
+        this.showBlockCountDialog = true
+        this.resetBlockForm()
+        this.$nextTick(() => {
+          this.$refs.blockCount.focus()
+        })
+      } else {
+        this.emitSelectEnd()
       }
     },
     emitSelectEnd () {
@@ -306,6 +343,27 @@ export default {
         this.selected = []
         this.table.selected = undefined
       })
+    },
+    getCommonLayouts () {
+      const { videoCommonLayouts, eduCommonLayouts } = this
+      if (!(videoCommonLayouts && eduCommonLayouts)) {
+        this.$service.getDictType({ type: 'videoCommonLayout' }).then(data => {
+          this.videoCommonLayouts = data.map(item => {
+            return {
+              label: item.dictCnName,
+              value: item.dictEnName
+            }
+          })
+        })
+        this.$service.getDictType({ type: 'eduCommonLayout' }).then(data => {
+          this.eduCommonLayouts = data.map(item => {
+            return {
+              label: item.dictCnName,
+              value: item.dictEnName
+            }
+          })
+        })
+      }
     },
     handleTableRowSelectionChange (item, index) {
       this.selected = [item]
@@ -347,3 +405,24 @@ export default {
   }
 }
 </script>
+<style lang="stylus" scoped>
+.item-list--table
+  margin-right 230px
+  height 100%
+  overflow auto
+.item-list--common
+  position absolute
+  top 0
+  right 0
+  width 230px
+  height 100%
+  border-right 1px solid #ebeef5
+  border-left 1px solid #ebeef5
+  box-sizing border-box
+  overflow auto
+.common-layout-divide
+  border-top 1px solid #ebeef5
+.common-layout-item
+  margin 5px
+  cursor pointer
+</style>
