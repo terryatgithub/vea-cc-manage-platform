@@ -164,7 +164,7 @@ export default {
           {
             label: '状态',
             prop: 'pluginStatus',
-            width: 140,
+            width: 100,
             render: (createElement, { row }) => {
               return this.$consts.statusText[row.pluginStatus]
             }
@@ -173,7 +173,9 @@ export default {
             label: '版面',
             render: (h, { row }) => {
               const rlsTabs = row.rlsTabs || []
-              return rlsTabs.map(item => item.tabName).join('、')
+              return rlsTabs.map(item => {
+                return `${item.tabName}(${item.tabId})`
+              }).join('、')
             }
           },
           {
@@ -195,10 +197,12 @@ export default {
           },
           {
             label: '更新时间',
+            width: 140,
             prop: 'lastUpdateDate'
           },
           {
             label: '操作',
+            width: 100,
             render: (h, { row }) => {
               if (row.showContentAuthSettingBtn) {
                 return h('el-button', {
