@@ -8,6 +8,16 @@
       label-width="120px">
       <template v-if="mode !== 'read'">
         <template v-if="pluginType === 'REFERENCE_VOTE'">
+          <template v-if="form.dataType === 7">
+            <el-form-item label="人群" prop="dmpRegistryInfo">
+              <el-button @click="handleSelectCrowdStart" type="primary" plain>
+                选择人群
+              </el-button>
+              <span v-if="form.dmpRegistryInfo">
+                已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}({{ form.dmpRegistryInfo.dmpPolicyId }})/{{ form.dmpRegistryInfo.dmpCrowdName }}({{ form.dmpRegistryInfo.dmpCrowdId }})
+              </span>
+            </el-form-item>
+          </template>
           <el-form-item label="活动id" prop="voteActiveId">
             <InputPositiveInt placeholder="activeId" v-model="voteActiveId"></InputPositiveInt>
           </el-form-item>
@@ -87,7 +97,7 @@
 
           <template v-if="form.dataType === 7">
             <el-form-item label="人群" prop="dmpRegistryInfo">
-              <el-button @click="handleSelectCrowdStart">
+              <el-button @click="handleSelectCrowdStart" type="primary" plain>
                 选择人群
               </el-button>
               <span v-if="form.dmpRegistryInfo">
@@ -251,6 +261,13 @@
       </template>
       <template v-else>
         <template v-if="pluginType === 'REFERENCE_VOTE'">
+          <template v-if="form.dataType === 7">
+            <el-form-item label="人群" prop="dmpRegistryInfo">
+              <span v-if="form.dmpRegistryInfo">
+                已选择: {{ form.dmpRegistryInfo.dmpPolicyName }}({{ form.dmpRegistryInfo.dmpPolicyId }})/{{ form.dmpRegistryInfo.dmpCrowdName }}({{ form.dmpRegistryInfo.dmpCrowdId }})
+              </span>
+            </el-form-item>
+          </template>
           <el-form-item label="活动id">{{ voteActiveId }}</el-form-item>
           <el-form-item label="海报">
             <div class="poster">

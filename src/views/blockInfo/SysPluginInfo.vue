@@ -222,7 +222,11 @@
                   {{ pluginTypeText }}
                 </el-form-item>
                 <el-form-item v-if="pluginParentType === 'builtIn'" label="关联版面">
-
+                  <div v-if="block.pluginInfo.rlsTabs" class="related-tabs">
+                    <el-tag v-for="item in block.pluginInfo.rlsTabs" :key="item.tabId">
+                      {{ item.tabName }}
+                    </el-tag>
+                  </div>
                 </el-form-item>
 
                 <template v-if="baseHasTitle">

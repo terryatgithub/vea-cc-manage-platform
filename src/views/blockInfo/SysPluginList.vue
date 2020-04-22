@@ -170,7 +170,11 @@ export default {
             }
           },
           {
-            label: '版面'
+            label: '版面',
+            render: (h, { row }) => {
+              const rlsTabs = row.rlsTabs || []
+              return rlsTabs.map(item => item.tabName).join('、')
+            }
           },
           {
             label: '频道',

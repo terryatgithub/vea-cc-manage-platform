@@ -106,15 +106,29 @@
           <el-checkbox label="1">具有4k</el-checkbox>
           <el-checkbox label="2">具有杜比</el-checkbox>
         </el-checkbox-group>
-        <!-- <div>(7) 长短片区分<span>左边是我们计算长短片区分，右边是第三方给到到的</span></div>
-        <el-checkbox-group v-model="" class="margin-bottom-20">
-          <el-checkbox
-            v-for="item in filmContentTypeOptions"
-            :key="item.value"
-            :label="item.value">
-            {{item.label}}
-          </el-checkbox>
-        </el-checkbox-group> -->
+        <div>(7) 长短片区分<span>左边是我们计算长短片区分，右边是第三方给到到的</span></div>
+        <div>
+          <div class="inline-checkbox-group">
+            <el-checkbox-group v-model="movieFilterForm.longShortTypes" class="margin-bottom-20">
+              <el-checkbox
+                v-for="item in filmLongShortTypeOptions"
+                :key="item.value"
+                :label="item.value">
+                {{item.label}}
+              </el-checkbox>
+            </el-checkbox-group>
+          </div>
+          <div class="inline-checkbox-group">
+            <el-checkbox-group v-model="movieFilterForm.contentTypes" class="margin-bottom-20">
+              <el-checkbox
+                v-for="item in filmContentTypeOptions"
+                :key="item.value"
+                :label="item.value">
+                {{item.label}}
+              </el-checkbox>
+            </el-checkbox-group>
+          </div>
+        </div>
         <div>(8) 创建时间</div>
         <el-row :gutter="1" style="width: 100%" class="margin-bottom-20">
           <el-col :span="8">
@@ -323,6 +337,7 @@ export default {
       filmAreaOptions: [],
       filmPayTypeOptions: [],
       filmContentTypeOptions: [],
+      filmLongShortTypeOptions: [],
       movieFilterForm: {
         categorys: [],
         tagsRelation: 1,
@@ -332,6 +347,8 @@ export default {
         areas: [],
         payTypes: [],
         videoFeatures: [],
+        longShortTypes: [],
+        contentTypes: [],
         createdTime: [],
         createdMonthTime: undefined,
         feverTop: undefined
@@ -432,7 +449,7 @@ export default {
         this.stepCount++
         this.$service.getFilmFilterOptions({ businessType: 0, type: 'vod' }).then(result => {
           const rs = JSON.parse(result.replace('result(', '').replace(/\)*$/, ''))
-          const { contentTypes = [] } = rs.vod || {}
+          const { contentTypes = [], longShortTypes = [] } = rs.vod || {}
           this.filmTypeOptions = (rs.vod.categoryList || []).map(item => {
             return {
               label: item.categoryName,
@@ -455,6 +472,12 @@ export default {
             return {
               label: item.contentType,
               value: item.contentTypeId
+            }
+          })
+          this.filmLongShortTypeOptions = longShortTypes.map(item => {
+            return {
+              label: item.tagCnName,
+              value: item.tagEnName
             }
           })
         })
@@ -524,7 +547,9 @@ export default {
           directors: movieFilterForm.directors.join(','),
           areas: movieFilterForm.areas.join(','),
           payTypes: movieFilterForm.payTypes.join(','),
-          videoFeatures: movieFilterForm.videoFeatures.join(',')
+          videoFeatures: movieFilterForm.videoFeatures.join(','),
+          longShortTypes: movieFilterForm.longShortTypes.join(','),
+          contentTypes: movieFilterForm.contentTypes.join(',')
         }
         const createdTimeSelect = this.createdTimeSelect
         if (createdTimeSelect === 1 && movieFilterForm.createdTime.length !== 0) {
@@ -640,8 +665,8 @@ export default {
       desc += '\n'
       // 影视描述
       if (isMovieFilter) {
-        const { filmTypeOptions, filmAreaOptions, filmPayTypeOptions, movieCodeTagDesc } = this
-        const { categorys, tagsRelation, tagCodes, actors, directors, areas, payTypes, videoFeatures,
+        const { filmTypeOptions, filmAreaOptions, filmPayTypeOptions, movieCodeTagDesc, filmLongShortTypeOptions, filmContentTypeOptions } = this
+        const { categorys, tagsRelation, tagCodes, actors, directors, areas, payTypes, videoFeatures, longShortTypes, contentTypes,
           createdTime, createdMonthTime, feverTop } = movieFilterForm
         desc += '影视业务规则：\n'
         categorys.length !== 0 && (desc += '分类：' + parseRuleLabel(filmTypeOptions, categorys, '、') + '\n')
@@ -652,6 +677,13 @@ export default {
         payTypes.length !== 0 && (desc += '付费类型：' + parseRuleLabel(filmPayTypeOptions, payTypes, '、') + '\n')
         videoFeatures.length !== 0 && (desc += '视频特点：' +
           parseRuleLabel([{ label: '4k', value: 1 }, { label: '杜比', value: 2 }], videoFeatures, '、') + '\n')
+
+        if (longShortTypes.length > 0) {
+          desc += `长短片：${parseRuleLabel(filmLongShortTypeOptions, longShortTypes, '、')}\n`
+        }
+        if (contentTypes.length > 0) {
+          desc += `长短片（第三方）：${parseRuleLabel(filmContentTypeOptions, contentTypes, '、')}\n`
+        }
         const createdTimeSelect = this.createdTimeSelect
         if (createdTimeSelect === 1 && movieFilterForm.createdTime.length !== 0) {
           desc += '新度：' + createdTime.join('、') + '\n'
@@ -737,4 +769,11 @@ export default {
 .order-radio
   display block
   margin-bottom 15px
+.inline-checkbox-group
+  display inline-block
+  margin-right 10px
+  >>> .el-checkbox-group
+    padding 0 10px
+    border 1px solid #DCDFE6
+    border-radius 2px
 </style>
