@@ -15,16 +15,6 @@
           <el-input clearable v-model="filter.pluginName" placeholder="状态栏名称" title="状态栏名称"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-select filterable clearable v-model="filter.channel" placeholder="频道" title="频道">
-            <el-option
-              v-for="(item, index) in channelOptions"
-              :key="index"
-              :value="item.value"
-              :label="item.label"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
           <el-select filterable clearable v-model="filter.pluginStatus" placeholder="状态" title="状态">
             <el-option
               v-for="(item, index) in $consts.statusOptions"
@@ -176,23 +166,6 @@ export default {
               return rlsTabs.map(item => {
                 return `${item.tabName}(${item.tabId})`
               }).join('、')
-            }
-          },
-          {
-            label: '频道',
-            prop: 'channel',
-            width: 120,
-            render: (createElement, { row }) => {
-              switch (row.channel) {
-                case 'movie':
-                  return '影视'
-                case 'child':
-                  return '少儿'
-                case 'sport':
-                  return '体育'
-                case 'edu':
-                  return '教育'
-              }
             }
           },
           {
