@@ -44,6 +44,7 @@
               <el-form ref="form" :model="pannel" label-width="120px">
                 <el-form-item label="业务分类"  class="selectItem">
                   <CommonSelector
+                    filterable
                     :value="pannel.panelGroupCategory"
                     @input="handlePanelGroupCategoryChange"
                     :disabled="isReplica"
