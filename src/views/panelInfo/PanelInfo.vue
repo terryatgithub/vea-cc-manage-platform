@@ -2274,7 +2274,7 @@ export default {
       const panelDataType = this.currentPanelDataType
       const layout = this.selectedLayout
       const pannel = JSON.parse(JSON.stringify(data))
-      const panelFillTypes = this.panelFillTypes
+      const panelFillTypes = this.$consts.panelFillTypes
       // 媒资规则的panelGroupType=10
       pannel.panelGroupType = pannel.pannelList[0].fillType !== 3 ? panelDataType : 10
       pannel.pannelList = pannel.pannelList.map(item => {
