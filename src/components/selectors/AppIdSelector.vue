@@ -4,6 +4,7 @@
     </span>
     <el-select
         v-else
+        :filterable="filterable"
         :value="value"
         :disabled="disabled"
         @input="$emit('input', $event)"
@@ -40,7 +41,7 @@ export default {
       }
     }
   },
-  props: ['value', 'isRead', 'disabled'],
+  props: ['value', 'isRead', 'disabled', 'filterable'],
   methods: {
   },
   created () {

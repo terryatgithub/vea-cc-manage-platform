@@ -1,6 +1,6 @@
 <template>
   <span v-if="isRead">{{ valueLabel }}</span>
-  <el-select v-else :value="value" @input="handleInput">
+  <el-select ref="select" :filterable="filterable" v-else :value="value" @input="handleInput">
     <el-option
       v-for="(item) in options"
       :key="item.value"
@@ -32,14 +32,23 @@ export default {
       }
     }
   },
-  props: ['value', 'isRead', 'confirm'],
+  props: ['value', 'isRead', 'confirm', 'filterable'],
   methods: {
     handleInput (val) {
       const confirm = this.confirm
-      if (confirm) {
+      const originVal = this.value
+      const shouldConfirm = originVal && val !== originVal
+      if (shouldConfirm && confirm) {
         this.$confirm(confirm, '提示').then(() => {
           this.$emit('input', val)
-        }).catch(() => {})
+          this.$nextTick(() => {
+            this.$refs.select.blur()
+          })
+        }).catch(() => {
+          this.$nextTick(() => {
+            this.$refs.select.blur()
+          })
+        })
       } else {
         this.$emit('input', val)
       }

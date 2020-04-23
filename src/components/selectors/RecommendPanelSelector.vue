@@ -19,13 +19,13 @@
         @select-end="handleSelectEnd">
         <el-form slot="filter" :inline="true" v-model="filter">
           <el-form-item >
-            <el-input v-model="filter.panelGroupId" placeholder="版块ID"></el-input>
+            <el-input clearable v-model="filter.panelGroupId" placeholder="版块ID"></el-input>
           </el-form-item>
           <el-form-item >
-            <el-input v-model="filter.panelGroupName" placeholder="版块名称"></el-input>
+            <el-input clearable v-model="filter.panelGroupName" placeholder="版块名称"></el-input>
           </el-form-item>
           <el-form-item >
-            <el-input v-model="filter.panelGroupTitle" placeholder="版块组标题"></el-input>
+            <el-input clearable v-model="filter.panelGroupTitle" placeholder="版块组标题"></el-input>
           </el-form-item>
 
           <el-button type="primary" @click="handleFilterChange">查询</el-button>

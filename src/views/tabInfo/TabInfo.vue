@@ -27,19 +27,20 @@
               </div>
               <div :style="{display: isCollapseBase ? 'none' : 'block'}">
                 <el-form-item label="版面名称" prop="tabName">
-                  <el-input v-model.trim="tabInfo.tabName"></el-input>
+                  <el-input clearable v-model.trim="tabInfo.tabName"></el-input>
                 </el-form-item>
 
                 <el-form-item label="TAB标题(中文)" prop="tabCnTitle">
-                  <el-input v-model.trim="tabInfo.tabCnTitle"></el-input>
+                  <el-input clearable v-model.trim="tabInfo.tabCnTitle"></el-input>
                 </el-form-item>
 
                 <el-form-item label="TAB标题(英文)" prop="tabEnTitle">
-                  <el-input v-model.trim="tabInfo.tabEnTitle"></el-input>
+                  <el-input clearable v-model.trim="tabInfo.tabEnTitle"></el-input>
                 </el-form-item>
 
                 <el-form-item label="业务分类" prop="tabCategory" class="selectItem">
                   <cc-business-type-selector
+                    filterable
                     :is-read="isReplicate"
                     :value="tabInfo.tabCategory"
                     @input="handleChangeTabCategory"
@@ -57,6 +58,7 @@
 
                 <el-form-item label="AppId" prop="tabAppid" class="selectItem">
                   <cc-appid-selector
+                    filterable
                     :is-read="isReplicate"
                     :disabled="disableAppId"
                     v-model="tabInfo.tabAppid"
@@ -127,6 +129,7 @@
                 <el-form-item v-if="canForceRefresh" label="强制刷新时间点" class="force-refresh-time-list">
                   <el-form-item label="时间点1" label-width="80px">
                     <el-date-picker
+                      clearable
                       v-model="tabInfo.refreshTimeList[0]"
                       type="datetime"
                       placeholder="选择日期时间">
@@ -134,6 +137,7 @@
                   </el-form-item>
                   <el-form-item label="时间点2" label-width="80px">
                     <el-date-picker
+                      clearable
                       v-model="tabInfo.refreshTimeList[1]"
                       type="datetime"
                       placeholder="选择日期时间">
@@ -141,6 +145,7 @@
                   </el-form-item>
                   <el-form-item label="时间点3" label-width="80px">
                     <el-date-picker
+                      clearable
                       v-model="tabInfo.refreshTimeList[2]"
                       type="datetime"
                       placeholder="选择日期时间">
@@ -343,7 +348,7 @@
 
                 <div :style="{display: isCollapseSpec || isPanelDragging ? 'none' : 'block'}">
                   <el-form-item label="会员展示">
-                      <el-select placeholder="前端不显示" v-model="tabInfo.vipButtonSourceId" :clearable="true">
+                      <el-select filterable placeholder="前端不显示" v-model="tabInfo.vipButtonSourceId" :clearable="true">
                           <el-option
                               v-for="(item, index) in vipEnums"
                               :value="item.value"
@@ -427,13 +432,14 @@
                 <div v-if="tabInfo.panelRecommendConfig.enableRecommend">
                   <el-form-item label="选择版块流" prop="panelRecommendConfig.recommendSign" :rules="[{required: true, message: '请选择版块流'}]">
                     <RecommendStreamSignSelector
+                      filterable
                       confirm="改变版块流将清空优先推荐版块，确认修改？"
                       :value="tabInfo.panelRecommendConfig.recommendSign"
                       @input="handleInputRecommendSign"/>
                     该流可推荐版块: {{ recommendStreamSignPanelCount }} 个
                   </el-form-item>
                   <el-form-item label="从第几个位置开始推荐" prop="panelRecommendConfig.recommendIndex" :rules="[{required: true, message: '请设置开始推荐位置', trigger: 'blur'}]">
-                    <InputPositiveInt style="width: 200px" v-model="tabInfo.panelRecommendConfig.recommendIndex" />
+                    <InputPositiveInt clearable style="width: 200px" v-model="tabInfo.panelRecommendConfig.recommendIndex" />
                     例: 选择 1， 则整个版面都是个性化推荐, 当前版块总数 {{ tabInfo.pannelList.length }}
                   </el-form-item>
                   <el-form-item label="优先推荐版块">

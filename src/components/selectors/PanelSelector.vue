@@ -18,20 +18,20 @@
         @select-end="handleSelectEnd">
         <el-form slot="filter" @keypress.enter.prevent.native="handleFilterChange" :inline="true" v-model="filter">
           <el-form-item>
-            <el-select v-model="filter.pannelType" placeholder="类型">
+            <el-select filterable v-model="filter.pannelType" placeholder="类型">
               <el-option :value="1" label="内容版块"></el-option>
               <el-option :value="3" label="专辑版块"></el-option>
               <el-option :value="5" label="专属影院版块"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item >
-            <InputPositiveInt v-model="filter.pannelId" placeholder="版块ID"></InputPositiveInt>
+            <InputPositiveInt clearable v-model="filter.pannelId" placeholder="版块ID"></InputPositiveInt>
           </el-form-item>
           <el-form-item >
-            <el-input v-model="filter.pannelName" placeholder="版块名称"></el-input>
+            <el-input clearable v-model="filter.pannelName" placeholder="版块名称"></el-input>
           </el-form-item>
           <el-form-item >
-            <el-select v-model="filter.pannelCategory" placeholder="业务分类">
+            <el-select filterable clearable v-model="filter.pannelCategory" placeholder="业务分类">
               <el-option
                 v-for="(item, index) in panelCategoryOptions"
                 :key="index"
@@ -43,7 +43,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-select v-model="filter.pannelStatus" placeholder="状态">
+            <el-select filterable clearable v-model="filter.pannelStatus" placeholder="状态">
               <el-option
                 v-for="(item, index) in $consts.statusOptions"
                 :key="index"
@@ -54,7 +54,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-select v-model="filter.parentType" placeholder="版块组类型">
+            <el-select filterable clearable v-model="filter.parentType" placeholder="版块组类型">
               <el-option
                 v-for="(item, index) in parentTypeOptions"
                 :key="index"
@@ -65,7 +65,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-select v-model="filter.fillType" placeholder="版块内容来源">
+            <el-select filterable clearable v-model="filter.fillType" placeholder="版块内容来源">
               <el-option
                 v-for="(item, index) in fillTypeOptions"
                 :key="index"
@@ -76,7 +76,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-select v-model="filter.idPrefix" placeholder="数据来源">
+            <el-select filterable clearable v-model="filter.idPrefix" placeholder="数据来源">
               <el-option label="酷开" value="10"></el-option>
               <el-option label="江苏广电" value="11"></el-option>
             </el-select>

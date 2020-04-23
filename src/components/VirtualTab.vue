@@ -59,6 +59,7 @@
           <template v-else>{{ getPanelInfo(panelItem.panel).panelName }}</template>
           <InputOrder
             size="small"
+            clearable
             :key="Math.random().toString()"
             class="tab-placeholder__index"
             :value="index + 1"

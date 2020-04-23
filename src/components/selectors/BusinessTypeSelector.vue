@@ -1,12 +1,12 @@
 <template>
   <span v-if="isRead">{{ valueLabel }}</span>
-  <el-select v-else :value="value" @input="$emit('input', $event)">
+  <el-select ref="select" :filterable="filterable" v-else :value="value" @input="handleInput">
     <el-option
       v-for="(item) in options"
       :key="item.value"
       :value="item.value"
-      :label="item.label"
-    ></el-option>
+      :label="item.label">
+    </el-option>
   </el-select>
 </template>
 
@@ -32,8 +32,15 @@ export default {
       }
     }
   },
-  props: ['value', 'isRead'],
-  methods: {},
+  props: ['value', 'isRead', 'filterable'],
+  methods: {
+    handleInput (val) {
+      this.$emit('input', val)
+      this.$nextTick(() => {
+        this.$refs.select.blur()
+      })
+    }
+  },
   created () {
     const isRead = this.isRead
     this.$service.getDictType({ type: 'businessType', isFilter: isRead ? 0 : 1 }).then(data => {
