@@ -361,7 +361,9 @@
                         </el-tag>
                       </template>
                     </el-form-item>
-                    <el-form-item label="推荐位" v-if="pannelFillType === $consts.panelFillTypes.mediaRule && firstPanel.contentList.length > 0">
+                    <el-form-item
+                      label="推荐位"
+                      v-if="pannelFillType === $consts.panelFillTypes.mediaRule && firstPanel.contentList.length > 0">
                       <VirtualPanel
                         class="pannel-blocks"
                         :isNotExtra="true"
@@ -2272,6 +2274,7 @@ export default {
       const panelDataType = this.currentPanelDataType
       const layout = this.selectedLayout
       const pannel = JSON.parse(JSON.stringify(data))
+      const panelFillTypes = this.panelFillTypes
       // 媒资规则的panelGroupType=10
       pannel.panelGroupType = pannel.pannelList[0].fillType !== 3 ? panelDataType : 10
       pannel.pannelList = pannel.pannelList.map(item => {
@@ -2374,26 +2377,8 @@ export default {
             pannelType = 10
           }
         }
-        // 插入设置interveneContentList
-        const contentListCopy = JSON.parse(JSON.stringify(itemContentList))
-        const interveneContentList = (item.interveneContentList || []).map(interveneContent => {
-          const intervenePos = interveneContent.intervenePos
-          const content = contentListCopy[intervenePos - 1]
-          content.intervenePos = parseInt(intervenePos)
-          content.videoContent = content.videoContentList[0]
-          delete content.videoContentList
-          delete content.specificContentList
-          return content
-        })
-        const canHasIntervene = fillType === 3 || fillType === 4
-        const hasIntervene = canHasIntervene
-          ? interveneContentList.length > 0
-            ? 1
-            : 0
-          : undefined
 
-        // 自动化板块
-        return {
+        const result = {
           pannelStatus: pannel.pannelStatus,
           pannelId: item.pannelId,
           pannelCategory: pannel.panelGroupCategory,
@@ -2418,11 +2403,35 @@ export default {
           mediaRule: fillType === 3 ? item.mediaRule : undefined,
           mediaRuleDesc: fillType === 3 ? item.mediaRuleDesc : undefined,
           hasEdu: fillType === 3 ? item.hasEdu : undefined,
-          hasIntervene,
           mediaFilmNum: fillType === 3 ? item.mediaFilmNum : undefined,
-          interveneContentList: canHasIntervene ? interveneContentList : undefined,
           partner: fillType === 3 ? that.$consts.sourceToPartner[pannel.pannelResource] : undefined
         }
+
+        // 插入设置interveneContentList
+        const canHasIntervene = fillType === 3 || fillType === 4
+        if (canHasIntervene) {
+          const contentListCopy = JSON.parse(JSON.stringify(itemContentList))
+          const interveneContentList = (item.interveneContentList || []).map(interveneContent => {
+            const intervenePos = interveneContent.intervenePos
+            const content = contentListCopy[intervenePos - 1]
+            content.intervenePos = parseInt(intervenePos)
+            content.videoContent = content.videoContentList[0]
+            delete content.videoContentList
+            delete content.specificContentList
+            return content
+          })
+          const hasIntervene = interveneContentList.length > 0 ? 1 : 0
+          Object.assign(result, {
+            hasIntervene,
+            interveneContentList
+          })
+        }
+        // 推荐流信息
+        if (fillType === panelFillTypes.recStream) {
+          result.recStreamPanelRls = item.recStreamPanelRls
+        }
+
+        return result
       })
       delete pannel.pannelName
       delete pannel.pannelResource
@@ -3034,9 +3043,48 @@ export default {
     updateInterveneResources () {
       const pannel = this.pannel
       const activePannel = pannel.pannelList[0]
+      const fillType = this.pannelFillType
+      const panelFillTypes = this.$consts.panelFillTypes
       const selectedLayoutId = this.selectedLayoutId
+      const insertInterveneContentList = () => {
+        // 按插入顺序排序
+        activePannel.interveneContentList.sort((a, b) => {
+          return a.intervenePos - b.intervenePos
+        })
+        // 插入位
+        const interveneContentList = activePannel.interveneContentList || []
+        interveneContentList.forEach(item => {
+          if (item.intervenePos && item.videoContentList.length !== 0) {
+            const insertBlockIndex = item.intervenePos - 1
+            const resource = {
+              videoContentList: item.videoContentList,
+              specificContentList: item.specificContentList
+            }
+            activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
+          }
+        })
+        // 修复插入位引起的pictureurl横竖图变化问题
+        if ((selectedLayoutId === '7' || selectedLayoutId === '8') && interveneContentList.length !== 0) {
+          this.updateSelectedResourcesPic(0)
+        }
+        this.updatePosition()
+      }
       this.clearBlocks()
-      if (activePannel.mediaRuleDesc) {
+      if (fillType === panelFillTypes.recStream) {
+        const maxPos = activePannel.interveneContentList.reduce((result, item) => {
+          return Math.max(item.intervenePos, result)
+        }, -1)
+        const newResourcesLength = Math.max(
+          maxPos,
+          activePannel.selectedResources.length
+        )
+        const newResources = Array.apply(null, {
+          length: newResourcesLength
+        })
+        activePannel.selectedResources = newResources
+        insertInterveneContentList()
+      }
+      if (fillType === panelFillTypes.mediaRule && activePannel.mediaRuleDesc) {
         const mediaRuleObj = JSON.parse(activePannel.mediaRule)
         const _partner = this.$consts.sourceToPartner[pannel.pannelResource]
         this.$service.getFilmFilterResult(mediaRuleObj).then(rs => {
@@ -3051,27 +3099,7 @@ export default {
           this.insertResources({
             selectedResources: this.filteredFilm.rows
           })
-          // 按插入顺序排序
-          activePannel.interveneContentList.sort((a, b) => {
-            return a.intervenePos - b.intervenePos
-          })
-          // 插入位
-          const interveneContentList = activePannel.interveneContentList || []
-          interveneContentList.forEach(item => {
-            if (item.intervenePos && item.videoContentList.length !== 0) {
-              const insertBlockIndex = item.intervenePos - 1
-              const resource = {
-                videoContentList: item.videoContentList,
-                specificContentList: item.specificContentList
-              }
-              activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
-            }
-          })
-          // 修复插入位引起的pictureurl横竖图变化问题
-          if ((selectedLayoutId === '7' || selectedLayoutId === '8') && interveneContentList.length !== 0) {
-            this.updateSelectedResourcesPic(0)
-          }
-          this.updatePosition()
+          insertInterveneContentList()
         })
       }
     },
