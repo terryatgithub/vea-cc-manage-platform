@@ -2385,6 +2385,13 @@ export default {
           delete content.specificContentList
           return content
         })
+        const canHasIntervene = fillType === 3 || fillType === 4
+        const hasIntervene = canHasIntervene
+          ? interveneContentList.length > 0
+            ? 1
+            : 0
+          : undefined
+
         // 自动化板块
         return {
           pannelStatus: pannel.pannelStatus,
@@ -2411,9 +2418,9 @@ export default {
           mediaRule: fillType === 3 ? item.mediaRule : undefined,
           mediaRuleDesc: fillType === 3 ? item.mediaRuleDesc : undefined,
           hasEdu: fillType === 3 ? item.hasEdu : undefined,
-          hasIntervene: fillType === 3 ? (item.interveneContentList.length !== 0 ? 1 : 0) : undefined,
+          hasIntervene,
           mediaFilmNum: fillType === 3 ? item.mediaFilmNum : undefined,
-          interveneContentList: fillType === 3 ? interveneContentList : undefined,
+          interveneContentList: canHasIntervene ? interveneContentList : undefined,
           partner: fillType === 3 ? that.$consts.sourceToPartner[pannel.pannelResource] : undefined
         }
       })

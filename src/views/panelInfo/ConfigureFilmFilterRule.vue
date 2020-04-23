@@ -106,7 +106,7 @@
           <el-checkbox label="1">具有4k</el-checkbox>
           <el-checkbox label="2">具有杜比</el-checkbox>
         </el-checkbox-group>
-        <div>(7) 长短片区分<span>左边是我们计算长短片区分，右边是第三方给到到的</span></div>
+        <div>(8) 长短片区分<span style="font-size: 12px;margin-left: 10px">（左边是我们计算长短片区分，右边是第三方给到到的）</span></div>
         <div>
           <div class="inline-checkbox-group">
             <el-checkbox-group v-model="movieFilterForm.longShortTypes" class="margin-bottom-20">
@@ -129,10 +129,10 @@
             </el-checkbox-group>
           </div>
         </div>
-        <div>(8) 创建时间</div>
+        <div>(9) 创建时间</div>
         <el-row :gutter="1" style="width: 100%" class="margin-bottom-20">
           <el-col :span="8">
-            <el-select v-model="createdTimeSelect" @change="handleResetFilmTime">
+            <el-select filterable v-model="createdTimeSelect" @change="handleResetFilmTime">
               <el-option :value="1" label="时间段选择"></el-option>
               <el-option :value="2" label="最近x个月"></el-option>
             </el-select>
@@ -151,21 +151,21 @@
               :picker-options="pickerOptions">
             </el-date-picker>
             <div v-else>
-              <InputPositiveInt v-model="movieFilterForm.createdMonthTime" style="width: 100px"/>
-              <span>个月</span>
+              <InputPositiveInt clearable v-model="movieFilterForm.createdMonthTime" style="width: 100px"/>
+              <span>&nbsp;个月</span>
             </div>
           </el-col>
         </el-row>
-        <div>(9) 热度</div>
+        <div>(10) 热度</div>
         <el-row :gutter="1" class="margin-bottom-20">
           <el-col :span="8">
-            <el-select v-model="feverSelect">
+            <el-select filterable v-model="feverSelect">
               <el-option :value="1" label="一月热度"></el-option>
               <el-option :value="2" label="一周热度"></el-option>
             </el-select>
           </el-col>
           <el-col :span="16">
-            Top<InputPositiveInt style="width: 100px" v-model="movieFilterForm.feverTop"/>
+            Top&nbsp;<InputPositiveInt clearable style="width: 100px" v-model="movieFilterForm.feverTop"/>
             <span class="tip-text">填写6及以上整数</span>
           </el-col>
         </el-row>

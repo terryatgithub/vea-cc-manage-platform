@@ -124,6 +124,7 @@
             :rules="contentRule.categoryId">
             <template v-if="maskLifeInfo.videoId">
               <el-select
+                filterable
                 :disabled="isReadonly"
                 :value="maskLifeInfo.categoryId"
                 @input="handleInputRecommendCategory(maskLifeInfo, $event)"
@@ -186,8 +187,7 @@
           :disable-partner="!!source"
           selection-type="single"
           :source="source"
-          @select-end="handleSelectAppEnd"
-        >
+          @select-end="handleSelectAppEnd">
           <el-button>选择资源</el-button>
         </ResourceSelector>
         <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
@@ -210,7 +210,7 @@
 
       <template v-if="contentType === 'specfic'">
         <el-form-item label="内容类型" v-if="contentForm.coverType === 'custom'">
-          <el-select v-model="contentForm.blockResourceType" :disabled="isReadonly">
+          <el-select filterable v-model="contentForm.blockResourceType" :disabled="isReadonly">
             <el-option label="影视" :value="1"></el-option>
             <el-option label="应用" :value="0"></el-option>
             <el-option label="其他" :value="-1"></el-option>
@@ -219,24 +219,26 @@
       </template>
 
       <el-form-item label="标题" prop="title">
-        <el-input v-model.trim="contentForm.title" :disabled="isReadonly"></el-input>
+        <el-input clearable v-model.trim="contentForm.title" :disabled="isReadonly"></el-input>
         <el-checkbox
           v-if="!hideTitleOptions"
           :value="!contentForm.showTitle"
           :disabled="isReadonly"
-          @input="contentForm.showTitle = $event ? 0 : 1"
-        >关闭标题栏，仅图片运营</el-checkbox>
+          @input="contentForm.showTitle = $event ? 0 : 1">
+          关闭标题栏，仅图片运营
+        </el-checkbox>
       </el-form-item>
       <el-form-item label="副标题" prop="subTitle" v-if="contentForm.coverType !== 'block'">
-        <el-input v-model.trim="contentForm.subTitle" :disabled="isReadonly"></el-input>
+        <el-input clearable v-model.trim="contentForm.subTitle" :disabled="isReadonly"></el-input>
         <el-checkbox
           :value="!contentForm.showSubTitle"
           :disabled="isReadonly"
-          @input="contentForm.showSubTitle = $event ? 0 : 1"
-        >落焦不显示副标题</el-checkbox>
+          @input="contentForm.showSubTitle = $event ? 0 : 1">
+          落焦不显示副标题
+        </el-checkbox>
       </el-form-item>
       <el-form-item label="单集副标题" prop="singleSubTitle">
-        <el-input v-model.trim="contentForm.singleSubTitle" :disabled="isReadonly"></el-input> 有单集副标题时，优先显示单集副标题
+        <el-input clearable v-model.trim="contentForm.singleSubTitle" :disabled="isReadonly"></el-input> 有单集副标题时，优先显示单集副标题
       </el-form-item>
 
       <el-form-item label="内容海报" prop="pictureUrl" v-if="contentForm.coverType !== 'block'">
@@ -244,16 +246,14 @@
           :disabled="isReadonly"
           :picture-resolution="resolution[0] + '*' + resolution[1]"
           :resource="contentForm"
-          @select-end="handleSelectPostEnd"
-        >
+          @select-end="handleSelectPostEnd">
           <div
             class="post-box corner-box"
             :style="{
               height: postSize.height + 'px',
               width: postSize.width + 'px',
               cursor: 'pointer'
-            }"
-          >
+            }">
             <img referrerpolicy="no-referrer" :src="contentForm.pictureUrl" >
             <div class="post-info">
               <div class="post-episode" v-if="[1, 4, 5].indexOf(contentForm.categoryId) > -1">
@@ -284,34 +284,34 @@
               <div
                 v-show="contentForm.showTitle"
                 class="post-title"
-                :title="contentForm.title"
-              >{{ contentForm.title }}</div>
+                :title="contentForm.title">
+                {{ contentForm.title }}
+              </div>
               <div
                 v-show="contentForm.showTitle && contentForm.showSubTitle"
                 class="post-sub-title"
-                :title="contentForm.singleSubTitle || contentForm.subTitle"
-              >{{ contentForm.singleSubTitle || contentForm.subTitle }}</div>
+                :title="contentForm.singleSubTitle || contentForm.subTitle">
+                {{ contentForm.singleSubTitle || contentForm.subTitle }}
+              </div>
             </div>
             <template>
               <span
                 v-for="(corner, cIndex) in contentForm.cornerList"
                 :class="['corner', 'corner-' + cIndex]"
                 :key="cIndex"
-                @click.stop="void(0)"
-              >
+                @click.stop="void(0)">
                 <CornerSelector
                   :disabled="isReadonly"
                   :position="cIndex"
-                  @select-end="handleSelectCornerIconEnd($event, cIndex)"
-                >
+                  @select-end="handleSelectCornerIconEnd($event, cIndex)">
                   <span class="corner-img-wrapper" v-if="corner.imgUrl">
                     <img referrerpolicy="no-referrer" :src="corner.imgUrl">
                     <i
                       v-show="!isReadonly"
                       title="删除角标"
                       class="el-icon-circle-close"
-                      @click.stop="handleRemoveCornerIcon(cIndex)"
-                    ></i>
+                      @click.stop="handleRemoveCornerIcon(cIndex)">
+                    </i>
                   </span>
                   <div class="corner-add-icon-wrapper" v-else>
                     <i class="el-icon-plus"></i>
@@ -340,12 +340,10 @@
       <el-form-item label="替补海报" v-if="shouldHaveBackupPicture" prop="alternativePictureUrl">
         <GlobalPictureSelector
           :picture-resolution="resolution[0] + '*' + resolution[1]"
-          @select-end="handleSelectBackupPostEnd"
-        >
+          @select-end="handleSelectBackupPostEnd">
           <div
             class="post-box"
-            :style="{ height: postSize.height + 'px', width: postSize.width + 'px', cursor: 'pointer' }"
-          >
+            :style="{ height: postSize.height + 'px', width: postSize.width + 'px', cursor: 'pointer' }">
             <img referrerpolicy="no-referrer" :src="contentForm.alternativePictureUrl" >
           </div>
         </GlobalPictureSelector>
@@ -357,8 +355,7 @@
             :disabled="isReadonly"
             v-model="isShowConfigBg"
             active-color="#13ce66"
-            inactive-color="grey"
-          >
+            inactive-color="grey">
           </el-switch>
         </el-form-item>
         <el-form-item v-if="isShowConfigBg" label="背景视频" prop="bgParams.id">
@@ -370,8 +367,7 @@
             :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
             selection-type="single"
             :source="source"
-            @select-end="handleSelectBgMediaEnd"
-          >
+            @select-end="handleSelectBgMediaEnd">
             <el-button>选择资源</el-button>
           </ResourceSelector>
           <el-tag type="primary" :closable="!isReadonly" @close="handleRemoveBgMedia" v-if="contentForm.bgParams && contentForm.bgParams.id">
@@ -407,8 +403,7 @@
           :selectors="['func', 'broadcast']"
           selection-type="single"
           :source="source"
-          @select-end="handleSelectBlockEnd"
-        >
+          @select-end="handleSelectBlockEnd">
           <el-button>选择推荐位</el-button>
         </ResourceSelector>
         <el-tag type="primary" v-if="contentForm.vContentId">已选择: {{ contentForm.vContentId }}</el-tag>
@@ -416,26 +411,25 @@
       <el-form-item
         label="价格"
         prop="price"
-        v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)"
-      >
+        v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)">
         <Price
+          clearable
           v-model.trim="contentForm.price"
           min="0"
           style="margin-right: 10px"
-          :disabled="isReadonly"
-        ></Price>(元)
+          :disabled="isReadonly"></Price>(元)
       </el-form-item>
       <el-form-item
         label="秒杀价"
         prop="secKillPrice"
-        v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)"
-      >
+        v-if="isMall && (['custom', 'media', 'app'].indexOf(contentForm.coverType) > -1)">
         <Price
+          clearable
           v-model.trim="contentForm.secKillPrice"
           min="0"
           style="margin-right: 10px"
-          :disabled="isReadonly"
-        ></Price>(元)
+          :disabled="isReadonly">
+        </Price>(元)
       </el-form-item>
       <template v-if="contentForm.coverType === 'custom'">
         <el-form-item label="打开方式">
@@ -562,8 +556,7 @@
           :value="!!contentForm.flagSetRec"
           @input="handleInputFlagSetRec"
           active-color="#13ce66"
-          inactive-color="grey"
-        >
+          inactive-color="grey">
         </el-switch>
       </el-form-item>
       <RecommendStreamSelector
@@ -577,6 +570,7 @@
       />
       <el-form-item label="刷新机制" v-if="!!contentForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
         <InputPositiveInt
+          clearable
           v-model="contentForm.mediaAutomationBlockRls.refreshCal"
           class="flash-count-input"
           :disabled="isReadonly"
@@ -584,14 +578,13 @@
         客户端曝光X次之后刷新推荐位
       </el-form-item>
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
-        <el-input v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
+        <el-input clearable v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
       </el-form-item>
       <template v-if="contentType === 'normal'">
         <el-form-item
           label="设置广告位"
           v-if="!isInterveneBlock && data.pannelParentType !== 'group' && data.blockInfo.type !== 'Mall' && (contentForm.coverType === 'media' || contentForm.coverType === 'app' || contentForm.coverType === 'custom')"
-          prop="flagIsSetad"
-        >
+          prop="flagIsSetad">
           <el-radio-group v-model="contentForm.flagIsSetad" :disabled="isReadonly">
             <el-radio :label="0">否</el-radio>
             <el-radio :label="1">是</el-radio>

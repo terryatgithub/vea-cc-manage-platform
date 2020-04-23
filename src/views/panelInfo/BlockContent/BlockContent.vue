@@ -11,7 +11,7 @@
       <el-collapse-item title="通用内容" name="normal">
         <el-form label-width="120px">
           <el-form-item label="内容资源">
-            <el-select v-show="mode !== 'read'" v-model="normalContentWrapper.selectionType" style="margin-bottom: 10px">
+            <el-select filterable v-show="mode !== 'read'" v-model="normalContentWrapper.selectionType" style="margin-bottom: 10px">
               <el-option value="manual" label="手动添加"></el-option>
             </el-select>
             <div v-if="mode !== 'read'">

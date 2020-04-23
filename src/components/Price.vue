@@ -1,5 +1,5 @@
 <template>
-    <el-input v-model="inputValue" :disabled="disabled" />
+    <el-input clearable v-model="inputValue" :disabled="disabled" />
 </template>
 
 <script>
@@ -17,7 +17,7 @@ export default {
       inputValue: undefined
     }
   },
-  props: ['value', 'disabled'],
+  props: ['value', 'disabled', 'clearable'],
   watch: {
     'inputValue': 'updateValue',
     'value': 'updateInputValue'

@@ -7,11 +7,12 @@
       <div class="intervene-input--wrapper">
         <InputPositiveInt
           ref="posInput"
+          clearable
           :value="block.intervenePos"
           :disabled="disabled"
           @input="handleInputValue($event, index)"
           @blur="$emit('end-intervene-input', index)"
-          style="width: 50px"/>
+          style="width: 65px"/>
         <i v-if="!disabled" class="el-icon-circle-close intervene-remove-icon" @click.stop="$emit('remove-block', index)" />
       </div>
       <div class="intervene-block" @click="handleClickBlock(index)">

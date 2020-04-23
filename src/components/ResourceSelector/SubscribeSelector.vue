@@ -15,10 +15,10 @@
 
     <el-form slot="filter" :inline="true" @keypress.enter.stop.native="handleFilterChange" v-model="filter" label-width="72px">
       <el-form-item label="渠道">
-        <CommonSelector v-model="filter.partner" :disabled="disablePartner" :options="$consts.partnerOptions" />
+        <CommonSelector filterable v-model="filter.partner" :disabled="disablePartner" :options="$consts.partnerOptions" />
       </el-form-item>
       <el-form-item label="内容源">
-        <CommonSelector v-model="filter.sources" :options="sourceEnums" />
+        <CommonSelector filterable v-model="filter.sources" :options="sourceEnums" />
       </el-form-item>
       <el-form-item>
         <el-input placeholder="影片名" clearable v-model="filter.code"/>
