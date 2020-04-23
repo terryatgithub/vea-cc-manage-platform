@@ -13,7 +13,7 @@
             :prop="propPrefix + index + '.key'"
             :rules="rules.params.key"
           >
-            <el-input v-model.trim="param.key"></el-input>
+            <el-input clearable v-model.trim="param.key"></el-input>
           </el-form-item>
           <el-form-item
             label="value:"
@@ -21,7 +21,7 @@
             :prop="propPrefix + index + '.value'"
             :rules="rules.params.value"
           >
-            <el-input v-model.trim="param.value"></el-input>
+            <el-input clearable v-model.trim="param.value"></el-input>
           </el-form-item>
           <a class="app-params__remove-param" @click="handleRemoveParam(index)">
             <i class="el-icon-minus"></i>

@@ -463,21 +463,22 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item key="webpageUrl" label="网页地址" prop="redundantParams.webpageUrl" :rules="contentRule.webpageUrl">
-            <el-input v-model.trim="contentForm.redundantParams.webpageUrl" :disabled="isReadonly"></el-input>
+            <el-input clearable v-model.trim="contentForm.redundantParams.webpageUrl" :disabled="isReadonly"></el-input>
           </el-form-item>
           <el-form-item key="webpage-versioncode" label="应用版本号" prop="redundantParams.versioncode" :rules="contentRule.versioncode">
             <el-input
+              clearable
               v-model.trim="contentForm.redundantParams.versioncode"
-              :disabled="isReadonly"
-            ></el-input>
+              :disabled="isReadonly">
+            </el-input>
           </el-form-item>
         </template>
         <template v-if="contentForm.redundantParams.openMode === 'video'">
           <el-form-item key="videoName" label="视频名称" prop="redundantParams.videoName" :rules="contentRule.videoName">
-            <el-input v-model.trim="contentForm.redundantParams.videoName" :disabled="isReadonly"></el-input>
+            <el-input clearable v-model.trim="contentForm.redundantParams.videoName" :disabled="isReadonly"></el-input>
           </el-form-item>
           <el-form-item key="videoUrl" label="视频地址" prop="redundantParams.videoUrl" :rules="contentRule.videoUrl">
-            <el-input v-model.trim="contentForm.redundantParams.videoUrl" :disabled="isReadonly"></el-input>
+            <el-input clearable v-model.trim="contentForm.redundantParams.videoUrl" :disabled="isReadonly"></el-input>
           </el-form-item>
         </template>
 
