@@ -1,12 +1,87 @@
 <template>
   <ContentCard ref="contentCard" class="content">
     <ContentWrapper
-      :filter="filter"
-      :filterSchema="filterSchema"
       :pagination="pagination"
-      @filter-change="handleFilterChange"
-      @filter-reset="handleFilterReset"
-    >
+      @filter-change="fetchData">
+      <el-form
+        class="form el-row"
+        v-form-autocomplete
+        @submit.native="handleFilterChange"
+        @reset.native="handleFilterReset"
+        :model="filter"
+        :inline="true"
+        label-width="0px">
+        <el-form-item label="" class="el-col-6">
+         <el-select clearable filterable v-model="filter.pannelCategory" placeholder="业务分类">
+           <el-option v-for="item in businessTypeOptions"
+             :key="item.value"
+             :label="item.label"
+             :value="item.value">
+           </el-option>
+         </el-select>
+        </el-form-item>
+        <el-form-item label="" class="el-col-6">
+          <InputPositiveInt v-model="filter.pannelId" placeholder="ID" clearable name="pannelId" autocomplete="on"></InputPositiveInt>
+        </el-form-item>
+        <el-form-item label="" class="el-col-6">
+          <el-input v-model="filter.pannelName" placeholder="版块名称" clearable name="pannelName" autocomplete="on"></el-input>
+        </el-form-item>
+        <el-form-item label="" class="el-col-6">
+          <el-input v-model="filter.pannelTitle" placeholder="版块标题" clearable name="pannelTitle" autocomplete="on"></el-input>
+        </el-form-item>
+        <el-form-item label="" class="el-col-6">
+          <el-input v-model="filter.tabName" placeholder="引用状态" clearable name="tabName" autocomplete="on"></el-input>
+        </el-form-item>
+        <el-form-item label="" class="el-col-6">
+         <el-select clearable filterable v-model="filter.pannelResource" placeholder="内容源">
+           <el-option v-for="item in $consts.sourceOptions"
+             :key="item.value"
+             :label="item.label"
+             :value="item.value">
+           </el-option>
+         </el-select>
+        </el-form-item>
+        <el-form-item label="" class="el-col-6">
+         <el-select clearable filterable v-model="filter.pannelStatus" placeholder="状态">
+           <el-option v-for="item in $consts.statusOptions"
+             :key="item.value"
+             :label="item.label"
+             :value="item.value">
+           </el-option>
+         </el-select>
+        </el-form-item>
+        <el-form-item label="" class="el-col-6">
+         <el-select clearable filterable v-model="filter.pannelType" placeholder="版块类别">
+           <el-option v-for="item in panelTypeOptions"
+             :key="item.value"
+             :label="item.label"
+             :value="item.value">
+           </el-option>
+         </el-select>
+        </el-form-item>
+        <el-form-item label="" class="el-col-6">
+         <el-select clearable filterable v-model="filter.fillType" placeholder="版块内容来源">
+           <el-option v-for="item in fillTypeOptions"
+             :key="item.value"
+             :label="item.label"
+             :value="item.value">
+           </el-option>
+         </el-select>
+        </el-form-item>
+        <el-form-item v-if="$consts.idPrefix !== '10'" label="" class="el-col-6">
+         <el-select filterable v-model="filter.idPrefix" placeholder="数据来源">
+           <el-option v-for="item in $consts.idPrefixOptions"
+             :key="item.value"
+             :label="item.label"
+             :value="item.value">
+           </el-option>
+         </el-select>
+        </el-form-item>
+        <el-form-item class="el-col-6">
+          <el-button type="primary" native-type="submit">查询</el-button>
+          <el-button native-type="reset">重置</el-button>
+        </el-form-item>
+      </el-form>
       <ButtonGroupForListPage
         pageName='panel'
         @add="handleCreate"
@@ -34,13 +109,15 @@ import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table } from 'admin-toolkit'
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
+import InputPositiveInt from '@/components/InputPositiveInt'
 import { isFrozen } from './frozen'
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
     Table,
-    ButtonGroupForListPage
+    ButtonGroupForListPage,
+    InputPositiveInt
   },
 
   props: {
@@ -55,11 +132,26 @@ export default {
       canAdd: false,
       resourceType: 'panelInfo',
       filter: this.genDefaultFilter(),
+      efficientFilter: this.genDefaultFilter(),
       filterSchema: null,
       pagination: {
         currentPage: 1
       },
-      businessType: {},
+      businessTypeOptions: [],
+      panelTypeOptions: [
+        {
+          label: '影视推荐版块',
+          value: 6
+        },
+        {
+          label: '定向版块',
+          value: 7
+        },
+        {
+          label: '常规版块',
+          value: 1
+        }
+      ],
       table: {
         props: {},
         data: [],
@@ -200,7 +292,7 @@ export default {
         selectionType: 'multiple'
       },
       selected: [],
-      fillTypeEnums: {}
+      fillTypeOptions: []
     }
   },
 
@@ -260,46 +352,42 @@ export default {
       }
     },
     parseFilter () {
-      const { filter, pagination } = this
+      const { pagination } = this
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
       return filter
     },
-    handleFilterChange (type, filter) {
-      if (filter) { this.filter = filter }
-      if (this.$validateId(this.filter.pannelId)) {
-        if (type === 'query') {
-          if (this.pagination) {
-            this.pagination.currentPage = 1
-          }
-        }
-        this.fetchData()
-      }
+    handleFilterChange () {
+      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
+      this.pagination.currentPage = 1
+      this.fetchData()
     },
     handleFilterReset () {
-      console.log(this.dataList)
-      if (this.dataList) {
-        this.filter = Object.assign({}, this.dataList.filter)
-        console.log(this.filter)
-      } else {
-        this.filter = this.genDefaultFilter()
-      }
+      this.filter = this.genDefaultFilter()
+      this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
     getBusinessType () {
       return this.$service.getDictType({ type: 'businessType' }).then(data => {
-        data.forEach((item) => {
-          this.businessType[item.dictCnName] = item.dictId
+        this.businessTypeOptions = data.map(item => {
+          return {
+            label: item.dictCnName,
+            value: item.dictId
+          }
         })
       })
     },
     getFillType () {
       return this.$service.getMediaFillType().then(data => {
-        data.forEach(item => {
-          this.fillTypeEnums[item.dictCnName] = item.dictEnName
+        this.fillTypeOptions = data.map(item => {
+          return {
+            label: item.dictCnName,
+            value: item.dictEnName
+          }
         })
       })
     },
@@ -318,97 +406,8 @@ export default {
     }
   },
   created () {
-    const filterSchema = _.map({
-      pannelCategory: _.o.enum(this.businessType).other('form', {
-        placeholder: '业务分类',
-        component: 'Select',
-        clearable: true
-      }),
-      pannelId: _.o.string.other('form', {
-        placeholder: 'ID',
-        component: 'Input',
-        name: 'pannelId',
-        autocomplete: 'on'
-      }),
-      pannelName: _.o.string.other('form', {
-        placeholder: '版块名称',
-        component: 'Input',
-        name: 'pannelName',
-        autocomplete: 'on'
-      }),
-      pannelTitle: _.o.string.other('form', {
-        placeholder: '版块标题',
-        component: 'Input',
-        name: 'pannelTitle',
-        autocomplete: 'on'
-      }),
-      tabName: _.o.string.other('form', {
-        placeholder: '引用状态',
-        component: 'Input',
-        name: 'tabName',
-        autocomplete: 'on'
-      }),
-      pannelResource: _.o.enum(this.$consts.sourceEnums).other('form', {
-        placeholder: '内容源',
-        component: 'Select',
-        clearable: true
-      }),
-      pannelStatus: _.o.enum(this.$consts.statusEnums).other('form', {
-        placeholder: '状态',
-        component: 'Select',
-        clearable: true
-      }),
-      pannelType: _.o.enum({ '影视推荐版块': 6, '定向版块': 7, '常规版块': 1 }).other('form', {
-        placeholder: '版块类别',
-        component: 'Select',
-        clearable: true
-      }),
-      fillType: _.o.enum(this.fillTypeEnums).other('form', {
-        placeholder: '版块内容来源',
-        component: 'Select',
-        clearable: true
-      })
-    })
-      .other('form', {
-        cols: {
-          item: 6,
-          label: 0,
-          wrapper: 20
-        },
-        layout: 'inline',
-        footer: {
-          cols: {
-            label: 0,
-            wrapper: 24
-          },
-          showSubmit: true,
-          submitText: '查询',
-          showReset: true,
-          resetText: '重置'
-        }
-      })
-    if (this.$consts.idPrefix !== '10') {
-      filterSchema.map({
-        idPrefix: _.o.enum({
-          '酷开': '10',
-          '江苏广电': '11'
-        }).other('form', {
-          component: 'Select',
-          placeholder: '数据来源'
-        })
-      })
-    }
-    this.getBusinessType().then(() => {
-      this.getFillType().then(() => {
-        this.dataList ? this.filterSchema = dataList.filterSchema : this.filterSchema = filterSchema
-      })
-    })
-    // 影片详情页中的版块
-    const dataList = this.dataList
-    if (dataList) {
-      this.filter = Object.assign({}, dataList.filter)
-      this.table = dataList.table
-    }
+    this.getBusinessType()
+    this.getFillType()
     this.fetchData()
     this.$service.getButtonGroupForPageList('panel').then(data => {
       this.canAdd = data.some(item => item.runComm === 'add')
@@ -418,5 +417,14 @@ export default {
 }
 </script>
 
-<style lang='stylus' scoped>
+<style lang = 'stylus' scoped>
+.form >>>.el-form-item__content
+  width: 83.33333%
+  .el-select
+    width: 100%
+.form >>>.el-form-item
+  margin-right 0px
+  margin-bottom 10px
+.el-form-item-submit
+  width: 200px
 </style>

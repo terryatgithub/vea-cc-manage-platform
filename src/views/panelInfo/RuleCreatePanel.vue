@@ -4,26 +4,30 @@
       <div slot="filter">
         <DataForm :model="filter" :inline="true">
           <FormEnum
+            filterable
             placeholder="是否有教育业务"
             v-model="filter.hasEdu"
             :options="zeroOneOptions"
             clearable>
           </FormEnum>
           <FormEnum
+            filterable
             placeholder="是否运营插入"
             v-model="filter.hasIntervene"
             :options="zeroOneOptions"
             clearable>
           </FormEnum>
           <FormEnum
+            filterable
             placeholder="版块状态"
             v-model="filter.pannelStatus"
             :options="$consts.statusOptions"
             clearable>
           </FormEnum>
-          <FormString v-model="filter.pannelName" placeholder="版块名称"/>
-          <FormString v-model="filter.pannelId" placeholder="版块ID"/>
+          <FormString clearable v-model="filter.pannelName" placeholder="版块名称"/>
+          <FormString clearable v-model="filter.pannelId" placeholder="版块ID"/>
           <FormEnum
+            filterable
             placeholder="版块内容源"
             v-model="filter.pannelResource"
             :options="$consts.sourceOptions"

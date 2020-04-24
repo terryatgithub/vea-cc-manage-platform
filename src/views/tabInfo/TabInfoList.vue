@@ -2,15 +2,23 @@
   <ContentCard ref="contentCard" class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <!-- 筛选部分 -->
-      <el-form inline ref="form" v-model="filter" @keypress.enter.native="handleFilterChange" @submit.native="preventSubmit" label-width="90px" class="form">
+      <el-form
+        inline
+        ref="form"
+        class="form"
+        v-form-autocomplete
+        v-model="filter"
+        @submit.native="handleFilterChange"
+        @reset.native="handleFilterReset"
+        label-width="90px">
         <el-form-item class="el-col-6">
-          <InputPositiveInt name="tabId" autocomplete="on" v-model="filter.tabId" placeholder="版面ID" />
+          <InputPositiveInt clearable name="tabId" autocomplete="on" v-model="filter.tabId" placeholder="版面ID" />
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-input name="tabName" autocomplete="on" v-model="filter.tabName" placeholder="版面标题"/>
+          <el-input clearable name="tabName" autocomplete="on" v-model="filter.tabName" placeholder="版面标题"/>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.tabType" placeholder="版面属性" clearable>
+          <el-select filterable v-model="filter.tabType" placeholder="版面属性" clearable>
             <el-option
               v-for="(item, index) in tabTypeOption"
               :key="index"
@@ -20,14 +28,13 @@
           </el-select>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.hasSubTab" clearable placeholder="是否二级tab">
+          <el-select filterable v-model="filter.hasSubTab" clearable placeholder="是否二级tab">
             <el-option value="1" label="是"></el-option>
             <el-option value="0" label="否"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.tabCategory" placeholder="业务分类" clearable>
-            <el-option value>请选择</el-option>
+          <el-select filterable v-model="filter.tabCategory" placeholder="业务分类" clearable>
             <el-option
               v-for="(item, index) in businessType"
               :key="index"
@@ -37,7 +44,7 @@
           </el-select>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.tabAppid" placeholder="AppId" clearable>
+          <el-select filterable v-model="filter.tabAppid" placeholder="AppId" clearable>
             <el-option
               v-for="item in appIdType"
               :key="item.dictEnName"
@@ -47,7 +54,7 @@
           </el-select>
         </el-form-item>
         <el-form-item class="el-col-6">
-          <el-select v-model="filter.tabStatus" placeholder="状态" clearable>
+          <el-select filterable v-model="filter.tabStatus" placeholder="状态" clearable>
             <el-option
               v-for="item in tabStatusOption"
               :key="item.label"
@@ -57,24 +64,23 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="$consts.idPrefix != '10'" class="el-col-6">
-          <el-select v-model="filter.idPrefix" placeholder="数据来源">
+          <el-select filterable v-model="filter.idPrefix" placeholder="数据来源">
             <el-option value="10" label="酷开"></el-option>
             <el-option value="11" label="江苏广电"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item class="el-form-item-submit">
-          <el-button type="primary" native-type="submit"  @click="handleFilterChange">查询</el-button>
-          <el-button  @click="handleFilterReset">重置</el-button>
+          <el-button type="primary" native-type="submit">查询</el-button>
+          <el-button native-type="reset">重置</el-button>
         </el-form-item>
       </el-form>
-         <ButtonGroupForListPage
-          v-if="!listProps.isCollectionPage"
-          pageName='tab'
-          @add="handleCreate"
-          @edit="handleEdit"
-          @delete="handleDelete"
-        >
-        </ButtonGroupForListPage>
+      <ButtonGroupForListPage
+        v-if="!listProps.isCollectionPage"
+        pageName='tab'
+        @add="handleCreate"
+        @edit="handleEdit"
+        @delete="handleDelete">
+      </ButtonGroupForListPage>
       <Table
         :props="table.props"
         :header="table.header"
@@ -411,7 +417,8 @@ export default {
   .el-select
     width: 100%
 .form >>>.el-form-item
-  margin-right: 0px
+  margin-right 0px
+  margin-bottom 10px
 .el-form-item-submit
   width: 200px
 </style>
