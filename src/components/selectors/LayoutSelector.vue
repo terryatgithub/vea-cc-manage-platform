@@ -79,7 +79,7 @@
       <el-button type="primary" @click="handleSelectEnd">确定</el-button>
       <el-button @click="$refs.wrapper.handleSelectCancel()">取消</el-button>
       <!--拓展布局的个数-->
-      <el-dialog title="请输入预置推荐位个数" :visible.sync="showBlockCountDialog" :append-to-body="true">
+      <el-dialog title="请输入预置推荐位个数" width="350px" :visible.sync="showBlockCountDialog" :append-to-body="true">
         <el-form
           ref="blockCountForm"
           @keypress.native.enter.prevent="emitSelectEnd"
@@ -149,12 +149,12 @@ export default {
         header: [
           {
             label: 'ID',
-            prop: 'layoutId'
+            prop: 'layoutId',
+            width: 200
           },
           {
             label: '名称',
-            prop: 'layoutName',
-            width: 200
+            prop: 'layoutName'
           },
           {
             label: '分类',
