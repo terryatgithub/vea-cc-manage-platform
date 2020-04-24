@@ -154,6 +154,7 @@
                       :panel="panelData[item.id]"
                       :ratio="ratio"
                       :active="item.activeIndex"
+                      :show-chart-btn="showChartBtn"
                       :show-exchange-tool="showExchangeTool"
                       :show-title="showTitle"
                       @copy-block="handleCopyBlock({
@@ -252,6 +253,7 @@
                     :active="panel.activeIndex"
                     :ratio="ratio"
                     :show-title="showTitle"
+                    :show-chart-btn="showChartBtn"
                     :show-exchange-tool="showExchangeTool"
                     @copy-block="handleCopyBlock({
                       panelGroupId: panelItem.panel.id,
@@ -428,7 +430,7 @@ export default {
       STATUS_TEXT: this.$consts.statusText
     }
   },
-  props: ['panels', 'ratio', 'width', 'panelData', 'showTitle', 'readOnly', 'showExchangeTool'],
+  props: ['panels', 'ratio', 'width', 'panelData', 'showTitle', 'readOnly', 'showExchangeTool', 'showChartBtn'],
   methods: {
     refresh () {
       this.show = false

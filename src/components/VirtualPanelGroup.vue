@@ -6,11 +6,14 @@
           <el-tab-pane v-for="(item, index) in panel.panelList" :key="index" :name="index + ''">
             <span slot="label">{{ item.panelTitle }}</span>
             <cc-virtual-panel
+              :panel-group="panel"
+              :panel-index="index"
               :blocks="item.blocks"
               :ratio="ratio"
               @copy-block="handleCopyBlock(index, $event)"
               @exchange-block="handleExchangeBlock(index, $event)"
               :show-title="showTitle"
+              :show-chart-btn="showChartBtn"
               :show-exchange-tool="showExchangeTool"
               :disable-exchange-tool="disableExchangeTool"
               @click-block="handleClickBlock(index, $event)"
@@ -20,11 +23,14 @@
       </template>
       <cc-virtual-panel
         v-else
+        :panel-group="panel"
+        :panel-index="0"
         :blocks="panel.panelList[0].blocks"
         @copy-block="handleCopyBlock(0, $event)"
         @exchange-block="handleExchangeBlock(0, $event)"
         :ratio="ratio"
         :show-title="showTitle"
+        :show-chart-btn="showChartBtn"
         :show-exchange-tool="showExchangeTool"
         :disable-exchange-tool="disableExchangeTool"
         @click-block="handleClickBlock(0, $event)"
@@ -46,7 +52,7 @@ export default {
   components: {
     'cc-virtual-panel': VirtualPanel
   },
-  props: ['panel', 'ratio', 'active', 'showTitle', 'showExchangeTool'],
+  props: ['panel', 'ratio', 'active', 'showTitle', 'showExchangeTool', 'showChartBtn'],
   computed: {
     disableExchangeTool () {
       return this.isForbiddenType || this.isForbiddenStatus

@@ -1,9 +1,11 @@
 <template>
   <div>
-    <el-dialog :title="dialogTitle"
+    <el-dialog
+      :title="dialogTitle"
       :visible.sync="visible"
       :show="show"
       width="70%"
+      :append-to-body="true"
       @close="$emit('update:show', false)"
       @open="fetchData"
     >
@@ -25,6 +27,7 @@
     <el-dialog
       title="推荐位标题变化"
       :visible.sync="extraVisible"
+      :append-to-body="true"
       width="30%"
       class="extra-dia"
     >

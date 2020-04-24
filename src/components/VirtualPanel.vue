@@ -9,51 +9,61 @@
         <el-popover
           placement="top"
           trigger="hover"
-          :disabled="!(showChartBtn || showExchangeTool)"
+          :disabled="!(showPopover)"
           popper-class="show-chart-popper">
           <!-- 看数据按钮 -->
           <div v-if="showChartBtn">
-            <el-button
-              type="success"
+            <BlockStatChartViewer
               v-if="blocks[index].vcId != -101"
-              class="analyze-data--btn"
-              @click.stop="handleAnalyzeSimpleData(index)">
-              整体数据
-           </el-button>
-            <el-button
-              type="success"
+              :panel-group="panelGroup"
+              :panel-index="panelIndex"
+              :block-index="index">
+              <el-button
+                type="success"
+                class="popover-tool-btn">
+                整体数据
+              </el-button>
+            </BlockStatChartViewer>
+            <BlockStatDmpChartViewer
               v-if="block.specificContentList && block.specificContentList.length !== 0"
-              class="analyze-data--btn"
-              @click.stop="handleAnalyzeDmpData(index)">
-              DMP
-            </el-button>
-            <br v-if="block.specificContentList && block.specificContentList.length !== 0"/>
+              :panel-group="panelGroup"
+              :panel-index="panelIndex"
+              :block-index="index">
+              <el-button
+                type="success"
+                class="popover-tool-btn">
+                DMP
+              </el-button>
+            </BlockStatDmpChartViewer>
+            <!-- <br v-if="block.specificContentList && block.specificContentList.length !== 0"/> -->
             <!-- <el-button
               type="success"
-              class="analyze-data--btn"
+              class="popover-tool-btn"
               @click.stop="handleAnalyzeSimpleData(index, true)"
             >整体实时数据</el-button>
             <el-button
               type="success"
+              class="popover-tool-btn"
               v-if="block.specificContentList && block.specificContentList.length !== 0"
-              class="analyze-data--btn"
               @click.stop="handleAnalyzeDmpData(index, true)"
             >DMP实时数据</el-button> -->
           </div>
           <!-- 交换 -->
           <div v-if="showExchangeTool">
-              <el-button
-                type="success"
-                :class="disableExchangeTool ? 'is-disabled el-button--disabled' : ''"
-                @click.stop="$emit('copy-block', index)">
-                复制
-              </el-button>
-              <el-button
-                type="success"
-                :class="disableExchangeTool ? 'is-disabled el-button--disabled' : ''"
-                @click.stop="$emit('exchange-block', index)">
-                交换
-              </el-button>
+            <el-button
+              type="warning"
+              class="popover-tool-btn"
+              :class="disableExchangeTool ? 'is-disabled el-button--disabled' : ''"
+              @click.stop="$emit('copy-block', index)">
+              复制
+            </el-button>
+            <el-button
+              type="warning"
+              class="popover-tool-btn"
+              :class="disableExchangeTool ? 'is-disabled el-button--disabled' : ''"
+              @click.stop="$emit('exchange-block', index)">
+              交换
+            </el-button>
           </div>
 
           <!-- 内容 -->
@@ -142,8 +152,14 @@
 </template>
 
 <script>
+import BlockStatChartViewer from '@/components/statViewer/BlockStatChartViewer'
+import BlockStatDmpChartViewer from '@/components/statViewer/BlockStatDmpChartViewer'
 export default {
   template: '#cc-virtual-panel',
+  components: {
+    BlockStatChartViewer,
+    BlockStatDmpChartViewer
+  },
   data () {
     return {
       blockItems: [],
@@ -152,8 +168,12 @@ export default {
       dropIndex: undefined
     }
   },
-
-  props: ['blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn', 'showExchangeTool', 'disableExchangeTool', 'isNotExtra'],
+  props: ['panelGroup', 'panelIndex', 'blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn', 'showExchangeTool', 'disableExchangeTool', 'isNotExtra'],
+  computed: {
+    showPopover () {
+      return this.showChartBtn || this.showExchangeTool
+    }
+  },
   watch: {
     blocks: 'computeBlockItems'
   },
@@ -415,8 +435,7 @@ export default {
   left: 0;
 }
 
-.analyze-data--btn {
-  width: 100px;
+.popover-tool-btn {
   margin: 3px;
 }
 

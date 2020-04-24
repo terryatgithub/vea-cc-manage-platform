@@ -3,6 +3,7 @@
     <el-dialog
       :title="dialogTitle"
       :visible.sync="visible"
+      :append-to-body="true"
       :show="show"
       width="70%"
       @open="handleDialogOpen"
@@ -58,6 +59,7 @@
     <el-dialog
       title="推荐位标题变化"
       :visible.sync="extraVisible"
+      :append-to-body="true"
       width="30%"
       class="extra-dia"
     >

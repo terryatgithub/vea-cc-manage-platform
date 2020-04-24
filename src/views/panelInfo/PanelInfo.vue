@@ -258,8 +258,11 @@
                                 }}
                               </span>
                               <VirtualPanel
+                                :panel-group="pannel"
+                                :panel-index="item"
                                 :blocks="item.contentList"
                                 :mode="mode"
+                                :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
                                 @drag="handleDragBlock"
                                 @remove-block="handleRemoveBlock"
                                 @click-block="handleClickBlock"
@@ -272,6 +275,9 @@
                           v-else
                           :blocks="pannel.pannelList[0].contentList"
                           :mode="mode"
+                          :panel-group="pannel"
+                          :panel-index="0"
+                          :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
                           @drag="handleDragBlock"
                           @remove-block="handleRemoveBlock"
                           @click-block="handleClickBlock"
@@ -549,13 +555,13 @@
                               {{ item.pannelTitle }} {{ item.panelIsFocus && pannel.focusConfig === '' ? '(默认落焦)' : '' }}
                             </span>
                             <VirtualPanel
+                              :panel-group="pannel"
+                              :panel-index="index"
                               :blocks="item.contentList"
                               :mode="mode"
                               :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
-                              @click-block="handleClickBlock"
-                              @show-simple-chart="handleAnalyzeData('simple', $event, index)"
-                              @show-dmp-chart="handleAnalyzeData('dmp', $event, index)"
-                            ></VirtualPanel>
+                              @click-block="handleClickBlock">
+                            </VirtualPanel>
                           </el-tab-pane>
                         </el-tabs>
                       </template>
@@ -563,12 +569,12 @@
                       <VirtualPanel
                         v-else
                         :mode="mode"
+                        :panel-group="pannel"
+                        :panel-index="0"
                         :blocks="pannel.pannelList[0].contentList"
                         @click-block="handleClickBlock"
-                        :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
-                        @show-simple-chart="handleAnalyzeData('simple', $event)"
-                        @show-dmp-chart="handleAnalyzeData('dmp', $event)"
-                      ></VirtualPanel>
+                        :show-chart-btn="pannel.pannelStatus !== $consts.status.draft">
+                      </VirtualPanel>
                     </div>
                   </el-form-item>
                   <template v-if="pannelFillType === 3">
@@ -636,16 +642,6 @@
         />
       </PageContentWrapper>
 
-      <AnalyzeSimpleDataDialog
-        :show.sync="isVisiAnalyzeSimpleData"
-        :parentId="id"
-        :position="analyzeBtnCurrentIndex"
-        :isRealTime="analyzeIsRealTime"/>
-      <AnalyzeDmpDataDialog
-        :show.sync="isVisiAnalyzeDmpData"
-        :parentId="id"
-        :position="analyzeBtnCurrentIndex"
-        :isRealTime="analyzeIsRealTime"/>
     </PageWrapper>
   </TabPage>
 </template>
@@ -673,9 +669,6 @@ import TagFrame from './TagFrame'
 import VeLine from 'v-charts/lib/line.common'
 import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/markPoint'
-
-import AnalyzeSimpleDataDialog from './AnalyzeSimpleDataDialog'
-import AnalyzeDmpDataDialog from './AnalyzeDmpDataDialog'
 
 import SubscribeVideos from './SubscribeVideos'
 
@@ -716,8 +709,6 @@ export default {
     PanelGroupInfoSetter,
     TagFrame,
     VeLine,
-    AnalyzeSimpleDataDialog,
-    AnalyzeDmpDataDialog,
     SubscribeVideos,
     BlockRecStreamSelector,
     ConfigureFilmFilterRule,
@@ -778,10 +769,6 @@ export default {
       ]
     }
     return {
-      analyzeBtnCurrentIndex: undefined,
-      analyzeIsRealTime: false,
-      isVisiAnalyzeSimpleData: false,
-      isVisiAnalyzeDmpData: false,
       // 数据展现
       extend: extend,
       settings: {
