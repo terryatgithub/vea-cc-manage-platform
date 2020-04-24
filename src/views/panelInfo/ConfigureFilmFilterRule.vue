@@ -106,7 +106,7 @@
           <el-checkbox label="1">具有4k</el-checkbox>
           <el-checkbox label="2">具有杜比</el-checkbox>
         </el-checkbox-group>
-        <div>(8) 长短片区分<span style="font-size: 12px;margin-left: 10px">（左边是我们计算长短片区分，右边是第三方给到到的）</span></div>
+        <div>(8) 长短片区分<span style="font-size: 12px;margin-left: 10px">（左边是我们计算的长短片区分，右边是第三方给到的）</span></div>
         <div>
           <div class="inline-checkbox-group">
             <el-checkbox-group v-model="movieFilterForm.longShortTypes" class="margin-bottom-20">
