@@ -1077,10 +1077,12 @@ export default {
   },
   methods: {
     handleSelectBlockRecStreamEnd (selected) {
-      const { recId, recName } = selected[0]
+      const { recId, recName, recCategory, recFlag } = selected[0]
       this.firstPanel.recStreamPanelRls = {
         recId,
-        recName
+        recName,
+        recCategory,
+        recFlag
       }
     },
     genPannel (preset) {
@@ -2391,7 +2393,9 @@ export default {
           mediaRuleDesc: fillType === 3 ? item.mediaRuleDesc : undefined,
           hasEdu: fillType === 3 ? item.hasEdu : undefined,
           mediaFilmNum: fillType === 3 ? item.mediaFilmNum : undefined,
-          partner: fillType === 3 ? that.$consts.sourceToPartner[pannel.pannelResource] : undefined
+          partner: fillType === 3 ? that.$consts.sourceToPartner[pannel.pannelResource] : undefined,
+          // 推荐流信息
+          recStreamPanelRls: item.recStreamPanelRls
         }
 
         // 插入设置interveneContentList
@@ -2412,10 +2416,6 @@ export default {
             hasIntervene,
             interveneContentList
           })
-        }
-        // 推荐流信息
-        if (fillType === panelFillTypes.recStream) {
-          result.recStreamPanelRls = item.recStreamPanelRls
         }
 
         return result

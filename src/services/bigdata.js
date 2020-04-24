@@ -4,7 +4,9 @@ export function getBlockRecList (params) {
   //   rows: [
   //     {
   //       recId: '123',
-  //       recName: '6666'
+  //       recName: '6666',
+  //       recCategory: 'category',
+  //       recFlag: 'mac'
   //     }
   //   ]
   // })
