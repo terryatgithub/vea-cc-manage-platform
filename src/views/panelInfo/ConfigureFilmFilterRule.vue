@@ -347,7 +347,7 @@ export default {
         areas: [],
         payTypes: [],
         videoFeatures: [],
-        longShortTypes: [],
+        longShortTypes: ['0'],
         contentTypes: [],
         createdTime: [],
         createdMonthTime: undefined,
