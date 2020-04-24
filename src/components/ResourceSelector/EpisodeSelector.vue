@@ -18,7 +18,7 @@
       @select-end="handleSelectEnd">
       <el-form slot="filter" :inline="true" v-model="filter" label-width="72px">
         <el-form-item label="素材类型">
-          <el-select v-model="filter.urlIsTrailer" clearable>
+          <el-select filterable v-model="filter.urlIsTrailer" clearable>
             <el-option
               v-for="option in episodeTypeEnums"
               :key="option.label"
@@ -28,7 +28,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="单集名称">
-          <el-input v-model="filter.urlTitle"/>
+          <el-input clearable v-model="filter.urlTitle"/>
         </el-form-item>
         <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
         <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>

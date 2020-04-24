@@ -15,7 +15,7 @@
 
     <el-form slot="filter" :inline="true" v-model="filter" label-width="72px">
       <el-form-item>
-        <CommonSelector v-model="filter.source" placeholder="内容源" :options="$consts.partnerOptions" :disabled="disablePartner" />
+        <CommonSelector filterable v-model="filter.source" placeholder="内容源" :options="$consts.partnerOptions" :disabled="disablePartner" />
       </el-form-item>
       <el-form-item>
         <el-input placeholder="正片id" clearable v-model="filter.pThirdVId">
