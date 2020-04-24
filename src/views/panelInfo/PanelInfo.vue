@@ -538,7 +538,7 @@
                       <el-button type="text">复制规则json</el-button>
                     </ClickCopy>
                   </el-form-item>
-                  <el-form-item label="推荐位">
+                  <el-form-item label="推荐位" v-if="pannelFillType !== PANEL_FILL_TYPE.recStream">
                     <div class="pannel-blocks pannel-blocks--read">
                       <template v-if="pannel.parentType === 'group'">
                         <el-tabs
@@ -577,7 +577,7 @@
                       </VirtualPanel>
                     </div>
                   </el-form-item>
-                  <template v-if="pannelFillType === 3">
+                  <template v-if="pannelFillType === PANEL_FILL_TYPE.mediaRule || pannelFillType === PANEL_FILL_TYPE.recStream">
                     <el-form-item label="插入位">
                       <VirtualIntervenePanel
                         class="pannel-blocks"
@@ -1055,6 +1055,9 @@ export default {
     },
     firstPanel () {
       return this.panelList[0]
+    },
+    PANEL_FILL_TYPE () {
+      return this.$consts.panelFillTypes
     }
   },
   watch: {
@@ -2263,7 +2266,6 @@ export default {
       const panelDataType = this.currentPanelDataType
       const layout = this.selectedLayout
       const pannel = JSON.parse(JSON.stringify(data))
-      const panelFillTypes = this.$consts.panelFillTypes
       // 媒资规则的panelGroupType=10
       pannel.panelGroupType = pannel.pannelList[0].fillType !== 3 ? panelDataType : 10
       pannel.pannelList = pannel.pannelList.map(item => {

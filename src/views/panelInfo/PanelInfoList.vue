@@ -107,7 +107,6 @@
 <script>
 import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table } from 'admin-toolkit'
-import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import { isFrozen } from './frozen'
