@@ -272,7 +272,7 @@ export default {
     handleSelectCommonLayout (id) {
       this.$service.getLayoutInforById({ id }).then((layout) => {
         if (layout.layoutStatus !== this.$consts.status.accepted) {
-          return this.$message.error('当前布局不是 审核通过 状态, 请选择另外一个')
+          return this.$message.error('当前布局不存在或不是审核通过状态, 请选择另外一个')
         }
         this.doSelectEnd(layout)
       }).catch((e) => {
