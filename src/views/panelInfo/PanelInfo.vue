@@ -1077,7 +1077,7 @@ export default {
   },
   methods: {
     handleSelectBlockRecStreamEnd (selected) {
-      const { recId, recName, recCategory, recFlag } = selected[0]
+      const { recId, recName, recCategory, flag: recFlag } = selected[0]
       this.firstPanel.recStreamPanelRls = {
         recId,
         recName,
