@@ -1356,19 +1356,7 @@ export default {
         this.clearBlocks(index)
       })
       this.selectedLayout = layout
-      // 如果是横向拓展布局
-      blockCount = blockCount || layout.layoutJsonParsed.contents.length
-      this.blockCount = blockCount
-      this.blockCountList = this.blockCountList.map(_ => blockCount)
-      // 如果选择的是拓展布局，按照设置的数量删除多余的资源
-      if (blockCount !== undefined) {
-        this.pannel.pannelList.forEach(item => {
-          const selectedResources = item.selectedResources
-          if (selectedResources) {
-            item.selectedResources = selectedResources.slice(0, blockCount)
-          }
-        })
-      }
+      this.updateBlockCount(layout, blockCount)
       // 关闭推荐流按钮
       this.pannel.pannelList.forEach(pannelList => {
         pannelList.contentList.forEach(contentList => {
@@ -1406,6 +1394,21 @@ export default {
       this.getSharedTags()
       // 清除异形焦点
       this.pannel.focusImgUrl = ''
+    },
+    updateBlockCount (layout, blockCount) {
+      // 如果是横向拓展布局
+      blockCount = blockCount || layout.layoutJsonParsed.contents.length
+      this.blockCount = blockCount
+      this.blockCountList = this.blockCountList.map(_ => blockCount)
+      // 如果选择的是拓展布局，按照设置的数量删除多余的资源
+      if (blockCount !== undefined) {
+        this.pannel.pannelList.forEach(item => {
+          const selectedResources = item.selectedResources
+          if (selectedResources) {
+            item.selectedResources = selectedResources.slice(0, blockCount)
+          }
+        })
+      }
     },
     handleSelectAlienFocusEnd (item) {
       this.pannel.focusImgUrl = item.pictureUrl
@@ -3094,7 +3097,6 @@ export default {
       const activePannel = pannel.pannelList[0]
       const fillType = this.pannelFillType
       const panelFillTypes = this.$consts.panelFillTypes
-      const selectedLayoutId = this.selectedLayoutId
       const insertInterveneContentList = () => {
         // 按插入顺序排序
         activePannel.interveneContentList.sort((a, b) => {
@@ -3113,7 +3115,7 @@ export default {
           }
         })
         // 修复插入位引起的pictureurl横竖图变化问题
-        if ((selectedLayoutId === '7' || selectedLayoutId === '8') && interveneContentList.length !== 0) {
+        if (interveneContentList.length > 0) {
           this.updateSelectedResourcesPic(0)
         }
         this.updatePosition()
@@ -3145,9 +3147,9 @@ export default {
           if (activePannel.mediaFilmNum < 12) {
             return this.$message.error('筛选影片数量不足12， 请重新配置筛选规则')
           }
-          this.insertResources({
-            selectedResources: this.filteredFilm.rows
-          })
+          // 重置推荐位数量, 让它按照资源数量填充
+          this.updateBlockCount(this.selectedLayout, 1)
+          this.insertResources({ selectedResources: this.filteredFilm.rows })
           insertInterveneContentList()
         })
       }
