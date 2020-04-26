@@ -355,7 +355,7 @@
                     </el-form-item>
                     <el-form-item v-if="pannelFillType === $consts.panelFillTypes.recStream" label="选择推荐流" required>
                       <BlockRecStreamSelector
-                        title="选择影片推荐流"
+                        title="选择推荐流"
                         selection-type="single"
                         :source="pannel.pannelResource"
                         @select-end="handleSelectBlockRecStreamEnd">
@@ -576,6 +576,14 @@
                         :show-chart-btn="!!id">
                       </VirtualPanel>
                     </div>
+                  </el-form-item>
+                  <el-form-item v-if="pannelFillType === $consts.panelFillTypes.recStream" label="选择推荐流" required>
+                    <template v-if="firstPanel.recStreamPanelRls">
+                      已选择: <el-tag>
+                        {{ firstPanel.recStreamPanelRls.recId }}
+                        ({{ firstPanel.recStreamPanelRls.recName }})
+                      </el-tag>
+                    </template>
                   </el-form-item>
                   <template v-if="pannelFillType === PANEL_FILL_TYPE.mediaRule || pannelFillType === PANEL_FILL_TYPE.recStream">
                     <el-form-item label="插入">
