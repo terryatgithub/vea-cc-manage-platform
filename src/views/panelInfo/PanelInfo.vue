@@ -861,8 +861,9 @@ export default {
 
       picDialogVisible: false,
       reviewPicUrl: undefined,
-      mediaRuleLayoutOptions: []
+      mediaRuleLayoutOptions: [],
       // mediaRuleLayout: '1'
+      MAX_MEDIA_RULE_VIDEO_COUNT: 30
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -3101,11 +3102,13 @@ export default {
       const activePannel = pannel.pannelList[0]
       const fillType = this.pannelFillType
       const panelFillTypes = this.$consts.panelFillTypes
+      const MAX_MEDIA_RULE_VIDEO_COUNT = this.MAX_MEDIA_RULE_VIDEO_COUNT
       const insertInterveneContentList = () => {
         // 按插入顺序排序
         activePannel.interveneContentList.sort((a, b) => {
           return a.intervenePos - b.intervenePos
         })
+
         // 插入位
         const interveneContentList = activePannel.interveneContentList || []
         interveneContentList.forEach(item => {
@@ -3117,6 +3120,8 @@ export default {
             }
             activePannel.selectedResources.splice(insertBlockIndex, 0, resource)
           }
+          activePannel.selectedResources = (activePannel.selectedResources || []).slice(0, MAX_MEDIA_RULE_VIDEO_COUNT)
+          // 如果超出
         })
         // 修复插入位引起的pictureurl横竖图变化问题
         if (interveneContentList.length > 0) {
