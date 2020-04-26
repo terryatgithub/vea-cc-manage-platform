@@ -847,7 +847,7 @@
         @go-back="handlePreviewPanelEnd"
       />
       <PrivatePanelInfo
-        v-else-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1 && panelPreview.fillType !== 3"
+        v-else-if="[5, 9, 10].indexOf(panelPreview.dataType) > -1 && (panelPreview.fillType !== 3 && panelPreview.fillType !== 4)"
         :title-prefix="title"
         :init-mode="panelPreview.initMode"
         :id="panelPreview.id"
