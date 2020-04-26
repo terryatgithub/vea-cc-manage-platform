@@ -262,7 +262,7 @@
                                 :panel-index="item"
                                 :blocks="item.contentList"
                                 :mode="mode"
-                                :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
+                                :show-chart-btn="!!id"
                                 @drag="handleDragBlock"
                                 @remove-block="handleRemoveBlock"
                                 @click-block="handleClickBlock"
@@ -277,7 +277,7 @@
                           :mode="mode"
                           :panel-group="pannel"
                           :panel-index="0"
-                          :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
+                          :show-chart-btn="!!id"
                           @drag="handleDragBlock"
                           @remove-block="handleRemoveBlock"
                           @click-block="handleClickBlock"
@@ -559,7 +559,7 @@
                               :panel-index="index"
                               :blocks="item.contentList"
                               :mode="mode"
-                              :show-chart-btn="pannel.pannelStatus !== $consts.status.draft"
+                              :show-chart-btn="!!id"
                               @click-block="handleClickBlock">
                             </VirtualPanel>
                           </el-tab-pane>
@@ -573,7 +573,7 @@
                         :panel-index="0"
                         :blocks="pannel.pannelList[0].contentList"
                         @click-block="handleClickBlock"
-                        :show-chart-btn="pannel.pannelStatus !== $consts.status.draft">
+                        :show-chart-btn="!!id">
                       </VirtualPanel>
                     </div>
                   </el-form-item>
@@ -1014,14 +1014,18 @@ export default {
     fillTypeOptions () {
       const panelGroupCategory = this.pannel.panelGroupCategory
       const panelFillTypeOptions = this.$consts.panelFillTypeOptions
+      const PANEL_FILL_TYPE = this.PANEL_FILL_TYPE
+      const categoryVideo = 31 // 影视
+      const categoryEducation = 60 // 教育
+      const categoryCommon = 67 // 不限
 
-      if (panelGroupCategory === 31) {
+      if (panelGroupCategory === categoryVideo) {
         return panelFillTypeOptions
       }
-      if ([67, 60].includes(panelGroupCategory)) {
-        return panelFillTypeOptions.slice(0, 2)
+      if ([categoryCommon, categoryEducation].includes(panelGroupCategory)) {
+        return panelFillTypeOptions.filter(item => item.value !== PANEL_FILL_TYPE.mediaRule)
       }
-      return panelFillTypeOptions.slice(0, 1)
+      return panelFillTypeOptions.filter(item => item.value !== PANEL_FILL_TYPE.mediaRule && item.value !== PANEL_FILL_TYPE.ranking)
     },
     reviewPicUrlSrc () {
       if (this.reviewPicUrlSrc) {
@@ -2624,6 +2628,8 @@ export default {
     },
     validateBlocks () {
       const pannelList = this.pannel.pannelList
+      const panelFillType = this.pannelFillType
+      const PANEL_FILL_TYPE = this.PANEL_FILL_TYPE
       const focusConfig = this.pannel.focusConfig
       const pannelTitleIndex = {}
       let emptyPannelTitleIndex
@@ -2677,46 +2683,48 @@ export default {
           focusIndex = i
         }
         const contentList = pannel.contentList
-        for (let j = 0, lengthJ = contentList.length; j < lengthJ; j++) {
-          const content = contentList[j] || {}
-          if (
-            !content.videoContentList ||
-            content.videoContentList.length === 0
-          ) {
-            emptyBlock = content
-            // eslint-disable-next-line
-            break checkBlock
-          }
-          if (content.duplicated) {
-            duplicatedIndex = i
-            duplicatedInfo = content.duplicated
-            // eslint-disable-next-line
-            break checkBlock
-          }
+        if (panelFillType !== PANEL_FILL_TYPE.recStream) {
+          for (let j = 0, lengthJ = contentList.length; j < lengthJ; j++) {
+            const content = contentList[j] || {}
+            if (
+              !content.videoContentList ||
+              content.videoContentList.length === 0
+            ) {
+              emptyBlock = content
+              // eslint-disable-next-line
+              break checkBlock
+            }
+            if (content.duplicated) {
+              duplicatedIndex = i
+              duplicatedInfo = content.duplicated
+              // eslint-disable-next-line
+              break checkBlock
+            }
 
-          const price = content.videoContentList[0].price
-          if (
-            content.contentPosition.type === 'Mall' &&
-            (price === undefined || price === -1 || price === '')
-          ) {
-            emptyPriceIndex = i
-            emptyPriceBlockIndex = j
-            // eslint-disable-next-line
-            break checkBlock
-          }
+            const price = content.videoContentList[0].price
+            if (
+              content.contentPosition.type === 'Mall' &&
+              (price === undefined || price === -1 || price === '')
+            ) {
+              emptyPriceIndex = i
+              emptyPriceBlockIndex = j
+              // eslint-disable-next-line
+              break checkBlock
+            }
 
-          const title = content.videoContentList[0].title || ''
-          const mustSetTitle = content.videoContentList[0].forceTitle || false
-          if (mustSetTitle && title.trim() === '') {
-            emptyTitleIndex = i
-            emptyTitleBlockIndex = j
-          }
+            const title = content.videoContentList[0].title || ''
+            const mustSetTitle = content.videoContentList[0].forceTitle || false
+            if (mustSetTitle && title.trim() === '') {
+              emptyTitleIndex = i
+              emptyTitleBlockIndex = j
+            }
 
-          // 海报检查
-          const post = content.videoContentList[0].pictureUrl
-          if (!post) {
-            emptyPostIndex = i
-            emptyPostBlockIndex = j
+            // 海报检查
+            const post = content.videoContentList[0].pictureUrl
+            if (!post) {
+              emptyPostIndex = i
+              emptyPostBlockIndex = j
+            }
           }
         }
       }
