@@ -184,7 +184,6 @@ export function setMediaContent (contentForm, options) {
         contentForm.extraValue1 = '_oyk_' + selected.coocaaVId
       }
       contentForm.singleId = ''
-      contentForm.singleId = ''
       contentForm.contentType = 0
       contentForm.videoContentType = 'movie'
       contentForm.extraValue5 = undefined

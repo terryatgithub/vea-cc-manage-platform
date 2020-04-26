@@ -1,8 +1,13 @@
 <template>
   <ContentCard class="content">
-    <ab-list-layout :pagination="pagination" @pagingation-change="handlePaginationChange">
+    <ab-list-layout :pagination="pagination" @pagingation-change="fetchData">
       <div slot="filter">
-        <DataForm :model="filter" :inline="true">
+        <DataForm
+          v-form-autocomplete
+          @submit.native="handleFilterChange"
+          @reset.native="handleResetFilter"
+          :model="filter"
+          :inline="true">
           <FormEnum
             filterable
             placeholder="是否有教育业务"
@@ -39,11 +44,13 @@
             label="影片数量"
             v-model="filter.filmNumSelect"
             :options="filmNumOptions"/>
+          <div>
+            <el-form-item>
+              <el-button type="primary" native-type="submit">查询</el-button>
+              <el-button native-type="reset">重置</el-button>
+            </el-form-item>
+          </div>
         </DataForm>
-      </div>
-      <div slot="actions">
-        <el-button type="primary" @click="fetchData">查询</el-button>
-        <el-button type="primary" plain @click="handleResetFilter">重置</el-button>
       </div>
       <Table
         slot="table"
@@ -114,6 +121,7 @@ export default {
     return {
       resourceType: 'ruleCreatePanel',
       filter: this.getDefaultFilter(),
+      efficientFilter: this.getDefaultFilter(),
       pagination: {
         currentPage: 1
       },
@@ -187,8 +195,8 @@ export default {
   },
 
   methods: {
-    fetchData (type) {
-      const filter = cloneDeep(this.parseFilter(type))
+    fetchData () {
+      const filter = this.getFilter()
       const { mediaFilmNumStart, mediaFilmNumEnd } = this.parseFilmNum(filter.filmNumSelect)
       delete filter.filmNumSelect
       filter.mediaFilmNumStart = mediaFilmNumStart
@@ -198,13 +206,22 @@ export default {
         this.table.data = data.rows
       })
     },
-    handlePaginationChange () {
-      this.fetchData('pagination')
+    handleFilterChange () {
+      this.efficientFilter = cloneDeep(this.filter)
+      this.pagination.currentPage = 1
+      this.fetchData()
     },
-    parseFilter (type) {
-      const { filter, pagination } = this
+    handleResetFilter () {
+      this.filter = this.getDefaultFilter()
+      this.efficientFilter = this.getDefaultFilter()
+      this.pagination.currentPage = 1
+      this.fetchData()
+    },
+    getFilter () {
+      const { pagination } = this
+      const filter = cloneDeep(this.efficientFilter)
       if (pagination) {
-        filter.page = type === 'pagination' ? pagination.currentPage : 1
+        filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
       return filter
@@ -237,10 +254,6 @@ export default {
         pannelResource: undefined,
         filmNumSelect: undefined
       }
-    },
-    handleResetFilter () {
-      this.filter = this.getDefaultFilter()
-      this.fetchData()
     }
   },
   created () {
