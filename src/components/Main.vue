@@ -285,7 +285,9 @@ const iconMap = {
 
   policyGroup: 'el-icon-cc-fork',
   testPolicyGroup: 'el-icon-cc-branches',
-  matchHomepage: 'el-icon-cc-pic-center'
+  matchHomepage: 'el-icon-cc-pic-center',
+
+  recommendStream: 'el-icon-connection'
 }
 
 export default {
