@@ -25,14 +25,14 @@
         <div slot="filter">
           <el-form :inline="true" :model="filter" @keypress.enter.native.prevent="handleFilterChange">
             <el-form-item>
-              <InputPositiveInt v-model="filter.recId" clearable placeholder="推荐流ID"></InputPositiveInt>
+              <el-input v-model="filter.recId" clearable placeholder="推荐流ID"></el-input>
             </el-form-item>
             <el-form-item>
               <el-input v-model="filter.recName" placeholder="推荐流名称" clearable></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleFilterChange">查询</el-button>
-              <el-button type="primary" @click="handleResetFilter">重置</el-button>
+              <el-button @click="handleResetFilter">重置</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -44,7 +44,6 @@
 <script>
 import RemoteSelectorWrapper from '../SelectorWrapper'
 import BaseSelector from '../BaseSelector'
-import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
   data () {
     return {
@@ -64,7 +63,7 @@ export default {
             label: '推荐流ID',
             prop: 'recId',
             sortable: true,
-            width: '100px',
+            width: '200px',
             fixed: 'left'
           },
           {
@@ -96,12 +95,11 @@ export default {
   },
   components: {
     RemoteSelectorWrapper,
-    BaseSelector,
-    InputPositiveInt
+    BaseSelector
   },
   methods: {
     getId (item) {
-      return item.id
+      return item.recId
     },
     genDefaultFilter () {
       return {
@@ -154,8 +152,8 @@ export default {
         filter.rows = pagination.pageSize
       }
       this.$service.getBlockRecList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+        this.pagination.total = data.total || 0
+        this.table.data = data.rows || []
       })
     }
   },

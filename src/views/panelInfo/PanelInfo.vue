@@ -2364,6 +2364,10 @@ export default {
           if (fillType === 3) {
             pannelType = 10
           }
+          // 推荐流
+          if (fillType === 4) {
+            pannelType = 13
+          }
         }
 
         const result = {
