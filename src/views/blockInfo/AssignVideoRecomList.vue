@@ -57,14 +57,14 @@ export default {
         props: {},
         header: [
           {
-            label: '指定影片推荐流ID',
+            label: '影片推荐流ID',
             prop: 'id',
             sortable: true,
-            width: '100px',
+            width: '120px',
             fixed: 'left'
           },
           {
-            label: '指定影片推荐流名称',
+            label: '影片推荐流名称',
             prop: 'name',
             fixed: 'left',
             render: (h, { row }) => {
@@ -234,7 +234,7 @@ export default {
   created () {
     let filterSchema = _.map({
       id: _.o.oneOf([_.number, _.value('')]).$msg('请输入数字').other('form', {
-        component: 'Input',
+        component: 'InputPositiveInt',
         placeholder: '影片流ID'
       }),
       name: _.o.string.other('form', {

@@ -10,7 +10,7 @@
     >
       <el-form :inline="true" class="form">
         <el-form-item label="标题筛选">
-          <el-select v-model="selectTitle" filterable clearable>
+          <el-select v-model="filter.title" filterable clearable>
             <el-option
               v-for="(title, index) in allTitles"
               :key="index"
@@ -19,6 +19,16 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="类型">
+          <el-select v-model="filter.type" placeholder="类型">
+            <el-option v-for="item in typeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="fetchData">查询</el-button>
         </el-form-item>
@@ -43,6 +53,20 @@
 import VeLine from 'v-charts/lib/line.common'
 import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/markPoint'
+const typeOptions = [
+  {
+    label: '整体数据',
+    value: 'total'
+  },
+  {
+    label: '视频窗数据',
+    value: 'video'
+  },
+  {
+    label: '静态图数据',
+    value: 'static'
+  }
+]
 
 export default {
   components: {
@@ -103,16 +127,18 @@ export default {
     }
 
     return {
-      selectTitle: '', // 标题筛选
+      filter: this.genDefaultFilter(),
       allTitles: [],
-
       visible: this.show,
       broadcastChartDataArr: [],
-      extend: extend
+      extend: extend,
+      typeOptions
     }
   },
   props: {
     id: Number,
+    selectedType: String,
+    selectedTitle: String,
     show: {
       type: Boolean,
       default () {
@@ -138,9 +164,15 @@ export default {
   },
 
   methods: {
+    genDefaultFilter () {
+      return {
+        title: this.selectedTitle,
+        type: this.selectedType || typeOptions[0].value
+      }
+    },
     fetchData () {
       const analyzeMethods = this.isRealTime ? 'getBlockRealTimeChartData' : 'getBlockChartData'
-      this.$service[analyzeMethods]({ id: this.id, title: this.selectTitle }).then(data => {
+      this.$service[analyzeMethods]({ id: this.id, ...this.filter }).then(data => {
         this.broadcastChartDataArr = data.rows
         if (data.rows.length === 0) {
           this.$message('暂无数据')
@@ -148,8 +180,8 @@ export default {
       })
     },
     handleDialogOpen () {
-      this.selectTitle = ''
       this.broadcastChartDataArr = []
+      this.filter = this.genDefaultFilter()
       this.$service.getBroadcastDataTitles({ id: this.id }).then(data => {
         this.allTitles = data.rows
       })
