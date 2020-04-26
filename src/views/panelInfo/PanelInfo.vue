@@ -578,7 +578,7 @@
                     </div>
                   </el-form-item>
                   <template v-if="pannelFillType === PANEL_FILL_TYPE.mediaRule || pannelFillType === PANEL_FILL_TYPE.recStream">
-                    <el-form-item label="插入位">
+                    <el-form-item label="插入">
                       <VirtualIntervenePanel
                         class="pannel-blocks"
                         style="display: flex;"
@@ -673,7 +673,7 @@ import 'echarts/lib/component/markPoint'
 import SubscribeVideos from './SubscribeVideos'
 
 import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking,
-  genMediaRuleContentList } from './panelInfoUtil'
+  genMediaRuleContentList, getIdByCoverType } from './panelInfoUtil'
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
@@ -2120,16 +2120,6 @@ export default {
         const resource = selectedResources[index] || {}
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
-        const getIdByCoverType = (coverType, content) => {
-          switch (coverType) {
-            case 'media':
-              return content.extraValue1
-            case 'block':
-              return content.vContentId
-            case 'mall':
-              return content.extraValue1
-          }
-        }
         // 有 extraValue1 才判断重复, 自定义不判断
         contentList.forEach((content, contentIndex) => {
           const coverType = content.coverType
@@ -2489,15 +2479,15 @@ export default {
       }
       if (fillType === 3) {
         if (!activePannel.mediaRule) {
-          return cb(Error('请配置筛选规则，并选择一种你需要的布局'))
+          return cb(Error('请配置筛选规则'))
         }
-        const interveneContentList = activePannel.interveneContentList || []
-        const error = interveneContentList.some(item => {
-          return !item.intervenePos || item.videoContentList.length === 0
-        })
-        if (error) {
-          return cb(Error('插入推荐位信息不完整！'))
-        }
+        // const interveneContentList = activePannel.interveneContentList || []
+        // const error = interveneContentList.some(item => {
+        //   return !item.intervenePos || item.videoContentList.length === 0
+        // })
+        // if (error) {
+        //   return cb(Error('插入推荐位信息不完整！'))
+        // }
       }
       if (!this.selectedLayout) {
         return cb(Error('请选择布局'))
@@ -2515,23 +2505,42 @@ export default {
         }
       }
 
+      if (fillType === 3 || fillType === 4) {
+        const {
+          emptyInterveneContentIndex,
+          emptyIntervenePosIndex,
+          duplicatedContentIndex
+        } = this.validateInterveneContentList()
+        if (emptyIntervenePosIndex !== undefined) {
+          return cb(Error(`第 ${emptyIntervenePosIndex + 1} 个插入位置位置信息为空`))
+        }
+        if (emptyInterveneContentIndex !== undefined) {
+          return cb(Error(`第 ${emptyInterveneContentIndex + 1} 个插入位置内容为空`))
+        }
+        if (duplicatedContentIndex) {
+          return cb(Error(`第 ${duplicatedContentIndex[0] + 1} 个插入位置与第 ${duplicatedContentIndex[1] + 1} 个插入位置内容重复`))
+        }
+      }
+
       // 如果是待审核或者审核通过
       if (status === PANNEL_STATUS.accepted || status === PANNEL_STATUS.waiting) {
         const validateBlocksRes = this.validateBlocks()
 
-        const emptyPannelTitleIndex = validateBlocksRes.emptyPannelTitleIndex
-        const duplicatedPannelTitleIndex = validateBlocksRes.duplicatedPannelTitleIndex
-        const emptyTimeSlotIndex = validateBlocksRes.emptyTimeSlotIndex
-        const emptyPostIndex = validateBlocksRes.emptyPostIndex
-        const emptyPostBlockIndex = validateBlocksRes.emptyPostBlockIndex
-        const emptyPriceIndex = validateBlocksRes.emptyPriceIndex
-        const emptyPriceBlockIndex = validateBlocksRes.emptyPriceBlockIndex
-        const emptyTitleIndex = validateBlocksRes.emptyTitleIndex
-        const emptyTitleBlockIndex = validateBlocksRes.emptyTitleBlockIndex
-        const emptyBlock = validateBlocksRes.emptyBlock
-        const duplicatedIndex = validateBlocksRes.duplicatedIndex
-        const duplicatedInfo = validateBlocksRes.duplicatedInfo
-        const focusIndex = validateBlocksRes.focusIndex
+        const {
+          emptyPannelTitleIndex,
+          duplicatedPannelTitleIndex,
+          emptyTimeSlotIndex,
+          emptyPostIndex,
+          emptyPostBlockIndex,
+          emptyPriceIndex,
+          emptyPriceBlockIndex,
+          emptyTitleIndex,
+          emptyTitleBlockIndex,
+          emptyBlock,
+          duplicatedIndex,
+          duplicatedInfo,
+          focusIndex
+        } = validateBlocksRes
 
         const isPanelGroup = pannel.parentType === 'group'
 
@@ -2625,6 +2634,49 @@ export default {
         }
       }
       cb()
+    },
+    validateInterveneContentList () {
+      const interveneContentList = this.pannel.pannelList[0].interveneContentList
+      const resourceIndexed = {}
+      let emptyIntervenePosIndex
+      let emptyInterveneContentIndex
+      let duplicatedContentIndex
+
+      for (let interveneIndex = 0; interveneIndex < interveneContentList.length; interveneIndex++) {
+        const item = interveneContentList[interveneIndex]
+        const intervenePos = item.intervenePos
+        const contentList = item.videoContentList || []
+        if (!intervenePos) {
+          emptyIntervenePosIndex = interveneIndex
+          break
+        }
+        if (contentList.length === 0) {
+          emptyInterveneContentIndex = interveneIndex
+          break
+        }
+        contentList.forEach((content, contentIndex) => {
+          const coverType = content.coverType
+          const shouldCheck = coverType === 'media' || coverType === 'block' || coverType === 'mall'
+          if (shouldCheck) {
+            let id = getIdByCoverType(coverType, content)
+            if (id) {
+              // 单集的 extraValue1 相同，可能有 extraValue4 或 extraValue5
+              id = id + (content.extraValue4 || '') + (content.extraValue5 || '')
+              const duplicatedItem = resourceIndexed[id]
+              if (duplicatedItem) {
+                duplicatedContentIndex = [interveneIndex, duplicatedItem.interveneIndex]
+              } else {
+                resourceIndexed[id] = { interveneIndex }
+              }
+            }
+          }
+        })
+      }
+      return {
+        emptyIntervenePosIndex,
+        emptyInterveneContentIndex,
+        duplicatedContentIndex
+      }
     },
     validateBlocks () {
       const pannelList = this.pannel.pannelList

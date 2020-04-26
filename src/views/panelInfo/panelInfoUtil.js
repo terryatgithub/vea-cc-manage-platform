@@ -376,6 +376,17 @@ export function chopSubTitle (title) {
   return (title || '').slice(0, 45)
 }
 
+export function getIdByCoverType (coverType, content) {
+  switch (coverType) {
+    case 'media':
+      return content.extraValue1
+    case 'block':
+      return content.vContentId
+    case 'mall':
+      return content.extraValue1
+  }
+}
+
 export function genDefaultContentForm (preset) {
   preset = preset || {}
 
