@@ -333,7 +333,7 @@
                         @input="handleInputLayoutId">
                         <el-radio
                           class="layout-radio"
-                          v-for="mediaLayout in mediaRuleLayoutOptions"
+                          v-for="mediaLayout in finalMediaRuleLayoutOptions"
                           :key="mediaLayout.dictEnName"
                           :label="+mediaLayout.dictEnName">
                           {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictEnName)"/>
@@ -689,6 +689,7 @@ import { isFrozen } from './frozen'
  *
  */
 const DEFAULT_MEDIA_RULE_LAYOUT_ID = 1
+const DEFAULT_REC_STREAM_LAYOUT_ID = 3
 export default {
   mixins: [titleMixin],
   components: {
@@ -868,6 +869,12 @@ export default {
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
+    finalMediaRuleLayoutOptions () {
+      const { pannelFillType, PANEL_FILL_TYPE, mediaRuleLayoutOptions } = this
+      return pannelFillType === PANEL_FILL_TYPE.recStream
+        ? mediaRuleLayoutOptions.slice(2)
+        : mediaRuleLayoutOptions
+    },
     interveneMaxCount () {
       const selectedLayoutId = this.selectedLayoutId
       return [10, 10, 6, 6, 8, 8, 9, 9][selectedLayoutId - 1]
@@ -2998,8 +3005,11 @@ export default {
         filmNum: val === panelFillTypes.ranking ? 6 : undefined
       })
       panelGroup.pannelList = [panel]
-      if (val === panelFillTypes.mediaRule || val === panelFillTypes.recStream) {
+      if (val === panelFillTypes.mediaRule) {
         this.handleInputLayoutId(DEFAULT_MEDIA_RULE_LAYOUT_ID)
+      }
+      if (val === panelFillTypes.recStream) {
+        this.handleInputLayoutId(DEFAULT_REC_STREAM_LAYOUT_ID)
       }
     },
     handleInputFilmNum (val) {
@@ -3168,10 +3178,11 @@ export default {
       const currentPannel = this.pannel.pannelList[currentPannelIndex]
       blocks.forEach((item, index) => {
         const firstContent = selectedBlocksAndResources[index] || {}
-        const picturePreset = firstContent.videoContentList[0].picturePreset || []
+        const firstVideoContent = firstContent.videoContentList[0] || {}
+        const picturePreset = firstVideoContent.picturePreset || []
         if (picturePreset.length !== 0) {
           const size = [item.width, item.height]
-          firstContent.videoContentList[0].pictureUrl = getMatchedPictureUrl(size, picturePreset)
+          firstVideoContent.pictureUrl = getMatchedPictureUrl(size, picturePreset)
         }
       })
       currentPannel.contentList = selectedBlocksAndResources
