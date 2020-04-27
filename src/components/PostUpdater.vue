@@ -49,7 +49,7 @@ export default {
     },
     url () {
       const { id, partner } = this.videoInfo
-      const server = /^(127|172|cc0808)/.test(location.host)
+      const server = /^(127|172|beta)/.test(location.host)
         ? 'http://dev-mgr-media.tc.cc0808.com'
         : 'http://mgrnew.media.tc.skysrt.com'
       return server + `/#/ownMediaResManage/homeView.html?coocaaVId=${id}&partner=${partner}`
