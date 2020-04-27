@@ -7,6 +7,8 @@
       v-if="mountDialog"
       :show.sync="showChart"
       :id="id"
+      :selected-title="selectedTitle"
+      :selected-type="selectedType"
       :isRealTime="isRealTime"
     />
   </div>
@@ -18,7 +20,7 @@ export default {
   components: {
     BroadcastSimpleData
   },
-  props: ['id', 'isRealTime'],
+  props: ['id', 'selectedTitle', 'selectedType', 'isRealTime'],
   data () {
     return {
       mountDialog: false,

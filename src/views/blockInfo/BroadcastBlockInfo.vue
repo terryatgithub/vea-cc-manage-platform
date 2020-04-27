@@ -138,6 +138,7 @@
               ref="broadcastBlockForm"
               @toggle-use-short-video="handleToggleUseShortVideo"
               @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
+              :id="id"
               :config-model="basicForm.configModel"
               :normal-form="normalForm"
               :normal-rules="normalRules"
@@ -180,6 +181,7 @@
               v-if="normalForm.dmpContentList[normalForm.activeIndex]"
               @toggle-use-short-video="handleToggleUseShortVideo($event, 'dmp')"
               @toggle-manaulset-resource="handleToggleManualSetResource($event, 'dmp')"
+              :id="id"
               :config-model="basicForm.configModel"
               :normal-form="normalForm.dmpContentList[normalForm.activeIndex]"
               :normal-rules="normalRules"
@@ -197,6 +199,7 @@
             ref="broadcastBlockForm"
             @toggle-use-short-video="handleToggleUseShortVideo"
             @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
+            :id="id"
             :config-model="basicForm.configModel"
             :normal-form="normalForm"
             :normal-rules="normalRules"
@@ -393,6 +396,7 @@ import titleMixin from '@/mixins/title'
 import BroadcastBlockForm from './BroadcastBlockForm'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import { parseResourceContent, setContentForm, getSelectedResource } from './broadcastBlockUtil'
+import BroadcastBlockStatChartViewer from '@/components/statViewer/BroadcastBlockStatChartViewer'
 
 export default {
   mixins: [titleMixin],
@@ -407,7 +411,8 @@ export default {
     AppParams,
     AppParamsRead,
     CommonContent,
-    BroadcastBlockForm
+    BroadcastBlockForm,
+    BroadcastBlockStatChartViewer
   },
   props: ['id', 'initMode', 'version'],
   data () {

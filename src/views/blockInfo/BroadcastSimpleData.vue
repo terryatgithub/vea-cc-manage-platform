@@ -10,13 +10,13 @@
     >
       <el-form :inline="true" class="form">
         <el-form-item label="标题筛选">
-          <el-select v-model="filter.title" filterable clearable>
+          <el-select v-model="filter.title" filterable>
             <el-option
               v-for="(title, index) in allTitles"
               :key="index"
               :label="title"
-              :value="title"
-            ></el-option>
+              :value="title">
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="类型">
@@ -166,7 +166,7 @@ export default {
   methods: {
     genDefaultFilter () {
       return {
-        title: this.selectedTitle,
+        title: '',
         type: this.selectedType || typeOptions[0].value
       }
     },
@@ -183,7 +183,17 @@ export default {
       this.broadcastChartDataArr = []
       this.filter = this.genDefaultFilter()
       this.$service.getBroadcastDataTitles({ id: this.id }).then(data => {
-        this.allTitles = data.rows
+        const filter = this.filter
+        const allTitles = data.rows || []
+        const selectedTitle = this.selectedTitle
+        this.allTitles = allTitles
+        if (selectedTitle) {
+          const hasData = allTitles.some(item => item === selectedTitle)
+          if (hasData) {
+            filter.title = selectedTitle
+            this.fetchData()
+          }
+        }
       })
     },
     handleChartData (chartData) {
@@ -229,7 +239,7 @@ export default {
 }
 .chart--wrapper
   width auto
-  height 380px
+  height 400px
   margin 15px
 .chart-box--title
   height: 44px

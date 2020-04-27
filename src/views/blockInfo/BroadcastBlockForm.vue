@@ -163,6 +163,27 @@
         </el-form-item>
         <el-form-item label="标题" prop="title">
           <el-input v-model="normalForm.title" :disabled="disabled"></el-input>
+          <BroadcastBlockStatChartViewer
+            class="margin-right-10 margin-left-10"
+            :id="id"
+            :selected-title="normalForm.title"
+            selected-type="total">
+            <el-button type="primary">整体数据</el-button>
+          </BroadcastBlockStatChartViewer>
+          <BroadcastBlockStatChartViewer
+            class="margin-right-10"
+            :id="id"
+            :selected-title="normalForm.title"
+            selected-type="video">
+            <el-button type="primary">视频窗数据</el-button>
+          </BroadcastBlockStatChartViewer>
+          <BroadcastBlockStatChartViewer
+            class="margin-right-10"
+            :id="id"
+            :selected-title="normalForm.title"
+            selected-type="static">
+            <el-button type="primary">静态数据</el-button>
+          </BroadcastBlockStatChartViewer>
         </el-form-item>
         <el-form-item label="副标题" prop="subTitle">
           <el-input v-model="normalForm.subTitle" :disabled="disabled"></el-input>
@@ -301,6 +322,7 @@ import selectClick from '@/views/blockInfo/selectClick'
 
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
+import BroadcastBlockStatChartViewer from '@/components/statViewer/BroadcastBlockStatChartViewer'
 
 import { getSelectedResource, parseResourceContent, setContentForm, getParams } from './broadcastBlockUtil'
 export default {
@@ -315,7 +337,8 @@ export default {
     selectClick,
 
     InputPositiveInt,
-    RecommendStreamSelector
+    RecommendStreamSelector,
+    BroadcastBlockStatChartViewer
   },
   data () {
     return {
@@ -323,7 +346,7 @@ export default {
       showCrowdSelector: false
     }
   },
-  props: ['configModel', 'normalForm', 'normalRules', 'isGroupModel', 'isReadonly', 'source', 'checkCrowd', 'showResourceTip'],
+  props: ['id', 'configModel', 'normalForm', 'normalRules', 'isGroupModel', 'isReadonly', 'source', 'checkCrowd', 'showResourceTip'],
   computed: {
     isManualSetResource () {
       return this.normalForm.type === 'url'
