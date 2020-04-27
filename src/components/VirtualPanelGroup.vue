@@ -60,10 +60,13 @@ export default {
     isForbiddenType () {
       const panel = this.panel
       const parentType = panel.parentType
+      const fillType = panel.pannelList[0].fillType
+      const panelFillTypes = this.$consts.panelFillTypes
       const isRankingPanel = panel.pannelList[0].rankIsOpen === 1
-      const isMediaRulePanel = panel.pannelList[0].fillType === 3
+      const isMediaRulePanel = fillType === panelFillTypes.mediaRule
+      const isRecStreamPanel = fillType === panelFillTypes.recStream
       const isCoocaaRanking = panel.panelGroupType === 12
-      return parentType === 'function' || parentType === 'subscribe' || isRankingPanel || isMediaRulePanel || isCoocaaRanking
+      return parentType === 'function' || parentType === 'subscribe' || isRankingPanel || isMediaRulePanel || isCoocaaRanking || isRecStreamPanel
     },
     isForbiddenStatus () {
       const status = this.panel.pannelStatus
@@ -72,7 +75,7 @@ export default {
     errorMsg () {
       return this.isForbiddenStatus
         ? '只有审核通过和草稿状态的版块支持移动待'
-        : '不能移动排行榜版块、影片规则筛选版块、预约版块、功能版块、酷开幸福榜里的推荐位'
+        : '不能移动排行榜版块、影片规则筛选版块、推荐流填充版块、预约版块、功能版块、酷开幸福榜里的推荐位'
     }
   },
   methods: {
