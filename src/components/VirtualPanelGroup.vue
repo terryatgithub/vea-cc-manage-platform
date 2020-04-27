@@ -16,13 +16,13 @@
               :show-chart-btn="showChartBtn"
               :show-exchange-tool="showExchangeTool"
               :disable-exchange-tool="disableExchangeTool"
-              @click-block="handleClickBlock(index, $event)"
-            ></cc-virtual-panel>
+              @click-block="handleClickBlock(index, $event)">
+            </cc-virtual-panel>
           </el-tab-pane>
         </el-tabs>
       </template>
       <cc-virtual-panel
-        v-else
+        v-else-if="!isRecStreamPanel"
         :panel-group="panel"
         :panel-index="0"
         :blocks="panel.panelList[0].blocks"
@@ -33,8 +33,8 @@
         :show-chart-btn="showChartBtn"
         :show-exchange-tool="showExchangeTool"
         :disable-exchange-tool="disableExchangeTool"
-        @click-block="handleClickBlock(0, $event)"
-      ></cc-virtual-panel>
+        @click-block="handleClickBlock(0, $event)">
+      </cc-virtual-panel>
     </template>
     <div v-else class="skeleton">
       <div class="skeleton__block"></div>
@@ -57,6 +57,13 @@ export default {
     disableExchangeTool () {
       return this.isForbiddenType || this.isForbiddenStatus
     },
+    isRecStreamPanel () {
+      const panel = this.panel
+      const fillType = panel.pannelList[0].fillType
+      const panelFillTypes = this.$consts.panelFillTypes
+      const isRecStreamPanel = fillType === panelFillTypes.recStream
+      return isRecStreamPanel
+    },
     isForbiddenType () {
       const panel = this.panel
       const parentType = panel.parentType
@@ -64,9 +71,8 @@ export default {
       const panelFillTypes = this.$consts.panelFillTypes
       const isRankingPanel = panel.pannelList[0].rankIsOpen === 1
       const isMediaRulePanel = fillType === panelFillTypes.mediaRule
-      const isRecStreamPanel = fillType === panelFillTypes.recStream
       const isCoocaaRanking = panel.panelGroupType === 12
-      return parentType === 'function' || parentType === 'subscribe' || isRankingPanel || isMediaRulePanel || isCoocaaRanking || isRecStreamPanel
+      return parentType === 'function' || parentType === 'subscribe' || isRankingPanel || isMediaRulePanel || isCoocaaRanking
     },
     isForbiddenStatus () {
       const status = this.panel.pannelStatus
@@ -75,7 +81,7 @@ export default {
     errorMsg () {
       return this.isForbiddenStatus
         ? '只有审核通过和草稿状态的版块支持移动待'
-        : '不能移动排行榜版块、影片规则筛选版块、推荐流填充版块、预约版块、功能版块、酷开幸福榜里的推荐位'
+        : '不能移动排行榜版块、影片规则筛选版块、预约版块、功能版块、酷开幸福榜里的推荐位'
     }
   },
   methods: {
