@@ -353,7 +353,10 @@
                       >查看规则
                       </el-button>
                     </el-form-item>
-                    <el-form-item v-if="pannelFillType === $consts.panelFillTypes.recStream" label="选择推荐流" required>
+                    <el-form-item
+                      v-if="pannelFillType === $consts.panelFillTypes.recStream"
+                      label="选择推荐流"
+                      required>
                       <BlockRecStreamSelector
                         title="选择推荐流"
                         selection-type="single"
@@ -373,6 +376,8 @@
                       <VirtualPanel
                         class="pannel-blocks"
                         :isNotExtra="true"
+                        :show-post-updater="isFillWithMediaRule"
+                        @update-post-end="handleUpdatePostEnd"
                         :mode="mode"
                         :blocks="pannel.pannelList[0].contentList"
                         @click-block="handleClickBlock"
@@ -560,6 +565,8 @@
                               :blocks="item.contentList"
                               :mode="mode"
                               :show-chart-btn="!!id"
+                              :show-post-updater="isFillWithMediaRule"
+                              @update-post-end="handleUpdatePostEnd"
                               @click-block="handleClickBlock">
                             </VirtualPanel>
                           </el-tab-pane>
@@ -572,8 +579,10 @@
                         :panel-group="pannel"
                         :panel-index="0"
                         :blocks="pannel.pannelList[0].contentList"
-                        @click-block="handleClickBlock"
-                        :show-chart-btn="!!id">
+                        :show-chart-btn="!!id"
+                        :show-post-updater="isFillWithMediaRule"
+                        @update-post-end="handleUpdatePostEnd"
+                        @click-block="handleClickBlock">
                       </VirtualPanel>
                     </div>
                   </el-form-item>
@@ -1060,6 +1069,10 @@ export default {
       const pannelFillType = firstPanel.fillType || 1
       return pannelFillType
     },
+    isFillWithMediaRule () {
+      console.log(this.pannelFillType === this.$consts.panelFillTypes.mediaRule)
+      return this.pannelFillType === this.$consts.panelFillTypes.mediaRule
+    },
     // eslint-disable-next-line
     initActiveResoruceSelector () {
       const panelGroupCategory = this.pannel.panelGroupCategory
@@ -1099,6 +1112,12 @@ export default {
     'pannel.focusConfig': 'handleFocusConfigChange'
   },
   methods: {
+    handleUpdatePostEnd () {
+      // 延迟 100 毫秒，有时媒资数据还没更新过来
+      setTimeout(() => {
+        this.updateInterveneResources()
+      }, 100)
+    },
     handleSelectBlockRecStreamEnd (selected) {
       const { recId, recName, recCategory, flag: recFlag } = selected[0]
       this.firstPanel.recStreamPanelRls = {
@@ -1433,14 +1452,19 @@ export default {
     // 设置版块内容
     handleClickBlock (index) {
       const pannel = this.pannel
+      const panelFillType = this.pannelFillType
+      const panelFillTypes = this.$consts.panelFillTypes
       if (this.isFillWithRanking) {
         return this.$message.error('使用排行榜填充的版块里的推荐位不能查看或编辑')
       }
       if (pannel.parentType === 'subscribe') {
         return this.$message.error('预约版块里的推荐位不可以查看或编辑详情')
       }
-      if (pannel.pannelList[0].fillType === 3) {
-        return this.$message.error('影片筛选规则的推荐位不能查看或编辑')
+      if (panelFillType === panelFillTypes.mediaRule) {
+        return this.$message.error('影片筛选规则填充版块的推荐位不能查看或编辑')
+      }
+      if (panelFillType === panelFillTypes.recStream) {
+        return this.$message.error('推荐流填充版块的推荐位不能查看或编辑')
       }
       const selectedLayout = this.selectedLayout
       const activePannelIndex = +this.activePannelIndex
@@ -2495,22 +2519,29 @@ export default {
         return cb(Error('版块标题长度不能大于 45 个字符'))
       }
       // 排行榜填充、筛选规则填充
-      const activePannel = pannel.pannelList[0]
-      const fillType = activePannel.fillType
-      if (fillType === 2 && (!activePannel.filmNum || !this.selectedLayout)) {
+      const firstPanel = pannel.pannelList[0]
+      const fillType = firstPanel.fillType
+      const panelFillTypes = this.$consts.panelFillTypes
+      if (fillType === 2 && (!firstPanel.filmNum || !this.selectedLayout)) {
         return cb(Error('请填写影片数量，并填充排行榜'))
       }
-      if (fillType === 3) {
-        if (!activePannel.mediaRule) {
+      if (fillType === panelFillTypes.mediaRule) {
+        if (!firstPanel.mediaRule) {
           return cb(Error('请配置筛选规则'))
         }
-        // const interveneContentList = activePannel.interveneContentList || []
+        // const interveneContentList = firstPanel.interveneContentList || []
         // const error = interveneContentList.some(item => {
         //   return !item.intervenePos || item.videoContentList.length === 0
         // })
         // if (error) {
         //   return cb(Error('插入推荐位信息不完整！'))
         // }
+      }
+
+      if (fillType === panelFillTypes.recStream) {
+        if (!firstPanel.recStreamPanelRls) {
+          return cb(Error('请选择推荐流'))
+        }
       }
       if (!this.selectedLayout) {
         return cb(Error('请选择布局'))
@@ -2870,6 +2901,24 @@ export default {
         Object.assign(pannel, panelInit)
         pannel.pannelName = panelInit.pannelGroupRemark
 
+        const parseContentItem = (item) => {
+          if (+item.price === -1) {
+            item.price = ''
+          }
+          if (+item.secKillPrice === -1) {
+            item.secKillPrice = ''
+          }
+          const appParamsStr = item.appParams
+          if (appParamsStr) {
+            const appParamsObj = JSON.parse(appParamsStr)
+            item.appParams = Object.keys(appParamsObj).map(key => {
+              return { key, value: appParamsObj[key] }
+            })
+          } else {
+            item.appParams = []
+          }
+        }
+
         if (firstPannel) {
           firstPannel.contentList = firstPannel.contentList || []
           this.blockCountList = pannelList.map(function (item) {
@@ -2881,29 +2930,15 @@ export default {
                 contentItem.contentPosition
               )
               ;[].concat(contentItem.videoContentList || [], contentItem.specificContentList || [])
-                .forEach((item) => {
-                  if (+item.price === -1) {
-                    item.price = ''
-                  }
-                  if (+item.secKillPrice === -1) {
-                    item.secKillPrice = ''
-                  }
-                  const appParamsStr = item.appParams
-                  if (appParamsStr) {
-                    const appParamsObj = JSON.parse(appParamsStr)
-                    item.appParams = Object.keys(appParamsObj).map(key => {
-                      return { key, value: appParamsObj[key] }
-                    })
-                  } else {
-                    item.appParams = []
-                  }
-                })
+                .forEach(parseContentItem)
               return contentItem
             })
             item.interveneContentList = (item.interveneContentList || []).map(interveneContent => {
+              const videoContentList = [].concat(interveneContent.videoContent)
+              videoContentList.forEach(parseContentItem)
               return {
                 intervenePos: interveneContent.intervenePos,
-                videoContentList: [].concat(interveneContent.videoContent)
+                videoContentList
               }
             })
             if (item.timeSlot) {

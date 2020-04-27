@@ -104,7 +104,7 @@ export default {
         if (window.localStorage) {
           window.localStorage.setItem(
             'loginType',
-            this.isDomainActive ? 'normal' : 'domain'
+            this.isDomainActive ? 'domain' : 'normal'
           )
         }
         this.$login(this.user).then(
@@ -128,6 +128,8 @@ export default {
   },
   created: function () {
     loginRedbg()
+    const loginType = window.localStorage.getItem('loginType')
+    this.changAccoutType(loginType === 'domain' ? 'domain' : 'normal')
   }
 }
 </script>

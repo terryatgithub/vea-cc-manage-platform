@@ -65,6 +65,9 @@
               交换
             </el-button>
           </div>
+          <div v-if="showPostUpdater">
+            <PostUpdater :vid="getVid(block)" :disabled="!getVid(block)" @update-post-end="$emit('update-post-end')"></PostUpdater>
+          </div>
 
           <!-- 内容 -->
           <div
@@ -154,11 +157,14 @@
 <script>
 import BlockStatChartViewer from '@/components/statViewer/BlockStatChartViewer'
 import BlockStatDmpChartViewer from '@/components/statViewer/BlockStatDmpChartViewer'
+import PostUpdater from '@/components/PostUpdater'
 export default {
   template: '#cc-virtual-panel',
   components: {
     BlockStatChartViewer,
-    BlockStatDmpChartViewer
+    // eslint-disable-next-line
+    BlockStatDmpChartViewer,
+    PostUpdater
   },
   data () {
     return {
@@ -168,16 +174,33 @@ export default {
       dropIndex: undefined
     }
   },
-  props: ['panelGroup', 'panelIndex', 'blocks', 'ratio', 'draggable', 'showTitle', 'mode', 'showChartBtn', 'showExchangeTool', 'disableExchangeTool', 'isNotExtra'],
+  props: [
+    'panelGroup',
+    'panelIndex',
+    'blocks',
+    'ratio',
+    'draggable',
+    'showTitle',
+    'mode',
+    'showChartBtn',
+    'showExchangeTool',
+    'showPostUpdater',
+    'disableExchangeTool',
+    'isNotExtra'
+  ],
   computed: {
     showPopover () {
-      return this.showChartBtn || this.showExchangeTool
+      return this.showChartBtn || this.showExchangeTool || this.showPostUpdater
     }
   },
   watch: {
     blocks: 'computeBlockItems'
   },
   methods: {
+    getVid (block) {
+      const { extraValue1 } = block.content
+      return extraValue1
+    },
     handleDragStart (index) {
       this.dragIndex = index
     },

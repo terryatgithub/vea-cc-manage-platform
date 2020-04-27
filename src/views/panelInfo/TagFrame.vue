@@ -1,5 +1,11 @@
 <template>
-  <FrameDialog :url="url" @close="handleClose"></FrameDialog>
+  <FrameDialog
+    title="批量打标签"
+    :url="url"
+    :frame-style="{padding: '0 10px'}"
+    :fullscreen="true"
+    @close="handleClose">
+  </FrameDialog>
 </template>
 
 <script>

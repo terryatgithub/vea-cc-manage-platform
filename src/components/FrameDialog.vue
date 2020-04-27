@@ -1,14 +1,17 @@
 <template>
   <el-dialog
     class="cc-frame-dialog__dialog"
-    title="批量打标签"
     :visible="true"
-    :fullscreen="true"
+    :append-to-body="true"
+    :fullscreen="fullscreen"
     :before-close="handleClose">
-    <div>
-    <iframe class="cc-frame-dialog__frame" :src="url">
+    <span class="el-dialog__title" slot="title">
+      <slot name="title">
+        {{ title }}
+      </slot>
+    </span>
+    <iframe :style="frameStyle" class="cc-frame-dialog__frame" :src="url">
     </iframe>
-    </div>
   </el-dialog>
 </template>
 
@@ -19,7 +22,7 @@ export default {
 
     }
   },
-  props: ['url'],
+  props: ['title', 'url', 'fullscreen', 'frameStyle'],
   methods: {
     handleClose () {
       this.$emit('close')
@@ -27,8 +30,8 @@ export default {
   }
 }
 </script>
-<style scoped>
-.cc-frame-dialog__dialog .el-dialog--full {
+<style>
+.cc-frame-dialog__dialog .is-fullscreen {
   display: flex;
   flex-direction: column;
   overflow: hidden;
