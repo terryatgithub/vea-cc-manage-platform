@@ -4,6 +4,7 @@
       class="content"
       width="70%"
       :visible.sync="visible"
+      :append-to-body="true"
       :show="show"
       @open="handleDialogOpen"
       @close="$emit('update:show', false)"
@@ -28,7 +29,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-
         <el-form-item>
           <el-button type="primary" @click="fetchData">查询</el-button>
         </el-form-item>

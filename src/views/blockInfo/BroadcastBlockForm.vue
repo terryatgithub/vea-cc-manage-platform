@@ -161,29 +161,31 @@
           />
           客户端曝光X次之后刷新推荐位
         </el-form-item>
-        <el-form-item label="标题" prop="title">
+        <el-form-item label="标题" prop="title" style="width: 890px">
           <el-input v-model="normalForm.title" :disabled="disabled"></el-input>
-          <BroadcastBlockStatChartViewer
-            class="margin-right-10 margin-left-10"
-            :id="id"
-            :selected-title="normalForm.title"
-            selected-type="total">
-            <el-button type="primary">整体数据</el-button>
-          </BroadcastBlockStatChartViewer>
-          <BroadcastBlockStatChartViewer
-            class="margin-right-10"
-            :id="id"
-            :selected-title="normalForm.title"
-            selected-type="video">
-            <el-button type="primary">视频窗数据</el-button>
-          </BroadcastBlockStatChartViewer>
-          <BroadcastBlockStatChartViewer
-            class="margin-right-10"
-            :id="id"
-            :selected-title="normalForm.title"
-            selected-type="static">
-            <el-button type="primary">静态数据</el-button>
-          </BroadcastBlockStatChartViewer>
+          <div class="block-stat-viewer">
+            <BroadcastBlockStatChartViewer
+              class="margin-right-10 margin-left-10"
+              :id="id"
+              :selected-title="normalForm.title"
+              selected-type="total">
+              <el-button type="primary">整体数据</el-button>
+            </BroadcastBlockStatChartViewer>
+            <BroadcastBlockStatChartViewer
+              class="margin-right-10"
+              :id="id"
+              :selected-title="normalForm.title"
+              selected-type="video">
+              <el-button type="primary">视频窗数据</el-button>
+            </BroadcastBlockStatChartViewer>
+            <BroadcastBlockStatChartViewer
+              class="margin-right-10"
+              :id="id"
+              :selected-title="normalForm.title"
+              selected-type="static">
+              <el-button type="primary">静态数据</el-button>
+            </BroadcastBlockStatChartViewer>
+          </div>
         </el-form-item>
         <el-form-item label="副标题" prop="subTitle">
           <el-input v-model="normalForm.subTitle" :disabled="disabled"></el-input>
@@ -715,4 +717,6 @@ export default {
   clear both
 .flash-count-input
   width 100px !important
+.block-stat-viewer
+  display inline-block
 </style>
