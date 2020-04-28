@@ -67,6 +67,7 @@
           </div>
           <div v-if="showPostUpdater">
             <PostUpdater
+              class="popover-tool-btn"
               :vid="getVid(block)"
               :disabled="isDisablePostUpdater(block)"
               @update-post-end="$emit('update-post-end')">

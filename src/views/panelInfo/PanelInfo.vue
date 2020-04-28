@@ -595,6 +595,9 @@
                     </template>
                   </el-form-item>
                   <template v-if="pannelFillType === PANEL_FILL_TYPE.mediaRule || pannelFillType === PANEL_FILL_TYPE.recStream">
+                    <el-form-item label="版块布局" v-if="selectedLayout">
+                      <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
+                    </el-form-item>
                     <el-form-item label="插入">
                       <VirtualIntervenePanel
                         class="pannel-blocks"
