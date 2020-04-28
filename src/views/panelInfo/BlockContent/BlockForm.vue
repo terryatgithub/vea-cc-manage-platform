@@ -170,6 +170,7 @@
           :disable-partner="!!source"
           :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
           selection-type="single"
+          :id-type="idType"
           :source="source"
           @select-end="handleSelectMediaEnd"
         >
@@ -186,6 +187,7 @@
           :selectors="['app']"
           :disable-partner="!!source"
           selection-type="single"
+          :id-type="idType"
           :source="source"
           @select-end="handleSelectAppEnd">
           <el-button>选择资源</el-button>
@@ -200,6 +202,7 @@
           :is-live="false"
           :selectors="['good']"
           selection-type="single"
+          :id-type="idType"
           :auto-fetch-selectors="['good']"
           @select-end="handleSelectGoodEnd"
         >
@@ -367,6 +370,7 @@
             :selectors="['video', 'edu', 'pptv', 'live', 'topic', 'rotate']"
             selection-type="single"
             :source="source"
+            :id-type="idType"
             @select-end="handleSelectBgMediaEnd">
             <el-button>选择资源</el-button>
           </ResourceSelector>
@@ -403,6 +407,7 @@
           :selectors="['func', 'broadcast']"
           selection-type="single"
           :source="source"
+          :id-type="idType"
           @select-end="handleSelectBlockEnd">
           <el-button>选择推荐位</el-button>
         </ResourceSelector>
@@ -936,6 +941,12 @@ export default {
     },
     hiddenCoverTypes () {
       return this.contentType === 'specific' ? ['block'] : []
+    },
+    idType () {
+      const fillType = this.pannel.fillType
+      const panelFillTypes = this.$consts.panelFillTypes
+      const isRecStreamFillType = fillType === panelFillTypes.recStream
+      return isRecStreamFillType ? 1 : undefined
     }
   },
 
