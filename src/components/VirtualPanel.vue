@@ -66,7 +66,11 @@
             </el-button>
           </div>
           <div v-if="showPostUpdater">
-            <PostUpdater :vid="getVid(block)" :disabled="!getVid(block)" @update-post-end="$emit('update-post-end')"></PostUpdater>
+            <PostUpdater
+              :vid="getVid(block)"
+              :disabled="isDisablePostUpdater(block)"
+              @update-post-end="$emit('update-post-end')">
+            </PostUpdater>
           </div>
 
           <!-- 内容 -->
@@ -197,6 +201,10 @@ export default {
     blocks: 'computeBlockItems'
   },
   methods: {
+    isDisablePostUpdater (block) {
+      const vid = this.getVid(block)
+      return !vid || block.isInterveneBlock
+    },
     getVid (block) {
       const { extraValue1 } = block.content
       return extraValue1
@@ -250,6 +258,7 @@ export default {
         const block = {
           title: item.title,
           isExtra: item.isExtra,
+          isInterveneBlock: item.isInterveneBlock,
           duplicated: item.duplicated,
           specificContentList: item.specificContentList
         }

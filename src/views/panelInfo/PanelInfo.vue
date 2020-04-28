@@ -2161,6 +2161,7 @@ export default {
       const resourceIndexed = {}
       const selectedBlocksAndResources = blocks.map(function (item, index) {
         const resource = selectedResources[index] || {}
+        const isInterveneBlock = !!resource.intervenePos
         const contentList = resource.videoContentList || []
         const specificContentList = resource.specificContentList || []
         // 有 extraValue1 才判断重复, 自定义不判断
@@ -2200,6 +2201,7 @@ export default {
           } else {
             resource.duplicated = false
           }
+          resource.isInterveneBlock = isInterveneBlock
         })
 
         // 如果推荐位带标题，则强制显示标题
@@ -2375,6 +2377,7 @@ export default {
           delete contentItem.mallResize
           delete contentItem.isExtra
           delete contentItem.duplicated
+          delete contentItem.isInterveneBlock
 
           return contentItem
         })
@@ -3168,6 +3171,7 @@ export default {
           if (item.intervenePos && item.videoContentList.length !== 0) {
             const insertBlockIndex = item.intervenePos - 1
             const resource = {
+              intervenePos: item.intervenePos,
               videoContentList: item.videoContentList,
               specificContentList: item.specificContentList
             }
