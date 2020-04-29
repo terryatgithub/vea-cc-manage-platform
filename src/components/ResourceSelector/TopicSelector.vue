@@ -95,6 +95,11 @@ export default {
             }
           },
           {
+            prop: 'code',
+            label: 'code',
+            width: '80px'
+          },
+          {
             prop: 'lastUpdateDate',
             label: '更新时间',
             width: '200'
