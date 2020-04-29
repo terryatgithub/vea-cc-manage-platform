@@ -373,6 +373,7 @@
                     <el-form-item
                       label="推荐位"
                       v-if="pannelFillType === $consts.panelFillTypes.mediaRule && firstPanel.contentList.length > 0">
+                      <el-button type="primary" @click="handleRefreshMediaRuleContents">刷新推荐位内容</el-button>
                       <VirtualPanel
                         class="pannel-blocks"
                         :isNotExtra="true"
@@ -504,11 +505,11 @@
                 <el-form-item v-if="pannel.parentType === 'normal'" label="板块内容来源">
                   {{$consts.panelFillTypeText[pannelFillType]}}
                 </el-form-item>
+                <el-form-item label="版块布局" v-if="selectedLayout">
+                  <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
+                </el-form-item>
                 <div v-show="pannel.parentType !== 'subscribe'">
                   <template v-if="pannelFillType === 1">
-                    <el-form-item label="版块布局" v-if="selectedLayout">
-                      <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
-                    </el-form-item>
                     <el-form-item label="落焦形式" required>
                       {{ $consts.panelFocusText[pannel.focusShape] }}
                     </el-form-item>
@@ -544,6 +545,7 @@
                     </ClickCopy>
                   </el-form-item>
                   <el-form-item label="推荐位" v-if="pannelFillType !== PANEL_FILL_TYPE.recStream">
+                    <el-button v-if="pannelFillType === PANEL_FILL_TYPE.mediaRule" type="primary" @click="handleRefreshMediaRuleContents">刷新推荐位内容</el-button>
                     <div class="pannel-blocks pannel-blocks--read">
                       <template v-if="pannel.parentType === 'group'">
                         <el-tabs
@@ -595,9 +597,6 @@
                     </template>
                   </el-form-item>
                   <template v-if="pannelFillType === PANEL_FILL_TYPE.mediaRule || pannelFillType === PANEL_FILL_TYPE.recStream">
-                    <el-form-item label="版块布局" v-if="selectedLayout">
-                      <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
-                    </el-form-item>
                     <el-form-item label="插入">
                       <VirtualIntervenePanel
                         class="pannel-blocks"
@@ -1117,9 +1116,10 @@ export default {
   methods: {
     handleUpdatePostEnd () {
       // 延迟 100 毫秒，有时媒资数据还没更新过来
+      this.$message.info('更换海报后，海报更新可能有延迟，3 秒后自动为你刷新推荐位内容')
       setTimeout(() => {
-        this.updateInterveneResources()
-      }, 100)
+        this.handleRefreshMediaRuleContents()
+      }, 3000)
     },
     handleSelectBlockRecStreamEnd (selected) {
       const { recId, recName, recCategory, flag: recFlag } = selected[0]
@@ -3155,6 +3155,15 @@ export default {
         return
       }
       this.updateInterveneResources()
+    },
+    handleRefreshMediaRuleContents () {
+      const pannel = this.pannel
+      const activePannel = pannel.pannelList[0]
+      const fillType = this.pannelFillType
+      const panelFillTypes = this.$consts.panelFillTypes
+      if (fillType === panelFillTypes.mediaRule && activePannel.mediaRuleDesc) {
+        this.updateInterveneResources()
+      }
     },
     updateInterveneResources () {
       const pannel = this.pannel
