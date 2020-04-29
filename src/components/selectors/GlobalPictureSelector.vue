@@ -109,11 +109,13 @@
 </template>
 
 <script>
+import emitter from 'element-ui/src/mixins/emitter'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
 import { CardList } from 'admin-toolkit'
 import { debounce } from 'lodash'
 import InputPositiveInt from '@/components/InputPositiveInt'
 export default {
+  mixins: [emitter],
   components: {
     CardList,
     RemoteSelectorWrapper,
@@ -194,6 +196,9 @@ export default {
       this.selectedCollection = 'normal'
       this.table.selected = index
       this.$refs.selectorWrapper.handleSelectEnd()
+      this.$nextTick(() => {
+        this.dispatch('ElFormItem', 'el.form.blur')
+      })
     },
     onFilterChange () {
       this.handleFilterChangeDebounce()
