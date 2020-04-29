@@ -103,6 +103,16 @@ export function getMatchedPictureUrl (blockSize, imgList) {
   return url
 }
 
+export function getFirstMatchedOrientPicture (blockSize, imgList) {
+  let url
+  if (blockSize && imgList) {
+    const [w, h] = blockSize
+    const style = w > h ? 'v' : 'h'
+    const target = imgList.find(item => item.style === style) || {}
+    return target.url
+  }
+  return url
+}
 function getMatchingValue (blockSize, imgSize) {
   const [w, h] = blockSize
   const [imgW, imgH] = imgSize
@@ -132,6 +142,10 @@ export function setMediaContent (contentForm, options) {
     blockSize
   } = options
   const partner = selected._partner
+
+  const getPictureUrl = function () {
+    return getMatchedPictureUrl.apply(null, arguments)
+  }
 
   // 清空由app可能引起的遗留数据
   Object.assign(contentForm, {
@@ -188,9 +202,7 @@ export function setMediaContent (contentForm, options) {
       contentForm.videoContentType = 'movie'
       contentForm.extraValue5 = undefined
       contentForm.platformId = selected.source
-      contentForm.pictureUrl =
-        getMatchedPictureUrl(blockSize, selected.imageInfoList) ||
-        selected.thumb
+      contentForm.pictureUrl = getPictureUrl(blockSize, selected.imageInfoList) || selected.thumb
       contentForm.picturePreset = selected.imageInfoList
       contentForm.title = selected.title
       contentForm.subTitle = chopSubTitle(selected.subTitle)
@@ -225,8 +237,7 @@ export function setMediaContent (contentForm, options) {
     contentForm.videoContentType = videoContentTypeMap[selected.contentForm] || 'edu'
     contentForm.extraValue1 = '_otx_' + selected.coocaaVId
     contentForm.platformId = selected.source
-    contentForm.pictureUrl =
-      getMatchedPictureUrl(blockSize, selected.imageInfoList) || selected.thumb
+    contentForm.pictureUrl = getPictureUrl(blockSize, selected.imageInfoList) || selected.thumb
     contentForm.picturePreset = selected.imageInfoList
     contentForm.title = selected.title
     contentForm.subTitle = chopSubTitle(selected.subTitle)
@@ -273,8 +284,7 @@ export function setMediaContent (contentForm, options) {
       ? (contentForm.videoContentType = 'bigTopic')
       : (contentForm.videoContentType = 'topic')
     contentForm.extraValue1 = selected.id + ''
-    contentForm.pictureUrl =
-      getMatchedPictureUrl(blockSize, selected.imageInfoList) || selected.picture
+    contentForm.pictureUrl = getPictureUrl(blockSize, selected.imageInfoList) || selected.picture
     contentForm.title = selected.title
     contentForm.subTitle = chopSubTitle(selected.subTitle)
     contentForm.singleSubTitle = ''

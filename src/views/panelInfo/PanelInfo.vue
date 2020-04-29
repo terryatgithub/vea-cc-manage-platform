@@ -692,7 +692,7 @@ import 'echarts/lib/component/markPoint'
 import SubscribeVideos from './SubscribeVideos'
 
 import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking,
-  genMediaRuleContentList, getIdByCoverType } from './panelInfoUtil'
+  genMediaRuleContentList, getIdByCoverType, getFirstMatchedOrientPicture } from './panelInfoUtil'
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
@@ -1515,7 +1515,6 @@ export default {
       const currentInterveneBlockIndex = this.currentInterveneBlockIndex
       const interveneContent = activePannel.interveneContentList[currentInterveneBlockIndex]
       interveneContent.videoContentList = param.videoContentList
-      interveneContent.videoContentList[0].shouldFindFitestPicture = true
       interveneContent.specificContentList = param.specificContentList
       if (interveneContent.intervenePos) {
         this.updateInterveneResources()
@@ -1678,6 +1677,7 @@ export default {
       if (pannel.pannelList[0].fillType === 3) {
         fillType = 'mediaRule'
       }
+      const isMediaRule = pannel.pannelList[0].fillType === 3
       const genMethodMap = {
         subscribe: genSubscribeContentList,
         ranking: genRankingContentList,
@@ -1694,7 +1694,9 @@ export default {
         cornerList: undefined,
         redundantParams: undefined,
         // 定义一个标识，在填充的时候，填充最合适尺寸的图片
-        shouldFindFitestPicture: true
+        shouldFindFitestPicture: true,
+        // 标识是否筛选规则来的
+        isMediaRule
       })
         .map(function (item) {
           return {
@@ -2225,7 +2227,8 @@ export default {
           }
         })
 
-        // 获取最匹配的海报
+        // 这个只更新一次吗？？应该是只在第一次填充的时候自动匹配最佳海报，因为后面可能被用户自己把海报改了？
+        // 获取最匹配的海报,
         const firstContent = contentList[0] || {}
         const picturePreset = firstContent.picturePreset
         if (firstContent.shouldFindFitestPicture && picturePreset) {
@@ -2361,6 +2364,7 @@ export default {
             .forEach(function (item) {
               item.forceTitle = undefined
               item.picturePreset = undefined
+              item.isMediaRule = undefined
               const appParamsList = item.appParams
               if (appParamsList) {
                 if (typeof (appParamsList) !== 'string') {
@@ -2904,6 +2908,7 @@ export default {
         const pannel = this.pannel
         const pannelList = initData.pannelList || []
         const firstPannel = pannelList[0]
+        const panelFillTypes = this.$consts.panelFillTypes
         Object.assign(pannel, panelInit)
         pannel.pannelName = panelInit.pannelGroupRemark
 
@@ -2975,8 +2980,11 @@ export default {
           }
           // 规则筛选
           const fillType = firstPannel.fillType
-          if (fillType === 3) {
+          if (fillType === panelFillTypes.mediaRule) {
             this.reviewPicUrl = parseInt(firstPannel.layoutId)
+          }
+          if (fillType === panelFillTypes.recStream) {
+            this.updateInterveneResources()
           }
         }
         this.pannel = cloneDeep(pannel)
@@ -3192,10 +3200,6 @@ export default {
           activePannel.selectedResources = (activePannel.selectedResources || []).slice(0, MAX_MEDIA_RULE_VIDEO_COUNT)
           // 如果超出
         })
-        // 修复插入位引起的pictureurl横竖图变化问题
-        if (interveneContentList.length > 0) {
-          this.updateSelectedResourcesPic(0)
-        }
         this.updatePosition()
       }
       this.clearBlocks()
@@ -3229,8 +3233,30 @@ export default {
           this.updateBlockCount(this.selectedLayout, 1)
           this.insertResources({ selectedResources: this.filteredFilm.rows })
           insertInterveneContentList()
+          // 更新筛选规则来的资源的海报
+          this.updateMediaRuleBlockPosts()
         })
       }
+    },
+    updateMediaRuleBlockPosts () {
+      // 筛选规则版块用不同的算法进行匹配海报，
+      // 这里从新匹配筛选规则资源的推荐位的海报
+      // 筛选规则只有一个版块列表
+      const currentPannelIndex = 0
+      let { blocks, selectedBlocksAndResources } = this.getBlocksAndResources(currentPannelIndex)
+      const currentPannel = this.pannel.pannelList[currentPannelIndex]
+      blocks.forEach((item, index) => {
+        const firstContent = selectedBlocksAndResources[index] || {}
+        const firstVideoContent = firstContent.videoContentList[0] || {}
+        const isMediaRule = firstVideoContent.isMediaRule
+        const picturePreset = firstVideoContent.picturePreset || []
+        if (isMediaRule && picturePreset.length !== 0) {
+          console.log('isMediaRule:', index)
+          const size = [item.width, item.height]
+          firstVideoContent.pictureUrl = getFirstMatchedOrientPicture(size, picturePreset)
+        }
+      })
+      currentPannel.contentList = selectedBlocksAndResources
     },
     updateSelectedResourcesPic (currentPannelIndex) {
       let { blocks, selectedBlocksAndResources } = this.getBlocksAndResources(currentPannelIndex)
