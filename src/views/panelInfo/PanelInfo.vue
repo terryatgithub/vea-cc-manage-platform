@@ -3250,11 +3250,10 @@ export default {
         const firstVideoContent = firstContent.videoContentList[0] || {}
         const isMediaRule = firstVideoContent.isMediaRule
         const picturePreset = firstVideoContent.picturePreset || []
-        if (isMediaRule && picturePreset.length !== 0) {
-          console.log('isMediaRule:', index)
-          const size = [item.width, item.height]
-          firstVideoContent.pictureUrl = getFirstMatchedOrientPicture(size, picturePreset)
-        }
+        const size = [item.width, item.height]
+        firstVideoContent.pictureUrl = isMediaRule
+          ? getFirstMatchedOrientPicture(size, picturePreset)
+          : getMatchedPictureUrl(size, picturePreset)
       })
       currentPannel.contentList = selectedBlocksAndResources
     },
