@@ -3162,7 +3162,8 @@ export default {
       if (interveneContent.videoContentList.length === 0) {
         return
       }
-      this.updateInterveneResources()
+      // 更新位置需要更新海报
+      this.updateInterveneResources(true)
     },
     handleRefreshMediaRuleContents () {
       const pannel = this.pannel
@@ -3173,7 +3174,7 @@ export default {
         this.updateInterveneResources()
       }
     },
-    updateInterveneResources () {
+    updateInterveneResources (updateIntervenePost) {
       const pannel = this.pannel
       const activePannel = pannel.pannelList[0]
       const fillType = this.pannelFillType
@@ -3234,11 +3235,11 @@ export default {
           this.insertResources({ selectedResources: this.filteredFilm.rows })
           insertInterveneContentList()
           // 更新筛选规则来的资源的海报
-          this.updateMediaRuleBlockPosts()
+          this.updateMediaRuleBlockPosts(updateIntervenePost)
         })
       }
     },
-    updateMediaRuleBlockPosts () {
+    updateMediaRuleBlockPosts (updateIntervenePost) {
       // 筛选规则版块用不同的算法进行匹配海报，
       // 这里从新匹配筛选规则资源的推荐位的海报
       // 筛选规则只有一个版块列表
@@ -3248,12 +3249,16 @@ export default {
       blocks.forEach((item, index) => {
         const firstContent = selectedBlocksAndResources[index] || {}
         const firstVideoContent = firstContent.videoContentList[0] || {}
-        const isMediaRule = firstVideoContent.isMediaRule
         const picturePreset = firstVideoContent.picturePreset || []
-        const size = [item.width, item.height]
-        firstVideoContent.pictureUrl = isMediaRule
-          ? getMatchedPictureUrlByRotation(size, picturePreset)
-          : getMatchedPictureUrl(size, picturePreset)
+        if (picturePreset.length > 0) {
+          const isMediaRule = firstVideoContent.isMediaRule
+          const size = [item.width, item.height]
+          if (isMediaRule) {
+            firstVideoContent.pictureUrl = getMatchedPictureUrlByRotation(size, picturePreset)
+          } else if (updateIntervenePost) {
+            firstVideoContent.pictureUrl = getMatchedPictureUrl(size, picturePreset)
+          }
+        }
       })
       currentPannel.contentList = selectedBlocksAndResources
     },
