@@ -692,7 +692,7 @@ import 'echarts/lib/component/markPoint'
 import SubscribeVideos from './SubscribeVideos'
 
 import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking,
-  genMediaRuleContentList, getIdByCoverType, getFirstMatchedOrientPicture } from './panelInfoUtil'
+  genMediaRuleContentList, getIdByCoverType, getMatchedPictureUrlByRotation } from './panelInfoUtil'
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
@@ -3252,7 +3252,7 @@ export default {
         const picturePreset = firstVideoContent.picturePreset || []
         const size = [item.width, item.height]
         firstVideoContent.pictureUrl = isMediaRule
-          ? getFirstMatchedOrientPicture(size, picturePreset)
+          ? getMatchedPictureUrlByRotation(size, picturePreset)
           : getMatchedPictureUrl(size, picturePreset)
       })
       currentPannel.contentList = selectedBlocksAndResources

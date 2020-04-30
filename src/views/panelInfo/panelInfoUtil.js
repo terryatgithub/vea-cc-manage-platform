@@ -82,7 +82,7 @@ export function getMatchedPictureUrlByRotation (blockSize, imgList) {
   let targetImg = imgList[0] || {}
   if (imgList.length > 1) {
     const [w, h] = blockSize
-    const rotation = w > h ? 'v' : 'h'
+    const rotation = w > h ? 'h' : 'v'
     targetImg = imgList.find(item => item.style === rotation) || targetImg
   }
   return targetImg.url
@@ -103,16 +103,6 @@ export function getMatchedPictureUrl (blockSize, imgList) {
   return url
 }
 
-export function getFirstMatchedOrientPicture (blockSize, imgList) {
-  let url
-  if (blockSize && imgList) {
-    const [w, h] = blockSize
-    const style = w > h ? 'v' : 'h'
-    const target = imgList.find(item => item.style === style) || {}
-    return target.url
-  }
-  return url
-}
 function getMatchingValue (blockSize, imgSize) {
   const [w, h] = blockSize
   const [imgW, imgH] = imgSize
