@@ -273,7 +273,7 @@ export function setMediaContent (contentForm, options) {
     selected.dataSign === 'parentTopic'
       ? (contentForm.videoContentType = 'bigTopic')
       : (contentForm.videoContentType = 'topic')
-    contentForm.extraValue1 = selected.id + ''
+    contentForm.extraValue1 = selected.code + ''
     contentForm.pictureUrl = getPictureUrl(blockSize, selected.imageInfoList) || selected.picture
     contentForm.title = selected.title
     contentForm.subTitle = chopSubTitle(selected.subTitle)
