@@ -692,7 +692,7 @@ import 'echarts/lib/component/markPoint'
 import SubscribeVideos from './SubscribeVideos'
 
 import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking,
-  genMediaRuleContentList, getIdByCoverType, getMatchedPictureUrlByRotation } from './panelInfoUtil'
+  genMediaRuleContentList, getIdByCoverType } from './panelInfoUtil'
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
@@ -3254,7 +3254,7 @@ export default {
           const isMediaRule = firstVideoContent.isMediaRule
           const size = [item.width, item.height]
           if (isMediaRule) {
-            firstVideoContent.pictureUrl = getMatchedPictureUrlByRotation(size, picturePreset)
+            firstVideoContent.pictureUrl = getMatchedPictureUrl(size, picturePreset)
           } else if (updateIntervenePost) {
             firstVideoContent.pictureUrl = getMatchedPictureUrl(size, picturePreset)
           }
