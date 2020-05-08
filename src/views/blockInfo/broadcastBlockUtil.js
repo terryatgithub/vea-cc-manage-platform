@@ -95,10 +95,15 @@ export function parseResourceContent (tabName, selected) {
       const selectedEpisode = selected.selectedEpisodes
       const prefix = (prefixMap[partner] || '')
       if (selectedEpisode) {
+        const { thirdVuId = '' } = selectedEpisode
+        const isBilibili = thirdVuId.indexOf('bili') === 0
         if (selectedEpisode.urlIsTrailer === 6 && selectedEpisode.thirdVId) {
           // 如果是短视频, 并且 thirdVId 存在
           s.thirdIdOrPackageName = prefix + selectedEpisode.thirdVId
           s.sid = selectedEpisode.coocaaMId
+        } else if (isBilibili) {
+          s.thirdIdOrPackageName = prefix + selected.coocaaVId
+          s.vid = thirdVuId
         } else {
           s.thirdIdOrPackageName = prefix + selected.coocaaVId
           s.vid = selectedEpisode.coocaaMId

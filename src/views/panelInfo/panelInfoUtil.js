@@ -172,7 +172,13 @@ export function setMediaContent (contentForm, options) {
       } else {
         contentForm.extraValue1 = prefix + selected.coocaaVId
       }
-      contentForm[extraIdField] = selectedEpisode.coocaaMId
+      const { thirdVuId = '' } = selectedEpisode
+      const isBilibili = thirdVuId.indexOf('bili') === 0
+      if (isBilibili) {
+        contentForm[extraIdField] = thirdVuId
+      } else {
+        contentForm[extraIdField] = selectedEpisode.coocaaMId
+      }
       contentForm.singleId = selectedEpisode.coocaaMId
       contentForm.pictureUrl = selectedEpisode.thumb
       contentForm.title = selectedEpisode.urlTitle
