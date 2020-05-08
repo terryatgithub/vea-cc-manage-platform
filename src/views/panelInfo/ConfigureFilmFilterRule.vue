@@ -10,7 +10,7 @@
       @closed="handleCloseDialog"
     >
       <div v-show="stepCount === 0">
-        <div class="step-title">第一步：选择内容源</div>
+        <div class="step-title">选择内容源</div>
         <el-checkbox-group v-model="sourceList" class="items-group">
           <el-checkbox
             v-for="(source, index) in sourceListOptions"
@@ -18,10 +18,10 @@
             :label="source.value"
           >{{source.label}}</el-checkbox>
         </el-checkbox-group>
-        <el-button type="primary" @click="handleOneStepNext" :disabled="sourceList.length === 0">进入第二步</el-button>
+        <el-button type="primary" @click="handleOneStepNext" :disabled="sourceList.length === 0">下一步</el-button>
       </div>
       <div v-show="stepCount === 1">
-        <div class="step-title">第二步：选择影视业务筛选条件</div>
+        <div class="step-title">选择影视业务筛选条件</div>
         <div>(1) 影片分类</div>
         <el-checkbox-group v-model="movieFilterForm.categorys" class="margin-bottom-20 items-group">
           <el-checkbox
@@ -175,7 +175,7 @@
         </div>
       </div>
       <div v-show="stepCount === 2">
-        <div class="step-title">第三步：选择教育业务筛选条件</div>
+        <div class="step-title">选择教育业务筛选条件</div>
         <div>(1) 影片分类</div>
         <el-checkbox-group v-model="eduFilterForm.teachCategory" class="margin-bottom-20 items-group">
           <el-checkbox
@@ -282,7 +282,7 @@
         </div>
       </div>
       <div v-show="stepCount === 3">
-        <div class="step-title">第四步：设置排序规则（{{filmFilterCount}}部影片）</div>
+        <div class="step-title">设置排序规则（{{filmFilterCount}}部影片）</div>
         <el-radio-group v-model="homeOrderType">
           <el-radio :label="0" class="order-radio">创建时间排序（越新的排越前面）</el-radio>
           <el-radio :label="1" class="order-radio">热度排序（越热的排越前面）</el-radio>
@@ -434,10 +434,10 @@ export default {
         return item === 'teach'
       })
       this.isEduFilter = eduIndex !== -1
-      if (this.isEduFilter) {
-        this.$message.error('暂不支持教育筛选规则，期待下一期哦^-^')
-        return
-      }
+      // if (this.isEduFilter) {
+      //   this.$message.error('暂不支持教育筛选规则，期待下一期哦^-^')
+      //   return
+      // }
       // 不含影视业务跳过第二步
       if (this.isEduFilter && sourceList.length === 1) {
         this.isMovieFilter = false
