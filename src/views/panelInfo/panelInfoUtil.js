@@ -93,7 +93,7 @@ export function getMatchedPictureUrl (blockSize, imgList) {
   let url
   if (blockSize && imgList) {
     imgList.forEach(item => {
-      const matchingValue = getMatchingValue(blockSize, item.size.split('*'))
+      const matchingValue = getMatchingValue(blockSize, item.size.split(/[*|x]/))
       if (matchingValue > maxMatchingValue) {
         maxMatchingValue = matchingValue
         url = item.url

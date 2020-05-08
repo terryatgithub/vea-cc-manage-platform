@@ -227,15 +227,15 @@
            >{{teachArea.label}}</el-checkbox>
         </el-checkbox-group>
         <div>(5) 教育媒资特点</div>
-        <el-radio-group
-          v-model="eduFilterForm.teachFeatures"
+        <el-checkbox-group
+          :value="eduFilterForm.teachFeatures"
+          @input="handleInputTeachFeatures"
           class="margin-bottom-20"
-          style="margin-top: 10px"
-        >
-          <el-radio :label="1">仅选取绘本</el-radio>
-          <el-radio :label="2">仅选取有声读物</el-radio>
-          <el-radio :label="3">仅选取视频内容</el-radio>
-        </el-radio-group>
+          style="margin-top: 10px">
+          <el-checkbox :label="1">仅选取绘本</el-checkbox>
+          <el-checkbox :label="2">仅选取有声读物</el-checkbox>
+          <el-checkbox :label="3">仅选取视频内容</el-checkbox>
+        </el-checkbox-group>
         <div>(6) 创建时间</div>
         <el-row :gutter="1" style="width: 100%" class="margin-bottom-20">
           <el-col :span="8">
@@ -413,6 +413,13 @@ export default {
     }
   },
   methods: {
+    handleInputTeachFeatures (val) {
+      const eduFilterForm = this.eduFilterForm
+      const originVal = eduFilterForm.teachFeatures
+      eduFilterForm.teachFeatures = val.filter(item => {
+        return !originVal.includes(item)
+      })
+    },
     handleOpenDialog () {
       this.$service.getFilmFilterPartnerSource({ partnerName: this.$consts.sourceToPartner[this.source] }).then(data => {
         this.sourceListOptions = data.rows[0].source_List.map(item => {
@@ -493,7 +500,7 @@ export default {
         this.teachCategoryOptions = (rs.vod.teachCategory || []).map(item => {
           return {
             label: item.tagCnName,
-            value: item.tagId
+            value: item.tagEnName
           }
         })
         this.teachAreaOptions = (rs.vod.areas || []).map(item => {
