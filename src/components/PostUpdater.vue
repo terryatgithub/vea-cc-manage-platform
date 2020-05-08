@@ -46,7 +46,7 @@ export default {
         'oqy': 'yinhe',
         'oyk': 'youku'
       }
-      const partner = partnerMap[source] ? partnerMap[source] : source
+      const partner = partnerMap[source] ? partnerMap[source] : ''
       return {
         id,
         partner
