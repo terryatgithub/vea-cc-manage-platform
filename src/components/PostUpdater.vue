@@ -34,9 +34,10 @@ export default {
   },
   computed: {
     videoInfo () {
-      const matchResult = this.vid.match(/_(.+)_(.+)/) || []
+      const vidSplited = this.vid.split('_') || []
+      const partner = vidSplited[1]
+      const id = vidSplited.slice(2).join('_')
       // eslint-disable-next-line
-      const [_, partner, id] = matchResult
       const partnerMap = {
         'otx': 'tencent',
         'oqy': 'yinhe',
