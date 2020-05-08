@@ -34,18 +34,22 @@ export default {
   },
   computed: {
     videoInfo () {
+      // _otx_xxxxxxx
+      // _otx_wasu_xxxxx
       const vidSplited = this.vid.split('_') || []
-      const partner = vidSplited[1]
       const id = vidSplited.slice(2).join('_')
+      // 倒数第二个是内容源
+      const source = vidSplited[vidSplited.length - 2]
       // eslint-disable-next-line
       const partnerMap = {
         'otx': 'tencent',
         'oqy': 'yinhe',
         'oyk': 'youku'
       }
+      const partner = partnerMap[source] ? partnerMap[source] : source
       return {
         id,
-        partner: partnerMap[partner]
+        partner
       }
     },
     url () {
@@ -59,7 +63,7 @@ export default {
   methods: {
     handleShowDialog () {
       const videoInfo = this.videoInfo
-      if (!(videoInfo.id && videoInfo.partner)) {
+      if (!(videoInfo.id)) {
         return this.$message.error('该影片id不符合规则，无法更换')
       }
       if (!this.disabled) {
