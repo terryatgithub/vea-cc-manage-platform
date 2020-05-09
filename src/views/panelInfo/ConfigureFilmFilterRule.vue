@@ -455,10 +455,10 @@ export default {
         return item === 'teach'
       })
       this.isEduFilter = eduIndex !== -1
-      if (this.isEduFilter) {
-        this.$message.error('暂不支持教育筛选规则，期待下一期哦^-^')
-        return
-      }
+      // if (this.isEduFilter) {
+      //   this.$message.error('暂不支持教育筛选规则，期待下一期哦^-^')
+      //   return
+      // }
       // 不含影视业务跳过第二步
       if (this.isEduFilter && sourceList.length === 1) {
         this.isMovieFilter = false
