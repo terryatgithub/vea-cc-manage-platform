@@ -25,7 +25,7 @@ export default {
       const server = /^(127|172|beta)/.test(location.host)
         ? 'http://dev-mgr-media.tc.cc0808.com'
         : 'http://mgr.media.tc.skysrt.com'
-      return server + `/ccGlobalMediaTag/com.html?origin=${location.origin}&referrer=homepage&enableDelete=0&coocaaVId=` + ids.join(',')
+      return server + `/#/ccGlobalMediaTag/com.html?origin=${location.origin}&referrer=homepage&enableDelete=0&coocaaVId=` + ids.join(',')
     }
   },
   methods: {
