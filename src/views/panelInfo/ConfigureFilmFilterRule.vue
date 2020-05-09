@@ -11,7 +11,7 @@
     >
       <div v-show="stepCount === 0">
         <div class="step-title">选择内容源</div>
-        <el-checkbox-group v-model="sourceList" class="items-group">
+        <el-checkbox-group :value="sourceList" @input="handleInputSourceList" class="items-group">
           <el-checkbox
             v-for="(source, index) in sourceListOptions"
             :key="index"
@@ -258,7 +258,7 @@
               :picker-options="pickerOptions">
             </el-date-picker>
             <div v-else>
-              <InputPositiveInt v-model="movieFilterForm.teachCreatedMonthTime" style="width: 100px"/>
+              <InputPositiveInt v-model="eduFilterForm.teachCreatedMonthTime" style="width: 100px"/>
               <span>个月</span>
             </div>
           </el-col>
@@ -413,6 +413,20 @@ export default {
     }
   },
   methods: {
+    handleInputSourceList (val) {
+      const sourceList = this.sourceList || []
+      const selectedTeach = sourceList.includes('teach')
+      const currentSelectedTeash = val.includes('teach')
+      if (!selectedTeach && currentSelectedTeash) {
+        // 已经选了别的，新选中教育
+        this.sourceList = ['teach']
+      } else if (selectedTeach && val.length > 1) {
+        // 已经选中教育，新选了别的
+        this.sourceList = val.filter(item => item !== 'teach')
+      } else {
+        this.sourceList = val
+      }
+    },
     handleInputTeachFeatures (val) {
       const eduFilterForm = this.eduFilterForm
       const originVal = eduFilterForm.teachFeatures
@@ -657,7 +671,7 @@ export default {
     },
     handleResetEduTime () {
       this.eduFilterForm.teachCreatedTime = undefined
-      this.movieFilterForm.teachCreatedMonthTime = undefined
+      this.eduFilterForm.teachCreatedMonthTime = undefined
     },
     parseRuleDesc () {
       const { sourceList, sourceListOptions, isMovieFilter, isEduFilter, movieFilterForm, eduFilterForm } = this
