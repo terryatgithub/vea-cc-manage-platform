@@ -181,6 +181,10 @@ const panelTypeOptions = [
   {
     label: '预约版块',
     value: 'subscribe'
+  },
+  {
+    label: '标签流板块',
+    value: 'tag'
   }
 ]
 const panelTypeText = optionsToText(panelTypeOptions)
@@ -203,6 +207,7 @@ const panelFillTypeOptions = [
     value: 4
   }
 ]
+const panelFillTypeText = optionsToText(panelFillTypeOptions)
 
 const panelFillTypes = {
   manual: 1,
@@ -210,8 +215,6 @@ const panelFillTypes = {
   mediaRule: 3,
   recStream: 4
 }
-
-const panelFillTypeText = optionsToText(panelFillTypeOptions)
 
 const panelFocusOptions = [
   {
@@ -223,8 +226,19 @@ const panelFocusOptions = [
     value: 0
   }
 ]
-
 const panelFocusText = optionsToText(panelFocusOptions)
+
+const panelTagAlgorithmOptions = [
+  {
+    label: '标签历史',
+    value: 1
+  },
+  {
+    label: '常规标签推荐算法',
+    value: 2
+  }
+]
+const panelTagAlgorithmText = optionsToText(panelTagAlgorithmOptions)
 
 const cornerIconPositionOptions = [
   {
@@ -358,6 +372,8 @@ export default {
   panelFillTypeOptions,
   panelFillTypeText,
   panelFillTypes,
+  panelTagAlgorithmOptions,
+  panelTagAlgorithmText,
 
   cornerIconPositionOptions,
   cornerIconPositionEnums,

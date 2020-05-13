@@ -37,6 +37,7 @@
               <div>业务专辑：</div>
               <div>运营人员可以把业务站点专辑，关联映射至此版块中，可以多个进行排序。</div>
             </div>
+            <!-- 新增编辑页 -->
             <template v-if="mode !== 'read'">
               <div class="form-legend-header">
                 <i class="el-icon-edit">基本信息</i>
@@ -88,6 +89,7 @@
                 </el-form-item>
               </el-form>
 
+              <!-- 板块数据 -->
               <div v-if="mode === 'edit' || mode === 'replicate'">
                 <div class="form-legend-header" @click="handlePanelDataClick">
                   <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
@@ -119,7 +121,10 @@
               </div>
 
               <el-form ref="form" :model="pannel" label-width="150px">
-                <el-form-item v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe'" label="版块标题" required>
+                <el-form-item
+                  v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe' || pannel.parentType === 'tag'"
+                  label="版块标题"
+                  required>
                   <el-input
                     clearable
                     style="width: 300px"
@@ -131,7 +136,7 @@
                 <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
                   <el-input clearable v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
                 </el-form-item>
-                <div v-show="pannel.parentType !== 'subscribe'">
+                <div v-show="pannel.parentType !== 'subscribe' && pannel.parentType !== 'tag'">
                   <el-form-item label="版块内容来源" v-if="pannel.parentType === 'normal'">
                     <el-radio-group :value="pannelFillType" @input="handleInputFillType">
                       <el-radio
@@ -413,6 +418,7 @@
                     </div>
                   </el-dialog>
                 </div>
+                <!-- 预约板块内容 -->
                 <el-form-item v-show="pannel.parentType === 'subscribe'" label="预约影片">
                   <ResourceSelector
                     ref="subscribeSelector"
@@ -429,9 +435,23 @@
                     @remove-block="handleRemoveBlock"
                     :blocks="pannel.pannelList[0].contentList" />
                 </el-form-item>
+                <!-- 标签流板块内容 -->
+                <template v-if="pannel.parentType === 'tag'">
+                  <el-form-item label="行数">
+                    <el-input-number v-model="firstPanel.tagPanelInfo.rowNum" :min="1" :max="5" />
+                    <TagTypeSelector v-model="firstPanel.tagPanelInfo.categoryType" />
+                  </el-form-item>
+                  <el-form-item label="选择算法">
+                    <CommonSelector
+                      type='radio'
+                      v-model="firstPanel.tagPanelInfo.algorithmType"
+                      :options="$consts.panelTagAlgorithmOptions"/>
+                  </el-form-item>
+                </template>
               </el-form>
             </template>
 
+            <!-- 详情页 -->
             <template v-if="mode === 'read'">
 
               <div class="form-legend-header">
@@ -680,6 +700,7 @@ import BlockContent from './BlockContent/BlockContent'
 import CommonSelector from '@/components/CommonSelector'
 import BinCheckBox from '@/components/BinCheckBox'
 import BlockRecStreamSelector from '@/components/selectors/BlockRecStreamSelector'
+import TagTypeSelector from '@/components/ResourceSelector/TagTypeSelector'
 
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import PanelGroupInfoSetter from './PanelGroupInfoSetter'
@@ -732,7 +753,8 @@ export default {
     SubscribeVideos,
     BlockRecStreamSelector,
     ConfigureFilmFilterRule,
-    ClickCopy
+    ClickCopy,
+    TagTypeSelector
   },
   data () {
     const extend = {
@@ -1144,6 +1166,11 @@ export default {
         mediaRuleDesc: undefined,
         rankName: undefined,
         recStreamPanelRls: undefined,
+        tagPanelInfo: {
+          rowNum: 1,
+          categoryType: undefined,
+          algorithmType: 1
+        }, //  标签板块信息
         ...preset
       }
     },
@@ -2313,6 +2340,7 @@ export default {
       const pannel = JSON.parse(JSON.stringify(data))
       // 媒资规则的panelGroupType=10
       pannel.panelGroupType = pannel.pannelList[0].fillType !== 3 ? panelDataType : 10
+      const isTagPanel = pannel.parentType === 'tag'
       pannel.pannelList = pannel.pannelList.map(item => {
         let hasSpecific = false
         const itemContentList = item.contentList.map(function (_contentItem) {
@@ -2408,16 +2436,7 @@ export default {
             pannelType = panelDataType
           }
           // 排行榜填充、筛选规则填充
-          if (fillType === 2) {
-            pannelType = 2
-          }
-          if (fillType === 3) {
-            pannelType = 10
-          }
-          // 推荐流
-          if (fillType === 4) {
-            pannelType = 13
-          }
+          pannelType = fillType === 2 ? 2 : fillType === 3 ? 10 : fillType === 4 ? 13 : pannelType
         }
 
         const result = {
@@ -2430,7 +2449,7 @@ export default {
           pannelType,
           showTitle: pannel.showTitle,
           flagIs4k: pannel.flagIs4k,
-          layoutId: layout.layoutId,
+          layoutId: isTagPanel ? undefined : layout.layoutId,
           panelIsFocus: item.panelIsFocus,
           timeSlot: timeSlot,
           focusShape: pannel.focusShape,
@@ -2438,6 +2457,7 @@ export default {
           rankIsOpen: item.rankIsOpen,
           rankChildId: item.rankChildId,
           fillType: item.fillType,
+          tagPanelInfo: isTagPanel ? item.tagPanelInfo : undefined, // 标签流板块信息
           // 排行榜填充
           filmNum: fillType === 2 ? (itemContentList.length - 1) : undefined,
           rankName: fillType === 2 ? item.rankName : undefined,
@@ -2553,7 +2573,7 @@ export default {
           return cb(Error('请选择推荐流'))
         }
       }
-      if (!this.selectedLayout) {
+      if (!this.selectedLayout && parentType !== 'tag') {
         return cb(Error('请选择布局'))
       }
 
@@ -2887,8 +2907,9 @@ export default {
       })
     },
     upsertPanelInfo (data) {
+      const isTagPanel = data.parentType === 'tag'
       // 使用 v6 布局重新计算 contentPosition
-      this.makeCompatibleV6(data)
+      !isTagPanel && this.makeCompatibleV6(data)
       this.$service
         .panelUpsert(this.parseDataToApi(data), '保存成功')
         .then(result => {
