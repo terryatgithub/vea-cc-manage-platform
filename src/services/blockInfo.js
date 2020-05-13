@@ -315,3 +315,13 @@ export function getBroadcastDataTitles (params) {
     params
   })
 }
+/**
+ * 推荐位管理——新影片推荐流管理-适用场景
+ */
+export function getMediaSence (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dict/getTypes/scene.html',
+    params
+  })
+}

@@ -11,7 +11,7 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="流类型">
+        <!-- <el-form-item label="流类型">
           <el-select v-model="createForm.type" placeholder="请选择">
             <el-option-group
               v-for="group in streamTypeGroup"
@@ -38,7 +38,7 @@
     </template>
 
     <template v-else>
-      <CommonContent
+      <!-- <CommonContent
         :mode="mode"
         :resource-info="resourceInfo"
         @replicate="mode = 'replicate'"
@@ -52,7 +52,7 @@
         @select-version="fetchData"
         @cancel-timing="fetchData(tabInfo.currentVersion)"
         @delete="$emit('upsert-end', $event)"
-      >
+      > -->
       <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
         <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
         <i v-else class="el-icon-arrow-up"></i>
@@ -64,17 +64,28 @@
           <el-form-item label="推荐流名称" prop="name">
             <el-input class="title-input" v-model="basicForm.name" :disabled="isRead"/>
           </el-form-item>
-          <el-form-item label="源" prop="source">
-            <el-radio-group :value="basicForm.source" :disabled="isRead || isReplica" @input="handleSourceChange">
-              <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
-            </el-radio-group>
+          <el-form-item label="内容源" required>
+            {{$consts.sourceTextWithNone[basicForm.source]}}
+          </el-form-item>
+          <el-form-item label="用户唯一标识" required>
+            mac
+          </el-form-item>
+          <el-form-item label="业务来源" prop="bussinessSource">
+            <el-input class="title-input" v-model="basicForm.bussinessSource" :disabled="isRead"/>
+          </el-form-item>
+          <el-form-item label="运营后台请求间隔" required>
+            {{basicForm.createTime}}
+            <i class="nuit">单位：秒</i>
+          </el-form-item>
+          <el-form-item label="适用场景" required>
+            {{basicForm.createTime}} xx
           </el-form-item>
           <!-- <el-form-item label="流类型">
             {{streamType}}
           </el-form-item> -->
-          <el-form-item label="流状态">
+          <!-- <el-form-item label="流状态">
             {{['关闭', '开启'][basicForm.openStatus]}}
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </div>
 
@@ -128,7 +139,7 @@
           />
         </div>
       </div>
-      </CommonContent>
+      <!-- </CommonContent> -->
     </template>
 
     <!-- 添加尺寸dialog -->
@@ -151,11 +162,11 @@
 import InputPositiveInt from '@/components/InputPositiveInt'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import AssignVideoTab from './AssignVideoTab'
-import CommonContent from '@/components/CommonContent.vue'
+// import CommonContent from '@/components/CommonContent.vue'
 import titleMixin from '@/mixins/title'
 import { cloneDeep } from 'lodash'
 const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picInfoList'] // picInfoList兼容预览，可转换为picList
-const params = ['name', 'source', 'status']
+const params = ['name', 'source', 'bussinessSource', 'status']
 const streamTypeGroupOption = [
   {
     label: '普通流',
@@ -206,10 +217,10 @@ export default {
   components: {
     InputPositiveInt,
     ResourceSelector,
-    AssignVideoTab,
-    CommonContent
+    AssignVideoTab
+    // CommonContent
   },
-  data () {
+  data (value) {
     return {
       resourceName: '指定影片推荐流',
       createForm: {
@@ -242,6 +253,9 @@ export default {
         name: [
           { required: true, message: '请输入名称', trigger: 'blur' },
           { max: 45, message: '推荐流名称不得超出45个字符', trigger: 'blur' }
+        ],
+        bussinessSource: [
+          { required: true, message: '请输入业务来源', trigger: 'blur' }
         ]
       },
       videoListParams, // 必填参数
