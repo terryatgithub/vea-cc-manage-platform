@@ -26,7 +26,7 @@
             </el-option-group>
           </el-select>
           <div v-if="createForm.type !== 'normal'" class="type-tip">Tip：基本流仅适用于标准尺寸的推荐位 (标准尺寸：260*364，498*280)</div>
-        </el-form-item> -->
+        </el-form-item>
       </el-form>
       <div class="base-info">
         创建流后，默认是关闭状态的。填充完内容后，找产品或开发去开启状态;

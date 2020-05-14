@@ -10,8 +10,8 @@
         class="form"
         v-form-autocomplete
         v-model="filter"
-            @submit.native.prevent="handleFilterChangeTwo"
-            @reset.native.prevent="handleFilterResetTwo">
+            @submit.native.prevent="handleFilterChange"
+            @reset.native.prevent="handleFilterReset">
             <el-form-item>
                 <el-input clearable v-model="filter.id" placeholder="影片流ID" title="id"></el-input>
             </el-form-item>
@@ -49,13 +49,12 @@
                 <el-button native-type="reset">重置</el-button>
             </el-form-item>
         </el-form>
-      <ButtonGroupForListPage
-        pageName="blockInfo"
-        :not-contain-btns="notContainBtns"
-        @add="handleCreate"
-        @edit="handleEdit"
-      ></ButtonGroupForListPage>
       <Table
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+      />
+       <!-- <Table
         :props="table.props"
         :header="table.header"
         :data="table.data"
@@ -65,7 +64,7 @@
         @row-selection-add="handleRowSelectionAdd"
         @row-selection-remove="handleRowSelectionRemove"
         @all-row-selection-change="handleAllRowSelectionChange"
-      />
+      /> -->
     </ContentWrapper>
 
   </ContentCard>
@@ -74,7 +73,7 @@
 // import _ from 'gateschema'
 import BaseList from '@/components/BaseList'
 import { ContentWrapper, Table } from 'admin-toolkit'
-import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
+// import ButtonGroupForListPage from './../../components/ButtonGroupForListPage'
 // const typeOption = {
 //   normal: '普通', child: '少儿', movie: '电影', series: '电视剧'
 // }
@@ -83,8 +82,8 @@ export default {
   extends: BaseList,
   components: {
     Table,
-    ContentWrapper,
-    ButtonGroupForListPage
+    ContentWrapper
+    // ButtonGroupForListPage
   },
   data () {
     return {
@@ -95,7 +94,9 @@ export default {
       sourceOption: this.$consts.sourceOptionsWithNone,
       sceneOption: [],
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10,
+        scene: ''
       },
       selected: [],
       table: {
@@ -140,7 +141,7 @@ export default {
             label: '适用场景',
             prop: 'source',
             render: (h, { row }) => {
-              return this.$consts.sourceTextWithNone[row.source]
+              return this.sceneOption[row.source]
             }
           },
           {
@@ -165,18 +166,7 @@ export default {
             label: '操作',
             fixed: 'right',
             render: (h, { row }) => {
-              return h('div', [
-                h('el-button', {
-                  props: { type: 'text' },
-                  style: { 'font-size': '14px' },
-                  on: {
-                    click: (event) => {
-                      event.stopPropagation()
-                      this.handleOpenStatus(row)
-                    }
-                  }
-                }, [row.openStatus === 1 ? '开启' : '关闭'])
-              ])
+              return h('div')
             }
           }
         ],
@@ -199,32 +189,17 @@ export default {
     genDefaultFilter () {
       return {
         page: 1,
-        rows: 10
+        rows: 10,
+        scene: ''
       }
-    },
-    handleFilterChange (type, filter) {
-      if (filter) {
-        this.filter = filter
-      }
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
-        }
-      }
-      this.fetchData()
     },
     handleFilterReset () {
-      this.filter = this.genDefaultFilter()
-      this.pagination.currentPage = 1
-      this.fetchData()
-    },
-    handleFilterResetTwo () {
       this.filter = this.genDefaultFilter()
       this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    handleFilterChangeTwo () {
+    handleFilterChange () {
       this.pagination.currentPage = 1
       this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.fetchData()
@@ -239,6 +214,7 @@ export default {
     },
     fetchData () {
       const filter = this.parseFilter()
+      console.log(filter, '----')
       this.$service.getMediaAutomationList(filter).then(data => {
         this.pagination.total = data.total
         data.rows = data.rows.map(item => {
@@ -257,7 +233,6 @@ export default {
     fetchMediaSence () {
       this.$service.getMediaSence().then(res => {
         this.sceneOption = res
-        console.log(this.sceneOption, '-----s')
       })
     }
   },

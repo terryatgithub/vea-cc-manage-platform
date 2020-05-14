@@ -117,8 +117,8 @@ const routerMap = {
   multiFunctionBlock: 'multiFunctionBlock',
   sysPlugin: 'sysPlugin',
   mediaAutomation: 'mediaAutomation',
-  newRecommendStream: 'newRecommendStream',
-
+  recStream: 'recStream',
+  recommendStreamScene: 'recommendStreamScene',
   albumPannelInfo: 'albumPannelInfo',
   markPanel: 'markPanel',
   pannelInfo: 'pannelInfo',
@@ -197,7 +197,8 @@ const iconMap = {
   multiFunctionBlock: 'el-icon-cc-control',
   sysPlugin: 'el-icon-cc-minus-square',
   mediaAutomation: 'el-icon-cc-tag',
-  newRecommendStream: 'el-icon-cc-tag',
+  recStream: 'el-icon-cc-tag',
+  recommendStreamScene: 'el-icon-cc-tag',
   ruleCreatePanel: 'el-icon-cc-bankuaiguanli',
 
   blockInfo: 'el-icon-cc-appstore',

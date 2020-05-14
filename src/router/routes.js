@@ -49,6 +49,7 @@ import CrowdRel from '../views/crowdRel/Index.vue'
 import PanelRecommend from '../views/panelRecommend/PanelRecommendIndex.vue'
 import AssignVideoRecom from '../views/blockInfo/AssignVideoRecomIndex.vue'
 import NewVideoRecom from '../views/blockInfo/NewVideoRecomIndex.vue'
+import VideoRecomScene from '../views/blockInfo/VideoRecomScene.vue'
 import DeviceConfig from '../views/deviceConfig/DeviceConfigIndex.vue'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
@@ -445,12 +446,21 @@ const children = [
         }
       },
       {
-        name: 'newRecommendStream',
-        path: '/newRecommendStream/view.html',
+        name: 'recStream',
+        path: '/recStream/view.html',
         component: NewVideoRecom,
         meta: {
           title: '新影片推荐流',
-          tagId: 'newRecommendStream'
+          tagId: 'recStream'
+        }
+      },
+      {
+        name: 'recommendStreamScene',
+        path: '/recommendStreamScene/view.html',
+        component: VideoRecomScene,
+        meta: {
+          title: '影片推荐流应用场景',
+          tagId: 'recommendStreamScene'
         }
       }
     ]

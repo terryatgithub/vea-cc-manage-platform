@@ -236,6 +236,48 @@
           </span>
         </el-card>
       </el-form-item>
+      <el-form-item label="正片引导" v-if="!normalForm.shortVideoSwitch">
+        <ResourceSelector
+          ref="resourceSelector"
+          :source="source"
+          :disable-partner="!!source"
+          v-if="!isManualSetResource && normalResourceBtn==='播放资源' && !disabled "
+          :selectors="resourceOptionsNormalForm"
+          :is-live="false"
+          :id-type="1"
+          selection-type="single"
+          @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
+        >
+        <el-button type="primary" plain>选择正片引导资源</el-button>
+      </ResourceSelector>
+      </el-form-item>
+      <el-form-item label="播放完成后" v-if="isGroupModel" pop="sign">
+        <el-radio-group
+          :value="normalForm.sign"
+          :disabled="isManualSetResource"
+          @input="handleChooseRecommend">
+          <el-radio lanbel="nextBlock" :disabled="disabled">播放下一个推荐位</el-radio>
+          <el-radio lanbel="nextFilm" :disabled="disabled">播放下一集或者相关推荐</el-radio>
+          <el-radio lanbel="theFilm" :disabled="disabled">播放指定影片</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label prop="clickParams">
+        <div v-if="normalForm.sign === 'nextFilm'">
+          <ResourceSelector
+            ref="resourceSelector"
+            v-if="!disabled "
+            :disable-partner="!!source"
+            :source="source"
+            :selectors="resourceOptionsManualResource"
+            :is-live="false"
+            selection-type="single"
+            @select-end="handleSelectNormalSingleOtherResourceEnd($event)"
+          >
+            <el-button type="primary" plain>选择资源</el-button>
+          </ResourceSelector>
+          <span v-show="thirdIdOrPackageNameForClick">已选择: {{ thirdIdOrPackageNameForClick }}</span>
+        </div>
+      </el-form-item>
       <el-form-item label="点击跳转" v-if="isGroupModel">
         <el-radio-group :value="normalForm.clickType" @input="handleInputClickType">
           <el-radio label="detail" :disabled="disabled" v-show="!normalForm.shortVideoSwitch">点击进详情页</el-radio>
@@ -347,6 +389,9 @@ export default {
       onclickEventVisible: false,
       showCrowdSelector: false
     }
+  },
+  mounted () {
+    console.log(this.normalForm, '---dd')
   },
   props: ['id', 'configModel', 'normalForm', 'normalRules', 'isGroupModel', 'isReadonly', 'source', 'checkCrowd', 'showResourceTip'],
   computed: {
@@ -481,6 +526,10 @@ export default {
         imgUrl: selectPicture.imgUrl
       }
       this.$set(this.normalForm.cornerIconList, index, corner)
+    },
+    // 切换播放推荐位
+    handleChooseRecommend (newVal) {
+      console.log(this.normalForm, '---dd')
     },
     handleChangeSign (newVal) {
       const normalForm = this.normalForm

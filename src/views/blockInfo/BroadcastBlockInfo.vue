@@ -34,8 +34,9 @@
         </el-form-item>
         <el-form-item label="配置模式">
           <el-radio-group :value="basicForm.configModel" @input="handleInputConfigModel">
-            <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio>
-            <el-radio label="group" :disabled="disabled">组合模式</el-radio>
+            <el-radio label="purePoster" :disabled="disabled">纯图模式</el-radio>
+            <!-- <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio> -->
+            <el-radio label="group" :disabled="disabled">窗口模式</el-radio>
             <el-radio label="sign" :disabled="disabled">信号源</el-radio>
           </el-radio-group>
         </el-form-item>
@@ -56,7 +57,7 @@
         <h4 class="version-title__h">正常版本</h4>
         <el-tag
           class="version-title__tag"
-          v-if="basicForm.configModel === 'group'"
+          v-if="basicForm.configModel === 'group' || basicForm.configModel === 'purePoster'"
           type="warning"
         >短标题模式需至少运营四个资源，长标题模式至少6个，才能填满布局哦~</el-tag>
         <ResourceSelector
@@ -126,7 +127,7 @@
         </el-row>
 
         <!-- broadcast -->
-        <div class="content-wrapper" v-if="basicForm.configModel === 'group'">
+        <div class="content-wrapper"  v-if="basicForm.configModel === 'group'">
           <div class="content-type-switcher">
             <el-radio-group :value="normalForm.showContentType" @input="handleSwitchShowContentType">
               <el-radio class="conten-type-switcher__item" label="general">通用推荐位版本</el-radio>
@@ -192,22 +193,39 @@
             />
           </div>
         </div>
-        <div
-          :class="basicForm.configModel === 'sign' ? 'content-wrapper' : ''"
-          v-if="basicForm.configModel === 'broadcast' || basicForm.configModel === 'sign'">
-          <BroadcastBlockForm
-            ref="broadcastBlockForm"
-            @toggle-use-short-video="handleToggleUseShortVideo"
-            @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
-            :id="id"
-            :config-model="basicForm.configModel"
-            :normal-form="normalForm"
-            :normal-rules="normalRules"
-            :is-readonly="disabled"
-            :is-group-model="isGroupModel"
-            :source="source"
-            :show-resource-tip="currentIndex === 0"
-          />
+        <div class="content-wrapper" :class="basicForm.configModel === 'purePoster' ? 'min-height': ''"
+          v-if="basicForm.configModel === 'purePoster' || basicForm.configModel === 'sign'">
+          <template v-if="basicForm.configModel === 'sign'">
+            <BroadcastBlockForm
+              ref="broadcastBlockForm"
+              @toggle-use-short-video="handleToggleUseShortVideo"
+              @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
+              :id="id"
+              :config-model="basicForm.configModel"
+              :normal-form="normalForm"
+              :normal-rules="normalRules"
+              :is-readonly="disabled"
+              :is-group-model="isGroupModel"
+              :source="source"
+              :show-resource-tip="currentIndex === 0"
+            />
+          </template>
+          <!-- 纯图模式 -->
+          <template v-if="basicForm.configModel === 'purePoster'">
+           <BroadcastBlockFormSpe
+              ref="broadcastBlockFormSpe"
+              @toggle-use-short-video="handleToggleUseShortVideo"
+              @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
+              :id="id"
+              :config-model="basicForm.configModel"
+              :normal-form="normalForm"
+              :normal-rules="normalRules"
+              :is-readonly="disabled"
+              :is-group-model="isGroupModel"
+              :source="source"
+              :show-resource-tip="currentIndex === 0"
+            />
+          </template>
         </div>
       </div>
       <!-- {{lowerVersionContent兼容低版本}} -->
@@ -397,6 +415,7 @@ import BroadcastBlockForm from './BroadcastBlockForm'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import { parseResourceContent, setContentForm, getSelectedResource } from './broadcastBlockUtil'
 import BroadcastBlockStatChartViewer from '@/components/statViewer/BroadcastBlockStatChartViewer'
+import BroadcastBlockFormSpe from './BroadcastBlockFormSpe'
 
 export default {
   mixins: [titleMixin],
@@ -412,7 +431,8 @@ export default {
     AppParamsRead,
     CommonContent,
     BroadcastBlockForm,
-    BroadcastBlockStatChartViewer
+    BroadcastBlockStatChartViewer,
+    BroadcastBlockFormSpe
   },
   props: ['id', 'initMode', 'version'],
   data () {
@@ -432,7 +452,7 @@ export default {
         id: undefined,
         containerName: '',
         containerType: 'REFERENCE_BROADCASTING',
-        configModel: 'broadcast',
+        configModel: 'purePoster',
         currentVersion: undefined,
         status: undefined,
         source: 'none'
@@ -628,7 +648,9 @@ export default {
     },
     isGroupModel () {
       const configModel = this.basicForm.configModel
-      return configModel === 'group' || configModel === 'sign'
+      // alert(this.basicForm.configModel)
+      // return configModel === 'group' || configModel === 'sign'
+      return configModel
     },
     source () {
       return this.basicForm.source === 'none' ? '' : this.basicForm.source
@@ -839,6 +861,9 @@ export default {
         exception: data.exception
       }
       this[this.onclickEventVisibleFlag + 'Form']['onclick'] = o
+    },
+    handleChooseRecommend (newVal) {
+      alert(newVal)
     },
     handleChangeSign (newVal) {
       const normalForm = this.normalForm
@@ -1542,6 +1567,8 @@ export default {
   width 75%
   border-left 1px solid #808080
   margin-left 10px
+.min-height
+  height 648px
 .content-type-switcher
   margin-bottom 20px
   border-bottom 1px solid #ccc
