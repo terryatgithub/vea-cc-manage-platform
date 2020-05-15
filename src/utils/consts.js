@@ -183,7 +183,7 @@ const panelTypeOptions = [
     value: 'subscribe'
   },
   {
-    label: '标签流板块',
+    label: '标签流版块',
     value: 'tag'
   }
 ]

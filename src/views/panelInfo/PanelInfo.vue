@@ -89,7 +89,7 @@
                 </el-form-item>
               </el-form>
 
-              <!-- 板块数据 -->
+              <!-- 版块数据 -->
               <div v-if="mode === 'edit' || mode === 'replicate'">
                 <div class="form-legend-header" @click="handlePanelDataClick">
                   <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
@@ -122,7 +122,7 @@
 
               <el-form ref="form" :model="pannel" label-width="150px">
                 <el-form-item
-                  v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe' || pannel.parentType === 'tag'"
+                  v-if="showPannelTitleField"
                   label="版块标题"
                   required>
                   <el-input
@@ -202,6 +202,17 @@
                       <el-button type="primary" plain @click="handleBatchAddTag">
                         批量打标签
                       </el-button>
+                      <el-form-item
+                        label-width="160px"
+                        v-show="isShowTagsField"
+                        class="item-item-wrapper"
+                        label="是否开启版块标签引导">
+                        <el-switch
+                          :value="firstPanel.flagTagVector"
+                          @input="handleInputFlagTagVector"
+                          active-color="#13ce66"
+                          inactive-color="grey" />
+                      </el-form-item>
                     </el-form-item>
                     <el-form-item label="批量填充">
                       <span v-show="!selectedLayout">
@@ -225,6 +236,12 @@
                             清空当前版块推荐位
                           </el-button>
                         </template>
+                        <el-form-item label="第三方内容源左上角标" class="item-item-wrapper" label-width="160px">
+                          <el-switch
+                            v-model="isShowThirdCorner"
+                            active-color="#13ce66"
+                            inactive-color="grey" />
+                          </el-form-item>
                       </div>
                       <div v-if="pannel.parentType === 'group'" style="float:right">
                         <el-button
@@ -418,7 +435,7 @@
                     </div>
                   </el-dialog>
                 </div>
-                <!-- 预约板块内容 -->
+                <!-- 预约版块内容 -->
                 <el-form-item v-show="pannel.parentType === 'subscribe'" label="预约影片">
                   <ResourceSelector
                     ref="subscribeSelector"
@@ -435,7 +452,7 @@
                     @remove-block="handleRemoveBlock"
                     :blocks="pannel.pannelList[0].contentList" />
                 </el-form-item>
-                <!-- 标签流板块内容 -->
+                <!-- 标签流版块内容 -->
                 <template v-if="pannel.parentType === 'tag'">
                   <el-form-item label="行数">
                     <el-input-number v-model="firstPanel.tagPanelInfo.rowNum" :min="1" :max="5" />
@@ -516,13 +533,13 @@
               </div>
 
               <el-form ref="form" :model="pannel" label-width="120px">
-                <el-form-item v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe'" label="版块标题" required>
-                  <div>{{pannel.pannelList[0].pannelTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
+                <el-form-item v-if="showPannelTitleField" label="版块标题" required>
+                  <div>{{firstPanel.pannelTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
                 </el-form-item>
                 <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
                   <div>{{pannel.groupTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
                 </el-form-item>
-                <el-form-item v-if="pannel.parentType === 'normal'" label="板块内容来源">
+                <el-form-item v-if="pannel.parentType === 'normal'" label="版块内容来源">
                   {{$consts.panelFillTypeText[pannelFillType]}}
                 </el-form-item>
                 <el-form-item label="版块布局" v-if="selectedLayout">
@@ -548,19 +565,19 @@
                   </template>
                   <template v-if="pannelFillType === 2">
                     <el-form-item label="展示影片数量">
-                      {{pannel.pannelList[0].filmNum}}
+                      {{firstPanel.filmNum}}
                     </el-form-item>
                     <el-form-item label="选用排行榜">
-                      {{pannel.pannelList[0].rankName}}
+                      {{firstPanel.rankName}}
                     </el-form-item>
                   </template>
                   <el-form-item v-if="pannelFillType === 3" label="筛选规则描述">
                     <el-button
                       type="text"
-                      @click="showMediaRuleDesc(pannel.pannelList[0].mediaRuleDesc)"
+                      @click="showMediaRuleDesc(firstPanel.mediaRuleDesc)"
                     >查看规则
                     </el-button>
-                    <ClickCopy :content="pannel.pannelList[0].mediaRule">
+                    <ClickCopy :content="firstPanel.mediaRule">
                       <el-button type="text">复制规则json</el-button>
                     </ClickCopy>
                   </el-form-item>
@@ -600,7 +617,7 @@
                         :mode="mode"
                         :panel-group="pannel"
                         :panel-index="0"
-                        :blocks="pannel.pannelList[0].contentList"
+                        :blocks="firstPanel.contentList"
                         :show-chart-btn="!!id"
                         :show-post-updater="isFillWithMediaRule"
                         @update-post-end="handleUpdatePostEnd"
@@ -636,8 +653,17 @@
                   <SubscribeVideos
                     :mode="mode"
                     @remove-block="handleRemoveBlock"
-                    :blocks="pannel.pannelList[0].contentList" />
+                    :blocks="firstPanel.contentList" />
                 </el-form-item>
+                <template v-if="pannel.parentType === 'tag'">
+                  <el-form-item label="行数">
+                    {{firstPanel.tagPanelInfo.rowNum}}
+                    <TagTypeSelector :disabled="true" v-model="firstPanel.tagPanelInfo.categoryType" />
+                  </el-form-item>
+                  <el-form-item label="选择算法">
+                    {{$consts.panelTagAlgorithmText[firstPanel.tagPanelInfo.algorithmType]}}
+                  </el-form-item>
+                </template>
               </el-form>
             </template>
           </CommonContent>
@@ -905,11 +931,16 @@ export default {
       reviewPicUrl: undefined,
       mediaRuleLayoutOptions: [],
       // mediaRuleLayout: '1'
-      MAX_MEDIA_RULE_VIDEO_COUNT: 30
+      MAX_MEDIA_RULE_VIDEO_COUNT: 30,
+      isShowThirdCorner: false // 第三方内容源角标
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
+    showPannelTitleField () {
+      const pannel = this.pannel
+      return pannel.parentType === 'normal' || pannel.parentType === 'subscribe' || pannel.parentType === 'tag'
+    },
     finalMediaRuleLayoutOptions () {
       const { pannelFillType, PANEL_FILL_TYPE, mediaRuleLayoutOptions } = this
       return pannelFillType === PANEL_FILL_TYPE.recStream
@@ -1170,7 +1201,8 @@ export default {
           rowNum: 1,
           categoryType: undefined,
           algorithmType: 1
-        }, //  标签板块信息
+        }, //  标签版块信息
+        flagTagVector: false,
         ...preset
       }
     },
@@ -1502,6 +1534,7 @@ export default {
         this.pannel.pannelList[activePannelIndex].selectedResources || []
       this.blockContentProps = {
         layoutType: selectedLayout.layoutJsonParsed.type,
+        layoutIsTitle: selectedLayout.layoutIsTitle,
         pannelParentType: pannel.parentType,
         pannelCategory: this.pannel.panelGroupCategory,
         block: selectedResources[index],
@@ -1912,7 +1945,7 @@ export default {
           // 清空推荐位内容
           this.clearBlocks()
           this.pannel.parentType = parentType
-          // 清空板块内容来源
+          // 清空版块内容来源
           pannel.pannelList[0].fillType = 1
           switch (true) {
             case parentType === 'normal':
@@ -2457,7 +2490,7 @@ export default {
           rankIsOpen: item.rankIsOpen,
           rankChildId: item.rankChildId,
           fillType: item.fillType,
-          tagPanelInfo: isTagPanel ? item.tagPanelInfo : undefined, // 标签流板块信息
+          tagPanelInfo: isTagPanel ? item.tagPanelInfo : undefined, // 标签流版块信息
           // 排行榜填充
           filmNum: fillType === 2 ? (itemContentList.length - 1) : undefined,
           rankName: fillType === 2 ? item.rankName : undefined,
@@ -2980,6 +3013,7 @@ export default {
             }
             item.rankIsOpen = item.rankIsOpen || 0
             item.selectedResources = item.contentList
+            item.tagPanelInfo = item.tagPanelInfo || {}
             return item
           })
           pannel.pannelResource = firstPannel.pannelResource
@@ -3030,7 +3064,7 @@ export default {
         this.panelUVCTRPercent.weeklyGrowth = panelUVCTR.weeklyGrowth ? this.toArrowPercent(panelUVCTR.weeklyGrowth) : 'N/A'
       })
     },
-    // 点击板块数据展示折线图
+    // 点击版块数据展示折线图
     handlePanelDataClick () {
       this.isCollapseData = !this.isCollapseData
       if (this.panelChartDataArr.length !== 0) {
@@ -3296,6 +3330,10 @@ export default {
         }
       })
       currentPannel.contentList = selectedBlocksAndResources
+    },
+    handleInputFlagTagVector (val) {
+      const firstPanel = this.firstPanel
+      firstPanel.flagTagVector = val
     }
   },
   created () {
@@ -3403,4 +3441,7 @@ export default {
   width 400px
   border 1px solid #ccc
   padding 10px
+.item-item-wrapper
+  display inline-block
+  margin-bottom 0
 </style>

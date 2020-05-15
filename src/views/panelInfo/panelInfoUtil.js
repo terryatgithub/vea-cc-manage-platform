@@ -264,7 +264,7 @@ export function setMediaContent (contentForm, options) {
     // 直播资源
     contentForm.contentType = 6
     contentForm.videoContentType = 'txLive'
-    contentForm.extraValue1 = '_otx_' + selected.vId + ''
+    contentForm.extraValue1 = '_otx_' + selected.vId + '' // 直播资源给到客户端前缀otx会被去掉
     contentForm.platformId = selected.source
     contentForm.pictureUrl = selected.thumb
     contentForm.title = selected.title
@@ -427,6 +427,7 @@ export function genDefaultContentForm (preset) {
     // Sprint2.8.2 背景图片和视频
     bgImgUrl: '',
     flagSetRec: 0,
+    flagTagVector: false, // 标签引导
     mediaAutomationBlockRls: {
       refreshCal: 1,
       mediaAutomationId: '',
