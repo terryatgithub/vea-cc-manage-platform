@@ -204,11 +204,11 @@
                       </el-button>
                       <el-form-item
                         label-width="160px"
-                        v-show="isShowTagsField"
+                        v-show="isShowTagsField && pannel.parentType === 'normal'"
                         class="item-item-wrapper"
                         label="是否开启版块标签引导">
                         <el-switch
-                          :value="firstPanel.flagTagVector"
+                          :value="!!firstPanel.flagTagVector"
                           @input="handleInputFlagTagVector"
                           active-color="#13ce66"
                           inactive-color="grey" />
@@ -1202,7 +1202,12 @@ export default {
           categoryType: undefined,
           algorithmType: 1
         }, //  标签版块信息
-        flagTagVector: false,
+        flagTagVector: 0, // 是否开启版块标签引导
+        panelTagVectorInfo: {
+          category_id: undefined,
+          category_type: undefined, // 跳转分类
+          category_name: undefined
+        }, // 开启标签版块引导的相关信息
         ...preset
       }
     },
@@ -3333,7 +3338,7 @@ export default {
     },
     handleInputFlagTagVector (val) {
       const firstPanel = this.firstPanel
-      firstPanel.flagTagVector = val
+      firstPanel.flagTagVector = val ? 1 : 0
     }
   },
   created () {

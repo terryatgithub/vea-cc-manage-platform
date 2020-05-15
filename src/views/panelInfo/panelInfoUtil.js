@@ -427,7 +427,7 @@ export function genDefaultContentForm (preset) {
     // Sprint2.8.2 背景图片和视频
     bgImgUrl: '',
     flagSetRec: 0,
-    flagTagVector: false, // 标签引导
+    flagTagVector: 0, // 标签引导
     mediaAutomationBlockRls: {
       refreshCal: 1,
       mediaAutomationId: '',

@@ -586,7 +586,7 @@
       <el-form-item label="开启推荐位引导标签">
         <el-switch
           :disabled="isReadonly"
-          :value="contentForm.flagTagVector"
+          :value="!!contentForm.flagTagVector"
           @input="handleInputFlagTagVector"
           active-color="#13ce66"
           inactive-color="grey">
@@ -1181,7 +1181,7 @@ export default {
       if (this.resolution[0] < 410) {
         return this.$message('推荐位宽度必须>=410')
       }
-      this.contentForm.flagTagVector = val
+      this.contentForm.flagTagVector = val ? 1 : 0
     },
     genParams (openMode) {
       return {
