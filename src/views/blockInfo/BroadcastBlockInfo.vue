@@ -34,8 +34,9 @@
         </el-form-item>
         <el-form-item label="配置模式">
           <el-radio-group :value="basicForm.configModel" @input="handleInputConfigModel">
-            <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio>
-            <el-radio label="group" :disabled="disabled">组合模式</el-radio>
+           <el-radio label="purePoster" :disabled="disabled">纯图模式</el-radio>
+            <!-- <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio> -->
+            <el-radio label="group" :disabled="disabled">窗口模式</el-radio>
             <el-radio label="sign" :disabled="disabled">信号源</el-radio>
           </el-radio-group>
         </el-form-item>
@@ -56,7 +57,7 @@
         <h4 class="version-title__h">正常版本</h4>
         <el-tag
           class="version-title__tag"
-          v-if="basicForm.configModel === 'group'"
+          v-if="basicForm.configModel === 'group'|| basicForm.configModel === 'purePoster'"
           type="warning"
         >短标题模式需至少运营四个资源，长标题模式至少6个，才能填满布局哦~</el-tag>
         <ResourceSelector
@@ -193,21 +194,40 @@
           </div>
         </div>
         <div
-          :class="basicForm.configModel === 'sign' ? 'content-wrapper' : ''"
-          v-if="basicForm.configModel === 'broadcast' || basicForm.configModel === 'sign'">
-          <BroadcastBlockForm
-            ref="broadcastBlockForm"
-            @toggle-use-short-video="handleToggleUseShortVideo"
-            @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
-            :id="id"
-            :config-model="basicForm.configModel"
-            :normal-form="normalForm"
-            :normal-rules="normalRules"
-            :is-readonly="disabled"
-            :is-group-model="isGroupModel"
-            :source="source"
-            :show-resource-tip="currentIndex === 0"
-          />
+          class="content-wrapper" :class="basicForm.configModel === 'purePoster' ? 'min-height': ''"
+           v-if="basicForm.configModel === 'purePoster' || basicForm.configModel === 'sign'">
+          <template v-if="basicForm.configModel === 'sign'">
+            <BroadcastBlockForm
+              ref="broadcastBlockForm"
+              @toggle-use-short-video="handleToggleUseShortVideo"
+              @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
+              :id="id"
+              :config-model="basicForm.configModel"
+              :normal-form="normalForm"
+              :normal-rules="normalRules"
+              :is-readonly="disabled"
+              :is-group-model="isGroupModel"
+              :source="source"
+              :show-resource-tip="currentIndex === 0"
+            />
+          </template>
+          <!-- 纯图模式 -->
+          <template v-if="basicForm.configModel === 'purePoster'">
+           <BroadcastBlockFormSpe
+              ref="broadcastBlockFormSpe"
+              @toggle-use-short-video="handleToggleUseShortVideo"
+              @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
+              @cover-type-change="handleCoverTypeChange"
+              :id="id"
+              :config-model="basicForm.configModel"
+              :normal-form="normalForm"
+              :normal-rules="normalRules"
+              :is-readonly="disabled"
+              :is-group-model="isGroupModel"
+              :source="source"
+              :show-resource-tip="currentIndex"
+            />
+          </template>
         </div>
       </div>
       <!-- {{lowerVersionContent兼容低版本}} -->
@@ -394,6 +414,7 @@ import AppParamsRead from '@/components/AppParamsRead.vue'
 import { cloneDeep } from 'lodash'
 import titleMixin from '@/mixins/title'
 import BroadcastBlockForm from './BroadcastBlockForm'
+import BroadcastBlockFormSpe from './BroadcastBlockFormSpe'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import { parseResourceContent, setContentForm, getSelectedResource } from './broadcastBlockUtil'
 import BroadcastBlockStatChartViewer from '@/components/statViewer/BroadcastBlockStatChartViewer'
@@ -406,13 +427,13 @@ export default {
     ResourceSelector,
     GlobalPictureSelector,
     CornerSelector,
-
     selectClick,
     AppParams,
     AppParamsRead,
     CommonContent,
     BroadcastBlockForm,
-    BroadcastBlockStatChartViewer
+    BroadcastBlockStatChartViewer,
+    BroadcastBlockFormSpe
   },
   props: ['id', 'initMode', 'version'],
   data () {
@@ -432,7 +453,7 @@ export default {
         id: undefined,
         containerName: '',
         containerType: 'REFERENCE_BROADCASTING',
-        configModel: 'broadcast',
+        configModel: 'purePoster',
         currentVersion: undefined,
         status: undefined,
         source: 'none'
@@ -451,6 +472,7 @@ export default {
         thirdIdOrPackageName: [
           { required: true, message: '请填选择资源', trigger: 'blur' }
         ],
+
         clickParams: [
           {
             validator: (rule, value, cb) => {
@@ -628,7 +650,8 @@ export default {
     },
     isGroupModel () {
       const configModel = this.basicForm.configModel
-      return configModel === 'group' || configModel === 'sign'
+      // return configModel === 'group' || configModel === 'sign'
+      return configModel
     },
     source () {
       return this.basicForm.source === 'none' ? '' : this.basicForm.source
@@ -688,6 +711,17 @@ export default {
         // 当前内容被删除
         this.normalForm.activeIndex = index
       }
+    },
+    handleCoverTypeChange (coverType) {
+      this.normalForm.coverType = coverType
+      // if (coverType === 'custom') {
+      //   this.normalForm.coverType = 'custom'
+      // }
+
+      // if (coverType === 'media') {
+      //   this.normalForm.coverType = 'media'
+      // }
+      console.log(coverType)
     },
     handleRemoveDmpContent (index) {
       this.$confirm('确认删除该内容', '提示', {
@@ -1000,6 +1034,15 @@ export default {
         clickType: 'detail',
         onclick: {},
         sign: 'autoSet',
+        guideConfig: {
+          id: '',
+          vid: '',
+          after_play: {
+            operation: 'nextFilm',
+            id: '',
+            vid: ''
+          }
+        },
         contentType: '',
         clickParams: {},
         // jumpAdress: '1',
@@ -1597,4 +1640,6 @@ img
 .add-version-card
   cursor pointer
   width 160px
+.min-height
+  height 648px
 </style>

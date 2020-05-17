@@ -236,6 +236,48 @@
           </span>
         </el-card>
       </el-form-item>
+      <el-form-item label="正片引导" v-if="!normalForm.shortVideoSwitch">
+        <ResourceSelector
+            ref="resourceSelector"
+            v-if="!disabled"
+            :disable-partner="!!source"
+            :source="source"
+            :selectors="resourceOptionsManualResource"
+            :is-live="false"
+            selection-type="single"
+            @select-end="handleSelectGuideByMovie($event)"
+          >
+          <el-button type="primary" plain>选择正片引导资源</el-button>
+        </ResourceSelector>
+        <span v-show="normalForm.guideConfig.vid || normalForm.guideConfig.id">已选择: {{normalForm.guideConfig.vid || normalForm.guideConfig.id}}</span>
+      </el-form-item>
+      <el-form-item label="播放完成后" v-if="isGroupModel" pop="guideConfig.after_play.operation">
+        <el-radio-group
+          :value="normalForm.guideConfig.after_play.operation"
+          :disabled="isManualSetResource"
+          @input="handleChooseRecommend">
+          <el-radio label="nextBlock" :disabled="disabled">播放下一个推荐位</el-radio>
+          <el-radio label="nextFilm" :disabled="disabled">播放下一集或者相关推荐</el-radio>
+          <el-radio label="theFilm" :disabled="disabled">播放指定影片</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label prop="guideConfig.after_play.operatio">
+        <div v-if="normalForm.guideConfig.after_play.operation === 'theFilm'">
+          <ResourceSelector
+            ref="resourceSelector"
+            v-if="!disabled "
+            :disable-partner="!!source"
+            :source="source"
+            :selectors="resourceOptionsManualResource"
+            :is-live="false"
+            selection-type="single"
+            @select-end="handleSelectGuideResource($event)"
+          >
+            <el-button type="primary" plain>选择资源</el-button>
+          </ResourceSelector>
+          <span v-show="normalForm.guideConfig.after_play.id || normalForm.guideConfig.after_play.vid">已选择: {{ normalForm.guideConfig.after_play.id || normalForm.guideConfig.after_play.vid }}</span>
+        </div>
+      </el-form-item>
       <el-form-item label="点击跳转" v-if="isGroupModel">
         <el-radio-group :value="normalForm.clickType" @input="handleInputClickType">
           <el-radio label="detail" :disabled="disabled" v-show="!normalForm.shortVideoSwitch">点击进详情页</el-radio>
@@ -273,7 +315,7 @@
           >
             <el-button type="primary" plain>选择资源</el-button>
           </ResourceSelector>
-          <span v-show="thirdIdOrPackageNameForClick">已选择: {{ thirdIdOrPackageNameForClick }}</span>
+          <span v-show="changeOneMovie">已选择: {{ changeOneMovie }}</span>
         </div>
       </el-form-item>
       <div v-if="normalForm.sign === 'manualSet'">
@@ -370,6 +412,14 @@ export default {
     couldFullscreen () {
       const contentType = this.normalForm.contentType
       return this.normalForm.shortVideoSwitch || ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
+    },
+    // 正片引导
+    changeGuideByMovie () {
+      return this.getThirdId(this.normalForm.clickParams)
+    },
+    // 播放指定影片
+    changeOneMovie () {
+      return this.getThirdId(this.normalForm.clickParams)
     },
     thirdIdOrPackageNameForClick () {
       return this.getThirdId(this.normalForm.clickParams)
@@ -482,6 +532,10 @@ export default {
       }
       this.$set(this.normalForm.cornerIconList, index, corner)
     },
+    handleChooseRecommend (newVal) {
+      const normalForm = this.normalForm
+      normalForm.guideConfig.after_play.operation = newVal
+    },
     handleChangeSign (newVal) {
       const normalForm = this.normalForm
       if (newVal === 'autoSet') {
@@ -586,6 +640,20 @@ export default {
         prefix = this.$consts.sourcePrefix[source]
       }
       this.normalForm.shortVideoParams.shortVideoId = prefix + shortVideo[0].sCoocaaMId
+    },
+    // 正片引导
+    handleSelectGuideByMovie (selectedResources) {
+      const result = getSelectedResource(selectedResources)
+      const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
+      this.normalForm.guideConfig.id = resourceContent.thirdIdOrPackageName
+      this.normalForm.guideConfig.vid = resourceContent.vid
+    },
+    // 播放指定影片
+    handleSelectGuideResource (selectedResources) {
+      const result = getSelectedResource(selectedResources)
+      const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
+      this.normalForm.guideConfig.after_play.id = resourceContent.thirdIdOrPackageName
+      this.normalForm.guideConfig.after_play.vid = resourceContent.vid
     }
   }
 }
