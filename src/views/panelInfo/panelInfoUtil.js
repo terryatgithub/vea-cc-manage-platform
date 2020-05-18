@@ -264,7 +264,7 @@ export function setMediaContent (contentForm, options) {
     // 直播资源
     contentForm.contentType = 6
     contentForm.videoContentType = 'txLive'
-    contentForm.extraValue1 = '_otx_' + selected.vId + '' // 直播资源给到客户端前缀otx会被去掉
+    contentForm.extraValue1 = selected.vId + ''
     contentForm.platformId = selected.source
     contentForm.pictureUrl = selected.thumb
     contentForm.title = selected.title
