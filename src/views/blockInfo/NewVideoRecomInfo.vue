@@ -41,7 +41,7 @@
             <i class="nuit">单位：秒</i>
           </el-form-item>
           <el-form-item label="适用场景" required>
-            {{basicForm.createTime}}
+            {{handleScene(basicForm.scene)}}
           </el-form-item>
           <!-- <el-form-item label="流类型">
             {{streamType}}
@@ -223,7 +223,9 @@ export default {
       },
       videoListParams, // 必填参数
       params,
-      streamTypeGroup: streamTypeGroupOption
+      streamTypeGroup: streamTypeGroupOption,
+      sceneNames: [],
+      resSceneOption: []
     }
   },
 
@@ -269,6 +271,24 @@ export default {
   },
 
   methods: {
+    fetchMediaSence () {
+      this.$service.getMediaSence().then(res => {
+        this.resSceneOption = res
+      })
+    },
+    handleScene (scene) {
+      if (scene) {
+        let sceneNames = [] // this.sceneNames = [] 错误 render不能操作dom?
+        scene.split(',').map(item => {
+          this.resSceneOption.map(element => {
+            if (item === element.dictEnName) {
+              sceneNames.push(element.dictCnName)
+            }
+          })
+        })
+        return (sceneNames.join(','))
+      }
+    },
     getDefaultVideoTab () {
       return {
         id: undefined, //  影片自增id
@@ -976,6 +996,7 @@ export default {
       basicForm.platformName = data.platformName
       basicForm.status = data.status
       basicForm.source = data.source
+      basicForm.scene = data.scene
       this.videoTabs = []
       this.videoTabs = (data.videoList || [])
         .map(item => {
@@ -986,21 +1007,20 @@ export default {
           return b.priority - a.priority
         })
       this.sizeTags = []
-      if (data.picSize.length !== 0) {
-        data.picSize.map(item => {
-          const picInfo = data.picInfoList.find(picInfo => {
-            return item === picInfo.picSize
-          })
-          this.sizeTags.push(
-            {
-              width: item.split('*')[0],
-              height: item.split('*')[1],
-              closable: picInfo.canDelete
-            }
-          )
-        })
-      }
-      console.log('dataDetail', data)
+      // if (data.picSize.length !== 0) {
+      //   data.picSize.map(item => {
+      //     const picInfo = data.picInfoList.find(picInfo => {
+      //       return item === picInfo.picSize
+      //     })
+      //     this.sizeTags.push(
+      //       {
+      //         width: item.split('*')[0],
+      //         height: item.split('*')[1],
+      //         closable: picInfo.canDelete
+      //       }
+      //     )
+      //   })
+      // }
     }
   },
 
@@ -1011,6 +1031,9 @@ export default {
         this.setBasicInfo(data)
       })
     }
+  },
+  mounted () {
+    this.fetchMediaSence()
   }
 }
 </script>

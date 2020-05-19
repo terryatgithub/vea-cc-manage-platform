@@ -89,6 +89,7 @@ export default {
     },
     handleCreate () {
       let contentForm = {}
+      contentForm.scene = '4'
       contentForm.recStreamId = this.contentForm.id
       contentForm.dmpPolicyId = this.contentForm.dmpRegistryInfo.dmpPolicyId
       contentForm.dmpCrowdId = this.contentForm.dmpRegistryInfo.dmpCrowdId

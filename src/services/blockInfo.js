@@ -342,6 +342,13 @@ export function getMediaSceneList (params) {
   })
 }
 // 推荐流应用场景-删除
+export function removeMediaDmp (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/recStreamDmp/remove.html',
+    params
+  })
+}
 // 推荐流应用场景--保存
 export function saveMediaRecStreamDmp (data) {
   return this.fetch({

@@ -1,12 +1,15 @@
 <template>
     <ContentCard class="content">
-      <ContentWrapper>
+      <ContentWrapper
+      :filter="filter"
+      @filter-change="fetchData"
+      :pagination="pagination">
         <template>
-            <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                <el-tab-pane label="主板上板块填充" name="first" disabled></el-tab-pane>
-                <el-tab-pane label="主页上推荐位填充" name="second" disabled></el-tab-pane>
-                <el-tab-pane label="影片相关推荐" name="third"></el-tab-pane>
-                <el-tab-pane label="搜索页猜你想找" name="fourth"></el-tab-pane>
+            <el-tabs v-model="activeName" type="card" @tab-click="handleClick(activeName)">
+                <el-tab-pane label="主板上板块填充" name="1" disabled></el-tab-pane>
+                <el-tab-pane label="主页上推荐位填充" name="2" disabled></el-tab-pane>
+                <el-tab-pane label="影片相关推荐" name="3" disabled></el-tab-pane>
+                <el-tab-pane label="搜索页猜你想找" name="4"></el-tab-pane>
             </el-tabs>
         </template>
         <template>
@@ -51,7 +54,7 @@ export default {
     return {
       filter: this.genDefaultFilter(),
       showCrowdSelector: false,
-      activeName: '',
+      activeName: '4',
       dialogFormVisible: false,
       form: {},
       firstPanel: {},
@@ -61,7 +64,8 @@ export default {
         recStreamPanelRls: ''
       },
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
       table: {
         props: {},
@@ -78,7 +82,7 @@ export default {
           },
           {
             label: '优先级',
-            prop: ''
+            prop: 'priority'
           },
           {
             label: '操作',
@@ -116,7 +120,9 @@ export default {
         this.table.data = data.rows
       })
     },
-    handleClick () {},
+    handleClick (type) {
+      this.fetchData()
+    },
     handleSelectBlockRecStreamEnd (selected) {
       const { recId, recName, recCategory, flag: recFlag } = selected[0]
       this.firstPanel.recStreamPanelRls = {
@@ -137,6 +143,7 @@ export default {
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
+        filter.scene = this.activeName
       }
       return filter
     },
@@ -161,11 +168,14 @@ export default {
       })
       this.showCrowdSelector = false
     },
-    handleDel () {
-      alert('删除')
+    handleDel (row) {
+      this.$service.removeMediaDmp({ id: row.id }).then(res => {
+        this.$message.success('删除成功！')
+        this.fetchData()
+      })
     }
   },
-  created () {
+  mounted () {
     this.fetchData()
   }
 }

@@ -29,12 +29,13 @@
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-select  v-model="filter.scene" multiple placeholder="适用场景" clearable>
+                <el-select  v-model="defalutScene"
+                 multiple placeholder="适用场景" style="margin-left: 20px;width:200px;" clearable>
                     <el-option
                     v-for="item in sceneOption"
-                    :key="item.dictId"
+                    :key="item.dictEnName"
                     :label="item.dictCnName"
-                    :value="item.dictId"
+                    :value="item.dictEnName"
                     />
                 </el-select>
             </el-form-item>
@@ -91,13 +92,11 @@ export default {
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
       filterSchema: null,
-      sourceOption: this.$consts.sourceOptionsWithNone,
+      sourceOption: [],
       sceneOption: [],
       pagination: {
         currentPage: 1,
-        pageSize: 10,
-        scene: '',
-        source: ''
+        pageSize: 10
       },
       selected: [],
       table: {
@@ -141,9 +140,12 @@ export default {
           },
           {
             label: '适用场景',
-            prop: 'source',
+            prop: 'scene',
+            width: '200px',
             render: (h, { row }) => {
-              return this.sceneOption[row.source]
+              var scene = this.handleScene(row)
+              return h('div', {}, scene)
+              // return scene
             }
           },
           {
@@ -164,7 +166,9 @@ export default {
         data: [],
         selected: [],
         selectionType: 'multiple'
-      }
+      },
+      defalutScene: [],
+      sceneNames: []
     }
   },
   methods: {
@@ -177,13 +181,11 @@ export default {
     },
     handleFilterReset () {
       this.filter = this.genDefaultFilter()
-      this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
     handleFilterChange () {
       this.pagination.currentPage = 1
-      this.efficientFilter = JSON.parse(JSON.stringify(this.filter))
       this.fetchData()
     },
     parseFilter () {
@@ -191,20 +193,18 @@ export default {
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
-        filter.scene = pagination.scene
+        filter.scene = this.defalutScene.join(',')
       }
       return filter
     },
     fetchData () {
       const filter = this.parseFilter()
-      console.log(filter, '--filter')
       this.$service.getNewMediaAutomationList(filter).then(data => {
         this.pagination.total = data.total
         data.rows = data.rows.map(item => {
           // item.picSize = item.picSize.join(',')
           return item
         })
-        console.log(data.rows, ' ======  ')
         this.table.data = data.rows
       })
     },
@@ -217,56 +217,25 @@ export default {
     fetchMediaSence () {
       this.$service.getMediaSence().then(res => {
         this.sceneOption = res
-        console.log(this.pagination.scene)
+        // this.sceneNames = this.sceneOption.map(item => {
+        //   return item.dictCnName
+        // })
       })
+    },
+    handleScene (row) {
+      let sceneNames = [] // this.sceneNames = [] 错误 render不能操作dom?
+      row.scene.split(',').map(item => {
+        this.sceneOption.map(element => {
+          if (item === element.dictEnName) {
+            sceneNames.push(element.dictCnName)
+          }
+        })
+      })
+      return (sceneNames.join(','))
     }
   },
-  created () {
+  mounted () {
     this.fetchMediaSence()
-    // let filterSchema = _.map({
-    //   id: _.o.oneOf([_.number, _.value('')]).$msg('请输入数字').other('form', {
-    //     component: 'InputPositiveInt',
-    //     placeholder: '推荐流ID'
-    //   }),
-    //   name: _.o.string.other('form', {
-    //     component: 'Input',
-    //     placeholder: '推荐流名称'
-    //   }),
-    //   source: _.o.enum(this.$consts.sourceOptionsWithNoneEnums).other('form', {
-    //     component: 'Select',
-    //     placeholder: '内容源',
-    //     clearable: true
-    //   }),
-    //   since: _.o.enumList(this.keyAndValueExchage(typeOption)).other('form', {
-    //     component: 'Select',
-    //     multiple: true,
-    //     placeholder: '适用场景',
-    //     clearable: true
-    //   }),
-    //   openStatus: _.o.enum({ '开启': 1, '关闭': 0 }).other('form', {
-    //     component: 'Select',
-    //     placeholder: '可用状态',
-    //     clearable: true
-    //   })
-    // }).other('form', {
-    //   layout: 'inline',
-    //   cols: {
-    //     item: 6,
-    //     label: 0,
-    //     wrapper: 20
-    //   },
-    //   footer: {
-    //     cols: {
-    //       label: 0,
-    //       wrapper: 24
-    //     },
-    //     showSubmit: true,
-    //     submitText: '查询',
-    //     showReset: true,
-    //     resetText: '重置'
-    //   }
-    // })
-    // this.filterSchema = filterSchema
     this.fetchData()
   }
 }
