@@ -575,10 +575,9 @@
                     </el-form-item>
                     <el-form-item
                       v-if="isVideoOrEdu"
-                      label-width="160px"
                       v-show="isShowTagsField && pannel.parentType === 'normal'"
                       class="item-item-wrapper"
-                      label="是否开启版块标签引导">
+                      label="版块标签引导">
                       <el-switch
                         :value="!!firstPanel.flagTagVector"
                         @input="handleInputFlagTagVector"
@@ -2426,6 +2425,7 @@ export default {
       // 媒资规则的panelGroupType=10
       pannel.panelGroupType = pannel.pannelList[0].fillType !== 3 ? panelDataType : 10
       const isTagPanel = pannel.parentType === 'tag'
+      const isNormalPanel = pannel.parentType === 'normal'
       const flagThirdSourceCorner = pannel.flagThirdSourceCorner
       const _this = this
       pannel.pannelList = pannel.pannelList.map(item => {
@@ -2559,6 +2559,8 @@ export default {
           rankChildId: item.rankChildId,
           fillType: item.fillType,
           tagPanelInfo: isTagPanel ? item.tagPanelInfo : undefined, // 标签流版块信息
+          flagTagVector: isNormalPanel ? item.flagTagVector : undefined, // 是否开启版块标签引导
+          panelTagVectorInfo: item.flagTagVector === 1 ? item.panelTagVectorInfo : undefined, // 开启标签版块引导的相关信息
           // 排行榜填充
           filmNum: fillType === 2 ? (itemContentList.length - 1) : undefined,
           rankName: fillType === 2 ? item.rankName : undefined,
@@ -3083,6 +3085,12 @@ export default {
             item.rankIsOpen = item.rankIsOpen || 0
             item.selectedResources = item.contentList
             item.tagPanelInfo = item.tagPanelInfo || {}
+            item.flagTagVector = item.flagTagVector || 0
+            item.panelTagVectorInfo = item.panelTagVectorInfo || {
+              category_id: undefined,
+              category_type: undefined,
+              category_name: undefined
+            }
             return item
           })
           pannel.pannelResource = firstPannel.pannelResource
