@@ -203,6 +203,7 @@
                         批量打标签
                       </el-button>
                       <el-form-item
+                        v-if="isVideoOrEdu"
                         label-width="160px"
                         v-show="isShowTagsField && pannel.parentType === 'normal'"
                         class="item-item-wrapper"
@@ -238,7 +239,8 @@
                         </template>
                         <el-form-item label="第三方内容源左上角标" class="item-item-wrapper" label-width="160px">
                           <el-switch
-                            v-model="isShowThirdCorner"
+                            :value="!!pannel.flagThirdSourceCorner"
+                            @input="pannel.flagThirdSourceCorner = +$event"
                             active-color="#13ce66"
                             inactive-color="grey" />
                           </el-form-item>
@@ -456,10 +458,13 @@
                 <template v-if="pannel.parentType === 'tag'">
                   <el-form-item label="行数">
                     <el-input-number v-model="firstPanel.tagPanelInfo.rowNum" :min="1" :max="5" />
-                    <TagTypeSelector v-model="firstPanel.tagPanelInfo.categoryType" />
+                    <TagTypeSelector v-model="firstPanel.tagPanelInfo.focusCategory">
+                      <span slot="label">标签详情页默认落焦分类</span>
+                    </TagTypeSelector>
                   </el-form-item>
                   <el-form-item label="选择算法">
                     <CommonSelector
+                      class="radio-block-select"
                       type='radio'
                       v-model="firstPanel.tagPanelInfo.algorithmType"
                       :options="$consts.panelTagAlgorithmOptions"/>
@@ -581,7 +586,7 @@
                       <el-button type="text">复制规则json</el-button>
                     </ClickCopy>
                   </el-form-item>
-                  <el-form-item label="推荐位" v-if="pannelFillType !== PANEL_FILL_TYPE.recStream">
+                  <el-form-item label="推荐位" v-if="pannelFillType !== PANEL_FILL_TYPE.recStream && pannel.parentType !== 'tag'">
                     <el-button v-if="pannelFillType === PANEL_FILL_TYPE.mediaRule" type="primary" @click="handleRefreshMediaRuleContents">刷新推荐位内容</el-button>
                     <div class="pannel-blocks pannel-blocks--read">
                       <template v-if="pannel.parentType === 'group'">
@@ -658,7 +663,9 @@
                 <template v-if="pannel.parentType === 'tag'">
                   <el-form-item label="行数">
                     {{firstPanel.tagPanelInfo.rowNum}}
-                    <TagTypeSelector :disabled="true" v-model="firstPanel.tagPanelInfo.categoryType" />
+                    <TagTypeSelector :disabled="true" v-model="firstPanel.tagPanelInfo.focusCategory">
+                      <span slot="label">标签详情页默认落焦分类</span>
+                    </TagTypeSelector>
                   </el-form-item>
                   <el-form-item label="选择算法">
                     {{$consts.panelTagAlgorithmText[firstPanel.tagPanelInfo.algorithmType]}}
@@ -739,7 +746,7 @@ import 'echarts/lib/component/markPoint'
 import SubscribeVideos from './SubscribeVideos'
 
 import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking,
-  genMediaRuleContentList, getIdByCoverType } from './panelInfoUtil'
+  genMediaRuleContentList, getIdByCoverType, thirdSourcePrefixMap } from './panelInfoUtil'
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
@@ -903,7 +910,7 @@ export default {
 
         focusConfig: '', // '', week
         currentVersion: '',
-
+        flagThirdSourceCorner: 1, // 是否开启第三方源角标
         pannelList: []
       },
       isShowfocusImgUrl: false,
@@ -932,7 +939,9 @@ export default {
       mediaRuleLayoutOptions: [],
       // mediaRuleLayout: '1'
       MAX_MEDIA_RULE_VIDEO_COUNT: 30,
-      isShowThirdCorner: false // 第三方内容源角标
+      isShowThirdCorner: false, // 第三方内容源角标
+      thirdSourcePrefixMap,
+      thirdSourceOptions: []
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
@@ -998,6 +1007,11 @@ export default {
       const panelGroupCategory = this.pannel.panelGroupCategory
       // 影视，不限 是分源的
       return panelGroupCategory === 31 || panelGroupCategory === 67
+    },
+    isVideoOrEdu () {
+      const panelGroupCategory = this.pannel.panelGroupCategory
+      // 影视，不限 是分源的
+      return panelGroupCategory === 31 || panelGroupCategory === 62 || panelGroupCategory === 60
     },
     isReplica () {
       return this.mode === 'replicate' || this.pannel.duplicateVersion === 'yes'
@@ -1199,7 +1213,7 @@ export default {
         recStreamPanelRls: undefined,
         tagPanelInfo: {
           rowNum: 1,
-          categoryType: undefined,
+          focusCategory: undefined,
           algorithmType: 1
         }, //  标签版块信息
         flagTagVector: 0, // 是否开启版块标签引导
@@ -1952,6 +1966,9 @@ export default {
           this.pannel.parentType = parentType
           // 清空版块内容来源
           pannel.pannelList[0].fillType = 1
+          // 清空版块引导开关
+          firstPannel.flagTagVector = 0
+
           switch (true) {
             case parentType === 'normal':
               pannel.focusConfig = ''
@@ -2379,6 +2396,8 @@ export default {
       // 媒资规则的panelGroupType=10
       pannel.panelGroupType = pannel.pannelList[0].fillType !== 3 ? panelDataType : 10
       const isTagPanel = pannel.parentType === 'tag'
+      const flagThirdSourceCorner = pannel.flagThirdSourceCorner
+      const _this = this
       pannel.pannelList = pannel.pannelList.map(item => {
         let hasSpecific = false
         const itemContentList = item.contentList.map(function (_contentItem) {
@@ -2428,6 +2447,20 @@ export default {
           // 去除辅助字段, 转换数据结构
           ;[].concat(contentItem.videoContentList || [], contentItem.specificContentList || [])
             .forEach(function (item) {
+              // 开启第三方角标的进行查找和替换
+              if (flagThirdSourceCorner === 1 && item.coverType === 'media') {
+                const { thirdSourceOptions, thirdSourcePrefixMap } = _this
+                const sourcePrefix = item.extraValue1.match(/_.+?_(.+?)_.*/)
+                if (sourcePrefix && sourcePrefix[1]) {
+                  const sourceCode = thirdSourcePrefixMap[sourcePrefix[1]]
+                  const thirdCorner = thirdSourceOptions.find(item => item.sourceCode === sourceCode)
+                  if (typeof thirdCorner === 'object') {
+                    item.cornerList = (item.cornerList || []).filter(corner => corner.position !== 0)
+                    item.cornerList.push({ position: 0, cornerIconId: thirdCorner.pictureId, imgUrl: thirdCorner.pictureUrl })
+                  }
+                }
+              }
+
               item.forceTitle = undefined
               item.picturePreset = undefined
               item.isMediaRule = undefined
@@ -2970,6 +3003,7 @@ export default {
         const panelFillTypes = this.$consts.panelFillTypes
         Object.assign(pannel, panelInit)
         pannel.pannelName = panelInit.pannelGroupRemark
+        pannel.flagThirdSourceCorner = panelInit.flagThirdSourceCorner || 0
 
         const parseContentItem = (item) => {
           if (+item.price === -1) {
@@ -3028,9 +3062,11 @@ export default {
           pannel.pannelStatus = firstPannel.pannelStatus
 
           const layout = firstPannel.layoutInfo
-          layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-          this.selectedLayout = layout
-          this.selectedLayoutId = layout.layoutId
+          if (layout !== undefined) {
+            layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
+            this.selectedLayout = layout
+            this.selectedLayoutId = layout.layoutId
+          }
 
           const firstBlock = firstPannel.contentList[0]
           if (firstBlock) {
@@ -3339,6 +3375,26 @@ export default {
     handleInputFlagTagVector (val) {
       const firstPanel = this.firstPanel
       firstPanel.flagTagVector = val ? 1 : 0
+    },
+    handleShowThirdSourceCorner (isShow) {
+      const pannelList = this.pannel.pannelList
+      pannelList.forEach(pannelItem => {
+        (pannelItem.contentList || []).forEach(content => {
+          (content.videoContentList || []).forEach(video => {
+            video.cornerList = (video.cornerList || []).filter(corner => corner.position !== 0)
+            if (isShow && video.coverType === 'media') {
+              // 媒体资源匹配角标
+              const sourcePrefix = video.extraValue1.split('_')[2]
+              const { thirdSourceOptions, thirdSourcePrefixMap } = this
+              if (sourcePrefix) {
+                const sourceCode = thirdSourcePrefixMap[sourcePrefix]
+                const cornerInfo = thirdSourceOptions.find(item => item.sourceCode === sourceCode)
+                video.cornerList.unshift({ position: 0, cornerIconId: cornerInfo.pictureId, imgUrl: cornerInfo.pictureUrl })
+              }
+            }
+          })
+        })
+      })
     }
   },
   created () {
@@ -3359,6 +3415,10 @@ export default {
     // 影片筛选规则填充
     this.$service.getMediaRuleLayout().then(data => {
       this.mediaRuleLayoutOptions = data
+    })
+    // 第三方资源角标
+    this.$service.getDictCorner({ dictCategory: 'thirdSource' }).then(data => {
+      this.thirdSourceOptions = data
     })
   },
   mounted () {
@@ -3449,4 +3509,7 @@ export default {
 .item-item-wrapper
   display inline-block
   margin-bottom 0
+.radio-block-select >>> .el-radio
+  display block
+  margin-top 10px
 </style>

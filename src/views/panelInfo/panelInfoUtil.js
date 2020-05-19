@@ -680,3 +680,15 @@ export function isValidLayoutForRanking (contentList = []) {
 
   return hasTitleAndOnlyOneRowAndMatchSize && hasSuitableBlocks
 }
+
+export const thirdSourcePrefixMap = {
+  cibn: 'cibn',
+  movie1905: 'movie1905',
+  sohu: 'sohu',
+  mgtv: 'mgtv',
+  gdn: '4KGarden',
+  wasu: 'wasu',
+  tvb: 'tvb',
+  'bili_pgc': 'bili',
+  df: 'dfdjy'
+}

@@ -278,10 +278,18 @@ export function getMediaFillType (params) {
   })
 }
 
-export function getVectorTagTypes (data) {
+export function getFocusCategory (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/v1/dict/getTypes/vectorTag',
+    url: 'api/v1/dict/getTypes/focusCategory',
     data
+  })
+}
+
+export function getDictCorner (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/dict/getDictCorner',
+    params
   })
 }

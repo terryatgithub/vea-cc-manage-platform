@@ -230,12 +230,28 @@ const panelFocusText = optionsToText(panelFocusOptions)
 
 const panelTagAlgorithmOptions = [
   {
-    label: '标签历史',
+    label: '标签页访问历史',
     value: 1
   },
   {
-    label: '常规标签推荐算法',
+    label: '常规标签推荐算法（不区分分类）',
     value: 2
+  },
+  {
+    label: '常规标签推荐算法（电影）',
+    value: 3
+  },
+  {
+    label: '常规标签推荐算法（电视剧）',
+    value: 4
+  },
+  {
+    label: '常规标签推荐算法（综艺）',
+    value: 5
+  },
+  {
+    label: '常规标签推荐算法（动漫）',
+    value: 6
   }
 ]
 const panelTagAlgorithmText = optionsToText(panelTagAlgorithmOptions)

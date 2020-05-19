@@ -1,13 +1,14 @@
 <template>
   <div style="display: inline-block">
     <div class="selector-wrapper">
-      <span name="label">标签跳转分类</span>
+      <slot name="label">标签跳转分类</slot>
       <el-button :disabled="disabled" class="selector-button" type="primary" @click="isShowDialog = true">分类选择</el-button>
       <el-tag
         :closable="!disabled"
         @close="$emit('input')"
         v-if="value !== undefined">
         {{valueTagName}}</el-tag>
+      <slot name="tip"><span style="margin-left: 10px">本字段仅用于配置客户端上标签详情页的默认落焦，与其他逻辑无关</span></slot>
     </div>
     <el-dialog @open="handleOpenDialog" title="标签跳转分类选择" :visible.sync="isShowDialog" width="800px">
       <CommonSelector
@@ -55,7 +56,7 @@ export default {
     }
   },
   created () {
-    this.$service.getVectorTagTypes().then(data => {
+    this.$service.getFocusCategory().then(data => {
       this.categoryEnums = (data || []).map(item => {
         return { label: item.dictCnName, value: item.dictEnName }
       })
