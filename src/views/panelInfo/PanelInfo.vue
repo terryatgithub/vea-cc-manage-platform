@@ -363,7 +363,7 @@
                         @input="handleInputLayoutId">
                         <el-radio
                           class="layout-radio"
-                          v-for="mediaLayout in finalMediaRuleLayoutOptions"
+                          v-for="mediaLayout in mediaRuleLayoutOptions"
                           :key="mediaLayout.dictEnName"
                           :label="+mediaLayout.dictEnName">
                           {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictEnName)"/>
@@ -975,12 +975,6 @@ export default {
       const pannel = this.pannel
       return pannel.parentType === 'normal' || pannel.parentType === 'subscribe' || pannel.parentType === 'tag'
     },
-    finalMediaRuleLayoutOptions () {
-      const { pannelFillType, PANEL_FILL_TYPE, mediaRuleLayoutOptions } = this
-      return pannelFillType === PANEL_FILL_TYPE.recStream
-        ? mediaRuleLayoutOptions.slice(2, 6) // 推荐流只支持几个布局
-        : mediaRuleLayoutOptions
-    },
     interveneMaxCount () {
       const selectedLayoutId = this.selectedLayoutId
       return [10, 10, 6, 6, 8, 8, 9, 9][selectedLayoutId - 1]
@@ -1164,7 +1158,6 @@ export default {
       return pannelFillType
     },
     isFillWithMediaRule () {
-      console.log(this.pannelFillType === this.$consts.panelFillTypes.mediaRule)
       return this.pannelFillType === this.$consts.panelFillTypes.mediaRule
     },
     // eslint-disable-next-line
