@@ -3412,8 +3412,17 @@ export default {
     },
     handleInputFlagTagVector (val) {
       const firstPanel = this.firstPanel
-      const isExist = this.getVectorTag()
-      isExist && (firstPanel.flagTagVector = val ? 1 : 0)
+      if (val) {
+        const isExist = this.getVectorTag()
+        isExist && (firstPanel.flagTagVector = 1)
+      } else {
+        firstPanel.flagTagVector = 0
+        firstPanel.panelTagVectorInfo = {
+          category_id: undefined,
+          category_type: undefined,
+          category_name: undefined
+        }
+      }
     },
     getVectorTag () {
       const firstPanel = this.firstPanel
