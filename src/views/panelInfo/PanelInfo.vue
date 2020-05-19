@@ -215,7 +215,7 @@
                           inactive-color="grey" />
                         <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.category_id>
                           <span>可引导标签：{{firstPanel.panelTagVectorInfo.category_name}}</span>
-                          <TagTypeSelector v-model="firstPanel.panelTagVectorInfo.category_type">
+                          <TagTypeSelector v-model="firstPanel.panelTagVectorInfo.focusCategory">
                             <span slot="tip" />
                           </TagTypeSelector>
                         </template>
@@ -586,7 +586,7 @@
                         inactive-color="grey" />
                       <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.category_id>
                         <span>可引导标签：{{firstPanel.panelTagVectorInfo.category_name}}</span>
-                        <TagTypeSelector :disabled="true" v-model="firstPanel.panelTagVectorInfo.category_type">
+                        <TagTypeSelector :disabled="true" v-model="firstPanel.panelTagVectorInfo.focusCategory">
                           <span slot="tip" />
                         </TagTypeSelector>
                       </template>
@@ -1236,7 +1236,7 @@ export default {
         flagTagVector: 0, // 是否开启版块标签引导
         panelTagVectorInfo: {
           category_id: undefined,
-          category_type: undefined, // 跳转分类
+          focusCategory: undefined, // 跳转分类
           category_name: undefined
         }, // 开启标签版块引导的相关信息
         ...preset
@@ -1644,7 +1644,7 @@ export default {
           this.firstPanel.flagTagVector = 0
           this.firstPanel.panelTagVectorInfo = {
             category_id: undefined,
-            category_type: undefined,
+            focusCategory: undefined,
             category_name: undefined
           }
         }
@@ -3088,7 +3088,7 @@ export default {
             item.flagTagVector = item.flagTagVector || 0
             item.panelTagVectorInfo = item.panelTagVectorInfo || {
               category_id: undefined,
-              category_type: undefined,
+              focusCategory: undefined,
               category_name: undefined
             }
             return item
@@ -3419,7 +3419,7 @@ export default {
         firstPanel.flagTagVector = 0
         firstPanel.panelTagVectorInfo = {
           category_id: undefined,
-          category_type: undefined,
+          focusCategory: undefined,
           category_name: undefined
         }
       }
