@@ -213,6 +213,12 @@
                           @input="handleInputFlagTagVector"
                           active-color="#13ce66"
                           inactive-color="grey" />
+                        <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.category_id>
+                          <span>可引导标签：{{firstPanel.panelTagVectorInfo.category_name}}</span>
+                          <TagTypeSelector v-model="firstPanel.panelTagVectorInfo.category_type">
+                            <span slot="tip" />
+                          </TagTypeSelector>
+                        </template>
                       </el-form-item>
                     </el-form-item>
                     <el-form-item label="批量填充">
@@ -566,6 +572,25 @@
                     </el-form-item>
                     <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
                       <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
+                    </el-form-item>
+                    <el-form-item
+                      v-if="isVideoOrEdu"
+                      label-width="160px"
+                      v-show="isShowTagsField && pannel.parentType === 'normal'"
+                      class="item-item-wrapper"
+                      label="是否开启版块标签引导">
+                      <el-switch
+                        :value="!!firstPanel.flagTagVector"
+                        @input="handleInputFlagTagVector"
+                        :disabled="true"
+                        active-color="#13ce66"
+                        inactive-color="grey" />
+                      <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.category_id>
+                        <span>可引导标签：{{firstPanel.panelTagVectorInfo.category_name}}</span>
+                        <TagTypeSelector :disabled="true" v-model="firstPanel.panelTagVectorInfo.category_type">
+                          <span slot="tip" />
+                        </TagTypeSelector>
+                      </template>
                     </el-form-item>
                   </template>
                   <template v-if="pannelFillType === 2">
@@ -1620,6 +1645,18 @@ export default {
       this.updatePosition()
       this.getSharedTags()
       this.activePage = 'panel_info'
+      // 重置版块标签引导
+      if (this.pannel.parentType === 'normal' && this.firstPanel.flagTagVector === 1) {
+        const isValid = this.getVectorTag()
+        if (!isValid) {
+          this.firstPanel.flagTagVector = 0
+          this.firstPanel.panelTagVectorInfo = {
+            category_id: undefined,
+            category_type: undefined,
+            category_name: undefined
+          }
+        }
+      }
     },
     handleSelectSubscribeStart () {
       this.$refs.subscribeSelector.$refs.wrapper.handleSelectStart()
@@ -2450,9 +2487,9 @@ export default {
               // 开启第三方角标的进行查找和替换
               if (flagThirdSourceCorner === 1 && item.coverType === 'media') {
                 const { thirdSourceOptions, thirdSourcePrefixMap } = _this
-                const sourcePrefix = item.extraValue1.match(/_.+?_(.+?)_.*/)
-                if (sourcePrefix && sourcePrefix[1]) {
-                  const sourceCode = thirdSourcePrefixMap[sourcePrefix[1]]
+                const sourcePrefix = item.extraValue1.split('_')
+                if (sourcePrefix && sourcePrefix[2]) {
+                  const sourceCode = thirdSourcePrefixMap[sourcePrefix[2]]
                   const thirdCorner = thirdSourceOptions.find(item => item.sourceCode === sourceCode)
                   if (typeof thirdCorner === 'object') {
                     item.cornerList = (item.cornerList || []).filter(corner => corner.position !== 0)
@@ -3374,7 +3411,38 @@ export default {
     },
     handleInputFlagTagVector (val) {
       const firstPanel = this.firstPanel
-      firstPanel.flagTagVector = val ? 1 : 0
+      const isExist = this.getVectorTag()
+      isExist && (firstPanel.flagTagVector = val ? 1 : 0)
+    },
+    getVectorTag () {
+      const firstPanel = this.firstPanel
+      const contentList = firstPanel.contentList
+      let ids = []
+      for (let i = 0; i < contentList.length; i++) {
+        const videoContentList = contentList[i].videoContentList
+        for (let j = 0; j < videoContentList.length; j++) {
+          const videoItem = videoContentList[j]
+          if (videoItem.coverType !== 'media') {
+            this.$message.error('每个推荐位都必须是媒体资源')
+            return false
+          } else {
+            const id = videoItem.extraValue1
+            ids.push(id)
+          }
+        }
+      }
+      this.$service.getVectorTag({ coocaaVIds: ids.join(',') }).then(data => {
+        data = data || {}
+        firstPanel.panelTagVectorInfo = {
+          category_id: data.tagId,
+          category_name: data.tagName
+        }
+        if (JSON.stringify(data) === '{}') {
+          this.firstPanel.flagTagVector = 0
+          this.$message.error('无所有影片都具有的标签')
+        }
+      })
+      return true
     },
     handleShowThirdSourceCorner (isShow) {
       const pannelList = this.pannel.pannelList

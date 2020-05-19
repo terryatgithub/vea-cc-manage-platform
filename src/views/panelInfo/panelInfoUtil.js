@@ -689,6 +689,6 @@ export const thirdSourcePrefixMap = {
   gdn: '4KGarden',
   wasu: 'wasu',
   tvb: 'tvb',
-  'bili_pgc': 'bili',
+  bili: 'bili',
   df: 'dfdjy'
 }

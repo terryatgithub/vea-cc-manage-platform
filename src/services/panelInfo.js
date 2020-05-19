@@ -293,3 +293,11 @@ export function getDictCorner (params) {
     params
   })
 }
+
+export function getVectorTag (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tvos/getVectorTag',
+    params
+  })
+}
