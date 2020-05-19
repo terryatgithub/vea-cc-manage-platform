@@ -325,3 +325,38 @@ export function getMediaSence (params) {
     params
   })
 }
+// 新影片推荐流管理
+export function getNewMediaAutomationList (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/recStream/dataList.html',
+    params
+  })
+}
+// 推荐流应用场景
+export function getMediaSceneList (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/recStreamDmp/pageList.html',
+    params
+  })
+}
+// 推荐流应用场景-删除
+// 推荐流应用场景--保存
+export function saveMediaRecStreamDmp (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/recStreamDmp/save.html',
+    data: {
+      jsonStr: JSON.stringify(data)
+    }
+  })
+}
+// 新推荐流获取详情接口
+export function getNewMediaAutomationDetial (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/v1/recStream/getDetailInfo.html',
+    params
+  })
+}

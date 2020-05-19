@@ -49,7 +49,7 @@ import CrowdRel from '../views/crowdRel/Index.vue'
 import PanelRecommend from '../views/panelRecommend/PanelRecommendIndex.vue'
 import AssignVideoRecom from '../views/blockInfo/AssignVideoRecomIndex.vue'
 import NewVideoRecom from '../views/blockInfo/NewVideoRecomIndex.vue'
-import VideoRecomScene from '../views/blockInfo/VideoRecomScene.vue'
+import VideoRecomScene from '../views/blockInfo/VideoRecomSceneIndex.vue'
 import DeviceConfig from '../views/deviceConfig/DeviceConfigIndex.vue'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')

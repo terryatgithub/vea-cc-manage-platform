@@ -38,12 +38,12 @@
                     />
                 </el-select>
             </el-form-item>
-            <el-form-item>
+            <!-- <el-form-item>
                 <el-select  v-model="filter.openStatus" placeholder="可用状态" clearable>
                     <el-option value="1" label="开启">开启</el-option>
                     <el-option value="0" label="关闭">关闭</el-option>
                 </el-select>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item class="el-form-item-submit">
                 <el-button type="primary" native-type="submit">查询</el-button>
                 <el-button native-type="reset">重置</el-button>
@@ -96,7 +96,8 @@ export default {
       pagination: {
         currentPage: 1,
         pageSize: 10,
-        scene: ''
+        scene: '',
+        source: ''
       },
       selected: [],
       table: {
@@ -111,8 +112,9 @@ export default {
           },
           {
             label: '推荐流名称',
-            prop: 'name',
+            prop: 'recName',
             fixed: 'left',
+            width: '180px',
             render: (h, { row }) => {
               return h(
                 'el-button',
@@ -126,7 +128,7 @@ export default {
                     }
                   }
                 },
-                row.name
+                row.recName
               )
             }
           },
@@ -146,21 +148,10 @@ export default {
           },
           {
             label: '推荐流业务来源',
-            prop: 'source',
-            render: (h, { row }) => {
-              return this.$consts.sourceTextWithNone[row.source]
-            }
-          },
-          {
-            label: '可用状态',
-            prop: 'openStatus',
-            render: (h, { row }) => {
-              return ['关闭', '开启'][row.openStatus]
-            }
-          },
-          {
-            label: '备注',
-            prop: 'note'
+            prop: 'platformName'
+            // render: (h, { row }) => {
+            //   return this.$consts.sourceTextWithNone[row.source]
+            // }
           },
           {
             label: '操作',
@@ -177,15 +168,6 @@ export default {
     }
   },
   methods: {
-    // 开启关闭按钮
-    handleOpenStatus (row) {},
-    handleOpenContentAuthManager (row) {
-      this.$refs.contentCard.handleShowContentAuthManager({
-        id: row.id,
-        type: 'block',
-        menuElId: 'broadcastBlock'
-      })
-    },
     genDefaultFilter () {
       return {
         page: 1,
@@ -209,18 +191,20 @@ export default {
       if (pagination) {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
+        filter.scene = pagination.scene
       }
       return filter
     },
     fetchData () {
       const filter = this.parseFilter()
-      console.log(filter, '----')
-      this.$service.getMediaAutomationList(filter).then(data => {
+      console.log(filter, '--filter')
+      this.$service.getNewMediaAutomationList(filter).then(data => {
         this.pagination.total = data.total
         data.rows = data.rows.map(item => {
-          item.picSize = item.picSize.join(',')
+          // item.picSize = item.picSize.join(',')
           return item
         })
+        console.log(data.rows, ' ======  ')
         this.table.data = data.rows
       })
     },
@@ -233,6 +217,7 @@ export default {
     fetchMediaSence () {
       this.$service.getMediaSence().then(res => {
         this.sceneOption = res
+        console.log(this.pagination.scene)
       })
     }
   },

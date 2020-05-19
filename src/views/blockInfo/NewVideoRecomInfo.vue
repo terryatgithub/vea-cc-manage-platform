@@ -1,43 +1,6 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-    <template v-if="mode === 'create'">
-      <el-form :model="createForm" label-width="80px" ref="createForm">
-        <el-form-item label="流名称" prop="name" :rules="basicFormRules.name">
-          <el-input v-model="createForm.name" class="title-input"></el-input>
-        </el-form-item>
-        <el-form-item label="源" prop="source">
-          <el-radio-group v-model="createForm.source">
-            <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-
-        <!-- <el-form-item label="流类型">
-          <el-select v-model="createForm.type" placeholder="请选择">
-            <el-option-group
-              v-for="group in streamTypeGroup"
-              :key="group.label"
-              :label="group.label">
-              <el-option
-                v-for="item in group.options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-option-group>
-          </el-select>
-          <div v-if="createForm.type !== 'normal'" class="type-tip">Tip：基本流仅适用于标准尺寸的推荐位 (标准尺寸：260*364，498*280)</div>
-        </el-form-item> -->
-      </el-form>
-      <div class="base-info">
-        创建流后，默认是关闭状态的。填充完内容后，找产品或开发去开启状态;
-      </div>
-      <el-row class="createBtn-container">
-        <el-button type="primary" @click="handleCreate">创建</el-button>
-        <el-button type="success" @click="$emit('go-back')">取消</el-button>
-      </el-row>
-    </template>
-
-    <template v-else>
+    <template>
       <!-- <CommonContent
         :mode="mode"
         :resource-info="resourceInfo"
@@ -61,8 +24,8 @@
       <div :style="{display: isCollapseBase ? 'none' : 'block'}">
         <el-form :model="basicForm" ref="basicForm" label-width="150px" :rules="basicFormRules">
           <el-form-item label="推荐流ID">{{basicForm.id}}</el-form-item>
-          <el-form-item label="推荐流名称" prop="name">
-            <el-input class="title-input" v-model="basicForm.name" :disabled="isRead"/>
+          <el-form-item label="推荐流名称" prop="recName">
+            <el-input class="title-input" v-model="basicForm.recName" :disabled="isRead"/>
           </el-form-item>
           <el-form-item label="内容源" required>
             {{$consts.sourceTextWithNone[basicForm.source]}}
@@ -70,15 +33,15 @@
           <el-form-item label="用户唯一标识" required>
             mac
           </el-form-item>
-          <el-form-item label="业务来源" prop="bussinessSource">
-            <el-input class="title-input" v-model="basicForm.bussinessSource" :disabled="isRead"/>
+          <el-form-item label="业务来源" prop="platformName">
+            <el-input class="title-input" v-model="basicForm.platformName" :disabled="isRead"/>
           </el-form-item>
           <el-form-item label="运营后台请求间隔" required>
             {{basicForm.createTime}}
             <i class="nuit">单位：秒</i>
           </el-form-item>
           <el-form-item label="适用场景" required>
-            {{basicForm.createTime}} xx
+            {{basicForm.createTime}}
           </el-form-item>
           <!-- <el-form-item label="流类型">
             {{streamType}}
@@ -166,7 +129,7 @@ import AssignVideoTab from './AssignVideoTab'
 import titleMixin from '@/mixins/title'
 import { cloneDeep } from 'lodash'
 const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picInfoList'] // picInfoList兼容预览，可转换为picList
-const params = ['name', 'source', 'bussinessSource', 'status']
+const params = ['name', 'source', 'platformName', 'status']
 const streamTypeGroupOption = [
   {
     label: '普通流',
@@ -250,11 +213,11 @@ export default {
         height: undefined
       },
       basicFormRules: {
-        name: [
+        recName: [
           { required: true, message: '请输入名称', trigger: 'blur' },
           { max: 45, message: '推荐流名称不得超出45个字符', trigger: 'blur' }
         ],
-        bussinessSource: [
+        platformName: [
           { required: true, message: '请输入业务来源', trigger: 'blur' }
         ]
       },
@@ -998,18 +961,19 @@ export default {
       return param
     },
     fetchData (version) {
-      this.$service.getMediaAutomationDetial({ id: this.id, version }).then(data => {
+      this.$service.getNewMediaAutomationDetial({ id: this.id, version }).then(data => {
         this.setBasicInfo(data)
       })
     },
     setBasicInfo (data) {
       let basicForm = this.basicForm
       basicForm.id = data.id
-      basicForm.name = data.name
+      basicForm.recName = data.recName
       basicForm.openStatus = data.openStatus
       basicForm.type = data.type || 'normal'
       basicForm.currentVersion = data.currentVersion
       basicForm.duplicateVersion = data.duplicateVersion
+      basicForm.platformName = data.platformName
       basicForm.status = data.status
       basicForm.source = data.source
       this.videoTabs = []
@@ -1043,7 +1007,7 @@ export default {
   created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
-      this.$service.getMediaAutomationDetial({ id: this.id, version: this.version }).then(data => {
+      this.$service.getNewMediaAutomationDetial({ id: this.id, version: this.version }).then(data => {
         this.setBasicInfo(data)
       })
     }

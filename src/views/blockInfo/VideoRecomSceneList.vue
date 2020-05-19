@@ -1,0 +1,172 @@
+<template>
+    <ContentCard class="content">
+      <ContentWrapper>
+        <template>
+            <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+                <el-tab-pane label="主板上板块填充" name="first" disabled></el-tab-pane>
+                <el-tab-pane label="主页上推荐位填充" name="second" disabled></el-tab-pane>
+                <el-tab-pane label="影片相关推荐" name="third"></el-tab-pane>
+                <el-tab-pane label="搜索页猜你想找" name="fourth"></el-tab-pane>
+            </el-tabs>
+        </template>
+        <template>
+            <el-button type="primary" @click="$emit('create')">添加推荐流与人群</el-button>
+            <!--  常规运营-用推荐流填充-选择推荐流 -->
+            <!-- 批量填充的banner 点进去 精细化定向内容 关联定向人群-->
+        </template>
+        <!-- <ButtonGroupForListPage
+        pageName='tab'
+        @add="handleCreate"
+        @delete="handleDelete"
+        > -->
+        <!-- </ButtonGroupForListPage> -->
+        <Table
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+      />
+      </ContentWrapper>
+    </ContentCard>
+</template>
+<script>
+import { ContentWrapper, Table } from 'admin-toolkit'
+export default {
+  components: {
+    Table,
+    ContentWrapper
+  },
+  props: [
+    'contentType',
+    'mode',
+    // 'contentForm',
+    'data',
+    'source',
+    // 'pannel',
+    'pannelGroupId',
+    'hideTitleOptions',
+    'checkCrowd',
+    'isInterveneBlock'
+  ],
+  data () {
+    return {
+      filter: this.genDefaultFilter(),
+      showCrowdSelector: false,
+      activeName: '',
+      dialogFormVisible: false,
+      form: {},
+      firstPanel: {},
+      contentForm: {
+        pannelResource: 'o_tencent',
+        dmpRegistryInfo: '',
+        recStreamPanelRls: ''
+      },
+      pagination: {
+        currentPage: 1
+      },
+      table: {
+        props: {},
+        data: [],
+        header: [
+          {
+            label: '推荐流名称',
+            prop: 'recStreamName'
+          },
+          {
+            label: '人群ID',
+            width: '150',
+            prop: 'dmpCrowdId'
+          },
+          {
+            label: '优先级',
+            prop: ''
+          },
+          {
+            label: '操作',
+            fixed: 'right',
+            width: 180,
+            render: (h, { row }) => {
+              return h('div', [
+                h('el-button', {
+                  props: { type: 'text' },
+                  on: {
+                    click: (event) => {
+                      event.stopPropagation()
+                      this.handleDel(row)
+                    }
+                  }
+                }, '删除')
+              ])
+            }
+          }
+        ],
+        selected: [],
+        selectionType: 'multiple'
+      }
+    }
+  },
+  methods: {
+    fetchData () {
+      const filter = this.parseFilter()
+      this.$service.getMediaSceneList(filter).then(data => {
+        this.pagination.total = data.total
+        // data.rows = data.rows.map(item => {
+        //   item.picSize = item.picSize.join(',')
+        //   return item
+        // })
+        this.table.data = data.rows
+      })
+    },
+    handleClick () {},
+    handleSelectBlockRecStreamEnd (selected) {
+      const { recId, recName, recCategory, flag: recFlag } = selected[0]
+      this.firstPanel.recStreamPanelRls = {
+        recId,
+        recName,
+        recCategory,
+        recFlag
+      }
+    },
+    genDefaultFilter () {
+      return {
+        page: 1,
+        rows: 10
+      }
+    },
+    parseFilter () {
+      const { filter, pagination } = this
+      if (pagination) {
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
+      }
+      return filter
+    },
+    handleSelectCrowdStart () {
+      this.showCrowdSelector = true
+    },
+    handleSelectCrowdCancel () {
+      this.showCrowdSelector = false
+    },
+    handleSelectCrowdEnd (policy, crowd) {
+      this.$set(this.contentForm, 'dmpRegistryInfo', {
+        dmpPolicyId: policy.value,
+        dmpCrowdId: crowd.value,
+        dmpPolicyName: policy.label,
+        dmpCrowdName: crowd.label
+      })
+      this.$sendEvent({
+        type: 'create_block_dmp',
+        payload: {
+          type: 'common'
+        }
+      })
+      this.showCrowdSelector = false
+    },
+    handleDel () {
+      alert('删除')
+    }
+  },
+  created () {
+    this.fetchData()
+  }
+}
+</script>
