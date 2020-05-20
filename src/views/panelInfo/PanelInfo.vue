@@ -213,8 +213,8 @@
                           @input="handleInputFlagTagVector"
                           active-color="#13ce66"
                           inactive-color="grey" />
-                        <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.category_id>
-                          <span>可引导标签：{{firstPanel.panelTagVectorInfo.category_name}}</span>
+                        <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.categoryCode>
+                          <span>可引导标签：{{firstPanel.panelTagVectorInfo.categoryName}}</span>
                           <TagTypeSelector v-model="firstPanel.panelTagVectorInfo.focusCategory">
                             <span slot="tip" />
                           </TagTypeSelector>
@@ -584,8 +584,8 @@
                         :disabled="true"
                         active-color="#13ce66"
                         inactive-color="grey" />
-                      <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.category_id>
-                        <span>可引导标签：{{firstPanel.panelTagVectorInfo.category_name}}</span>
+                      <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.categoryCode>
+                        <span>可引导标签：{{firstPanel.panelTagVectorInfo.categoryName}}</span>
                         <TagTypeSelector :disabled="true" v-model="firstPanel.panelTagVectorInfo.focusCategory">
                           <span slot="tip" />
                         </TagTypeSelector>
@@ -1235,9 +1235,9 @@ export default {
         }, //  标签版块信息
         flagTagVector: 0, // 是否开启版块标签引导
         panelTagVectorInfo: {
-          category_id: undefined,
+          categoryCode: undefined,
           focusCategory: undefined, // 跳转分类
-          category_name: undefined
+          categoryName: undefined
         }, // 开启标签版块引导的相关信息
         ...preset
       }
@@ -1643,9 +1643,9 @@ export default {
         if (!isValid) {
           this.firstPanel.flagTagVector = 0
           this.firstPanel.panelTagVectorInfo = {
-            category_id: undefined,
+            categoryCode: undefined,
             focusCategory: undefined,
-            category_name: undefined
+            categoryName: undefined
           }
         }
       }
@@ -3087,9 +3087,9 @@ export default {
             item.tagPanelInfo = item.tagPanelInfo || {}
             item.flagTagVector = item.flagTagVector || 0
             item.panelTagVectorInfo = item.panelTagVectorInfo || {
-              category_id: undefined,
+              categoryCode: undefined,
               focusCategory: undefined,
-              category_name: undefined
+              categoryName: undefined
             }
             return item
           })
@@ -3418,9 +3418,9 @@ export default {
       } else {
         firstPanel.flagTagVector = 0
         firstPanel.panelTagVectorInfo = {
-          category_id: undefined,
+          categoryCode: undefined,
           focusCategory: undefined,
-          category_name: undefined
+          categoryName: undefined
         }
       }
     },
@@ -3444,8 +3444,8 @@ export default {
       this.$service.getVectorTag({ coocaaVIds: ids.join(',') }).then(data => {
         data = data || {}
         firstPanel.panelTagVectorInfo = {
-          category_id: data.tagId,
-          category_name: data.tagName
+          categoryCode: data.tagCode,
+          categoryName: data.tagName
         }
         if (JSON.stringify(data) === '{}') {
           this.firstPanel.flagTagVector = 0
