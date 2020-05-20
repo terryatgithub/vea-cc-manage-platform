@@ -583,6 +583,15 @@
         />
         客户端曝光X次之后刷新推荐位
       </el-form-item>
+      <el-form-item label="开启推荐位引导标签">
+        <el-switch
+          :disabled="isReadonly"
+          :value="!!contentForm.flagTagVector"
+          @input="handleInputFlagTagVector"
+          active-color="#13ce66"
+          inactive-color="grey">
+        </el-switch>
+      </el-form-item>
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
         <el-input clearable v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
       </el-form-item>
@@ -899,6 +908,10 @@ export default {
       const data = this.data
       return [data.blockInfo.width, data.blockInfo.height]
     },
+    layoutIsTitle () {
+      const data = this.data
+      return data.layoutIsTitle
+    },
     postSize () {
       const blockInfo = this.data.blockInfo || {}
       const width = blockInfo.width || 200
@@ -1157,6 +1170,18 @@ export default {
           blockType: 'normal'
         }
       }
+    },
+    handleInputFlagTagVector (val) {
+      if (this.contentForm.coverType !== 'media') {
+        return this.$message('推荐位的配置必须是影片')
+      }
+      if (this.layoutIsTitle === 1) {
+        return this.$message('推荐位的布局不能是带标题布局')
+      }
+      if (this.resolution[0] < 410) {
+        return this.$message('推荐位宽度必须>=410')
+      }
+      this.contentForm.flagTagVector = val ? 1 : 0
     },
     genParams (openMode) {
       return {
