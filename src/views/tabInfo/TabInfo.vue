@@ -79,7 +79,7 @@
                 </el-form-item>
 
                 <el-form-item label="标题图片">
-                  <cc-global-picture-selector
+                  <GlobalPictureSelector
                     title="选择素材"
                     @select-end="handleSelectTitleIcon('imgOnSelected', $event)"
                     picture-resolution="178*80"
@@ -91,9 +91,9 @@
                       </template>
                       <div class="tab-title-icon__title">选中</div>
                     </el-form-item>
-                  </cc-global-picture-selector>
+                  </GlobalPictureSelector>
 
-                  <cc-global-picture-selector
+                  <GlobalPictureSelector
                     title="选择素材"
                     @select-end="handleSelectTitleIcon('imgOnFocus', $event)"
                     picture-resolution="178*80"
@@ -105,9 +105,9 @@
                       </template>
                       <div class="tab-title-icon__title">落焦</div>
                     </el-form-item>
-                  </cc-global-picture-selector>
+                  </GlobalPictureSelector>
 
-                  <cc-global-picture-selector
+                  <GlobalPictureSelector
                     title="选择素材"
                     @select-end="handleSelectTitleIcon('imgOnBlur', $event)"
                     picture-resolution="178*80">
@@ -118,7 +118,7 @@
                       </template>
                       <div class="tab-title-icon__title">非落焦</div>
                     </el-form-item>
-                  </cc-global-picture-selector>
+                  </GlobalPictureSelector>
                 </el-form-item>
 
                 <el-form-item label="固定刷新时间" prop="timeCycle">
@@ -153,8 +153,55 @@
                   </el-form-item>
                   <div class="hint remarks">强制刷新时会导致画面闪动，如无必要，请勿使用</div>
                 </el-form-item>
+                 <el-form-item label="背景图" prop="bgImgUrl">
+                  <GlobalPictureSelector
+                    @select-end="handleSelectBgPicEnd">
+                    <div v-if="tabInfo.bgImgUrl"  class="bg-img-wrapper">
+                      <img
+                        class="bg-img"
+                        referrerpolicy="no-referrer"
+                        :src="tabInfo.bgImgUrl">
+                      <i
+                          v-show="!isReadonly && tabInfo.bgImgUrl"
+                          title="删除背景"
+                          class="el-icon-close"
+                          @click.stop="tabInfo.bgImgUrl = ''"></i>
+                    </div>
+                    <div v-else class="bg-placeholder"></div>
+                  </GlobalPictureSelector>
+                </el-form-item>
+                <el-form-item class="force-refresh-time-list">
+                  <el-form-item label="线落焦色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                  </el-form-item>
+                  <el-form-item label="面落焦色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                  </el-form-item>
+                  <el-form-item label="推荐位标题色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                  </el-form-item>
+                </el-form-item>
+                <el-form-item class="force-refresh-time-list">
+                  <el-form-item label="推荐位标题色(落焦)" label-width="180px">
+                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                  </el-form-item>
+                  <el-form-item label="板块标题色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                  </el-form-item>
+                </el-form-item>
+                <el-form-item  class="force-refresh-time-list">
+                  <el-form-item label="插件包名" label-width="80px">
+                    <el-input></el-input>
+                  </el-form-item>
+                  <el-form-item label="插件分类名" label-width="100px">
+                    <el-input></el-input>
+                  </el-form-item>
+                  <el-form-item label="插件主页最低版本" label-width="140px">
+                    <el-input></el-input>
+                  </el-form-item>
+                </el-form-item>
+                <el-form-item label="插件扩展参数"></el-form-item>
               </div>
-
               <div v-if="mode === 'edit'|| mode ==='replicate'">
               <div class="form-legend-header" @click="handleTabDataClick">
                 <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
@@ -360,7 +407,7 @@
                   </el-form-item>
 
                   <el-form-item label="专题版面大背景" prop="alumbTabBg">
-                    <cc-global-picture-selector
+                    <GlobalPictureSelector
                       title="选择素材"
                       @select-end="handleSelectBgEnd"
                       picture-resolution="1920*1080"
@@ -372,7 +419,7 @@
                     </div>
                   </el-form-item>
                   <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg">
-                    <cc-global-picture-selector
+                    <GlobalPictureSelector
                       title="选择长图素材"
                       @select-end="handleSelectLongBgEnd"
                       :query-long-poster="1"
@@ -942,7 +989,6 @@ export default {
     'cc-panel-selector-el': PanelSelector,
     'cc-business-type-selector': BusinessTypeSelector,
     'cc-appid-selector': AppIdSelector,
-    'cc-global-picture-selector': GlobalPictureSelector,
     'cc-float-window-selector': FloatWindowSelector,
     'cc-icon-selector': IconSelector,
     'cc-virtual-tab': VirtualTab,
@@ -963,7 +1009,8 @@ export default {
     RecommendStreamSignSelector,
     RecommendPanelSelector,
     VeLine,
-    BlockExchangeCenter
+    BlockExchangeCenter,
+    GlobalPictureSelector
   },
   data () {
     this.markLine = {
@@ -1376,6 +1423,9 @@ export default {
     this.resetAffix()
   },
   methods: {
+    handleSelectBgPicEnd (post) {
+      this.contentForm.bgImgUrl = post.pictureUrl
+    },
     resetAffix () {
       this.showAffix = false
       this.$nextTick(() => {
@@ -3181,5 +3231,21 @@ export default {
   left -180px
   height 100%
   overflow auto
-
+.bg-img-wrapper
+  position relative
+  width 300px
+  i
+    color red
+    cursor pointer
+    position absolute
+    top 0px
+    right -12px
+.bg-img
+  width 100%
+.bg-placeholder
+  position relative
+  border 1px solid #ccc
+  width 250px
+  height 250px
+  cursor pointer
 </style>
