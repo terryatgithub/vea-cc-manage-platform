@@ -463,7 +463,7 @@
                 <!-- 标签流版块内容 -->
                 <template v-if="pannel.parentType === 'tag'">
                   <el-form-item label="行数">
-                    <el-input-number v-model="firstPanel.tagPanelInfo.rowNum" :min="1" :max="5" />
+                    <el-input-number v-model="firstPanel.tagPanelInfo.rowNum" :min="1" :max="5" step-strictly />
                     <TagTypeSelector v-model="firstPanel.tagPanelInfo.focusCategory">
                       <span slot="label">标签详情页默认落焦分类</span>
                     </TagTypeSelector>
