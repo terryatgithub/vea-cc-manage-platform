@@ -194,7 +194,7 @@
           </div>
         </div>
         <div
-          class="content-wrapper" :class="basicForm.configModel === 'purePoster' ? 'min-height': ''"
+          class="content-wrapper"
            v-if="basicForm.configModel === 'purePoster' || basicForm.configModel === 'sign'">
           <template v-if="basicForm.configModel === 'sign'">
             <BroadcastBlockForm
