@@ -198,6 +198,10 @@ export default {
     },
     handleDel (row) {
       this.$service.removeMediaDmp({ id: row.id }, '删除成功').then(res => {
+        // 当为第11条的时候跳回第一页
+        if (this.table.data.length === 1) {
+          this.pagination.currentPage = this.pagination.currentPage - 1
+        }
         this.fetchData()
       })
     }

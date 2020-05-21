@@ -25,8 +25,8 @@
              <el-button type="primary" @click="handleSelectCrowdStart">添加人群</el-button>
             <el-tag
                 type="primary"
-                v-if="contentForm.dmpPolicyName"
-            >已选择: {{ contentForm.dmpPolicyName}}({{ contentForm.dmpPolicyId }}) / {{ contentForm.dmpCrowdName}}({{ contentForm.dmpCrowdId }})</el-tag>
+                v-if="dmpRegistryInfo.dmpPolicyName"
+            >已选择: {{ dmpRegistryInfo.dmpPolicyName}}({{ dmpRegistryInfo.dmpPolicyId }}) / {{ dmpRegistryInfo.dmpCrowdName}}({{ dmpRegistryInfo.dmpCrowdId }})</el-tag>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleCreate">确定</el-button>
@@ -53,7 +53,9 @@ export default {
     return {
       contentForm: {
         id: '',
-        recName: '',
+        recName: ''
+      },
+      dmpRegistryInfo: {
         dmpPolicyId: '',
         dmpCrowdId: '',
         dmpPolicyName: '',
@@ -66,7 +68,7 @@ export default {
   methods: {
     handleSelectBlockRecStreamEnd (selected) {
       this.contentForm = selected[0]
-      console.log(this.contentForm, '-----d')
+      this.contentForm = Object.assign(this.dmpRegistryInfo, this.contentForm)
     },
     handleSelectCrowdStart () {
       this.showCrowdSelector = true
@@ -75,23 +77,10 @@ export default {
       this.showCrowdSelector = false
     },
     handleSelectCrowdEnd (policy, crowd) {
-      this.contentForm.dmpPolicyId = policy.value
-      this.contentForm.dmpCrowdId = crowd.value
-      this.contentForm.dmpPolicyName = policy.label
-      this.contentForm.dmpCrowdName = crowd.label
-      console.log(this.contentForm.dmpPolicyId, '---d')
-      // this.$set(this.contentForm, 'dmpRegistryInfo', {
-      //   dmpPolicyId: policy.value,
-      //   dmpCrowdId: crowd.value,
-      //   dmpPolicyName: policy.label,
-      //   dmpCrowdName: crowd.label
-      // })
-      this.$sendEvent({
-        type: 'create_block_dmp',
-        payload: {
-          type: 'common'
-        }
-      })
+      this.dmpRegistryInfo.dmpPolicyId = policy.value
+      this.dmpRegistryInfo.dmpCrowdId = crowd.value
+      this.dmpRegistryInfo.dmpPolicyName = policy.label
+      this.dmpRegistryInfo.dmpCrowdName = crowd.label
       this.showCrowdSelector = false
     },
     handleCreate () {
