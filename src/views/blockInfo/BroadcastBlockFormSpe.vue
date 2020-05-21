@@ -120,7 +120,7 @@
         </ResourceSelector>
       </el-form-item>
       <el-form-item label="标题" v-if="isGroupModel">
-        <el-input :value="normalForm.title"></el-input>
+        <el-input v-model="normalForm.subTitle"></el-input>
       </el-form-item>
       <el-form-item label prop="clickParams">
         <div v-if="normalForm.sign === 'manualResource'">
@@ -243,7 +243,6 @@ export default {
     this.$consts.panelCoverTypeOptions.map((item, index) => {
       if (index === 0 || index === 2) {
         this.pannelCoverTypeTwo.push(item)
-        console.log(this.pannelCoverTypeTwo)
       }
     })
   },

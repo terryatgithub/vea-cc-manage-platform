@@ -77,7 +77,7 @@
       </div>
       <!-- {{normalVersionContent正常版本}} -->
       <div class="form-wrap">
-        <!-- group -->
+        <!-- group 正常版本左侧 -->
         <el-row
           :gutter="4"
           class="normal-left-list"
@@ -721,7 +721,6 @@ export default {
       // if (coverType === 'media') {
       //   this.normalForm.coverType = 'media'
       // }
-      console.log(coverType)
     },
     handleRemoveDmpContent (index) {
       this.$confirm('确认删除该内容', '提示', {
@@ -972,7 +971,7 @@ export default {
           })
         })
     },
-    clearFormAll: function () {
+    clearFormAll () {
       // 清空正常版本和低版本数据
       const normalForm = cloneDeep(this.versionForm)
       const lowerForm = cloneDeep(this.versionForm)
@@ -1067,6 +1066,7 @@ export default {
         this.normalForm = this.genDefaultContentForm()
         this.normalVersionContent.push(this.normalForm)
         this.currentIndex = this.normalVersionContent.length - 1
+        console.log(this.currentIndex, '----currentIndex')
       })
     },
     // 组合模式->删除normalForm
@@ -1414,6 +1414,7 @@ export default {
   },
   created () {
     this.normalForm = cloneDeep(this.versionForm)
+    this.normalVersionContent.push(this.normalForm) // 纯图模式下默认给个值展示左边数据
     this.lowerForm = cloneDeep(this.versionForm)
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
