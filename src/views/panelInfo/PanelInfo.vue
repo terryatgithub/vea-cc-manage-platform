@@ -556,7 +556,8 @@
                 <el-form-item label="版块布局" v-if="selectedLayout">
                   <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
                 </el-form-item>
-                <div v-show="pannel.parentType !== 'subscribe'">
+
+                <div v-show="pannel.parentType === 'normal' || pannel.parentType === 'group'">
                   <template v-if="pannelFillType === 1">
                     <el-form-item label="落焦形式" required>
                       {{ $consts.panelFocusText[pannel.focusShape] }}
@@ -572,6 +573,14 @@
                     </el-form-item>
                     <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
                       <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
+                    </el-form-item>
+                    <el-form-item label="第三方内容源左上角标" class="line-height-item">
+                      <el-switch
+                        :value="!!pannel.flagThirdSourceCorner"
+                        @input="pannel.flagThirdSourceCorner = +$event"
+                        :disabled="true"
+                        active-color="#13ce66"
+                        inactive-color="grey" />
                     </el-form-item>
                     <el-form-item
                       v-if="isVideoOrEdu"
@@ -1493,7 +1502,12 @@ export default {
       // 关闭推荐流按钮
       this.pannel.pannelList.forEach(pannelList => {
         pannelList.contentList.forEach(contentList => {
+          // 如果是带标题的布局，清空推荐位引导
+          const layoutIsTitle = layout.layoutIsTitle
           contentList.videoContentList.forEach(videoContent => {
+            if (layoutIsTitle === 1) {
+              videoContent.flagTagVector = 0
+            }
             videoContent.flagSetRec = 0
             videoContent.mediaAutomationBlockRls = {
               refreshCal: 1,
@@ -1638,17 +1652,7 @@ export default {
       this.getSharedTags()
       this.activePage = 'panel_info'
       // 重置版块标签引导
-      if (this.pannel.parentType === 'normal' && this.firstPanel.flagTagVector === 1) {
-        const isValid = this.getVectorTag()
-        if (!isValid) {
-          this.firstPanel.flagTagVector = 0
-          this.firstPanel.panelTagVectorInfo = {
-            categoryCode: undefined,
-            focusCategory: undefined,
-            categoryName: undefined
-          }
-        }
-      }
+      this.firstPanel.flagTagVector === 1 && this.getVectorTag()
     },
     handleSelectSubscribeStart () {
       this.$refs.subscribeSelector.$refs.wrapper.handleSelectStart()
@@ -1729,6 +1733,7 @@ export default {
         insertAfter: activePannel.selectedResources.length + 1
       })
     },
+    // 批量填充
     handleSelectResourceEnd (selectedResources) {
       const resourceSelector = this.$refs.resourceSelector
       const pannel = this.pannel
@@ -1867,6 +1872,8 @@ export default {
       // 计算每个 block 的位置
       this.updatePosition()
       this.getSharedTags()
+      // 校验版块标签引导是否需要关闭
+      this.firstPanel.flagTagVector === 1 && this.getVectorTag()
     },
     handleRemoveTab (indexString) {
       this.$confirm('确认删除该子版块?', '提示', {
@@ -3413,18 +3420,21 @@ export default {
     handleInputFlagTagVector (val) {
       const firstPanel = this.firstPanel
       if (val) {
-        const isExist = this.getVectorTag()
-        isExist && (firstPanel.flagTagVector = 1)
+        const isValid = this.getVectorTag()
+        if (!isValid) {
+          this.$message.info('每个推荐位都必须是媒体资源')
+          firstPanel.flagTagVector = 0
+        } else {
+          firstPanel.flagTagVector = 1
+        }
       } else {
         firstPanel.flagTagVector = 0
-        firstPanel.panelTagVectorInfo = {
-          categoryCode: undefined,
-          focusCategory: undefined,
-          categoryName: undefined
-        }
       }
     },
-    getVectorTag () {
+    fetchVectorTag () {
+      if (!this.isShowTagsField || this.pannel.parentType !== 'normal') {
+        return false
+      }
       const firstPanel = this.firstPanel
       const contentList = firstPanel.contentList
       let ids = []
@@ -3433,7 +3443,6 @@ export default {
         for (let j = 0; j < videoContentList.length; j++) {
           const videoItem = videoContentList[j]
           if (videoItem.coverType !== 'media') {
-            this.$message.error('每个推荐位都必须是媒体资源')
             return false
           } else {
             const id = videoItem.extraValue1
@@ -3453,6 +3462,18 @@ export default {
         }
       })
       return true
+    },
+    getVectorTag () {
+      const isValid = this.fetchVectorTag()
+      if (!isValid) {
+        this.firstPanel.flagTagVector = 0
+        this.firstPanel.panelTagVectorInfo = {
+          categoryCode: undefined,
+          focusCategory: undefined,
+          categoryName: undefined
+        }
+      }
+      return isValid
     },
     handleShowThirdSourceCorner (isShow) {
       const pannelList = this.pannel.pannelList
@@ -3590,4 +3611,7 @@ export default {
 .radio-block-select >>> .el-radio
   display block
   margin-top 10px
+.line-height-item >>> .el-form-item__label
+  line-height 23px
+  margin-top 3px
 </style>
