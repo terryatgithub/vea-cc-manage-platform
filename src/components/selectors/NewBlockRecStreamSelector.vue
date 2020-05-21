@@ -16,7 +16,7 @@
         :filter="filter"
         :filterSchema="filterSchema"
         :pagination="pagination"
-        :select-end-on-dbl-click="true"
+        :select-end-on-dbl-click="false"
         @pagination-change="fetchData"
         @filter-change="handleFilterChange"
         @filter-reset="handleResetFilter"
@@ -25,7 +25,7 @@
         <div slot="filter">
           <el-form :inline="true" :model="filter" @keypress.enter.native.prevent="handleFilterChange">
             <el-form-item>
-              <el-input v-model="filter.recId" clearable placeholder="推荐流ID"></el-input>
+              <el-input type="number" v-model="filter.id" clearable placeholder="推荐流ID"></el-input>
             </el-form-item>
             <el-form-item>
               <el-input v-model="filter.recName" placeholder="推荐流名称" clearable></el-input>
@@ -99,11 +99,11 @@ export default {
   },
   methods: {
     getId (item) {
-      return item.recId
+      return item.id
     },
     genDefaultFilter () {
       return {
-        recId: '',
+        id: '',
         recName: ''
       }
     },

@@ -13,15 +13,15 @@
             @submit.native.prevent="handleFilterChange"
             @reset.native.prevent="handleFilterReset">
             <el-form-item>
-                <el-input clearable v-model="filter.id" placeholder="影片流ID" title="id"></el-input>
+                <el-input type="number" clearable v-model="filter.id" placeholder="推荐流ID" title="id"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input clearable v-model="filter.name" placeholder="影片流名称"></el-input>
+                <el-input clearable v-model="filter.name" placeholder="推荐流名称"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-select  v-model="filter.source" placeholder="内容源" clearable>
                     <el-option
-                    v-for="(item , index) in sourceOption"
+                    v-for="(item,index) in sourceOption"
                     :key="index"
                     :label="item.label"
                     :value="item.value"
@@ -92,7 +92,7 @@ export default {
       resourceType: 'broadcastBlock',
       filter: this.genDefaultFilter(),
       filterSchema: null,
-      sourceOption: [],
+      sourceOption: this.$consts.sourceOptionsWithEmpty,
       sceneOption: [],
       pagination: {
         currentPage: 1,
@@ -176,10 +176,12 @@ export default {
       return {
         page: 1,
         rows: 10,
-        scene: ''
+        scene: '',
+        defalutScene: []
       }
     },
     handleFilterReset () {
+      this.defalutScene = []
       this.filter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()

@@ -367,3 +367,13 @@ export function getNewMediaAutomationDetial (params) {
     params
   })
 }
+// 新推荐流更新优先级接口
+export function dmpUpdatePriority (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/v1/recStreamDmp/updatePriority.html',
+    data: {
+      jsonStr: JSON.stringify(data)
+    }
+  })
+}

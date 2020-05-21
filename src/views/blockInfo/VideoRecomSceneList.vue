@@ -6,7 +6,7 @@
       :pagination="pagination">
         <template>
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick(activeName)">
-                <el-tab-pane label="主板上板块填充" name="1" disabled></el-tab-pane>
+                <el-tab-pane label="主页上板块填充" name="1" disabled></el-tab-pane>
                 <el-tab-pane label="主页上推荐位填充" name="2" disabled></el-tab-pane>
                 <el-tab-pane label="影片相关推荐" name="3" disabled></el-tab-pane>
                 <el-tab-pane label="搜索页猜你想找" name="4"></el-tab-pane>
@@ -82,7 +82,23 @@ export default {
           },
           {
             label: '优先级',
-            prop: 'priority'
+            prop: 'priority',
+            render: (h, { row }) => {
+              return h('el-input', {
+                style: { width: '100px' },
+                props: {
+                  value: row.priority
+                },
+                on: {
+                  input: (value) => {
+                    row.priority = value
+                  },
+                  blur: (value) => {
+                    this.handleUpdatePriority(row)
+                  }
+                }
+              })
+            }
           },
           {
             label: '操作',
@@ -109,6 +125,18 @@ export default {
     }
   },
   methods: {
+    handleUpdatePriority (row) {
+      let params = {}
+      params.id = row.id
+      params.priority = row.priority
+      var reg = /^\+?[1-9]\d*$/
+      if (!reg.test(params.priority)) return this.$message.error('只能输入数字')
+      this.$service.dmpUpdatePriority(params).then(res => {
+        if (res.success) {
+          this.fetchData()
+        }
+      })
+    },
     fetchData () {
       const filter = this.parseFilter()
       this.$service.getMediaSceneList(filter).then(data => {
@@ -169,8 +197,7 @@ export default {
       this.showCrowdSelector = false
     },
     handleDel (row) {
-      this.$service.removeMediaDmp({ id: row.id }).then(res => {
-        this.$message.success('删除成功！')
+      this.$service.removeMediaDmp({ id: row.id }, '删除成功').then(res => {
         this.fetchData()
       })
     }

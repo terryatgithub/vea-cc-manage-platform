@@ -37,7 +37,7 @@
             <el-input class="title-input" v-model="basicForm.platformName" :disabled="isRead"/>
           </el-form-item>
           <el-form-item label="运营后台请求间隔" required>
-            {{basicForm.createTime}}
+            {{basicForm.requestInterval}}
             <i class="nuit">单位：秒</i>
           </el-form-item>
           <el-form-item label="适用场景" required>
@@ -199,7 +199,8 @@ export default {
         openStatus: undefined,
         currentVersion: undefined,
         flagAllVideoPoster: 0,
-        type: 'normal'
+        type: 'normal',
+        requestInterval: ''
       },
       isCollapseBase: false,
       isCollapseVideo: false,
@@ -997,6 +998,7 @@ export default {
       basicForm.status = data.status
       basicForm.source = data.source
       basicForm.scene = data.scene
+      basicForm.requestInterval = data.requestInterval
       this.videoTabs = []
       this.videoTabs = (data.videoList || [])
         .map(item => {

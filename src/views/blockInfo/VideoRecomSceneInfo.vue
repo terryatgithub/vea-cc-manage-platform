@@ -25,8 +25,8 @@
              <el-button type="primary" @click="handleSelectCrowdStart">添加人群</el-button>
             <el-tag
                 type="primary"
-                v-if="contentForm.dmpRegistryInfo"
-            >已选择: {{ contentForm.dmpRegistryInfo.dmpPolicyName}}({{ contentForm.dmpRegistryInfo.dmpPolicyId }}) / {{ contentForm.dmpRegistryInfo.dmpCrowdName}}({{ contentForm.dmpRegistryInfo.dmpCrowdId }})</el-tag>
+                v-if="contentForm.dmpPolicyName"
+            >已选择: {{ contentForm.dmpPolicyName}}({{ contentForm.dmpPolicyId }}) / {{ contentForm.dmpCrowdName}}({{ contentForm.dmpCrowdId }})</el-tag>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleCreate">确定</el-button>
@@ -52,6 +52,8 @@ export default {
   data () {
     return {
       contentForm: {
+        id: '',
+        recName: '',
         dmpPolicyId: '',
         dmpCrowdId: '',
         dmpPolicyName: '',
@@ -73,12 +75,17 @@ export default {
       this.showCrowdSelector = false
     },
     handleSelectCrowdEnd (policy, crowd) {
-      this.$set(this.contentForm, 'dmpRegistryInfo', {
-        dmpPolicyId: policy.value,
-        dmpCrowdId: crowd.value,
-        dmpPolicyName: policy.label,
-        dmpCrowdName: crowd.label
-      })
+      this.contentForm.dmpPolicyId = policy.value
+      this.contentForm.dmpCrowdId = crowd.value
+      this.contentForm.dmpPolicyName = policy.label
+      this.contentForm.dmpCrowdName = crowd.label
+      console.log(this.contentForm.dmpPolicyId, '---d')
+      // this.$set(this.contentForm, 'dmpRegistryInfo', {
+      //   dmpPolicyId: policy.value,
+      //   dmpCrowdId: crowd.value,
+      //   dmpPolicyName: policy.label,
+      //   dmpCrowdName: crowd.label
+      // })
       this.$sendEvent({
         type: 'create_block_dmp',
         payload: {
@@ -88,14 +95,20 @@ export default {
       this.showCrowdSelector = false
     },
     handleCreate () {
+      if (this.contentForm.id === '') {
+        return this.$message.error('请选择推荐流')
+      }
+      // if (this.contentForm.dmpRegistryInfo === undefined) {
+      //   return this.$message.error('未选择')
+      // }
       let contentForm = {}
       contentForm.scene = '4'
       contentForm.recStreamId = this.contentForm.id
-      contentForm.dmpPolicyId = this.contentForm.dmpRegistryInfo.dmpPolicyId
-      contentForm.dmpCrowdId = this.contentForm.dmpRegistryInfo.dmpCrowdId
-      contentForm.dmpCrowdName = this.contentForm.dmpRegistryInfo.dmpCrowdName
-      contentForm.dmpPolicyName = this.contentForm.dmpRegistryInfo.dmpPolicyName
-      console.log(contentForm, '-----fuuds')
+      contentForm.dmpPolicyId = this.contentForm.dmpPolicyId
+      contentForm.dmpCrowdId = this.contentForm.dmpCrowdId
+      contentForm.dmpCrowdName = this.contentForm.dmpCrowdName
+      contentForm.dmpPolicyName = this.contentForm.dmpPolicyName
+      console.log(contentForm, '--con')
       this.$service.saveMediaRecStreamDmp(contentForm).then(res => {
         this.$emit('upsert-end')
       })
