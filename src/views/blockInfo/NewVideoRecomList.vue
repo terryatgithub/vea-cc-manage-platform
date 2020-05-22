@@ -16,7 +16,7 @@
                 <el-input type="number" clearable v-model="filter.id" placeholder="推荐流ID" title="id"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input clearable v-model="filter.name" placeholder="推荐流名称"></el-input>
+                <el-input clearable v-model="filter.recName" placeholder="推荐流名称"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-select  v-model="filter.source" placeholder="内容源" clearable>
