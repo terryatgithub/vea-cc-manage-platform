@@ -583,9 +583,8 @@
         />
         客户端曝光X次之后刷新推荐位
       </el-form-item>
-      <el-form-item label="开启推荐位引导标签">
+      <el-form-item label="开启推荐位引导标签" v-if="contentForm.coverType === 'media'">
         <el-switch
-          v-if="contentForm.coverType === 'media'"
           :disabled="isReadonly"
           :value="!!contentForm.flagTagVector"
           @input="handleInputFlagTagVector"
