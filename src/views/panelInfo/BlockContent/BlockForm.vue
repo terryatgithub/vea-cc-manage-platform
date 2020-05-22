@@ -585,6 +585,7 @@
       </el-form-item>
       <el-form-item label="开启推荐位引导标签">
         <el-switch
+          v-if="contentForm.coverType === 'media'"
           :disabled="isReadonly"
           :value="!!contentForm.flagTagVector"
           @input="handleInputFlagTagVector"
@@ -892,6 +893,10 @@ export default {
     'isInterveneBlock'
   ],
   computed: {
+    shouldCloseTagVector () {
+      const isClose = this.contentForm.coverType !== 'media' || this.hideTitleOptions || this.resolution[0] < 410
+      return isClose
+    },
     maskLifeInfo () {
       return this.contentForm.maskLifeInfo
     },
@@ -907,10 +912,6 @@ export default {
     resolution () {
       const data = this.data
       return [data.blockInfo.width, data.blockInfo.height]
-    },
-    layoutIsTitle () {
-      const data = this.data
-      return data.layoutIsTitle
     },
     postSize () {
       const blockInfo = this.data.blockInfo || {}
@@ -971,6 +972,11 @@ export default {
           title: ''
         }
         this.contentForm.bgImgUrl = ''
+      }
+    },
+    shouldCloseTagVector (bool) {
+      if (bool) {
+        this.contentForm.flagTagVector = 0
       }
     }
   },
@@ -1175,8 +1181,8 @@ export default {
       if (this.contentForm.coverType !== 'media') {
         return this.$message('推荐位的配置必须是影片')
       }
-      if (this.layoutIsTitle === 1) {
-        return this.$message('推荐位的布局不能是带标题布局')
+      if (this.hideTitleOptions) {
+        return this.$message('推荐位不能是带标题的推荐位')
       }
       if (this.resolution[0] < 410) {
         return this.$message('推荐位宽度必须>=410')
