@@ -6,7 +6,7 @@
       :pagination="pagination">
         <template>
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick(activeName)">
-                <el-tab-pane label="主页上板块填充" name="1" disabled></el-tab-pane>
+                <el-tab-pane label="主页上版块填充" name="1" disabled></el-tab-pane>
                 <el-tab-pane label="主页上推荐位填充" name="2" disabled></el-tab-pane>
                 <el-tab-pane label="影片相关推荐" name="3" disabled></el-tab-pane>
                 <el-tab-pane label="搜索页猜你想找" name="4"></el-tab-pane>
