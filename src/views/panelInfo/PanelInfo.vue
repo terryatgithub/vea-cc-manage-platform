@@ -1499,45 +1499,43 @@ export default {
       })
       this.selectedLayout = layout
       this.updateBlockCount(layout, blockCount)
-      // 关闭推荐流按钮
-      this.pannel.pannelList.forEach(pannelList => {
-        pannelList.contentList.forEach(contentList => {
-          // 如果是带标题的布局，清空推荐位引导
-          const layoutIsTitle = layout.layoutIsTitle
-          contentList.videoContentList.forEach(videoContent => {
-            if (layoutIsTitle === 1) {
-              videoContent.flagTagVector = 0
-            }
-            videoContent.flagSetRec = 0
-            videoContent.mediaAutomationBlockRls = {
-              refreshCal: 1,
-              mediaAutomationId: '',
-              blockType: 'normal'
-            }
-          })
-        })
-      })
-      // 如果选择的是不含价格的布局，要删除所有价格信息
-      if (layout.layoutJsonParsed.contents[0].type !== 'Mall') {
-        this.pannel.pannelList.forEach(function (item) {
-          item.contentList.forEach(function (cItem) {
-            ;[]
-              .concat(
-                cItem.videoContentList || [],
-                cItem.specificContentList || []
-              )
-              .forEach(function (vItem) {
-                vItem.price = undefined
-                vItem.secKillPrice = undefined
-              })
-          })
-        })
-      }
+
       // 重新计算所有 pannel 的推荐位
       let i = this.pannel.pannelList.length
       while (--i >= 0) {
         this.updatePosition(i)
       }
+
+      const blockInfoList = this.blockList[this.activePannelIndex]
+      // 如果选择的是不含价格的布局，要删除所有价格信息
+      const isDelPrice = (layout.layoutJsonParsed.contents[0].type !== 'Mall')
+      this.pannel.pannelList.forEach(pannelList => {
+        pannelList.contentList.forEach((cItem, cIndex) => {
+          const blockInfo = blockInfoList[cIndex]
+          ;[]
+            .concat(
+              cItem.videoContentList || [],
+              cItem.specificContentList || []
+            )
+            .forEach(vItem => {
+              // 如果是带标题的推荐位，清空推荐位引导
+              if (blockInfo.title_info || blockInfo.width < 410) {
+                vItem.flagTagVector = 0
+              }
+              // 关闭推荐流按钮
+              vItem.flagSetRec = 0
+              vItem.mediaAutomationBlockRls = {
+                refreshCal: 1,
+                mediaAutomationId: '',
+                blockType: 'normal'
+              }
+              if (isDelPrice) {
+                vItem.price = undefined
+                vItem.secKillPrice = undefined
+              }
+            })
+        })
+      })
       this.getSharedTags()
       // 清除异形焦点
       this.pannel.focusImgUrl = ''

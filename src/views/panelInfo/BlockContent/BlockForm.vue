@@ -892,10 +892,6 @@ export default {
     'isInterveneBlock'
   ],
   computed: {
-    shouldCloseTagVector () {
-      const isClose = this.contentForm.coverType !== 'media' || this.hideTitleOptions || this.resolution[0] < 410
-      return isClose
-    },
     maskLifeInfo () {
       return this.contentForm.maskLifeInfo
     },
@@ -971,11 +967,6 @@ export default {
           title: ''
         }
         this.contentForm.bgImgUrl = ''
-      }
-    },
-    shouldCloseTagVector (bool) {
-      if (bool) {
-        this.contentForm.flagTagVector = 0
       }
     }
   },

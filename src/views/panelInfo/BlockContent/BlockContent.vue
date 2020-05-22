@@ -315,6 +315,9 @@ export default {
         contentForm.tvLiveInfo = genDefaultTvLiveInfo()
         contentForm.videoContentType = 'tvLive'
       }
+      if (coverType !== 'media' && contentForm.flagTagVector === 1) {
+        contentForm.flagTagVector = 0
+      }
       this.$set(contentList, activeIndex, contentForm)
     },
     handleRemoveContent (index, contentType) {
