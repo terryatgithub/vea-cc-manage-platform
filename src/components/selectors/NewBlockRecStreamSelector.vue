@@ -73,11 +73,18 @@ export default {
           },
           {
             label: '内容源',
-            prop: 'source'
+            prop: 'source',
+            render: (h, { row }) => {
+              return this.$consts.sourceTextWithNone[row.source]
+            }
           },
           {
             label: '适用场景',
-            prop: 'scene'
+            prop: 'scene',
+            render: (h, { row }) => {
+              var scene = this.handleScene(row)
+              return h('div', {}, scene)
+            }
           },
           {
             label: '推荐业务来源',
@@ -87,10 +94,11 @@ export default {
         data: [],
         selected: [],
         selectionType: 'multiple'
-      }
+      },
+      sceneOption: []
     }
   },
-  props: ['title', 'disabled', 'isLive', 'source', 'selectionType', 'initSelected'],
+  props: ['title', 'disabled', 'isLive', 'scene', 'source', 'selectionType', 'initSelected'],
   computed: {
   },
   components: {
@@ -98,13 +106,26 @@ export default {
     BaseSelector
   },
   methods: {
+    handleScene (row) {
+      let sceneNames = [] // this.sceneNames = [] 错误 render不能操作dom?
+      row.scene.split(',').map(item => {
+        this.sceneOption.map(element => {
+          if (item === element.dictEnName) {
+            sceneNames.push(element.dictCnName)
+          }
+        })
+      })
+      return (sceneNames.join(','))
+    },
     getId (item) {
       return item.id
     },
     genDefaultFilter () {
       return {
         id: '',
-        recName: ''
+        recName: '',
+        source: this.source,
+        scene: this.scene
       }
     },
     handleSelectStart () {
@@ -155,9 +176,17 @@ export default {
         this.pagination.total = data.total || 0
         this.table.data = data.rows || []
       })
+    },
+    fetchMediaSence () {
+      this.$service.getMediaSence().then(res => {
+        this.sceneOption = res
+      })
     }
   },
   created () {
+  },
+  mounted () {
+    this.fetchMediaSence()
   }
 }
 </script>

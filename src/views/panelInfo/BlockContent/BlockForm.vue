@@ -577,6 +577,8 @@
         <NewBlockRecStreamSelector
             title="选择新推荐流"
             selection-type="single"
+            :source="source"
+            :scene="scene"
             @select-end="handleSelectBlockRecStreamEnd"
             style="margin: 0 0 20px 160px;">
         </NewBlockRecStreamSelector>
@@ -865,9 +867,9 @@ export default {
           { required: false, validator: checkSecKill, trigger: 'blur' }
         ],
         dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }],
-        'mediaAutomationBlockRls.mediaAutomationId': [
-          { required: true, message: '当开关开启时必填' }
-        ],
+        // 'mediaAutomationBlockRls.mediaAutomationId': [
+        //   { required: true, message: '当开关开启时必填' }
+        // ],
         'mediaAutomationBlockRls.refreshCal': [
           { required: true, message: '当开关开启时必填', trigger: 'blur' }
         ],
@@ -881,7 +883,8 @@ export default {
         'tvLiveInfo.channelId': [
           { required: true, message: '请选择频道', trigger: 'blur' }
         ]
-      }
+      },
+      scene: '2'
     }
   },
   props: [
@@ -1466,6 +1469,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.source, '-=========')
     const contentForm = this.contentForm
     const redundantParams = contentForm.redundantParams
     if (redundantParams.openMode === 'picture' && redundantParams.pictureUrl) {

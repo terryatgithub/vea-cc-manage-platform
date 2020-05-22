@@ -378,6 +378,7 @@
                           title="选择推荐流"
                           selection-type="single"
                           :source="pannel.pannelResource"
+                          :scene="scene"
                           @select-end="handleSelectBlockRecNew">
                       </NewBlockRecStreamSelector>
                       <template v-if="firstPanel.recStreamPanelRls">
@@ -805,6 +806,7 @@ export default {
       ]
     }
     return {
+      scene: '1',
       // 数据展现
       extend: extend,
       settings: {
