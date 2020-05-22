@@ -200,7 +200,12 @@ export default {
       originSelected: []
     }
   },
-  props: ['isLive', 'source', 'selectionType'],
+  props: ['isLive', 'source', 'selectionType', 'tabType'],
+  computed: {
+    isAlbumTab () {
+      return this.tabType === 2
+    }
+  },
   methods: {
     handleSelectStart () {
       this.$emit('select-start')
@@ -210,6 +215,20 @@ export default {
       this.$refs.wrapper.handleSelectCancel()
     },
     handleSelectEnd (data) {
+      if (!this.isAlbumTab) {
+        // 校验版块是否存在视频播放推荐位
+        const validPanelVideoPlugin = function (pannelList) {
+          return pannelList.some(panel => {
+            return panel.contentList.some(content => {
+              return (content.videoContentList[0] || {}).pluginType === 'REFERENCE_PLAY_VIDEO'
+            })
+          })
+        }
+        const isVideoPlugin = validPanelVideoPlugin(data.pannelList || [])
+        if (isVideoPlugin) {
+          return this.$message.error('【播放视频推荐位】只能配置在专题版面中')
+        }
+      }
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
     },

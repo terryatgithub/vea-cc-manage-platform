@@ -321,6 +321,7 @@
                       <cc-panel-selector-el
                         ref="panelSelector"
                         :source="tabInfo.tabResource"
+                        :tabType="tabInfo.tabType"
                         @select-end="handleSelectPanelEnd"
                       />
                       <el-dropdown>

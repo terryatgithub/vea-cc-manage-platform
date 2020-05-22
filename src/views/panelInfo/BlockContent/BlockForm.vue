@@ -1426,6 +1426,7 @@ export default {
         this.contentForm.pictureUrl = selected.globalPicture
           ? selected.globalPicture.pictureUrl
           : ''
+        this.contentForm.pluginType = selected.pluginType
         // if (selected.referenceData) {
         //     this.contentForm.price = selected.referenceData.price / 100;
         //     this.contentForm.secKillPrice =

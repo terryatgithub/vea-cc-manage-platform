@@ -2827,6 +2827,19 @@ export default {
           return cb(Error('请选择默认落焦'))
         }
       }
+      // 校验一个版块只能有一个视频播放位
+      const isMutiVideo = pannel.pannelList.some(panel => {
+        let videoPluginCount = 0
+        panel.contentList.forEach(content => {
+          if ((content.videoContentList[0] || {}).pluginType === 'REFERENCE_PLAY_VIDEO') {
+            videoPluginCount++
+          }
+        })
+        return videoPluginCount > 1
+      })
+      if (isMutiVideo) {
+        return cb(Error('一个版块只能有一个视频播放推荐位'))
+      }
       cb()
     },
     validateInterveneContentList () {
