@@ -565,8 +565,8 @@
           inactive-color="grey">
         </el-switch>
       </el-form-item>
+      <template v-if="!!contentForm.flagSetRec">
       <RecommendStreamSelector
-        v-if="!!contentForm.flagSetRec"
         :value="contentForm.mediaAutomationBlockRls.mediaAutomationId"
         :disabled="isReadonly"
         :source="source"
@@ -574,6 +574,19 @@
         @select-end="handleSelectRecomStream"
         @del-select="contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
       />
+        <NewBlockRecStreamSelector
+            title="选择新推荐流"
+            selection-type="single"
+            @select-end="handleSelectBlockRecStreamEnd"
+            style="margin: 0 0 20px 160px;">
+        </NewBlockRecStreamSelector>
+        <template v-if="contentForm.mediaAutomationBlockRls.id">
+            已选择: <el-tag>
+            {{ contentForm.mediaAutomationBlockRls.id }}
+            ({{ contentForm.mediaAutomationBlockRls.recName }})
+            </el-tag>
+        </template>
+      </template>
       <el-form-item label="刷新机制" v-if="!!contentForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
         <InputPositiveInt
           clearable
@@ -608,7 +621,6 @@
       :ids="[currentResourceId]"
       @close="showBlockTagDialog = false">
     </TagFrame>
-
   </div>
 </template>
 
@@ -624,6 +636,7 @@ import CommonSelector from '@/components/CommonSelector'
 import CrowdSelector from '@/components/CrowdSelector.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 import ClickEventSelector from '@/components/selectors/ClickEventSelector'
+import NewBlockRecStreamSelector from '@/components/selectors/NewBlockRecStreamSelector'
 import TagFrame from '../TagFrame'
 import {
   getSelectedResource,
@@ -665,6 +678,7 @@ export default {
     TagFrame,
     InputPositiveInt,
     RecommendStreamSelector,
+    NewBlockRecStreamSelector,
     KnowledgeTagSelector,
     MaskAuthorSelector,
     MaskVideoSelector,
@@ -962,6 +976,17 @@ export default {
     }
   },
   methods: {
+    handleSelectBlockRecStreamEnd (selected) {
+      // this.normalForm = selected[0]
+      const { id, recName, recCategory, userToken: recFlag } = selected[0]
+      this.contentForm.mediaAutomationBlockRls = {
+        id,
+        recName,
+        recCategory,
+        recFlag
+      }
+      console.log(this.contentForm.mediaAutomationBlockRls, '-----s')
+    },
     handleInputGDLiveClickType (val) {
       this.contentForm.tvLiveInfo = genDefaultTvLiveInfo({
         clickType: val

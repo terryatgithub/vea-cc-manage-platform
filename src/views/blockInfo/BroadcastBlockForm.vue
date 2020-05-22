@@ -367,7 +367,6 @@ import selectClick from '@/views/blockInfo/selectClick'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
 import BroadcastBlockStatChartViewer from '@/components/statViewer/BroadcastBlockStatChartViewer'
-
 import { getSelectedResource, parseResourceContent, setContentForm, getParams } from './broadcastBlockUtil'
 export default {
   components: {

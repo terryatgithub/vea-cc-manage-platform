@@ -353,7 +353,7 @@
                       >查看规则
                       </el-button>
                     </el-form-item>
-                    <el-form-item
+                    <!-- <el-form-item
                       v-if="pannelFillType === $consts.panelFillTypes.recStream"
                       label="选择推荐流"
                       required>
@@ -368,6 +368,23 @@
                           {{ firstPanel.recStreamPanelRls.recId }}
                           ({{ firstPanel.recStreamPanelRls.recName }})
                         </el-tag>
+                      </template>
+                    </el-form-item> -->
+                    <el-form-item
+                      v-if="pannelFillType === $consts.panelFillTypes.recStream"
+                      label="选择推荐流"
+                      required>
+                      <NewBlockRecStreamSelector
+                          title="选择推荐流"
+                          selection-type="single"
+                          :source="pannel.pannelResource"
+                          @select-end="handleSelectBlockRecNew">
+                      </NewBlockRecStreamSelector>
+                      <template v-if="firstPanel.recStreamPanelRls">
+                          已选择: <el-tag>
+                          {{ firstPanel.recStreamPanelRls.recId }}
+                          ({{ firstPanel.recStreamPanelRls.recName }})
+                          </el-tag>
                       </template>
                     </el-form-item>
                     <el-form-item
@@ -679,8 +696,7 @@ import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import BlockContent from './BlockContent/BlockContent'
 import CommonSelector from '@/components/CommonSelector'
 import BinCheckBox from '@/components/BinCheckBox'
-import BlockRecStreamSelector from '@/components/selectors/BlockRecStreamSelector'
-
+import NewBlockRecStreamSelector from '@/components/selectors/NewBlockRecStreamSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 
@@ -730,7 +746,7 @@ export default {
     TagFrame,
     VeLine,
     SubscribeVideos,
-    BlockRecStreamSelector,
+    NewBlockRecStreamSelector,
     ConfigureFilmFilterRule,
     ClickCopy
   },
@@ -1121,14 +1137,24 @@ export default {
         this.handleRefreshMediaRuleContents()
       }, 3000)
     },
-    handleSelectBlockRecStreamEnd (selected) {
-      const { recId, recName, recCategory, flag: recFlag } = selected[0]
+    // handleSelectBlockRecStreamEnd (selected) {
+    //   const { recId, recName, recCategory, flag: recFlag } = selected[0]
+    //   this.firstPanel.recStreamPanelRls = {
+    //     recId,
+    //     recName,
+    //     recCategory,
+    //     recFlag
+    //   }
+    // },
+    handleSelectBlockRecNew (selected) {
+      const { id: recId, recName, recCategory, userToken: recFlag } = selected[0]
       this.firstPanel.recStreamPanelRls = {
         recId,
         recName,
         recCategory,
         recFlag
       }
+      console.log(this.firstPanel.recStreamPanelRls, '----')
     },
     genPannel (preset) {
       return {
