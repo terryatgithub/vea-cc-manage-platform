@@ -271,6 +271,7 @@ export default {
           videoContentList: this.parseContentList(this.normalContentList),
           specificContentList: this.parseContentList(this.specificContentList)
         })
+        console.log(this.normalContentList, '--------')
       })
     },
     genDefaultNormalContentWrapper () {

@@ -980,15 +980,14 @@ export default {
   },
   methods: {
     handleSelectBlockRecStreamEnd (selected) {
-      // this.normalForm = selected[0]
-      const { id, recName, recCategory, userToken: recFlag } = selected[0]
-      this.contentForm.mediaAutomationBlockRls = {
-        id,
-        recName,
-        recCategory,
-        recFlag
+      this.normalForm = selected[0]
+      let defalutParams = {
+        id: selected[0].id,
+        recName: selected[0].recName,
+        recCategory: selected[0].recCategory,
+        recFlag: selected[0].userToken
       }
-      console.log(this.contentForm.mediaAutomationBlockRls, '-----s')
+      this.contentForm.mediaAutomationBlockRls = Object.assign(defalutParams, this.contentForm.mediaAutomationBlockRls)
     },
     handleInputGDLiveClickType (val) {
       this.contentForm.tvLiveInfo = genDefaultTvLiveInfo({
@@ -1465,11 +1464,12 @@ export default {
       })
     },
     handleSelectRecomStream (recomStream) {
+      console.log(recomStream)
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
+      console.log(this.contentForm.mediaAutomationBlockRls, '----旧推荐流')
     }
   },
   mounted () {
-    console.log(this.source, '-=========')
     const contentForm = this.contentForm
     const redundantParams = contentForm.redundantParams
     if (redundantParams.openMode === 'picture' && redundantParams.pictureUrl) {
