@@ -1506,36 +1506,6 @@ export default {
         this.updatePosition(i)
       }
 
-      const blockInfoList = this.blockList[this.activePannelIndex]
-      // 如果选择的是不含价格的布局，要删除所有价格信息
-      const isDelPrice = (layout.layoutJsonParsed.contents[0].type !== 'Mall')
-      this.pannel.pannelList.forEach(pannelList => {
-        pannelList.contentList.forEach((cItem, cIndex) => {
-          const blockInfo = blockInfoList[cIndex]
-          ;[]
-            .concat(
-              cItem.videoContentList || [],
-              cItem.specificContentList || []
-            )
-            .forEach(vItem => {
-              // 如果是带标题的推荐位，清空推荐位引导
-              if (blockInfo.title_info || blockInfo.width < 410) {
-                vItem.flagTagVector = 0
-              }
-              // 关闭推荐流按钮
-              vItem.flagSetRec = 0
-              vItem.mediaAutomationBlockRls = {
-                refreshCal: 1,
-                mediaAutomationId: '',
-                blockType: 'normal'
-              }
-              if (isDelPrice) {
-                vItem.price = undefined
-                vItem.secKillPrice = undefined
-              }
-            })
-        })
-      })
       this.getSharedTags()
       // 清除异形焦点
       this.pannel.focusImgUrl = ''
@@ -2125,6 +2095,35 @@ export default {
       const { blocks, selectedBlocksAndResources } = this.getBlocksAndResources(currentPannelIndex)
       blockList[currentPannelIndex] = blocks
       currentPannel.contentList = selectedBlocksAndResources
+
+      // 如果选择的是不含价格的布局，要删除所有价格信息
+      const isDelPrice = (this.selectedLayout.layoutJsonParsed.contents[0].type !== 'Mall')
+      const blockInfoList = blockList[currentPannelIndex]
+      currentPannel.contentList.forEach((cItem, cIndex) => {
+        const blockInfo = blockInfoList[cIndex]
+        ;[].concat(
+          cItem.videoContentList || [],
+          cItem.specificContentList || []
+        ).forEach(vItem => {
+          // 如果是带标题的推荐位，清空推荐位引导
+          if (blockInfo.title_info || blockInfo.width < 410) {
+            if (vItem.flagTagVector === 1) {
+              vItem.flagTagVector = 0
+            }
+          }
+          // 关闭推荐流按钮
+          vItem.flagSetRec = 0
+          vItem.mediaAutomationBlockRls = {
+            refreshCal: 1,
+            mediaAutomationId: '',
+            blockType: 'normal'
+          }
+          if (isDelPrice) {
+            vItem.price = undefined
+            vItem.secKillPrice = undefined
+          }
+        })
+      })
     },
     getBlocksAndResources (currentPannelIndex, layoutVersion) {
       // 可以使用外部传过来的 pannel 数据,
