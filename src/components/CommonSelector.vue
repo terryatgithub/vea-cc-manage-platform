@@ -82,7 +82,6 @@ export default {
   },
   methods: {
     handleInput (val) {
-      console.log(val)
       if (val !== this.value) {
         this.$emit('input', val)
         // fix el-select
