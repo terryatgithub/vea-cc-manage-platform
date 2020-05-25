@@ -980,14 +980,14 @@ export default {
   },
   methods: {
     handleSelectBlockRecStreamEnd (selected) {
-      this.normalForm = selected[0]
-      let defalutParams = {
+      let defaultObj = {
         id: selected[0].id,
         recName: selected[0].recName,
         recCategory: selected[0].recCategory,
         recFlag: selected[0].userToken
       }
-      this.contentForm.mediaAutomationBlockRls = Object.assign(defalutParams, this.contentForm.mediaAutomationBlockRls)
+      this.contentForm.mediaAutomationBlockRls = Object.assign(this.contentForm.mediaAutomationBlockRls, defaultObj)
+      this.$set(this.contentForm, defaultObj.id, selected[0].id) // 实时更新id
     },
     handleInputGDLiveClickType (val) {
       this.contentForm.tvLiveInfo = genDefaultTvLiveInfo({
@@ -1466,7 +1466,7 @@ export default {
     handleSelectRecomStream (recomStream) {
       console.log(recomStream)
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
-      console.log(this.contentForm.mediaAutomationBlockRls, '----旧推荐流')
+      console.log(this.contentForm.mediaAutomationBlockRls.mediaAutomationId, '----旧推荐流')
     }
   },
   mounted () {
