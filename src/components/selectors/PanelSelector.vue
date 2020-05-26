@@ -216,17 +216,19 @@ export default {
     },
     handleSelectEnd (data) {
       if (!this.isAlbumTab) {
-        // 校验版块是否存在视频播放推荐位
-        const validPanelVideoPlugin = function (pannelList) {
-          return pannelList.some(panel => {
-            return panel.contentList.some(content => {
-              return (content.videoContentList[0] || {}).pluginType === 'REFERENCE_PLAY_VIDEO'
-            })
-          })
+        // 校验版块是否存在多功能推荐位
+        const validPanelPlugin = function (pluginType, panel) {
+          const pluginTypeList = (panel.pluginBlocks || '').split(',')
+          return pluginTypeList.some(item => item === pluginType)
         }
-        const isVideoPlugin = validPanelVideoPlugin(data.pannelList || [])
-        if (isVideoPlugin) {
-          return this.$message.error('【播放视频推荐位】只能配置在专题版面中')
+        for (let i = 0; i < data.length; i++) {
+          const panel = data[i]
+          if (validPanelPlugin('REFERENCE_PLAY_VIDEO', panel)) {
+            return this.$message.error('版块' + panel.pannelGroupRemark + '含有【播放视频推荐位】，只能配置在专题版面中')
+          }
+          if (validPanelPlugin('REFERENCE_VIP_QRCODE', panel)) {
+            return this.$message.error('版块' + panel.pannelGroupRemark + '含有【VIP二维码推荐位】，只能配置在专题版面中')
+          }
         }
       }
       this.$emit('select-end', data)
