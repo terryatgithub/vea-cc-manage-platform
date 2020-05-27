@@ -153,54 +153,35 @@
                   </el-form-item>
                   <div class="hint remarks">强制刷新时会导致画面闪动，如无必要，请勿使用</div>
                 </el-form-item>
-                 <el-form-item label="背景图" prop="bgImgUrl">
-                  <GlobalPictureSelector
-                    @select-end="handleSelectBgPicEnd">
-                    <div v-if="tabInfo.bgImgUrl"  class="bg-img-wrapper">
-                      <img
-                        class="bg-img"
-                        referrerpolicy="no-referrer"
-                        :src="tabInfo.bgImgUrl">
-                      <i
-                          v-show="!isReadonly && tabInfo.bgImgUrl"
-                          title="删除背景"
-                          class="el-icon-close"
-                          @click.stop="tabInfo.bgImgUrl = ''"></i>
-                    </div>
-                    <div v-else class="bg-placeholder"></div>
-                  </GlobalPictureSelector>
-                </el-form-item>
                 <el-form-item class="force-refresh-time-list">
                   <el-form-item label="线落焦色" label-width="180px">
-                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                    <el-color-picker v-model="tabInfo.blockLineFocusColor"/>
                   </el-form-item>
                   <el-form-item label="面落焦色" label-width="180px">
-                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                    <el-color-picker v-model="tabInfo.blockFieldFocusColor"/>
                   </el-form-item>
                   <el-form-item label="推荐位标题色" label-width="180px">
-                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                    <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
                   </el-form-item>
                 </el-form-item>
-                <el-form-item class="force-refresh-time-list">
+               <el-form-item class="force-refresh-time-list">
                   <el-form-item label="推荐位标题色(落焦)" label-width="180px">
-                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                    <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
                   </el-form-item>
                   <el-form-item label="板块标题色" label-width="180px">
-                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
+                    <el-color-picker v-model="tabInfo.panelTitleColor"/>
                   </el-form-item>
                 </el-form-item>
-                <el-form-item  class="force-refresh-time-list">
-                  <el-form-item label="插件包名" label-width="80px">
-                    <el-input></el-input>
-                  </el-form-item>
-                  <el-form-item label="插件分类名" label-width="100px">
-                    <el-input></el-input>
-                  </el-form-item>
-                  <el-form-item label="插件主页最低版本" label-width="140px">
-                    <el-input></el-input>
-                  </el-form-item>
+                <!--  <el-form-item label="插件包名" label-width="180px">
+                  <el-input v-model.trim="tabInfo.packagename"></el-input>
                 </el-form-item>
-                <el-form-item label="插件扩展参数"></el-form-item>
+                <el-form-item label="插件分类名" label-width="180px">
+                  <el-input v-model.trim="tabInfo.category"></el-input>
+                </el-form-item>
+                <el-form-item label="插件主页最低版本" label-width="180px">
+                  <el-input v-model.trim="tabInfo.minHomepageVersion"></el-input>
+                </el-form-item> -->
+                <TabPluginParams propPrefix="tabPluginInfo."  v-model="tabInfo.tabPluginInfo"></TabPluginParams>
               </div>
               <div v-if="mode === 'edit'|| mode ==='replicate'">
               <div class="form-legend-header" @click="handleTabDataClick">
@@ -293,7 +274,26 @@
                     </div>
                   </el-form-item>
                 </template>
-
+                <template v-if="tabInfo.tabType === 13">
+                  <el-form-item label="选择版面">
+                    <cc-tab-selector-el
+                      ref="tabSelector"
+                      :source="tabInfo.tabResource"
+                      :has-sub-tab="0"
+                      :oneOption='oneOption'
+                      @select-start="handleSelectTabStart"
+                      @select-end="handleSelectTabEnd"
+                    />
+                    <el-button type="primary" plain @click="handleCreateTab">新建版面</el-button>
+                    <div>
+                      <OrderableTable
+                        ref="subTabTable"
+                        v-model="tabInfo.tabList"
+                        :header="subTabTableHeader"
+                      />
+                    </div>
+                  </el-form-item>
+                </template>
                 <template v-if="tabInfo.tabType === 2">
                   <el-form-item label="活动浮窗" prop="floatWindow">
                     <cc-float-window-selector
@@ -307,7 +307,7 @@
                   </el-form-item>
                 </template>
 
-                <el-form-item label="选择版块" v-if="tabInfo.hasSubTab === 0">
+                <el-form-item label="选择版块" v-if="tabInfo.hasSubTab === 0 && tabInfo.tabType !== 13">
                   <div
                     class="tab-info__virtual-tab-menu"
                     :style="{visibility: isPanelDragging ? 'hidden' : 'visible'}">
@@ -388,7 +388,7 @@
                 </el-form-item>
               </div>
 
-              <template v-if="tabInfo.tabType === 2">
+              <template v-if="tabInfo.tabType === 2 || tabInfo.tabType === 13">
                 <div class="form-legend-header" @click="isCollapseSpec = !isCollapseSpec">
                   <i v-if="isCollapseSpec" class="el-icon-arrow-down"></i>
                   <i v-else class="el-icon-arrow-up"></i>
@@ -438,6 +438,18 @@
                       </div>
                       </div>
                   </el-form-item>
+                  <el-form-item label="收藏展示图">
+                    <GlobalPictureSelector
+                      title="选择素材"
+                      @select-end="handleSelectCollectImgEnd"
+                      picture-resolution="260*364"
+                    />
+                    <div>
+                      <div class="image-preview-wrapper" v-if="tabInfo.collectImg">
+                        <img class="image-preview" :src="tabInfo.collectImg">
+                      </div>
+                    </div>
+                  </el-form-item>
                   <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
                     <el-switch
                       :value="!!tabInfo.flagIsBlockBg"
@@ -454,12 +466,12 @@
                       v-model.number="tabInfo.sinkSize"
                     /><span class="remarks marginL"> 注:数值范围0-880</span>
                   </el-form-item>
-                  <el-form-item label="版块标题颜色">
-                    <el-color-picker v-model="tabInfo.pannelTitleColor"/>
-                  </el-form-item>
-                  <el-form-item label="推荐位字体颜色(落焦)">
+                  <!-- <el-form-item label="版块标题颜色">
+                    <el-color-picker v-model="tabInfo.panelTitleColor"/>
+                  </el-form-item> -->
+                  <!-- <el-form-item label="推荐位字体颜色(落焦)">
                     <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
-                  </el-form-item>
+                  </el-form-item> -->
                   <el-form-item label="推荐位字体颜色(非落焦)">
                     <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
                   </el-form-item>
@@ -606,6 +618,27 @@
                     </el-date-picker>
                   </el-form-item>
                 </el-form-item>
+                <!--AddSomeCode-->
+                <el-form-item class="force-refresh-time-list">
+                  <el-form-item label="线落焦色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.blockLineFocusColor"/>
+                  </el-form-item>
+                  <el-form-item label="面落焦色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.blockFieldFocusColor"/>
+                  </el-form-item>
+                  <el-form-item label="推荐位标题色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
+                  </el-form-item>
+                </el-form-item>
+                <el-form-item class="force-refresh-time-list">
+                  <el-form-item label="推荐位标题色(落焦)" label-width="180px">
+                    <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
+                  </el-form-item>
+                  <el-form-item label="板块标题色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.panelTitleColor"/>
+                  </el-form-item>
+                </el-form-item>
+                <TabPluginParamsRead :value="tabInfo.tabPluginInfo"></TabPluginParamsRead>
               </div>
 
               <div class="form-legend-header" @click="handleTabDataClick">
@@ -665,27 +698,38 @@
                 <el-form-item
                   label="版面属性"
                   prop="tabType"
-                >{{ tabInfo.tabType === 1 ? '普通版面' : '专题版面'}}</el-form-item>
+                v-if="tabInfo.tabType === 1">普通版面 </el-form-item>
+                <el-form-item
+                  label="版面属性"
+                  prop="tabType"
+                v-if="tabInfo.tabType === 2">专题版面</el-form-item>
+                <el-form-item
+                  label="版面属性"
+                  prop="tabType"
+                v-if="tabInfo.tabType === 13">分页专题版面</el-form-item>
 
                 <template v-if="tabInfo.tabType === 1">
-                  <el-form-item
-                    label="是否二级版面"
-                    prop="hasSubTab"
-                  >{{ tabInfo.hasSubTab === 1 ? '是' : '否'}}</el-form-item>
+                  <template v-if="tabInfo.hasSubTab === 1">
+                    <el-form-item
+                      label="是否二级版面"
+                      prop="hasSubTab"
+                    >{{ tabInfo.hasSubTab === 1 ? '是' : '否'}}</el-form-item>
 
-                  <el-form-item
-                    v-if="tabInfo.hasSubTab === 1"
-                    label="是否支持记忆"
-                    prop="flagIsRecord"
-                  >{{ tabInfo.flagIsRecord === 1 ? '是' : '否'}}</el-form-item>
+                    <el-form-item
+                      v-if="tabInfo.hasSubTab === 1"
+                      label="是否支持记忆"
+                      prop="flagIsRecord"
+                    >{{ tabInfo.flagIsRecord === 1 ? '是' : '否'}}</el-form-item>
 
-                  <el-form-item label="活动浮窗" prop="floatWindow">
-                    <template
-                      v-if="tabInfo.activityFloatWindow"
-                    >{{ tabInfo.activityFloatWindow.pluginName }}</template>
-                  </el-form-item>
-
-                  <el-form-item label="选择版面" v-if="tabInfo.hasSubTab === 1">
+                    <el-form-item label="活动浮窗" prop="floatWindow">
+                      <template
+                        v-if="tabInfo.activityFloatWindow"
+                      >{{ tabInfo.activityFloatWindow.pluginName }}</template>
+                    </el-form-item>
+                  </template>
+                </template>
+                <template v-if="tabInfo.hasSubTab === 1 || tabInfo.tabType === 13">
+                  <el-form-item label="选择版面" >
                     <div>
                       <el-table
                         :data="tabInfo.tabList"
@@ -806,6 +850,14 @@
                     </div>
                   </el-form-item>
 
+                  <el-form-item label="收藏展示图">
+                    <div>
+                      <div class="image-preview-wrapper" v-if="tabInfo.collectImg">
+                        <img class="image-preview" :src="tabInfo.collectImg">
+                      </div>
+                    </div>
+                  </el-form-item>
+
                   <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
                     {{ tabInfo.flagIsBlockBg ? '是' : '否'}}
                   </el-form-item>
@@ -813,7 +865,7 @@
                   <el-form-item label="版面简介显示高">{{ tabInfo.sinkSize }}</el-form-item>
 
                   <el-form-item label="版块标题颜色">
-                    <input disabled type="color" :value="tabInfo.pannelTitleColor">
+                    <input disabled type="color" :value="tabInfo.panelTitleColor">
                   </el-form-item>
 
                   <el-form-item label="推荐位字体颜色(落焦)">
@@ -980,6 +1032,8 @@ import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/markPoint'
 import BlockExchangeCenter from './BlockExchangeCenter'
 import { cloneDeep, uniq } from 'lodash'
+import TabPluginParams from '@/components/TabPluginParams'
+import TabPluginParamsRead from '@/components/TabPluginParamsRead'
 
 const PANEL_CACHE = {}
 export default {
@@ -1011,7 +1065,9 @@ export default {
     RecommendPanelSelector,
     VeLine,
     BlockExchangeCenter,
-    GlobalPictureSelector
+    GlobalPictureSelector,
+    TabPluginParams,
+    TabPluginParamsRead
   },
   data () {
     this.markLine = {
@@ -1098,6 +1154,7 @@ export default {
     }
 
     return {
+      oneOption: '2',
       loading: false,
       loadingText: '',
       showAffix: true,
@@ -1192,6 +1249,10 @@ export default {
         {
           label: '专题版面',
           value: 2
+        },
+        {
+          label: '分页专题',
+          value: 13
         }
       ],
       panelListIndexed: {},
@@ -1238,9 +1299,10 @@ export default {
         isShowvip: 1,
         alumbTabBg: undefined,
         alumbTabLongBg: undefined,
-        pannelTitleColor: undefined,
+        panelTitleColor: undefined,
         blockTitleFocusColor: undefined,
         blockTitleUnfocusColor: undefined,
+        collectImg: undefined,
 
         // 自动推荐
         // 活动浮窗
@@ -1262,7 +1324,12 @@ export default {
           recommendIndex: undefined,
           // 否 List 优先推荐的版块列表信息
           panelInfoList: []
-        }
+        },
+        blockLineFocusColor: undefined,
+        blockFieldFocusColor: undefined,
+        minHomepageVersion: '',
+        params: {},
+        tabPluginInfo: {}
       },
       versionList: [],
 
@@ -1927,7 +1994,10 @@ export default {
       this.showBgSelector = false
       this.tabInfo.alumbTabBg = data.pictureUrl
     },
-
+    handleSelectCollectImgEnd (data) {
+      this.showBgSelector = false
+      this.tabInfo.collectImg = data.pictureUrl
+    },
     handleSelectLongBgStart () {
       this.showLongBgSelector = true
     },
@@ -2580,6 +2650,13 @@ export default {
     },
     handleSubmitAudit (timing) {
       const data = this.getFormData()
+      if (data.tabType === 13) {
+        data.hasSubTab = 1
+      }
+      console.log(data, '-----submit')
+      if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
+        return this.$message.error('插件主页最低版本只能输入数字')
+      }
       data.tabStatus = this.$consts.status.waiting
       this.validateFormData(data, () => {
         if (this.couldSetReleaseTime) {
@@ -2621,6 +2698,7 @@ export default {
     },
     getFormData () {
       const data = JSON.parse(JSON.stringify(this.tabInfo))
+      console.log(data, '----getFormData---')
       const mode = this.mode
       if (mode === 'replicate') {
         data.currentVersion = ''
@@ -2677,8 +2755,8 @@ export default {
               if (data.tabList.length === 0) {
                 error = '请选择二级版面'
               }
-            } else if (data.pannelList.length === 0) {
-              error = '请选择版块'
+            } else if (data.tabType === 1 || data.tabType === 2) {
+              if (data.pannelList.length === 0) error = '请选择版块23'
             } else {
               // 检查重复版块
               const panelList = data.pannelList
@@ -2795,12 +2873,21 @@ export default {
         alumbTabBg: tabInfo.alumbTabBg,
         alumbTabLongBg: tabInfo.alumbTabLongBg,
         sinkSize: tabInfo.sinkSize,
-        pannelTitleColor: tabInfo.pannelTitleColor,
+        panelTitleColor: tabInfo.panelTitleColor,
         blockTitleFocusColor: tabInfo.blockTitleFocusColor,
-        blockTitleUnfocusColor: tabInfo.blockTitleUnfocusColor,
-        flagIsBlockBg: tabInfo.flagIsBlockBg
-      }
 
+        blockTitleUnfocusColor: tabInfo.blockTitleUnfocusColor,
+        blockLineFocusColor: tabInfo.blockLineFocusColor,
+        blockFieldFocusColor: tabInfo.blockFieldFocusColor,
+        flagIsBlockBg: tabInfo.flagIsBlockBg,
+        collectImg: tabInfo.collectImg
+      }
+      // let tabPluginInfo = {
+      //   packagename: tabInfo.packagename,
+      //   category: tabInfo.category,
+      //   minHomepageVersion: tabInfo.minHomepageVersion,
+      //   params: tabInfo.params
+      // }
       const vipButtonSourceId = tabInfo.vipButtonSourceId
       if (vipButtonSourceId) {
         const vipButton = this.getVipButtonSourceItem(vipButtonSourceId)
@@ -2882,7 +2969,9 @@ export default {
         tabTitleIcons: tabTitleIcons,
         tabType: tabInfo.tabType,
         timeCycle: tabInfo.timeCycle,
-        panelRecommendConfig
+        panelRecommendConfig,
+        tabPluginInfo: tabInfo.tabPluginInfo
+
       }
       return data
     },
@@ -2955,6 +3044,15 @@ export default {
           return new Date(originTime)
         }
       })
+      let paramsArr
+      if (data.tabPluginInfo.params) { paramsArr = JSON.parse(data.tabPluginInfo.params) }
+      let o = {
+        packagename: data.tabPluginInfo.packagename,
+        category: data.tabPluginInfo.category,
+        minHomepageVersion: data.tabPluginInfo.minHomepageVersion,
+        params: paramsArr
+      }
+      this.tabInfo.tabPluginInfo = o
       const panelRecommendConfig = data.panelRecommendConfig
         ? data.panelRecommendConfig
         : tabInfo.panelRecommendConfig
@@ -2991,9 +3089,12 @@ export default {
         alumbTabBg: tabExtArr.alumbTabBg,
         alumbTabLongBg: tabExtArr.alumbTabLongBg,
         isShowvip: tabExtArr.isShowvip,
-        pannelTitleColor: tabExtArr.pannelTitleColor,
+        panelTitleColor: tabExtArr.panelTitleColor,
         blockTitleFocusColor: tabExtArr.blockTitleFocusColor,
         blockTitleUnfocusColor: tabExtArr.blockTitleUnfocusColor,
+        blockLineFocusColor: tabExtArr.blockLineFocusColor,
+        blockFieldFocusColor: tabExtArr.blockFieldFocusColor,
+        collectImg: tabExtArr.collectImg,
         sinkSize: tabExtArr.sinkSize,
 
         activityFloatWindow: activityFloatWindow,
@@ -3003,15 +3104,18 @@ export default {
         imgOnSelected: tabTitleIcons.selected_img_url,
         vipButtonSourceId: tabExtArr.vipButtonSourceId,
         panelRecommendConfig: panelRecommendConfig,
-        duplicateVersion: data.duplicateVersion
+        duplicateVersion: data.duplicateVersion,
+        tabPluginInfo: this.tabInfo.tabPluginInfo
       })
 
       this.updateDuplicates()
       this.setRecommendStreamSignPanelCount()
     },
     upsertTabInfo (tabInfo) {
+      debugger
       const doUpsert = () => {
         const formData = this.parseTabInfo(tabInfo)
+        console.log(tabInfo, '---提交成功')
         this.$service.tabInfoUpsert(formData, '操作成功').then(() => {
           this.$emit('upsert-end')
         })
