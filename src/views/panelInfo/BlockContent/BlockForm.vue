@@ -259,9 +259,10 @@
             }">
             <img referrerpolicy="no-referrer" :src="contentForm.pictureUrl" >
             <div class="post-info">
-              <div class="post-episode" v-if="[1, 4, 5].indexOf(contentForm.categoryId) > -1">
+              <div class="post-episode" v-if="[1, 2, 9, 4, 5].indexOf(contentForm.categoryId) > -1">
                 <span v-if="contentForm.showSeries"  class="episode">
-                  <template v-if="contentForm.categoryId === 1">
+                  <!-- 1电视剧2动漫9纪录片 -->
+                  <template v-if="contentForm.categoryId === 1 || contentForm.categoryId === 2 || contentForm.categoryId === 9">
                     {{
                     contentForm.publishStatus === 'ended'
                     ? contentForm.series
