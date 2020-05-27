@@ -1992,6 +1992,17 @@ export default {
               this.isShowfocusImgUrl = false
               this.handleSetLayoutForSubscribeType()
               break
+            case parentType === 'tag':
+              this.$set(firstPannel, 'tagPanelInfo', {})
+              this.$nextTick(() => {
+                firstPannel.tagPanelInfo = {
+                  rowNum: 1,
+                  focusCategory: undefined,
+                  algorithmType: 1
+                }
+              })
+              this.handleClearLayoutForSubscribeType()
+              break
           }
         })
         .catch((e) => { console.log(e) })

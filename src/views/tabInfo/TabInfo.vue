@@ -2132,7 +2132,7 @@ export default {
             return {
               panelTitle: item.pannelTitle,
               blocks:
-                panelDetail.parentType === 'function'
+                (panelDetail.parentType === 'function' || panelDetail.parentType === 'tag')
                   ? []
                   : this.getPanelBlocks(item)
             }
