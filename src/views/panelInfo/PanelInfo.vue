@@ -239,6 +239,36 @@
                             @select-end="handleSelectResourceEnd">
                             <el-button type="primary" plain @click.stop="handleSelectResourceStart">选择资源</el-button>
                           </ResourceSelector>
+                          <ResourceSelector
+                            class="margin-left-10"
+                            v-if="canFillWithRanking"
+                            ref="rankingSelector"
+                            :selectors="['ranking']"
+                            :is-live="false"
+                            :disable-partner="!!pannel.pannelResource"
+                            selection-type="single"
+                            :source="pannel.pannelResource"
+                            :business-type="pannel.panelGroupCategory"
+                            @select-end="handleSelectRankingEnd">
+                              <el-button type="primary" plain @click.stop="handleSelectRankingStart">
+                                选择排行榜
+                              </el-button>
+                          </ResourceSelector>
+                          <el-tooltip
+                            v-else
+                            effect="dark"
+                            placement="top">
+                            <div slot="content">
+                              使用排行榜，布局必须满足：标题布局、不带价格、只有一行、
+                              <br/>
+                              每个推荐位都是 260*364、推荐位数量 6~11 个
+                              <br />
+                              目前只支持业务类型为 不限、教育、影视
+                            </div>
+                            <el-button class="is-disabled" type="primary" plain>
+                              选择排行榜
+                            </el-button>
+                          </el-tooltip>
                           <el-button class="btn-clear-current-blocks" @click="handleClearCurrentBlocks" type="primary" plain>
                             清空当前版块推荐位
                           </el-button>
