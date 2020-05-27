@@ -3045,11 +3045,12 @@ export default {
         }
       })
       let paramsArr
-      if (data.tabPluginInfo.params) { paramsArr = JSON.parse(data.tabPluginInfo.params) }
+      const defalutInfo = data.tabPluginInfo || {}
+      if (data.tabPluginInfo) { paramsArr = JSON.parse(defalutInfo.params) }
       let o = {
-        packagename: data.tabPluginInfo.packagename,
-        category: data.tabPluginInfo.category,
-        minHomepageVersion: data.tabPluginInfo.minHomepageVersion,
+        packagename: defalutInfo.packagename,
+        category: defalutInfo.category,
+        minHomepageVersion: defalutInfo.minHomepageVersion,
         params: paramsArr
       }
       this.tabInfo.tabPluginInfo = o
