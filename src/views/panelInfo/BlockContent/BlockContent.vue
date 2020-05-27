@@ -601,7 +601,10 @@ export default {
               break
           }
         }
-        content.onclick = onclick
+        // 如果媒资传了onclick，就直接给后端
+        if (!content.onclick) {
+          content.onclick = onclick
+        }
         content.params = params
         if (content.bgParams) {
           delete content.bgParams.title

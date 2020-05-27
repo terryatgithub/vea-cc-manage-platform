@@ -1378,6 +1378,7 @@ export default {
     },
     handleBatchAddTagEnd () {
       this.getSharedTags()
+      this.firstPanel.flagTagVector === 1 && this.getVectorTag()
       this.showAddTagDialog = false
     },
     handleInputTagWeight (weight, originWeight, tag) {

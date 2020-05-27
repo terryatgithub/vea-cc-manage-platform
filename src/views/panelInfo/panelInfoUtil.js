@@ -296,6 +296,7 @@ export function setMediaContent (contentForm, options) {
     contentForm.videoContentType = 'rotate'
   }
   contentForm.categoryId = selected.categoryId
+  contentForm.onclick = ((selected.ccVideoSourceEntities || [])[0] || {}).onclick
 }
 
 export function setAppContent (contentForm, selected) {
