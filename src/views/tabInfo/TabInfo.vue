@@ -3112,7 +3112,6 @@ export default {
       this.setRecommendStreamSignPanelCount()
     },
     upsertTabInfo (tabInfo) {
-      debugger
       const doUpsert = () => {
         const formData = this.parseTabInfo(tabInfo)
         console.log(tabInfo, '---提交成功')
