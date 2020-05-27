@@ -3046,7 +3046,7 @@ export default {
       })
       let paramsArr
       const defalutInfo = data.tabPluginInfo || {}
-      if (data.tabPluginInfo) { paramsArr = JSON.parse(defalutInfo.params) }
+      if (defalutInfo.params) { paramsArr = JSON.parse(defalutInfo.params) }
       let o = {
         packagename: defalutInfo.packagename,
         category: defalutInfo.category,

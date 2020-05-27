@@ -1223,6 +1223,8 @@ export default {
     },
     handleSubmitAudit (timing) {
       const data = this.getFormData()
+      // clickTemplateType
+      console.log(data)
       data.status = this.$consts.status.waiting
       this.validate(data, () => {
         if (this.couldSetReleaseTime) {
