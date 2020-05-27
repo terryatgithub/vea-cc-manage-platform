@@ -240,6 +240,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.normalForm, '--ss')
     this.$consts.panelCoverTypeOptions.map((item, index) => {
       if (index === 0 || index === 2) {
         this.pannelCoverTypeTwo.push(item)
