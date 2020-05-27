@@ -118,7 +118,8 @@ export default {
       tabTypeOption: [
         { label: '第三方版面', value: '4' },
         { label: '专题版面', value: '2' },
-        { label: '普通版面', value: '1' }
+        { label: '普通版面', value: '1' },
+        { label: '分页专题版面', value: '13' }
       ],
       tabStatusOption:
       [
@@ -176,7 +177,8 @@ export default {
                   '1': '普通版面',
                   '2': '专题版面',
                   '4': '第三方版面',
-                  '5': '信号源版面'
+                  '5': '信号源版面',
+                  '13': '分页专题版面'
                 }[v + ''] || '未知版面'
               )
             }
