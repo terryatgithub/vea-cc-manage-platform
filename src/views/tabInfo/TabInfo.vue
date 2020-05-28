@@ -168,7 +168,7 @@
                   <el-form-item label="推荐位标题色(落焦)" label-width="180px">
                     <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
                   </el-form-item>
-                  <el-form-item label="板块标题色" label-width="180px">
+                  <el-form-item label="版块标题色" label-width="180px">
                     <el-color-picker v-model="tabInfo.panelTitleColor"/>
                   </el-form-item>
                 </el-form-item>
@@ -407,7 +407,7 @@
                       </el-select>
                   </el-form-item>
 
-                  <el-form-item label="专题版面大背景" prop="alumbTabBg">
+                  <el-form-item label="专题版面大背景" prop="alumbTabBg" v-if="tabInfo.tabType !== 13">
                     <GlobalPictureSelector
                       title="选择素材"
                       @select-end="handleSelectBgEnd"
@@ -419,7 +419,7 @@
                       </div>
                     </div>
                   </el-form-item>
-                  <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg">
+                  <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg" v-if="tabInfo.tabType !== 13">
                     <GlobalPictureSelector
                       title="选择长图素材"
                       @select-end="handleSelectLongBgEnd"
@@ -472,9 +472,9 @@
                   <!-- <el-form-item label="推荐位字体颜色(落焦)">
                     <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
                   </el-form-item> -->
-                  <el-form-item label="推荐位字体颜色(非落焦)">
+                  <!-- <el-form-item label="推荐位字体颜色(非落焦)">
                     <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
-                  </el-form-item>
+                  </el-form-item> -->
                 </div>
               </template>
 
@@ -834,7 +834,7 @@
                       {{ getVipButtonSourceItem(tabInfo.vipButtonSourceId).sourceName }}
                   </el-form-item>
 
-                  <el-form-item label="专题版面大背景" prop="alumbTabBg">
+                  <el-form-item label="专题版面大背景" prop="alumbTabBg" v-if="tabInfo.tabType !== 13">
                     <div>
                       <div class="image-preview-wrapper" v-if="tabInfo.alumbTabBg">
                         <img class="image-preview" :src="tabInfo.alumbTabBg">
@@ -842,7 +842,7 @@
                     </div>
                   </el-form-item>
 
-                  <el-form-item label="专题版面长图背景" prop="alumbTabLongBg">
+                  <el-form-item label="专题版面长图背景" prop="alumbTabLongBg" v-if="tabInfo.tabType !== 13">
                     <div>
                       <div class="image-preview-wrapper" v-if="tabInfo.alumbTabLongBg">
                         <img class="image-preview" :src="tabInfo.alumbTabLongBg">
@@ -872,9 +872,9 @@
                     <input disabled type="color" :value="tabInfo.blockTitleFocusColor">
                   </el-form-item>
 
-                  <el-form-item label="推荐位字体颜色(非落焦)">
+                  <!-- <el-form-item label="推荐位字体颜色(非落焦)">
                     <input disabled type="color" :value="tabInfo.blockTitleUnfocusColor">
-                  </el-form-item>
+                  </el-form-item> -->
                 </template>
 
               </div>
