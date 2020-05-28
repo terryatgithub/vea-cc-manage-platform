@@ -621,21 +621,21 @@
                 <!--AddSomeCode-->
                 <el-form-item class="force-refresh-time-list">
                   <el-form-item label="线落焦色" label-width="180px">
-                    <el-color-picker v-model="tabInfo.blockLineFocusColor"/>
+                    <el-color-picker disabled v-model="tabInfo.blockLineFocusColor"/>
                   </el-form-item>
                   <el-form-item label="面落焦色" label-width="180px">
-                    <el-color-picker v-model="tabInfo.blockFieldFocusColor"/>
+                    <el-color-picker disabled v-model="tabInfo.blockFieldFocusColor"/>
                   </el-form-item>
                   <el-form-item label="推荐位标题色" label-width="180px">
-                    <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
+                    <el-color-picker disabled v-model="tabInfo.blockTitleUnfocusColor"/>
                   </el-form-item>
                 </el-form-item>
                 <el-form-item class="force-refresh-time-list">
                   <el-form-item label="推荐位标题色(落焦)" label-width="180px">
-                    <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
+                    <el-color-picker disabled v-model="tabInfo.blockTitleFocusColor"/>
                   </el-form-item>
                   <el-form-item label="板块标题色" label-width="180px">
-                    <el-color-picker v-model="tabInfo.panelTitleColor"/>
+                    <el-color-picker disabled v-model="tabInfo.panelTitleColor"/>
                   </el-form-item>
                 </el-form-item>
                 <TabPluginParamsRead :value="tabInfo.tabPluginInfo"></TabPluginParamsRead>
@@ -2653,10 +2653,10 @@ export default {
       if (data.tabType === 13) {
         data.hasSubTab = 1
       }
-      console.log(data, '-----submit')
       if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
         return this.$message.error('插件主页最低版本只能输入数字')
       }
+      // debugger
       data.tabStatus = this.$consts.status.waiting
       this.validateFormData(data, () => {
         if (this.couldSetReleaseTime) {

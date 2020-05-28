@@ -7,7 +7,7 @@
       <el-input v-model.trim="inputValue.category"></el-input>
     </el-form-item>
     <el-form-item label="插件主页最低版本" :prop="formProp('minHomepageVersion')">
-      <el-input v-model.trim="inputValue.minHomepageVersion"></el-input><i>例：7104343</i>
+      <el-input v-model.trim="inputValue.minHomepageVersion" maxlength="7"></el-input><i>例：7104343</i>
     </el-form-item>
     <el-form-item label="扩展参数">
       <div class="app-extend-params" v-for="(param, index) in inputValue.params" :key="index">
