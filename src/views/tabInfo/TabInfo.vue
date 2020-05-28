@@ -181,7 +181,7 @@
                 <el-form-item label="插件主页最低版本" label-width="180px">
                   <el-input v-model.trim="tabInfo.minHomepageVersion"></el-input>
                 </el-form-item> -->
-                <TabPluginParams propPrefix="tabPluginInfo."  v-model="tabInfo.tabPluginInfo"></TabPluginParams>
+                <TabPluginParams propPrefix="tabPluginInfo."  v-model="tabInfo.tabPluginInfo" v-if="tabInfo.tabType !== 2"></TabPluginParams>
               </div>
               <div v-if="mode === 'edit'|| mode ==='replicate'">
               <div class="form-legend-header" @click="handleTabDataClick">
@@ -634,11 +634,11 @@
                   <el-form-item label="推荐位标题色(落焦)" label-width="180px">
                     <el-color-picker disabled v-model="tabInfo.blockTitleFocusColor"/>
                   </el-form-item>
-                  <el-form-item label="板块标题色" label-width="180px">
+                  <el-form-item label="版块标题色" label-width="180px">
                     <el-color-picker disabled v-model="tabInfo.panelTitleColor"/>
                   </el-form-item>
                 </el-form-item>
-                <TabPluginParamsRead :value="tabInfo.tabPluginInfo"></TabPluginParamsRead>
+                <TabPluginParamsRead :value="tabInfo.tabPluginInfo" v-if="tabInfo.tabType !== 2"></TabPluginParamsRead>
               </div>
 
               <div class="form-legend-header" @click="handleTabDataClick">
@@ -2644,6 +2644,12 @@ export default {
       data.isTiming = undefined
       data.releaseTime = undefined
       data.tabStatus = this.$consts.status.draft
+      if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
+        return this.$message.error('插件主页最低版本只能输入数字')
+      }
+      if (data.tabPluginInfo.minHomepageVersion && data.tabPluginInfo.minHomepageVersion.length < 7) {
+        return this.$message.error('插件主页最低版本不能少于7位数')
+      }
       this.validateFormData(data, () => {
         this.upsertTabInfo(data)
       })
@@ -2655,6 +2661,9 @@ export default {
       }
       if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
         return this.$message.error('插件主页最低版本只能输入数字')
+      }
+      if (data.tabPluginInfo.minHomepageVersion && data.tabPluginInfo.minHomepageVersion.length < 7) {
+        return this.$message.error('插件主页最低版本不能少于7位数')
       }
       // debugger
       data.tabStatus = this.$consts.status.waiting
@@ -2756,7 +2765,7 @@ export default {
                 error = '请选择二级版面'
               }
             } else if (data.tabType === 1 || data.tabType === 2) {
-              if (data.pannelList.length === 0) error = '请选择版块23'
+              if (data.pannelList.length === 0) error = '请选择版块'
             } else {
               // 检查重复版块
               const panelList = data.pannelList
@@ -3044,16 +3053,14 @@ export default {
           return new Date(originTime)
         }
       })
-      let paramsArr
-      const defalutInfo = data.tabPluginInfo || {}
-      if (defalutInfo.params) { paramsArr = JSON.parse(defalutInfo.params) }
-      let o = {
-        packagename: defalutInfo.packagename,
-        category: defalutInfo.category,
-        minHomepageVersion: defalutInfo.minHomepageVersion,
-        params: paramsArr
+      const { packagename, category, minHomepageVersion, params } = data.tabPluginInfo || {}
+      const tabPluginInfo = {
+        packagename,
+        category,
+        minHomepageVersion,
+        params: params ? JSON.parse(params) : [] // 默认值
       }
-      this.tabInfo.tabPluginInfo = o
+      this.tabInfo.tabPluginInfo = tabPluginInfo
       const panelRecommendConfig = data.panelRecommendConfig
         ? data.panelRecommendConfig
         : tabInfo.panelRecommendConfig
