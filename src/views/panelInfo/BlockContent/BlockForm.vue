@@ -1412,6 +1412,16 @@ export default {
       const selectedBroadcast = resources.broadcast[0]
       if (selectedFunc) {
         const selected = selectedFunc
+        if (selected.pluginType === 'REFERENCE_VIP_QRCODE') {
+          const rlsTabInfo = this.pannel.rlsTabInfo || []
+          const isSomeNoTopic = rlsTabInfo.some(tabInfo => {
+            return tabInfo.tabType !== 2
+          })
+          if (isSomeNoTopic) {
+            return this.$message.error('【VIP二维码推荐位】只能配置在专题版面中')
+          }
+        }
+
         this.contentForm.videoContentType = 'sysPlugin'
         this.contentForm.title = selected.pluginName
         this.contentForm.vContentId = selected.pluginId

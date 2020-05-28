@@ -3150,6 +3150,8 @@ export default {
               focusCategory: undefined,
               categoryName: undefined
             }
+            // 给pannelList版面信息，用于推荐位资源
+            item.rlsTabInfo = pannel.rlsTabInfo || []
             return item
           })
           pannel.pannelResource = firstPannel.pannelResource
