@@ -149,6 +149,7 @@
           :value="normalForm.mediaAutomationBlockRls.mediaAutomationId"
           :disabled="isReadonly"
           :source="source"
+          :show="showTitle"
           resolution="797*449"
           @select-end="handleSelectRecomStream"
           @del-select="normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
@@ -386,7 +387,8 @@ export default {
   data () {
     return {
       onclickEventVisible: false,
-      showCrowdSelector: false
+      showCrowdSelector: false,
+      showTitle: '选择推荐流'
     }
   },
   mounted () {

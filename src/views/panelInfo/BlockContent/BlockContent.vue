@@ -378,8 +378,11 @@ export default {
       this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
           if (contentForm.flagSetRec === 1) {
+            console.log(contentForm.mediaAutomationBlockRls, '---dd')
             if (!contentForm.mediaAutomationBlockRls.mediaAutomationId && !contentForm.mediaAutomationBlockRls.id) {
               return this.$message.error('开关开启时，推荐流选择必须选择其一')
+            } else if (contentForm.mediaAutomationBlockRls.mediaAutomationId && contentForm.mediaAutomationBlockRls.id) {
+              return this.$message.error('开关开启时，推荐流只能保存其一')
             }
           }
           cb()
