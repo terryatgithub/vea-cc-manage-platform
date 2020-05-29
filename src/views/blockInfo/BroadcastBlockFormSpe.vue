@@ -120,7 +120,7 @@
         </ResourceSelector>
       </el-form-item>
       <el-form-item label="标题" v-if="isGroupModel">
-        <el-input v-model="normalForm.subTitle"></el-input>
+        <el-input v-model="normalForm.title"></el-input>
       </el-form-item>
       <el-form-item label prop="clickParams">
         <div v-if="normalForm.sign === 'manualResource'">
@@ -152,7 +152,7 @@
             @click="handleSelectClickEventStart"
           >快速填充</el-button>
         </el-form-item>
-        <AppParams prop-prefix="onclick." v-model="normalForm.onclick" v-if="!disabled">
+        <AppParams prop-prefix="onclick." ref="formProp" v-model="normalForm.onclick" v-if="!disabled">
         </AppParams>
         <AppParamsRead :value="normalForm.onclick" v-if="disabled"></AppParamsRead>
       </div>
@@ -240,7 +240,7 @@ export default {
     }
   },
   mounted () {
-    console.log(this.normalForm, '--ss')
+    // console.log(this.normalForm, '--ss')
     this.$consts.panelCoverTypeOptions.map((item, index) => {
       if (index === 0 || index === 2) {
         this.pannelCoverTypeTwo.push(item)

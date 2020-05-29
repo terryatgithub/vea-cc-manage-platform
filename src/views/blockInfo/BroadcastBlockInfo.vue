@@ -1002,8 +1002,17 @@ export default {
     // 校验normalForm
     checkNormalForm: function (cb) {
       const $broadcastBlockForm = this.$refs.broadcastBlockForm
+      const $broadcastBlockFormSpe = this.$refs.broadcastBlockFormSpe
       if ($broadcastBlockForm) {
         $broadcastBlockForm.$refs.normalForm.validate((valid) => {
+          if (valid) {
+            cb()
+          } else {
+            this.$message.error('请将表单填写完整')
+          }
+        })
+      } else if (($broadcastBlockFormSpe)) {
+        $broadcastBlockFormSpe.$refs.normalForm.validate((valid) => {
           if (valid) {
             cb()
           } else {
@@ -1241,6 +1250,23 @@ export default {
       })
     },
     doSave (data) {
+      // validate (cb) {
+      //   const currentForm = this.$refs.form
+      //   if (currentForm) {
+      //     currentForm.validate((valid) => {
+      //       if (valid) {
+      //         cb()
+      //       } else {
+      //         this.$message({
+      //           type: 'error',
+      //           message: '请填写完整表单'
+      //         })
+      //       }
+      //     })
+      //   } else {
+      //     cb()
+      //   }
+      // },
       const parseParams = (onclick) => {
         const params = onclick.params || []
         onclick.params = params.reduce((result, item) => {
@@ -1302,7 +1328,13 @@ export default {
         return item
       }
       data.normalVersionContent = data.normalVersionContent.map(parseContent)
-
+      // const normalVersionContent = data.normalVersionContent
+      // if (normalVersionContent.onclick) {
+      //   parseParams(normalVersionContent.onclick)
+      // }
+      // normalVersionContent.params = JSON.stringify(normalVersionContent.params)
+      // normalVersionContent.onclick = JSON.stringify(normalVersionContent.onclick)
+      // debugger
       const lowerVersionContent = data.lowerVersionContent
       if (lowerVersionContent.onclick) {
         parseParams(lowerVersionContent.onclick)
@@ -1362,7 +1394,8 @@ export default {
             }, [{}, {}, {}, {}])
           }
           const mapContent = (item, isDmpContent) => {
-            item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
+            // item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
+            item.onclick = JSON.parse(item.onclick)
             item.params = JSON.parse(item.params || '{}')
             item.clickParams = JSON.parse(item.clickParams || '{}')
             parseCornerIconList(item)
@@ -1389,6 +1422,7 @@ export default {
           }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
           this.normalForm = this.normalVersionContent[0]
+          console.log(this.normalForm, '---basic')
 
           // lower data
           const lowerData = cloneDeep(data.lowerVersionContent)

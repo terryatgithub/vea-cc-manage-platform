@@ -153,7 +153,7 @@
                   </el-form-item>
                   <div class="hint remarks">强制刷新时会导致画面闪动，如无必要，请勿使用</div>
                 </el-form-item>
-                <el-form-item class="force-refresh-time-list">
+                <el-form-item class="force-refresh-time-list" v-if="tabInfo.hasSubTab !== 1">
                   <el-form-item label="线落焦色" label-width="180px">
                     <el-color-picker v-model="tabInfo.blockLineFocusColor"/>
                   </el-form-item>
@@ -164,7 +164,7 @@
                     <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
                   </el-form-item>
                 </el-form-item>
-               <el-form-item class="force-refresh-time-list">
+               <el-form-item class="force-refresh-time-list" v-if="tabInfo.hasSubTab !== 1">
                   <el-form-item label="推荐位标题色(落焦)" label-width="180px">
                     <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
                   </el-form-item>
@@ -172,16 +172,7 @@
                     <el-color-picker v-model="tabInfo.panelTitleColor"/>
                   </el-form-item>
                 </el-form-item>
-                <!--  <el-form-item label="插件包名" label-width="180px">
-                  <el-input v-model.trim="tabInfo.packagename"></el-input>
-                </el-form-item>
-                <el-form-item label="插件分类名" label-width="180px">
-                  <el-input v-model.trim="tabInfo.category"></el-input>
-                </el-form-item>
-                <el-form-item label="插件主页最低版本" label-width="180px">
-                  <el-input v-model.trim="tabInfo.minHomepageVersion"></el-input>
-                </el-form-item> -->
-                <TabPluginParams propPrefix="tabPluginInfo."  v-model="tabInfo.tabPluginInfo" v-if="tabInfo.tabType !== 2"></TabPluginParams>
+                <TabPluginParams propPrefix="tabPluginInfo."  v-model="tabInfo.tabPluginInfo" v-if="tabInfo.tabType !== 2 && tabInfo.hasSubTab !== 1 && tabInfo.tabType !== 13"></TabPluginParams>
               </div>
               <div v-if="mode === 'edit'|| mode ==='replicate'">
               <div class="form-legend-header" @click="handleTabDataClick">
