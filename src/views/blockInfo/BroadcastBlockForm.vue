@@ -154,6 +154,24 @@
           @select-end="handleSelectRecomStream"
           @del-select="normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
         />
+        <NewBlockRecStreamSelector
+            title="选择新推荐流"
+            selection-type="single"
+            :source="source"
+            :disabled="isReadonly"
+            @select-end="handleSelectBlockRecStreamEnd"
+            v-if="!!normalForm.flagSetRec"
+            style="margin:0 0 10px 140px">
+        </NewBlockRecStreamSelector>
+        <template v-if="normalForm.mediaAutomationBlockRls.recId">
+          已选择: <el-tag closable
+          @close="handleDelTagClose(normalForm.mediaAutomationBlockRls)"
+          :disabled="isReadonly"
+          >
+          {{ normalForm.mediaAutomationBlockRls.recId }}
+          ({{ normalForm.mediaAutomationBlockRls.recName }})
+          </el-tag>
+        </template>
         <el-form-item label="刷新机制" v-if="!!normalForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
           <InputPositiveInt
             v-model="normalForm.mediaAutomationBlockRls.refreshCal"
@@ -368,6 +386,7 @@ import selectClick from '@/views/blockInfo/selectClick'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
 import BroadcastBlockStatChartViewer from '@/components/statViewer/BroadcastBlockStatChartViewer'
+import NewBlockRecStreamSelector from '@/components/selectors/NewBlockRecStreamSelector'
 import { getSelectedResource, parseResourceContent, setContentForm, getParams } from './broadcastBlockUtil'
 export default {
   components: {
@@ -382,10 +401,12 @@ export default {
 
     InputPositiveInt,
     RecommendStreamSelector,
-    BroadcastBlockStatChartViewer
+    BroadcastBlockStatChartViewer,
+    NewBlockRecStreamSelector
   },
   data () {
     return {
+      isShowOrHide: false,
       onclickEventVisible: false,
       showCrowdSelector: false,
       showTitle: '选择推荐流'
@@ -426,6 +447,22 @@ export default {
     }
   },
   methods: {
+    // 移除新推荐流选中的
+    handleDelTagClose (tag) {
+      tag.recId = undefined
+      this.isShowOrHide = false
+    },
+    handleSelectBlockRecStreamEnd (selected) {
+      let defaultObj = {
+        recId: selected[0].id,
+        recName: selected[0].recName,
+        recCategory: selected[0].recCategory,
+        recFlag: selected[0].userToken
+      }
+      this.isShowOrHide = true
+      this.normalForm.mediaAutomationBlockRls = { ...this.normalForm.mediaAutomationBlockRls, ...defaultObj }
+      console.log(this.normalForm.mediaAutomationBlockRls, this.isShowOrHide, '====')
+    },
     getThirdId (clickParams) {
       if (clickParams) {
         const result = (clickParams.id ||

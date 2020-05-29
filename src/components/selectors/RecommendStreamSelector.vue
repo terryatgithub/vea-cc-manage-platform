@@ -23,14 +23,14 @@
           class="recom-tag cursor-tip"
           @click="handleSelectTag(tag)"
         >{{tag.name}}</el-tag>
-        <h4>规则筛选影片流</h4>
+        <!-- <h4>规则筛选影片流</h4>
         <el-tag
           v-for="tag in standardStreamTags"
           :key="tag.id"
           size="medium"
           class="recom-tag cursor-tip"
           @click="handleSelectTag(tag)"
-        >{{tag.name}}</el-tag>
+        >{{tag.name}}</el-tag> -->
       </el-dialog>
       <!-- 推荐流弹框 end -->
     </div>

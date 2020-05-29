@@ -908,8 +908,11 @@ export default {
   computed: {
     finalMediaRuleLayoutOptions () {
       const { pannelFillType, PANEL_FILL_TYPE, mediaRuleLayoutOptions } = this
+      // return pannelFillType === PANEL_FILL_TYPE.recStream
+      //   ? mediaRuleLayoutOptions.slice(2, 6) // 推荐流只支持几个布局
+      //   : mediaRuleLayoutOptions
       return pannelFillType === PANEL_FILL_TYPE.recStream
-        ? mediaRuleLayoutOptions.slice(2, 6) // 推荐流只支持几个布局
+        ? mediaRuleLayoutOptions // 推荐流只支持几个布局
         : mediaRuleLayoutOptions
     },
     interveneMaxCount () {

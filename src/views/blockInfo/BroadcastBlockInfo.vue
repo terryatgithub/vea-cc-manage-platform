@@ -1151,8 +1151,18 @@ export default {
       this.lowerForm = newForm
     },
     validate (data, cb) {
+      const normalForm = data.normalVersionContent[0]
+      console.log(normalForm, normalForm.flagSetRec)
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
+          // debugger
+          if (normalForm.flagSetRec === 1) {
+            if (!normalForm.mediaAutomationBlockRls.mediaAutomationId && !normalForm.mediaAutomationBlockRls.recId) {
+              return this.$message.error('开关开启时，推荐流选择必须选择其一')
+            } else if (normalForm.mediaAutomationBlockRls.mediaAutomationId && normalForm.mediaAutomationBlockRls.recId) {
+              return this.$message.error('开关开启时，推荐流只能保存其一')
+            }
+          }
           this.checkNormalForm(() => {
             this.$refs.lowerForm.validate((valid) => {
               if (valid) {
@@ -1175,6 +1185,7 @@ export default {
                     return this.$message.error(`请设置第 ${i + 1} 个内容的海报`)
                   }
                 }
+
                 cb()
               } else {
                 this.$message.error('请将表单填写完整')
