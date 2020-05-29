@@ -218,7 +218,7 @@ export default {
       if (!this.isAlbumTab) {
         // 校验版块是否存在多功能推荐位
         const validPanelPlugin = function (pluginType, panel) {
-          const pluginTypeList = (panel.pluginBlocks || '').split(',')
+          const pluginTypeList = (panel.pluginTypes || '').split(',')
           return pluginTypeList.some(item => item === pluginType)
         }
         for (let i = 0; i < data.length; i++) {

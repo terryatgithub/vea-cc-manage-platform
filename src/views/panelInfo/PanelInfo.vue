@@ -1234,7 +1234,16 @@ export default {
         this.pannel.showTitle = 1
       }
     },
-    'pannel.focusConfig': 'handleFocusConfigChange'
+    'pannel.focusConfig': 'handleFocusConfigChange',
+    'firstPanel.flagTagVector': function (val) {
+      if (val === 0) {
+        this.firstPanel.panelTagVectorInfo = {
+          categoryCode: undefined,
+          focusCategory: undefined,
+          categoryName: undefined
+        }
+      }
+    }
   },
   methods: {
     handleUpdatePostEnd () {
@@ -3474,18 +3483,18 @@ export default {
     handleInputFlagTagVector (val) {
       const firstPanel = this.firstPanel
       if (val) {
-        const isValid = this.getVectorTag()
-        if (!isValid) {
-          this.$message.info('每个推荐位都必须是媒体资源')
-          firstPanel.flagTagVector = 0
-        } else {
-          firstPanel.flagTagVector = 1
-        }
+        this.getVectorTag().then(isValid => {
+          if (!isValid) {
+            firstPanel.flagTagVector = 0
+          } else {
+            firstPanel.flagTagVector = 1
+          }
+        })
       } else {
         firstPanel.flagTagVector = 0
       }
     },
-    fetchVectorTag () {
+    async fetchVectorTag () {
       if (!this.isShowTagsField || this.pannel.parentType !== 'normal') {
         return false
       }
@@ -3497,6 +3506,7 @@ export default {
         for (let j = 0; j < videoContentList.length; j++) {
           const videoItem = videoContentList[j]
           if (videoItem.coverType !== 'media') {
+            this.$message.info('每个推荐位都必须是媒体资源')
             return false
           } else {
             const id = videoItem.extraValue1
@@ -3504,30 +3514,27 @@ export default {
           }
         }
       }
-      this.$service.getVectorTag({ coocaaVIds: ids.join(',') }).then(data => {
+      const exist = await this.$service.getVectorTag({ coocaaVIds: ids.join(',') }).then(data => {
         data = data || {}
-        firstPanel.panelTagVectorInfo = {
-          categoryCode: data.tagCode,
-          categoryName: data.tagName
-        }
-        if (JSON.stringify(data) === '{}') {
+        firstPanel.panelTagVectorInfo.categoryCode = data.tagCode
+        firstPanel.panelTagVectorInfo.categoryName = data.tagName
+        if (JSON.stringify(data) === '{}' || typeof data === 'string') {
           this.firstPanel.flagTagVector = 0
           this.$message.error('无所有影片都具有的标签')
+          return false
+        } else {
+          return true
         }
       })
-      return true
+      return exist
     },
     getVectorTag () {
-      const isValid = this.fetchVectorTag()
-      if (!isValid) {
-        this.firstPanel.flagTagVector = 0
-        this.firstPanel.panelTagVectorInfo = {
-          categoryCode: undefined,
-          focusCategory: undefined,
-          categoryName: undefined
+      return this.fetchVectorTag().then(isValid => {
+        if (!isValid) {
+          this.firstPanel.flagTagVector = 0
         }
-      }
-      return isValid
+        return isValid
+      })
     },
     handleShowThirdSourceCorner (isShow) {
       const pannelList = this.pannel.pannelList
