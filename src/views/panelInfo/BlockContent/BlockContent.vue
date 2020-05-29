@@ -271,7 +271,7 @@ export default {
           videoContentList: this.parseContentList(this.normalContentList),
           specificContentList: this.parseContentList(this.specificContentList)
         })
-        console.log(this.normalContentList, '--------')
+        console.log(this.normalContentList, '---handleSave-保存----')
       })
     },
     genDefaultNormalContentWrapper () {
@@ -378,13 +378,13 @@ export default {
       this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
           if (contentForm.flagSetRec === 1) {
-            console.log(contentForm.mediaAutomationBlockRls, '---dd')
-            if (!contentForm.mediaAutomationBlockRls.mediaAutomationId && !contentForm.mediaAutomationBlockRls.id) {
+            if (!contentForm.mediaAutomationBlockRls.mediaAutomationId && !contentForm.mediaAutomationBlockRls.recId) {
               return this.$message.error('开关开启时，推荐流选择必须选择其一')
-            } else if (contentForm.mediaAutomationBlockRls.mediaAutomationId && contentForm.mediaAutomationBlockRls.id) {
+            } else if (contentForm.mediaAutomationBlockRls.mediaAutomationId && contentForm.mediaAutomationBlockRls.recId) {
               return this.$message.error('开关开启时，推荐流只能保存其一')
             }
           }
+          console.log(contentForm, '---save验证')
           cb()
         } else {
           return this.error(err)

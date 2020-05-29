@@ -579,14 +579,16 @@
                 selection-type="single"
                 :source="source"
                 :scene="scene"
+                :disabled="isReadonly"
                 @select-end="handleSelectBlockRecStreamEnd"
                 style="margin:0 0 10px 160px">
             </NewBlockRecStreamSelector>
-            <template v-if="contentForm.mediaAutomationBlockRls.id">
+            <template v-if="contentForm.mediaAutomationBlockRls.recId">
               已选择: <el-tag closable
               @close="handleDelTagClose(contentForm.mediaAutomationBlockRls)"
-              v-if="isShowOrHide">
-              {{ contentForm.mediaAutomationBlockRls.id }}
+              :disabled="isReadonly"
+              >
+              {{ contentForm.mediaAutomationBlockRls.recId }}
               ({{ contentForm.mediaAutomationBlockRls.recName }})
               </el-tag>
             </template>
@@ -984,12 +986,12 @@ export default {
   methods: {
     // 移除新推荐流选中的
     handleDelTagClose (tag) {
-      tag.id = undefined
+      tag.recId = undefined
       this.isShowOrHide = false
     },
     handleSelectBlockRecStreamEnd (selected) {
       let defaultObj = {
-        id: selected[0].id,
+        recId: selected[0].id,
         recName: selected[0].recName,
         recCategory: selected[0].recCategory,
         recFlag: selected[0].userToken
@@ -1492,6 +1494,7 @@ export default {
     if (contentForm.bgImgUrl || contentForm.bgParams.id || contentForm.bgParams.title) {
       this.isShowConfigBg = true
     }
+    console.log(contentForm.mediaAutomationBlockRls, '-----d')
   }
 }
 </script>
