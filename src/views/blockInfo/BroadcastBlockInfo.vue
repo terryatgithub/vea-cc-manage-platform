@@ -1421,7 +1421,8 @@ export default {
             return item
           }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
-          this.normalForm = this.normalVersionContent[0]
+          console.log(this.normalVersionContent, '----dd')
+          // this.normalForm = this.normalVersionContent[0]
           console.log(this.normalForm, '---basic')
 
           // lower data
