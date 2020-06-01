@@ -686,18 +686,9 @@
               </div>
 
               <div :style="{display: isCollapseExtend ? 'none' : 'block'}">
-                <el-form-item
-                  label="版面属性"
-                  prop="tabType"
-                v-if="tabInfo.tabType === 1">普通版面 </el-form-item>
-                <el-form-item
-                  label="版面属性"
-                  prop="tabType"
-                v-if="tabInfo.tabType === 2">专题版面</el-form-item>
-                <el-form-item
-                  label="版面属性"
-                  prop="tabType"
-                v-if="tabInfo.tabType === 13">分页专题版面</el-form-item>
+                <el-form-item label="版面属性" prop="tabType">
+                  {{$consts.optionsToText(TAB_TYPES)[tabInfo.tabType]}}
+                </el-form-item>
 
                 <template v-if="tabInfo.tabType === 1">
                   <template v-if="tabInfo.hasSubTab === 1">
@@ -1683,10 +1674,38 @@ export default {
       this.loadPanelDetail(panel)
     },
     handleInputTabType (val) {
-      if (val === 2) {
+      if (val === 2 || val === 13) {
         this.tabInfo.refreshTimeList = []
+        this.tabInfo.tabType = val
       }
-      this.tabInfo.tabType = val
+      if (val === 1) {
+        this.$confirm('切换到普通版面将清空含有VIP二维码推荐位和视频播放推荐位的版块，是否切换？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            const panelList = this.tabInfo.pannelList
+            let panelIds = []
+            const delPanelList = panelList.filter(item => {
+              const id = item.panel.id
+              panelIds.push(id)
+              const pluginTypeList = (this.panelListIndexed[id].pluginTypes || '').split(',')
+              return (pluginTypeList.indexOf('REFERENCE_PLAY_VIDEO') !== -1 || pluginTypeList.indexOf('REFERENCE_VIP_QRCODE') !== -1)
+            })
+            delPanelList.forEach(delPanel => {
+              const index = panelList.indexOf(delPanel)
+              this.doRemovePanel(index)
+            })
+            this.updateDuplicates()
+            // 被移除的修改不用提交
+            this.panelsModified = this.panelsModified.filter(id => !panelIds.includes(id))
+            // 清除改动历史
+            this.clearBlockExchangeHistory()
+            this.tabInfo.tabType = val
+          })
+          .catch(e => console.log(e))
+      }
     },
     toPercent: decimal => {
       return (Math.round(decimal * 10000) / 100.00 + '%')
