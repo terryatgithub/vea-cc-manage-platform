@@ -485,9 +485,9 @@ export default {
           }
         ],
         dmpRegistryInfo: [{ required: true, message: '请选择定向人群' }],
-        'mediaAutomationBlockRls.mediaAutomationId': [
-          { required: true, message: '当开关开启时必填' }
-        ],
+        // 'mediaAutomationBlockRls.mediaAutomationId': [
+        //   { required: true, message: '当开关开启时必填123' }
+        // ],
         'mediaAutomationBlockRls.refreshCal': [
           { required: true, message: '当开关开启时必填', trigger: 'blur' }
         ],
@@ -1379,7 +1379,7 @@ export default {
             return item
           }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
-          this.normalForm = this.normalVersionContent[0]
+          // this.normalForm = this.normalVersionContent[0]
 
           // lower data
           const lowerData = cloneDeep(data.lowerVersionContent)
