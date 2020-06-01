@@ -409,6 +409,7 @@
           selection-type="single"
           :source="source"
           :id-type="idType"
+          :before-select-end-cbs="beforeSelectBlockCbs"
           @select-end="handleSelectBlockEnd">
           <el-button>选择推荐位</el-button>
         </ResourceSelector>
@@ -877,6 +878,24 @@ export default {
         'tvLiveInfo.channelId': [
           { required: true, message: '请选择频道', trigger: 'blur' }
         ]
+      },
+      beforeSelectBlockCbs: {
+        func: (rows) => {
+          for (let i = 0; i < rows.length; i++) {
+            const selected = rows[i]
+            if (selected.pluginType === 'REFERENCE_VIP_QRCODE') {
+              const rlsTabInfo = this.data.rlsTabInfo || []
+              const isSomeNoTopic = rlsTabInfo.some(tabInfo => {
+                return tabInfo.tabType !== 2
+              })
+              if (isSomeNoTopic) {
+                this.$message.error('【VIP二维码推荐位】只能配置在专题版面中')
+                return false
+              }
+            }
+          }
+          return true
+        }
       }
     }
   },
@@ -1412,15 +1431,6 @@ export default {
       const selectedBroadcast = resources.broadcast[0]
       if (selectedFunc) {
         const selected = selectedFunc
-        if (selected.pluginType === 'REFERENCE_VIP_QRCODE') {
-          const rlsTabInfo = this.pannel.rlsTabInfo || []
-          const isSomeNoTopic = rlsTabInfo.some(tabInfo => {
-            return tabInfo.tabType !== 2
-          })
-          if (isSomeNoTopic) {
-            return this.$message.error('【VIP二维码推荐位】只能配置在专题版面中')
-          }
-        }
 
         this.contentForm.videoContentType = 'sysPlugin'
         this.contentForm.title = selected.pluginName

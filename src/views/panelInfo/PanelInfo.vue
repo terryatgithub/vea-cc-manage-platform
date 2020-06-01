@@ -1597,7 +1597,8 @@ export default {
         pannelCategory: this.pannel.panelGroupCategory,
         block: selectedResources[index],
         blockInfo: this.blockList[activePannelIndex][index],
-        pannelResource: this.pannel.pannelResource
+        pannelResource: this.pannel.pannelResource,
+        rlsTabInfo: this.pannel.rlsTabInfo || []
       }
       this.currentBlockIndex = index
       this.activePage = 'block_content'
@@ -3160,7 +3161,7 @@ export default {
               categoryName: undefined
             }
             // 给pannelList版面信息，用于推荐位资源
-            item.rlsTabInfo = pannel.rlsTabInfo || []
+            item.rlsTabInfo = item.rlsTabInfo || []
             return item
           })
           pannel.pannelResource = firstPannel.pannelResource
