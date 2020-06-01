@@ -104,7 +104,7 @@
           信号源模式的第一个资源必须是轮播资源
         </div>
       </el-form-item>
-      <el-form-item>
+      <el-form-item v-if="normalForm.coverType !== 'custom'">
           <ResourceSelector
           ref="resourceSelector"
           :source="source"

@@ -1314,6 +1314,7 @@ export default {
         }
         item.params = JSON.stringify(item.params)
         item.clickParams = JSON.stringify(item.clickParams)
+        item.guideConfig = JSON.stringify(item.guideConfig)
         if (item.dmpContentList.length > 0) {
           item.dmpContentList = item.dmpContentList.map(parseContent)
         } else {
@@ -1398,6 +1399,7 @@ export default {
             item.onclick = JSON.parse(item.onclick)
             item.params = JSON.parse(item.params || '{}')
             item.clickParams = JSON.parse(item.clickParams || '{}')
+            item.guideConfig = JSON.parse(item.guideConfig || '{}')
             parseCornerIconList(item)
             parseParams(item.onclick)
             // 短视频
@@ -1421,6 +1423,7 @@ export default {
             return item
           }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
+          console.log(this.normalVersionContent, '----dd')
           this.normalForm = this.normalVersionContent[0]
           console.log(this.normalForm, '---basic')
 

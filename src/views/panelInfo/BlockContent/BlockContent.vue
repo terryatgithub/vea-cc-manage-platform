@@ -377,6 +377,7 @@ export default {
     },
     validateCurrentContent (cb) {
       const contentForm = this.contentForm
+      console.log(contentForm, 'submit')
       this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
           cb()
@@ -548,15 +549,21 @@ export default {
             case 'tab': {
               var tabType = currentOnclick.tabType
               params += ',tabType==' + tabType
+              var isValueType = ''
+              if (tabType === '1') {
+                isValueType = 'coocaa.intent.action.HOME_COMMON_LIST'
+              } else if (tabType === '13') {
+                isValueType = 'coocaa.intent.action.HOME_SPECIAL_TOPIC_PAGE_EDU'
+              } else {
+                isValueType = 'coocaa.intent.action.HOME_SPECIAL_TOPIC'
+              }
               onclick = JSON.stringify({
                 packagename: 'com.tianci.movieplatform',
                 versioncode: '',
                 dowhat: 'startActivity',
                 bywhat: 'action',
                 // eslint-disable-next-line
-                byvalue: tabType == 1
-                  ? 'coocaa.intent.action.HOME_COMMON_LIST'
-                  : 'coocaa.intent.action.HOME_SPECIAL_TOPIC',
+                byvalue: isValueType,
                 params: {
                   id: currentOnclick.tabId
                 },

@@ -251,7 +251,7 @@
         </ResourceSelector>
         <span v-show="normalForm.guideConfig.vid || normalForm.guideConfig.id">已选择: {{normalForm.guideConfig.vid || normalForm.guideConfig.id}}</span>
       </el-form-item>
-      <el-form-item label="播放完成后" v-if="isGroupModel" pop="guideConfig.after_play.operation">
+      <el-form-item label="播放完成后" v-if="isGroupModel">
         <el-radio-group
           :value="normalForm.guideConfig.after_play.operation"
           :disabled="isManualSetResource"
@@ -261,7 +261,7 @@
           <el-radio label="theFilm" :disabled="disabled">播放指定影片</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label prop="guideConfig.after_play.operatio">
+      <el-form-item >
         <div v-if="normalForm.guideConfig.after_play.operation === 'theFilm'">
           <ResourceSelector
             ref="resourceSelector"
@@ -655,6 +655,21 @@ export default {
       this.normalForm.guideConfig.after_play.id = resourceContent.thirdIdOrPackageName
       this.normalForm.guideConfig.after_play.vid = resourceContent.vid
     }
+  },
+  created () {
+    if (this.normalForm.guideConfig.id === undefined) {
+      this.normalForm.guideConfig = {
+        id: '',
+        vid: '',
+        after_play: {
+          operation: 'nextFilm',
+          id: '',
+          vid: ''
+        }
+      }
+    }
+    // window.normalForm = this.normalForm
+    console.log(this.normalForm.guideConfig, '-----获取详23情数据')
   }
 }
 </script>

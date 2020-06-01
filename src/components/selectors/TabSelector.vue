@@ -126,6 +126,10 @@ const tabTypeOptions = [
   {
     label: '第三方版面',
     value: '4'
+  },
+  {
+    label: '分页专题版面',
+    value: '13'
   }
 ]
 
