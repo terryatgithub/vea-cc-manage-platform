@@ -912,7 +912,7 @@ export default {
       //   ? mediaRuleLayoutOptions.slice(2, 6) // 推荐流只支持几个布局
       //   : mediaRuleLayoutOptions
       return pannelFillType === PANEL_FILL_TYPE.recStream
-        ? mediaRuleLayoutOptions // 推荐流只支持几个布局
+        ? mediaRuleLayoutOptions
         : mediaRuleLayoutOptions
     },
     interveneMaxCount () {
@@ -1066,7 +1066,6 @@ export default {
       const categoryVideo = 31 // 影视
       const categoryEducation = 60 // 教育
       const categoryCommon = 67 // 不限
-
       if (panelGroupCategory === categoryVideo) {
         return panelFillTypeOptions
       }
@@ -3329,6 +3328,7 @@ export default {
     })
   },
   mounted () {
+    console.log(this.finalMediaRuleLayoutOptions, '----d')
     if (this.id) {
       this.fetchData(this.version).then(() => {
         this.clickBlock()

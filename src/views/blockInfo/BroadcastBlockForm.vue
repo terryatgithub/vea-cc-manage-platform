@@ -255,7 +255,7 @@
           </span>
         </el-card>
       </el-form-item>
-      <el-form-item label="正片引导" v-if="!normalForm.shortVideoSwitch">
+      <!-- <el-form-item label="正片引导" v-if="!normalForm.shortVideoSwitch">
         <ResourceSelector
           ref="resourceSelector"
           :source="source"
@@ -269,8 +269,8 @@
         >
         <el-button type="primary" plain>选择正片引导资源</el-button>
       </ResourceSelector>
-      </el-form-item>
-      <el-form-item label="播放完成后" v-if="isGroupModel" pop="sign">
+      </el-form-item> -->
+      <!-- <el-form-item label="播放完成后" v-if="isGroupModel" pop="sign">
         <el-radio-group
           :value="normalForm.sign"
           :disabled="isManualSetResource"
@@ -279,7 +279,7 @@
           <el-radio lanbel="nextFilm" :disabled="disabled">播放下一集或者相关推荐</el-radio>
           <el-radio lanbel="theFilm" :disabled="disabled">播放指定影片</el-radio>
         </el-radio-group>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label prop="clickParams">
         <div v-if="normalForm.sign === 'nextFilm'">
           <ResourceSelector

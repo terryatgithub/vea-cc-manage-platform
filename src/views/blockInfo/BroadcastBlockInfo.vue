@@ -1152,18 +1152,22 @@ export default {
     },
     validate (data, cb) {
       const normalForm = data.normalVersionContent[0]
-      console.log(normalForm, normalForm.flagSetRec)
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
           // debugger
-          if (normalForm.flagSetRec === 1) {
-            if (!normalForm.mediaAutomationBlockRls.mediaAutomationId && !normalForm.mediaAutomationBlockRls.recId) {
-              return this.$message.error('开关开启时，推荐流选择必须选择其一')
-            } else if (normalForm.mediaAutomationBlockRls.mediaAutomationId && normalForm.mediaAutomationBlockRls.recId) {
-              return this.$message.error('开关开启时，推荐流只能保存其一')
-            }
-          }
           this.checkNormalForm(() => {
+            if (normalForm.flagSetRec === 1) {
+              if (!normalForm.mediaAutomationBlockRls.mediaAutomationId && !normalForm.mediaAutomationBlockRls.recId) {
+                return this.$message.error('开关开启时，推荐流选择必须选择其一')
+              } else if (normalForm.mediaAutomationBlockRls.mediaAutomationId && normalForm.mediaAutomationBlockRls.recId) {
+                return this.$message.error('开关开启时，推荐流只能保存其一')
+              }
+            }
+            if (normalForm.mediaAutomationBlockRls.recId) {
+              let defalutId = normalForm.mediaAutomationBlockRls.recId
+              normalForm.mediaAutomationBlockRls.mediaAutomationId = defalutId
+            }
+            console.log(normalForm.mediaAutomationBlockRls, '=--保存id')
             this.$refs.lowerForm.validate((valid) => {
               if (valid) {
                 const configModel = data.configModel
@@ -1379,7 +1383,7 @@ export default {
             return item
           }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
-          // this.normalForm = this.normalVersionContent[0]
+          this.normalForm = this.normalVersionContent[0]
 
           // lower data
           const lowerData = cloneDeep(data.lowerVersionContent)
