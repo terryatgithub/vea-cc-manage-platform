@@ -986,12 +986,12 @@ export default {
   methods: {
     // 移除新推荐流选中的
     handleDelTagClose (tag) {
-      tag.mediaAutomationId = undefined
+      tag.recId = undefined
       this.isShowOrHide = false
     },
     handleSelectBlockRecStreamEnd (selected) {
       let defaultObj = {
-        mediaAutomationId: selected[0].id,
+        recId: selected[0].id,
         recName: selected[0].recName,
         recCategory: selected[0].recCategory,
         recFlag: selected[0].userToken

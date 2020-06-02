@@ -200,6 +200,7 @@ export default {
       })
     },
     handleSelectResourcesEnd (resources) {
+      console.log(resources)
       const contentPreset = {
         coverType: this.isMall ? 'custom' : 'media',
         // hideTitleOptions 表示强制需要标题，无法关闭

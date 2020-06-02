@@ -402,7 +402,7 @@
                         @click-block="handleClickBlock"
                       ></VirtualPanel>
                     </el-form-item>
-                    <el-form-item label="插入">
+                    <el-form-item label="插入345">
                       <el-button type="primary" :disabled="!selectedLayout" @click="handleAddIntervene">添加</el-button>
                       <VirtualIntervenePanel
                         class="pannel-blocks"
@@ -715,6 +715,8 @@ import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
 import ClickCopy from '@/components/ClickCopy'
 import { isFrozen } from './frozen'
+
+const AUTO_BLOCK_COUNT = 12
 /**
  * 插入推荐位
  * 需要先选布局和设置位置，因为要确定海报尺寸
@@ -1081,6 +1083,7 @@ export default {
         return undefined
       }
     },
+    // 插入
     interveneContentList () {
       const firstPanel = this.pannel.pannelList[0] || {}
       const interveneContentList = firstPanel.interveneContentList || []
@@ -1524,6 +1527,7 @@ export default {
         return this.$message('为了匹配海报尺寸，请先确定插入位置哦！')
       }
       const currentIntervenePos = selectedResources[index].intervenePos
+      debugger
       this.blockConetentInterveneProps = {
         layoutType: 'Panel',
         pannelParentType: pannel.parentType,
@@ -3014,6 +3018,11 @@ export default {
             this.reviewPicUrl = parseInt(firstPannel.layoutId)
           }
           if (fillType === panelFillTypes.recStream) {
+            // 初始化-计算布局大小
+            if (firstPannel.contentList.length === 0) {
+              this.updateBlockCount(layout, AUTO_BLOCK_COUNT)
+              this.updatePosition(0)
+            }
             this.updateInterveneResources()
           }
         }
@@ -3142,13 +3151,14 @@ export default {
       this.$service.getLayoutInforById({ id }).then((layout) => {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
         this.selectedLayout = layout
-        this.handleSelectLayoutEnd(layout, 12)
+        this.handleSelectLayoutEnd(layout, AUTO_BLOCK_COUNT)
         if (currentPannel.mediaRule) {
           this.updateInterveneResources()
         }
       })
     },
     handleAddIntervene () {
+      debugger
       const currentPannel = this.pannel.pannelList[0]
       const fillType = this.pannelFillType
       const panelFillTypes = this.$consts.panelFillTypes
