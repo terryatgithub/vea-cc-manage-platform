@@ -402,7 +402,7 @@
                         @click-block="handleClickBlock"
                       ></VirtualPanel>
                     </el-form-item>
-                    <el-form-item label="插入345">
+                    <el-form-item label="插入">
                       <el-button type="primary" :disabled="!selectedLayout" @click="handleAddIntervene">添加</el-button>
                       <VirtualIntervenePanel
                         class="pannel-blocks"
