@@ -2965,6 +2965,7 @@ export default {
           this.blockCountList = pannelList.map(function (item) {
             return item.contentList.length
           })
+          this.blockCount = this.blockCountList[0] || 1
           pannel.pannelList = pannelList.map(function (item) {
             item.contentList = item.contentList.map(function (contentItem) {
               contentItem.contentPosition = JSON.parse(
