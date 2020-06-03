@@ -200,6 +200,7 @@ export default {
       })
     },
     handleSelectResourcesEnd (resources) {
+      console.log(resources)
       const contentPreset = {
         coverType: this.isMall ? 'custom' : 'media',
         // hideTitleOptions 表示强制需要标题，无法关闭
@@ -271,6 +272,7 @@ export default {
           videoContentList: this.parseContentList(this.normalContentList),
           specificContentList: this.parseContentList(this.specificContentList)
         })
+        console.log(this.normalContentList, '---handleSave-保存----')
       })
     },
     genDefaultNormalContentWrapper () {
@@ -380,6 +382,14 @@ export default {
       console.log(contentForm, 'submit')
       this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
+          if (contentForm.flagSetRec === 1) {
+            if (!contentForm.mediaAutomationBlockRls.mediaAutomationId && !contentForm.mediaAutomationBlockRls.recId) {
+              return this.$message.error('开关开启时，推荐流选择必须选择其一')
+            } else if (contentForm.mediaAutomationBlockRls.mediaAutomationId && contentForm.mediaAutomationBlockRls.recId) {
+              return this.$message.error('开关开启时，推荐流只能保存其一')
+            }
+          }
+          console.log(contentForm, '---save验证')
           cb()
         } else {
           return this.error(err)

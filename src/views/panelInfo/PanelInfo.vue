@@ -431,6 +431,24 @@
                       </template>
                     </el-form-item>
                     <el-form-item
+                      v-if="pannelFillType === $consts.panelFillTypes.recStream"
+                      label="选择推荐流"
+                      required>
+                      <NewBlockRecStreamSelector
+                          title="选择推荐流"
+                          selection-type="single"
+                          :source="pannel.pannelResource"
+                          :scene="scene"
+                          @select-end="handleSelectBlockRecNew">
+                      </NewBlockRecStreamSelector>
+                      <template v-if="firstPanel.recStreamPanelRls">
+                          已选择: <el-tag>
+                          {{ firstPanel.recStreamPanelRls.recId }}
+                          ({{ firstPanel.recStreamPanelRls.recName }})
+                          </el-tag>
+                      </template>
+                    </el-form-item>
+                    <el-form-item
                       label="推荐位"
                       v-if="pannelFillType === $consts.panelFillTypes.mediaRule && firstPanel.contentList.length > 0">
                       <el-button type="primary" @click="handleRefreshMediaRuleContents">刷新推荐位内容</el-button>
@@ -798,6 +816,7 @@ import BinCheckBox from '@/components/BinCheckBox'
 import BlockRecStreamSelector from '@/components/selectors/BlockRecStreamSelector'
 import TagTypeSelector from '@/components/ResourceSelector/TagTypeSelector'
 
+import NewBlockRecStreamSelector from '@/components/selectors/NewBlockRecStreamSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 
@@ -815,6 +834,8 @@ import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
 import ClickCopy from '@/components/ClickCopy'
 import { isFrozen } from './frozen'
+
+const AUTO_BLOCK_COUNT = 12
 /**
  * 插入推荐位
  * 需要先选布局和设置位置，因为要确定海报尺寸
@@ -847,7 +868,7 @@ export default {
     TagFrame,
     VeLine,
     SubscribeVideos,
-    BlockRecStreamSelector,
+    NewBlockRecStreamSelector,
     ConfigureFilmFilterRule,
     ClickCopy,
     TagTypeSelector
@@ -907,6 +928,7 @@ export default {
       ]
     }
     return {
+      scene: '1',
       // 数据展现
       extend: extend,
       settings: {
@@ -1012,6 +1034,15 @@ export default {
     showPannelTitleField () {
       const pannel = this.pannel
       return pannel.parentType === 'normal' || pannel.parentType === 'subscribe' || pannel.parentType === 'tag'
+    },
+    finalMediaRuleLayoutOptions () {
+      const { pannelFillType, PANEL_FILL_TYPE, mediaRuleLayoutOptions } = this
+      // return pannelFillType === PANEL_FILL_TYPE.recStream
+      //   ? mediaRuleLayoutOptions.slice(2, 6) // 推荐流只支持几个布局
+      //   : mediaRuleLayoutOptions
+      return pannelFillType === PANEL_FILL_TYPE.recStream
+        ? mediaRuleLayoutOptions
+        : mediaRuleLayoutOptions
     },
     interveneMaxCount () {
       const selectedLayoutId = this.selectedLayoutId
@@ -1169,7 +1200,6 @@ export default {
       const categoryVideo = 31 // 影视
       const categoryEducation = 60 // 教育
       const categoryCommon = 67 // 不限
-
       if (panelGroupCategory === categoryVideo) {
         return panelFillTypeOptions
       }
@@ -1185,6 +1215,7 @@ export default {
         return undefined
       }
     },
+    // 插入
     interveneContentList () {
       const firstPanel = this.pannel.pannelList[0] || {}
       const interveneContentList = firstPanel.interveneContentList || []
@@ -1253,14 +1284,24 @@ export default {
         this.handleRefreshMediaRuleContents()
       }, 3000)
     },
-    handleSelectBlockRecStreamEnd (selected) {
-      const { recId, recName, recCategory, flag: recFlag } = selected[0]
+    // handleSelectBlockRecStreamEnd (selected) {
+    //   const { recId, recName, recCategory, flag: recFlag } = selected[0]
+    //   this.firstPanel.recStreamPanelRls = {
+    //     recId,
+    //     recName,
+    //     recCategory,
+    //     recFlag
+    //   }
+    // },
+    handleSelectBlockRecNew (selected) {
+      const { id: recId, recName, recCategory, userToken: recFlag } = selected[0]
       this.firstPanel.recStreamPanelRls = {
         recId,
         recName,
         recCategory,
         recFlag
       }
+      console.log(this.firstPanel.recStreamPanelRls, '----')
     },
     genPannel (preset) {
       return {
@@ -1613,6 +1654,7 @@ export default {
         return this.$message('为了匹配海报尺寸，请先确定插入位置哦！')
       }
       const currentIntervenePos = selectedResources[index].intervenePos
+      debugger
       this.blockConetentInterveneProps = {
         layoutType: 'Panel',
         pannelParentType: pannel.parentType,
@@ -3190,6 +3232,11 @@ export default {
             this.reviewPicUrl = parseInt(firstPannel.layoutId)
           }
           if (fillType === panelFillTypes.recStream) {
+            // 初始化-计算布局大小
+            if (firstPannel.contentList.length === 0) {
+              this.updateBlockCount(layout, AUTO_BLOCK_COUNT)
+              this.updatePosition(0)
+            }
             this.updateInterveneResources()
           }
         }
@@ -3318,13 +3365,14 @@ export default {
       this.$service.getLayoutInforById({ id }).then((layout) => {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
         this.selectedLayout = layout
-        this.handleSelectLayoutEnd(layout, 12)
+        this.handleSelectLayoutEnd(layout, AUTO_BLOCK_COUNT)
         if (currentPannel.mediaRule) {
           this.updateInterveneResources()
         }
       })
     },
     handleAddIntervene () {
+      debugger
       const currentPannel = this.pannel.pannelList[0]
       const fillType = this.pannelFillType
       const panelFillTypes = this.$consts.panelFillTypes
@@ -3584,6 +3632,7 @@ export default {
     })
   },
   mounted () {
+    console.log(this.finalMediaRuleLayoutOptions, '----d')
     if (this.id) {
       this.fetchData(this.version).then(() => {
         this.clickBlock()
