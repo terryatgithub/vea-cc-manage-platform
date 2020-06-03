@@ -1312,7 +1312,7 @@ export default {
           item.params.stationId = item.subchannelId
           delete item.subchannelId
         }
-        if (item.coverType === 'custom') item.contentType = 'custom'
+        if (item.coverType === 'media') item.contentType = 'media'
         item.params = JSON.stringify(item.params)
         item.clickParams = JSON.stringify(item.clickParams)
         item.guideConfig = JSON.stringify(item.guideConfig)
