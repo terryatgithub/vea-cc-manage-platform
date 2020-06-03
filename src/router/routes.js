@@ -48,6 +48,8 @@ import FramePage from '../views/FramePage'
 import CrowdRel from '../views/crowdRel/Index.vue'
 import PanelRecommend from '../views/panelRecommend/PanelRecommendIndex.vue'
 import AssignVideoRecom from '../views/blockInfo/AssignVideoRecomIndex.vue'
+import NewVideoRecom from '../views/blockInfo/NewVideoRecomIndex.vue'
+import VideoRecomScene from '../views/blockInfo/VideoRecomSceneIndex.vue'
 import DeviceConfig from '../views/deviceConfig/DeviceConfigIndex.vue'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
@@ -441,6 +443,24 @@ const children = [
         meta: {
           title: '指定影片推荐流',
           tagId: 'mediaAutomation'
+        }
+      },
+      {
+        name: 'recStream',
+        path: '/recStream/view.html',
+        component: NewVideoRecom,
+        meta: {
+          title: '新影片推荐流',
+          tagId: 'recStream'
+        }
+      },
+      {
+        name: 'recommendStreamScene',
+        path: '/recommendStreamScene/view.html',
+        component: VideoRecomScene,
+        meta: {
+          title: '影片推荐流应用场景',
+          tagId: 'recommendStreamScene'
         }
       }
     ]

@@ -34,7 +34,7 @@
         </el-form-item>
         <el-form-item label="配置模式">
           <el-radio-group :value="basicForm.configModel" @input="handleInputConfigModel">
-           <el-radio label="purePoster" :disabled="disabled">纯图模式</el-radio>
+            <el-radio label="purePoster" :disabled="disabled">纯图模式</el-radio>
             <!-- <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio> -->
             <el-radio label="group" :disabled="disabled">窗口模式</el-radio>
             <el-radio label="sign" :disabled="disabled">信号源</el-radio>
@@ -57,7 +57,7 @@
         <h4 class="version-title__h">正常版本</h4>
         <el-tag
           class="version-title__tag"
-          v-if="basicForm.configModel === 'group'|| basicForm.configModel === 'purePoster'"
+          v-if="basicForm.configModel === 'group' || basicForm.configModel === 'purePoster'"
           type="warning"
         >短标题模式需至少运营四个资源，长标题模式至少6个，才能填满布局哦~</el-tag>
         <ResourceSelector
@@ -127,7 +127,7 @@
         </el-row>
 
         <!-- broadcast -->
-        <div class="content-wrapper" v-if="basicForm.configModel === 'group'">
+        <div class="content-wrapper"  v-if="basicForm.configModel === 'group'">
           <div class="content-type-switcher">
             <el-radio-group :value="normalForm.showContentType" @input="handleSwitchShowContentType">
               <el-radio class="conten-type-switcher__item" label="general">通用推荐位版本</el-radio>
@@ -193,9 +193,8 @@
             />
           </div>
         </div>
-        <div
-          class="content-wrapper"
-           v-if="basicForm.configModel === 'purePoster' || basicForm.configModel === 'sign'">
+        <div class="content-wrapper" :class="basicForm.configModel === 'purePoster' ? 'min-height': ''"
+          v-if="basicForm.configModel === 'purePoster' || basicForm.configModel === 'sign'">
           <template v-if="basicForm.configModel === 'sign'">
             <BroadcastBlockForm
               ref="broadcastBlockForm"
@@ -225,7 +224,7 @@
               :is-readonly="disabled"
               :is-group-model="isGroupModel"
               :source="source"
-              :show-resource-tip="currentIndex"
+              :show-resource-tip="currentIndex === 0"
             />
           </template>
         </div>
@@ -487,9 +486,9 @@ export default {
           }
         ],
         dmpRegistryInfo: [{ required: true, message: '请选择定向人群' }],
-        'mediaAutomationBlockRls.mediaAutomationId': [
-          { required: true, message: '当开关开启时必填' }
-        ],
+        // 'mediaAutomationBlockRls.mediaAutomationId': [
+        //   { required: true, message: '当开关开启时必填123' }
+        // ],
         'mediaAutomationBlockRls.refreshCal': [
           { required: true, message: '当开关开启时必填', trigger: 'blur' }
         ],
@@ -650,6 +649,7 @@ export default {
     },
     isGroupModel () {
       const configModel = this.basicForm.configModel
+      // alert(this.basicForm.configModel)
       // return configModel === 'group' || configModel === 'sign'
       return configModel
     },
@@ -872,6 +872,9 @@ export default {
         exception: data.exception
       }
       this[this.onclickEventVisibleFlag + 'Form']['onclick'] = o
+    },
+    handleChooseRecommend (newVal) {
+      alert(newVal)
     },
     handleChangeSign (newVal) {
       const normalForm = this.normalForm
@@ -1178,9 +1181,23 @@ export default {
       this.lowerForm = newForm
     },
     validate (data, cb) {
+      const normalForm = data.normalVersionContent[0]
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
+          // debugger
           this.checkNormalForm(() => {
+            if (normalForm.flagSetRec === 1) {
+              if (!normalForm.mediaAutomationBlockRls.mediaAutomationId && !normalForm.mediaAutomationBlockRls.recId) {
+                return this.$message.error('开关开启时，推荐流选择必须选择其一')
+              } else if (normalForm.mediaAutomationBlockRls.mediaAutomationId && normalForm.mediaAutomationBlockRls.recId) {
+                return this.$message.error('开关开启时，推荐流只能保存其一')
+              }
+            }
+            if (normalForm.mediaAutomationBlockRls.recId) {
+              let defalutId = normalForm.mediaAutomationBlockRls.recId
+              normalForm.mediaAutomationBlockRls.mediaAutomationId = defalutId
+            }
+            console.log(normalForm.mediaAutomationBlockRls, '=--保存id')
             this.$refs.lowerForm.validate((valid) => {
               if (valid) {
                 const configModel = data.configModel
@@ -1202,6 +1219,7 @@ export default {
                     return this.$message.error(`请设置第 ${i + 1} 个内容的海报`)
                   }
                 }
+
                 cb()
               } else {
                 this.$message.error('请将表单填写完整')
@@ -1628,6 +1646,8 @@ export default {
   width 75%
   border-left 1px solid #808080
   margin-left 10px
+.min-height
+  height 648px
 .content-type-switcher
   margin-bottom 20px
   border-bottom 1px solid #ccc

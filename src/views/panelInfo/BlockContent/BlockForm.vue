@@ -567,15 +567,34 @@
           inactive-color="grey">
         </el-switch>
       </el-form-item>
-      <RecommendStreamSelector
-        v-if="!!contentForm.flagSetRec"
-        :value="contentForm.mediaAutomationBlockRls.mediaAutomationId"
-        :disabled="isReadonly"
-        :source="source"
-        :resolution="resolution[0] + '*' + resolution[1]"
-        @select-end="handleSelectRecomStream"
-        @del-select="contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
-      />
+      <template v-if="!!contentForm.flagSetRec">
+            <RecommendStreamSelector
+              :value="contentForm.mediaAutomationBlockRls.mediaAutomationId"
+              :disabled="isReadonly"
+              :source="source"
+              :resolution="resolution[0] + '*' + resolution[1]"
+              @select-end="handleSelectRecomStream"
+              @del-select="contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
+            />
+            <NewBlockRecStreamSelector
+                title="选择新推荐流"
+                selection-type="single"
+                :source="source"
+                :scene="scene"
+                :disabled="isReadonly"
+                @select-end="handleSelectBlockRecStreamEnd"
+                style="margin:0 0 10px 160px">
+            </NewBlockRecStreamSelector>
+            <template v-if="contentForm.mediaAutomationBlockRls.recId">
+              已选择: <el-tag closable
+              @close="handleDelTagClose(contentForm.mediaAutomationBlockRls)"
+              :disabled="isReadonly"
+              >
+              {{ contentForm.mediaAutomationBlockRls.recId }}
+              ({{ contentForm.mediaAutomationBlockRls.recName }})
+              </el-tag>
+            </template>
+      </template>
       <el-form-item label="刷新机制" v-if="!!contentForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
         <InputPositiveInt
           clearable
@@ -619,7 +638,6 @@
       :ids="[currentResourceId]"
       @close="showBlockTagDialog = false">
     </TagFrame>
-
   </div>
 </template>
 
@@ -635,6 +653,7 @@ import CommonSelector from '@/components/CommonSelector'
 import CrowdSelector from '@/components/CrowdSelector.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 import ClickEventSelector from '@/components/selectors/ClickEventSelector'
+import NewBlockRecStreamSelector from '@/components/selectors/NewBlockRecStreamSelector'
 import TagFrame from '../TagFrame'
 import {
   getSelectedResource,
@@ -676,6 +695,7 @@ export default {
     TagFrame,
     InputPositiveInt,
     RecommendStreamSelector,
+    NewBlockRecStreamSelector,
     KnowledgeTagSelector,
     MaskAuthorSelector,
     MaskVideoSelector,
@@ -745,6 +765,7 @@ export default {
       }
     }
     return {
+      isShowOrHide: false,
       MASK_LIFE_TYPE_OPTIONS,
       MASK_LIFE_TYPES,
       MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
@@ -862,9 +883,9 @@ export default {
           { required: false, validator: checkSecKill, trigger: 'blur' }
         ],
         dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }],
-        'mediaAutomationBlockRls.mediaAutomationId': [
-          { required: true, message: '当开关开启时必填' }
-        ],
+        // 'mediaAutomationBlockRls.mediaAutomationId': [
+        //   { required: true, message: '当开关开启时必填' }
+        // ],
         'mediaAutomationBlockRls.refreshCal': [
           { required: true, message: '当开关开启时必填', trigger: 'blur' }
         ],
@@ -896,7 +917,8 @@ export default {
           }
           return true
         }
-      }
+      },
+      scene: '2'
     }
   },
   props: [
@@ -991,6 +1013,25 @@ export default {
     }
   },
   methods: {
+    // 移除新推荐流选中的
+    handleDelTagClose (tag) {
+      tag.recId = undefined
+      this.isShowOrHide = false
+    },
+    handleSelectBlockRecStreamEnd (selected) {
+      let defaultObj = {
+        recId: selected[0].id,
+        recName: selected[0].recName,
+        recCategory: selected[0].recCategory,
+        recFlag: selected[0].userToken
+      }
+      this.isShowOrHide = true
+      // 没有初始化，不是响应式数据
+      // this.contentForm.mediaAutomationBlockRls = Object.assign(this.contentForm.mediaAutomationBlockRls, defaultObj)
+      this.contentForm.mediaAutomationBlockRls = { ...this.contentForm.mediaAutomationBlockRls, ...defaultObj }
+      // this.$set(this.contentForm, defaultObj.id, selected[0].id) // 实时更新id
+      console.log(this.contentForm.mediaAutomationBlockRls, this.isShowOrHide, '====')
+    },
     handleInputGDLiveClickType (val) {
       this.contentForm.tvLiveInfo = genDefaultTvLiveInfo({
         clickType: val
@@ -1481,6 +1522,7 @@ export default {
     },
     handleSelectRecomStream (recomStream) {
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
+      console.log(this.contentForm.mediaAutomationBlockRls, '----旧推荐流')
     }
   },
   mounted () {
@@ -1495,6 +1537,7 @@ export default {
     if (contentForm.bgImgUrl || contentForm.bgParams.id || contentForm.bgParams.title) {
       this.isShowConfigBg = true
     }
+    console.log(contentForm.mediaAutomationBlockRls, '-----d')
   }
 }
 </script>
