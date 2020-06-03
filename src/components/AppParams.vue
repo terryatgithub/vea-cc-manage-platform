@@ -1,40 +1,71 @@
 <template>
   <div>
-    <el-form-item label="应用包名" :prop="formProp('packagename')" :rules="rules.packagename">
-      <el-input v-model.trim="inputValue.packagename"></el-input>
-    </el-form-item>
-    <el-form-item label="应用版本号" :prop="formProp('versioncode')" :rules="rules.versioncode">
-      <el-input v-model.trim="inputValue.versioncode"></el-input>
-    </el-form-item>
-    <el-form-item label="启动动作" :prop="formProp('dowhat')" :rules="rules.dowhat">
-      <el-select v-model="inputValue.dowhat">
-        <el-option
-            v-for="(item, index) in dowhatOptions"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-        >
-        </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="启动方式" :prop="formProp('bywhat')" :rules="rules.bywhat">
-      <el-select v-model="inputValue.bywhat">
-        <el-option
-            v-for="(item, index) in bywhatOptions"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-        >
-        </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="启动参数" :prop="formProp('byvalue')" :rules="rules.byvalue">
-      <el-input type="textarea" v-model.trim="inputValue.byvalue"></el-input>
-    </el-form-item>
-    <el-form-item label="数据配置" :prop="formProp('data')" >
-      <el-input type="textarea" v-model.trim="inputValue.data"></el-input>
-    </el-form-item>
+    <template v-if="!onlyParams">
+      <el-form-item label="应用包名" :prop="formProp('packagename')" :rules="rules.packagename">
+        <el-input v-model.trim="inputValue.packagename"></el-input>
+      </el-form-item>
+      <el-form-item label="应用版本号" :prop="formProp('versioncode')" :rules="rules.versioncode">
+        <el-input v-model.trim="inputValue.versioncode"></el-input>
+      </el-form-item>
+      <el-form-item label="启动动作" :prop="formProp('dowhat')" :rules="rules.dowhat">
+        <el-select v-model="inputValue.dowhat">
+          <el-option
+              v-for="(item, index) in dowhatOptions"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="启动方式" :prop="formProp('bywhat')" :rules="rules.bywhat">
+        <el-select v-model="inputValue.bywhat">
+          <el-option
+              v-for="(item, index) in bywhatOptions"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="启动参数" :prop="formProp('byvalue')" :rules="rules.byvalue">
+        <el-input type="textarea" v-model.trim="inputValue.byvalue"></el-input>
+      </el-form-item>
+      <el-form-item label="数据配置" :prop="formProp('data')" >
+        <el-input type="textarea" v-model.trim="inputValue.data"></el-input>
+      </el-form-item>
+    </template>
     <el-form-item label="扩展参数">
+      <!-- 默认参数 -->
+      <div class="app-extend-params" v-for="(param, index) in inputValue.defaultParams" :key="'default' + index">
+        <template v-if="!param.hide">
+          <el-form-item
+            class="item-left"
+            :label="param.label"
+            label-width="80px"
+          >
+            <div style="width: 100px">{{param.key}}</div>
+          </el-form-item>
+          <el-form-item
+            label="value:"
+            label-width="60px"
+            :prop="formProp('defaultParams') && formProp('defaultParams.' + index + '.value')"
+            :rules="rules.params.value"
+          >
+            <template v-if="!param.type">
+              <el-input v-if="param.ValueType === 'number'" v-model.trim.number="param.value"></el-input>
+              <el-input v-else v-model.trim="param.value"></el-input>
+            </template>
+            <CommonSelector v-else
+              :type="param.type"
+              v-model="param.value"
+              :options="param.valueOptions" />
+          </el-form-item>
+          <span class="tips">{{param.tip}}</span>
+        </template>
+      </div>
+      <!-- 常规参数 -->
       <div class="app-extend-params" v-for="(param, index) in inputValue.params" :key="index">
         <el-form-item
           label="key:"
@@ -64,7 +95,11 @@
 </template>
 
 <script>
+import CommonSelector from '@/components/CommonSelector'
 export default {
+  components: {
+    CommonSelector
+  },
   data () {
     const validateKey = (rule, value, cb) => {
       if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
@@ -86,16 +121,7 @@ export default {
     }
 
     return {
-      inputValue: {
-        packagename: undefined,
-        versioncode: undefined,
-        dowhat: undefined,
-        bywhat: undefined,
-        byvalue: undefined,
-        params: [],
-        data: '',
-        exception: {}
-      },
+      inputValue: this.genDefaultValue(),
       rules: {
         packagename: [
           { required: true, message: '请输入应用包名', trigger: 'blur' }
@@ -137,6 +163,7 @@ export default {
     value: {
 
     },
+    onlyParams: Boolean,
     propPrefix: {
 
     },
@@ -195,7 +222,8 @@ export default {
         dowhat: undefined,
         bywhat: undefined,
         byvalue: undefined,
-        params: []
+        params: [],
+        defaultParams: []
       }
     },
     setInputValue (val) {
@@ -227,6 +255,11 @@ export default {
 }
 </script>
 <style scoped>
+.tips {
+  color: #333;
+  font-size: 12px;
+  font-style: italic;
+}
 .app-extend-params .el-form-item,
 .app-extend-params .el-form-item__label,
 .app-extend-params .el-form-item__content,
@@ -247,5 +280,8 @@ export default {
   text-align: center;
   color: #999;
   margin-left: 5px;
+}
+.item-left >>> .el-form-item__label {
+  text-align: left;
 }
 </style>

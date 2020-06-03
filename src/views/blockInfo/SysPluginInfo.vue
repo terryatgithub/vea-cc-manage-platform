@@ -285,6 +285,8 @@ import InputMinute from '@/components/InputMinute'
 import Params from './Params'
 import TabSelector from '@/components/selectors/TabSelector'
 import CommonSelector from '@/components/CommonSelector'
+import { VIP_QRCODE_DEFAULT_PARAMS } from './broadcastBlockUtil.js'
+import { cloneDeep } from 'lodash'
 const PARENT_TYPES = {
   sign: 'sign', // 标记推荐位
   multi: 'multi',
@@ -731,19 +733,42 @@ export default {
         })
       }
 
+      if (pluginType === 'REFERENCE_VIP_QRCODE') {
+        Object.assign(result, {
+          onclick: {
+            defaultParams: cloneDeep(VIP_QRCODE_DEFAULT_PARAMS)
+          }
+        })
+      }
+
       return result
     },
     selectSubmit () {},
     clickSubmit () {},
-    parseOnclick (onclick) {
+    parseOnclick (onclick, pluginType) {
       if (onclick.params) {
-        const params = onclick.params
-        onclick.params = Object.keys(onclick.params).map(function (key) {
-          return {
-            key: key,
-            value: params[key]
-          }
-        })
+        const params = cloneDeep(onclick.params)
+        // VIP二维码存在默认参数填充
+        if (pluginType === 'REFERENCE_VIP_QRCODE') {
+          onclick.params = []
+          onclick.defaultParams = []
+          Object.keys(params).forEach(key => {
+            const defaultParam = cloneDeep(VIP_QRCODE_DEFAULT_PARAMS.find(item => item.key === key))
+            if (defaultParam) {
+              defaultParam.value = params[key]
+              onclick.defaultParams.push(defaultParam)
+            } else {
+              onclick.params.push({ key, value: params[key] })
+            }
+          })
+        } else {
+          onclick.params = Object.keys(onclick.params).map(function (key) {
+            return {
+              key: key,
+              value: params[key]
+            }
+          })
+        }
       }
       return onclick
     },
@@ -810,7 +835,7 @@ export default {
             item.appParams = Object.keys(appParams).map(key => ({ key, value: appParams[key] }))
           }
           if (item.onclick) {
-            item.onclick = this.parseOnclick(JSON.parse(item.onclick))
+            item.onclick = this.parseOnclick(JSON.parse(item.onclick), pluginType)
             const originOnclick = item.onclick
             const paramsIndexed = originOnclick.params.reduce((result, item) => {
               result[item.key] = item.value
@@ -1027,6 +1052,15 @@ export default {
             result[p.key] = p.value
             return result
           }, {})
+          // 默认参数
+          if (item.onclick.defaultParams && item.onclick.defaultParams.length !== 0) {
+            const defaultParamsObj = item.onclick.defaultParams.reduce((result, p) => {
+              result[p.key] = p.value
+              return result
+            }, {})
+            Object.assign(item.onclick.params, defaultParamsObj)
+          }
+          delete item.onclick.defaultParams
           item.onclick = JSON.stringify(item.onclick)
         }
         if (item.appParams) {
