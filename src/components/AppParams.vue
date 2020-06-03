@@ -223,7 +223,7 @@ export default {
         bywhat: undefined,
         byvalue: undefined,
         params: [],
-        defaultParams: []
+        defaultParams: undefined // 不用[]，防止有些地方传给后端,后端报错
       }
     },
     setInputValue (val) {
