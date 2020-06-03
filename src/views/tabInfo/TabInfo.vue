@@ -1692,9 +1692,10 @@ export default {
             let panelIds = []
             const delPanelList = panelList.filter(item => {
               const id = item.panel.id
-              panelIds.push(id)
               const pluginTypeList = (this.panelListIndexed[id].pluginTypes || '').split(',')
-              return (pluginTypeList.indexOf('REFERENCE_PLAY_VIDEO') !== -1 || pluginTypeList.indexOf('REFERENCE_VIP_QRCODE') !== -1)
+              const isDel = (pluginTypeList.indexOf('REFERENCE_PLAY_VIDEO') !== -1 || pluginTypeList.indexOf('REFERENCE_VIP_QRCODE') !== -1)
+              isDel && panelIds.push(id)
+              return isDel
             })
             delPanelList.forEach(delPanel => {
               const index = panelList.indexOf(delPanel)
