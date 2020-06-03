@@ -599,6 +599,7 @@ export default {
     handleChooseRecommend (newVal) {
       const normalForm = this.normalForm
       normalForm.guideConfig.after_play.operation = newVal
+      // normalForm.guideConfig.after_play.operation = ''
     },
     handleChangeSign (newVal) {
       const normalForm = this.normalForm

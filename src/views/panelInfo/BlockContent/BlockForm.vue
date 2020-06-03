@@ -585,13 +585,13 @@
                 @select-end="handleSelectBlockRecStreamEnd"
                 style="margin:0 0 10px 160px">
             </NewBlockRecStreamSelector>
-            <template v-if="contentForm.mediaAutomationBlockRls.recId">
+            <template v-if="contentForm.mediaAutomationBlockRls.type === 1">
               已选择: <el-tag closable
               @close="handleDelTagClose(contentForm.mediaAutomationBlockRls)"
               :disabled="isReadonly"
               >
-              {{ contentForm.mediaAutomationBlockRls.recId }}
-              ({{ contentForm.mediaAutomationBlockRls.recName }})
+              {{ contentForm.mediaAutomationBlockRls.mediaAutomationId || contentForm.mediaAutomationBlockRls.recId}}
+              ({{ contentForm.mediaAutomationBlockRls.recName || contentForm.mediaAutomationBlockRls.mediaAutomationName}})
               </el-tag>
             </template>
       </template>

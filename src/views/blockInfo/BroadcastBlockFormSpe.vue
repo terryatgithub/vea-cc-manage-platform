@@ -18,6 +18,12 @@
           :options="pannelCoverTypeTwo"
         />
       </el-form-item>
+      <!-- <el-form-item label="资源类别" prop="coverType">
+        <el-radio-group :value="normalForm.coverType" @input="handleInputNormalFormCoverType">
+          <el-radio-button label="media" :disabled="disabled">媒体资源</el-radio-button>
+          <el-radio-button label="custom" :disabled="disabled">自定义</el-radio-button>
+        </el-radio-group>
+      </el-form-item> -->
       <el-form-item v-if="normalForm.isDmpContent" label="关联定向人群" prop="dmpRegistryInfo">
         <el-button type="primary" @click="handleSelectCrowdStart" :disabled="isReadonly">添加人群</el-button>
         <el-tag
@@ -37,7 +43,7 @@
           开关切换时，清空配置数据；开关开启时，将禁用个性化推荐
         </span>
       </el-form-item>
-      <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName" v-if="!normalForm.shortVideoSwitch">
+      <!-- <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName" v-if="!normalForm.shortVideoSwitch">
         <ResourceSelector
           ref="resourceSelector"
           :source="source"
@@ -85,7 +91,7 @@
         <div v-if="configModel === 'sign' && showResourceTip" class="sign-tip">
           信号源模式的第一个资源必须是轮播资源
         </div>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="跳转话题" v-if="normalForm.shortVideoSwitch" prop="shortVideoParams.topicId">
         <ResourceSelector
           :disable-partner="!!source"
@@ -206,8 +212,8 @@
           <span v-show="thirdIdOrPackageNameForClick">已选择: {{ thirdIdOrPackageNameForClick }}</span>
         </div>
       </el-form-item>
-      <!-- <div pop="guideConfig.after_play.operation" v-if="normalForm.coverType === 'custom'"> -->
-      <div v-if="normalForm.sign === 'manualSet'">
+      <div pop="guideConfig.after_play.operation" v-if="normalForm.coverType === 'custom'">
+      <!-- <div v-if="normalForm.sign === 'manualSet'"> -->
         <el-form-item label="打开方式">
           <el-select value="第三方应用" :disabled="disabled">
             <el-option value="app">第三方应用</el-option>
@@ -316,6 +322,8 @@ export default {
     })
   },
   methods: {
+    handleInputNormalFormCoverType () {
+    },
     getThirdId (clickParams) {
       if (clickParams) {
         const result = (clickParams.id ||

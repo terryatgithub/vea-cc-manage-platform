@@ -51,7 +51,7 @@ export default {
       title: ''
     }
   },
-  props: ['value', 'disabled', 'source', 'resolution', 'show'],
+  props: ['value', 'disabled', 'source', 'resolution', 'show', 'type'],
   methods: {
     handleDelStreamTag () {
       this.$emit('del-select')
@@ -93,7 +93,6 @@ export default {
     }
   },
   created () {
-
   },
   mounted () {
     if (this.show) {

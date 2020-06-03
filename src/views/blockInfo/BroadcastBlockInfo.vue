@@ -1332,6 +1332,11 @@ export default {
         }
         if (item.coverType === 'custom') item.contentType = 'custom'
         if (item.contentType === '') return this.$message.error('请选择资源！')
+        if (item.guideConfig.after_play.operation === 'theFilm') {
+          if (item.guideConfig.after_play.id === '' || item.guideConfig.after_play.vid === '') {
+            return this.$message.error('请指定播放资源！')
+          }
+        }
         item.params = JSON.stringify(item.params)
         item.clickParams = JSON.stringify(item.clickParams)
         item.guideConfig = JSON.stringify(item.guideConfig)
@@ -1373,14 +1378,13 @@ export default {
       }
       lowerVersionContent.params = JSON.stringify(lowerVersionContent.params)
       lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
-
       data.parentType = 'Block'
       console.log('save', data)
-      this.$service
-        .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
-        .then(() => {
-          this.$emit('upsert-end')
-        })
+      // this.$service
+      //   .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
+      //   .then(() => {
+      //     this.$emit('upsert-end')
+      //   })
     },
 
     fetchData (version) {

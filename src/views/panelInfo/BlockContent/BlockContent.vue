@@ -379,7 +379,7 @@ export default {
     },
     validateCurrentContent (cb) {
       const contentForm = this.contentForm
-      console.log(contentForm, 'submit')
+      console.log(contentForm, 'submit12')
       this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
           if (contentForm.flagSetRec === 1) {
@@ -388,8 +388,13 @@ export default {
             } else if (contentForm.mediaAutomationBlockRls.mediaAutomationId && contentForm.mediaAutomationBlockRls.recId) {
               return this.$message.error('开关开启时，推荐流只能保存其一')
             }
+            if (contentForm.mediaAutomationBlockRls.recName) {
+              contentForm.mediaAutomationBlockRls.mediaAutomationId = contentForm.mediaAutomationBlockRls.recId
+              contentForm.mediaAutomationBlockRls.mediaAutomationName = contentForm.mediaAutomationBlockRls.recName
+              delete contentForm.mediaAutomationBlockRls.recId
+              delete contentForm.mediaAutomationBlockRls.recName
+            }
           }
-          console.log(contentForm, '---save验证')
           cb()
         } else {
           return this.error(err)
@@ -568,7 +573,7 @@ export default {
                 isValueType = 'coocaa.intent.action.HOME_SPECIAL_TOPIC'
               }
               onclick = JSON.stringify({
-                packagename: 'com.tianci.movieplatform',
+                packagename: tabType === '13' ? 'com.coocaa.educate' : 'com.tianci.movieplatform',
                 versioncode: '',
                 dowhat: 'startActivity',
                 bywhat: 'action',
@@ -577,7 +582,19 @@ export default {
                 params: {
                   id: currentOnclick.tabId
                 },
-                exception: {}
+                exception: tabType === '13' ? {
+                  'name': 'onclick_exception',
+                  'value': {
+                    'packagename': 'com.tianci.appstore',
+                    'dowhat': 'startActivity',
+                    'versioncode': '-1',
+                    'params': {
+                      'id': 'com.coocaa.educate'
+                    },
+                    'byvalue': 'coocaa.intent.action.APP_STORE_DETAIL',
+                    'bywhat': 'action'
+                  }
+                } : {}
               })
               break
             }
