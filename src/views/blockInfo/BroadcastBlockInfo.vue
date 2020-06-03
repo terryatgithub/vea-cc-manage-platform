@@ -1312,6 +1312,7 @@ export default {
           item.params.stationId = item.subchannelId
           delete item.subchannelId
         }
+        if (item.coverType === 'media') item.contentType = 'media'
         item.params = JSON.stringify(item.params)
         item.clickParams = JSON.stringify(item.clickParams)
         item.guideConfig = JSON.stringify(item.guideConfig)
@@ -1329,6 +1330,7 @@ export default {
         return item
       }
       data.normalVersionContent = data.normalVersionContent.map(parseContent)
+      console.log(data.normalVersionContent, '----ds')
       // const normalVersionContent = data.normalVersionContent
       // if (normalVersionContent.onclick) {
       //   parseParams(normalVersionContent.onclick)

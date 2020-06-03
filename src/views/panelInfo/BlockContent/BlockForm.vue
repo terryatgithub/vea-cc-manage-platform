@@ -1288,7 +1288,6 @@ export default {
       }
     },
     handleOpenModeChange (val) {
-      alert(val)
       this.contentForm.redundantParams = this.genParams(val)
       this.contentForm.appParams = []
     },

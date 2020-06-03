@@ -236,7 +236,7 @@
           </span>
         </el-card>
       </el-form-item>
-      <el-form-item label="正片引导" v-if="!normalForm.shortVideoSwitch">
+      <el-form-item label="正片引导" v-show="couldFullscreen">
         <ResourceSelector
             ref="resourceSelector"
             v-if="!disabled"
@@ -249,7 +249,19 @@
           >
           <el-button type="primary" plain>选择正片引导资源</el-button>
         </ResourceSelector>
-        <span v-show="normalForm.guideConfig.vid || normalForm.guideConfig.id">已选择: {{normalForm.guideConfig.vid || normalForm.guideConfig.id}}</span>
+        <el-tag
+          type="success"
+          class="marginL"
+          v-if="normalForm.guideConfig.id"
+          :closable="!disabled"
+          @close="normalForm.guideConfig.id  = undefined"
+          >已选择: {{normalForm.guideConfig.id}}</el-tag>
+          <el-tag
+          type="success"
+          class="marginL"
+          v-if="normalForm.guideConfig.id && normalForm.guideConfig.vid"
+        >单集：{{normalForm.guideConfig.vid}}</el-tag>
+        <!-- <span v-show="normalForm.guideConfig.vid || normalForm.guideConfig.id">已选择: {{normalForm.guideConfig.vid || normalForm.guideConfig.id}}</span> -->
       </el-form-item>
       <el-form-item label="播放完成后" v-if="isGroupModel">
         <el-radio-group
@@ -275,7 +287,18 @@
           >
             <el-button type="primary" plain>选择资源</el-button>
           </ResourceSelector>
-          <span v-show="normalForm.guideConfig.after_play.id || normalForm.guideConfig.after_play.vid">已选择: {{ normalForm.guideConfig.after_play.id || normalForm.guideConfig.after_play.vid }}</span>
+          <el-tag
+          type="success"
+          class="marginL"
+          v-if="normalForm.guideConfig.after_play.id"
+          :closable="!disabled"
+          @close="normalForm.guideConfig.after_play.id  = undefined"
+          >已选择: {{ normalForm.guideConfig.after_play.id}}</el-tag>
+          <el-tag
+          type="success"
+          class="marginL"
+          v-if="normalForm.guideConfig.after_play.id && normalForm.guideConfig.after_play.vid"
+        >单集：{{normalForm.guideConfig.after_play.vid}}</el-tag>
         </div>
       </el-form-item>
       <el-form-item label="点击跳转" v-if="isGroupModel">
@@ -501,6 +524,7 @@ export default {
 
     },
     handleSelectNormalSingleResourceEnd (selectedResources, mode) {
+      debugger
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
       setContentForm(this.normalForm, resourceContent)
@@ -652,6 +676,7 @@ export default {
     handleSelectGuideResource (selectedResources) {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
+      console.log(selectedResources, resourceContent, '-----fds')
       this.normalForm.guideConfig.after_play.id = resourceContent.thirdIdOrPackageName
       this.normalForm.guideConfig.after_play.vid = resourceContent.vid
     }
