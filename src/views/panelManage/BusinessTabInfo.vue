@@ -462,7 +462,7 @@ export default {
       } else {
         this.$refs.tabForm.validate((valid) => {
           if (!valid) {
-            showError('请把表单填写完整')
+            showError('请把表单填写完整123')
           } else {
             if (data.pannelList.length === 0) {
               error = '请选择版块'

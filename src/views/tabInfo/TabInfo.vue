@@ -153,7 +153,7 @@
                   </el-form-item>
                   <div class="hint remarks">强制刷新时会导致画面闪动，如无必要，请勿使用</div>
                 </el-form-item>
-                <el-form-item class="force-refresh-time-list" v-if="tabInfo.hasSubTab !== 1 && tabInfo.tabType === 1">
+                <el-form-item class="force-refresh-time-list" v-if="(tabInfo.hasSubTab !== 1 && tabInfo.tabType === 1) || tabInfo.tabType !== 13">
                   <el-form-item label="线落焦色" label-width="180px">
                     <el-color-picker v-model="tabInfo.blockLineFocusColor"/>
                   </el-form-item>
@@ -164,7 +164,7 @@
                     <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
                   </el-form-item>
                 </el-form-item>
-               <el-form-item class="force-refresh-time-list" v-if="tabInfo.hasSubTab !== 1 && tabInfo.tabType === 1">
+               <el-form-item class="force-refresh-time-list" v-if="(tabInfo.hasSubTab !== 1 && tabInfo.tabType === 1) || tabInfo.tabType !== 13">
                   <el-form-item label="推荐位标题色(落焦)" label-width="180px">
                     <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
                   </el-form-item>
@@ -2778,7 +2778,7 @@ export default {
               if (data.tabList.length === 0) {
                 error = '请选择二级版面'
               }
-            } else if (data.tabType === 1 || data.tabType === 2) {
+            } else if (data.tabType === 1) {
               if (data.pannelList.length === 0) error = '请选择版块'
             } else {
               // 检查重复版块

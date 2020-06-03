@@ -431,24 +431,6 @@
                       </template>
                     </el-form-item>
                     <el-form-item
-                      v-if="pannelFillType === $consts.panelFillTypes.recStream"
-                      label="选择推荐流"
-                      required>
-                      <NewBlockRecStreamSelector
-                          title="选择推荐流"
-                          selection-type="single"
-                          :source="pannel.pannelResource"
-                          :scene="scene"
-                          @select-end="handleSelectBlockRecNew">
-                      </NewBlockRecStreamSelector>
-                      <template v-if="firstPanel.recStreamPanelRls">
-                          已选择: <el-tag>
-                          {{ firstPanel.recStreamPanelRls.recId }}
-                          ({{ firstPanel.recStreamPanelRls.recName }})
-                          </el-tag>
-                      </template>
-                    </el-form-item>
-                    <el-form-item
                       label="推荐位"
                       v-if="pannelFillType === $consts.panelFillTypes.mediaRule && firstPanel.contentList.length > 0">
                       <el-button type="primary" @click="handleRefreshMediaRuleContents">刷新推荐位内容</el-button>
@@ -1047,7 +1029,7 @@ export default {
     },
     interveneMaxCount () {
       const selectedLayoutId = this.selectedLayoutId
-      return [10, 10, 6, 6, 8, 8, 9, 9][selectedLayoutId - 1]
+      return [9, 9, 6, 6, 8, 8, 9, 9][selectedLayoutId - 1]
     },
     filmNumOptions () {
       return Array.apply(null, { length: 6 }).map((_, index) => {
@@ -1285,15 +1267,15 @@ export default {
         this.handleRefreshMediaRuleContents()
       }, 3000)
     },
-    // handleSelectBlockRecStreamEnd (selected) {
-    //   const { recId, recName, recCategory, flag: recFlag } = selected[0]
-    //   this.firstPanel.recStreamPanelRls = {
-    //     recId,
-    //     recName,
-    //     recCategory,
-    //     recFlag
-    //   }
-    // },
+    handleSelectBlockRecStreamEnd (selected) {
+      const { recId, recName, recCategory, flag: recFlag } = selected[0]
+      this.firstPanel.recStreamPanelRls = {
+        recId,
+        recName,
+        recCategory,
+        recFlag
+      }
+    },
     handleSelectBlockRecNew (selected) {
       const { id: recId, recName, recCategory, userToken: recFlag } = selected[0]
       this.firstPanel.recStreamPanelRls = {
@@ -1655,7 +1637,6 @@ export default {
         return this.$message('为了匹配海报尺寸，请先确定插入位置哦！')
       }
       const currentIntervenePos = selectedResources[index].intervenePos
-      debugger
       this.blockConetentInterveneProps = {
         layoutType: 'Panel',
         pannelParentType: pannel.parentType,
@@ -2207,12 +2188,12 @@ export default {
             }
           }
           // 关闭推荐流按钮
-          vItem.flagSetRec = 0
-          vItem.mediaAutomationBlockRls = {
-            refreshCal: 1,
-            mediaAutomationId: '',
-            blockType: 'normal'
-          }
+          // vItem.flagSetRec = 0
+          // vItem.mediaAutomationBlockRls = {
+          //   refreshCal: 1,
+          //   mediaAutomationId: '',
+          //   blockType: 'normal'
+          // }
           if (isDelPrice) {
             vItem.price = undefined
             vItem.secKillPrice = undefined
@@ -3096,10 +3077,12 @@ export default {
       }
     },
     handleSaveDraft () {
+      // debugger
       const data = this.getFormData()
       data.isTiming = undefined
       data.releaseTime = undefined
       data.pannelStatus = this.$consts.status.draft
+      console.log(data, '------da')
       this.validate(data, () => {
         this.upsertPanelInfo(data)
       })
@@ -3373,7 +3356,6 @@ export default {
       })
     },
     handleAddIntervene () {
-      debugger
       const currentPannel = this.pannel.pannelList[0]
       const fillType = this.pannelFillType
       const panelFillTypes = this.$consts.panelFillTypes
