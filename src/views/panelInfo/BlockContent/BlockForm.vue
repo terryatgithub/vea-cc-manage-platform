@@ -904,13 +904,14 @@ export default {
         func: (rows) => {
           for (let i = 0; i < rows.length; i++) {
             const selected = rows[i]
-            if (selected.pluginType === 'REFERENCE_VIP_QRCODE') {
+            if (selected.pluginType === 'REFERENCE_VIP_QRCODE' || selected.pluginType === 'REFERENCE_PLAY_VIDEO') {
               const rlsTabInfo = this.data.rlsTabInfo || []
               const isSomeNoTopic = rlsTabInfo.some(tabInfo => {
                 return tabInfo.tabType !== 2
               })
               if (isSomeNoTopic) {
-                this.$message.error('【VIP二维码推荐位】只能配置在专题版面中')
+                selected.pluginType === 'REFERENCE_VIP_QRCODE' && this.$message.error('【VIP二维码推荐位】只能配置在专题版面中')
+                selected.pluginType === 'REFERENCE_PLAY_VIDEO' && this.$message.error('【视频播放推荐位】只能配置在专题版面中')
                 return false
               }
             }

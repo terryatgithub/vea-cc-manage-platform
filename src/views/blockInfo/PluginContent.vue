@@ -163,7 +163,7 @@
             </el-form-item>
           </template>
           <el-form-item
-            v-if="parentType === 'multi' || parentType === 'secKill' || parentType === 'builtIn'"
+            v-if="(parentType === 'multi' || parentType === 'secKill' || parentType === 'builtIn') && !VIP_QRCODE_MODE && !PLAY_VIDEO_MODE"
             label="打开方式"
             prop="openMode"
             :rules="rules.openMode">
@@ -255,11 +255,13 @@
           <AppParams
             v-if="form.openMode === 'app'"
             prop-prefix="onclick."
+            :onlyParams="VIP_QRCODE_MODE || PLAY_VIDEO_MODE"
             v-model="form.onclick">
           </AppParams>
           <Params v-if="form.appParams" :params="form.appParams" prop-prefix="appParams." />
         </template>
       </template>
+      <!-- 预览 -->
       <template v-else>
         <template v-if="pluginType === 'REFERENCE_VOTE'">
           <template v-if="form.dataType === 7">
@@ -321,7 +323,7 @@
             <el-form-item label="点击次数">{{ form.extendInfo.clickCount}}</el-form-item>
           </template>
           <el-form-item
-            v-if="parentType === 'multi' || parentType === 'secKill'"
+            v-if="(parentType === 'multi' || parentType === 'secKill' || parentType === 'builtIn') && !VIP_QRCODE_MODE && !PLAY_VIDEO_MODE"
             label="打开方式"
           >{{ OPEN_MODE_TEXT[form.openMode] }}</el-form-item>
           <template v-if="form.openMode === 'webpage'">
@@ -346,6 +348,7 @@
           <AppParamsRead
             v-if="form.openMode === 'app'"
             v-model="form.onclick"
+            :onlyParams="VIP_QRCODE_MODE || PLAY_VIDEO_MODE"
             label-width="140px"/>
           <Params v-if="form.appParams" :params="form.appParams" :readonly="true" />
         </template>
@@ -517,6 +520,12 @@ export default {
   },
   props: ['mode', 'plugin', 'pluginList', 'pluginType', 'parentType', 'source'],
   computed: {
+    VIP_QRCODE_MODE () {
+      return this.pluginType === 'REFERENCE_VIP_QRCODE'
+    },
+    PLAY_VIDEO_MODE () {
+      return this.pluginType === 'REFERENCE_PLAY_VIDEO'
+    },
     formWithComputedVal () {
       return {
         ...this.form,
