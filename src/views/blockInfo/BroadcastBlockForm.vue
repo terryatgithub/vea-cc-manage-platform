@@ -524,7 +524,6 @@ export default {
 
     },
     handleSelectNormalSingleResourceEnd (selectedResources, mode) {
-      debugger
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
       setContentForm(this.normalForm, resourceContent)

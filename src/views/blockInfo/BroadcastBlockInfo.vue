@@ -1312,7 +1312,8 @@ export default {
           item.params.stationId = item.subchannelId
           delete item.subchannelId
         }
-        if (item.coverType === 'media') item.contentType = 'media'
+        if (item.coverType === 'custom') item.contentType = 'custom'
+        if (item.contentType === '') return this.$message.error('请选择资源！')
         item.params = JSON.stringify(item.params)
         item.clickParams = JSON.stringify(item.clickParams)
         item.guideConfig = JSON.stringify(item.guideConfig)

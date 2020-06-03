@@ -74,8 +74,22 @@
               style="height: 180px;">
           </el-card>
         </GlobalPictureSelector>
-
-        <el-input
+      </el-form-item>
+      <el-form-item v-if="normalForm.coverType !== 'custom'">
+          <ResourceSelector
+          ref="resourceSelector"
+          :source="source"
+          :disable-partner="!!source"
+          v-if="!isManualSetResource && normalResourceBtn==='媒体资源' && !disabled "
+          :selectors="resourceOptionsNormalForm"
+          :is-live="false"
+          :id-type="1"
+          selection-type="single"
+          @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
+        >
+          <el-button type="primary" plain>选择资源</el-button>
+        </ResourceSelector>
+         <el-input
           v-if="isManualSetResource"
           v-model="normalForm.thirdIdOrPackageName"
           style="float: left"
@@ -104,25 +118,10 @@
           信号源模式的第一个资源必须是轮播资源
         </div>
       </el-form-item>
-      <el-form-item v-if="normalForm.coverType !== 'custom'">
-          <ResourceSelector
-          ref="resourceSelector"
-          :source="source"
-          :disable-partner="!!source"
-          v-if="!isManualSetResource && normalResourceBtn==='媒体资源' && !disabled "
-          :selectors="resourceOptionsNormalForm"
-          :is-live="false"
-          :id-type="1"
-          selection-type="single"
-          @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
-        >
-          <el-button type="primary" plain>选择资源</el-button>
-        </ResourceSelector>
-      </el-form-item>
       <el-form-item label="标题" v-if="isGroupModel">
         <el-input v-model="normalForm.title"></el-input>
       </el-form-item>
-      <el-form-item label prop="clickParams">
+      <el-form-item  prop="clickParams">
         <div v-if="normalForm.sign === 'manualResource'">
           <ResourceSelector
             ref="resourceSelector"
