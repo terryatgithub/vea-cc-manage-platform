@@ -17,6 +17,7 @@
           :hiddenItems="hiddenCoverTypes"
           :options="pannelCoverTypeTwo"
         />
+      </el-form-item>
       <el-form-item v-if="normalForm.isDmpContent" label="关联定向人群" prop="dmpRegistryInfo">
         <el-button type="primary" @click="handleSelectCrowdStart" :disabled="isReadonly">添加人群</el-button>
         <el-tag

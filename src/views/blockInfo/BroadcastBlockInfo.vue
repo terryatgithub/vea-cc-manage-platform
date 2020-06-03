@@ -417,7 +417,6 @@ import BroadcastBlockFormSpe from './BroadcastBlockFormSpe'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import { parseResourceContent, setContentForm, getSelectedResource } from './broadcastBlockUtil'
 import BroadcastBlockStatChartViewer from '@/components/statViewer/BroadcastBlockStatChartViewer'
-import BroadcastBlockFormSpe from './BroadcastBlockFormSpe'
 
 export default {
   mixins: [titleMixin],

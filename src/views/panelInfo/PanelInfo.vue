@@ -871,7 +871,8 @@ export default {
     NewBlockRecStreamSelector,
     ConfigureFilmFilterRule,
     ClickCopy,
-    TagTypeSelector
+    TagTypeSelector,
+    BlockRecStreamSelector
   },
   data () {
     const extend = {
