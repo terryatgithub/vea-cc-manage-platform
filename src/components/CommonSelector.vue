@@ -95,7 +95,6 @@ export default {
       }
     },
     changeTypeValue (val) {
-      alert(val)
     }
   }
 }
