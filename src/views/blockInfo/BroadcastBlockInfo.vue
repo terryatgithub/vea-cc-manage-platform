@@ -1169,6 +1169,7 @@ export default {
       this.cleanLowerForm(val)
     },
     cleanLowerForm: function (val) {
+      debugger
       var newForm = Object.assign({}, this.versionForm)
       newForm.type = val
       newForm.coverType = val
@@ -1380,11 +1381,11 @@ export default {
       lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
       data.parentType = 'Block'
       console.log('save', data)
-      // this.$service
-      //   .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
-      //   .then(() => {
-      //     this.$emit('upsert-end')
-      //   })
+      this.$service
+        .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
+        .then(() => {
+          this.$emit('upsert-end')
+        })
     },
 
     fetchData (version) {

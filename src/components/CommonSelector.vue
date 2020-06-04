@@ -94,7 +94,8 @@ export default {
         }
       }
     },
-    changeTypeValue () {}
+    changeTypeValue (val) {
+    }
   }
 }
 </script>

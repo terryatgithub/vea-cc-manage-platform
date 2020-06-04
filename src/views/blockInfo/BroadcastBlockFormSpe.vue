@@ -24,115 +24,6 @@
           <el-radio-button label="custom" :disabled="disabled">自定义</el-radio-button>
         </el-radio-group>
       </el-form-item> -->
-      <el-form-item v-if="normalForm.isDmpContent" label="关联定向人群" prop="dmpRegistryInfo">
-        <el-button type="primary" @click="handleSelectCrowdStart" :disabled="isReadonly">添加人群</el-button>
-        <el-tag
-          type="primary"
-          v-if="normalForm.dmpRegistryInfo"
-        >已选择: {{ normalForm.dmpRegistryInfo.dmpPolicyName }}({{ normalForm.dmpRegistryInfo.dmpPolicyId }}) / {{ normalForm.dmpRegistryInfo.dmpCrowdName}}({{ normalForm.dmpRegistryInfo.dmpCrowdId }})</el-tag>
-      </el-form-item>
-      <el-form-item v-if="false" label="使用短视频流">
-        <el-switch
-          :value="normalForm.shortVideoSwitch"
-          @input="handleSwitchShortVideo"
-          :disabled="judegeShortVideoDisabled()"
-          active-color="#13ce66"
-          inactive-color="grey"
-        ></el-switch>
-        <span class="sign-tip">
-          开关切换时，清空配置数据；开关开启时，将禁用个性化推荐
-        </span>
-      </el-form-item>
-      <!-- <el-form-item :label="normalResourceBtn" prop="thirdIdOrPackageName" v-if="!normalForm.shortVideoSwitch">
-        <ResourceSelector
-          ref="resourceSelector"
-          :source="source"
-          :disable-partner="!!source"
-          v-if="!isManualSetResource && normalResourceBtn==='媒体资源' && !disabled "
-          :selectors="resourceOptionsNormalForm"
-          :is-live="false"
-          :id-type="1"
-          selection-type="single"
-          @select-end="handleSelectNormalSingleResourceEnd($event, 'Multiple')"
-        >
-          <el-button type="primary" plain>选择资源</el-button>
-        </ResourceSelector>
-        <el-input
-          v-if="isManualSetResource"
-          v-model="normalForm.thirdIdOrPackageName"
-          style="float: left"
-          :disabled="disabled"
-        ></el-input>
-        <el-tag
-          type="success"
-          class="marginL"
-          v-if="normalForm.thirdIdOrPackageName && !isManualSetResource"
-          :closable="!disabled"
-          @close="normalForm.thirdIdOrPackageName = undefined"
-        >已选择：{{normalForm.thirdIdOrPackageName}}</el-tag>
-        <el-tag
-          type="success"
-          class="marginL"
-          v-if="normalForm.thirdIdOrPackageName && singleEpisodeNum"
-        >单集：{{singleEpisodeNum}}</el-tag>
-        <a
-          class="write-play"
-          v-if="!isManualSetResource && isGroupModel && !disabled "
-          href="#"
-          @click="$emit('toggle-manaulset-resource', true)"
-        >手动填写播放串</a>
-        <a
-          class="write-play"
-          v-if="isManualSetResource && isGroupModel &&!disabled "
-          href="#"
-          @click="$emit('toggle-manaulset-resource', false)"
-          style="float: left"
-        >自动配置播放资源</a>
-        <div v-if="configModel === 'sign' && showResourceTip" class="sign-tip">
-          信号源模式的第一个资源必须是轮播资源
-        </div>
-      </el-form-item> -->
-      <el-form-item label="跳转话题" v-if="normalForm.shortVideoSwitch" prop="shortVideoParams.topicId">
-        <ResourceSelector
-          :disable-partner="!!source"
-          :source="source"
-          :selectors="['shortVideoTopic']"
-          v-if="!disabled"
-          selection-type="single"
-          @select-end="handleSelectVideoTopicEnd">
-          <el-button type="primary" plain>
-            选择话题
-          </el-button>
-        </ResourceSelector>
-        <el-tag
-          type="success"
-          class="marginL"
-          v-if="normalForm.shortVideoParams.topicId"
-          :closable="!disabled"
-          @close="normalForm.shortVideoParams.topicId = undefined"
-        >已选择：{{normalForm.shortVideoParams.topicId}}</el-tag>
-      </el-form-item>
-      <el-form-item label="开头短视频" v-if="normalForm.shortVideoSwitch">
-        <ResourceSelector
-          :source="source"
-          :selectors="['shortVideo']"
-          :disable-partner="!!source"
-          :auto-fetch-selectors="['shortVideo']"
-          v-if="!disabled"
-          selection-type="single"
-          @select-end="handleSelectVideoEnd">
-          <el-button type="primary" plain>
-            选择短视频
-          </el-button>
-        </ResourceSelector>
-        <el-tag
-          type="success"
-          class="marginL"
-          v-if="normalForm.shortVideoParams.shortVideoId"
-          :closable="!disabled"
-          @close="normalForm.shortVideoParams.shortVideoId = undefined"
-        >已选择：{{normalForm.shortVideoParams.shortVideoId}}</el-tag>
-      </el-form-item>
       <el-form-item label="海报" prop="poster.pictureUrl">
         <GlobalPictureSelector
           :disabled="isReadonly"
@@ -322,7 +213,21 @@ export default {
     })
   },
   methods: {
-    handleInputNormalFormCoverType () {
+    handleInputNormalFormCoverType (val) {
+      this.clearNormalForm(val)
+    },
+    clearNormalForm (val) {
+      debugger
+      var newForm = Object.assign({}, this.normalForm)
+      newForm.coverType = val
+      if (val === 'custom') {
+        newForm.sign = 'openMode==app'
+        newForm.contentType = 'custom'
+        newForm.params = {}
+        newForm.clickTemplateType = 'custom'
+      }
+      this.normalForm = newForm
+      console.log(this.normalForm.title)
     },
     getThirdId (clickParams) {
       if (clickParams) {

@@ -286,7 +286,8 @@
         <el-radio-group
           :value="normalForm.guideConfig.after_play.operation"
           :disabled="isManualSetResource"
-          @input="handleChooseRecommend">
+          @input="handleChooseRecommend"
+          @change="handleChangeOperation">
           <el-radio label="nextBlock" :disabled="disabled">播放下一个推荐位</el-radio>
           <el-radio label="nextFilm" :disabled="disabled">播放下一集或者相关推荐</el-radio>
           <el-radio label="theFilm" :disabled="disabled">播放指定影片</el-radio>
@@ -478,6 +479,11 @@ export default {
     }
   },
   methods: {
+    handleChangeOperation (val) {
+      if (val !== 'theFilm') {
+        this.normalForm.guideConfig.after_play.id = ''
+      }
+    },
     // 移除新推荐流选中的
     handleDelTagClose (tag) {
       tag.recId = undefined
