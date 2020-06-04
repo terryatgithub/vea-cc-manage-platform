@@ -112,6 +112,26 @@ export function mediaGetGDChannelList (params) {
   // })
 }
 
+export function mediaGetGDSchedulelList (params) {
+  const { page = 1, rows } = params
+  params.pageIndex = page - 1
+  params.pageSize = rows
+  delete params.page
+  delete params.rows
+  return this.fetch({
+    method: 'get',
+    url: 'api/live/tvos/getScheduleInfos',
+    params
+  }).then(({ data }) => {
+    data = data || {}
+    return {
+      rows: data.scheduleList || [],
+      total: data.scheduleTotal,
+      page: data.pageIndex
+    }
+  })
+}
+
 export function mediaGetChannelProvinceOptions () {
   return Promise.resolve([
     {

@@ -51,12 +51,17 @@ export const GD_LIVE_CLICK_TYPE_OPTIONS = [
   {
     label: '正常启动',
     value: 'normal'
+  },
+  {
+    label: '启动到节目',
+    value: 'telecast'
   }
 ]
 
 export const GD_LIVE_CLICK_TYPES = {
   channel: 'channel',
-  normal: 'normal'
+  normal: 'normal',
+  telecast: 'telecast'
 }
 
 export function getVideoInfo (video) {
