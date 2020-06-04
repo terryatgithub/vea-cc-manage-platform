@@ -153,7 +153,8 @@
                   </el-form-item>
                   <div class="hint remarks">强制刷新时会导致画面闪动，如无必要，请勿使用</div>
                 </el-form-item>
-                <el-form-item class="force-refresh-time-list" v-if="(tabInfo.hasSubTab !== 1 && tabInfo.tabType === 1) || tabInfo.tabType !== 13">
+                <!--普通版面 开启二级面板不展示 -->
+                <el-form-item class="force-refresh-time-list" v-if="tabInfo.hasSubTab !== 1 && tabInfo.tabType === 1">
                   <el-form-item label="线落焦色" label-width="180px">
                     <el-color-picker v-model="tabInfo.blockLineFocusColor"/>
                   </el-form-item>
@@ -164,7 +165,27 @@
                     <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
                   </el-form-item>
                 </el-form-item>
-               <el-form-item class="force-refresh-time-list" v-if="(tabInfo.hasSubTab !== 1 && tabInfo.tabType === 1) || tabInfo.tabType !== 13">
+               <el-form-item class="force-refresh-time-list" v-if="tabInfo.hasSubTab !== 1 && tabInfo.tabType === 1">
+                  <el-form-item label="推荐位标题色(落焦)" label-width="180px">
+                    <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
+                  </el-form-item>
+                  <el-form-item label="版块标题色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.panelTitleColor"/>
+                  </el-form-item>
+                </el-form-item>
+                <!--分页专题不展示 -->
+                <el-form-item class="force-refresh-time-list" v-if="tabInfo.tabType === 2">
+                  <el-form-item label="线落焦色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.blockLineFocusColor"/>
+                  </el-form-item>
+                  <el-form-item label="面落焦色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.blockFieldFocusColor"/>
+                  </el-form-item>
+                  <el-form-item label="推荐位标题色" label-width="180px">
+                    <el-color-picker v-model="tabInfo.blockTitleUnfocusColor"/>
+                  </el-form-item>
+                </el-form-item>
+               <el-form-item class="force-refresh-time-list" v-if="tabInfo.tabType === 2">
                   <el-form-item label="推荐位标题色(落焦)" label-width="180px">
                     <el-color-picker v-model="tabInfo.blockTitleFocusColor"/>
                   </el-form-item>

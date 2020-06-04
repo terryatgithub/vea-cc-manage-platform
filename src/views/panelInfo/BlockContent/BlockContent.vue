@@ -379,21 +379,23 @@ export default {
     },
     validateCurrentContent (cb) {
       const contentForm = this.contentForm
-      console.log(contentForm, 'submit12')
       this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
           if (contentForm.flagSetRec === 1) {
-            if (!contentForm.mediaAutomationBlockRls.mediaAutomationId && !contentForm.mediaAutomationBlockRls.recId) {
+            if (!contentForm.mediaAutomationBlockRls.mediaAutomationId) {
               return this.$message.error('开关开启时，推荐流选择必须选择其一')
-            } else if (contentForm.mediaAutomationBlockRls.mediaAutomationId && contentForm.mediaAutomationBlockRls.recId) {
-              return this.$message.error('开关开启时，推荐流只能保存其一')
             }
-            if (contentForm.mediaAutomationBlockRls.recName) {
-              contentForm.mediaAutomationBlockRls.mediaAutomationId = contentForm.mediaAutomationBlockRls.recId
-              contentForm.mediaAutomationBlockRls.mediaAutomationName = contentForm.mediaAutomationBlockRls.recName
-              delete contentForm.mediaAutomationBlockRls.recId
-              delete contentForm.mediaAutomationBlockRls.recName
-            }
+            // if (!contentForm.mediaAutomationBlockRls.mediaAutomationId && !contentForm.mediaAutomationBlockRls.recId) {
+            //   return this.$message.error('开关开启时，推荐流选择必须选择其一')
+            // } else if (contentForm.mediaAutomationBlockRls.mediaAutomationId && contentForm.mediaAutomationBlockRls.recId) {
+            //   return this.$message.error('开关开启时，推荐流只能保存其一')
+            // }
+            // if (contentForm.mediaAutomationBlockRls.recName) {
+            //   contentForm.mediaAutomationBlockRls.mediaAutomationId = contentForm.mediaAutomationBlockRls.recId
+            //   contentForm.mediaAutomationBlockRls.mediaAutomationName = contentForm.mediaAutomationBlockRls.recName
+            //   delete contentForm.mediaAutomationBlockRls.recId
+            //   delete contentForm.mediaAutomationBlockRls.recName
+            // }
           }
           cb()
         } else {

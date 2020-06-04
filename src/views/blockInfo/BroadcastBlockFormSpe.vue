@@ -18,12 +18,6 @@
           :options="pannelCoverTypeTwo"
         />
       </el-form-item>
-      <!-- <el-form-item label="资源类别" prop="coverType">
-        <el-radio-group :value="normalForm.coverType" @input="handleInputNormalFormCoverType">
-          <el-radio-button label="media" :disabled="disabled">媒体资源</el-radio-button>
-          <el-radio-button label="custom" :disabled="disabled">自定义</el-radio-button>
-        </el-radio-group>
-      </el-form-item> -->
       <el-form-item label="海报" prop="poster.pictureUrl">
         <GlobalPictureSelector
           :disabled="isReadonly"
@@ -213,22 +207,6 @@ export default {
     })
   },
   methods: {
-    handleInputNormalFormCoverType (val) {
-      this.clearNormalForm(val)
-    },
-    clearNormalForm (val) {
-      debugger
-      var newForm = Object.assign({}, this.normalForm)
-      newForm.coverType = val
-      if (val === 'custom') {
-        newForm.sign = 'openMode==app'
-        newForm.contentType = 'custom'
-        newForm.params = {}
-        newForm.clickTemplateType = 'custom'
-      }
-      this.normalForm = newForm
-      console.log(this.normalForm.title)
-    },
     getThirdId (clickParams) {
       if (clickParams) {
         const result = (clickParams.id ||

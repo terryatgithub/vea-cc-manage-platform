@@ -712,15 +712,17 @@ export default {
         this.normalForm.activeIndex = index
       }
     },
-    handleCoverTypeChange (coverType) {
-      this.normalForm.coverType = coverType
-      // if (coverType === 'custom') {
-      //   this.normalForm.coverType = 'custom'
-      // }
-
-      // if (coverType === 'media') {
-      //   this.normalForm.coverType = 'media'
-      // }
+    // 切换资源类别之后清空操作
+    handleCoverTypeChange (val) {
+      var newForm = Object.assign({}, this.versionForm)
+      newForm.coverType = val
+      if (val === 'custom') {
+        newForm.sign = 'openMode==app'
+        newForm.contentType = 'custom'
+        newForm.params = {}
+        newForm.clickTemplateType = 'custom'
+      }
+      this.normalForm = newForm
     },
     handleRemoveDmpContent (index) {
       this.$confirm('确认删除该内容', '提示', {
@@ -872,9 +874,6 @@ export default {
         exception: data.exception
       }
       this[this.onclickEventVisibleFlag + 'Form']['onclick'] = o
-    },
-    handleChooseRecommend (newVal) {
-      alert(newVal)
     },
     handleChangeSign (newVal) {
       const normalForm = this.normalForm
@@ -1169,7 +1168,7 @@ export default {
       this.cleanLowerForm(val)
     },
     cleanLowerForm: function (val) {
-      debugger
+      // debugger
       var newForm = Object.assign({}, this.versionForm)
       newForm.type = val
       newForm.coverType = val
