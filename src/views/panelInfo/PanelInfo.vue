@@ -2941,6 +2941,7 @@ export default {
         const panelFillTypes = this.$consts.panelFillTypes
         Object.assign(pannel, panelInit)
         pannel.pannelName = panelInit.pannelGroupRemark
+        const isGroupPannel = initData.parentType === 'group'
 
         const parseContentItem = (item) => {
           if (+item.price === -1) {
@@ -2990,6 +2991,10 @@ export default {
             }
             item.rankIsOpen = item.rankIsOpen || 0
             item.selectedResources = item.contentList
+            // 初始化分组版块的fillType, 直到分组版块支持fillType
+            if (isGroupPannel) {
+              item.fillType = 1
+            }
             return item
           })
           pannel.pannelResource = firstPannel.pannelResource
