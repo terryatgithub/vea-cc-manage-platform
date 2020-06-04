@@ -732,7 +732,7 @@ export default {
           }
         })
       }
-
+      // VIP二维码
       if (pluginType === 'REFERENCE_VIP_QRCODE') {
         Object.assign(result, {
           onclick: {
@@ -740,11 +740,44 @@ export default {
           }
         })
       }
+      // 播放视频推荐位
+      if (pluginType === 'REFERENCE_PLAY_VIDEO') {
+        Object.assign(result, {
+          appParams: [
+            {
+              key: 'id',
+              value: undefined,
+              default: true,
+              tip: '用酷开自有ID'
+            },
+            {
+              key: 'type',
+              value: 'res',
+              hide: true
+            }
+          ]
+        })
+      }
 
       return result
     },
     selectSubmit () {},
     clickSubmit () {},
+    parseAppParams (appParams, pluginType) {
+      if (pluginType === 'REFERENCE_PLAY_VIDEO') {
+        return Object.keys(appParams).map(key => {
+          let preset = {}
+          if (key === 'id') {
+            preset = { default: true, tip: '用酷开自有ID' }
+          }
+          if (key === 'type') {
+            preset = { hide: true }
+          }
+          return { key, value: appParams[key], ...preset }
+        })
+      }
+      return Object.keys(appParams).map(key => ({ key, value: appParams[key] }))
+    },
     parseOnclick (onclick, pluginType) {
       if (onclick.params) {
         const params = cloneDeep(onclick.params)
@@ -832,7 +865,7 @@ export default {
           item.openMode = item.params.split(',')[0].split('==')[1]
           if (item.appParams) {
             const appParams = JSON.parse(item.appParams)
-            item.appParams = Object.keys(appParams).map(key => ({ key, value: appParams[key] }))
+            item.appParams = this.parseAppParams(appParams, pluginType)
           }
           if (item.onclick) {
             item.onclick = this.parseOnclick(JSON.parse(item.onclick), pluginType)

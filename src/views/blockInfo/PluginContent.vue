@@ -163,11 +163,11 @@
             </el-form-item>
           </template>
           <el-form-item
-            v-if="(parentType === 'multi' || parentType === 'secKill' || parentType === 'builtIn') && !VIP_QRCODE_MODE && !PLAY_VIDEO_MODE"
+            v-if="parentType === 'multi' || parentType === 'secKill' || parentType === 'builtIn'"
             label="打开方式"
             prop="openMode"
             :rules="rules.openMode">
-            <el-select :value="form.openMode" @input="handleChangeOpenMode(form, $event)">
+            <el-select :disabled="VIP_QRCODE_MODE || PLAY_VIDEO_MODE" :value="form.openMode" @input="handleChangeOpenMode(form, $event)">
                 <el-option label="网页" value="webpage"></el-option>
               <!-- <template v-if=" pluginType === 'REFERENCE_ACTIVITY'"> -->
                 <el-option label="视频" value="video"></el-option>
@@ -255,7 +255,6 @@
           <AppParams
             v-if="form.openMode === 'app'"
             prop-prefix="onclick."
-            :onlyParams="VIP_QRCODE_MODE || PLAY_VIDEO_MODE"
             v-model="form.onclick">
           </AppParams>
           <Params v-if="form.appParams" :params="form.appParams" prop-prefix="appParams." />
@@ -348,7 +347,6 @@
           <AppParamsRead
             v-if="form.openMode === 'app'"
             v-model="form.onclick"
-            :onlyParams="VIP_QRCODE_MODE || PLAY_VIDEO_MODE"
             label-width="140px"/>
           <Params v-if="form.appParams" :params="form.appParams" :readonly="true" />
         </template>
@@ -602,7 +600,8 @@ export default {
         bywhat: data.bywhat,
         byvalue: data.byvalue,
         params: paramsArr,
-        exception: data.exception
+        exception: data.exception,
+        defaultParams: this.VIP_QRCODE_MODE ? (this.form.onclick || {}).defaultParams : undefined
       }
       this.form.onclick = o
     },

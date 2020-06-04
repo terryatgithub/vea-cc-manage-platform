@@ -41,9 +41,10 @@
       <div class="app-extend-params" v-for="(param, index) in inputValue.defaultParams" :key="'default' + index">
         <template v-if="!param.hide">
           <el-form-item
-            class="item-left"
-            :label="param.label"
-            label-width="80px"
+            label="key:"
+            label-width="60px"
+            :prop="formProp('defaultParams.' + index + '.key')"
+            :rules="rules.params.key"
           >
             <div style="width: 100px">{{param.key}}</div>
           </el-form-item>
@@ -280,8 +281,5 @@ export default {
   text-align: center;
   color: #999;
   margin-left: 5px;
-}
-.item-left >>> .el-form-item__label {
-  text-align: left;
 }
 </style>

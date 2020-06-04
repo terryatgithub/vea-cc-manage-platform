@@ -7,25 +7,29 @@
       </div>
       <div key="edit-params"  v-if="!readonly">
         <div class="app-extend-params" v-for="(param, index) in params" :key="index">
-          <el-form-item
-            label="key:"
-            label-width="60px"
-            :prop="propPrefix + index + '.key'"
-            :rules="rules.params.key"
-          >
-            <el-input v-model.trim="param.key"></el-input>
-          </el-form-item>
-          <el-form-item
-            label="value:"
-            label-width="60px"
-            :prop="propPrefix + index + '.value'"
-            :rules="rules.params.value"
-          >
-            <el-input v-model.trim="param.value"></el-input>
-          </el-form-item>
-          <a class="app-params__remove-param" @click="handleRemoveParam(index)">
-            <i class="el-icon-minus"></i>
-          </a>
+          <template v-if="!param.hide">
+            <el-form-item
+              label="key:"
+              label-width="60px"
+              :prop="propPrefix + index + '.key'"
+              :rules="rules.params.key"
+            >
+              <div style="min-width: 160px" v-if="param.default">{{param.key}}</div>
+              <el-input v-else v-model.trim="param.key"></el-input>
+            </el-form-item>
+            <el-form-item
+              label="value:"
+              label-width="60px"
+              :prop="propPrefix + index + '.value'"
+              :rules="rules.params.value"
+            >
+              <el-input v-model.trim="param.value"></el-input>
+            </el-form-item>
+            <a v-if="!param.default" class="app-params__remove-param" @click="handleRemoveParam(index)">
+              <i class="el-icon-minus"></i>
+            </a>
+            <div class="tips" style="display: inline">{{param.tip}}</div>
+          </template>
         </div>
         <el-button type="primary" plain @click="handleAddParam">
           <i class="el-icon-plus"></i>&nbsp;添加
