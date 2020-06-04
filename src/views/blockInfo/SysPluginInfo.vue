@@ -735,7 +735,7 @@ export default {
       // VIP二维码
       if (pluginType === 'REFERENCE_VIP_QRCODE') {
         Object.assign(result, {
-          appParams: [].concat(VIP_QRCODE_DEFAULT_PARAMS)
+          appParams: cloneDeep(VIP_QRCODE_DEFAULT_PARAMS)
         })
       }
       // 播放视频推荐位
