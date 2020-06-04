@@ -28,7 +28,7 @@
             <a v-if="!param.default" class="app-params__remove-param" @click="handleRemoveParam(index)">
               <i class="el-icon-minus"></i>
             </a>
-            <div class="tips" style="display: inline">{{param.tip}}</div>
+            <div class="tips">{{param.tip}}</div>
           </template>
         </div>
         <el-button type="primary" plain @click="handleAddParam">
@@ -115,6 +115,13 @@ export default {
   color: #333;
   font-size: 12px;
   font-style: italic;
+  display: inline-block;
+  line-height: 1;
+}
+@media screen and (max-width: 1420px) {
+  .tips {
+    max-width: 340px;
+  }
 }
 .app-extend-params .el-form-item,
 .app-extend-params .el-form-item__label,

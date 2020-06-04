@@ -735,9 +735,7 @@ export default {
       // VIP二维码
       if (pluginType === 'REFERENCE_VIP_QRCODE') {
         Object.assign(result, {
-          onclick: {
-            defaultParams: cloneDeep(VIP_QRCODE_DEFAULT_PARAMS)
-          }
+          appParams: [].concat(VIP_QRCODE_DEFAULT_PARAMS)
         })
       }
       // 播放视频推荐位
@@ -776,32 +774,27 @@ export default {
           return { key, value: appParams[key], ...preset }
         })
       }
+      if (pluginType === 'REFERENCE_VIP_QRCODE') {
+        return Object.keys(appParams).map(key => {
+          const defaultParam = cloneDeep(VIP_QRCODE_DEFAULT_PARAMS.find(item => item.key === key))
+          if (defaultParam) {
+            defaultParam.value = appParams[key]
+            return defaultParam
+          }
+          return { key, value: appParams[key] }
+        })
+      }
       return Object.keys(appParams).map(key => ({ key, value: appParams[key] }))
     },
     parseOnclick (onclick, pluginType) {
       if (onclick.params) {
         const params = cloneDeep(onclick.params)
-        // VIP二维码存在默认参数填充
-        if (pluginType === 'REFERENCE_VIP_QRCODE') {
-          onclick.params = []
-          onclick.defaultParams = []
-          Object.keys(params).forEach(key => {
-            const defaultParam = cloneDeep(VIP_QRCODE_DEFAULT_PARAMS.find(item => item.key === key))
-            if (defaultParam) {
-              defaultParam.value = params[key]
-              onclick.defaultParams.push(defaultParam)
-            } else {
-              onclick.params.push({ key, value: params[key] })
-            }
-          })
-        } else {
-          onclick.params = Object.keys(onclick.params).map(function (key) {
-            return {
-              key: key,
-              value: params[key]
-            }
-          })
-        }
+        onclick.params = Object.keys(onclick.params).map(function (key) {
+          return {
+            key: key,
+            value: params[key]
+          }
+        })
       }
       return onclick
     },

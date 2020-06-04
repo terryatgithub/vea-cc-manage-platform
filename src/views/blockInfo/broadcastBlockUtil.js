@@ -193,13 +193,15 @@ export const VIP_QRCODE_DEFAULT_PARAMS = [
     label: '影片ID',
     key: 'movie_id',
     value: undefined,
-    tip: '影片ID，类似：_oqy_84lrco980400，即内容源前缀加酷开ID'
+    tip: '影片ID，类似：_oqy_84lrco980400，即内容源前缀加酷开ID',
+    default: true
   },
   {
     label: '影片名称',
     key: 'movie_name',
     value: undefined,
-    tip: '即影片名称'
+    tip: '即影片名称',
+    default: true
   },
   {
     label: '付费类型',
@@ -208,7 +210,8 @@ export const VIP_QRCODE_DEFAULT_PARAMS = [
     valueType: 'number',
     // type: 'radio',
     // valueOptions: [{ label: '免费', value: 0 }, { label: '单点', value: 2 }, { label: '会员', value: 1 }],
-    tip: '付费类型，免费0、单点2、会员1'
+    tip: '付费类型，免费0、单点2、会员1',
+    default: true
   },
   {
     label: '权益类型',
@@ -216,7 +219,8 @@ export const VIP_QRCODE_DEFAULT_PARAMS = [
     value: 'yinhe',
     // type: 'radio',
     // valueOptions: [{ label: '奇异果VIP', value: 'yinhe' }, { label: '腾讯超级影视', value: '6' }],
-    tip: '权益类型，即产品包后台的权益标识。奇异果VIP是yinhe，腾讯超级影视是6'
+    tip: '权益类型，即产品包后台的权益标识。奇异果VIP是yinhe，腾讯超级影视是6',
+    default: true
   },
   {
     label: '业务类型',
@@ -224,7 +228,8 @@ export const VIP_QRCODE_DEFAULT_PARAMS = [
     value: 0,
     // type: 'radio',
     // valueOptions: [{ label: '影视', value: 0 }, { label: '教育', value: 1 }],
-    tip: '业务类型，影视=0，教育=1'
+    tip: '业务类型，影视=0，教育=1',
+    default: true
   },
   {
     label: '轮播或者点播',
