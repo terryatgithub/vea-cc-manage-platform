@@ -48,6 +48,11 @@
           </el-form>
         </div>
       </BaseSelector>
+
+      <GDScheduleSelector ref="gdChannelSelector" :provincesCode="currentProvincesCode" :channelId="currentChannelId">
+        <span></span>
+      </GDScheduleSelector>
+
     </template>
   </RemoteSelectorWrapper>
 </template>
@@ -55,6 +60,7 @@
 <script>
 import RemoteSelectorWrapper from '../SelectorWrapper'
 import BaseSelector from '../BaseSelector'
+import GDScheduleSelector from './GDScheduleSelector'
 export default {
   data () {
     return {
@@ -82,21 +88,62 @@ export default {
           {
             label: '聚合之中的省份',
             prop: 'provincesName'
+          },
+          // {
+          //   prop: 'segment',
+          //   label: '已选集数',
+          //   type: 'specialBut',
+          //   width: '105',
+          //   mouseStyle: 'hover',
+          //   fixed: 'right',
+          //   render: (h, { row }) => {
+          //     const coocaaVId = row.coocaaVId
+          //     const selectedEpisodes = this.selectedEpisodes
+          //     if (selectedEpisodes[coocaaVId]) {
+          //       return h('el-button', {
+          //         attrs: {
+          //           type: 'primary',
+          //           text: '已选集数',
+          //           value: '已选集数',
+          //           title: selectedEpisodes[coocaaVId].urlTitle
+          //         } }, '已选集数')
+          //     }
+          //   }
+          // },
+          {
+            prop: 'but',
+            label: '操作',
+            width: '105',
+            fixed: 'right',
+            render: (h, { row }) => {
+              return h('el-button', {
+                on: {
+                  'click': (event) => {
+                    event.stopPropagation()
+                    this.handleSelectChannel(row)
+                  }
+
+                }
+              }, '选择节目')
+            }
           }
         ],
         selectionType: 'single',
         props: {
           'tooltip-effect': 'dark'
         }
-      }
+      },
+      currentChannelId: undefined,
+      currentProvincesCode: undefined
     }
   },
-  props: ['title', 'disabled', 'isLive', 'source', 'selectionType', 'initSelected'],
+  props: ['title', 'disabled', 'isLive', 'source', 'selectionType', 'initSelected', 'hasSchedule'],
   computed: {
   },
   components: {
     RemoteSelectorWrapper,
-    BaseSelector
+    BaseSelector,
+    GDScheduleSelector
   },
   methods: {
     getId (item) {
@@ -130,6 +177,13 @@ export default {
     handleSelectEnd (data) {
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
+    },
+    handleSelectChannel (row) {
+      this.currentChannelId = row.ccChannelId
+      this.currentProvincesCode = row.provincesCode
+      this.$nextTick(() => {
+        this.$refs.gdChannelSelector.$refs.wrapper.handleSelectStart()
+      })
     },
     handleRowSelectionRemove (item) {
       this.$refs.baseSelector.handleTableRowSelectionRemove(item)
@@ -165,6 +219,9 @@ export default {
   },
   created () {
     this.getProvinceOptions()
+    if (this.hasSchedule === undefined) {
+      this.table.header.splice(this.table.header.length - 1, 1)
+    }
   }
 }
 </script>

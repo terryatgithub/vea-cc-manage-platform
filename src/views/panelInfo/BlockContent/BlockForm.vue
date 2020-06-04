@@ -46,8 +46,23 @@
             :options="GD_LIVE_CLICK_TYPE_OPTIONS"
           />
         </el-form-item>
-        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.channel" prop="tvLiveInfo.channelId" label="频道选择">
+        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.channel"
+          key="channelSelector"
+          prop="tvLiveInfo.channelId"
+          label="频道选择">
           <GDChannelSelector v-if="!isReadonly" title="选择频道" @select-end="handleSelectGDChannelEnd" selection-type="single"></GDChannelSelector>
+          <template v-if="contentForm.tvLiveInfo.channelId">
+            已选择: <el-tag>{{ contentForm.tvLiveInfo.channelId }}</el-tag>
+          </template>
+        </el-form-item>
+        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.telecast"
+          label="节目选择">
+          <GDChannelSelector v-if="!isReadonly"
+            key="scheduleSelector"
+            hasSchedule
+            title="选择节目"
+            @select-end="handleSelectGDChannelEnd"
+            selection-type="single" />
           <template v-if="contentForm.tvLiveInfo.channelId">
             已选择: <el-tag>{{ contentForm.tvLiveInfo.channelId }}</el-tag>
           </template>
