@@ -457,8 +457,7 @@ export default {
         status: undefined,
         source: 'none'
       },
-      normalForm: {
-      },
+      normalForm: {},
       lowerForm: {
         coverType: 'media'
       },
@@ -1005,6 +1004,7 @@ export default {
     checkNormalForm: function (cb) {
       const $broadcastBlockForm = this.$refs.broadcastBlockForm
       const $broadcastBlockFormSpe = this.$refs.broadcastBlockFormSpe
+      console.log($broadcastBlockForm, $broadcastBlockFormSpe)
       if ($broadcastBlockForm) {
         $broadcastBlockForm.$refs.normalForm.validate((valid) => {
           if (valid) {
@@ -1168,7 +1168,6 @@ export default {
       this.cleanLowerForm(val)
     },
     cleanLowerForm: function (val) {
-      // debugger
       var newForm = Object.assign({}, this.versionForm)
       newForm.type = val
       newForm.coverType = val
@@ -1354,7 +1353,6 @@ export default {
         return item
       }
       data.normalVersionContent = data.normalVersionContent.map(parseContent)
-      console.log(data.normalVersionContent, '----ds')
       // const normalVersionContent = data.normalVersionContent
       // if (normalVersionContent.onclick) {
       //   parseParams(normalVersionContent.onclick)
@@ -1419,12 +1417,22 @@ export default {
               return result
             }, [{}, {}, {}, {}])
           }
+          // 解决旧版本没有该字段问题。
+          let guideConfigObj = {
+            id: '',
+            vid: '',
+            after_play: {
+              operation: '',
+              id: '',
+              vid: ''
+            }
+          }
           const mapContent = (item, isDmpContent) => {
             // item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
             item.onclick = JSON.parse(item.onclick)
             item.params = JSON.parse(item.params || '{}')
             item.clickParams = JSON.parse(item.clickParams || '{}')
-            item.guideConfig = JSON.parse(item.guideConfig || '{}')
+            item.guideConfig = JSON.parse(item.guideConfig || JSON.stringify(guideConfigObj))
             parseCornerIconList(item)
             parseParams(item.onclick)
             // 短视频
@@ -1448,9 +1456,7 @@ export default {
             return item
           }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
-          console.log(this.normalVersionContent, '----dd')
           this.normalForm = this.normalVersionContent[0]
-          console.log(this.normalForm, '---basic')
 
           // lower data
           const lowerData = cloneDeep(data.lowerVersionContent)

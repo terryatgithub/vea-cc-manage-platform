@@ -293,7 +293,7 @@
           <el-radio label="theFilm" :disabled="disabled">播放指定影片</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item >
+      <el-form-item>
         <div v-if="normalForm.guideConfig.after_play.operation === 'theFilm'">
           <ResourceSelector
             ref="resourceSelector"
@@ -436,9 +436,7 @@ export default {
       showTitle: '选择推荐流'
     }
   },
-  mounted () {
-    console.log(this.normalForm, '---dd')
-  },
+  mounted () {},
   props: ['id', 'configModel', 'normalForm', 'normalRules', 'isGroupModel', 'isReadonly', 'source', 'checkCrowd', 'showResourceTip'],
   computed: {
     isManualSetResource () {

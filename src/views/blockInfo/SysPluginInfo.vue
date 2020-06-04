@@ -127,6 +127,16 @@
                     </el-tag>
                   </div>
                 </el-form-item>
+                <el-form-item label="会员展示">
+                    <el-select filterable placeholder="前端不显示" v-model="block.pluginInfo.vipButtonSourceId" :clearable="true">
+                        <el-option
+                            v-for="item in vipEnums"
+                            :value="item.value"
+                            :label="item.label"
+                            :key="item.sourceId">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <div v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title" :rules="rules.title">
                     <el-input v-model.trim="block.helper.title"></el-input>
@@ -228,7 +238,9 @@
                     </el-tag>
                   </div>
                 </el-form-item>
-
+                <el-form-item label="会员展示">
+                      {{ getVipButtonSourceItem(block.pluginInfo.vipButtonSourceId).sourceName }}
+                  </el-form-item>
                 <template v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title">{{ block.helper.title }}</el-form-item>
                   <el-form-item label="副标题" prop="helper.subTitle">{{ block.helper.subTitle }}</el-form-item>
@@ -308,6 +320,8 @@ export default {
   props: ['id', 'initMode', 'version', 'contentProps'],
   data () {
     return {
+      vipEnums: [],
+      vipEnumsData: [],
       currentIndex: 0,
       title: null,
       dialogTableVisible: false,
@@ -355,7 +369,10 @@ export default {
           // 系统功能状态，2-草稿，3-待审核，4-审核通过，5-审核不通过
           pluginStatus: undefined,
           refreshTime: this.contentProps.menuElId === 'sysPlugin' ? 240 : '',
-          rlsTabs: []
+          rlsTabs: [],
+          vipButtonSourceId: '', // 会员展示
+          vipButtonSourceName: '',
+          vipButtonSourceSign: ''
         },
         rlsInfo: []
       },
@@ -465,6 +482,23 @@ export default {
   },
   watch: {},
   methods: {
+    getVipButtonSourceItem (id) {
+      const result = this.vipEnumsData.find(function (item) {
+        return item.sourceId === id
+      })
+      return result || {}
+    },
+    getVipButtonSource () {
+      this.$service.getVipButtonSource().then((data) => {
+        this.vipEnumsData = data
+        this.vipEnums = data.map(function (item) {
+          return {
+            value: item.sourceId,
+            label: item.sourceName
+          }
+        })
+      })
+    },
     handleRemoveRelatedTab ({ tabId }) {
       const pluginInfo = this.block.pluginInfo
       pluginInfo.rlsTabs = pluginInfo.rlsTabs.filter(item => item.tabId !== tabId)
@@ -799,7 +833,15 @@ export default {
       return onclick
     },
     getData (status) {
+      const vipButtonSourceId = this.block.pluginInfo.vipButtonSourceId
+      if (vipButtonSourceId) {
+        const vipButton = this.getVipButtonSourceItem(vipButtonSourceId)
+        this.block.pluginInfo.vipButtonSourceId = vipButtonSourceId
+        this.block.pluginInfo.vipButtonSourceName = vipButton.sourceName
+        this.block.pluginInfo.vipButtonSourceSign = vipButton.sourceSign
+      }
       const data = JSON.parse(JSON.stringify(this.block))
+      console.log(data)
       if (this.mode === 'replicate') {
         data.pluginInfo.currentVersion = ''
       }
@@ -1104,6 +1146,7 @@ export default {
     /** 提交审核 */
     handleSubmitAudit (d, status) {
       const data = this.getData(status)
+      console.log(data, '----dd')
       this.validateData(
         data,
         function () {
@@ -1127,6 +1170,7 @@ export default {
   },
   created () {
     this.getPluginParentTypes()
+    this.getVipButtonSource()
     this.mode = this.initMode || 'create'
     switch (this.mode) {
       case 'create':
