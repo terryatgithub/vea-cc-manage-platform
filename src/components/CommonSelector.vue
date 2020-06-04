@@ -3,7 +3,6 @@
     v-if="type === 'radio' || type === 'radio-button'"
     :value="value"
     @input="handleInput"
-    @change="changeTypeValue"
     :disabled="disabled">
       <template v-for="(item, key) in options">
         <component
@@ -93,8 +92,6 @@ export default {
           })
         }
       }
-    },
-    changeTypeValue (val) {
     }
   }
 }

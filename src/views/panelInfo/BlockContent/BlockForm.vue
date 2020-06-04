@@ -584,7 +584,7 @@
       </el-form-item>
       <template v-if="!!contentForm.flagSetRec">
             <RecommendStreamSelector
-              :value="contentForm.mediaAutomationBlockRls.mediaAutomationId"
+              :value="contentForm.mediaAutomationBlockRls.type === 0? contentForm.mediaAutomationBlockRls.mediaAutomationId : ''"
               :disabled="isReadonly"
               :source="source"
               :resolution="resolution[0] + '*' + resolution[1]"
@@ -605,8 +605,7 @@
               @close="handleDelTagClose(contentForm.mediaAutomationBlockRls)"
               :disabled="isReadonly"
               >
-              {{ contentForm.mediaAutomationBlockRls.mediaAutomationId || contentForm.mediaAutomationBlockRls.recId}}
-              ({{ contentForm.mediaAutomationBlockRls.recName || contentForm.mediaAutomationBlockRls.mediaAutomationName}})
+              {{contentForm.mediaAutomationBlockRls.mediaAutomationId}}({{contentForm.mediaAutomationBlockRls.mediaAutomationName}})
               </el-tag>
             </template>
       </template>
@@ -1031,22 +1030,25 @@ export default {
   methods: {
     // 移除新推荐流选中的
     handleDelTagClose (tag) {
-      tag.recId = undefined
+      // tag.mediaAutomationId = undefined
+      tag.type = 0
       this.isShowOrHide = false
     },
     handleSelectBlockRecStreamEnd (selected) {
       let defaultObj = {
-        recId: selected[0].id,
-        recName: selected[0].recName,
+        mediaAutomationId: selected[0].id,
+        mediaAutomationName: selected[0].recName,
         recCategory: selected[0].recCategory,
         recFlag: selected[0].userToken
       }
+
       this.isShowOrHide = true
       // 没有初始化，不是响应式数据
       // this.contentForm.mediaAutomationBlockRls = Object.assign(this.contentForm.mediaAutomationBlockRls, defaultObj)
       this.contentForm.mediaAutomationBlockRls = { ...this.contentForm.mediaAutomationBlockRls, ...defaultObj }
       // this.$set(this.contentForm, defaultObj.id, selected[0].id) // 实时更新id
       console.log(this.contentForm.mediaAutomationBlockRls, this.isShowOrHide, '====')
+      this.contentForm.mediaAutomationBlockRls.type = 1 // 新推荐流为1
     },
     handleInputGDLiveClickType (val) {
       this.contentForm.tvLiveInfo = genDefaultTvLiveInfo({
@@ -1538,6 +1540,7 @@ export default {
     },
     handleSelectRecomStream (recomStream) {
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
+      this.contentForm.mediaAutomationBlockRls.type = 0
       console.log(this.contentForm.mediaAutomationBlockRls, '----旧推荐流')
     }
   },
