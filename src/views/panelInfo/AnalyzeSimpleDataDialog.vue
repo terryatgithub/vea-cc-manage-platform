@@ -146,6 +146,7 @@ export default {
       const originPosition = this.cachePosition
       const originIsRealTime = this.cacheIsRealTime
       const { parentId, position, isRealTime } = this
+      debugger
       // 获取缓存数据
       if (originParentId === parentId && originPosition === position && originIsRealTime === isRealTime) {
         return

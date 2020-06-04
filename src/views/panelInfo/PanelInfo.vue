@@ -319,7 +319,7 @@
                               </span>
                               <VirtualPanel
                                 :panel-group="pannel"
-                                :panel-index="item"
+                                :panel-index="index"
                                 :blocks="item.contentList"
                                 :mode="mode"
                                 :show-chart-btn="!!id"
