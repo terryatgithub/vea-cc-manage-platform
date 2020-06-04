@@ -413,7 +413,8 @@
                       >查看规则
                       </el-button>
                     </el-form-item>
-                    <el-form-item
+                    <!-- 旧推荐流 -->
+                    <!-- <el-form-item
                       v-if="pannelFillType === $consts.panelFillTypes.recStream"
                       label="选择推荐流"
                       required>
@@ -428,6 +429,25 @@
                           {{ firstPanel.recStreamPanelRls.recId }}
                           ({{ firstPanel.recStreamPanelRls.recName }})
                         </el-tag>
+                      </template>
+                    </el-form-item> -->
+                    <!-- 新推荐流 -->
+                    <el-form-item
+                      v-if="pannelFillType === $consts.panelFillTypes.recStream"
+                      label="选择推荐流"
+                      required>
+                      <NewBlockRecStreamSelector
+                          title="选择推荐流"
+                          selection-type="single"
+                          :source="pannel.pannelResource"
+                          :scene="scene"
+                          @select-end="handleSelectBlockRecNew">
+                      </NewBlockRecStreamSelector>
+                      <template v-if="firstPanel.recStreamPanelRls">
+                          已选择: <el-tag>
+                          {{ firstPanel.recStreamPanelRls.recId }}
+                          ({{ firstPanel.recStreamPanelRls.recName }})
+                          </el-tag>
                       </template>
                     </el-form-item>
                     <el-form-item
@@ -795,7 +815,7 @@ import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import BlockContent from './BlockContent/BlockContent'
 import CommonSelector from '@/components/CommonSelector'
 import BinCheckBox from '@/components/BinCheckBox'
-import BlockRecStreamSelector from '@/components/selectors/BlockRecStreamSelector'
+// import BlockRecStreamSelector from '@/components/selectors/BlockRecStreamSelector'
 import TagTypeSelector from '@/components/ResourceSelector/TagTypeSelector'
 
 import NewBlockRecStreamSelector from '@/components/selectors/NewBlockRecStreamSelector'
@@ -853,8 +873,8 @@ export default {
     NewBlockRecStreamSelector,
     ConfigureFilmFilterRule,
     ClickCopy,
-    TagTypeSelector,
-    BlockRecStreamSelector
+    TagTypeSelector
+    // BlockRecStreamSelector
   },
   data () {
     const extend = {
