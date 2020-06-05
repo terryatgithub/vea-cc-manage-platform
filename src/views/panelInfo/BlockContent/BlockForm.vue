@@ -1578,6 +1578,7 @@ export default {
   overflow hidden
 .post-box img
   width 100%
+  height 100%
 .post-info
   position absolute
   bottom 0
