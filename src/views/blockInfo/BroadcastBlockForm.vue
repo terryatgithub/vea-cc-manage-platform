@@ -144,33 +144,40 @@
           >
           </el-switch>
         </el-form-item>
-        <RecommendStreamSelector
-          v-if="!!normalForm.flagSetRec"
-          :value="normalForm.mediaAutomationBlockRls.mediaAutomationId"
-          :disabled="isReadonly"
-          :source="source"
-          :show="showTitle"
-          resolution="797*449"
-          @select-end="handleSelectRecomStream"
-          @del-select="normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
-        />
-        <NewBlockRecStreamSelector
-            title="选择新推荐流"
-            selection-type="single"
-            :source="source"
+        <template v-if="!!normalForm.flagSetRec">
+          <RecommendStreamSelector
+            :value="normalForm.mediaAutomationBlockRls.type === 0? normalForm.mediaAutomationBlockRls.mediaAutomationId: ''"
             :disabled="isReadonly"
-            @select-end="handleSelectBlockRecStreamEnd"
-            v-if="!!normalForm.flagSetRec"
-            style="margin:0 0 10px 140px">
-        </NewBlockRecStreamSelector>
-        <template v-if="normalForm.mediaAutomationBlockRls.recId">
-          已选择: <el-tag closable
-          @close="handleDelTagClose(normalForm.mediaAutomationBlockRls)"
-          :disabled="isReadonly"
-          >
-          {{ normalForm.mediaAutomationBlockRls.recId }}
-          ({{ normalForm.mediaAutomationBlockRls.recName }})
-          </el-tag>
+            :source="source"
+            :show="showTitle"
+            resolution="797*449"
+            @select-end="handleSelectRecomStream"
+            @del-select="normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
+          />
+          <NewBlockRecStreamSelector
+              title="选择新推荐流"
+              selection-type="single"
+              :source="source"
+              :disabled="isReadonly"
+              @select-end="handleSelectBlockRecStreamEnd"
+              style="margin:0 0 10px 140px">
+          </NewBlockRecStreamSelector>
+          <template v-if="isReadonly === false && normalForm.mediaAutomationBlockRls.mediaAutomationId">
+            已选择:<el-tag closable
+            @close="handleDelTagClose(normalForm.mediaAutomationBlockRls)"
+            :disabled="isReadonly"
+            v-if="normalForm.mediaAutomationBlockRls.type === 1"
+            >
+            {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}({{normalForm.mediaAutomationBlockRls.mediaAutomationName}})
+            </el-tag>
+          </template>
+          <template v-if="isReadonly === true && normalForm.mediaAutomationBlockRls.mediaAutomationId">
+            已选择:<el-tag
+            v-if="normalForm.mediaAutomationBlockRls.type === 1"
+            >
+            {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}({{normalForm.mediaAutomationBlockRls.mediaAutomationName}})
+            </el-tag>
+          </template>
         </template>
         <el-form-item label="刷新机制" v-if="!!normalForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
           <InputPositiveInt
@@ -255,7 +262,7 @@
           </span>
         </el-card>
       </el-form-item>
-      <el-form-item label="正片引导" v-show="couldFullscreen">
+      <el-form-item label="正片引导" v-show="normalForm.clickType === 'play-fullscreen'">
         <ResourceSelector
             ref="resourceSelector"
             v-if="!disabled"
@@ -285,7 +292,7 @@
       <el-form-item label="播放完成后" v-if="isGroupModel">
         <el-radio-group
           :value="normalForm.guideConfig.after_play.operation"
-          :disabled="isManualSetResource"
+          :disabled="isReadonly"
           @input="handleChooseRecommend"
           @change="handleChangeOperation">
           <el-radio label="nextBlock" :disabled="disabled">播放下一个推荐位</el-radio>
@@ -484,18 +491,20 @@ export default {
     },
     // 移除新推荐流选中的
     handleDelTagClose (tag) {
-      tag.recId = undefined
+      tag.type = 0
+      tag.mediaAutomationId = undefined
       this.isShowOrHide = false
     },
     handleSelectBlockRecStreamEnd (selected) {
       let defaultObj = {
-        recId: selected[0].id,
-        recName: selected[0].recName,
+        mediaAutomationId: selected[0].id,
+        mediaAutomationName: selected[0].recName,
         recCategory: selected[0].recCategory,
         recFlag: selected[0].userToken
       }
       this.isShowOrHide = true
       this.normalForm.mediaAutomationBlockRls = { ...this.normalForm.mediaAutomationBlockRls, ...defaultObj }
+      this.normalForm.mediaAutomationBlockRls.type = 1
       console.log(this.normalForm.mediaAutomationBlockRls, this.isShowOrHide, '====')
     },
     getThirdId (clickParams) {
@@ -586,6 +595,7 @@ export default {
       this.normalForm.clickTemplateType = resourceContent.contentType
     },
     handleSelectPostEnd (selected) {
+      debugger
       this.normalForm.poster = {
         pictureUrl: selected.pictureUrl,
         pictureId: selected.pictureId
@@ -673,6 +683,7 @@ export default {
     },
     handleSelectRecomStream (recomStream) {
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
+      this.normalForm.mediaAutomationBlockRls.type = 0
     },
     // 选择资源拓展项
     handleSwitchShortVideo (bool) {

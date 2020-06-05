@@ -127,13 +127,13 @@
                     </el-tag>
                   </div>
                 </el-form-item>
-                <el-form-item label="会员展示">
-                    <el-select filterable placeholder="前端不显示" v-model="block.pluginInfo.vipButtonSourceId" :clearable="true">
+                <el-form-item v-if="pluginParentType === 'builtIn'" label="会员展示">
+                    <el-select filterable v-model="block.pluginInfo.sourceId" :clearable="true">
                         <el-option
-                            v-for="item in vipEnums"
+                            v-for="(item, index) in vipEnums"
                             :value="item.value"
                             :label="item.label"
-                            :key="item.sourceId">
+                            :key="index">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -239,7 +239,7 @@
                   </div>
                 </el-form-item>
                 <el-form-item label="会员展示">
-                      {{ getVipButtonSourceItem(block.pluginInfo.vipButtonSourceId).sourceName }}
+                    {{ block.pluginInfo.sourceName }}
                   </el-form-item>
                 <template v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title">{{ block.helper.title }}</el-form-item>
@@ -370,9 +370,9 @@ export default {
           pluginStatus: undefined,
           refreshTime: this.contentProps.menuElId === 'sysPlugin' ? 240 : '',
           rlsTabs: [],
-          vipButtonSourceId: '', // 会员展示
-          vipButtonSourceName: '',
-          vipButtonSourceSign: ''
+          sourceId: '', // 会员展示
+          sourceName: '',
+          sourceSign: ''
         },
         rlsInfo: []
       },
@@ -482,12 +482,6 @@ export default {
   },
   watch: {},
   methods: {
-    getVipButtonSourceItem (id) {
-      const result = this.vipEnumsData.find(function (item) {
-        return item.sourceId === id
-      })
-      return result || {}
-    },
     getVipButtonSource () {
       this.$service.getVipButtonSource().then((data) => {
         this.vipEnumsData = data
@@ -833,15 +827,8 @@ export default {
       return onclick
     },
     getData (status) {
-      const vipButtonSourceId = this.block.pluginInfo.vipButtonSourceId
-      if (vipButtonSourceId) {
-        const vipButton = this.getVipButtonSourceItem(vipButtonSourceId)
-        this.block.pluginInfo.vipButtonSourceId = vipButtonSourceId
-        this.block.pluginInfo.vipButtonSourceName = vipButton.sourceName
-        this.block.pluginInfo.vipButtonSourceSign = vipButton.sourceSign
-      }
+      console.log(this.block.pluginInfo, '-----ehehe')
       const data = JSON.parse(JSON.stringify(this.block))
-      console.log(data)
       if (this.mode === 'replicate') {
         data.pluginInfo.currentVersion = ''
       }
@@ -972,6 +959,7 @@ export default {
       const helper = data.helper
       const hasBaseTitle = this.baseHasTitle
       const pluginParentType = this.pluginParentType
+      console.log(this.vipEnumsData, '-=')
       if (pluginParentType === 'sign') {
         data.rlsInfo = data.rlsInfo || []
         data.rlsInfo[0] = data.rlsInfo[0] || {
@@ -1160,7 +1148,15 @@ export default {
         formData,
         function () {
           formData = this.parseData(formData)
-          console.log(formData)
+          if (formData.pluginInfo.sourceId) {
+            this.vipEnumsData.map(item => {
+              if (item.sourceId === formData.pluginInfo.sourceId) {
+                formData.pluginInfo.sourceName = item.sourceName
+                formData.pluginInfo.sourceSign = item.sourceSign
+              }
+            })
+          }
+          console.log(formData, '========保存')
           this.$service.SavePlugin(formData, '保存成功').then(data => {
             this.$emit('upsert-end')
           })
@@ -1168,9 +1164,11 @@ export default {
       )
     }
   },
+  mounted () {
+    this.getVipButtonSource()
+  },
   created () {
     this.getPluginParentTypes()
-    this.getVipButtonSource()
     this.mode = this.initMode || 'create'
     switch (this.mode) {
       case 'create':

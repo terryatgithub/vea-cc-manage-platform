@@ -32,10 +32,17 @@
             <el-option label="视频列表" value="REFERENCE_BROADCASTING"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="配置模式">
+        <el-form-item label="配置模式" v-if="mode !== 'read'">
           <el-radio-group :value="basicForm.configModel" @input="handleInputConfigModel">
-            <el-radio label="purePoster" :disabled="disabled">纯图模式</el-radio>
-            <!-- <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio> -->
+            <el-radio label="purePoster" :disabled="disabled" v-if="basicForm.configModel === 'purePoster'">纯图模式</el-radio>
+            <el-radio label="broadcast" :disabled="disabled" v-if="basicForm.configModel === 'broadcast'">轮播模式</el-radio>
+            <el-radio label="group" :disabled="disabled">窗口模式</el-radio>
+            <el-radio label="sign" :disabled="disabled">信号源</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="配置模式" v-if="mode === 'read'">
+          <el-radio-group :value="basicForm.configModel" @input="handleInputConfigModel">
+            <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio>
             <el-radio label="group" :disabled="disabled">窗口模式</el-radio>
             <el-radio label="sign" :disabled="disabled">信号源</el-radio>
           </el-radio-group>
@@ -713,6 +720,7 @@ export default {
     },
     // 切换资源类别之后清空操作
     handleCoverTypeChange (val) {
+      const normalVersionContent = this.normalVersionContent
       var newForm = Object.assign({}, this.versionForm)
       newForm.coverType = val
       if (val === 'custom') {
@@ -722,6 +730,7 @@ export default {
         newForm.clickTemplateType = 'custom'
       }
       this.normalForm = newForm
+      normalVersionContent.splice(this.currentIndex, 1, newForm)
     },
     handleRemoveDmpContent (index) {
       this.$confirm('确认删除该内容', '提示', {
@@ -1073,6 +1082,7 @@ export default {
     },
     // 组合模式->添加normalForm
     handleAddNormalContent () {
+      debugger
       this.checkNormalForm(() => {
         this.normalForm = this.genDefaultContentForm()
         this.normalVersionContent.push(this.normalForm)
@@ -1427,12 +1437,19 @@ export default {
               vid: ''
             }
           }
+          let mediaAutomationBlockRlsObj = {
+            mediaAutomationId: '',
+            mediaAutomationName: '',
+            refreshCal: '',
+            type: ''
+          }
           const mapContent = (item, isDmpContent) => {
             // item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
             item.onclick = JSON.parse(item.onclick)
             item.params = JSON.parse(item.params || '{}')
             item.clickParams = JSON.parse(item.clickParams || '{}')
             item.guideConfig = JSON.parse(item.guideConfig || JSON.stringify(guideConfigObj))
+            item.mediaAutomationBlockRls = item.mediaAutomationBlockRls || mediaAutomationBlockRlsObj
             parseCornerIconList(item)
             parseParams(item.onclick)
             // 短视频
@@ -1455,6 +1472,11 @@ export default {
             item = this.genDefaultContentForm({ ...item, isDmpContent })
             return item
           }
+          // this.normalForm.mediaAutomationBlockRls = {
+          //   refreshCal: 1,
+          //   mediaAutomationId: '',
+          //   blockType: 'rotate'
+          // }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
           this.normalForm = this.normalVersionContent[0]
 
