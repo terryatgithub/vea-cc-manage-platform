@@ -128,7 +128,7 @@
                   </div>
                 </el-form-item>
                 <el-form-item v-if="pluginParentType === 'builtIn'" label="会员展示">
-                    <el-select filterable v-model="block.pluginInfo.sourceId" :clearable="true">
+                    <el-select filterable v-model="block.pluginInfo.sourceId" @clear="clearAll" :clearable="true">
                         <el-option
                             v-for="(item, index) in vipEnums"
                             :value="item.value"
@@ -482,6 +482,10 @@ export default {
   },
   watch: {},
   methods: {
+    clearAll () {
+      this.block.pluginInfo.sourceName = ''
+      this.block.pluginInfo.sourceSign = ''
+    },
     getVipButtonSource () {
       this.$service.getVipButtonSource().then((data) => {
         this.vipEnumsData = data
@@ -882,6 +886,10 @@ export default {
       const block = JSON.parse(JSON.stringify(data))
       const pluginParentType = block.pluginInfo.pluginParentType
       const pluginType = block.pluginInfo.pluginType
+      // 将字符串转成数字回显
+      if (block.pluginInfo.sourceId) {
+        block.pluginInfo.sourceId = block.pluginInfo.sourceId * 1
+      }
       block.rlsInfo.forEach(
         function (item) {
           item.openMode = item.params.split(',')[0].split('==')[1]

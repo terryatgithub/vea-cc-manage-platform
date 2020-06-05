@@ -9,24 +9,27 @@
       @delete="handleDelete"
      >
      </BroadcastBlockList>
-    <BroadcastBlockInfo
+    <component
+      :is="configModel === 'broadcast' ?  'BroadcastBlockInfoLegacy': 'BroadcastBlockInfo'"
       v-if="!isShowList"
        :id="id"
       :init-mode="mode"
       :version="version"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
-    </BroadcastBlockInfo>
+    </component>
   </TabPage>
 </template>
 <script>
 import TabPage from '@/components/TabPage'
 import BroadcastBlockList from './BroadcastBlockList'
 import BroadcastBlockInfo from './BroadcastBlockInfo'
+import BroadcastBlockInfoLegacy from './BroadcastBlockInfoLegacy/BroadcastBlockInfo'
 export default {
   components: {
     TabPage,
     BroadcastBlockInfo,
+    BroadcastBlockInfoLegacy,
     BroadcastBlockList
   },
   data () {
@@ -34,7 +37,8 @@ export default {
       isShowList: true,
       id: undefined,
       mode: 'create',
-      version: undefined
+      version: undefined,
+      configModel: ''
     }
   },
   methods: {
@@ -45,6 +49,7 @@ export default {
         this.mode = 'list'
         this.version = undefined
       }
+      this.configModel = ''
     },
     handleCreate () {
       this.id = undefined
@@ -55,12 +60,14 @@ export default {
       this.id = item.id
       this.mode = 'edit'
       this.isShowList = false
+      this.configModel = item.configModel
     },
     handleRead (item, version) {
       this.id = item.id
       this.mode = 'read'
       this.version = version
       this.isShowList = false
+      this.configModel = item.configModel
     },
     handleDelete (selected) {
       this.$service
@@ -75,6 +82,7 @@ export default {
       this.id = item.id
       this.mode = 'copy'
       this.isShowList = false
+      this.configModel = item.configModel
     },
     /**
      * 新增编辑里面的返回事件
@@ -83,6 +91,7 @@ export default {
       this.isShowList = true
       this.mode = 'list'
       this.version = undefined
+      this.configModel = ''
     }
   }
 }

@@ -32,15 +32,13 @@
             <el-option label="视频列表" value="REFERENCE_BROADCASTING"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="配置模式" >
+        <el-form-item label="配置模式">
           <el-radio-group :value="basicForm.configModel" @input="handleInputConfigModel">
-            <el-radio label="purePoster" :disabled="disabled" >纯图模式</el-radio>
-            <!-- <el-radio label="broadcast" :disabled="disabled" v-if="basicForm.configModel === 'broadcast'">轮播模式</el-radio> -->
-            <el-radio label="group" :disabled="disabled">窗口模式</el-radio>
+            <el-radio label="broadcast" :disabled="disabled">轮播模式</el-radio>
+            <el-radio label="group" :disabled="disabled">组合模式</el-radio>
             <el-radio label="sign" :disabled="disabled">信号源</el-radio>
           </el-radio-group>
         </el-form-item>
-
         <el-form-item label="内容源">
           <el-radio-group :disabled="isReplica" :value="basicForm.source" @input="handleSourceChange">
             <el-radio
@@ -58,7 +56,7 @@
         <h4 class="version-title__h">正常版本</h4>
         <el-tag
           class="version-title__tag"
-          v-if="basicForm.configModel === 'group' || basicForm.configModel === 'purePoster'"
+          v-if="basicForm.configModel === 'group'"
           type="warning"
         >短标题模式需至少运营四个资源，长标题模式至少6个，才能填满布局哦~</el-tag>
         <ResourceSelector
@@ -78,7 +76,7 @@
       </div>
       <!-- {{normalVersionContent正常版本}} -->
       <div class="form-wrap">
-        <!-- group 正常版本左侧 -->
+        <!-- group -->
         <el-row
           :gutter="4"
           class="normal-left-list"
@@ -128,7 +126,7 @@
         </el-row>
 
         <!-- broadcast -->
-        <div class="content-wrapper"  v-if="basicForm.configModel === 'group'">
+        <div class="content-wrapper" v-if="basicForm.configModel === 'group'">
           <div class="content-type-switcher">
             <el-radio-group :value="normalForm.showContentType" @input="handleSwitchShowContentType">
               <el-radio class="conten-type-switcher__item" label="general">通用推荐位版本</el-radio>
@@ -194,40 +192,22 @@
             />
           </div>
         </div>
-        <div class="content-wrapper" :class="basicForm.configModel === 'purePoster' ? 'min-height': ''"
-          v-if="basicForm.configModel === 'purePoster' || basicForm.configModel === 'sign'">
-          <template v-if="basicForm.configModel === 'sign'">
-            <BroadcastBlockForm
-              ref="broadcastBlockForm"
-              @toggle-use-short-video="handleToggleUseShortVideo"
-              @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
-              :id="id"
-              :config-model="basicForm.configModel"
-              :normal-form="normalForm"
-              :normal-rules="normalRules"
-              :is-readonly="disabled"
-              :is-group-model="isGroupModel"
-              :source="source"
-              :show-resource-tip="currentIndex === 0"
-            />
-          </template>
-          <!-- 纯图模式 -->
-          <template v-if="basicForm.configModel === 'purePoster'">
-           <BroadcastBlockFormSpe
-              ref="broadcastBlockFormSpe"
-              @toggle-use-short-video="handleToggleUseShortVideo"
-              @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
-              @cover-type-change="handleCoverTypeChange"
-              :id="id"
-              :config-model="basicForm.configModel"
-              :normal-form="normalForm"
-              :normal-rules="normalRules"
-              :is-readonly="disabled"
-              :is-group-model="isGroupModel"
-              :source="source"
-              :show-resource-tip="currentIndex === 0"
-            />
-          </template>
+        <div
+          :class="basicForm.configModel === 'sign' ? 'content-wrapper' : ''"
+          v-if="basicForm.configModel === 'broadcast' || basicForm.configModel === 'sign'">
+          <BroadcastBlockForm
+            ref="broadcastBlockForm"
+            @toggle-use-short-video="handleToggleUseShortVideo"
+            @toggle-manaulset-resource="handleToggleManualSetResource($event, 'general')"
+            :id="id"
+            :config-model="basicForm.configModel"
+            :normal-form="normalForm"
+            :normal-rules="normalRules"
+            :is-readonly="disabled"
+            :is-group-model="isGroupModel"
+            :source="source"
+            :show-resource-tip="currentIndex === 0"
+          />
         </div>
       </div>
       <!-- {{lowerVersionContent兼容低版本}} -->
@@ -414,7 +394,6 @@ import AppParamsRead from '@/components/AppParamsRead.vue'
 import { cloneDeep } from 'lodash'
 import titleMixin from '@/mixins/title'
 import BroadcastBlockForm from './BroadcastBlockForm'
-import BroadcastBlockFormSpe from './BroadcastBlockFormSpe'
 import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import { parseResourceContent, setContentForm, getSelectedResource } from './broadcastBlockUtil'
 import BroadcastBlockStatChartViewer from '@/components/statViewer/BroadcastBlockStatChartViewer'
@@ -427,13 +406,13 @@ export default {
     ResourceSelector,
     GlobalPictureSelector,
     CornerSelector,
+
     selectClick,
     AppParams,
     AppParamsRead,
     CommonContent,
     BroadcastBlockForm,
-    BroadcastBlockStatChartViewer,
-    BroadcastBlockFormSpe
+    BroadcastBlockStatChartViewer
   },
   props: ['id', 'initMode', 'version'],
   data () {
@@ -453,12 +432,13 @@ export default {
         id: undefined,
         containerName: '',
         containerType: 'REFERENCE_BROADCASTING',
-        configModel: 'purePoster',
+        configModel: 'broadcast',
         currentVersion: undefined,
         status: undefined,
         source: 'none'
       },
-      normalForm: {},
+      normalForm: {
+      },
       lowerForm: {
         coverType: 'media'
       },
@@ -471,7 +451,6 @@ export default {
         thirdIdOrPackageName: [
           { required: true, message: '请填选择资源', trigger: 'blur' }
         ],
-
         clickParams: [
           {
             validator: (rule, value, cb) => {
@@ -486,9 +465,9 @@ export default {
           }
         ],
         dmpRegistryInfo: [{ required: true, message: '请选择定向人群' }],
-        // 'mediaAutomationBlockRls.mediaAutomationId': [
-        //   { required: true, message: '当开关开启时必填123' }
-        // ],
+        'mediaAutomationBlockRls.mediaAutomationId': [
+          { required: true, message: '当开关开启时必填' }
+        ],
         'mediaAutomationBlockRls.refreshCal': [
           { required: true, message: '当开关开启时必填', trigger: 'blur' }
         ],
@@ -649,9 +628,7 @@ export default {
     },
     isGroupModel () {
       const configModel = this.basicForm.configModel
-      // alert(this.basicForm.configModel)
-      // return configModel === 'group' || configModel === 'sign'
-      return configModel
+      return configModel === 'group' || configModel === 'sign'
     },
     source () {
       return this.basicForm.source === 'none' ? '' : this.basicForm.source
@@ -711,20 +688,6 @@ export default {
         // 当前内容被删除
         this.normalForm.activeIndex = index
       }
-    },
-    // 切换资源类别之后清空操作
-    handleCoverTypeChange (val) {
-      const normalVersionContent = this.normalVersionContent
-      var newForm = Object.assign({}, this.versionForm)
-      newForm.coverType = val
-      if (val === 'custom') {
-        newForm.sign = 'openMode==app'
-        newForm.contentType = 'custom'
-        newForm.params = {}
-        newForm.clickTemplateType = 'custom'
-      }
-      this.normalForm = newForm
-      normalVersionContent.splice(this.currentIndex, 1, newForm)
     },
     handleRemoveDmpContent (index) {
       this.$confirm('确认删除该内容', '提示', {
@@ -975,7 +938,7 @@ export default {
           })
         })
     },
-    clearFormAll () {
+    clearFormAll: function () {
       // 清空正常版本和低版本数据
       const normalForm = cloneDeep(this.versionForm)
       const lowerForm = cloneDeep(this.versionForm)
@@ -1006,18 +969,8 @@ export default {
     // 校验normalForm
     checkNormalForm: function (cb) {
       const $broadcastBlockForm = this.$refs.broadcastBlockForm
-      const $broadcastBlockFormSpe = this.$refs.broadcastBlockFormSpe
-      console.log($broadcastBlockForm, $broadcastBlockFormSpe)
       if ($broadcastBlockForm) {
         $broadcastBlockForm.$refs.normalForm.validate((valid) => {
-          if (valid) {
-            cb()
-          } else {
-            this.$message.error('请将表单填写完整')
-          }
-        })
-      } else if (($broadcastBlockFormSpe)) {
-        $broadcastBlockFormSpe.$refs.normalForm.validate((valid) => {
           if (valid) {
             cb()
           } else {
@@ -1047,15 +1000,6 @@ export default {
         clickType: 'detail',
         onclick: {},
         sign: 'autoSet',
-        guideConfig: {
-          id: '',
-          vid: '',
-          after_play: {
-            operation: 'nextFilm',
-            id: '',
-            vid: ''
-          }
-        },
         contentType: '',
         clickParams: {},
         // jumpAdress: '1',
@@ -1076,12 +1020,10 @@ export default {
     },
     // 组合模式->添加normalForm
     handleAddNormalContent () {
-      debugger
       this.checkNormalForm(() => {
         this.normalForm = this.genDefaultContentForm()
         this.normalVersionContent.push(this.normalForm)
         this.currentIndex = this.normalVersionContent.length - 1
-        console.log(this.currentIndex, '----currentIndex')
       })
     },
     // 组合模式->删除normalForm
@@ -1184,23 +1126,9 @@ export default {
       this.lowerForm = newForm
     },
     validate (data, cb) {
-      const normalForm = data.normalVersionContent[0]
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
-          // debugger
           this.checkNormalForm(() => {
-            if (normalForm.flagSetRec === 1) {
-              if (!normalForm.mediaAutomationBlockRls.mediaAutomationId && !normalForm.mediaAutomationBlockRls.recId) {
-                return this.$message.error('开关开启时，推荐流选择必须选择其一')
-              } else if (normalForm.mediaAutomationBlockRls.mediaAutomationId && normalForm.mediaAutomationBlockRls.recId) {
-                return this.$message.error('开关开启时，推荐流只能保存其一')
-              }
-            }
-            if (normalForm.mediaAutomationBlockRls.recId) {
-              let defalutId = normalForm.mediaAutomationBlockRls.recId
-              normalForm.mediaAutomationBlockRls.mediaAutomationId = defalutId
-            }
-            console.log(normalForm.mediaAutomationBlockRls, '=--保存id')
             this.$refs.lowerForm.validate((valid) => {
               if (valid) {
                 const configModel = data.configModel
@@ -1222,7 +1150,6 @@ export default {
                     return this.$message.error(`请设置第 ${i + 1} 个内容的海报`)
                   }
                 }
-
                 cb()
               } else {
                 this.$message.error('请将表单填写完整')
@@ -1253,8 +1180,6 @@ export default {
     },
     handleSubmitAudit (timing) {
       const data = this.getFormData()
-      // clickTemplateType
-      console.log(data)
       data.status = this.$consts.status.waiting
       this.validate(data, () => {
         if (this.couldSetReleaseTime) {
@@ -1271,23 +1196,6 @@ export default {
       })
     },
     doSave (data) {
-      // validate (cb) {
-      //   const currentForm = this.$refs.form
-      //   if (currentForm) {
-      //     currentForm.validate((valid) => {
-      //       if (valid) {
-      //         cb()
-      //       } else {
-      //         this.$message({
-      //           type: 'error',
-      //           message: '请填写完整表单'
-      //         })
-      //       }
-      //     })
-      //   } else {
-      //     cb()
-      //   }
-      // },
       const parseParams = (onclick) => {
         const params = onclick.params || []
         onclick.params = params.reduce((result, item) => {
@@ -1333,16 +1241,8 @@ export default {
           item.params.stationId = item.subchannelId
           delete item.subchannelId
         }
-        if (item.coverType === 'custom') item.contentType = 'custom'
-        if (item.contentType === '') return this.$message.error('请选择资源！')
-        if (item.guideConfig.after_play.operation === 'theFilm') {
-          if (item.guideConfig.after_play.id === '' || item.guideConfig.after_play.vid === '') {
-            return this.$message.error('请指定播放资源！')
-          }
-        }
         item.params = JSON.stringify(item.params)
         item.clickParams = JSON.stringify(item.clickParams)
-        item.guideConfig = JSON.stringify(item.guideConfig)
         if (item.dmpContentList.length > 0) {
           item.dmpContentList = item.dmpContentList.map(parseContent)
         } else {
@@ -1357,13 +1257,7 @@ export default {
         return item
       }
       data.normalVersionContent = data.normalVersionContent.map(parseContent)
-      // const normalVersionContent = data.normalVersionContent
-      // if (normalVersionContent.onclick) {
-      //   parseParams(normalVersionContent.onclick)
-      // }
-      // normalVersionContent.params = JSON.stringify(normalVersionContent.params)
-      // normalVersionContent.onclick = JSON.stringify(normalVersionContent.onclick)
-      // debugger
+
       const lowerVersionContent = data.lowerVersionContent
       if (lowerVersionContent.onclick) {
         parseParams(lowerVersionContent.onclick)
@@ -1380,6 +1274,7 @@ export default {
       }
       lowerVersionContent.params = JSON.stringify(lowerVersionContent.params)
       lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
+
       data.parentType = 'Block'
       console.log('save', data)
       this.$service
@@ -1421,29 +1316,10 @@ export default {
               return result
             }, [{}, {}, {}, {}])
           }
-          // 解决旧版本没有该字段问题。
-          let guideConfigObj = {
-            id: '',
-            vid: '',
-            after_play: {
-              operation: '',
-              id: '',
-              vid: ''
-            }
-          }
-          let mediaAutomationBlockRlsObj = {
-            mediaAutomationId: '',
-            mediaAutomationName: '',
-            refreshCal: '',
-            type: ''
-          }
           const mapContent = (item, isDmpContent) => {
-            // item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
-            item.onclick = JSON.parse(item.onclick)
+            item.onclick = item.sign === 'manualSet' ? JSON.parse(item.onclick) : {}
             item.params = JSON.parse(item.params || '{}')
             item.clickParams = JSON.parse(item.clickParams || '{}')
-            item.guideConfig = JSON.parse(item.guideConfig || JSON.stringify(guideConfigObj))
-            item.mediaAutomationBlockRls = item.mediaAutomationBlockRls || mediaAutomationBlockRlsObj
             parseCornerIconList(item)
             parseParams(item.onclick)
             // 短视频
@@ -1466,11 +1342,6 @@ export default {
             item = this.genDefaultContentForm({ ...item, isDmpContent })
             return item
           }
-          // this.normalForm.mediaAutomationBlockRls = {
-          //   refreshCal: 1,
-          //   mediaAutomationId: '',
-          //   blockType: 'rotate'
-          // }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
           this.normalForm = this.normalVersionContent[0]
 
@@ -1500,7 +1371,6 @@ export default {
   },
   created () {
     this.normalForm = cloneDeep(this.versionForm)
-    this.normalVersionContent.push(this.normalForm) // 纯图模式下默认给个值展示左边数据
     this.lowerForm = cloneDeep(this.versionForm)
     this.lowerForm.smallTopicsId = ''
     this.lowerForm.smallTopicsIs = false
@@ -1672,8 +1542,6 @@ export default {
   width 75%
   border-left 1px solid #808080
   margin-left 10px
-.min-height
-  height 648px
 .content-type-switcher
   margin-bottom 20px
   border-bottom 1px solid #ccc
@@ -1729,6 +1597,4 @@ img
 .add-version-card
   cursor pointer
   width 160px
-.min-height
-  height 648px
 </style>
