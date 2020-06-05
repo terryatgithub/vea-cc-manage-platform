@@ -396,7 +396,7 @@
                           v-for="mediaLayout in mediaRuleLayoutOptions"
                           :key="mediaLayout.dictEnName"
                           :label="+mediaLayout.dictEnName">
-                          {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictEnName)"/>
+                          {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictUrl)"/>
                         </el-radio>
                       </el-radio-group>
                     </el-form-item>
@@ -482,14 +482,7 @@
                   <!-- 预览图片 -->
                   <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="40%">
                     <div class="pics">
-                      <img v-if="reviewPicUrl === 1" style="width: 100%" src="../../assets/images/panelFillLayout1.png"/>
-                      <img v-if="reviewPicUrl === 2" style="width: 100%" src="../../assets/images/panelFillLayout2.png"/>
-                      <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
-                      <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
-                      <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
-                      <img v-if="reviewPicUrl === 6" style="width: 100%" src="../../assets/images/panelFillLayout6.png"/>
-                      <img v-if="reviewPicUrl === 7" style="width: 100%" src="../../assets/images/panelFillLayout7.png"/>
-                      <img v-if="reviewPicUrl === 8" style="width: 100%" src="../../assets/images/panelFillLayout8.png"/>
+                      <img style="width: 100%" :src="reviewPicUrl" />
                     </div>
                   </el-dialog>
                 </div>
@@ -1210,13 +1203,6 @@ export default {
         return panelFillTypeOptions.filter(item => item.value !== PANEL_FILL_TYPE.mediaRule)
       }
       return panelFillTypeOptions.filter(item => item.value !== PANEL_FILL_TYPE.mediaRule && item.value !== PANEL_FILL_TYPE.ranking)
-    },
-    reviewPicUrlSrc () {
-      if (this.reviewPicUrlSrc) {
-        return require('../../assets/images/panelFillLayout' + this.reviewPicUrl + '.png')
-      } else {
-        return undefined
-      }
     },
     // 插入
     interveneContentList () {
@@ -2921,17 +2907,26 @@ export default {
         }
       }
       // 校验一个版块只能有一个视频播放位
-      const isMutiVideo = pannel.pannelList.some(panel => {
+      let mutiVideoPanelIndex, mutiVideoCount
+      const isMutiVideo = pannel.pannelList.some((panel, index) => {
         let videoPluginCount = 0
         panel.contentList.forEach(content => {
           if ((content.videoContentList[0] || {}).pluginType === 'REFERENCE_PLAY_VIDEO') {
             videoPluginCount++
           }
         })
+        if (videoPluginCount > 1) {
+          mutiVideoPanelIndex = index
+          mutiVideoCount = videoPluginCount
+        }
         return videoPluginCount > 1
       })
       if (isMutiVideo) {
-        return cb(Error('一个版块只能有一个视频播放推荐位'))
+        if (pannel.parentType === 'group') {
+          return cb(Error('第' + (mutiVideoPanelIndex + 1) + '个分组含有' + mutiVideoCount + '个视频播放推荐位，一个版块只能有一个视频播放推荐位'))
+        } else {
+          return cb(Error('版块含有' + mutiVideoCount + '个视频播放推荐位，一个版块只能有一个视频播放推荐位'))
+        }
       }
       cb()
     },
@@ -3233,7 +3228,7 @@ export default {
           // 规则筛选
           const fillType = firstPannel.fillType
           if (fillType === panelFillTypes.mediaRule) {
-            this.reviewPicUrl = parseInt(firstPannel.layoutId)
+            this.reviewPicUrl = (this.mediaRuleLayoutOptions.find(item => item.dictEnName === firstPannel.layoutId) || {}).dictUrl
           }
           if (fillType === panelFillTypes.recStream) {
             // 初始化-计算布局大小
@@ -3337,8 +3332,8 @@ export default {
         this.handleSelectRankingEnd(selectedResources, 'rank')
       }
     },
-    handleShowLayout (seq) {
-      this.reviewPicUrl = parseInt(seq)
+    handleShowLayout (url) {
+      this.reviewPicUrl = url
       this.picDialogVisible = true
     },
     handleGetFilterResult (result) {

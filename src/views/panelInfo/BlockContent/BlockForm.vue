@@ -56,6 +56,7 @@
           </template>
         </el-form-item>
         <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.telecast"
+          prop="tvLiveInfo.channelId"
           label="节目选择">
           <GDChannelSelector v-if="!isReadonly"
             key="scheduleSelector"
@@ -65,6 +66,7 @@
             selection-type="single" />
           <template v-if="contentForm.tvLiveInfo.channelId">
             已选择: <el-tag>{{ contentForm.tvLiveInfo.channelId }}</el-tag>
+            <el-tag style="margin-left: 10px">{{ contentForm.extraValue1 }}</el-tag>
           </template>
         </el-form-item>
       </div>
@@ -919,7 +921,7 @@ export default {
           { required: true, message: '请选择知识', trigger: 'blur' }
         ],
         'tvLiveInfo.channelId': [
-          { required: true, message: '请选择频道', trigger: 'blur' }
+          { required: true, message: '请选择频道/节目', trigger: 'blur' }
         ]
       },
       beforeSelectBlockCbs: {
@@ -1062,9 +1064,10 @@ export default {
       this.contentForm.tvLiveInfo = genDefaultTvLiveInfo({
         clickType: val
       })
+      this.contentForm.extraValue1 = undefined
     },
     handleSelectGDChannelEnd (selected) {
-      const { categoryIds = '', ccChannelId, ccChannelTitle, images } = selected[0]
+      const { categoryIds = '', ccChannelId, ccChannelTitle, images, selectedSchedules } = selected[0]
       const categoryIdArr = categoryIds.split(',')
       const blockSize = this.resolution
       const contentForm = this.contentForm
@@ -1073,6 +1076,12 @@ export default {
       tvLiveInfo.channelId = ccChannelId
       contentForm.title = ccChannelTitle
       contentForm.pictureUrl = getMatchedPictureUrlByRotation(blockSize, images)
+      selectedSchedules && (contentForm.extraValue1 = selectedSchedules.thirdScheduleId)
+      if (selectedSchedules) {
+        contentForm.extraValue1 = selectedSchedules.thirdScheduleId
+        contentForm.title = selectedSchedules.thirdScheduleTitle
+        tvLiveInfo.startTime = selectedSchedules.startTime
+      }
     },
     initVideoInfo (maskLifeInfo) {
       if (!maskLifeInfo.videoInfo) {
@@ -1577,6 +1586,7 @@ export default {
   overflow hidden
 .post-box img
   width 100%
+  height 100%
 .post-info
   position absolute
   bottom 0

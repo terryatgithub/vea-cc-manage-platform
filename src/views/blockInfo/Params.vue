@@ -46,7 +46,7 @@
           </el-form-item>
           <el-form-item label label-width="0px">
             <el-tag>value</el-tag>&nbsp;
-            <el-tooltip class="item" effect="dark" :content="param.value" placement="top">
+            <el-tooltip class="item" effect="dark" :content="param.value + ''" placement="top">
               <span>{{ param.value }}</span>
             </el-tooltip>
           </el-form-item>
@@ -118,9 +118,9 @@ export default {
   display: inline-block;
   line-height: 1;
 }
-@media screen and (max-width: 1420px) {
+@media screen and (max-width: 1500px) {
   .tips {
-    max-width: 340px;
+    max-width: 330px;
   }
 }
 .app-extend-params .el-form-item,

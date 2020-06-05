@@ -56,21 +56,22 @@ export default {
         header: [
           {
             label: '节目标题',
-            prop: 'thirdScheduleTitle',
-            width: '70'
+            prop: 'thirdScheduleTitle'
           },
           {
             label: '节目id',
             prop: 'thirdScheduleId',
-            width: '150'
+            width: 150
           },
           {
             label: '第三方频道Id',
-            prop: 'thirdChannelId'
+            prop: 'thirdChannelId',
+            width: 120
           },
           {
             label: '频道Id',
-            prop: 'ccChannelId'
+            prop: 'ccChannelId',
+            width: 120
           },
           // {
           //   label: '频道描述',
