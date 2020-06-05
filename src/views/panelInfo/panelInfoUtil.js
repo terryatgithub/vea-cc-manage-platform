@@ -459,6 +459,7 @@ export function genDefaultTvLiveInfo (preset) {
     clickType: GD_LIVE_CLICK_TYPES.channel,
     categoryId: undefined,
     channelId: undefined,
+    startTime: undefined,
     ...preset
   }
 }
