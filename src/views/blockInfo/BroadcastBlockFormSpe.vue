@@ -34,7 +34,7 @@
           </el-card>
         </GlobalPictureSelector>
       </el-form-item>
-      <el-form-item v-if="normalForm.coverType !== 'custom'">
+      <el-form-item label="选择媒体资源" prop="thirdIdOrPackageName" v-if="normalForm.coverType !== 'custom'">
           <ResourceSelector
           ref="resourceSelector"
           :source="source"
@@ -295,6 +295,7 @@ export default {
       this.normalForm.clickTemplateType = resourceContent.contentType
     },
     handleSelectPostEnd (selected) {
+      debugger
       this.normalForm.poster = {
         pictureUrl: selected.pictureUrl,
         pictureId: selected.pictureId
