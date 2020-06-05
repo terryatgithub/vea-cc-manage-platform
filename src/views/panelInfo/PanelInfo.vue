@@ -2907,17 +2907,26 @@ export default {
         }
       }
       // 校验一个版块只能有一个视频播放位
-      const isMutiVideo = pannel.pannelList.some(panel => {
+      let mutiVideoPanelIndex, mutiVideoCount
+      const isMutiVideo = pannel.pannelList.some((panel, index) => {
         let videoPluginCount = 0
         panel.contentList.forEach(content => {
           if ((content.videoContentList[0] || {}).pluginType === 'REFERENCE_PLAY_VIDEO') {
             videoPluginCount++
           }
         })
+        if (videoPluginCount > 1) {
+          mutiVideoPanelIndex = index
+          mutiVideoCount = videoPluginCount
+        }
         return videoPluginCount > 1
       })
       if (isMutiVideo) {
-        return cb(Error('一个版块只能有一个视频播放推荐位'))
+        if (pannel.parentType === 'group') {
+          return cb(Error('第' + (mutiVideoPanelIndex + 1) + '个分组含有' + mutiVideoCount + '个视频播放推荐位，一个版块只能有一个视频播放推荐位'))
+        } else {
+          return cb(Error('版块含有' + mutiVideoCount + '个视频播放推荐位，一个版块只能有一个视频播放推荐位'))
+        }
       }
       cb()
     },
