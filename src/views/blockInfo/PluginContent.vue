@@ -374,7 +374,7 @@
 <script>
 import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
-import Params from './Params'
+import Params from '@/components/Params'
 import ClickSelector from './selectClick'
 import TabSelector from '@/components/selectors/TabSelector'
 import CrowdSelector from '@/components/CrowdSelector'
