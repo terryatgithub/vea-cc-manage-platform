@@ -39,7 +39,7 @@ export default {
     blocks: Array,
     maxCount: {
       type: Number,
-      default: 10
+      default: 9
     },
     disabled: {
       type: Boolean,

@@ -1007,13 +1007,18 @@ export default {
     checkNormalForm: function (cb) {
       const $broadcastBlockForm = this.$refs.broadcastBlockForm
       const $broadcastBlockFormSpe = this.$refs.broadcastBlockFormSpe
-      console.log($broadcastBlockForm, $broadcastBlockFormSpe)
-      if ($broadcastBlockForm) {
+      if (this.$refs.broadcastBlockForm) {
+        const $contentForm = this.$refs.broadcastBlockForm.normalForm
+        if ($contentForm.guideConfig.after_play.operation === 'theFilm') {
+          if (!$contentForm.guideConfig.after_play.id && !$contentForm.guideConfig.after_play.vid) {
+            return this.$message.error('请指定播放资源！')
+          }
+        }
         $broadcastBlockForm.$refs.normalForm.validate((valid) => {
           if (valid) {
             cb()
           } else {
-            this.$message.error('请将表单填写完整')
+            this.$message.error('请将表单填写完整123')
           }
         })
       } else if (($broadcastBlockFormSpe)) {
@@ -1188,7 +1193,6 @@ export default {
       const contentType = normalForm.contentType
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
-          // debugger
           this.checkNormalForm(() => {
             if (normalForm.flagSetRec === 1) {
               if (!normalForm.mediaAutomationBlockRls.mediaAutomationId && !normalForm.mediaAutomationBlockRls.recId) {
@@ -1198,7 +1202,7 @@ export default {
               }
             }
             if (guideConfig.after_play.operation === 'theFilm') {
-              if (guideConfig.after_play.id === '' || guideConfig.after_play.vid === '') {
+              if (!guideConfig.after_play.id && !guideConfig.after_play.vid) {
                 return this.$message.error('请指定播放资源！')
               }
             }
@@ -1278,23 +1282,6 @@ export default {
       })
     },
     doSave (data) {
-      // validate (cb) {
-      //   const currentForm = this.$refs.form
-      //   if (currentForm) {
-      //     currentForm.validate((valid) => {
-      //       if (valid) {
-      //         cb()
-      //       } else {
-      //         this.$message({
-      //           type: 'error',
-      //           message: '请填写完整表单'
-      //         })
-      //       }
-      //     })
-      //   } else {
-      //     cb()
-      //   }
-      // },
       const parseParams = (onclick) => {
         const params = onclick.params || []
         onclick.params = params.reduce((result, item) => {
@@ -1332,8 +1319,12 @@ export default {
           }
         }
         if (item.onclick) {
-          parseParams(item.onclick)
-          item.onclick = JSON.stringify(item.onclick)
+          if (item.coverType !== 'custom') {
+            item.onclick = ''
+          } else {
+            parseParams(item.onclick)
+            item.onclick = JSON.stringify(item.onclick || '')
+          }
         }
         // 转换子频道
         if (item.subchannelId) {
@@ -1375,7 +1366,11 @@ export default {
         delete lowerVersionContent.subchannelId
       }
       lowerVersionContent.params = JSON.stringify(lowerVersionContent.params)
-      lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
+      if (lowerVersionContent.coverType !== 'custom') {
+        lowerVersionContent.onclick = ''
+      } else {
+        lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
+      }
       data.parentType = 'Block'
       console.log('save', data)
       this.$service
@@ -1389,7 +1384,6 @@ export default {
       this.$service
         .getBroadcastBlockEditData({ id: this.id, version })
         .then(data => {
-          console.log('detail', data)
           const basicForm = this.basicForm
           basicForm.containerName = data.containerName
           basicForm.containerType = 'REFERENCE_BROADCASTING'
