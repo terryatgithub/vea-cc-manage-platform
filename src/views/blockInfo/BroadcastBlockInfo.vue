@@ -1378,11 +1378,11 @@ export default {
       lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
       data.parentType = 'Block'
       console.log('save', data)
-      // this.$service
-      //   .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
-      //   .then(() => {
-      //     this.$emit('upsert-end')
-      //   })
+      this.$service
+        .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
+        .then(() => {
+          this.$emit('upsert-end')
+        })
     },
 
     fetchData (version) {
