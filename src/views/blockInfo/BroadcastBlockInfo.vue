@@ -478,7 +478,7 @@ export default {
               const normalForm = this.normalForm
               if (normalForm.sign === 'manualResource') {
                 if (!value || JSON.stringify(value) === '{}') {
-                  return cb(Error('请选择资源'))
+                  return cb(Error('请选择资源JSON'))
                 }
               }
               cb()
@@ -1018,7 +1018,7 @@ export default {
           if (valid) {
             cb()
           } else {
-            this.$message.error('请将表单填写完整123')
+            this.$message.error('请将表单填写完整')
           }
         })
       } else if (($broadcastBlockFormSpe)) {
@@ -1206,7 +1206,7 @@ export default {
                 return this.$message.error('请指定播放资源！')
               }
             }
-            if (contentType === '') return this.$message.error('请选择资源！')
+            if (contentType === '' && normalForm.type !== 'url') return this.$message.error('请选择资源！')
             if (normalForm.mediaAutomationBlockRls.recId) {
               let defalutId = normalForm.mediaAutomationBlockRls.recId
               normalForm.mediaAutomationBlockRls.mediaAutomationId = defalutId
@@ -1310,6 +1310,7 @@ export default {
         }
         // type url 时，要转换 params 数据, 具体看 getUrlBlur
         if (item.type === 'url') {
+          debugger
           item.params = {
             url: item.thirdIdOrPackageName,
             source: '',
@@ -1326,7 +1327,7 @@ export default {
             item.onclick = JSON.stringify(item.onclick || '')
           }
         }
-        // 转换子频道
+        // 转换子频道123
         if (item.subchannelId) {
           item.params.stationId = item.subchannelId
           delete item.subchannelId

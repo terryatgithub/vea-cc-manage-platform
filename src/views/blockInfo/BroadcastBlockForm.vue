@@ -488,6 +488,7 @@ export default {
     handleChangeOperation (val) {
       if (val !== 'theFilm') {
         this.normalForm.guideConfig.after_play.id = ''
+        this.normalForm.guideConfig.after_play.vid = ''
       }
     },
     // 移除新推荐流选中的
