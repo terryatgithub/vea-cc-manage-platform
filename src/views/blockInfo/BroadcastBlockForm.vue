@@ -162,8 +162,9 @@
               @select-end="handleSelectBlockRecStreamEnd"
               style="margin:0 0 10px 140px">
           </NewBlockRecStreamSelector>
-          <template v-if="isReadonly === false && normalForm.mediaAutomationBlockRls.mediaAutomationId">
-            已选择:<el-tag closable
+          <template v-if="isReadonly === false && normalForm.mediaAutomationBlockRls.mediaAutomationName">
+            已选择
+            <el-tag closable
             @close="handleDelTagClose(normalForm.mediaAutomationBlockRls)"
             :disabled="isReadonly"
             v-if="normalForm.mediaAutomationBlockRls.type === 1"
@@ -172,7 +173,7 @@
             </el-tag>
           </template>
           <template v-if="isReadonly === true && normalForm.mediaAutomationBlockRls.mediaAutomationId">
-            已选择:<el-tag
+            已选择<el-tag
             v-if="normalForm.mediaAutomationBlockRls.type === 1"
             >
             {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}({{normalForm.mediaAutomationBlockRls.mediaAutomationName}})
@@ -493,9 +494,11 @@ export default {
     handleDelTagClose (tag) {
       tag.type = 0
       tag.mediaAutomationId = undefined
+      tag.mediaAutomationName = undefined
       this.isShowOrHide = false
     },
     handleSelectBlockRecStreamEnd (selected) {
+      this.normalForm.mediaAutomationBlockRls.type = 1
       let defaultObj = {
         mediaAutomationId: selected[0].id,
         mediaAutomationName: selected[0].recName,
@@ -504,7 +507,6 @@ export default {
       }
       this.isShowOrHide = true
       this.normalForm.mediaAutomationBlockRls = { ...this.normalForm.mediaAutomationBlockRls, ...defaultObj }
-      this.normalForm.mediaAutomationBlockRls.type = 1
       console.log(this.normalForm.mediaAutomationBlockRls, this.isShowOrHide, '====')
     },
     getThirdId (clickParams) {
@@ -546,6 +548,7 @@ export default {
     handleInputClickType (val) {
       const normalForm = this.normalForm
       normalForm.clickType = val
+      normalForm.guideConfig.id = undefined
       this.handleChangeSign('autoSet')
     },
     handleSelectClickEventStart () {
@@ -683,6 +686,7 @@ export default {
     },
     handleSelectRecomStream (recomStream) {
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
+      this.normalForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
       this.normalForm.mediaAutomationBlockRls.type = 0
     },
     // 选择资源拓展项

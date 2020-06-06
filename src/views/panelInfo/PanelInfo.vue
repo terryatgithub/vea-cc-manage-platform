@@ -481,6 +481,7 @@
 
                   <!-- 预览图片 -->
                   <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="40%">
+                    123
                     <div class="pics">
                       <img style="width: 100%" :src="reviewPicUrl" />
                     </div>
@@ -3092,7 +3093,6 @@ export default {
       }
     },
     handleSaveDraft () {
-      // debugger
       const data = this.getFormData()
       data.isTiming = undefined
       data.releaseTime = undefined
@@ -3630,7 +3630,6 @@ export default {
     })
   },
   mounted () {
-    console.log(this.finalMediaRuleLayoutOptions, '----d')
     if (this.id) {
       this.fetchData(this.version).then(() => {
         this.clickBlock()

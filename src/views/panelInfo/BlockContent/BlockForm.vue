@@ -274,7 +274,7 @@
               width: postSize.width + 'px',
               cursor: 'pointer'
             }">
-            <img referrerpolicy="no-referrer" :src="contentForm.pictureUrl" >
+            <img v-if="contentForm.pictureUrl" referrerpolicy="no-referrer" :src="contentForm.pictureUrl" >
             <div class="post-info">
               <div class="post-episode" v-if="[1, 2, 9, 4, 5].indexOf(contentForm.categoryId) > -1">
                 <span v-if="contentForm.showSeries"  class="episode">
@@ -602,14 +602,14 @@
                 @select-end="handleSelectBlockRecStreamEnd"
                 style="margin:0 0 10px 160px">
             </NewBlockRecStreamSelector>
-            <template v-if="isReadonly === true">
+            <template v-if="isReadonly === true  && contentForm.mediaAutomationBlockRls.mediaAutomationName">
               已选择: <el-tag
               v-if="contentForm.mediaAutomationBlockRls.type === 1"
               >
               {{contentForm.mediaAutomationBlockRls.mediaAutomationId}}({{contentForm.mediaAutomationBlockRls.mediaAutomationName}})
               </el-tag>
             </template>
-            <template v-if="isReadonly == false">
+            <template v-if="isReadonly == false  && contentForm.mediaAutomationBlockRls.mediaAutomationName">
               已选择: <el-tag closable
               @close="handleDelTagClose(contentForm.mediaAutomationBlockRls)"
               :disabled="isReadonly"
@@ -1557,7 +1557,8 @@ export default {
     },
     handleSelectRecomStream (recomStream) {
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
-      this.contentForm.mediaAutomationBlockRls.type = 0
+      this.normalForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
+      this.normalForm.mediaAutomationBlockRls.type = 0
       console.log(this.contentForm.mediaAutomationBlockRls, '----旧推荐流')
     }
   },

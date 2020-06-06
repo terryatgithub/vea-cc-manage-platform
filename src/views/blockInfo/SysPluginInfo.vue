@@ -238,7 +238,7 @@
                     </el-tag>
                   </div>
                 </el-form-item>
-                <el-form-item label="会员展示">
+                <el-form-item v-if="pluginParentType === 'builtIn'" label="会员展示">
                     {{ block.pluginInfo.sourceName }}
                   </el-form-item>
                 <template v-if="baseHasTitle">

@@ -77,8 +77,8 @@
           信号源模式的第一个资源必须是轮播资源
         </div>
       </el-form-item>
-      <el-form-item label="标题" v-if="isGroupModel">
-        <el-input v-model="normalForm.title"></el-input>
+      <el-form-item label="标题"  v-if="isGroupModel">
+        <el-input :disabled="isReadonly" v-model="normalForm.title"></el-input>
       </el-form-item>
       <el-form-item  prop="clickParams">
         <div v-if="normalForm.sign === 'manualResource'">

@@ -75,6 +75,7 @@ export default {
     handleInputValue (val, index) {
       const oldVal = this.blocks[index].intervenePos
       const maxCount = this.maxCount
+      // alert(this.maxCount)
       if (val !== '' && (val < 1 || val > maxCount)) {
         const ref = this.$refs.posInput[index]
         ref.inputValue = oldVal

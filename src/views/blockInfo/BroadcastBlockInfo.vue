@@ -1076,7 +1076,6 @@ export default {
     },
     // 组合模式->添加normalForm
     handleAddNormalContent () {
-      debugger
       this.checkNormalForm(() => {
         this.normalForm = this.genDefaultContentForm()
         this.normalVersionContent.push(this.normalForm)
@@ -1185,6 +1184,8 @@ export default {
     },
     validate (data, cb) {
       const normalForm = data.normalVersionContent[0]
+      const guideConfig = normalForm.guideConfig
+      const contentType = normalForm.contentType
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
           // debugger
@@ -1196,15 +1197,21 @@ export default {
                 return this.$message.error('开关开启时，推荐流只能保存其一')
               }
             }
+            if (guideConfig.after_play.operation === 'theFilm') {
+              if (guideConfig.after_play.id === '' || guideConfig.after_play.vid === '') {
+                return this.$message.error('请指定播放资源！')
+              }
+            }
+            if (contentType === '') return this.$message.error('请选择资源！')
             if (normalForm.mediaAutomationBlockRls.recId) {
               let defalutId = normalForm.mediaAutomationBlockRls.recId
               normalForm.mediaAutomationBlockRls.mediaAutomationId = defalutId
             }
-            console.log(normalForm.mediaAutomationBlockRls, '=--保存id')
             this.$refs.lowerForm.validate((valid) => {
               if (valid) {
                 const configModel = data.configModel
                 const normalVersionContent = data.normalVersionContent
+
                 if (configModel === 'group') {
                   if (normalVersionContent.length < 4) {
                     return this.$message.error('组合模式下，正常版本的配置资源至少4个，才可以进行保存！')
@@ -1334,12 +1341,7 @@ export default {
           delete item.subchannelId
         }
         if (item.coverType === 'custom') item.contentType = 'custom'
-        if (item.contentType === '') return this.$message.error('请选择资源！')
-        if (item.guideConfig.after_play.operation === 'theFilm') {
-          if (item.guideConfig.after_play.id === '' || item.guideConfig.after_play.vid === '') {
-            return this.$message.error('请指定播放资源！')
-          }
-        }
+
         item.params = JSON.stringify(item.params)
         item.clickParams = JSON.stringify(item.clickParams)
         item.guideConfig = JSON.stringify(item.guideConfig)
@@ -1357,12 +1359,6 @@ export default {
         return item
       }
       data.normalVersionContent = data.normalVersionContent.map(parseContent)
-      // const normalVersionContent = data.normalVersionContent
-      // if (normalVersionContent.onclick) {
-      //   parseParams(normalVersionContent.onclick)
-      // }
-      // normalVersionContent.params = JSON.stringify(normalVersionContent.params)
-      // normalVersionContent.onclick = JSON.stringify(normalVersionContent.onclick)
       // debugger
       const lowerVersionContent = data.lowerVersionContent
       if (lowerVersionContent.onclick) {
@@ -1382,11 +1378,11 @@ export default {
       lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
       data.parentType = 'Block'
       console.log('save', data)
-      this.$service
-        .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
-        .then(() => {
-          this.$emit('upsert-end')
-        })
+      // this.$service
+      //   .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
+      //   .then(() => {
+      //     this.$emit('upsert-end')
+      //   })
     },
 
     fetchData (version) {
