@@ -784,7 +784,7 @@
           :source="pannel.pannelResource"
           :pannel="pannel.pannelList[0]"
           :pannel-group-id="pannel.pannelGroupId"
-          :hide-title-options="selectedLayoutId % 2 === 0"
+          :hide-title-options="interveneHideTitle"
           @cancel="handleSetInterveneBlockContentCancle"
           @save="handleSetInterveneBlockContentEnd"
         />
@@ -1027,6 +1027,18 @@ export default {
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
+    interveneHideTitle () {
+      const selectedLayoutId = +this.selectedLayoutId
+      if (selectedLayoutId <= 8 || selectedLayoutId === 12) {
+        return selectedLayoutId % 2 === 0
+      } else if (selectedLayoutId === 11) {
+        const blockConetentInterveneProps = this.blockConetentInterveneProps
+        const intervenePos = blockConetentInterveneProps.block.intervenePos
+        return intervenePos > 3
+      } else {
+        return false
+      }
+    },
     showPannelTitleField () {
       const pannel = this.pannel
       return pannel.parentType === 'normal' || pannel.parentType === 'subscribe' || pannel.parentType === 'tag'
