@@ -1303,7 +1303,6 @@ export default {
         recCategory,
         recFlag
       }
-      console.log(this.firstPanel.recStreamPanelRls, '----')
     },
     genPannel (preset) {
       return {
