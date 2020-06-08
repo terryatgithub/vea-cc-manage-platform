@@ -146,7 +146,7 @@
         </el-form-item>
         <template v-if="!!normalForm.flagSetRec">
           <RecommendStreamSelector
-            :value="normalForm.mediaAutomationBlockRls.type === 0? normalForm.mediaAutomationBlockRls.mediaAutomationId: ''"
+            :value="normalForm.mediaAutomationBlockRls.type == '0'? normalForm.mediaAutomationBlockRls.mediaAutomationId: ''"
             :disabled="isReadonly"
             :source="source"
             :show="showTitle"
@@ -445,7 +445,8 @@ export default {
       showTitle: '选择推荐流'
     }
   },
-  mounted () {},
+  mounted () {
+  },
   props: ['id', 'configModel', 'normalForm', 'normalRules', 'isGroupModel', 'isReadonly', 'source', 'checkCrowd', 'showResourceTip'],
   computed: {
     isManualSetResource () {
@@ -553,7 +554,7 @@ export default {
       normalForm.guideConfig.id = undefined
       this.handleChangeSign('autoSet')
     },
-    handleSelectClickEventStart () {
+    handleSelectClickEventStart (data) {
       this.onclickEventVisible = true
     },
     handleSelectClickEvent (data) {
@@ -737,6 +738,7 @@ export default {
     handleSelectGuideByMovie (selectedResources) {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
+      this.normalForm.guideConfig = { ...this.normalForm.guideConfig, ...resourceContent }
       this.normalForm.guideConfig.id = resourceContent.thirdIdOrPackageName
       this.normalForm.guideConfig.vid = resourceContent.vid
     },
@@ -748,7 +750,6 @@ export default {
     handleSelectGuideResource (selectedResources) {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
-      console.log(selectedResources, resourceContent, '-----fds')
       this.normalForm.guideConfig.after_play.id = resourceContent.thirdIdOrPackageName
       this.normalForm.guideConfig.after_play.vid = resourceContent.vid
     }
@@ -766,7 +767,7 @@ export default {
       }
     }
     // window.normalForm = this.normalForm
-    console.log(this.normalForm.guideConfig, '-----获取详23情数据')
+    console.log(this.normalForm.mediaAutomationBlockRls, '-----获取详23情数据')
   }
 }
 </script>

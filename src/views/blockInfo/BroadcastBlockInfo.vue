@@ -1039,7 +1039,8 @@ export default {
         mediaAutomationBlockRls: {
           refreshCal: 1,
           mediaAutomationId: '',
-          blockType: 'rotate'
+          blockType: 'rotate',
+          type: '0'
         },
         title: '',
         subTitle: '',
@@ -1347,6 +1348,7 @@ export default {
         delete item.activeIndex
         delete item.showContentType
         delete item.isDmpContent
+        delete item.mediaAutomationBlockRls.type
         return item
       }
       data.normalVersionContent = data.normalVersionContent.map(parseContent)
@@ -1371,7 +1373,7 @@ export default {
         lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
       }
       data.parentType = 'Block'
-      console.log('save', data)
+      debugger
       this.$service
         .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
         .then(() => {
@@ -1462,7 +1464,7 @@ export default {
           // }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
           this.normalForm = this.normalVersionContent[0]
-
+          console.log(this.normalForm, '----normalForm')
           // lower data
           const lowerData = cloneDeep(data.lowerVersionContent)
           lowerData.onclick = JSON.parse(lowerData.onclick)

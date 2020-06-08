@@ -602,7 +602,7 @@
                 @select-end="handleSelectBlockRecStreamEnd"
                 style="margin:0 0 10px 160px">
             </NewBlockRecStreamSelector>
-            <template v-if="isReadonly === true  && contentForm.mediaAutomationBlockRls.mediaAutomationName">
+            <template v-if="isReadonly === true  && contentForm.mediaAutomationBlockRls.mediaAutomationId">
               已选择: <el-tag
               v-if="contentForm.mediaAutomationBlockRls.type === 1"
               >
@@ -1041,6 +1041,7 @@ export default {
     // 移除新推荐流选中的
     handleDelTagClose (tag) {
       tag.mediaAutomationId = undefined
+      tag.mediaAutomationName = undefined
       tag.type = 0
       this.isShowOrHide = false
     },

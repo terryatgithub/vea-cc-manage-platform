@@ -248,7 +248,7 @@ export default {
       normalForm.clickType = val
       this.handleChangeSign('autoSet')
     },
-    handleSelectClickEventStart () {
+    handleSelectClickEventStart (data) {
       this.onclickEventVisible = true
     },
     handleSelectClickEvent (data) {
