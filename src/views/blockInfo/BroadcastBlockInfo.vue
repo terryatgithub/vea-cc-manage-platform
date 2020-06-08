@@ -1456,20 +1456,8 @@ export default {
             item = this.genDefaultContentForm({ ...item, isDmpContent })
             return item
           }
-          // this.normalForm.mediaAutomationBlockRls = {
-          //   refreshCal: 1,
-          //   mediaAutomationId: '',
-          //   blockType: 'rotate'
-          // }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
           this.normalForm = this.normalVersionContent[0]
-          // alert(this.mode)
-          if (this.mode === 'edit') {
-            if (this.normalForm.clickType === 'detail' && this.normalForm.onclick !== {}) {
-              this.normalForm.onclick = {}
-            }
-          }
-          // lower data
           const lowerData = cloneDeep(data.lowerVersionContent)
           lowerData.onclick = JSON.parse(lowerData.onclick)
           lowerData.params = JSON.parse(lowerData.params || '{}')

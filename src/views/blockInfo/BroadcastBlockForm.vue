@@ -343,7 +343,6 @@
         <el-radio-group
           :value="normalForm.sign"
           @input="handleChangeSign"
-          @change="handleChangeClear"
           :disabled="isManualSetResource">
           <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
           <template v-if="normalForm.clickType === 'detail'">
@@ -370,7 +369,7 @@
         </div>
       </el-form-item>
       <div v-if="normalForm.sign === 'manualSet'">
-        <el-form-item label="打开方式">
+        <el-form-item label="打开方式" style="width: 890px">
           <el-select value="第三方应用" :disabled="disabled">
             <el-option value="app">第三方应用</el-option>
           </el-select>
@@ -632,11 +631,6 @@ export default {
       normalForm.guideConfig.after_play.operation = newVal
       // normalForm.guideConfig.after_play.operation = ''
     },
-    handleChangeClear (newVal) {
-      if (newVal !== 'manualSet') {
-        this.normalForm.onclick = ''
-      }
-    },
     handleChangeSign (newVal) {
       const normalForm = this.normalForm
       if (newVal === 'autoSet') {
@@ -652,6 +646,7 @@ export default {
       if (newVal === 'manualSet') {
         // 手动设置
         normalForm.clickTemplateType = 'custom'
+        normalForm.onclick = ''
         normalForm.clickParams = {}
       }
       normalForm.sign = newVal
