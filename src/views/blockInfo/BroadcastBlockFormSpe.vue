@@ -271,6 +271,19 @@ export default {
         byvalue: data.byvalue,
         params: paramsArr,
         exception: data.exception
+          ? data.exception : {
+            name: 'onclick_exception',
+            value: {
+              packagename: 'com.tianci.appstore',
+              dowhat: 'startActivity',
+              versioncode: '-1',
+              params: {
+                id: data.packagename
+              },
+              byvalue: 'coocaa.intent.action.APP_STORE_DETAIL',
+              bywhat: 'action'
+            }
+          }
       }
       this.normalForm.onclick = o
     },
