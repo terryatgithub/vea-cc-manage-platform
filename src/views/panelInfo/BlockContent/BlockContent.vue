@@ -200,7 +200,6 @@ export default {
       })
     },
     handleSelectResourcesEnd (resources) {
-      console.log(resources)
       const contentPreset = {
         coverType: this.isMall ? 'custom' : 'media',
         // hideTitleOptions 表示强制需要标题，无法关闭
@@ -272,7 +271,6 @@ export default {
           videoContentList: this.parseContentList(this.normalContentList),
           specificContentList: this.parseContentList(this.specificContentList)
         })
-        console.log(this.normalContentList, '---handleSave-保存----')
       })
     },
     genDefaultNormalContentWrapper () {

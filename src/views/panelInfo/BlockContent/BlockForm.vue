@@ -1058,7 +1058,6 @@ export default {
       // this.contentForm.mediaAutomationBlockRls = Object.assign(this.contentForm.mediaAutomationBlockRls, defaultObj)
       this.contentForm.mediaAutomationBlockRls = { ...this.contentForm.mediaAutomationBlockRls, ...defaultObj }
       // this.$set(this.contentForm, defaultObj.id, selected[0].id) // 实时更新id
-      console.log(this.contentForm.mediaAutomationBlockRls, this.isShowOrHide, '====')
       this.contentForm.mediaAutomationBlockRls.type = 1 // 新推荐流为1
     },
     handleInputGDLiveClickType (val) {
@@ -1260,7 +1259,8 @@ export default {
         this.contentForm.mediaAutomationBlockRls = {
           refreshCal: 1,
           mediaAutomationId: '',
-          blockType: 'normal'
+          blockType: 'normal',
+          type: '1'
         }
       }
     },
@@ -1516,11 +1516,6 @@ export default {
           ? selected.globalPicture.pictureUrl
           : ''
         this.contentForm.pluginType = selected.pluginType
-        // if (selected.referenceData) {
-        //     this.contentForm.price = selected.referenceData.price / 100;
-        //     this.contentForm.secKillPrice =
-        //             selected.referenceData.secKillPrice / 100;
-        // }
       }
       if (selectedBroadcast) {
         const selected = selectedBroadcast
@@ -1557,9 +1552,16 @@ export default {
       })
     },
     handleSelectRecomStream (recomStream) {
+      let defaultObj = {
+        refreshCal: 1,
+        mediaAutomationId: '',
+        blockType: 'rotate',
+        type: '0'
+      }
+      this.contentForm.mediaAutomationBlockRls = { ...defaultObj, ...this.contentForm.mediaAutomationBlockRls }
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
-      this.normalForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
-      this.normalForm.mediaAutomationBlockRls.type = 0
+      this.contentForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
+      this.contentForm.mediaAutomationBlockRls.type = 0
       console.log(this.contentForm.mediaAutomationBlockRls, '----旧推荐流')
     }
   },
@@ -1575,7 +1577,6 @@ export default {
     if (contentForm.bgImgUrl || contentForm.bgParams.id || contentForm.bgParams.title) {
       this.isShowConfigBg = true
     }
-    console.log(contentForm.mediaAutomationBlockRls, '-----d')
   }
 }
 </script>
