@@ -48,6 +48,15 @@
           </el-form>
         </div>
       </BaseSelector>
+
+      <GDScheduleSelector
+        ref="gdChannelSelector"
+        :provincesCode="currentProvincesCode"
+        :channelId="currentChannelId"
+        @select-end="handleSelectScheduleEnd" >
+        <span></span>
+      </GDScheduleSelector>
+
     </template>
   </RemoteSelectorWrapper>
 </template>
@@ -55,6 +64,7 @@
 <script>
 import RemoteSelectorWrapper from '../SelectorWrapper'
 import BaseSelector from '../BaseSelector'
+import GDScheduleSelector from './GDScheduleSelector'
 export default {
   data () {
     return {
@@ -82,21 +92,63 @@ export default {
           {
             label: '聚合之中的省份',
             prop: 'provincesName'
+          },
+          {
+            prop: 'segment',
+            label: '已选节目',
+            type: 'specialBut',
+            width: '105',
+            mouseStyle: 'hover',
+            fixed: 'right',
+            render: (h, { row }) => {
+              const ccChannelId = row.ccChannelId
+              const selectedSchedules = this.selectedSchedules
+              if (selectedSchedules[ccChannelId]) {
+                return h('el-button', {
+                  attrs: {
+                    type: 'primary',
+                    text: '已选节目',
+                    value: '已选节目',
+                    title: selectedSchedules[ccChannelId].thirdScheduleTitle
+                  } }, '已选节目')
+              }
+            }
+          },
+          {
+            prop: 'but',
+            label: '操作',
+            width: '105',
+            fixed: 'right',
+            render: (h, { row }) => {
+              return h('el-button', {
+                on: {
+                  'click': (event) => {
+                    event.stopPropagation()
+                    this.handleSelectScheduleStart(row)
+                  }
+
+                }
+              }, '选择节目')
+            }
           }
         ],
         selectionType: 'single',
         props: {
           'tooltip-effect': 'dark'
         }
-      }
+      },
+      currentChannelId: undefined,
+      currentProvincesCode: undefined,
+      selectedSchedules: {} // 已选节目映射表
     }
   },
-  props: ['title', 'disabled', 'isLive', 'source', 'selectionType', 'initSelected'],
+  props: ['title', 'disabled', 'isLive', 'source', 'selectionType', 'initSelected', 'hasSchedule'],
   computed: {
   },
   components: {
     RemoteSelectorWrapper,
-    BaseSelector
+    BaseSelector,
+    GDScheduleSelector
   },
   methods: {
     getId (item) {
@@ -128,8 +180,43 @@ export default {
       this.$refs.wrapper.handleSelectCancel()
     },
     handleSelectEnd (data) {
+      if (this.hasSchedule !== undefined) {
+        const isSomeNotSchedule = data.some(e => this.selectedSchedules[e.ccChannelId] === undefined)
+        if (isSomeNotSchedule) {
+          return this.$message.error('请选择节目')
+        }
+      }
+      data = data.map((e) => {
+        e.selectedSchedules = this.selectedSchedules[e.ccChannelId]
+        return e
+      })
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
+    },
+    handleSelectScheduleStart (row) {
+      this.currentChannelId = row.ccChannelId
+      this.currentProvincesCode = row.provincesCode
+      this.$nextTick(() => {
+        this.$refs.gdChannelSelector.$refs.wrapper.handleSelectStart()
+      })
+    },
+    handleSelectScheduleEnd (schedules) {
+      const currentChannelId = this.currentChannelId
+      this.$set(this.selectedSchedules, currentChannelId, schedules[0])
+      // 自动勾选当前影片
+      const tableData = this.table.data
+      const index = tableData.findIndex(item => item.ccChannelId === currentChannelId)
+      const channel = tableData[index]
+      const baseSelector = this.$refs.baseSelector
+      if (this.selectionType === 'single') {
+        if (baseSelector.tableSelected !== index) {
+          baseSelector.handleTableRowSelectionChange(channel, index)
+        }
+      } else if (this.selectionType === 'multiple') {
+        if (baseSelector.tableSelected.indexOf(index) === -1) {
+          baseSelector.handleTableRowSelectionAdd(channel, index)
+        }
+      }
     },
     handleRowSelectionRemove (item) {
       this.$refs.baseSelector.handleTableRowSelectionRemove(item)
@@ -165,6 +252,9 @@ export default {
   },
   created () {
     this.getProvinceOptions()
+    if (this.hasSchedule === undefined) {
+      this.table.header.splice(this.table.header.length - 1, 1)
+    }
   }
 }
 </script>

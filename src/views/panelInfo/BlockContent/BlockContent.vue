@@ -315,6 +315,9 @@ export default {
         contentForm.tvLiveInfo = genDefaultTvLiveInfo()
         contentForm.videoContentType = 'tvLive'
       }
+      if (coverType !== 'media' && contentForm.flagTagVector === 1) {
+        contentForm.flagTagVector = 0
+      }
       this.$set(contentList, activeIndex, contentForm)
     },
     handleRemoveContent (index, contentType) {
@@ -376,6 +379,11 @@ export default {
       const contentForm = this.contentForm
       this.$refs[this.activeType + 'BlockForm'].validate(contentForm, (err) => {
         if (!err) {
+          if (contentForm.flagSetRec === 1) {
+            if (!contentForm.mediaAutomationBlockRls.mediaAutomationId) {
+              return this.$message.error('开关开启时，推荐流选择必须选择其一')
+            }
+          }
           cb()
         } else {
           return this.error(err)
@@ -545,19 +553,37 @@ export default {
             case 'tab': {
               var tabType = currentOnclick.tabType
               params += ',tabType==' + tabType
+              var isValueType = ''
+              if (tabType === '1') {
+                isValueType = 'coocaa.intent.action.HOME_COMMON_LIST'
+              } else if (tabType === '13') {
+                isValueType = 'coocaa.intent.action.HOME_SPECIAL_TOPIC_PAGE_EDU'
+              } else {
+                isValueType = 'coocaa.intent.action.HOME_SPECIAL_TOPIC'
+              }
               onclick = JSON.stringify({
-                packagename: 'com.tianci.movieplatform',
+                packagename: tabType === '13' ? 'com.coocaa.educate' : 'com.tianci.movieplatform',
                 versioncode: '',
                 dowhat: 'startActivity',
                 bywhat: 'action',
                 // eslint-disable-next-line
-                byvalue: tabType == 1
-                  ? 'coocaa.intent.action.HOME_COMMON_LIST'
-                  : 'coocaa.intent.action.HOME_SPECIAL_TOPIC',
+                byvalue: isValueType,
                 params: {
                   id: currentOnclick.tabId
                 },
-                exception: {}
+                exception: tabType === '13' ? {
+                  'name': 'onclick_exception',
+                  'value': {
+                    'packagename': 'com.tianci.appstore',
+                    'dowhat': 'startActivity',
+                    'versioncode': '-1',
+                    'params': {
+                      'id': 'com.coocaa.educate'
+                    },
+                    'byvalue': 'coocaa.intent.action.APP_STORE_DETAIL',
+                    'bywhat': 'action'
+                  }
+                } : {}
               })
               break
             }
@@ -598,7 +624,10 @@ export default {
               break
           }
         }
-        content.onclick = onclick
+        // 如果媒资传了onclick，就直接给后端
+        if (!content.onclick) {
+          content.onclick = onclick
+        }
         content.params = params
         if (content.bgParams) {
           delete content.bgParams.title

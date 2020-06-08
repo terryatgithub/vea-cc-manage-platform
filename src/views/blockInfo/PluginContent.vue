@@ -167,7 +167,7 @@
             label="打开方式"
             prop="openMode"
             :rules="rules.openMode">
-            <el-select :value="form.openMode" @input="handleChangeOpenMode(form, $event)">
+            <el-select :disabled="VIP_QRCODE_MODE || PLAY_VIDEO_MODE" :value="form.openMode" @input="handleChangeOpenMode(form, $event)">
                 <el-option label="网页" value="webpage"></el-option>
               <!-- <template v-if=" pluginType === 'REFERENCE_ACTIVITY'"> -->
                 <el-option label="视频" value="video"></el-option>
@@ -260,6 +260,7 @@
           <Params v-if="form.appParams" :params="form.appParams" prop-prefix="appParams." />
         </template>
       </template>
+      <!-- 预览 -->
       <template v-else>
         <template v-if="pluginType === 'REFERENCE_VOTE'">
           <template v-if="form.dataType === 7">
@@ -321,7 +322,7 @@
             <el-form-item label="点击次数">{{ form.extendInfo.clickCount}}</el-form-item>
           </template>
           <el-form-item
-            v-if="parentType === 'multi' || parentType === 'secKill'"
+            v-if="(parentType === 'multi' || parentType === 'secKill' || parentType === 'builtIn') && !VIP_QRCODE_MODE && !PLAY_VIDEO_MODE"
             label="打开方式"
           >{{ OPEN_MODE_TEXT[form.openMode] }}</el-form-item>
           <template v-if="form.openMode === 'webpage'">
@@ -373,7 +374,7 @@
 <script>
 import AppParams from '@/components/AppParams.vue'
 import AppParamsRead from '@/components/AppParamsRead.vue'
-import Params from './Params'
+import Params from '@/components/Params'
 import ClickSelector from './selectClick'
 import TabSelector from '@/components/selectors/TabSelector'
 import CrowdSelector from '@/components/CrowdSelector'
@@ -517,6 +518,12 @@ export default {
   },
   props: ['mode', 'plugin', 'pluginList', 'pluginType', 'parentType', 'source'],
   computed: {
+    VIP_QRCODE_MODE () {
+      return this.pluginType === 'REFERENCE_VIP_QRCODE'
+    },
+    PLAY_VIDEO_MODE () {
+      return this.pluginType === 'REFERENCE_PLAY_VIDEO'
+    },
     formWithComputedVal () {
       return {
         ...this.form,
@@ -593,7 +600,8 @@ export default {
         bywhat: data.bywhat,
         byvalue: data.byvalue,
         params: paramsArr,
-        exception: data.exception
+        exception: data.exception,
+        defaultParams: this.VIP_QRCODE_MODE ? (this.form.onclick || {}).defaultParams : undefined
       }
       this.form.onclick = o
     },

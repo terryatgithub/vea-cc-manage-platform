@@ -51,12 +51,17 @@ export const GD_LIVE_CLICK_TYPE_OPTIONS = [
   {
     label: '正常启动',
     value: 'normal'
+  },
+  {
+    label: '启动到节目',
+    value: 'telecast'
   }
 ]
 
 export const GD_LIVE_CLICK_TYPES = {
   channel: 'channel',
-  normal: 'normal'
+  normal: 'normal',
+  telecast: 'telecast'
 }
 
 export function getVideoInfo (video) {
@@ -264,7 +269,7 @@ export function setMediaContent (contentForm, options) {
     // 直播资源
     contentForm.contentType = 6
     contentForm.videoContentType = 'txLive'
-    contentForm.extraValue1 = '_otx_' + selected.vId + ''
+    contentForm.extraValue1 = selected.vId + ''
     contentForm.platformId = selected.source
     contentForm.pictureUrl = selected.thumb
     contentForm.title = selected.title
@@ -296,6 +301,7 @@ export function setMediaContent (contentForm, options) {
     contentForm.videoContentType = 'rotate'
   }
   contentForm.categoryId = selected.categoryId
+  contentForm.onclick = ((selected.ccVideoSourceEntities || [])[0] || {}).onclick
 }
 
 export function setAppContent (contentForm, selected) {
@@ -427,6 +433,7 @@ export function genDefaultContentForm (preset) {
     // Sprint2.8.2 背景图片和视频
     bgImgUrl: '',
     flagSetRec: 0,
+    flagTagVector: 0, // 标签引导
     mediaAutomationBlockRls: {
       refreshCal: 1,
       mediaAutomationId: '',
@@ -452,6 +459,7 @@ export function genDefaultTvLiveInfo (preset) {
     clickType: GD_LIVE_CLICK_TYPES.channel,
     categoryId: undefined,
     channelId: undefined,
+    startTime: undefined,
     ...preset
   }
 }
@@ -678,4 +686,16 @@ export function isValidLayoutForRanking (contentList = []) {
   const hasSuitableBlocks = blockCount >= 6 && blockCount <= 11
 
   return hasTitleAndOnlyOneRowAndMatchSize && hasSuitableBlocks
+}
+
+export const thirdSourcePrefixMap = {
+  cibn: 'cibn',
+  movie1905: 'movie1905',
+  sohu: 'sohu',
+  mgtv: 'mgtv',
+  gdn: '4KGarden',
+  wasu: 'wasu',
+  tvb: 'tvb',
+  bili: 'bili',
+  df: 'dfdjy'
 }

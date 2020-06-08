@@ -1,36 +1,34 @@
 <template>
   <TabPage>
-    <BroadcastBlockList
-     v-show="isShowList"
-     ref="list"
+    <NewVideoRecomList
+      v-show="isShowList"
+      ref="list"
       @create="handleCreate"
       @read="handleRead"
       @edit="handleEdit"
       @delete="handleDelete"
      >
-     </BroadcastBlockList>
-    <component
-      :is="configModel === 'broadcast' ?  'BroadcastBlockInfoLegacy': 'BroadcastBlockInfo'"
+    </NewVideoRecomList>
+    <NewVideoRecomInfo
       v-if="!isShowList"
-       :id="id"
-      :init-mode="mode"
+      :id="id"
       :version="version"
+      :init-mode="mode"
+      :status="status"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
-    </component>
+    </NewVideoRecomInfo>
   </TabPage>
 </template>
 <script>
 import TabPage from '@/components/TabPage'
-import BroadcastBlockList from './BroadcastBlockList'
-import BroadcastBlockInfo from './BroadcastBlockInfo'
-import BroadcastBlockInfoLegacy from './BroadcastBlockInfoLegacy/BroadcastBlockInfo'
+import NewVideoRecomList from './NewVideoRecomList'
+import NewVideoRecomInfo from './NewVideoRecomInfo'
 export default {
   components: {
     TabPage,
-    BroadcastBlockInfo,
-    BroadcastBlockInfoLegacy,
-    BroadcastBlockList
+    NewVideoRecomInfo,
+    NewVideoRecomList
   },
   data () {
     return {
@@ -38,7 +36,7 @@ export default {
       id: undefined,
       mode: 'create',
       version: undefined,
-      configModel: ''
+      status: undefined
     }
   },
   methods: {
@@ -49,7 +47,6 @@ export default {
         this.mode = 'list'
         this.version = undefined
       }
-      this.configModel = ''
     },
     handleCreate () {
       this.id = undefined
@@ -58,20 +55,19 @@ export default {
     },
     handleEdit (item) {
       this.id = item.id
+      this.version = item.currentVersion // 加了
       this.mode = 'edit'
       this.isShowList = false
-      this.configModel = item.configModel
     },
     handleRead (item, version) {
       this.id = item.id
       this.mode = 'read'
-      this.version = version
+      this.version = version || item.currentVersion // 稍稍改动
       this.isShowList = false
-      this.configModel = item.configModel
     },
     handleDelete (selected) {
       this.$service
-        .deleteBroadcastBlock({
+        .deleteMediaAutomation({
           id: selected.map(item => item.id).join(',')
         }, '删除成功')
         .then(data => {
@@ -82,7 +78,6 @@ export default {
       this.id = item.id
       this.mode = 'copy'
       this.isShowList = false
-      this.configModel = item.configModel
     },
     /**
      * 新增编辑里面的返回事件
@@ -91,7 +86,6 @@ export default {
       this.isShowList = true
       this.mode = 'list'
       this.version = undefined
-      this.configModel = ''
     }
   }
 }

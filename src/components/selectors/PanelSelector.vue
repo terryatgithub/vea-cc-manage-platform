@@ -200,7 +200,12 @@ export default {
       originSelected: []
     }
   },
-  props: ['isLive', 'source', 'selectionType'],
+  props: ['isLive', 'source', 'selectionType', 'tabType'],
+  computed: {
+    isAlbumTab () {
+      return this.tabType === 2
+    }
+  },
   methods: {
     handleSelectStart () {
       this.$emit('select-start')
@@ -210,6 +215,22 @@ export default {
       this.$refs.wrapper.handleSelectCancel()
     },
     handleSelectEnd (data) {
+      if (!this.isAlbumTab) {
+        // 校验版块是否存在多功能推荐位
+        const validPanelPlugin = function (pluginType, panel) {
+          const pluginTypeList = (panel.pluginTypes || '').split(',')
+          return pluginTypeList.some(item => item === pluginType)
+        }
+        for (let i = 0; i < data.length; i++) {
+          const panel = data[i]
+          if (validPanelPlugin('REFERENCE_PLAY_VIDEO', panel)) {
+            return this.$message.error('版块' + panel.pannelGroupRemark + '含有【播放视频推荐位】，只能配置在专题版面中')
+          }
+          if (validPanelPlugin('REFERENCE_VIP_QRCODE', panel)) {
+            return this.$message.error('版块' + panel.pannelGroupRemark + '含有【VIP二维码推荐位】，只能配置在专题版面中')
+          }
+        }
+      }
       this.$emit('select-end', data)
       this.$refs.wrapper.handleSelectEnd()
     },

@@ -82,6 +82,7 @@
             ref="func-selector"
             :source="source"
             :selection-type="selectionType"
+            :before-select-end-cb="beforeSelectEndCbs['func']"
             @select-cancel="handleSelectCancel"
             @select-end="handleSelectEnd" />
           <broadcast-selector
@@ -273,7 +274,8 @@ export default {
       default () {
         return ['app', 'pptv', 'live', 'topic', 'rotate', 'func', 'broadcast', 'shortVideo', 'shortVideoTopic', 'ranking', 'good']
       }
-    }
+    },
+    beforeSelectEndCbs: {} // 选择数据确定前的校验
   },
   methods: {
     isUseSelector (name) {

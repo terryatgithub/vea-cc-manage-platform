@@ -191,9 +191,13 @@ export default {
             }
           },
           {
-            prop: 'publistSegment',
             label: '课程集数',
-            width: '120'
+            width: '120',
+            formatter: (row) => {
+              const ccVideoSourceEntities = row.ccVideoSourceEntities || []
+              const videoEntity = ccVideoSourceEntities[0] || {}
+              return videoEntity.publishSegment
+            }
           }
         ],
         selectionType: 'single'

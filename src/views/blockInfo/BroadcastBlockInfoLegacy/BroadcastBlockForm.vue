@@ -144,42 +144,15 @@
           >
           </el-switch>
         </el-form-item>
-        <template v-if="!!normalForm.flagSetRec">
-          <RecommendStreamSelector
-            :value="normalForm.mediaAutomationBlockRls.type == '0'? normalForm.mediaAutomationBlockRls.mediaAutomationId: ''"
-            :disabled="isReadonly"
-            :source="source"
-            :show="showTitle"
-            resolution="797*449"
-            @select-end="handleSelectRecomStream"
-            @del-select="normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
-          />
-          <NewBlockRecStreamSelector
-              title="选择新推荐流"
-              selection-type="single"
-              :source="source"
-              :disabled="isReadonly"
-              @select-end="handleSelectBlockRecStreamEnd"
-              style="margin:0 0 10px 140px">
-          </NewBlockRecStreamSelector>
-          <template v-if="isReadonly === false && normalForm.mediaAutomationBlockRls.mediaAutomationName">
-            已选择
-            <el-tag closable
-            @close="handleDelTagClose(normalForm.mediaAutomationBlockRls)"
-            :disabled="isReadonly"
-            v-if="normalForm.mediaAutomationBlockRls.type === 1"
-            >
-            {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}({{normalForm.mediaAutomationBlockRls.mediaAutomationName}})
-            </el-tag>
-          </template>
-          <template v-if="isReadonly === true && normalForm.mediaAutomationBlockRls.mediaAutomationId">
-            已选择<el-tag
-            v-if="normalForm.mediaAutomationBlockRls.type === 1"
-            >
-            {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}({{normalForm.mediaAutomationBlockRls.mediaAutomationName}})
-            </el-tag>
-          </template>
-        </template>
+        <RecommendStreamSelector
+          v-if="!!normalForm.flagSetRec"
+          :value="normalForm.mediaAutomationBlockRls.mediaAutomationId"
+          :disabled="isReadonly"
+          :source="source"
+          resolution="797*449"
+          @select-end="handleSelectRecomStream"
+          @del-select="normalForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
+        />
         <el-form-item label="刷新机制" v-if="!!normalForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
           <InputPositiveInt
             v-model="normalForm.mediaAutomationBlockRls.refreshCal"
@@ -263,72 +236,6 @@
           </span>
         </el-card>
       </el-form-item>
-      <el-form-item label="正片引导" v-show="normalForm.clickType === 'play-fullscreen'">
-        <ResourceSelector
-            ref="resourceSelector"
-            v-if="!disabled"
-            :disable-partner="!!source"
-            :source="source"
-            :selectors="resourceOptionsManualResource"
-            :is-live="false"
-            selection-type="single"
-            @select-end="handleSelectGuideByMovie($event)"
-          >
-          <el-button type="primary" plain>选择正片引导资源</el-button>
-        </ResourceSelector>
-        <el-tag
-          type="success"
-          class="marginL"
-          v-if="normalForm.guideConfig.id"
-          :closable="!disabled"
-          @close="handleDelSelectGuideMovie"
-          >已选择: {{normalForm.guideConfig.id}}</el-tag>
-          <el-tag
-          type="success"
-          class="marginL"
-          v-if="normalForm.guideConfig.id && normalForm.guideConfig.vid"
-        >单集：{{normalForm.guideConfig.vid}}</el-tag>
-        <!-- <span v-show="normalForm.guideConfig.vid || normalForm.guideConfig.id">已选择: {{normalForm.guideConfig.vid || normalForm.guideConfig.id}}</span> -->
-      </el-form-item>
-      <el-form-item label="播放完成后" v-if="isGroupModel">
-        <el-radio-group
-          :value="normalForm.guideConfig.after_play.operation"
-          :disabled="isReadonly"
-          @input="handleChooseRecommend"
-          @change="handleChangeOperation">
-          <el-radio label="nextBlock" :disabled="disabled">播放下一个推荐位</el-radio>
-          <el-radio label="nextFilm" :disabled="disabled">播放下一集或者相关推荐</el-radio>
-          <el-radio label="theFilm" :disabled="disabled">播放指定影片</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item>
-        <div v-if="normalForm.guideConfig.after_play.operation === 'theFilm'">
-          <ResourceSelector
-            ref="resourceSelector"
-            v-if="!disabled "
-            :disable-partner="!!source"
-            :source="source"
-            :selectors="resourceOptionsManualResource"
-            :is-live="false"
-            selection-type="single"
-            @select-end="handleSelectGuideResource($event)"
-          >
-            <el-button type="primary" plain>选择资源</el-button>
-          </ResourceSelector>
-          <el-tag
-          type="success"
-          class="marginL"
-          v-if="normalForm.guideConfig.after_play.id"
-          :closable="!disabled"
-          @close="normalForm.guideConfig.after_play.id  = undefined"
-          >已选择: {{ normalForm.guideConfig.after_play.id}}</el-tag>
-          <el-tag
-          type="success"
-          class="marginL"
-          v-if="normalForm.guideConfig.after_play.id && normalForm.guideConfig.after_play.vid"
-        >单集：{{normalForm.guideConfig.after_play.vid}}</el-tag>
-        </div>
-      </el-form-item>
       <el-form-item label="点击跳转" v-if="isGroupModel">
         <el-radio-group :value="normalForm.clickType" @input="handleInputClickType">
           <el-radio label="detail" :disabled="disabled" v-show="!normalForm.shortVideoSwitch">点击进详情页</el-radio>
@@ -344,7 +251,6 @@
         <el-radio-group
           :value="normalForm.sign"
           @input="handleChangeSign"
-          @change="handleChangeClear"
           :disabled="isManualSetResource">
           <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
           <template v-if="normalForm.clickType === 'detail'">
@@ -367,7 +273,7 @@
           >
             <el-button type="primary" plain>选择资源</el-button>
           </ResourceSelector>
-          <span v-show="changeOneMovie">已选择: {{ changeOneMovie }}</span>
+          <span v-show="thirdIdOrPackageNameForClick">已选择: {{ thirdIdOrPackageNameForClick }}</span>
         </div>
       </el-form-item>
       <div v-if="normalForm.sign === 'manualSet'">
@@ -419,7 +325,7 @@ import selectClick from '@/views/blockInfo/selectClick'
 import InputPositiveInt from '@/components/InputPositiveInt'
 import RecommendStreamSelector from '@/components/selectors/RecommendStreamSelector'
 import BroadcastBlockStatChartViewer from '@/components/statViewer/BroadcastBlockStatChartViewer'
-import NewBlockRecStreamSelector from '@/components/selectors/NewBlockRecStreamSelector'
+
 import { getSelectedResource, parseResourceContent, setContentForm, getParams } from './broadcastBlockUtil'
 export default {
   components: {
@@ -434,18 +340,13 @@ export default {
 
     InputPositiveInt,
     RecommendStreamSelector,
-    BroadcastBlockStatChartViewer,
-    NewBlockRecStreamSelector
+    BroadcastBlockStatChartViewer
   },
   data () {
     return {
-      isShowOrHide: false,
       onclickEventVisible: false,
-      showCrowdSelector: false,
-      showTitle: '选择推荐流'
+      showCrowdSelector: false
     }
-  },
-  mounted () {
   },
   props: ['id', 'configModel', 'normalForm', 'normalRules', 'isGroupModel', 'isReadonly', 'source', 'checkCrowd', 'showResourceTip'],
   computed: {
@@ -470,14 +371,6 @@ export default {
       const contentType = this.normalForm.contentType
       return this.normalForm.shortVideoSwitch || ['movie', 'custom', 'edu', 'txLive'].indexOf(contentType) > -1
     },
-    // 正片引导
-    changeGuideByMovie () {
-      return this.getThirdId(this.normalForm.clickParams)
-    },
-    // 播放指定影片
-    changeOneMovie () {
-      return this.getThirdId(this.normalForm.clickParams)
-    },
     thirdIdOrPackageNameForClick () {
       return this.getThirdId(this.normalForm.clickParams)
     },
@@ -487,31 +380,6 @@ export default {
     }
   },
   methods: {
-    handleChangeOperation (val) {
-      if (val !== 'theFilm') {
-        this.normalForm.guideConfig.after_play.id = ''
-        this.normalForm.guideConfig.after_play.vid = ''
-      }
-    },
-    // 移除新推荐流选中的
-    handleDelTagClose (tag) {
-      tag.type = 0
-      tag.mediaAutomationId = undefined
-      tag.mediaAutomationName = undefined
-      this.isShowOrHide = false
-    },
-    handleSelectBlockRecStreamEnd (selected) {
-      this.normalForm.mediaAutomationBlockRls.type = 1
-      let defaultObj = {
-        mediaAutomationId: selected[0].id,
-        mediaAutomationName: selected[0].recName,
-        recCategory: selected[0].recCategory,
-        recFlag: selected[0].userToken
-      }
-      this.isShowOrHide = true
-      this.normalForm.mediaAutomationBlockRls = { ...this.normalForm.mediaAutomationBlockRls, ...defaultObj }
-      console.log(this.normalForm.mediaAutomationBlockRls, this.isShowOrHide, '====')
-    },
     getThirdId (clickParams) {
       if (clickParams) {
         const result = (clickParams.id ||
@@ -551,10 +419,9 @@ export default {
     handleInputClickType (val) {
       const normalForm = this.normalForm
       normalForm.clickType = val
-      normalForm.guideConfig.id = undefined
       this.handleChangeSign('autoSet')
     },
-    handleSelectClickEventStart (data) {
+    handleSelectClickEventStart () {
       this.onclickEventVisible = true
     },
     handleSelectClickEvent (data) {
@@ -577,19 +444,6 @@ export default {
         byvalue: data.byvalue,
         params: paramsArr,
         exception: data.exception
-          ? data.exception : {
-            name: 'onclick_exception',
-            value: {
-              packagename: 'com.tianci.appstore',
-              dowhat: 'startActivity',
-              versioncode: '-1',
-              params: {
-                id: data.packagename
-              },
-              byvalue: 'coocaa.intent.action.APP_STORE_DETAIL',
-              bywhat: 'action'
-            }
-          }
       }
       this.normalForm.onclick = o
     },
@@ -627,16 +481,6 @@ export default {
         imgUrl: selectPicture.imgUrl
       }
       this.$set(this.normalForm.cornerIconList, index, corner)
-    },
-    handleChooseRecommend (newVal) {
-      const normalForm = this.normalForm
-      normalForm.guideConfig.after_play.operation = newVal
-      // normalForm.guideConfig.after_play.operation = ''
-    },
-    handleChangeClear (newVal) {
-      if (newVal !== 'manualSet') {
-        this.normalForm.onclick = ''
-      }
     },
     handleChangeSign (newVal) {
       const normalForm = this.normalForm
@@ -705,11 +549,7 @@ export default {
       }
     },
     handleSelectRecomStream (recomStream) {
-      console.log(recomStream, '---d')
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
-      this.normalForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
-      this.normalForm.mediaAutomationBlockRls.type = 0
-      console.log(this.normalForm.mediaAutomationBlockRls, '----')
     },
     // 选择资源拓展项
     handleSwitchShortVideo (bool) {
@@ -746,41 +586,7 @@ export default {
         prefix = this.$consts.sourcePrefix[source]
       }
       this.normalForm.shortVideoParams.shortVideoId = prefix + shortVideo[0].sCoocaaMId
-    },
-    // 正片引导
-    handleSelectGuideByMovie (selectedResources) {
-      const result = getSelectedResource(selectedResources)
-      const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
-      this.normalForm.guideConfig = { ...this.normalForm.guideConfig, ...resourceContent }
-      this.normalForm.guideConfig.id = resourceContent.thirdIdOrPackageName
-      this.normalForm.guideConfig.vid = resourceContent.vid
-    },
-    handleDelSelectGuideMovie () {
-      this.normalForm.guideConfig.id = undefined
-      this.normalForm.guideConfig.vid = undefined
-    },
-    // 播放指定影片
-    handleSelectGuideResource (selectedResources) {
-      const result = getSelectedResource(selectedResources)
-      const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
-      this.normalForm.guideConfig.after_play.id = resourceContent.thirdIdOrPackageName
-      this.normalForm.guideConfig.after_play.vid = resourceContent.vid
     }
-  },
-  created () {
-    if (this.normalForm.guideConfig.id === undefined) {
-      this.normalForm.guideConfig = {
-        id: '',
-        vid: '',
-        after_play: {
-          operation: 'nextFilm',
-          id: '',
-          vid: ''
-        }
-      }
-    }
-    // window.normalForm = this.normalForm
-    console.log(this.normalForm.mediaAutomationBlockRls, '-----获取详23情数据')
   }
 }
 </script>

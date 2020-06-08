@@ -127,6 +127,16 @@
                     </el-tag>
                   </div>
                 </el-form-item>
+                <el-form-item v-if="pluginParentType === 'builtIn'" label="会员展示">
+                    <el-select filterable v-model="block.pluginInfo.sourceId" @clear="clearAll" :clearable="true">
+                        <el-option
+                            v-for="(item, index) in vipEnums"
+                            :value="item.value"
+                            :label="item.label"
+                            :key="index">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <div v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title" :rules="rules.title">
                     <el-input v-model.trim="block.helper.title"></el-input>
@@ -228,7 +238,9 @@
                     </el-tag>
                   </div>
                 </el-form-item>
-
+                <el-form-item v-if="pluginParentType === 'builtIn'" label="会员展示">
+                    {{ block.pluginInfo.sourceName }}
+                  </el-form-item>
                 <template v-if="baseHasTitle">
                   <el-form-item label="标题" prop="helper.title">{{ block.helper.title }}</el-form-item>
                   <el-form-item label="副标题" prop="helper.subTitle">{{ block.helper.subTitle }}</el-form-item>
@@ -282,9 +294,11 @@ import Gallery from '@/components/Gallery'
 import PageWrapper from '@/components/PageWrapper'
 import PageContentWrapper from '@/components/PageContentWrapper'
 import InputMinute from '@/components/InputMinute'
-import Params from './Params'
+import Params from '@/components/Params'
 import TabSelector from '@/components/selectors/TabSelector'
 import CommonSelector from '@/components/CommonSelector'
+import { VIP_QRCODE_DEFAULT_PARAMS } from './broadcastBlockUtil.js'
+import { cloneDeep } from 'lodash'
 const PARENT_TYPES = {
   sign: 'sign', // 标记推荐位
   multi: 'multi',
@@ -306,6 +320,8 @@ export default {
   props: ['id', 'initMode', 'version', 'contentProps'],
   data () {
     return {
+      vipEnums: [],
+      vipEnumsData: [],
       currentIndex: 0,
       title: null,
       dialogTableVisible: false,
@@ -353,7 +369,10 @@ export default {
           // 系统功能状态，2-草稿，3-待审核，4-审核通过，5-审核不通过
           pluginStatus: undefined,
           refreshTime: this.contentProps.menuElId === 'sysPlugin' ? 240 : '',
-          rlsTabs: []
+          rlsTabs: [],
+          sourceId: '', // 会员展示
+          sourceName: '',
+          sourceSign: ''
         },
         rlsInfo: []
       },
@@ -463,6 +482,21 @@ export default {
   },
   watch: {},
   methods: {
+    clearAll () {
+      this.block.pluginInfo.sourceName = ''
+      this.block.pluginInfo.sourceSign = ''
+    },
+    getVipButtonSource () {
+      this.$service.getVipButtonSource().then((data) => {
+        this.vipEnumsData = data
+        this.vipEnums = data.map(function (item) {
+          return {
+            value: item.sourceId,
+            label: item.sourceName
+          }
+        })
+      })
+    },
     handleRemoveRelatedTab ({ tabId }) {
       const pluginInfo = this.block.pluginInfo
       pluginInfo.rlsTabs = pluginInfo.rlsTabs.filter(item => item.tabId !== tabId)
@@ -730,14 +764,63 @@ export default {
           }
         })
       }
+      // VIP二维码
+      if (pluginType === 'REFERENCE_VIP_QRCODE') {
+        Object.assign(result, {
+          appParams: cloneDeep(VIP_QRCODE_DEFAULT_PARAMS)
+        })
+      }
+      // 播放视频推荐位
+      if (pluginType === 'REFERENCE_PLAY_VIDEO') {
+        Object.assign(result, {
+          appParams: [
+            {
+              key: 'id',
+              value: undefined,
+              default: true,
+              tip: '用酷开自有ID'
+            },
+            {
+              key: 'type',
+              value: 'res',
+              hide: true
+            }
+          ]
+        })
+      }
 
       return result
     },
     selectSubmit () {},
     clickSubmit () {},
-    parseOnclick (onclick) {
+    parseAppParams (appParams, pluginType) {
+      if (pluginType === 'REFERENCE_PLAY_VIDEO') {
+        return Object.keys(appParams).map(key => {
+          let preset = {}
+          if (key === 'id') {
+            preset = { default: true, tip: '用酷开自有ID' }
+          }
+          if (key === 'type') {
+            preset = { hide: true }
+          }
+          return { key, value: appParams[key], ...preset }
+        })
+      }
+      if (pluginType === 'REFERENCE_VIP_QRCODE') {
+        return Object.keys(appParams).map(key => {
+          const defaultParam = cloneDeep(VIP_QRCODE_DEFAULT_PARAMS.find(item => item.key === key))
+          if (defaultParam) {
+            defaultParam.value = appParams[key]
+            return defaultParam
+          }
+          return { key, value: appParams[key] }
+        })
+      }
+      return Object.keys(appParams).map(key => ({ key, value: appParams[key] }))
+    },
+    parseOnclick (onclick, pluginType) {
       if (onclick.params) {
-        const params = onclick.params
+        const params = cloneDeep(onclick.params)
         onclick.params = Object.keys(onclick.params).map(function (key) {
           return {
             key: key,
@@ -748,6 +831,7 @@ export default {
       return onclick
     },
     getData (status) {
+      console.log(this.block.pluginInfo, '-----ehehe')
       const data = JSON.parse(JSON.stringify(this.block))
       if (this.mode === 'replicate') {
         data.pluginInfo.currentVersion = ''
@@ -802,15 +886,19 @@ export default {
       const block = JSON.parse(JSON.stringify(data))
       const pluginParentType = block.pluginInfo.pluginParentType
       const pluginType = block.pluginInfo.pluginType
+      // 将字符串转成数字回显
+      if (block.pluginInfo.sourceId) {
+        block.pluginInfo.sourceId = block.pluginInfo.sourceId * 1
+      }
       block.rlsInfo.forEach(
         function (item) {
           item.openMode = item.params.split(',')[0].split('==')[1]
           if (item.appParams) {
             const appParams = JSON.parse(item.appParams)
-            item.appParams = Object.keys(appParams).map(key => ({ key, value: appParams[key] }))
+            item.appParams = this.parseAppParams(appParams, pluginType)
           }
           if (item.onclick) {
-            item.onclick = this.parseOnclick(JSON.parse(item.onclick))
+            item.onclick = this.parseOnclick(JSON.parse(item.onclick), pluginType)
             const originOnclick = item.onclick
             const paramsIndexed = originOnclick.params.reduce((result, item) => {
               result[item.key] = item.value
@@ -879,6 +967,7 @@ export default {
       const helper = data.helper
       const hasBaseTitle = this.baseHasTitle
       const pluginParentType = this.pluginParentType
+      console.log(this.vipEnumsData, '-=')
       if (pluginParentType === 'sign') {
         data.rlsInfo = data.rlsInfo || []
         data.rlsInfo[0] = data.rlsInfo[0] || {
@@ -1027,6 +1116,15 @@ export default {
             result[p.key] = p.value
             return result
           }, {})
+          // 默认参数
+          if (item.onclick.defaultParams && item.onclick.defaultParams.length !== 0) {
+            const defaultParamsObj = item.onclick.defaultParams.reduce((result, p) => {
+              result[p.key] = p.value
+              return result
+            }, {})
+            Object.assign(item.onclick.params, defaultParamsObj)
+          }
+          delete item.onclick.defaultParams
           item.onclick = JSON.stringify(item.onclick)
         }
         if (item.appParams) {
@@ -1044,6 +1142,7 @@ export default {
     /** 提交审核 */
     handleSubmitAudit (d, status) {
       const data = this.getData(status)
+      console.log(data, '----dd')
       this.validateData(
         data,
         function () {
@@ -1057,13 +1156,24 @@ export default {
         formData,
         function () {
           formData = this.parseData(formData)
-          console.log(formData)
+          if (formData.pluginInfo.sourceId) {
+            this.vipEnumsData.map(item => {
+              if (item.sourceId === formData.pluginInfo.sourceId) {
+                formData.pluginInfo.sourceName = item.sourceName
+                formData.pluginInfo.sourceSign = item.sourceSign
+              }
+            })
+          }
+          console.log(formData, '========保存')
           this.$service.SavePlugin(formData, '保存成功').then(data => {
             this.$emit('upsert-end')
           })
         }.bind(this)
       )
     }
+  },
+  mounted () {
+    this.getVipButtonSource()
   },
   created () {
     this.getPluginParentTypes()

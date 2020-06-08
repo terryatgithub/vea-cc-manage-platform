@@ -37,6 +37,7 @@
               <div>业务专辑：</div>
               <div>运营人员可以把业务站点专辑，关联映射至此版块中，可以多个进行排序。</div>
             </div>
+            <!-- 新增编辑页 -->
             <template v-if="mode !== 'read'">
               <div class="form-legend-header">
                 <i class="el-icon-edit">基本信息</i>
@@ -88,6 +89,7 @@
                 </el-form-item>
               </el-form>
 
+              <!-- 版块数据 -->
               <div v-if="mode === 'edit' || mode === 'replicate'">
                 <div class="form-legend-header" @click="handlePanelDataClick">
                   <i v-if="isCollapseData" class="el-icon-arrow-down"></i>
@@ -119,7 +121,10 @@
               </div>
 
               <el-form ref="form" :model="pannel" label-width="150px">
-                <el-form-item v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe'" label="版块标题" required>
+                <el-form-item
+                  v-if="showPannelTitleField"
+                  label="版块标题"
+                  required>
                   <el-input
                     clearable
                     style="width: 300px"
@@ -131,7 +136,7 @@
                 <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
                   <el-input clearable v-model="pannel.groupTitle" placeholder="请输入版块标题"></el-input>
                 </el-form-item>
-                <div v-show="pannel.parentType !== 'subscribe'">
+                <div v-show="pannel.parentType !== 'subscribe' && pannel.parentType !== 'tag'">
                   <el-form-item label="版块内容来源" v-if="pannel.parentType === 'normal'">
                     <el-radio-group :value="pannelFillType" @input="handleInputFillType">
                       <el-radio
@@ -197,6 +202,24 @@
                       <el-button type="primary" plain @click="handleBatchAddTag">
                         批量打标签
                       </el-button>
+                      <el-form-item
+                        v-if="isVideoOrEdu"
+                        label-width="160px"
+                        v-show="isShowTagsField && pannel.parentType === 'normal'"
+                        class="item-item-wrapper"
+                        label="是否开启版块标签引导">
+                        <el-switch
+                          :value="!!firstPanel.flagTagVector"
+                          @input="handleInputFlagTagVector"
+                          active-color="#13ce66"
+                          inactive-color="grey" />
+                        <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.categoryCode>
+                          <span>可引导标签：{{firstPanel.panelTagVectorInfo.categoryName}}</span>
+                          <TagTypeSelector v-model="firstPanel.panelTagVectorInfo.focusCategory">
+                            <span slot="tip" />
+                          </TagTypeSelector>
+                        </template>
+                      </el-form-item>
                     </el-form-item>
                     <el-form-item label="批量填充">
                       <span v-show="!selectedLayout">
@@ -250,6 +273,13 @@
                             清空当前版块推荐位
                           </el-button>
                         </template>
+                        <el-form-item label="第三方内容源左上角标" class="item-item-wrapper" label-width="160px">
+                          <el-switch
+                            :value="!!pannel.flagThirdSourceCorner"
+                            @input="pannel.flagThirdSourceCorner = +$event"
+                            active-color="#13ce66"
+                            inactive-color="grey" />
+                          </el-form-item>
                       </div>
                       <div v-if="pannel.parentType === 'group'" style="float:right">
                         <el-button
@@ -289,7 +319,7 @@
                               </span>
                               <VirtualPanel
                                 :panel-group="pannel"
-                                :panel-index="item"
+                                :panel-index="index"
                                 :blocks="item.contentList"
                                 :mode="mode"
                                 :show-chart-btn="!!id"
@@ -363,10 +393,10 @@
                         @input="handleInputLayoutId">
                         <el-radio
                           class="layout-radio"
-                          v-for="mediaLayout in finalMediaRuleLayoutOptions"
+                          v-for="mediaLayout in mediaRuleLayoutOptions"
                           :key="mediaLayout.dictEnName"
                           :label="+mediaLayout.dictEnName">
-                          {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictEnName)"/>
+                          {{mediaLayout.dictCnName}}<i class="el-icon-question" @click="handleShowLayout(mediaLayout.dictUrl)"/>
                         </el-radio>
                       </el-radio-group>
                     </el-form-item>
@@ -383,7 +413,8 @@
                       >查看规则
                       </el-button>
                     </el-form-item>
-                    <el-form-item
+                    <!-- 旧推荐流 -->
+                    <!-- <el-form-item
                       v-if="pannelFillType === $consts.panelFillTypes.recStream"
                       label="选择推荐流"
                       required>
@@ -398,6 +429,25 @@
                           {{ firstPanel.recStreamPanelRls.recId }}
                           ({{ firstPanel.recStreamPanelRls.recName }})
                         </el-tag>
+                      </template>
+                    </el-form-item> -->
+                    <!-- 新推荐流 -->
+                    <el-form-item
+                      v-if="pannelFillType === $consts.panelFillTypes.recStream"
+                      label="选择推荐流"
+                      required>
+                      <NewBlockRecStreamSelector
+                          title="选择推荐流"
+                          selection-type="single"
+                          :source="pannel.pannelResource"
+                          :scene="scene"
+                          @select-end="handleSelectBlockRecNew">
+                      </NewBlockRecStreamSelector>
+                      <template v-if="firstPanel.recStreamPanelRls">
+                          已选择: <el-tag>
+                          {{ firstPanel.recStreamPanelRls.recId }}
+                          ({{ firstPanel.recStreamPanelRls.recName }})
+                          </el-tag>
                       </template>
                     </el-form-item>
                     <el-form-item
@@ -431,18 +481,13 @@
 
                   <!-- 预览图片 -->
                   <el-dialog title="预览图片" :visible.sync="picDialogVisible" width="40%">
+                    123
                     <div class="pics">
-                      <img v-if="reviewPicUrl === 1" style="width: 100%" src="../../assets/images/panelFillLayout1.png"/>
-                      <img v-if="reviewPicUrl === 2" style="width: 100%" src="../../assets/images/panelFillLayout2.png"/>
-                      <img v-if="reviewPicUrl === 3" style="width: 100%" src="../../assets/images/panelFillLayout3.png"/>
-                      <img v-if="reviewPicUrl === 4" style="width: 100%" src="../../assets/images/panelFillLayout4.png"/>
-                      <img v-if="reviewPicUrl === 5" style="width: 100%" src="../../assets/images/panelFillLayout5.png"/>
-                      <img v-if="reviewPicUrl === 6" style="width: 100%" src="../../assets/images/panelFillLayout6.png"/>
-                      <img v-if="reviewPicUrl === 7" style="width: 100%" src="../../assets/images/panelFillLayout7.png"/>
-                      <img v-if="reviewPicUrl === 8" style="width: 100%" src="../../assets/images/panelFillLayout8.png"/>
+                      <img style="width: 100%" :src="reviewPicUrl" />
                     </div>
                   </el-dialog>
                 </div>
+                <!-- 预约版块内容 -->
                 <el-form-item v-show="pannel.parentType === 'subscribe'" label="预约影片">
                   <ResourceSelector
                     ref="subscribeSelector"
@@ -459,9 +504,26 @@
                     @remove-block="handleRemoveBlock"
                     :blocks="pannel.pannelList[0].contentList" />
                 </el-form-item>
+                <!-- 标签流版块内容 -->
+                <template v-if="pannel.parentType === 'tag'">
+                  <el-form-item label="行数">
+                    <el-input-number v-model="firstPanel.tagPanelInfo.rowNum" :min="1" :max="5" step-strictly />
+                    <TagTypeSelector v-model="firstPanel.tagPanelInfo.focusCategory">
+                      <span slot="label">标签详情页默认落焦分类</span>
+                    </TagTypeSelector>
+                  </el-form-item>
+                  <el-form-item label="选择算法">
+                    <CommonSelector
+                      class="radio-block-select"
+                      type='radio'
+                      v-model="firstPanel.tagPanelInfo.algorithmType"
+                      :options="$consts.panelTagAlgorithmOptions"/>
+                  </el-form-item>
+                </template>
               </el-form>
             </template>
 
+            <!-- 详情页 -->
             <template v-if="mode === 'read'">
 
               <div class="form-legend-header">
@@ -526,19 +588,20 @@
               </div>
 
               <el-form ref="form" :model="pannel" label-width="120px">
-                <el-form-item v-if="pannel.parentType === 'normal' || pannel.parentType === 'subscribe'" label="版块标题" required>
-                  <div>{{pannel.pannelList[0].pannelTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
+                <el-form-item v-if="showPannelTitleField" label="版块标题" required>
+                  <div>{{firstPanel.pannelTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
                 </el-form-item>
                 <el-form-item v-if="pannel.parentType === 'group'" label="版块标题" required>
                   <div>{{pannel.groupTitle}} {{ pannel.showTitle === false ? '(前端不显示)' : '' }}</div>
                 </el-form-item>
-                <el-form-item v-if="pannel.parentType === 'normal'" label="板块内容来源">
+                <el-form-item v-if="pannel.parentType === 'normal'" label="版块内容来源">
                   {{$consts.panelFillTypeText[pannelFillType]}}
                 </el-form-item>
                 <el-form-item label="版块布局" v-if="selectedLayout">
                   <div>{{ selectedLayout.layoutName }}({{selectedLayout.layoutId}}){{pannel.lucenyFlag ? '(透明)' : ''}}</div>
                 </el-form-item>
-                <div v-show="pannel.parentType !== 'subscribe'">
+
+                <div v-show="pannel.parentType === 'normal' || pannel.parentType === 'group'">
                   <template v-if="pannelFillType === 1">
                     <el-form-item label="落焦形式" required>
                       {{ $consts.panelFocusText[pannel.focusShape] }}
@@ -555,26 +618,52 @@
                     <el-form-item v-show="isShowTagsField" class="tag-list" label="资源共有标签">
                       <el-tag type="primary" v-for="(item, index) in sharedTags" :key="index">{{ item.tagName }}/{{ item.tagWeight }}</el-tag>
                     </el-form-item>
+                    <el-form-item label="第三方内容源左上角标" class="line-height-item">
+                      <el-switch
+                        :value="!!pannel.flagThirdSourceCorner"
+                        @input="pannel.flagThirdSourceCorner = +$event"
+                        :disabled="true"
+                        active-color="#13ce66"
+                        inactive-color="grey" />
+                    </el-form-item>
+                    <el-form-item
+                      v-if="isVideoOrEdu"
+                      v-show="isShowTagsField && pannel.parentType === 'normal'"
+                      class="item-item-wrapper"
+                      label="版块标签引导">
+                      <el-switch
+                        :value="!!firstPanel.flagTagVector"
+                        @input="handleInputFlagTagVector"
+                        :disabled="true"
+                        active-color="#13ce66"
+                        inactive-color="grey" />
+                      <template v-if="firstPanel.flagTagVector === 1" && firstPanel.panelTagVectorInfo.categoryCode>
+                        <span>可引导标签：{{firstPanel.panelTagVectorInfo.categoryName}}</span>
+                        <TagTypeSelector :disabled="true" v-model="firstPanel.panelTagVectorInfo.focusCategory">
+                          <span slot="tip" />
+                        </TagTypeSelector>
+                      </template>
+                    </el-form-item>
                   </template>
                   <template v-if="pannelFillType === 2">
                     <el-form-item label="展示影片数量">
-                      {{pannel.pannelList[0].filmNum}}
+                      {{firstPanel.filmNum}}
                     </el-form-item>
                     <el-form-item label="选用排行榜">
-                      {{pannel.pannelList[0].rankName}}
+                      {{firstPanel.rankName}}
                     </el-form-item>
                   </template>
                   <el-form-item v-if="pannelFillType === 3" label="筛选规则描述">
                     <el-button
                       type="text"
-                      @click="showMediaRuleDesc(pannel.pannelList[0].mediaRuleDesc)"
+                      @click="showMediaRuleDesc(firstPanel.mediaRuleDesc)"
                     >查看规则
                     </el-button>
-                    <ClickCopy :content="pannel.pannelList[0].mediaRule">
+                    <ClickCopy :content="firstPanel.mediaRule">
                       <el-button type="text">复制规则json</el-button>
                     </ClickCopy>
                   </el-form-item>
-                  <el-form-item label="推荐位" v-if="pannelFillType !== PANEL_FILL_TYPE.recStream">
+                  <el-form-item label="推荐位" v-if="pannelFillType !== PANEL_FILL_TYPE.recStream && pannel.parentType !== 'tag'">
                     <el-button v-if="pannelFillType === PANEL_FILL_TYPE.mediaRule" type="primary" @click="handleRefreshMediaRuleContents">刷新推荐位内容</el-button>
                     <div class="pannel-blocks pannel-blocks--read">
                       <template v-if="pannel.parentType === 'group'">
@@ -610,7 +699,7 @@
                         :mode="mode"
                         :panel-group="pannel"
                         :panel-index="0"
-                        :blocks="pannel.pannelList[0].contentList"
+                        :blocks="firstPanel.contentList"
                         :show-chart-btn="!!id"
                         :show-post-updater="isFillWithMediaRule"
                         @update-post-end="handleUpdatePostEnd"
@@ -646,8 +735,19 @@
                   <SubscribeVideos
                     :mode="mode"
                     @remove-block="handleRemoveBlock"
-                    :blocks="pannel.pannelList[0].contentList" />
+                    :blocks="firstPanel.contentList" />
                 </el-form-item>
+                <template v-if="pannel.parentType === 'tag'">
+                  <el-form-item label="行数">
+                    {{firstPanel.tagPanelInfo.rowNum}}
+                    <TagTypeSelector :disabled="true" v-model="firstPanel.tagPanelInfo.focusCategory">
+                      <span slot="label">标签详情页默认落焦分类</span>
+                    </TagTypeSelector>
+                  </el-form-item>
+                  <el-form-item label="选择算法">
+                    {{$consts.panelTagAlgorithmText[firstPanel.tagPanelInfo.algorithmType]}}
+                  </el-form-item>
+                </template>
               </el-form>
             </template>
           </CommonContent>
@@ -685,7 +785,7 @@
           :source="pannel.pannelResource"
           :pannel="pannel.pannelList[0]"
           :pannel-group-id="pannel.pannelGroupId"
-          :hide-title-options="selectedLayoutId % 2 === 0"
+          :hide-title-options="interveneHideTitle"
           @cancel="handleSetInterveneBlockContentCancle"
           @save="handleSetInterveneBlockContentEnd"
         />
@@ -709,8 +809,10 @@ import GlobalPictureSelector from '@/components/selectors/GlobalPictureSelector'
 import BlockContent from './BlockContent/BlockContent'
 import CommonSelector from '@/components/CommonSelector'
 import BinCheckBox from '@/components/BinCheckBox'
-import BlockRecStreamSelector from '@/components/selectors/BlockRecStreamSelector'
+// import BlockRecStreamSelector from '@/components/selectors/BlockRecStreamSelector'
+import TagTypeSelector from '@/components/ResourceSelector/TagTypeSelector'
 
+import NewBlockRecStreamSelector from '@/components/selectors/NewBlockRecStreamSelector'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import PanelGroupInfoSetter from './PanelGroupInfoSetter'
 
@@ -722,12 +824,14 @@ import 'echarts/lib/component/markPoint'
 import SubscribeVideos from './SubscribeVideos'
 
 import { genResourceContentList, genRankingContentList, genSubscribeContentList, getMatchedPictureUrl, isValidLayoutForRanking,
-  genMediaRuleContentList, getIdByCoverType } from './panelInfoUtil'
+  genMediaRuleContentList, getIdByCoverType, thirdSourcePrefixMap } from './panelInfoUtil'
 import { cloneDeep, uniqBy, sortBy, reverse } from 'lodash'
 
 import ConfigureFilmFilterRule from './ConfigureFilmFilterRule'
 import ClickCopy from '@/components/ClickCopy'
 import { isFrozen } from './frozen'
+
+const AUTO_BLOCK_COUNT = 12
 /**
  * 插入推荐位
  * 需要先选布局和设置位置，因为要确定海报尺寸
@@ -760,9 +864,11 @@ export default {
     TagFrame,
     VeLine,
     SubscribeVideos,
-    BlockRecStreamSelector,
+    NewBlockRecStreamSelector,
     ConfigureFilmFilterRule,
-    ClickCopy
+    ClickCopy,
+    TagTypeSelector
+    // BlockRecStreamSelector
   },
   data () {
     const extend = {
@@ -819,6 +925,7 @@ export default {
       ]
     }
     return {
+      scene: '1',
       // 数据展现
       extend: extend,
       settings: {
@@ -885,7 +992,7 @@ export default {
 
         focusConfig: '', // '', week
         currentVersion: '',
-
+        flagThirdSourceCorner: 1, // 是否开启第三方源角标
         pannelList: []
       },
       isShowfocusImgUrl: false,
@@ -913,20 +1020,42 @@ export default {
       reviewPicUrl: undefined,
       mediaRuleLayoutOptions: [],
       // mediaRuleLayout: '1'
-      MAX_MEDIA_RULE_VIDEO_COUNT: 30
+      MAX_MEDIA_RULE_VIDEO_COUNT: 30,
+      isShowThirdCorner: false, // 第三方内容源角标
+      thirdSourcePrefixMap,
+      thirdSourceOptions: []
     }
   },
   props: ['id', 'initMode', 'version', 'panelDataType', 'initGroupIndex', 'initBlockIndex'],
   computed: {
+    interveneHideTitle () {
+      const selectedLayoutId = +this.selectedLayoutId
+      if (selectedLayoutId <= 8 || selectedLayoutId === 12) {
+        return selectedLayoutId % 2 === 0
+      } else if (selectedLayoutId === 11) {
+        const blockConetentInterveneProps = this.blockConetentInterveneProps
+        const intervenePos = blockConetentInterveneProps.block.intervenePos
+        return intervenePos > 3
+      } else {
+        return false
+      }
+    },
+    showPannelTitleField () {
+      const pannel = this.pannel
+      return pannel.parentType === 'normal' || pannel.parentType === 'subscribe' || pannel.parentType === 'tag'
+    },
     finalMediaRuleLayoutOptions () {
       const { pannelFillType, PANEL_FILL_TYPE, mediaRuleLayoutOptions } = this
+      // return pannelFillType === PANEL_FILL_TYPE.recStream
+      //   ? mediaRuleLayoutOptions.slice(2, 6) // 推荐流只支持几个布局
+      //   : mediaRuleLayoutOptions
       return pannelFillType === PANEL_FILL_TYPE.recStream
-        ? mediaRuleLayoutOptions.slice(2, 6) // 推荐流只支持几个布局
+        ? mediaRuleLayoutOptions
         : mediaRuleLayoutOptions
     },
     interveneMaxCount () {
       const selectedLayoutId = this.selectedLayoutId
-      return [10, 10, 6, 6, 8, 8, 9, 9][selectedLayoutId - 1]
+      return [9, 9, 6, 6, 8, 8, 9, 9][selectedLayoutId - 1]
     },
     filmNumOptions () {
       return Array.apply(null, { length: 6 }).map((_, index) => {
@@ -975,6 +1104,11 @@ export default {
       const panelGroupCategory = this.pannel.panelGroupCategory
       // 影视，不限 是分源的
       return panelGroupCategory === 31 || panelGroupCategory === 67
+    },
+    isVideoOrEdu () {
+      const panelGroupCategory = this.pannel.panelGroupCategory
+      // 影视，不限 是分源的
+      return panelGroupCategory === 31 || panelGroupCategory === 62 || panelGroupCategory === 60
     },
     isReplica () {
       return this.mode === 'replicate' || this.pannel.duplicateVersion === 'yes'
@@ -1075,7 +1209,6 @@ export default {
       const categoryVideo = 31 // 影视
       const categoryEducation = 60 // 教育
       const categoryCommon = 67 // 不限
-
       if (panelGroupCategory === categoryVideo) {
         return panelFillTypeOptions
       }
@@ -1084,13 +1217,7 @@ export default {
       }
       return panelFillTypeOptions.filter(item => item.value !== PANEL_FILL_TYPE.mediaRule && item.value !== PANEL_FILL_TYPE.ranking)
     },
-    reviewPicUrlSrc () {
-      if (this.reviewPicUrlSrc) {
-        return require('../../assets/images/panelFillLayout' + this.reviewPicUrl + '.png')
-      } else {
-        return undefined
-      }
-    },
+    // 插入
     interveneContentList () {
       const firstPanel = this.pannel.pannelList[0] || {}
       const interveneContentList = firstPanel.interveneContentList || []
@@ -1102,7 +1229,6 @@ export default {
       return pannelFillType
     },
     isFillWithMediaRule () {
-      console.log(this.pannelFillType === this.$consts.panelFillTypes.mediaRule)
       return this.pannelFillType === this.$consts.panelFillTypes.mediaRule
     },
     // eslint-disable-next-line
@@ -1141,7 +1267,16 @@ export default {
         this.pannel.showTitle = 1
       }
     },
-    'pannel.focusConfig': 'handleFocusConfigChange'
+    'pannel.focusConfig': 'handleFocusConfigChange',
+    'firstPanel.flagTagVector': function (val) {
+      if (val === 0) {
+        this.firstPanel.panelTagVectorInfo = {
+          categoryCode: undefined,
+          focusCategory: undefined,
+          categoryName: undefined
+        }
+      }
+    }
   },
   methods: {
     handleUpdatePostEnd () {
@@ -1153,6 +1288,15 @@ export default {
     },
     handleSelectBlockRecStreamEnd (selected) {
       const { recId, recName, recCategory, flag: recFlag } = selected[0]
+      this.firstPanel.recStreamPanelRls = {
+        recId,
+        recName,
+        recCategory,
+        recFlag
+      }
+    },
+    handleSelectBlockRecNew (selected) {
+      const { id: recId, recName, recCategory, userToken: recFlag } = selected[0]
       this.firstPanel.recStreamPanelRls = {
         recId,
         recName,
@@ -1174,6 +1318,17 @@ export default {
         mediaRuleDesc: undefined,
         rankName: undefined,
         recStreamPanelRls: undefined,
+        tagPanelInfo: {
+          rowNum: 1,
+          focusCategory: undefined,
+          algorithmType: 1
+        }, //  标签版块信息
+        flagTagVector: 0, // 是否开启版块标签引导
+        panelTagVectorInfo: {
+          categoryCode: undefined,
+          focusCategory: undefined, // 跳转分类
+          categoryName: undefined
+        }, // 开启标签版块引导的相关信息
         ...preset
       }
     },
@@ -1274,6 +1429,7 @@ export default {
     },
     handleBatchAddTagEnd () {
       this.getSharedTags()
+      this.firstPanel.flagTagVector === 1 && this.getVectorTag()
       this.showAddTagDialog = false
     },
     handleInputTagWeight (weight, originWeight, tag) {
@@ -1425,40 +1581,13 @@ export default {
       })
       this.selectedLayout = layout
       this.updateBlockCount(layout, blockCount)
-      // 关闭推荐流按钮
-      this.pannel.pannelList.forEach(pannelList => {
-        pannelList.contentList.forEach(contentList => {
-          contentList.videoContentList.forEach(videoContent => {
-            videoContent.flagSetRec = 0
-            videoContent.mediaAutomationBlockRls = {
-              refreshCal: 1,
-              mediaAutomationId: '',
-              blockType: 'normal'
-            }
-          })
-        })
-      })
-      // 如果选择的是不含价格的布局，要删除所有价格信息
-      if (layout.layoutJsonParsed.contents[0].type !== 'Mall') {
-        this.pannel.pannelList.forEach(function (item) {
-          item.contentList.forEach(function (cItem) {
-            ;[]
-              .concat(
-                cItem.videoContentList || [],
-                cItem.specificContentList || []
-              )
-              .forEach(function (vItem) {
-                vItem.price = undefined
-                vItem.secKillPrice = undefined
-              })
-          })
-        })
-      }
+
       // 重新计算所有 pannel 的推荐位
       let i = this.pannel.pannelList.length
       while (--i >= 0) {
         this.updatePosition(i)
       }
+
       this.getSharedTags()
       // 清除异形焦点
       this.pannel.focusImgUrl = ''
@@ -1505,11 +1634,13 @@ export default {
         this.pannel.pannelList[activePannelIndex].selectedResources || []
       this.blockContentProps = {
         layoutType: selectedLayout.layoutJsonParsed.type,
+        layoutIsTitle: selectedLayout.layoutIsTitle,
         pannelParentType: pannel.parentType,
         pannelCategory: this.pannel.panelGroupCategory,
         block: selectedResources[index],
         blockInfo: this.blockList[activePannelIndex][index],
-        pannelResource: this.pannel.pannelResource
+        pannelResource: this.pannel.pannelResource,
+        rlsTabInfo: this.pannel.rlsTabInfo || []
       }
       this.currentBlockIndex = index
       this.activePage = 'block_content'
@@ -1571,6 +1702,8 @@ export default {
       this.updatePosition()
       this.getSharedTags()
       this.activePage = 'panel_info'
+      // 重置版块标签引导
+      this.firstPanel.flagTagVector === 1 && this.getVectorTag()
     },
     handleSelectSubscribeStart () {
       this.$refs.subscribeSelector.$refs.wrapper.handleSelectStart()
@@ -1651,6 +1784,7 @@ export default {
         insertAfter: activePannel.selectedResources.length + 1
       })
     },
+    // 批量填充
     handleSelectResourceEnd (selectedResources) {
       const resourceSelector = this.$refs.resourceSelector
       const pannel = this.pannel
@@ -1789,6 +1923,8 @@ export default {
       // 计算每个 block 的位置
       this.updatePosition()
       this.getSharedTags()
+      // 校验版块标签引导是否需要关闭
+      this.firstPanel.flagTagVector === 1 && this.getVectorTag()
     },
     handleRemoveTab (indexString) {
       this.$confirm('确认删除该子版块?', '提示', {
@@ -1915,8 +2051,11 @@ export default {
           // 清空推荐位内容
           this.clearBlocks()
           this.pannel.parentType = parentType
-          // 清空板块内容来源
+          // 清空版块内容来源
           pannel.pannelList[0].fillType = 1
+          // 清空版块引导开关
+          firstPannel.flagTagVector = 0
+
           switch (true) {
             case parentType === 'normal':
               pannel.focusConfig = ''
@@ -1935,6 +2074,17 @@ export default {
               pannel.focusShape = 0
               this.isShowfocusImgUrl = false
               this.handleSetLayoutForSubscribeType()
+              break
+            case parentType === 'tag':
+              this.$set(firstPannel, 'tagPanelInfo', {})
+              this.$nextTick(() => {
+                firstPannel.tagPanelInfo = {
+                  rowNum: 1,
+                  focusCategory: undefined,
+                  algorithmType: 1
+                }
+              })
+              this.handleClearLayoutForSubscribeType()
               break
           }
         })
@@ -2039,6 +2189,35 @@ export default {
       const { blocks, selectedBlocksAndResources } = this.getBlocksAndResources(currentPannelIndex)
       blockList[currentPannelIndex] = blocks
       currentPannel.contentList = selectedBlocksAndResources
+
+      // 如果选择的是不含价格的布局，要删除所有价格信息
+      const isDelPrice = (this.selectedLayout.layoutJsonParsed.contents[0].type !== 'Mall')
+      const blockInfoList = blockList[currentPannelIndex]
+      currentPannel.contentList.forEach((cItem, cIndex) => {
+        const blockInfo = blockInfoList[cIndex]
+        ;[].concat(
+          cItem.videoContentList || [],
+          cItem.specificContentList || []
+        ).forEach(vItem => {
+          // 如果是带标题的推荐位，清空推荐位引导
+          if (blockInfo.title_info || blockInfo.width < 410) {
+            if (vItem.flagTagVector === 1) {
+              vItem.flagTagVector = 0
+            }
+          }
+          // 关闭推荐流按钮
+          // vItem.flagSetRec = 0
+          // vItem.mediaAutomationBlockRls = {
+          //   refreshCal: 1,
+          //   mediaAutomationId: '',
+          //   blockType: 'normal'
+          // }
+          if (isDelPrice) {
+            vItem.price = undefined
+            vItem.secKillPrice = undefined
+          }
+        })
+      })
     },
     getBlocksAndResources (currentPannelIndex, layoutVersion) {
       // 可以使用外部传过来的 pannel 数据,
@@ -2343,6 +2522,10 @@ export default {
       const pannel = JSON.parse(JSON.stringify(data))
       // 媒资规则的panelGroupType=10
       pannel.panelGroupType = pannel.pannelList[0].fillType !== 3 ? panelDataType : 10
+      const isTagPanel = pannel.parentType === 'tag'
+      const isNormalPanel = pannel.parentType === 'normal'
+      const flagThirdSourceCorner = pannel.flagThirdSourceCorner
+      const _this = this
       pannel.pannelList = pannel.pannelList.map(item => {
         let hasSpecific = false
         const itemContentList = item.contentList.map(function (_contentItem) {
@@ -2392,6 +2575,20 @@ export default {
           // 去除辅助字段, 转换数据结构
           ;[].concat(contentItem.videoContentList || [], contentItem.specificContentList || [])
             .forEach(function (item) {
+              // 开启第三方角标的进行查找和替换
+              if (flagThirdSourceCorner === 1 && item.coverType === 'media') {
+                const { thirdSourceOptions, thirdSourcePrefixMap } = _this
+                const sourcePrefix = item.extraValue1.split('_')
+                if (sourcePrefix && sourcePrefix[2]) {
+                  const sourceCode = thirdSourcePrefixMap[sourcePrefix[2]]
+                  const thirdCorner = thirdSourceOptions.find(item => item.sourceCode === sourceCode)
+                  if (typeof thirdCorner === 'object') {
+                    item.cornerList = (item.cornerList || []).filter(corner => corner.position !== 0)
+                    item.cornerList.push({ position: 0, cornerIconId: thirdCorner.pictureId, imgUrl: thirdCorner.pictureUrl })
+                  }
+                }
+              }
+
               item.forceTitle = undefined
               item.picturePreset = undefined
               item.isMediaRule = undefined
@@ -2438,16 +2635,7 @@ export default {
             pannelType = panelDataType
           }
           // 排行榜填充、筛选规则填充
-          if (fillType === 2) {
-            pannelType = 2
-          }
-          if (fillType === 3) {
-            pannelType = 10
-          }
-          // 推荐流
-          if (fillType === 4) {
-            pannelType = 13
-          }
+          pannelType = fillType === 2 ? 2 : fillType === 3 ? 10 : fillType === 4 ? 13 : pannelType
         }
 
         const result = {
@@ -2460,7 +2648,7 @@ export default {
           pannelType,
           showTitle: pannel.showTitle,
           flagIs4k: pannel.flagIs4k,
-          layoutId: layout.layoutId,
+          layoutId: isTagPanel ? undefined : layout.layoutId,
           panelIsFocus: item.panelIsFocus,
           timeSlot: timeSlot,
           focusShape: pannel.focusShape,
@@ -2468,6 +2656,9 @@ export default {
           rankIsOpen: item.rankIsOpen,
           rankChildId: item.rankChildId,
           fillType: item.fillType,
+          tagPanelInfo: isTagPanel ? item.tagPanelInfo : undefined, // 标签流版块信息
+          flagTagVector: isNormalPanel ? item.flagTagVector : undefined, // 是否开启版块标签引导
+          panelTagVectorInfo: item.flagTagVector === 1 ? item.panelTagVectorInfo : undefined, // 开启标签版块引导的相关信息
           // 排行榜填充
           filmNum: fillType === 2 ? (itemContentList.length - 1) : undefined,
           rankName: fillType === 2 ? item.rankName : undefined,
@@ -2583,7 +2774,7 @@ export default {
           return cb(Error('请选择推荐流'))
         }
       }
-      if (!this.selectedLayout) {
+      if (!this.selectedLayout && parentType !== 'tag') {
         return cb(Error('请选择布局'))
       }
 
@@ -2725,6 +2916,28 @@ export default {
           pannel.parentType === 'group'
         ) {
           return cb(Error('请选择默认落焦'))
+        }
+      }
+      // 校验一个版块只能有一个视频播放位
+      let mutiVideoPanelIndex, mutiVideoCount
+      const isMutiVideo = pannel.pannelList.some((panel, index) => {
+        let videoPluginCount = 0
+        panel.contentList.forEach(content => {
+          if ((content.videoContentList[0] || {}).pluginType === 'REFERENCE_PLAY_VIDEO') {
+            videoPluginCount++
+          }
+        })
+        if (videoPluginCount > 1) {
+          mutiVideoPanelIndex = index
+          mutiVideoCount = videoPluginCount
+        }
+        return videoPluginCount > 1
+      })
+      if (isMutiVideo) {
+        if (pannel.parentType === 'group') {
+          return cb(Error('第' + (mutiVideoPanelIndex + 1) + '个分组含有' + mutiVideoCount + '个视频播放推荐位，一个版块只能有一个视频播放推荐位'))
+        } else {
+          return cb(Error('版块含有' + mutiVideoCount + '个视频播放推荐位，一个版块只能有一个视频播放推荐位'))
         }
       }
       cb()
@@ -2895,6 +3108,7 @@ export default {
       data.isTiming = undefined
       data.releaseTime = undefined
       data.pannelStatus = this.$consts.status.draft
+      console.log(data, '------da')
       this.validate(data, () => {
         this.upsertPanelInfo(data)
       })
@@ -2917,8 +3131,9 @@ export default {
       })
     },
     upsertPanelInfo (data) {
+      const isTagPanel = data.parentType === 'tag'
       // 使用 v6 布局重新计算 contentPosition
-      this.makeCompatibleV6(data)
+      !isTagPanel && this.makeCompatibleV6(data)
       this.$service
         .panelUpsert(this.parseDataToApi(data), '保存成功')
         .then(result => {
@@ -2942,6 +3157,7 @@ export default {
         Object.assign(pannel, panelInit)
         pannel.pannelName = panelInit.pannelGroupRemark
         const isGroupPannel = initData.parentType === 'group'
+        pannel.flagThirdSourceCorner = panelInit.flagThirdSourceCorner || 0
 
         const parseContentItem = (item) => {
           if (+item.price === -1) {
@@ -2995,6 +3211,15 @@ export default {
             if (isGroupPannel) {
               item.fillType = 1
             }
+            item.tagPanelInfo = item.tagPanelInfo || {}
+            item.flagTagVector = item.flagTagVector || 0
+            item.panelTagVectorInfo = item.panelTagVectorInfo || {
+              categoryCode: undefined,
+              focusCategory: undefined,
+              categoryName: undefined
+            }
+            // 给pannelList版面信息，用于推荐位资源
+            item.rlsTabInfo = item.rlsTabInfo || []
             return item
           })
           pannel.pannelResource = firstPannel.pannelResource
@@ -3004,9 +3229,11 @@ export default {
           pannel.pannelStatus = firstPannel.pannelStatus
 
           const layout = firstPannel.layoutInfo
-          layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
-          this.selectedLayout = layout
-          this.selectedLayoutId = layout.layoutId
+          if (layout !== undefined) {
+            layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
+            this.selectedLayout = layout
+            this.selectedLayoutId = layout.layoutId
+          }
 
           const firstBlock = firstPannel.contentList[0]
           if (firstBlock) {
@@ -3017,9 +3244,14 @@ export default {
           // 规则筛选
           const fillType = firstPannel.fillType
           if (fillType === panelFillTypes.mediaRule) {
-            this.reviewPicUrl = parseInt(firstPannel.layoutId)
+            this.reviewPicUrl = (this.mediaRuleLayoutOptions.find(item => item.dictEnName === firstPannel.layoutId) || {}).dictUrl
           }
           if (fillType === panelFillTypes.recStream) {
+            // 初始化-计算布局大小
+            if (firstPannel.contentList.length === 0) {
+              this.updateBlockCount(layout, AUTO_BLOCK_COUNT)
+              this.updatePosition(0)
+            }
             this.updateInterveneResources()
           }
         }
@@ -3045,7 +3277,7 @@ export default {
         this.panelUVCTRPercent.weeklyGrowth = panelUVCTR.weeklyGrowth ? this.toArrowPercent(panelUVCTR.weeklyGrowth) : 'N/A'
       })
     },
-    // 点击板块数据展示折线图
+    // 点击版块数据展示折线图
     handlePanelDataClick () {
       this.isCollapseData = !this.isCollapseData
       if (this.panelChartDataArr.length !== 0) {
@@ -3116,8 +3348,8 @@ export default {
         this.handleSelectRankingEnd(selectedResources, 'rank')
       }
     },
-    handleShowLayout (seq) {
-      this.reviewPicUrl = parseInt(seq)
+    handleShowLayout (url) {
+      this.reviewPicUrl = url
       this.picDialogVisible = true
     },
     handleGetFilterResult (result) {
@@ -3148,7 +3380,7 @@ export default {
       this.$service.getLayoutInforById({ id }).then((layout) => {
         layout.layoutJsonParsed = JSON.parse(layout.layoutJson8)
         this.selectedLayout = layout
-        this.handleSelectLayoutEnd(layout, 12)
+        this.handleSelectLayoutEnd(layout, AUTO_BLOCK_COUNT)
         if (currentPannel.mediaRule) {
           this.updateInterveneResources()
         }
@@ -3311,6 +3543,82 @@ export default {
         }
       })
       currentPannel.contentList = selectedBlocksAndResources
+    },
+    handleInputFlagTagVector (val) {
+      const firstPanel = this.firstPanel
+      if (val) {
+        this.getVectorTag().then(isValid => {
+          if (!isValid) {
+            firstPanel.flagTagVector = 0
+          } else {
+            firstPanel.flagTagVector = 1
+          }
+        })
+      } else {
+        firstPanel.flagTagVector = 0
+      }
+    },
+    async fetchVectorTag () {
+      if (!this.isShowTagsField || this.pannel.parentType !== 'normal') {
+        return false
+      }
+      const firstPanel = this.firstPanel
+      const contentList = firstPanel.contentList
+      let ids = []
+      for (let i = 0; i < contentList.length; i++) {
+        const videoContentList = contentList[i].videoContentList
+        for (let j = 0; j < videoContentList.length; j++) {
+          const videoItem = videoContentList[j]
+          if (videoItem.coverType !== 'media') {
+            this.$message.info('每个推荐位都必须是媒体资源')
+            return false
+          } else {
+            const id = videoItem.extraValue1
+            ids.push(id)
+          }
+        }
+      }
+      const exist = await this.$service.getVectorTag({ coocaaVIds: ids.join(',') }).then(data => {
+        data = data || {}
+        firstPanel.panelTagVectorInfo.categoryCode = data.tagCode
+        firstPanel.panelTagVectorInfo.categoryName = data.tagName
+        if (JSON.stringify(data) === '{}' || typeof data === 'string') {
+          this.firstPanel.flagTagVector = 0
+          this.$message.error('无所有影片都具有的标签')
+          return false
+        } else {
+          return true
+        }
+      })
+      return exist
+    },
+    getVectorTag () {
+      return this.fetchVectorTag().then(isValid => {
+        if (!isValid) {
+          this.firstPanel.flagTagVector = 0
+        }
+        return isValid
+      })
+    },
+    handleShowThirdSourceCorner (isShow) {
+      const pannelList = this.pannel.pannelList
+      pannelList.forEach(pannelItem => {
+        (pannelItem.contentList || []).forEach(content => {
+          (content.videoContentList || []).forEach(video => {
+            video.cornerList = (video.cornerList || []).filter(corner => corner.position !== 0)
+            if (isShow && video.coverType === 'media') {
+              // 媒体资源匹配角标
+              const sourcePrefix = video.extraValue1.split('_')[2]
+              const { thirdSourceOptions, thirdSourcePrefixMap } = this
+              if (sourcePrefix) {
+                const sourceCode = thirdSourcePrefixMap[sourcePrefix]
+                const cornerInfo = thirdSourceOptions.find(item => item.sourceCode === sourceCode)
+                video.cornerList.unshift({ position: 0, cornerIconId: cornerInfo.pictureId, imgUrl: cornerInfo.pictureUrl })
+              }
+            }
+          })
+        })
+      })
     }
   },
   created () {
@@ -3331,6 +3639,10 @@ export default {
     // 影片筛选规则填充
     this.$service.getMediaRuleLayout().then(data => {
       this.mediaRuleLayoutOptions = data
+    })
+    // 第三方资源角标
+    this.$service.getDictCorner({ dictCategory: 'thirdSource' }).then(data => {
+      this.thirdSourceOptions = data
     })
   },
   mounted () {
@@ -3418,4 +3730,13 @@ export default {
   width 400px
   border 1px solid #ccc
   padding 10px
+.item-item-wrapper
+  display inline-block
+  margin-bottom 0
+.radio-block-select >>> .el-radio
+  display block
+  margin-top 10px
+.line-height-item >>> .el-form-item__label
+  line-height 23px
+  margin-top 3px
 </style>

@@ -28,17 +28,18 @@
             />
           </el-select>
         </el-form-item>
-
-        <el-form-item>
-          <el-select filterable clearable v-model="filter.tabType" placeholder="版面属性" title="版面属性">
-            <el-option
-              v-for="(item, index) in tabTypeOptions"
-              :key="index"
-              :value="item.value"
-              :label="item.label"
-            />
-          </el-select>
-        </el-form-item>
+        <template v-if="oneOption !== 2">
+          <el-form-item>
+            <el-select filterable clearable v-model="filter.tabType" placeholder="版面属性" title="版面属性">
+              <el-option
+                v-for="(item, index) in tabTypeOptions"
+                :key="index"
+                :value="item.value"
+                :label="item.label"
+              />
+            </el-select>
+          </el-form-item>
+        </template>
 
         <!-- <el-form-item class="el-col el-col-6">
           <el-select
@@ -125,6 +126,10 @@ const tabTypeOptions = [
   {
     label: '第三方版面',
     value: '4'
+  },
+  {
+    label: '分页专题版面',
+    value: '13'
   }
 ]
 
@@ -237,7 +242,8 @@ export default {
     'hasSubTab',
     'selectionType',
     'disabled',
-    'selectedClose'
+    'selectedClose',
+    'oneOption'
   ],
   watch: {
     initSelected: 'setSelected',
@@ -275,7 +281,7 @@ export default {
         tabId: undefined,
         tabName: undefined,
         tabCategory: undefined,
-        tabType: undefined,
+        tabType: undefined || this.oneOption,
         tabStatusArray: undefined,
         tabResource: undefined
       }
@@ -296,6 +302,9 @@ export default {
       const pagination = this.pagination
       filter.page = pagination.currentPage
       filter.rows = pagination.pageSize
+      if (this.oneOption === 2) {
+        filter.tabType = 2
+      }
       if (!filter.tabStatusArray) {
         filter.tabStatusArray = '4'
       }

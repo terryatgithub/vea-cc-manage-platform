@@ -46,10 +46,27 @@
             :options="GD_LIVE_CLICK_TYPE_OPTIONS"
           />
         </el-form-item>
-        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.channel" prop="tvLiveInfo.channelId" label="频道选择">
+        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.channel"
+          key="channelSelector"
+          prop="tvLiveInfo.channelId"
+          label="频道选择">
           <GDChannelSelector v-if="!isReadonly" title="选择频道" @select-end="handleSelectGDChannelEnd" selection-type="single"></GDChannelSelector>
           <template v-if="contentForm.tvLiveInfo.channelId">
             已选择: <el-tag>{{ contentForm.tvLiveInfo.channelId }}</el-tag>
+          </template>
+        </el-form-item>
+        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.telecast"
+          prop="tvLiveInfo.channelId"
+          label="节目选择">
+          <GDChannelSelector v-if="!isReadonly"
+            key="scheduleSelector"
+            hasSchedule
+            title="选择节目"
+            @select-end="handleSelectGDChannelEnd"
+            selection-type="single" />
+          <template v-if="contentForm.tvLiveInfo.channelId">
+            已选择: <el-tag>{{ contentForm.tvLiveInfo.channelId }}</el-tag>
+            <el-tag style="margin-left: 10px">{{ contentForm.extraValue1 }}</el-tag>
           </template>
         </el-form-item>
       </div>
@@ -257,11 +274,12 @@
               width: postSize.width + 'px',
               cursor: 'pointer'
             }">
-            <img referrerpolicy="no-referrer" :src="contentForm.pictureUrl" >
+            <img v-if="contentForm.pictureUrl" referrerpolicy="no-referrer" :src="contentForm.pictureUrl" >
             <div class="post-info">
-              <div class="post-episode" v-if="[1, 4, 5].indexOf(contentForm.categoryId) > -1">
+              <div class="post-episode" v-if="[1, 2, 9, 4, 5].indexOf(contentForm.categoryId) > -1">
                 <span v-if="contentForm.showSeries"  class="episode">
-                  <template v-if="contentForm.categoryId === 1">
+                  <!-- 1电视剧2动漫9纪录片 -->
+                  <template v-if="contentForm.categoryId === 1 || contentForm.categoryId === 2 || contentForm.categoryId === 9">
                     {{
                     contentForm.publishStatus === 'ended'
                     ? contentForm.series
@@ -408,6 +426,7 @@
           selection-type="single"
           :source="source"
           :id-type="idType"
+          :before-select-end-cbs="beforeSelectBlockCbs"
           @select-end="handleSelectBlockEnd">
           <el-button>选择推荐位</el-button>
         </ResourceSelector>
@@ -565,15 +584,41 @@
           inactive-color="grey">
         </el-switch>
       </el-form-item>
-      <RecommendStreamSelector
-        v-if="!!contentForm.flagSetRec"
-        :value="contentForm.mediaAutomationBlockRls.mediaAutomationId"
-        :disabled="isReadonly"
-        :source="source"
-        :resolution="resolution[0] + '*' + resolution[1]"
-        @select-end="handleSelectRecomStream"
-        @del-select="contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
-      />
+      <template v-if="!!contentForm.flagSetRec">
+            <RecommendStreamSelector
+              :value="contentForm.mediaAutomationBlockRls.type === 0? contentForm.mediaAutomationBlockRls.mediaAutomationId : ''"
+              :disabled="isReadonly"
+              :source="source"
+              :resolution="resolution[0] + '*' + resolution[1]"
+              @select-end="handleSelectRecomStream"
+              @del-select="contentForm.mediaAutomationBlockRls.mediaAutomationId = undefined"
+            />
+            <NewBlockRecStreamSelector
+                title="选择新推荐流"
+                selection-type="single"
+                :source="source"
+                :scene="scene"
+                :disabled="isReadonly"
+                @select-end="handleSelectBlockRecStreamEnd"
+                style="margin:0 0 10px 160px">
+            </NewBlockRecStreamSelector>
+            <template v-if="isReadonly === true  && contentForm.mediaAutomationBlockRls.mediaAutomationId">
+              已选择: <el-tag
+              v-if="contentForm.mediaAutomationBlockRls.type === 1"
+              >
+              {{contentForm.mediaAutomationBlockRls.mediaAutomationId}}({{contentForm.mediaAutomationBlockRls.mediaAutomationName}})
+              </el-tag>
+            </template>
+            <template v-if="isReadonly == false  && contentForm.mediaAutomationBlockRls.mediaAutomationName">
+              已选择: <el-tag closable
+              @close="handleDelTagClose(contentForm.mediaAutomationBlockRls)"
+              :disabled="isReadonly"
+              v-if="contentForm.mediaAutomationBlockRls.type === 1"
+              >
+              {{contentForm.mediaAutomationBlockRls.mediaAutomationId}}({{contentForm.mediaAutomationBlockRls.mediaAutomationName}})
+              </el-tag>
+            </template>
+      </template>
       <el-form-item label="刷新机制" v-if="!!contentForm.flagSetRec" prop="mediaAutomationBlockRls.refreshCal">
         <InputPositiveInt
           clearable
@@ -582,6 +627,15 @@
           :disabled="isReadonly"
         />
         客户端曝光X次之后刷新推荐位
+      </el-form-item>
+      <el-form-item label="开启推荐位引导标签" v-if="contentForm.coverType === 'media'">
+        <el-switch
+          :disabled="isReadonly"
+          :value="!!contentForm.flagTagVector"
+          @input="handleInputFlagTagVector"
+          active-color="#13ce66"
+          inactive-color="grey">
+        </el-switch>
       </el-form-item>
       <el-form-item label="应用版本号" prop="versionCode" v-if="contentForm.coverType === 'media'">
         <el-input clearable v-model.trim="contentForm.versionCode" :disabled="isReadonly"></el-input>
@@ -608,7 +662,6 @@
       :ids="[currentResourceId]"
       @close="showBlockTagDialog = false">
     </TagFrame>
-
   </div>
 </template>
 
@@ -624,6 +677,7 @@ import CommonSelector from '@/components/CommonSelector'
 import CrowdSelector from '@/components/CrowdSelector.vue'
 import TabSelector from '@/components/selectors/TabSelector'
 import ClickEventSelector from '@/components/selectors/ClickEventSelector'
+import NewBlockRecStreamSelector from '@/components/selectors/NewBlockRecStreamSelector'
 import TagFrame from '../TagFrame'
 import {
   getSelectedResource,
@@ -665,6 +719,7 @@ export default {
     TagFrame,
     InputPositiveInt,
     RecommendStreamSelector,
+    NewBlockRecStreamSelector,
     KnowledgeTagSelector,
     MaskAuthorSelector,
     MaskVideoSelector,
@@ -734,6 +789,7 @@ export default {
       }
     }
     return {
+      isShowOrHide: false,
       MASK_LIFE_TYPE_OPTIONS,
       MASK_LIFE_TYPES,
       MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
@@ -851,9 +907,9 @@ export default {
           { required: false, validator: checkSecKill, trigger: 'blur' }
         ],
         dmpRegistryInfo: [{ required: !isReadonly, message: '请选择定向人群' }],
-        'mediaAutomationBlockRls.mediaAutomationId': [
-          { required: true, message: '当开关开启时必填' }
-        ],
+        // 'mediaAutomationBlockRls.mediaAutomationId': [
+        //   { required: true, message: '当开关开启时必填' }
+        // ],
         'mediaAutomationBlockRls.refreshCal': [
           { required: true, message: '当开关开启时必填', trigger: 'blur' }
         ],
@@ -865,9 +921,29 @@ export default {
           { required: true, message: '请选择知识', trigger: 'blur' }
         ],
         'tvLiveInfo.channelId': [
-          { required: true, message: '请选择频道', trigger: 'blur' }
+          { required: true, message: '请选择频道/节目', trigger: 'blur' }
         ]
-      }
+      },
+      beforeSelectBlockCbs: {
+        func: (rows) => {
+          for (let i = 0; i < rows.length; i++) {
+            const selected = rows[i]
+            if (selected.pluginType === 'REFERENCE_VIP_QRCODE' || selected.pluginType === 'REFERENCE_PLAY_VIDEO') {
+              const rlsTabInfo = this.data.rlsTabInfo || []
+              const isSomeNoTopic = rlsTabInfo.some(tabInfo => {
+                return tabInfo.tabType !== 2
+              })
+              if (isSomeNoTopic) {
+                selected.pluginType === 'REFERENCE_VIP_QRCODE' && this.$message.error('【VIP二维码推荐位】只能配置在专题版面中')
+                selected.pluginType === 'REFERENCE_PLAY_VIDEO' && this.$message.error('【视频播放推荐位】只能配置在专题版面中')
+                return false
+              }
+            }
+          }
+          return true
+        }
+      },
+      scene: '2'
     }
   },
   props: [
@@ -962,13 +1038,36 @@ export default {
     }
   },
   methods: {
+    // 移除新推荐流选中的
+    handleDelTagClose (tag) {
+      tag.mediaAutomationId = undefined
+      tag.mediaAutomationName = undefined
+      tag.type = 0
+      this.isShowOrHide = false
+    },
+    handleSelectBlockRecStreamEnd (selected) {
+      let defaultObj = {
+        mediaAutomationId: selected[0].id,
+        mediaAutomationName: selected[0].recName,
+        recCategory: selected[0].recCategory,
+        recFlag: selected[0].userToken
+      }
+
+      this.isShowOrHide = true
+      // 没有初始化，不是响应式数据
+      // this.contentForm.mediaAutomationBlockRls = Object.assign(this.contentForm.mediaAutomationBlockRls, defaultObj)
+      this.contentForm.mediaAutomationBlockRls = { ...this.contentForm.mediaAutomationBlockRls, ...defaultObj }
+      // this.$set(this.contentForm, defaultObj.id, selected[0].id) // 实时更新id
+      this.contentForm.mediaAutomationBlockRls.type = 1 // 新推荐流为1
+    },
     handleInputGDLiveClickType (val) {
       this.contentForm.tvLiveInfo = genDefaultTvLiveInfo({
         clickType: val
       })
+      this.contentForm.extraValue1 = undefined
     },
     handleSelectGDChannelEnd (selected) {
-      const { categoryIds = '', ccChannelId, ccChannelTitle, images } = selected[0]
+      const { categoryIds = '', ccChannelId, ccChannelTitle, images, selectedSchedules } = selected[0]
       const categoryIdArr = categoryIds.split(',')
       const blockSize = this.resolution
       const contentForm = this.contentForm
@@ -977,6 +1076,12 @@ export default {
       tvLiveInfo.channelId = ccChannelId
       contentForm.title = ccChannelTitle
       contentForm.pictureUrl = getMatchedPictureUrlByRotation(blockSize, images)
+      selectedSchedules && (contentForm.extraValue1 = selectedSchedules.thirdScheduleId)
+      if (selectedSchedules) {
+        contentForm.extraValue1 = selectedSchedules.thirdScheduleId
+        contentForm.title = selectedSchedules.thirdScheduleTitle
+        tvLiveInfo.startTime = selectedSchedules.startTime
+      }
     },
     initVideoInfo (maskLifeInfo) {
       if (!maskLifeInfo.videoInfo) {
@@ -1154,9 +1259,22 @@ export default {
         this.contentForm.mediaAutomationBlockRls = {
           refreshCal: 1,
           mediaAutomationId: '',
-          blockType: 'normal'
+          blockType: 'normal',
+          type: '1'
         }
       }
+    },
+    handleInputFlagTagVector (val) {
+      if (this.contentForm.coverType !== 'media') {
+        return this.$message('推荐位的配置必须是影片')
+      }
+      if (this.hideTitleOptions) {
+        return this.$message('推荐位不能是带标题的推荐位')
+      }
+      if (this.resolution[0] < 410) {
+        return this.$message('推荐位宽度必须>=410')
+      }
+      this.contentForm.flagTagVector = val ? 1 : 0
     },
     genParams (openMode) {
       return {
@@ -1390,17 +1508,14 @@ export default {
       const selectedBroadcast = resources.broadcast[0]
       if (selectedFunc) {
         const selected = selectedFunc
+
         this.contentForm.videoContentType = 'sysPlugin'
         this.contentForm.title = selected.pluginName
         this.contentForm.vContentId = selected.pluginId
         this.contentForm.pictureUrl = selected.globalPicture
           ? selected.globalPicture.pictureUrl
           : ''
-        // if (selected.referenceData) {
-        //     this.contentForm.price = selected.referenceData.price / 100;
-        //     this.contentForm.secKillPrice =
-        //             selected.referenceData.secKillPrice / 100;
-        // }
+        this.contentForm.pluginType = selected.pluginType
       }
       if (selectedBroadcast) {
         const selected = selectedBroadcast
@@ -1437,7 +1552,17 @@ export default {
       })
     },
     handleSelectRecomStream (recomStream) {
+      let defaultObj = {
+        refreshCal: 1,
+        mediaAutomationId: '',
+        blockType: 'rotate',
+        type: '0'
+      }
+      this.contentForm.mediaAutomationBlockRls = { ...defaultObj, ...this.contentForm.mediaAutomationBlockRls }
       this.contentForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
+      this.contentForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
+      this.contentForm.mediaAutomationBlockRls.type = 0
+      console.log(this.contentForm.mediaAutomationBlockRls, '----旧推荐流')
     }
   },
   mounted () {
@@ -1464,6 +1589,7 @@ export default {
   overflow hidden
 .post-box img
   width 100%
+  height 100%
 .post-info
   position absolute
   bottom 0

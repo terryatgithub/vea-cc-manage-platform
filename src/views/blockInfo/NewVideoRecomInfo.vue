@@ -1,44 +1,7 @@
 <template>
   <ContentCard :title="title" @go-back="$emit('go-back')">
-    <template v-if="mode === 'create'">
-      <el-form :model="createForm" label-width="80px" ref="createForm">
-        <el-form-item label="流名称" prop="name" :rules="basicFormRules.name">
-          <el-input v-model="createForm.name" class="title-input"></el-input>
-        </el-form-item>
-        <el-form-item label="源" prop="source">
-          <el-radio-group v-model="createForm.source">
-            <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-
-        <el-form-item label="流类型">
-          <el-select v-model="createForm.type" placeholder="请选择">
-            <el-option-group
-              v-for="group in streamTypeGroup"
-              :key="group.label"
-              :label="group.label">
-              <el-option
-                v-for="item in group.options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-option-group>
-          </el-select>
-          <div v-if="createForm.type !== 'normal'" class="type-tip">Tip：基本流仅适用于标准尺寸的推荐位 (标准尺寸：260*364，498*280)</div>
-        </el-form-item>
-      </el-form>
-      <div class="base-info">
-        创建流后，默认是关闭状态的。填充完内容后，找产品或开发去开启状态;
-      </div>
-      <el-row class="createBtn-container">
-        <el-button type="primary" @click="handleCreate">创建</el-button>
-        <el-button type="success" @click="$emit('go-back')">取消</el-button>
-      </el-row>
-    </template>
-
-    <template v-else>
-      <CommonContent
+    <template>
+      <!-- <CommonContent
         :mode="mode"
         :resource-info="resourceInfo"
         @replicate="mode = 'replicate'"
@@ -52,7 +15,7 @@
         @select-version="fetchData"
         @cancel-timing="fetchData(tabInfo.currentVersion)"
         @delete="$emit('upsert-end', $event)"
-      >
+      > -->
       <div class="form-legend-header" @click="isCollapseBase = !isCollapseBase">
         <i v-if="isCollapseBase" class="el-icon-arrow-down"></i>
         <i v-else class="el-icon-arrow-up"></i>
@@ -61,20 +24,31 @@
       <div :style="{display: isCollapseBase ? 'none' : 'block'}">
         <el-form :model="basicForm" ref="basicForm" label-width="150px" :rules="basicFormRules">
           <el-form-item label="推荐流ID">{{basicForm.id}}</el-form-item>
-          <el-form-item label="推荐流名称" prop="name">
-            <el-input class="title-input" v-model="basicForm.name" :disabled="isRead"/>
+          <el-form-item label="推荐流名称" prop="recName">
+            <el-input class="title-input" v-model="basicForm.recName" :disabled="isRead"/>
           </el-form-item>
-          <el-form-item label="源" prop="source">
-            <el-radio-group :value="basicForm.source" :disabled="isRead || isReplica" @input="handleSourceChange">
-              <el-radio v-for="item in $consts.sourceOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio>
-            </el-radio-group>
+          <el-form-item label="内容源" required>
+            {{$consts.sourceTextWithNone[basicForm.source]}}
+          </el-form-item>
+          <el-form-item label="用户唯一标识" required>
+            mac
+          </el-form-item>
+          <el-form-item label="业务来源" prop="platformName">
+            <el-input class="title-input" v-model="basicForm.platformName" :disabled="isRead"/>
+          </el-form-item>
+          <el-form-item label="运营后台请求间隔" required>
+            {{basicForm.requestInterval}}
+            <i class="nuit">单位：秒</i>
+          </el-form-item>
+          <el-form-item label="适用场景" required>
+            {{handleScene(basicForm.scene)}}
           </el-form-item>
           <!-- <el-form-item label="流类型">
             {{streamType}}
           </el-form-item> -->
-          <el-form-item label="流状态">
+          <!-- <el-form-item label="流状态">
             {{['关闭', '开启'][basicForm.openStatus]}}
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </div>
 
@@ -128,7 +102,7 @@
           />
         </div>
       </div>
-      </CommonContent>
+      <!-- </CommonContent> -->
     </template>
 
     <!-- 添加尺寸dialog -->
@@ -151,11 +125,11 @@
 import InputPositiveInt from '@/components/InputPositiveInt'
 import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
 import AssignVideoTab from './AssignVideoTab'
-import CommonContent from '@/components/CommonContent.vue'
+// import CommonContent from '@/components/CommonContent.vue'
 import titleMixin from '@/mixins/title'
 import { cloneDeep } from 'lodash'
 const videoListParams = ['mediaResourceId', 'title', 'showSeries', 'showScore', 'picInfoList'] // picInfoList兼容预览，可转换为picList
-const params = ['name', 'source', 'status']
+const params = ['name', 'source', 'platformName', 'status']
 const streamTypeGroupOption = [
   {
     label: '普通流',
@@ -206,10 +180,10 @@ export default {
   components: {
     InputPositiveInt,
     ResourceSelector,
-    AssignVideoTab,
-    CommonContent
+    AssignVideoTab
+    // CommonContent
   },
-  data () {
+  data (value) {
     return {
       resourceName: '指定影片推荐流',
       createForm: {
@@ -225,7 +199,8 @@ export default {
         openStatus: undefined,
         currentVersion: undefined,
         flagAllVideoPoster: 0,
-        type: 'normal'
+        type: 'normal',
+        requestInterval: ''
       },
       isCollapseBase: false,
       isCollapseVideo: false,
@@ -239,14 +214,19 @@ export default {
         height: undefined
       },
       basicFormRules: {
-        name: [
+        recName: [
           { required: true, message: '请输入名称', trigger: 'blur' },
           { max: 45, message: '推荐流名称不得超出45个字符', trigger: 'blur' }
+        ],
+        platformName: [
+          { required: true, message: '请输入业务来源', trigger: 'blur' }
         ]
       },
       videoListParams, // 必填参数
       params,
-      streamTypeGroup: streamTypeGroupOption
+      streamTypeGroup: streamTypeGroupOption,
+      sceneNames: [],
+      resSceneOption: []
     }
   },
 
@@ -292,6 +272,24 @@ export default {
   },
 
   methods: {
+    fetchMediaSence () {
+      this.$service.getMediaSence().then(res => {
+        this.resSceneOption = res
+      })
+    },
+    handleScene (scene) {
+      if (scene) {
+        let sceneNames = [] // this.sceneNames = [] 错误 render不能操作dom?
+        scene.split(',').map(item => {
+          this.resSceneOption.map(element => {
+            if (item === element.dictEnName) {
+              sceneNames.push(element.dictCnName)
+            }
+          })
+        })
+        return (sceneNames.join(','))
+      }
+    },
     getDefaultVideoTab () {
       return {
         id: undefined, //  影片自增id
@@ -984,20 +982,23 @@ export default {
       return param
     },
     fetchData (version) {
-      this.$service.getMediaAutomationDetial({ id: this.id, version }).then(data => {
+      this.$service.getNewMediaAutomationDetial({ id: this.id, version }).then(data => {
         this.setBasicInfo(data)
       })
     },
     setBasicInfo (data) {
       let basicForm = this.basicForm
       basicForm.id = data.id
-      basicForm.name = data.name
+      basicForm.recName = data.recName
       basicForm.openStatus = data.openStatus
       basicForm.type = data.type || 'normal'
       basicForm.currentVersion = data.currentVersion
       basicForm.duplicateVersion = data.duplicateVersion
+      basicForm.platformName = data.platformName
       basicForm.status = data.status
       basicForm.source = data.source
+      basicForm.scene = data.scene
+      basicForm.requestInterval = data.requestInterval
       this.videoTabs = []
       this.videoTabs = (data.videoList || [])
         .map(item => {
@@ -1008,31 +1009,33 @@ export default {
           return b.priority - a.priority
         })
       this.sizeTags = []
-      if (data.picSize.length !== 0) {
-        data.picSize.map(item => {
-          const picInfo = data.picInfoList.find(picInfo => {
-            return item === picInfo.picSize
-          })
-          this.sizeTags.push(
-            {
-              width: item.split('*')[0],
-              height: item.split('*')[1],
-              closable: picInfo.canDelete
-            }
-          )
-        })
-      }
-      console.log('dataDetail', data)
+      // if (data.picSize.length !== 0) {
+      //   data.picSize.map(item => {
+      //     const picInfo = data.picInfoList.find(picInfo => {
+      //       return item === picInfo.picSize
+      //     })
+      //     this.sizeTags.push(
+      //       {
+      //         width: item.split('*')[0],
+      //         height: item.split('*')[1],
+      //         closable: picInfo.canDelete
+      //       }
+      //     )
+      //   })
+      // }
     }
   },
 
   created () {
     this.mode = this.initMode || 'create'
     if (this.id) {
-      this.$service.getMediaAutomationDetial({ id: this.id, version: this.version }).then(data => {
+      this.$service.getNewMediaAutomationDetial({ id: this.id, version: this.version }).then(data => {
         this.setBasicInfo(data)
       })
     }
+  },
+  mounted () {
+    this.fetchMediaSence()
   }
 }
 </script>

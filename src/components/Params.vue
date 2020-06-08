@@ -7,25 +7,29 @@
       </div>
       <div key="edit-params"  v-if="!readonly">
         <div class="app-extend-params" v-for="(param, index) in params" :key="index">
-          <el-form-item
-            label="key:"
-            label-width="60px"
-            :prop="propPrefix + index + '.key'"
-            :rules="rules.params.key"
-          >
-            <el-input clearable v-model.trim="param.key"></el-input>
-          </el-form-item>
-          <el-form-item
-            label="value:"
-            label-width="60px"
-            :prop="propPrefix + index + '.value'"
-            :rules="rules.params.value"
-          >
-            <el-input clearable v-model.trim="param.value"></el-input>
-          </el-form-item>
-          <a class="app-params__remove-param" @click="handleRemoveParam(index)">
-            <i class="el-icon-minus"></i>
-          </a>
+          <template v-if="!param.hide">
+            <el-form-item
+              label="key:"
+              label-width="60px"
+              :prop="propPrefix + index + '.key'"
+              :rules="rules.params.key"
+            >
+              <div style="min-width: 160px" v-if="param.default">{{param.key}}</div>
+              <el-input v-else v-model.trim="param.key"></el-input>
+            </el-form-item>
+            <el-form-item
+              label="value:"
+              label-width="60px"
+              :prop="propPrefix + index + '.value'"
+              :rules="rules.params.value"
+            >
+              <el-input v-model.trim="param.value"></el-input>
+            </el-form-item>
+            <a v-if="!param.default" class="app-params__remove-param" @click="handleRemoveParam(index)">
+              <i class="el-icon-minus"></i>
+            </a>
+            <div class="tips">{{param.tip}}</div>
+          </template>
         </div>
         <el-button type="primary" plain @click="handleAddParam">
           <i class="el-icon-plus"></i>&nbsp;添加
@@ -42,7 +46,7 @@
           </el-form-item>
           <el-form-item label label-width="0px">
             <el-tag>value</el-tag>&nbsp;
-            <el-tooltip class="item" effect="dark" :content="param.value" placement="top">
+            <el-tooltip class="item" effect="dark" :content="param.value + ''" placement="top">
               <span>{{ param.value }}</span>
             </el-tooltip>
           </el-form-item>
@@ -68,13 +72,13 @@ export default {
       }
       cb()
     }
-    const validateValue = (rule, value, cb) => {
-      if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
-        cb(new Error('请勿输入特殊或空白字符'))
-      } else {
-        cb()
-      }
-    }
+    // const validateValue = (rule, value, cb) => {
+    //   if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
+    //     cb(new Error('请勿输入特殊或空白字符'))
+    //   } else {
+    //     cb()
+    //   }
+    // }
     return {
       rules: {
         params: {
@@ -83,8 +87,8 @@ export default {
             { validator: validateKey, trigger: 'blur' }
           ],
           value: [
-            { required: true, message: '不能为空', trigger: 'blur' },
-            { validator: validateValue, trigger: 'blur' }
+            { required: true, message: '不能为空', trigger: 'blur' }
+            // { validator: validateValue, trigger: 'blur' }
           ]
         }
       }
@@ -111,6 +115,13 @@ export default {
   color: #333;
   font-size: 12px;
   font-style: italic;
+  display: inline-block;
+  line-height: 1;
+}
+@media screen and (max-width: 1500px) {
+  .tips {
+    max-width: 330px;
+  }
 }
 .app-extend-params .el-form-item,
 .app-extend-params .el-form-item__label,

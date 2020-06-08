@@ -1,6 +1,6 @@
 <template>
     <div>
-      <el-form-item label="推荐流选择" prop="mediaAutomationBlockRls.mediaAutomationId">
+      <el-form-item :label="title" prop="mediaAutomationBlockRls.mediaAutomationId">
         <el-button type="primary" @click="isVisiableRecom = true" :disabled="disabled">选择推荐流</el-button>
         <el-tag
           v-if="value"
@@ -23,14 +23,14 @@
           class="recom-tag cursor-tip"
           @click="handleSelectTag(tag)"
         >{{tag.name}}</el-tag>
-        <h4>规则筛选影片流</h4>
+        <!-- <h4>规则筛选影片流</h4>
         <el-tag
           v-for="tag in standardStreamTags"
           :key="tag.id"
           size="medium"
           class="recom-tag cursor-tip"
           @click="handleSelectTag(tag)"
-        >{{tag.name}}</el-tag>
+        >{{tag.name}}</el-tag> -->
       </el-dialog>
       <!-- 推荐流弹框 end -->
     </div>
@@ -47,10 +47,11 @@ export default {
       recomStreamTags: [],
       mediaAutomationId: undefined,
       normalStreamTags: [],
-      standardStreamTags: []
+      standardStreamTags: [],
+      title: ''
     }
   },
-  props: ['value', 'disabled', 'source', 'resolution'],
+  props: ['value', 'disabled', 'source', 'resolution', 'show', 'type'],
   methods: {
     handleDelStreamTag () {
       this.$emit('del-select')
@@ -92,6 +93,13 @@ export default {
     }
   },
   created () {
+  },
+  mounted () {
+    if (this.show) {
+      this.title = '推荐流选择'
+    } else {
+      this.title = ''
+    }
   }
 }
 </script>

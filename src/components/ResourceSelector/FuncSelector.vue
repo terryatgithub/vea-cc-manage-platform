@@ -13,7 +13,7 @@
     @filter-change="handleFilterChange"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
-    @select-end="$emit('select-end')">
+    @select-end="handleSelectEnd">
     <el-form
       slot="filter"
       :model="filter"
@@ -137,7 +137,7 @@ export default {
       }
     }
   },
-  props: ['isLive', 'selectionType', 'source'],
+  props: ['isLive', 'selectionType', 'source', 'beforeSelectEndCb'],
   computed: {
     selected () {
       return this.$refs.baseSelector.selected.slice()
@@ -179,6 +179,13 @@ export default {
         this.pagination.total = result.total
         this.table.data = result.rows
       })
+    },
+    handleSelectEnd (rows) {
+      let isValid = true
+      if (this.beforeSelectEndCb) {
+        isValid = this.beforeSelectEndCb(rows)
+      }
+      isValid && this.$emit('select-end', rows)
     }
   },
   created () {
