@@ -1373,7 +1373,6 @@ export default {
         lowerVersionContent.onclick = JSON.stringify(lowerVersionContent.onclick)
       }
       data.parentType = 'Block'
-      debugger
       this.$service
         .saveBlockInfo({ jsonStr: JSON.stringify(data) }, '提交成功')
         .then(() => {

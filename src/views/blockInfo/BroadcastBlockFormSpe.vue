@@ -274,9 +274,7 @@ export default {
       }
       this.normalForm.onclick = o
     },
-    handleSelectClickEventEnd () {
-
-    },
+    handleSelectClickEventEnd () {},
     handleSelectNormalSingleResourceEnd (selectedResources, mode) {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
