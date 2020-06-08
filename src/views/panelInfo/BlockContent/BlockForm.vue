@@ -837,7 +837,7 @@ export default {
           }
         ],
         extraValue1: [
-          { required: true, message: '请选择资源12', trigger: 'blur' }
+          { required: true, message: '请选择资源', trigger: 'blur' }
         ],
         title: [
           {

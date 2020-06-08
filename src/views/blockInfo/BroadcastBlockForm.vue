@@ -685,9 +685,11 @@ export default {
       }
     },
     handleSelectRecomStream (recomStream) {
+      console.log(recomStream, '---d')
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
       this.normalForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
       this.normalForm.mediaAutomationBlockRls.type = 0
+      console.log(this.normalForm.mediaAutomationBlockRls, '----')
     },
     // 选择资源拓展项
     handleSwitchShortVideo (bool) {

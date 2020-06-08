@@ -1310,7 +1310,6 @@ export default {
         }
         // type url 时，要转换 params 数据, 具体看 getUrlBlur
         if (item.type === 'url') {
-          debugger
           item.params = {
             url: item.thirdIdOrPackageName,
             source: '',
@@ -1320,7 +1319,7 @@ export default {
           }
         }
         if (item.onclick) {
-          if (item.coverType !== 'custom') {
+          if (item.coverType !== 'custom' && item.configModel === 'purePoster') {
             item.onclick = ''
           } else {
             parseParams(item.onclick)
@@ -1351,9 +1350,8 @@ export default {
         return item
       }
       data.normalVersionContent = data.normalVersionContent.map(parseContent)
-      // debugger
       const lowerVersionContent = data.lowerVersionContent
-      if (lowerVersionContent.onclick) {
+      if (lowerVersionContent.coverType) {
         parseParams(lowerVersionContent.onclick)
       }
       // 转换小专题
