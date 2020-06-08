@@ -1703,7 +1703,7 @@ export default {
         this.tabInfo.tabType = val
       }
       // alert(val)
-      if (val === 1) {
+      if (val === 1 && this.tabInfo.tabType === 2) {
         this.$confirm('切换到普通版面将清空含有VIP二维码推荐位和视频播放推荐位的版块，是否切换？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
