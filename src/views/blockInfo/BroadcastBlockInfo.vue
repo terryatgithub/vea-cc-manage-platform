@@ -1423,7 +1423,7 @@ export default {
           let mediaAutomationBlockRlsObj = {
             mediaAutomationId: '',
             mediaAutomationName: '',
-            refreshCal: '',
+            refreshCal: '1',
             type: ''
           }
           const mapContent = (item, isDmpContent) => {

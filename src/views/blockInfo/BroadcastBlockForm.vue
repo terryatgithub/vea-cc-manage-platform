@@ -281,7 +281,7 @@
           class="marginL"
           v-if="normalForm.guideConfig.id"
           :closable="!disabled"
-          @close="normalForm.guideConfig.id  = undefined"
+          @close="handleDelSelectGuideMovie"
           >已选择: {{normalForm.guideConfig.id}}</el-tag>
           <el-tag
           type="success"
@@ -344,6 +344,7 @@
         <el-radio-group
           :value="normalForm.sign"
           @input="handleChangeSign"
+          @change="handleChangeClear"
           :disabled="isManualSetResource">
           <el-radio label="autoSet" :disabled="disabled">跳转本播放资源</el-radio>
           <template v-if="normalForm.clickType === 'detail'">
@@ -618,6 +619,11 @@ export default {
       normalForm.guideConfig.after_play.operation = newVal
       // normalForm.guideConfig.after_play.operation = ''
     },
+    handleChangeClear (newVal) {
+      if (newVal !== 'manualSet') {
+        this.normalForm.onclick = ''
+      }
+    },
     handleChangeSign (newVal) {
       const normalForm = this.normalForm
       if (newVal === 'autoSet') {
@@ -733,6 +739,10 @@ export default {
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
       this.normalForm.guideConfig.id = resourceContent.thirdIdOrPackageName
       this.normalForm.guideConfig.vid = resourceContent.vid
+    },
+    handleDelSelectGuideMovie () {
+      this.normalForm.guideConfig.id = undefined
+      this.normalForm.guideConfig.vid = undefined
     },
     // 播放指定影片
     handleSelectGuideResource (selectedResources) {
