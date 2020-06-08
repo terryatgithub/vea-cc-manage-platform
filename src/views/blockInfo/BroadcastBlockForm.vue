@@ -146,7 +146,7 @@
         </el-form-item>
         <template v-if="!!normalForm.flagSetRec">
           <RecommendStreamSelector
-            :value="normalForm.mediaAutomationBlockRls.type == '0'? normalForm.mediaAutomationBlockRls.mediaAutomationId: ''"
+            :value="normalForm.mediaAutomationBlockRls.type == 0 ? normalForm.mediaAutomationBlockRls.mediaAutomationId: ''"
             :disabled="isReadonly"
             :source="source"
             :show="showTitle"
@@ -162,7 +162,7 @@
               @select-end="handleSelectBlockRecStreamEnd"
               style="margin:0 0 10px 140px">
           </NewBlockRecStreamSelector>
-          <template v-if="isReadonly === false && normalForm.mediaAutomationBlockRls.mediaAutomationName">
+          <template v-if="isReadonly === false && normalForm.mediaAutomationBlockRls.type === 1">
             已选择
             <el-tag closable
             @close="handleDelTagClose(normalForm.mediaAutomationBlockRls)"
@@ -172,9 +172,8 @@
             {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}({{normalForm.mediaAutomationBlockRls.mediaAutomationName}})
             </el-tag>
           </template>
-          <template v-if="isReadonly === true && normalForm.mediaAutomationBlockRls.mediaAutomationId">
+          <template v-if="isReadonly === true && normalForm.mediaAutomationBlockRls.type === 1">
             已选择<el-tag
-            v-if="normalForm.mediaAutomationBlockRls.type === 1"
             >
             {{normalForm.mediaAutomationBlockRls.mediaAutomationId}}({{normalForm.mediaAutomationBlockRls.mediaAutomationName}})
             </el-tag>
@@ -705,10 +704,17 @@ export default {
       }
     },
     handleSelectRecomStream (recomStream) {
+      let defaultObj = {
+        refreshCal: 1,
+        mediaAutomationId: '',
+        blockType: 'rotate',
+        type: '0'
+      }
+      this.normalForm.mediaAutomationBlockRls = { ...defaultObj, ...this.normalForm.mediaAutomationBlockRls }
       console.log(recomStream, '---d')
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
       this.normalForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
-      this.normalForm.mediaAutomationBlockRls.type = 0
+      this.normalForm.mediaAutomationBlockRls.type = '0'
       console.log(this.normalForm.mediaAutomationBlockRls, '----')
     },
     // 选择资源拓展项
@@ -751,9 +757,9 @@ export default {
     handleSelectGuideByMovie (selectedResources) {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
-      this.normalForm.guideConfig = { ...this.normalForm.guideConfig, ...resourceContent }
-      this.normalForm.guideConfig.id = resourceContent.thirdIdOrPackageName
-      this.normalForm.guideConfig.vid = resourceContent.vid
+      const guideConfig = this.normalForm.guideConfig
+      guideConfig.id = resourceContent.thirdIdOrPackageName
+      guideConfig.vid = resourceContent.vid
     },
     handleDelSelectGuideMovie () {
       this.normalForm.guideConfig.id = undefined
@@ -763,8 +769,12 @@ export default {
     handleSelectGuideResource (selectedResources) {
       const result = getSelectedResource(selectedResources)
       const resourceContent = parseResourceContent(result.selectedType, result.selected[0])
-      this.normalForm.guideConfig.after_play.id = resourceContent.thirdIdOrPackageName
-      this.normalForm.guideConfig.after_play.vid = resourceContent.vid
+      this.$set(this.normalForm.guideConfig.after_play, 'id', '')
+      this.$set(this.normalForm.guideConfig.after_play, 'vid', '')
+      this.$nextTick(() => {
+        this.normalForm.guideConfig.after_play.id = resourceContent.thirdIdOrPackageName
+        this.normalForm.guideConfig.after_play.vid = resourceContent.vid
+      })
     }
   },
   created () {

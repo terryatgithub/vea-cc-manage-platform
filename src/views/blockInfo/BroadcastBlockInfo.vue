@@ -478,7 +478,7 @@ export default {
               const normalForm = this.normalForm
               if (normalForm.sign === 'manualResource') {
                 if (!value || JSON.stringify(value) === '{}') {
-                  return cb(Error('请选择资源JSON'))
+                  return cb(Error('请选择资源'))
                 }
               }
               cb()
@@ -1014,6 +1014,13 @@ export default {
             return this.$message.error('请指定播放资源！')
           }
         }
+        if ($contentForm.flagSetRec === 1) {
+          if (!$contentForm.mediaAutomationBlockRls.mediaAutomationId && !$contentForm.mediaAutomationBlockRls.recId) {
+            return this.$message.error('开关开启时，推荐流选择必须选择其一')
+          } else if ($contentForm.mediaAutomationBlockRls.mediaAutomationId && $contentForm.mediaAutomationBlockRls.recId) {
+            return this.$message.error('开关开启时，推荐流只能保存其一')
+          }
+        }
         $broadcastBlockForm.$refs.normalForm.validate((valid) => {
           if (valid) {
             cb()
@@ -1195,13 +1202,6 @@ export default {
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
           this.checkNormalForm(() => {
-            if (normalForm.flagSetRec === 1) {
-              if (!normalForm.mediaAutomationBlockRls.mediaAutomationId && !normalForm.mediaAutomationBlockRls.recId) {
-                return this.$message.error('开关开启时，推荐流选择必须选择其一')
-              } else if (normalForm.mediaAutomationBlockRls.mediaAutomationId && normalForm.mediaAutomationBlockRls.recId) {
-                return this.$message.error('开关开启时，推荐流只能保存其一')
-              }
-            }
             if (guideConfig.after_play.operation === 'theFilm') {
               if (!guideConfig.after_play.id && !guideConfig.after_play.vid) {
                 return this.$message.error('请指定播放资源！')
@@ -1237,12 +1237,12 @@ export default {
 
                 cb()
               } else {
-                this.$message.error('请将表单填写完整')
+                this.$message.error('请将表单填写完整3')
               }
             })
           })
         } else {
-          this.$message.error('请将表单填写完整')
+          this.$message.error('请将表单填写完整4')
         }
       })
     },
@@ -1463,7 +1463,12 @@ export default {
           // }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
           this.normalForm = this.normalVersionContent[0]
-          console.log(this.normalForm, '----normalForm')
+          // alert(this.mode)
+          if (this.mode === 'edit') {
+            if (this.normalForm.clickType === 'detail' && this.normalForm.onclick !== {}) {
+              this.normalForm.onclick = {}
+            }
+          }
           // lower data
           const lowerData = cloneDeep(data.lowerVersionContent)
           lowerData.onclick = JSON.parse(lowerData.onclick)

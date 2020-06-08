@@ -602,14 +602,14 @@
                 @select-end="handleSelectBlockRecStreamEnd"
                 style="margin:0 0 10px 160px">
             </NewBlockRecStreamSelector>
-            <template v-if="isReadonly === true  && contentForm.mediaAutomationBlockRls.mediaAutomationId">
+            <template v-if="isReadonly === true  && contentForm.mediaAutomationBlockRls.type === 1">
               已选择: <el-tag
               v-if="contentForm.mediaAutomationBlockRls.type === 1"
               >
               {{contentForm.mediaAutomationBlockRls.mediaAutomationId}}({{contentForm.mediaAutomationBlockRls.mediaAutomationName}})
               </el-tag>
             </template>
-            <template v-if="isReadonly == false  && contentForm.mediaAutomationBlockRls.mediaAutomationName">
+            <template v-if="isReadonly == false  && contentForm.mediaAutomationBlockRls.type === 1">
               已选择: <el-tag closable
               @close="handleDelTagClose(contentForm.mediaAutomationBlockRls)"
               :disabled="isReadonly"
