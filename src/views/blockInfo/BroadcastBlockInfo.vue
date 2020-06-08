@@ -1022,14 +1022,11 @@ export default {
             return this.$message.error('开关开启时，推荐流只能保存其一')
           }
         }
-        // debugger
-        // configModel
-        // alert($contentForm.showContentType)
-        // if ($contentForm.showContentType === 'dmp') {
-        //   if ($contentForm.clickParams === {}) {
-        //     return this.$message.error('请选择跳转其他播放资源！')
-        //   }
-        // }
+        if ($contentForm.showContentType === 'dmp') {
+          if ($contentForm.clickParams === {}) {
+            return this.$message.error('请选择跳转其他播放资源！')
+          }
+        }
         $broadcastBlockForm.$refs.normalForm.validate((valid) => {
           if (valid) {
             cb()
@@ -1216,7 +1213,12 @@ export default {
                 return this.$message.error('请指定播放资源！')
               }
             }
-            if (contentType === '' && normalForm.type !== 'url') return this.$message.error('请选择资源23！')
+            if (normalForm.showContentType === 'dmp') {
+              if (normalForm.clickParams === {}) {
+                return this.$message.error('请选择跳转其他播放资源！')
+              }
+            }
+            if (contentType === '' && normalForm.type !== 'url') return this.$message.error('请选择资源！')
             if (normalForm.mediaAutomationBlockRls.recId) {
               let defalutId = normalForm.mediaAutomationBlockRls.recId
               normalForm.mediaAutomationBlockRls.mediaAutomationId = defalutId
