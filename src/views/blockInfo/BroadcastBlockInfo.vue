@@ -1247,12 +1247,12 @@ export default {
 
                 cb()
               } else {
-                this.$message.error('请将表单填写完整3')
+                this.$message.error('请将表单填写完整')
               }
             })
           })
         } else {
-          this.$message.error('请将表单填写完整4')
+          this.$message.error('请将表单填写完整')
         }
       })
     },
