@@ -346,6 +346,13 @@ export default {
         return this.$message.error('插入推荐位仅允许添加一个资源')
       }
       this.$refs[this.activeType + 'BlockForm'].validate(this.contentForm, (err) => {
+        if (this.contentForm.flagSetRec === 1) {
+          if (!this.contentForm.mediaAutomationBlockRls.mediaAutomationId && !this.contentForm.mediaAutomationBlockRls.recId) {
+            return this.$message.error('开关开启时，推荐流选择必须选择其一')
+          } else if (this.contentForm.mediaAutomationBlockRls.mediaAutomationId && this.contentForm.mediaAutomationBlockRls.recId) {
+            return this.$message.error('开关开启时，推荐流只能保存其一')
+          }
+        }
         if (!err) {
           const contentList = this[contentType + 'ContentList']
           if (contentType === 'normal') {

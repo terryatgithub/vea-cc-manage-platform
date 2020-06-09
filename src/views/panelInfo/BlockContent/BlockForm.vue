@@ -1535,10 +1535,17 @@ export default {
               return cb(Error('价格小于秒杀价，建议重新填写！'))
             }
             if (contentForm.flagSetRec === 1) {
-              if (!contentForm.mediaAutomationBlockRls.mediaAutomationId || !contentForm.mediaAutomationBlockRls.refreshCal) {
-                return cb(Error('已开启推荐位个性化推荐开关，但配置不完整!'))
+              if (!contentForm.mediaAutomationBlockRls.mediaAutomationId && !contentForm.mediaAutomationBlockRls.recId) {
+                return this.$message.error('开关开启时，推荐流选择必须选择其一')
+              } else if (contentForm.mediaAutomationBlockRls.mediaAutomationId && contentForm.mediaAutomationBlockRls.recId) {
+                return this.$message.error('开关开启时，推荐流只能保存其一')
               }
             }
+            // if (contentForm.flagSetRec === 1) {
+            //   if (!contentForm.mediaAutomationBlockRls.mediaAutomationId || !contentForm.mediaAutomationBlockRls.refreshCal) {
+            //     return cb(Error('已开启推荐位个性化推荐开关，但配置不完整!'))
+            //   }
+            // }
             if (this.isShowConfigBg) {
               if (!contentForm.bgParams.id || !contentForm.bgParams.title || !contentForm.bgImgUrl) {
                 return cb(Error('已开启配置高清背景图和视频开关，但配置不完整!'))

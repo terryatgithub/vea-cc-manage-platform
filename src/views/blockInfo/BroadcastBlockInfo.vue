@@ -748,6 +748,7 @@ export default {
       if (val === 'general' && this.dmpContentList.length === 0) {
         this.normalForm.showContentType = val
       } else {
+        // this.normalForm.showContentType = val
         this.checkNormalForm(() => {
           this.normalForm.showContentType = val
         })
@@ -1021,6 +1022,11 @@ export default {
             return this.$message.error('开关开启时，推荐流只能保存其一')
           }
         }
+        if ($contentForm.showContentType === 'dmp') {
+          if ($contentForm.clickParams === {}) {
+            return this.$message.error('请选择跳转其他播放资源！')
+          }
+        }
         $broadcastBlockForm.$refs.normalForm.validate((valid) => {
           if (valid) {
             cb()
@@ -1205,6 +1211,11 @@ export default {
             if (guideConfig.after_play.operation === 'theFilm') {
               if (!guideConfig.after_play.id && !guideConfig.after_play.vid) {
                 return this.$message.error('请指定播放资源！')
+              }
+            }
+            if (normalForm.showContentType === 'dmp') {
+              if (normalForm.clickParams === {}) {
+                return this.$message.error('请选择跳转其他播放资源！')
               }
             }
             if (contentType === '' && normalForm.type !== 'url') return this.$message.error('请选择资源！')
@@ -1456,20 +1467,8 @@ export default {
             item = this.genDefaultContentForm({ ...item, isDmpContent })
             return item
           }
-          // this.normalForm.mediaAutomationBlockRls = {
-          //   refreshCal: 1,
-          //   mediaAutomationId: '',
-          //   blockType: 'rotate'
-          // }
           this.normalVersionContent = data.normalVersionContent.map((item) => mapContent(item, false))
           this.normalForm = this.normalVersionContent[0]
-          // alert(this.mode)
-          if (this.mode === 'edit') {
-            if (this.normalForm.clickType === 'detail' && this.normalForm.onclick !== {}) {
-              this.normalForm.onclick = {}
-            }
-          }
-          // lower data
           const lowerData = cloneDeep(data.lowerVersionContent)
           lowerData.onclick = JSON.parse(lowerData.onclick)
           lowerData.params = JSON.parse(lowerData.params || '{}')
