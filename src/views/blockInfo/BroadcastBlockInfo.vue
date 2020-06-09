@@ -476,7 +476,11 @@ export default {
           {
             validator: (rule, value, cb) => {
               const normalForm = this.normalForm
-              if (normalForm.sign === 'manualResource') {
+              const formContent = normalForm.showContentType === 'dmp' // 如果是dmp 新校验dmpContentList
+                ? normalForm.dmpContentList[this.activeDmpIndex]
+                : normalForm
+              // console.log('rule', rule, value, normalForm.sign)
+              if (formContent.sign === 'manualResource') {
                 if (!value || JSON.stringify(value) === '{}') {
                   return cb(Error('请选择资源'))
                 }
@@ -745,18 +749,18 @@ export default {
       })
     },
     handleSwitchShowContentType (val) {
+      const normalForm = this.normalForm
       if (val === 'general' && this.dmpContentList.length === 0) {
-        this.normalForm.showContentType = val
+        normalForm.showContentType = val
       } else {
-        // this.normalForm.showContentType = val
         this.checkNormalForm(() => {
-          this.normalForm.showContentType = val
+          normalForm.showContentType = val
         })
       }
     },
     handleAddDmpContent () {
       const normalForm = this.normalForm
-      const dmpContentList = normalForm.dmpContentList
+      const dmpContentList = this.normalForm.dmpContentList
       if (dmpContentList.length > 0) {
         this.checkNormalForm(() => {
           dmpContentList.push(this.genDefaultContentForm({ isDmpContent: true }))
@@ -1020,11 +1024,6 @@ export default {
             return this.$message.error('开关开启时，推荐流选择必须选择其一')
           } else if ($contentForm.mediaAutomationBlockRls.mediaAutomationId && $contentForm.mediaAutomationBlockRls.recId) {
             return this.$message.error('开关开启时，推荐流只能保存其一')
-          }
-        }
-        if ($contentForm.showContentType === 'dmp') {
-          if ($contentForm.clickParams === {}) {
-            return this.$message.error('请选择跳转其他播放资源！')
           }
         }
         $broadcastBlockForm.$refs.normalForm.validate((valid) => {

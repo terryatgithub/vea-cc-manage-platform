@@ -508,7 +508,6 @@ export default {
       }
       this.isShowOrHide = true
       this.normalForm.mediaAutomationBlockRls = { ...this.normalForm.mediaAutomationBlockRls, ...defaultObj }
-      console.log(this.normalForm.mediaAutomationBlockRls, this.isShowOrHide, '====')
     },
     getThirdId (clickParams) {
       if (clickParams) {
@@ -706,11 +705,9 @@ export default {
         type: '0'
       }
       this.normalForm.mediaAutomationBlockRls = { ...defaultObj, ...this.normalForm.mediaAutomationBlockRls }
-      console.log(recomStream, '---d')
       this.normalForm.mediaAutomationBlockRls.mediaAutomationId = recomStream.id
       this.normalForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
       this.normalForm.mediaAutomationBlockRls.type = '0'
-      console.log(this.normalForm.mediaAutomationBlockRls, '----')
     },
     // 选择资源拓展项
     handleSwitchShortVideo (bool) {
@@ -785,7 +782,6 @@ export default {
       }
     }
     // window.normalForm = this.normalForm
-    console.log(this.normalForm.mediaAutomationBlockRls, '-----获取详23情数据')
   }
 }
 </script>
