@@ -3155,6 +3155,7 @@ export default {
         const panelFillTypes = this.$consts.panelFillTypes
         Object.assign(pannel, panelInit)
         pannel.pannelName = panelInit.pannelGroupRemark
+        const isGroupPannel = initData.parentType === 'group'
         pannel.flagThirdSourceCorner = panelInit.flagThirdSourceCorner || 0
 
         const parseContentItem = (item) => {
@@ -3205,6 +3206,10 @@ export default {
             }
             item.rankIsOpen = item.rankIsOpen || 0
             item.selectedResources = item.contentList
+            // 初始化分组版块的fillType, 直到分组版块支持fillType
+            if (isGroupPannel) {
+              item.fillType = 1
+            }
             item.tagPanelInfo = item.tagPanelInfo || {}
             item.flagTagVector = item.flagTagVector || 0
             item.panelTagVectorInfo = item.panelTagVectorInfo || {
