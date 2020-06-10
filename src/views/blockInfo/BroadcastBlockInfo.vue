@@ -316,7 +316,7 @@
           <el-form-item label="海报" prop="poster.pictureUrl">
             <GlobalPictureSelector
               :disabled="isReadonly"
-              picture-resolution='1210*449'
+              :picture-resolution="basicForm.configModel === 'purePoster' ? undefined : '1210*449'"
               @select-end="handleSelectPostEnd">
               <el-card
                 class="post-box"
