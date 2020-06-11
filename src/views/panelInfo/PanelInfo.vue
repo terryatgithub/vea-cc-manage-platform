@@ -2587,6 +2587,9 @@ export default {
                   }
                 }
               }
+              if (item.coverType !== 'media' || item.coverType !== 'custom') {
+                item.onclick = ''
+              }
 
               item.forceTitle = undefined
               item.picturePreset = undefined
