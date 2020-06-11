@@ -1331,11 +1331,8 @@ export default {
         }
         if (item.onclick) {
           if (item.coverType !== 'custom' && this.basicForm.configModel === 'purePoster') {
-<<<<<<< HEAD
-=======
             item.onclick = ''
           } else if (item.coverType !== 'custom' && this.basicForm.configModel === 'group') {
->>>>>>> feat/sprint2.19
             item.onclick = ''
           } else {
             parseParams(item.onclick)
