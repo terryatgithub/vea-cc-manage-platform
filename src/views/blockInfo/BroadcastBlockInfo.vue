@@ -1330,7 +1330,7 @@ export default {
           }
         }
         if (item.onclick) {
-          if (item.coverType !== 'custom' && item.configModel === 'purePoster') {
+          if (item.coverType !== 'custom' && this.basicForm.configModel === 'purePoster') {
             item.onclick = ''
           } else {
             parseParams(item.onclick)

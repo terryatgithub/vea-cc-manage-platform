@@ -2587,7 +2587,7 @@ export default {
                   }
                 }
               }
-              if (item.coverType !== 'media' || item.coverType !== 'custom') {
+              if (item.coverType !== 'media' && item.coverType !== 'custom') {
                 item.onclick = ''
               }
 
