@@ -118,6 +118,7 @@ const routerMap = {
   sysPlugin: 'sysPlugin',
   mediaAutomation: 'mediaAutomation',
   recStream: 'recStream',
+  recommendStreamABTest: 'recommendStreamABTest',
   recommendStreamScene: 'recommendStreamScene',
   albumPannelInfo: 'albumPannelInfo',
   markPanel: 'markPanel',
@@ -198,6 +199,7 @@ const iconMap = {
   sysPlugin: 'el-icon-cc-minus-square',
   mediaAutomation: 'el-icon-cc-tag',
   recStream: 'el-icon-cc-tag',
+  recommendStreamABTest: 'el-icon-cc-tag',
   recommendStreamScene: 'el-icon-cc-tag',
   ruleCreatePanel: 'el-icon-cc-bankuaiguanli',
 

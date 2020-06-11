@@ -1330,11 +1330,13 @@ export default {
           }
         }
         if (item.onclick) {
-          if (item.coverType !== 'custom' && item.configModel === 'purePoster') {
+          if (item.coverType !== 'custom' && this.basicForm.configModel === 'purePoster') {
+            item.onclick = ''
+          } else if (item.coverType !== 'custom' && this.basicForm.configModel === 'group') {
             item.onclick = ''
           } else {
             parseParams(item.onclick)
-            item.onclick = JSON.stringify(item.onclick || '')
+            item.onclick = JSON.stringify(item.onclick)
           }
         }
         // 转换子频道123
