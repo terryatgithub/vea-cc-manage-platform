@@ -1247,12 +1247,12 @@ export default {
 
                 cb()
               } else {
-                this.$message.error('请将表单填写完整3')
+                this.$message.error('请将表单填写完整')
               }
             })
           })
         } else {
-          this.$message.error('请将表单填写完整4')
+          this.$message.error('请将表单填写完整')
         }
       })
     },
@@ -1332,9 +1332,11 @@ export default {
         if (item.onclick) {
           if (item.coverType !== 'custom' && this.basicForm.configModel === 'purePoster') {
             item.onclick = ''
+          } else if (item.coverType !== 'custom' && this.basicForm.configModel === 'group') {
+            item.onclick = ''
           } else {
             parseParams(item.onclick)
-            item.onclick = JSON.stringify(item.onclick || '')
+            item.onclick = JSON.stringify(item.onclick)
           }
         }
         // 转换子频道123

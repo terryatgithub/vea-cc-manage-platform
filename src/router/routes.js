@@ -49,6 +49,7 @@ import CrowdRel from '../views/crowdRel/Index.vue'
 import PanelRecommend from '../views/panelRecommend/PanelRecommendIndex.vue'
 import AssignVideoRecom from '../views/blockInfo/AssignVideoRecomIndex.vue'
 import NewVideoRecom from '../views/blockInfo/NewVideoRecomIndex.vue'
+import StreamABTest from '../views/blockInfo/StreamABTestIndex.vue'
 import VideoRecomScene from '../views/blockInfo/VideoRecomSceneIndex.vue'
 import DeviceConfig from '../views/deviceConfig/DeviceConfigIndex.vue'
 
@@ -452,6 +453,15 @@ const children = [
         meta: {
           title: '新影片推荐流',
           tagId: 'recStream'
+        }
+      },
+      {
+        name: 'recommendStreamABTest',
+        path: '/recommendStreamABTest/view.html',
+        component: StreamABTest,
+        meta: {
+          title: '推荐流AB测试',
+          tagId: 'recommendStreamABTest'
         }
       },
       {
