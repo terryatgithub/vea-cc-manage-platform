@@ -1081,6 +1081,7 @@ export default {
         contentForm.extraValue1 = selectedSchedules.thirdScheduleId
         contentForm.title = selectedSchedules.thirdScheduleTitle
         tvLiveInfo.startTime = selectedSchedules.startTime
+        tvLiveInfo.programName = selectedSchedules.thirdScheduleTitle
       }
     },
     initVideoInfo (maskLifeInfo) {
