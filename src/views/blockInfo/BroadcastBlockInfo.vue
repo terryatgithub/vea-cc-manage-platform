@@ -1333,7 +1333,12 @@ export default {
           if (item.coverType !== 'custom' && this.basicForm.configModel === 'purePoster') {
             item.onclick = ''
           } else if (item.coverType !== 'custom' && this.basicForm.configModel === 'group') {
-            item.onclick = ''
+            if (item.sign === 'manualSet') {
+              parseParams(item.onclick)
+              item.onclick = JSON.stringify(item.onclick)
+            } else {
+              item.onclick = ''
+            }
           } else {
             parseParams(item.onclick)
             item.onclick = JSON.stringify(item.onclick)
