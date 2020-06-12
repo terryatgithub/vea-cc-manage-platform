@@ -46,7 +46,7 @@
             :options="GD_LIVE_CLICK_TYPE_OPTIONS"
           />
         </el-form-item>
-        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.channel"
+        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.channel || contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.autoCast || contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.teleTab"
           key="channelSelector"
           prop="tvLiveInfo.channelId"
           label="频道选择">
@@ -68,6 +68,46 @@
             已选择: <el-tag>{{ contentForm.tvLiveInfo.channelId }}</el-tag>
             <el-tag style="margin-left: 10px">{{ contentForm.extraValue1 }}</el-tag>
           </template>
+        </el-form-item>
+        <template v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.autoCast">
+          <el-form-item label="时间" prop="tvLiveInfo.autoTelecast.regularHour">
+            <InputPositiveInt
+              clearable
+              v-model="contentForm.tvLiveInfo.autoTelecast.regularHour"
+              :regexp="/^\d{0,6}$/"
+              :disabled="isReadonly" />
+            <span class="tips">6位数字HHMMSS，类似：190005</span>
+          </el-form-item>
+          <el-form-item label="星期轮替" prop="tvLiveInfo.autoTelecast.weekInfo">
+            <el-checkbox-group :disabled="isReadonly" v-model="contentForm.tvLiveInfo.autoTelecast.weekInfo" style="display: inline-block">
+              <el-checkbox v-for="(day, index) in WEEK_OPTIONS" :label="day.value" :key="index">{{day.label}}</el-checkbox>
+            </el-checkbox-group>
+            <span class="tips">即这个节目每周几更新</span>
+          </el-form-item>
+          <el-form-item label="首播日期" prop="tvLiveInfo.autoTelecast.firstPlayDate" >
+            <InputPositiveInt
+              clearable
+              v-model="contentForm.tvLiveInfo.autoTelecast.firstPlayDate"
+              :regexp="/^[1-9]\d{0,7}$/"
+              :disabled="isReadonly" />
+            <span class="tips">8位数字YYYYMMDD，类似：20200901</span>
+          </el-form-item>
+          <el-form-item label="往前多少期" prop="tvLiveInfo.autoTelecast.aheadSeries">
+            <InputPositiveInt v-model="contentForm.tvLiveInfo.autoTelecast.aheadSeries" :disabled="isReadonly" clearable />
+            <span class="tips">1表示上1期，2表示上2期</span>
+          </el-form-item>
+        </template>
+        <el-form-item v-show="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.teleTab"
+          label="选择省份"
+          prop="tvLiveInfo.provinceId">
+          <CommonSelector
+            style="width: 280px"
+            filterable
+            clearable
+            :disabled="isReadonly"
+            v-model="contentForm.tvLiveInfo.provinceId"
+            :options="provinceOptions"
+          />
         </el-form-item>
       </div>
 
@@ -258,7 +298,8 @@
         </el-checkbox>
       </el-form-item>
       <el-form-item label="单集副标题" prop="singleSubTitle">
-        <el-input clearable v-model.trim="contentForm.singleSubTitle" :disabled="isReadonly"></el-input> 有单集副标题时，优先显示单集副标题
+        <el-input clearable v-model.trim="contentForm.singleSubTitle" :disabled="isReadonly"></el-input>
+        <span class="tips">有单集副标题时，优先显示单集副标题</span>
       </el-form-item>
 
       <el-form-item label="内容海报" prop="pictureUrl" v-if="contentForm.coverType !== 'block'">
@@ -690,6 +731,7 @@ import {
   MASK_LIFE_RECOMMEND_TYPE_OPTIONS,
   GD_LIVE_CLICK_TYPE_OPTIONS,
   GD_LIVE_CLICK_TYPES,
+  WEEK_OPTIONS,
   genDefaultMaskLifeInfo,
   getVideoInfo,
   genDefaultTvLiveInfo,
@@ -796,6 +838,7 @@ export default {
       MASK_LIFE_RECOMMEND_TYPES,
       GD_LIVE_CLICK_TYPE_OPTIONS,
       GD_LIVE_CLICK_TYPES,
+      WEEK_OPTIONS,
       showCrowdSelector: false,
       showBlockTagDialog: false,
       uploadImg: '/uploadHomeImg.html', // 上传图片接口
@@ -922,6 +965,21 @@ export default {
         ],
         'tvLiveInfo.channelId': [
           { required: true, message: '请选择频道/节目', trigger: 'blur' }
+        ],
+        'tvLiveInfo.autoTelecast.regularHour': [
+          { required: true, message: '请填写', trigger: 'blur' }
+        ],
+        'tvLiveInfo.autoTelecast.weekInfo': [
+          { required: true, message: '请勾选星期', trigger: 'change' }
+        ],
+        'tvLiveInfo.autoTelecast.firstPlayDate': [
+          { required: true, message: '请填写', trigger: 'blur' }
+        ],
+        'tvLiveInfo.autoTelecast.aheadSeries': [
+          { required: true, message: '请填写', trigger: 'blur' }
+        ],
+        'tvLiveInfo.provinceId': [
+          { required: true, message: '请选择省份', trigger: 'blur' }
         ]
       },
       beforeSelectBlockCbs: {
@@ -943,7 +1001,8 @@ export default {
           return true
         }
       },
-      scene: '2'
+      scene: '2',
+      provinceOptions: []
     }
   },
   props: [
@@ -1065,6 +1124,7 @@ export default {
         clickType: val
       })
       this.contentForm.extraValue1 = undefined
+      this.$refs.contentForm.clearValidate()
     },
     handleSelectGDChannelEnd (selected) {
       const { categoryIds = '', ccChannelId, ccChannelTitle, images, selectedSchedules } = selected[0]
@@ -1571,9 +1631,15 @@ export default {
       this.contentForm.mediaAutomationBlockRls.mediaAutomationName = recomStream.mediaAutomationName
       this.contentForm.mediaAutomationBlockRls.type = 0
       console.log(this.contentForm.mediaAutomationBlockRls, '----旧推荐流')
+    },
+    getProvinceOptions () {
+      this.$service.mediaGetChannelProvinceOptions().then(result => {
+        this.provinceOptions = result
+      })
     }
   },
   mounted () {
+    this.getProvinceOptions()
     const contentForm = this.contentForm
     const redundantParams = contentForm.redundantParams
     if (redundantParams.openMode === 'picture' && redundantParams.pictureUrl) {
@@ -1757,4 +1823,11 @@ $width = 100px;
 .btn-remove-icon
   color red
   cursor pointer
+.tips
+  color: #333
+  font-size: 12px
+  font-style: italic
+  display: inline-block
+  line-height: 1
+  margin-left: 10px
 </style>

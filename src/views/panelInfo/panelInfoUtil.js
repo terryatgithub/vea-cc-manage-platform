@@ -55,14 +55,55 @@ export const GD_LIVE_CLICK_TYPE_OPTIONS = [
   {
     label: '启动到节目',
     value: 'telecast'
+  },
+  {
+    label: '启动到回看(自动时间)',
+    value: 'autoCast'
+  },
+  {
+    label: '跳转节目单版面',
+    value: 'teleTab'
   }
 ]
 
 export const GD_LIVE_CLICK_TYPES = {
   channel: 'channel',
   normal: 'normal',
-  telecast: 'telecast'
+  telecast: 'telecast',
+  autoCast: 'autoCast',
+  teleTab: 'teleTab'
 }
+
+export const WEEK_OPTIONS = [
+  {
+    label: '星期一',
+    value: 1
+  },
+  {
+    label: '星期二',
+    value: 2
+  },
+  {
+    label: '星期三',
+    value: 3
+  },
+  {
+    label: '星期四',
+    value: 4
+  },
+  {
+    label: '星期五',
+    value: 5
+  },
+  {
+    label: '星期六',
+    value: 6
+  },
+  {
+    label: '星期七',
+    value: 7
+  }
+]
 
 export function getVideoInfo (video) {
   let { category = '', categoryName = '', filterValue = '' } = video
@@ -460,6 +501,13 @@ export function genDefaultTvLiveInfo (preset) {
     categoryId: undefined,
     channelId: undefined,
     startTime: undefined,
+    provinceId: undefined,
+    autoTelecast: {
+      regularHour: undefined,
+      weekInfo: [],
+      firstPlayDate: undefined,
+      aheadSeries: undefined
+    },
     ...preset
   }
 }

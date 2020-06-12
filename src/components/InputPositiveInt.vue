@@ -30,10 +30,11 @@ export default {
       inputValue: undefined
     }
   },
-  props: ['value', 'disabled', 'append', 'prepend', 'placeholder', 'name', 'autocomplete', 'clearable'],
+  props: ['value', 'disabled', 'append', 'prepend', 'placeholder', 'name', 'autocomplete', 'clearable', 'regexp'],
   methods: {
     handleInputValue (val) {
-      if (val === '' || /^[1-9]\d*$/.test(val)) {
+      const regexp = this.regexp || /^[1-9]\d*$/
+      if (val === '' || regexp.test(val)) {
         this.inputValue = val
         this.$emit('input', val)
       }
