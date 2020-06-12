@@ -7,6 +7,7 @@
       @read="handleRead"
       @edit="handleEdit"
       @delete="handleDelete"
+      @copy="handleCopy"
     />
     <FilmDetailPageAdd
       v-if="!isShowList"
@@ -52,6 +53,11 @@ export default {
       this.id = item.tabId
       this.mode = 'read'
       this.version = version
+      this.isShowList = false
+    },
+    handleCopy (item) {
+      this.id = item.tabId
+      this.mode = 'copy'
       this.isShowList = false
     },
     handleDelete (selected) {

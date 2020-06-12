@@ -5,12 +5,12 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6" prop="tabId">
           <div class="el-col-20">
-            <InputPositiveInt v-model="filter.tabId" placeholder="版面ID"/>
+            <InputPositiveInt v-model="filter.tabId" placeholder="版面ID" clearable/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input v-model="filter.tabName" placeholder="版面名称"/>
+            <el-input v-model="filter.tabName" placeholder="版面名称" clearable/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
@@ -72,6 +72,20 @@
             </el-select>
           </div>
         </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select v-model="filter['filmDetailPageInfo.matchType']" placeholder="是否单片配置">
+              <el-option :value="undefined" label="全部"/>
+              <el-option :value="0" label="分类配置"/>
+              <el-option :value="1" label="影片配置"/>
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-input placeholder="单片酷开自有ID" clearable v-model.trim="filter['filmDetailPageInfo.videoId']" />
+          </div>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary"  @click="handleFilterChange">查询</el-button>
           <el-button  @click="handleFilterReset">重置</el-button>
@@ -118,6 +132,7 @@ export default {
 
   data () {
     return {
+      canAdd: false,
       resourceType: 'film',
       pannelValue: [],
       filter: this.genDefaultFilter(),
@@ -250,6 +265,24 @@ export default {
             prop: 'auditor',
             label: '审核人',
             sortable: true
+          },
+          {
+            label: '操作',
+            width: 150,
+            fixed: 'right',
+            render: (h, { row }) => {
+              return h('div', [
+                this.canAdd && h('el-button', {
+                  props: { type: 'text' },
+                  on: {
+                    click: (e) => {
+                      e.stopPropagation()
+                      this.handleCopy(row)
+                    }
+                  }
+                }, '复制')
+              ])
+            }
           }
         ],
         selected: [],
@@ -281,7 +314,9 @@ export default {
         'filmDetailPageInfo.source': undefined,
         'filmDetailPageInfo.channel': [],
         'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined
+        'filmDetailPageInfo.product': undefined,
+        'filmDetailPageInfo.matchType': undefined,
+        'filmDetailPageInfo.videoId': undefined
       }
     },
     /**
@@ -395,6 +430,9 @@ export default {
   created () {
     this.getMediaResourceInfo().then(() => {})
     this.fetchData()
+    this.$service.getButtonGroupForPageList('filmDetailPage').then(data => {
+      this.canAdd = data.some(item => item.runComm === 'add')
+    })
   }
 }
 </script>

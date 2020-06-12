@@ -1,4 +1,5 @@
 <template>
+<TabPage>
   <PageWrapper>
     <PageContentWrapper v-show="activePage === 'tab_info'">
       <ContentCard :title="title" @go-back="$emit('go-back')">
@@ -7,6 +8,7 @@
           :mode="mode"
           :resource-info="resourceInfo"
           @edit="mode = 'edit'"
+          @copy="handleCopy"
           @replicate="mode = 'replicate'"
           @submit-audit="btnAudit"
           @save-draft="btnSave"
@@ -14,7 +16,7 @@
           @unaudit="$emit('upsert-end')"
           @shelves="fetchData"
           @audit="$emit('upsert-end')"
-           @delete="$emit('upsert-end', $event)"
+          @delete="$emit('upsert-end', $event)"
         >
           <div class="form-legend-header">
             <i class="el-icon-edit">基本信息</i>
@@ -43,7 +45,10 @@
                   <el-radio label="youku">优酷</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="频道">
+              <el-form-item label="配置方式">
+                <CommonSelector type="radio" :value="form.matchType" @input="handleInputConfigWay" :options="configWayOptions" />
+              </el-form-item>
+              <el-form-item label="频道" v-if="form.matchType === 0">
                 <el-select v-model="pannel">
                   <el-option value="0" label="不限"/>
                   <el-option
@@ -65,11 +70,11 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="优先级">
+              <el-form-item label="优先级" v-if="form.matchType === 0">
                 <el-input-number v-model="form.priority" :min="1"/>
                 <span class="remarks marginL">注：数值越大优先级越高，数值越小优先级越低</span>
               </el-form-item>
-              <el-form-item label="选择版块" prop="tags">
+              <el-form-item label="选择版块" prop="tags" v-if="form.matchType === 0">
                 <cc-panel-selector-el
                   ref="panelSelector"
                   :source="form.tabResource"
@@ -93,12 +98,30 @@
                   class="orderableTable"
                 />
               </el-form-item>
-              <!-- <el-form-item>
-                <el-button type="primary" @click="handleShowTimeShelf()">提交审核</el-button>
-                <el-button type="warning" @click="handleSaveDraft()">保存草稿</el-button>
-              </el-form-item>-->
+              <el-form-item label="选择影片" v-if="form.matchType === 1" :required="true">
+                <ResourceSelector
+                  ref="resourceSelector"
+                  :selectors="['video', 'edu']"
+                  :disable-partner="!!$consts.partnerAliasToSource[form.tabResource]"
+                  selection-type="multiple"
+                  :source="$consts.partnerAliasToSource[form.tabResource]"
+                  @select-end="handleSelectResourceEnd">
+                  <el-button type="primary" plain>选择影片</el-button>
+                </ResourceSelector>
+                <br />
+                <el-tag
+                  v-for="(video, index) in form.videoList"
+                  :key="index"
+                  closable
+                  class="video-tag"
+                  :disable-transitions="true"
+                  @close="handleRemoveVideo(index)" >
+                  {{`${video.title}（${video.videoId}）`}}
+                </el-tag>
+              </el-form-item>
             </el-form>
           </template>
+          <!-- 预览 -->
           <template v-if="mode === 'read'">
             <el-form ref="form" :rules="rules" :model="form" label-width="90px" class="el-form-add">
               <el-form-item label="版面名称" prop="tabName">{{form.tabName}}</el-form-item>
@@ -108,7 +131,10 @@
                 v-if="form.tabCategory == 0"
                 prop="tabResource"
               >{{sourceText[form.tabResource]}}</el-form-item>
-              <el-form-item label="频道">
+              <el-form-item label="配置方式">
+                {{form.matchType}}
+              </el-form-item>
+              <el-form-item label="频道" v-if="form.matchType === 0">
                 <el-select v-model="pannel" :disabled="true">
                   <el-option value="0" label="不限"/>
                   <el-option
@@ -130,10 +156,10 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="优先级" prop="priority">
+              <el-form-item label="优先级" prop="priority" v-if="form.matchType === 0">
               {{form.priority}}
-            </el-form-item>
-              <el-form-item label="选择的版块" prop="tags">
+              </el-form-item>
+              <el-form-item label="选择的版块" prop="tags" v-if="form.matchType === 0">
                 <OrderableTable
                   v-model="form.panelInfoList"
                   :header="tabGroupTableHeader"
@@ -141,6 +167,13 @@
                   class="orderableTable"
                   :readonly="true"
                 />
+              </el-form-item>
+              <el-form-item label="选择影片">
+                <el-tag v-for="(video, index) in form.videoList"
+                  :key="index"
+                  class="video-tag" >
+                  {{`${video.title}（${video.videoId}）`}}
+                </el-tag>
               </el-form-item>
             </el-form>
           </template>
@@ -200,7 +233,8 @@
         @go-back="activePage = 'tab_info'"
       />
     </PageContentWrapper>
-</PageWrapper>
+  </PageWrapper>
+</TabPage>
 </template>
 <script>
 import PageWrapper from '@/components/PageWrapper'
@@ -211,6 +245,12 @@ import PanelSelector from '@/components/selectors/PanelSelector'
 import PrivatePanelInfo from './../blockManage/PrivatePannelInfo'
 import PanelInfo from './../panelInfo/PanelInfo'
 import titleMixin from '@/mixins/title'
+import CommonSelector from '@/components/CommonSelector'
+import ResourceSelector from '@/components/ResourceSelector/ResourceSelector'
+import TabPage from '@/components/TabPage'
+import { cloneDeep } from 'lodash'
+
+const configWayOptions = [{ label: '根据分类配置', value: 0 }, { label: '根据影片配置', value: 1 }]
 export default {
   mixins: [titleMixin],
   components: {
@@ -220,7 +260,10 @@ export default {
     PrivatePanelInfo,
     PanelInfo,
     OrderableTable,
-    CommonContent
+    CommonContent,
+    CommonSelector,
+    ResourceSelector,
+    TabPage
   },
   props: {
     id: Number,
@@ -237,11 +280,6 @@ export default {
       deep: true,
       handler: function (newVal, oldVal) {
         if (newVal === 1) {
-          this.pannelItems = this.eduProductItems.categoryList
-          this.productItems = this.eduProductItems.productList
-          if (this.eduProductItems.categoryList.length === 0) {
-            this.pannel = '不限'
-          }
           if (this.tabResourceFlag === 0) {
             this.tabResourceFlag = 1
           } else {
@@ -289,24 +327,49 @@ export default {
         priority: 1,
         currentVersion: '',
         currentStatus: '',
-        panelInfoList: []
+        panelInfoList: [],
+        matchType: 0,
+        videoList: [] // 已选影片
       },
+      configWayOptions,
       globalTabResource: '',
       parentResource: '',
       tabResourceFlag: 1,
-      iqiyiSource: [],
-      qqSource: [],
-      youkuSource: [],
       pannel: '0',
-      pannelItems: [],
       product: '0',
-      productItems: [],
-      eduProductItems: [],
+      // 数据字典
+      videoDictItems: {
+        qq: { categoryList: [], productList: [] },
+        iqiyi: {},
+        youku: {}
+      },
+      eduDictItems: {
+        categoryList: [],
+        productList: []
+      },
       blockTable: [], // 版块列表
       categoryEdit: false
     }
   },
   computed: {
+    pannelItems () {
+      const { form, videoDictItems, eduDictItems } = this
+      if (form.tabCategory === 0) {
+        const tabResource = form.tabResource
+        return (videoDictItems[tabResource] || {}).categoryList || []
+      } else {
+        return eduDictItems.categoryList || []
+      }
+    },
+    productItems () {
+      const { form, videoDictItems, eduDictItems } = this
+      if (form.tabCategory === 0) {
+        const tabResource = form.tabResource
+        return (videoDictItems[tabResource] || {}).productList || []
+      } else {
+        return eduDictItems.productList || []
+      }
+    },
     // eslint-disable-next-line
     resourceInfo() {
       const form = this.form
@@ -478,59 +541,83 @@ export default {
     btnSave () {
       this.save(2)
     },
-    save (status) {
-      if (this.form.panelInfoList.length === 0) {
-        this.$message('请添加版块')
-        return false
-      }
-      const mode = this.mode
-      const form = this.form
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          if (form.panelInfoList) {
-            form.panelInfoList = form.panelInfoList.map(function (item, index) {
-              return {
-                pannelGroupId: item.pannelGroupId,
-                pannelSequence: index,
-                isDmpPanel: false
-              }
-            })
-          }
-          var jsonStr = {
-            // tabInfo: {
-            tabParentType: 'special',
-            tabId: form.tabId,
-            tabName: form.tabName,
-            tabType: 3,
-            tabStatus: status,
-            tabResource: form.tabCategory === 0 ? form.tabResource : '',
-            currentVersion: mode === 'replicate' ? '' : form.currentVersion,
-            tabCategory: form.tabCategory,
-            hasSubTab: 0,
-            tabCnTitle: form.tabName,
-            // },
-            filmDetailPageInfo: {
-              source: form.tabCategory === 0 ? form.tabResource : '',
-              product: this.product || '0',
-              channel: this.pannel || '0',
-              category: form.tabCategory,
-              priority: form.priority
-            },
-            panelInfoList: form.panelInfoList
-          }
-          console.log(jsonStr)
-          this.$service.tabInfoUpsert(jsonStr, '保存成功').then(data => {
-            this.$emit('upsert-end')
-          })
+    validate (form, callback) {
+      const cb = (err) => {
+        if (!err) {
+          callback()
         } else {
-          this.$message('请将表单填写完整')
+          this.$message({
+            type: 'error',
+            message: err.message || err
+          })
         }
+      }
+      this.$refs.form.validate(valid => {
+        if (!valid) {
+          cb(Error('请将表单填写完整'))
+        }
+      })
+      const matchType = form.matchType
+      if (matchType === 0) {
+        if (form.panelInfoList.length === 0) {
+          cb(Error('请添加版块'))
+        }
+      } else {
+        if (form.videoList.length === 0) {
+          cb(Error('影片不可为空'))
+        }
+      }
+    },
+    save (status) {
+      const mode = this.mode
+      const form = cloneDeep(this.form)
+      this.validate(form, () => {
+        if (form.panelInfoList) {
+          form.panelInfoList = form.panelInfoList.map(function (item, index) {
+            return {
+              pannelGroupId: item.pannelGroupId,
+              pannelSequence: index,
+              isDmpPanel: false
+            }
+          })
+        }
+        const isCatelogConfig = form.matchType === 0
+        const filmDetailPageInfo = {
+          category: form.tabCategory,
+          source: form.tabCategory === 0 ? form.tabResource : '',
+          matchType: form.matchType,
+          product: this.product || '0'
+        }
+        if (isCatelogConfig) {
+          filmDetailPageInfo.channel = this.pannel || '0'
+          filmDetailPageInfo.priority = form.priority
+        } else {
+          filmDetailPageInfo.videoList = form.videoList
+        }
+        var jsonStr = {
+          tabParentType: 'special',
+          tabId: mode === 'copy' ? undefined : form.tabId,
+          tabName: form.tabName,
+          tabCnTitle: form.tabName,
+          tabType: 3,
+          tabStatus: status,
+          tabResource: form.tabCategory === 0 ? form.tabResource : '',
+          currentVersion: (mode === 'replicate' || mode === 'copy') ? '' : form.currentVersion,
+          tabCategory: form.tabCategory,
+          // 分类配置与影片配置
+          hasSubTab: isCatelogConfig ? 0 : undefined,
+          panelInfoList: isCatelogConfig ? form.panelInfoList : undefined,
+          filmDetailPageInfo
+        }
+        this.$service.tabInfoUpsert(jsonStr, '保存成功').then(data => {
+          this.$emit('upsert-end')
+        })
       })
     },
     // 内容源改变
     changeResource (value) {
       this.$confirm(
-        '是否要切换内容源，切换内容源之后所选择的版块数据将会清除掉！',
+        '是否要切换内容源，切换内容源之后所选择的版块和影片的数据将会清除掉！',
         '提示',
         {
           confirmButtonText: '确定',
@@ -545,6 +632,7 @@ export default {
           })
           this.form.tabResource = value
           this.form.panelInfoList = []
+          this.form.videoList = []
         })
         .catch(() => {
           this.$message({
@@ -565,7 +653,7 @@ export default {
         var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
         var videoItemModels = movieData.videoItemModels
         // 内容源：iqiyi
-        var iqiyiSource = {
+        const iqiyiSource = {
           categoryList: [],
           productList: []
         }
@@ -579,10 +667,10 @@ export default {
           'source_name',
           'source_sign'
         )
-        this.iqiyiSource = iqiyiSource
+        this.videoDictItems.iqiyi = iqiyiSource
 
         // 内容源：tencent
-        var qqSource = {
+        const qqSource = {
           categoryList: [],
           productList: []
         }
@@ -596,10 +684,10 @@ export default {
           'source_name',
           'source_sign'
         )
-        this.qqSource = qqSource
+        this.videoDictItems.qq = qqSource
 
         // 内容源：youku
-        var youkuSource = {
+        const youkuSource = {
           categoryList: [],
           productList: []
         }
@@ -613,7 +701,7 @@ export default {
           'source_name',
           'source_sign'
         )
-        this.youkuSource = youkuSource
+        this.videoDictItems.youku = youkuSource
 
         // 教育->产品包
         var coocaaSource = {
@@ -630,47 +718,28 @@ export default {
           'source_name',
           'source_sign'
         )
-        this.eduProductItems = coocaaSource
+        this.eduDictItems = coocaaSource
       })
     },
     handleTabResourceChange (value) {
-      const { qqSource, iqiyiSource, youkuSource } = this
       if (this.tabResourceFlag === 0 && this.globalTabResource === value) {
         this.tabResourceFlag = 1
       } else {
         this.pannel = '0'
         this.product = '0'
       }
-      switch (value) {
-        case 'qq': {
-          this.pannelItems = qqSource.categoryList
-          this.productItems = qqSource.productList
-          break
-        }
-        case 'iqiyi': {
-          this.pannelItems = iqiyiSource.categoryList
-          this.productItems = iqiyiSource.productList
-          break
-        }
-        case 'youku': {
-          this.pannelItems = youkuSource.categoryList
-          this.productItems = youkuSource.productList
-          break
-        }
-        default: {
-          this.pannelItems = []
-          this.productItems = []
-        }
-      }
     },
     setFormInfo (data) {
-      this.form.tabId = data.tabId
-      this.form.tabName = data.tabName
-      this.form.tabCategory = data.tabCategory
-      this.form.priority = data.filmDetailPageInfo.priority
-      this.form.tabResource = data.tabResource
-      this.form.currentVersion = data.currentVersion
-      this.form.currentStatus = data.tabStatus
+      const form = this.form
+      form.tabId = data.tabId
+      form.tabName = data.tabName
+      form.tabCategory = data.tabCategory
+      form.priority = data.filmDetailPageInfo.priority
+      form.tabResource = data.tabResource
+      form.currentVersion = data.currentVersion
+      form.currentStatus = data.tabStatus
+      form.matchType = data.filmDetailPageInfo.matchType || 0
+      form.videoList = data.filmDetailPageInfo.videoList
       this.globalTabResource = data.tabResource
       this.pannel = data.filmDetailPageInfo.channel
       this.product = data.filmDetailPageInfo.product
@@ -688,6 +757,42 @@ export default {
       //   item.pannelSequence = index + 1
       // })
       this.tabResourceFlag = 0
+    },
+    handleCopy (status) {
+      const STATUS = this.$consts.status
+      if (status === STATUS.waiting) {
+        this.btnAudit()
+      } else {
+        this.btnSave()
+      }
+    },
+    handleInputConfigWay (val) {
+      this.form.matchType = val
+      // 清空内容
+      this.pannel = '0'
+      this.product = '0'
+      this.priority = 1
+      this.form.panelInfoList = []
+      this.form.videoList = []
+    },
+    handleSelectResourceEnd (selectedResources) {
+      const { video: videoResources, edu: eduResources, episode: selectedEpisode } = selectedResources
+      videoResources.forEach(item => {
+        const id = item.coocaaVId
+        let episodeId
+        let title = item.title
+        if (selectedEpisode[id] !== undefined) {
+          episodeId = selectedEpisode[id].coocaaVId
+          title = selectedEpisode[id].urlTitle
+        }
+        this.form.videoList.push({ videoId: episodeId || id, title })
+      })
+      eduResources.forEach(item => {
+        this.form.videoList.push({ videoId: item.coocaaVId, title: item.title })
+      })
+    },
+    handleRemoveVideo (index) {
+      this.form.videoList.splice(index, 1)
     },
     fetchData (version) {
       // if (version !== undefined) { this.form.currentVersion = version }
@@ -714,7 +819,9 @@ export default {
 
 <style lang='stylus' scoped>
 .el-form-add .orderableTable >>>.el-input, .el-form-add .selectHourAndMinute >>>.el-input
-  width: 100%
+  width 100%
 .selectHourAndMinute
-  width: 450px
+  width 450px
+.video-tag
+  margin 5px 10px 5px 0
 </style>
