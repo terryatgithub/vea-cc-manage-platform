@@ -35,6 +35,9 @@
             <el-radio :label="0">或</el-radio>
             <el-radio :label="1">且</el-radio>
           </el-radio-group>
+          <!-- <FilmRuleTagLogicFilter
+            class="margin-bottom-20"
+            v-model="movieFilterForm.tagCodes" /> -->
           <TagLogicFilter
             class="margin-bottom-20"
             hiddenExtend
@@ -129,7 +132,13 @@
             </el-checkbox-group>
           </div>
         </div>
-        <div>(9) 创建时间</div>
+        <div>(9) 评分</div>
+        <div class="margin-bottom-20">
+          <InputPositiveInt :regexp="/^[\d\.]*$/" v-model.number="movieFilterForm.scoreUp" style="width: 100px;margin-right: 5px" />——
+          <InputPositiveInt :regexp="/^[\d\.]*$/" v-model.number="movieFilterForm.scoreDown" style="margin-left: 5px; width: 100px" />
+          <span style="font-size: 12px;margin-left: 10px">填写评分范围，精确到小数点后一位</span>
+        </div>
+        <div>(10) 创建时间</div>
         <el-row :gutter="1" style="width: 100%" class="margin-bottom-20">
           <el-col :span="8">
             <el-select filterable v-model="createdTimeSelect" @change="handleResetFilmTime">
@@ -156,7 +165,7 @@
             </div>
           </el-col>
         </el-row>
-        <div>(10) 热度</div>
+        <div>(11) 热度</div>
         <el-row :gutter="1" class="margin-bottom-20">
           <el-col :span="8">
             <el-select filterable v-model="feverSelect">
@@ -236,7 +245,13 @@
           <el-checkbox :label="2">仅选取有声读物</el-checkbox>
           <el-checkbox :label="3">仅选取视频内容</el-checkbox>
         </el-checkbox-group>
-        <div>(6) 创建时间</div>
+        <div>(6) 评分</div>
+        <div class="margin-bottom-20">
+          <el-input :regexp="/^[\d\.]*$/" v-model.number="eduFilterForm.scoreUp" style="width: 100px;margin-right: 5px" />——
+          <el-input :regexp="/^[\d\.]*$/" v-model.number="eduFilterForm.scoreDown" style="margin-left: 5px; width: 100px" />
+          <span style="font-size: 12px;margin-left: 10px">填写评分范围，精确到小数点后一位</span>
+        </div>
+        <div>(7) 创建时间</div>
         <el-row :gutter="1" style="width: 100%" class="margin-bottom-20">
           <el-col :span="8">
             <el-select v-model="eduCreatedTimeSelect" @change="handleResetEduTime">
@@ -263,7 +278,7 @@
             </div>
           </el-col>
         </el-row>
-        <div>(7) 热度</div>
+        <div>(8) 热度</div>
         <el-row :gutter="1" class="margin-bottom-20">
           <el-col :span="8">
             <el-select v-model="eduFeverSelect">
@@ -301,6 +316,7 @@
 <script>
 import InputPositiveInt from '@/components/InputPositiveInt'
 import TagLogicFilter from '@/components/ResourceSelector/TagLogicFilter'
+// import FilmRuleTagLogicFilter from './FilmRuleTagLogicFilter'
 const homeOrderTypeOptions = [
   {
     label: '创建时间排序',
@@ -323,6 +339,7 @@ export default {
   components: {
     InputPositiveInt,
     TagLogicFilter
+    // FilmRuleTagLogicFilter
   },
   props: ['source'],
   data () {
@@ -351,7 +368,9 @@ export default {
         contentTypes: [],
         createdTime: [],
         createdMonthTime: undefined,
-        feverTop: undefined
+        feverTop: undefined,
+        scoreDown: undefined,
+        scoreUp: undefined
       },
       createdTimeSelect: 1,
       feverSelect: 1,
@@ -368,7 +387,9 @@ export default {
         teachFeatures: [],
         teachCreatedTime: [],
         teachCreatedMonthTime: undefined,
-        feverTop: undefined
+        feverTop: undefined,
+        scoreDown: undefined,
+        scoreUp: undefined
       },
       eduCreatedTimeSelect: 1,
       eduFeverSelect: 1,
@@ -570,7 +591,9 @@ export default {
           payTypes: movieFilterForm.payTypes.join(','),
           videoFeatures: movieFilterForm.videoFeatures.join(','),
           longShortTypes: movieFilterForm.longShortTypes.join(','),
-          contentTypes: movieFilterForm.contentTypes.join(',')
+          contentTypes: movieFilterForm.contentTypes.join(','),
+          scoreUp: movieFilterForm.scoreUp,
+          scoreDown: movieFilterForm.scoreDown
         }
         const createdTimeSelect = this.createdTimeSelect
         if (createdTimeSelect === 1 && movieFilterForm.createdTime.length !== 0) {
@@ -595,7 +618,9 @@ export default {
           company: eduFilterForm.company.join(','),
           teachTagCodes: eduFilterForm.teachTagCodes.join(eduTagSign),
           teachAreas: eduFilterForm.teachAreas.join(','),
-          teachFeatures: eduFilterForm.teachFeatures.join(',')
+          teachFeatures: eduFilterForm.teachFeatures.join(','),
+          scoreUp: eduFilterForm.scoreUp,
+          scoreDown: eduFilterForm.scoreDown
         }
         const createdTimeSelect = this.eduCreatedTimeSelect
         if (createdTimeSelect === 1 && eduFilterForm.teachCreatedTime.length !== 0) {
@@ -688,7 +713,7 @@ export default {
       if (isMovieFilter) {
         const { filmTypeOptions, filmAreaOptions, filmPayTypeOptions, movieCodeTagDesc, filmLongShortTypeOptions, filmContentTypeOptions } = this
         const { categorys, tagsRelation, tagCodes, actors, directors, areas, payTypes, videoFeatures, longShortTypes, contentTypes,
-          createdTime, createdMonthTime, feverTop } = movieFilterForm
+          createdTime, createdMonthTime, feverTop, scoreUp, scoreDown } = movieFilterForm
         desc += '影视业务规则：\n'
         categorys.length !== 0 && (desc += '分类：' + parseRuleLabel(filmTypeOptions, categorys, '、') + '\n')
         tagCodes.length !== 0 && (desc += '标签：' + movieCodeTagDesc + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
@@ -705,6 +730,7 @@ export default {
         if (contentTypes.length > 0) {
           desc += `长短片（第三方）：${parseRuleLabel(filmContentTypeOptions, contentTypes, '、')}\n`
         }
+        ;(scoreUp || scoreDown) && (desc += `评分：${scoreUp || '_'}——${scoreDown || '_'}\n`)
         const createdTimeSelect = this.createdTimeSelect
         if (createdTimeSelect === 1 && movieFilterForm.createdTime.length !== 0) {
           desc += '新度：' + createdTime.join('、') + '\n'
@@ -719,7 +745,7 @@ export default {
       if (isEduFilter) {
         const { teachCategoryOptions, teachAreaOptions, eduCodeTagDesc } = this
         const { teachCategory, tagsRelation, teachTagCodes, company, teachAreas,
-          teachFeatures, teachCreatedTime, teachRecentMonths, feverTop } = eduFilterForm
+          teachFeatures, teachCreatedTime, teachRecentMonths, feverTop, scoreUp, scoreDown } = eduFilterForm
         desc += '教育业务规则：\n'
         teachCategory.length !== 0 && (desc += parseRuleLabel(teachCategoryOptions, teachCategory, '、') + '\n')
         teachTagCodes.length !== 0 && (desc += '标签：' + eduCodeTagDesc + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
@@ -727,6 +753,7 @@ export default {
         teachAreas.length !== 0 && (desc += '地区：' + parseRuleLabel(teachAreaOptions, teachAreas, '、') + '\n')
         teachFeatures.length !== 0 && (desc += '视频特点：' +
           parseRuleLabel([{ label: '绘本', value: 1 }, { label: '有声读物', value: 2 }, { label: '视频内容', value: 3 }], teachFeatures, '、') + '\n')
+        ;(scoreUp || scoreDown) && (desc += `评分：${scoreUp || '_'}——${scoreDown || '_'}\n`)
         const createdTimeSelect = this.eduCreatedTimeSelect
         if (createdTimeSelect === 1 && eduFilterForm.teachCreatedTime.length !== 0) {
           desc += '新度：' + teachCreatedTime.join('、') + '\n'
