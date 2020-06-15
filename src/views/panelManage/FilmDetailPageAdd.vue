@@ -554,17 +554,17 @@ export default {
       }
       this.$refs.form.validate(valid => {
         if (!valid) {
-          cb(Error('请将表单填写完整'))
+          return cb(Error('请将表单填写完整'))
         }
       })
       const matchType = form.matchType
       if (matchType === 0) {
         if (form.panelInfoList.length === 0) {
-          cb(Error('请添加版块'))
+          return cb(Error('请添加版块'))
         }
       } else {
         if (form.videoList.length === 0) {
-          cb(Error('影片不可为空'))
+          return cb(Error('影片不可为空'))
         }
       }
       cb()
