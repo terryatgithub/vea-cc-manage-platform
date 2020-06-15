@@ -74,7 +74,7 @@
                 <el-input-number v-model="form.priority" :min="1"/>
                 <span class="remarks marginL">注：数值越大优先级越高，数值越小优先级越低</span>
               </el-form-item>
-              <el-form-item label="选择版块" prop="tags" v-if="form.matchType === 0">
+              <el-form-item label="选择版块" prop="tags">
                 <cc-panel-selector-el
                   ref="panelSelector"
                   :source="form.tabResource"
@@ -159,7 +159,7 @@
               <el-form-item label="优先级" prop="priority" v-if="form.matchType === 0">
               {{form.priority}}
               </el-form-item>
-              <el-form-item label="选择的版块" prop="tags" v-if="form.matchType === 0">
+              <el-form-item label="选择的版块" prop="tags">
                 <OrderableTable
                   v-model="form.panelInfoList"
                   :header="tabGroupTableHeader"
@@ -557,15 +557,12 @@ export default {
           return cb(Error('请将表单填写完整'))
         }
       })
+      if (form.panelInfoList.length === 0) {
+        return cb(Error('请添加版块'))
+      }
       const matchType = form.matchType
-      if (matchType === 0) {
-        if (form.panelInfoList.length === 0) {
-          return cb(Error('请添加版块'))
-        }
-      } else {
-        if (form.videoList.length === 0) {
-          return cb(Error('影片不可为空'))
-        }
+      if (matchType === 1 && form.videoList.length === 0) {
+        return cb(Error('影片不可为空'))
       }
       cb()
     },
@@ -605,9 +602,9 @@ export default {
           tabResource: form.tabCategory === 0 ? form.tabResource : '',
           currentVersion: (mode === 'replicate' || mode === 'copy') ? '' : form.currentVersion,
           tabCategory: form.tabCategory,
+          panelInfoList: form.panelInfoList,
           // 分类配置与影片配置
           hasSubTab: isCatelogConfig ? 0 : undefined,
-          panelInfoList: isCatelogConfig ? form.panelInfoList : undefined,
           filmDetailPageInfo
         }
         this.$service.tabInfoUpsert(jsonStr, '保存成功').then(data => {
