@@ -24,7 +24,7 @@
                 整体数据
               </el-button>
             </BlockStatChartViewer>
-            <!-- <BlockStatDmpChartViewer
+            <BlockStatDmpChartViewer
               v-if="block.specificContentList && block.specificContentList.length !== 0"
               :panel-group="panelGroup"
               :panel-index="panelIndex"
@@ -34,7 +34,7 @@
                 class="popover-tool-btn">
                 DMP
               </el-button>
-            </BlockStatDmpChartViewer> -->
+            </BlockStatDmpChartViewer>
             <!-- <br v-if="block.specificContentList && block.specificContentList.length !== 0"/> -->
             <!-- <el-button
               type="success"
