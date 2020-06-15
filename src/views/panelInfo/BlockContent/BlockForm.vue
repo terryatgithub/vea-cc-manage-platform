@@ -97,7 +97,7 @@
             <span class="tips">1表示上1期，2表示上2期</span>
           </el-form-item>
         </template>
-        <el-form-item v-show="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.teleTab"
+        <el-form-item v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.teleTab"
           label="选择省份"
           prop="tvLiveInfo.provinceId">
           <CommonSelector

@@ -567,6 +567,7 @@ export default {
           cb(Error('影片不可为空'))
         }
       }
+      cb()
     },
     save (status) {
       const mode = this.mode
