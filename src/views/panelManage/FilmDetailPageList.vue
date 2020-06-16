@@ -251,6 +251,10 @@ export default {
             }
           },
           {
+            prop: 'filmDetailPageInfo.videoId',
+            label: '单片'
+          },
+          {
             prop: 'lastUpdateDate',
             label: '更新时间',
             sortable: true,
