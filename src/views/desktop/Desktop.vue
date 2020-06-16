@@ -48,6 +48,17 @@
               </div>
             </el-card>
           </div>
+          <div>
+            <el-card class="box-card" style="cursor: pointer;">
+              <div @click="goTo('msn')">
+                <img src="../../assets/images/search.png" class="cod-img search">
+                <div class="text-wrap">
+                  <span class="text"> 内容引用检索</span>
+                  <span class="text-num">({{movieNum}})</span>
+                </div>
+              </div>
+            </el-card>
+          </div>
         </div>
 
       </ContentCard>
@@ -288,4 +299,7 @@ img
     color #2d8cf0
 .data-sync-list__num
   float right
+.search
+  width 64px
+  height 64px
 </style>

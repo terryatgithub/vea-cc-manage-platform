@@ -306,6 +306,36 @@
                     </div>
                   </el-form-item>
                 </template>
+                <template v-if="tabInfo.tabType === 14">
+                  <el-form-item label="活动浮窗" prop="floatWindow">
+                    <cc-float-window-selector
+                      @select-end="handleSelectFloatWindowEnd"
+                      :params="floatWindowParams"
+                    />
+                    <template v-if="tabInfo.activityFloatWindow">
+                      已选择: {{ tabInfo.activityFloatWindow.pluginName }}
+                      <el-button type="danger" size="small" @click="handleRemoveFloatWindow">删除</el-button>
+                    </template>
+                  </el-form-item>
+                  <el-form-item label="选择版面">
+                    <cc-tab-selector-el
+                      ref="tabSelector"
+                      :source="tabInfo.tabResource"
+                      :has-sub-tab="0"
+                      :oneOption='oneOption'
+                      @select-start="handleSelectTabStart"
+                      @select-end="handleSelectTabEnd"
+                    />
+                    <el-button type="primary" plain @click="handleCreateTab">新建版面</el-button>
+                    <div>
+                      <OrderableTable
+                        ref="subTabTable"
+                        v-model="tabInfo.tabList"
+                        :header="subTabTableHeader"
+                      />
+                    </div>
+                  </el-form-item>
+                </template>
                 <template v-if="tabInfo.tabType === 2">
                   <el-form-item label="活动浮窗" prop="floatWindow">
                     <cc-float-window-selector
@@ -400,7 +430,7 @@
                 </el-form-item>
               </div>
 
-              <template v-if="tabInfo.tabType === 2 || tabInfo.tabType === 13">
+              <template v-if="tabInfo.tabType !== 1">
                 <div class="form-legend-header" @click="isCollapseSpec = !isCollapseSpec">
                   <i v-if="isCollapseSpec" class="el-icon-arrow-down"></i>
                   <i v-else class="el-icon-arrow-up"></i>
@@ -431,7 +461,7 @@
                       </div>
                     </div>
                   </el-form-item>
-                  <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg" v-if="tabInfo.tabType !== 13">
+                  <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg" v-if="tabInfo.tabType !== 13 && tabInfo.tabType !== 14">
                     <GlobalPictureSelector
                       title="选择长图素材"
                       @select-end="handleSelectLongBgEnd"
@@ -462,7 +492,7 @@
                       </div>
                     </div>
                   </el-form-item>
-                  <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
+                  <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg" v-if="tabInfo.tabType !== 14">
                     <el-switch
                       :value="!!tabInfo.flagIsBlockBg"
                       @input="tabInfo.flagIsBlockBg = $event ? 1 : 0"
@@ -1256,6 +1286,10 @@ export default {
         {
           label: '分页专题',
           value: 13
+        },
+        {
+          label: '专题-tab版面',
+          value: 14
         }
       ],
       panelListIndexed: {},
@@ -1698,7 +1732,7 @@ export default {
       this.tabInfo.collectImg = ''
     },
     handleInputTabType (val) {
-      if (val === 2 || val === 13 || (val === 1 && this.tabInfo.tabType !== 2)) {
+      if (val === 2 || val === 13 || val === 14 || (val === 1 && this.tabInfo.tabType !== 2)) {
         this.tabInfo.refreshTimeList = []
         this.tabInfo.tabType = val
       }

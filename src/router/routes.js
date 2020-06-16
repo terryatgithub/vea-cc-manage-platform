@@ -665,6 +665,12 @@ const children = [
         path: '/v1/msn/view.html',
         component: MovieNotice,
         meta: { title: '下架影片通知', tagId: 'msn' }
+      },
+      {
+        name: 'msn',
+        path: '/v1/msn/view.html',
+        component: MovieNotice,
+        meta: { title: '内容引用检索', tagId: 'msn' }
       }
     ]
   },

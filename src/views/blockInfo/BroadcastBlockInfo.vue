@@ -1499,6 +1499,7 @@ export default {
     }
   },
   created () {
+    console.log(this.$consts.sourceOptionsWithNone)
     this.normalForm = cloneDeep(this.versionForm)
     this.normalVersionContent.push(this.normalForm) // 纯图模式下默认给个值展示左边数据
     this.lowerForm = cloneDeep(this.versionForm)
