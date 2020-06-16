@@ -235,6 +235,10 @@
         </ResourceSelector>
         <el-tag type="primary" v-if="contentForm.extraValue1">已选择: {{ contentForm.extraValue1 }}</el-tag>
         <el-button v-show="!isReadonly && contentForm.extraValue1" plain type="primary" @click="handleAddTagStart">打标签</el-button>
+        <el-button v-show="contentForm.coverType === 'media' && (contentForm.videoContentType === 'movie' || contentForm.videoContentType === 'edu') && contentForm.extraValue1"
+          plain
+          type="primary"
+          @click="showMediaDetailDialog = true">影片数据</el-button>
       </el-form-item>
       <el-form-item key="coverTypeApp"  label="内容资源" prop="extraValue1" v-if="contentForm.coverType === 'app'">
         <ResourceSelector
@@ -703,6 +707,7 @@
       :ids="[currentResourceId]"
       @close="showBlockTagDialog = false">
     </TagFrame>
+    <MediaDetailFrame :id="contentForm.extraValue1.slice(5)" v-if="showMediaDetailDialog" @close="showMediaDetailDialog = false" />
   </div>
 </template>
 
@@ -744,6 +749,7 @@ import KnowledgeTagSelector from '@/components/mask/KnowledgeTagSelector/Knowled
 import MaskAuthorSelector from '@/components/mask/AuthorSelector'
 import MaskVideoSelector from '@/components/mask/VideoSelector'
 import GDChannelSelector from '@/components/selectors/GDChannelSelector'
+import MediaDetailFrame from '../MediaDetailFrame'
 export default {
   components: {
     Upload,
@@ -765,7 +771,8 @@ export default {
     KnowledgeTagSelector,
     MaskAuthorSelector,
     MaskVideoSelector,
-    GDChannelSelector
+    GDChannelSelector,
+    MediaDetailFrame
   },
   data () {
     const isReadonly = this.isReadonly
@@ -1002,7 +1009,8 @@ export default {
         }
       },
       scene: '2',
-      provinceOptions: []
+      provinceOptions: [],
+      showMediaDetailDialog: false
     }
   },
   props: [

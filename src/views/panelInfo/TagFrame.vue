@@ -20,17 +20,22 @@ export default {
     }
   },
   computed: {
-    url () {
-      const ids = this.ids || []
-      const server = /^(127|172|beta)/.test(location.host)
+    server () {
+      return /^(127|172|beta)/.test(location.host)
         ? 'http://dev-mgr-media.tc.cc0808.com'
         : 'http://mgrnew.media.tc.skysrt.com'
+    },
+    url () {
+      const ids = this.ids || []
+      const server = this.server
       return server + `/#/ccGlobalMediaTag/com.html?origin=${location.origin}&referrer=homepage&enableDelete=0&coocaaVId=` + ids.join(',')
     }
   },
   methods: {
-    handleClose () {
-      this.$emit('close')
+    handleClose (event) {
+      if (!event || (event.data === 'close' && event.origin === this.server)) {
+        this.$emit('close')
+      }
     }
   },
   mounted () {
