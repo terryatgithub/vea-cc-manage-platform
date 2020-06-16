@@ -33,7 +33,7 @@
                 <el-input v-model="form.tabName"/>
               </el-form-item>
               <el-form-item label="业务分类">
-                <el-select v-model="form.tabCategory" :disabled="categoryEdit">
+                <el-select :value="form.tabCategory" @input="handleInputTabCategory" :disabled="categoryEdit">
                   <el-option label="影视" :value="0"/>
                   <el-option label="教育" :value="1"/>
                 </el-select>
@@ -77,7 +77,7 @@
               <el-form-item label="选择版块" prop="tags">
                 <cc-panel-selector-el
                   ref="panelSelector"
-                  :source="form.tabResource"
+                  :source="panelSelectorSource"
                   @select-end="handleSelectPanelEnd"/>
 
                 <el-dropdown>
@@ -102,9 +102,9 @@
                 <ResourceSelector
                   ref="resourceSelector"
                   :selectors="['video', 'edu']"
-                  :disable-partner="!!$consts.partnerAliasToSource[form.tabResource]"
+                  :disable-partner="!!resourceSelectorSource"
                   selection-type="multiple"
-                  :source="$consts.partnerAliasToSource[form.tabResource]"
+                  :source="resourceSelectorSource"
                   @select-end="handleSelectResourceEnd">
                   <el-button type="primary" plain>选择影片</el-button>
                 </ResourceSelector>
@@ -352,6 +352,20 @@ export default {
     }
   },
   computed: {
+    panelSelectorSource () {
+      const { form } = this
+      if (form.tabCategory === 1) {
+        return undefined
+      }
+      return form.tabResource
+    },
+    resourceSelectorSource () {
+      const { form, $consts } = this
+      if (form.tabCategory === 1) {
+        return undefined
+      }
+      return $consts.partnerAliasToSource[form.tabResource]
+    },
     pannelItems () {
       const { form, videoDictItems, eduDictItems } = this
       if (form.tabCategory === 0) {
@@ -763,6 +777,15 @@ export default {
       } else {
         this.btnSave()
       }
+    },
+    handleInputTabCategory (val) {
+      this.form.tabCategory = val
+      // 清空内容
+      this.pannel = '0'
+      this.product = '0'
+      this.priority = 1
+      this.form.panelInfoList = []
+      this.form.videoList = []
     },
     handleInputConfigWay (val) {
       this.form.matchType = val
