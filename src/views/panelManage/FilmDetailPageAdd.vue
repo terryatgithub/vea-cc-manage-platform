@@ -132,7 +132,7 @@
                 prop="tabResource"
               >{{sourceText[form.tabResource]}}</el-form-item>
               <el-form-item label="配置方式">
-                {{form.matchType}}
+                {{$consts.optionsToText(configWayOptions)[form.matchType]}}
               </el-form-item>
               <el-form-item label="频道" v-if="form.matchType === 0">
                 <el-select v-model="pannel" :disabled="true">
