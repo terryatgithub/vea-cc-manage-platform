@@ -415,6 +415,30 @@
         </GlobalPictureSelector>
       </el-form-item>
 
+      <el-form-item label="配置信号源落焦海报" v-if="contentForm.coverType === 'custom'">
+        <el-switch
+          :disabled="isReadonly"
+          v-model="contentForm.flagSetFocusPictureUrl"
+          active-color="#13ce66"
+          @change="contentForm.focusPictureUrl = ''"
+          inactive-color="grey" /><br/>
+        <GlobalPictureSelector
+          v-if="contentForm.flagSetFocusPictureUrl"
+          :disabled="isReadonly"
+          :picture-resolution="resolution[0] + '*' + resolution[1]"
+          @select-end="handleSelectFocusPostEnd">
+          <div
+            class="post-box"
+            :style="{
+              height: postSize.height + 'px',
+              width: postSize.width + 'px',
+              cursor: 'pointer'
+            }">
+            <img v-if="contentForm.focusPictureUrl" referrerpolicy="no-referrer" :src="contentForm.focusPictureUrl" >
+          </div>
+        </GlobalPictureSelector>
+      </el-form-item>
+
       <template v-if="contentForm.coverType === 'media' && !isInterveneBlock">
         <el-form-item label="配置高清背景图和视频">
           <el-switch
@@ -1506,6 +1530,9 @@ export default {
     },
     handleSelectPostEnd (post) {
       this.contentForm.pictureUrl = post.pictureUrl
+    },
+    handleSelectFocusPostEnd (post) {
+      this.contentForm.focusPictureUrl = post.pictureUrl
     },
     handleSelectBackupPostEnd (post) {
       this.contentForm.alternativePictureUrl = post.pictureUrl

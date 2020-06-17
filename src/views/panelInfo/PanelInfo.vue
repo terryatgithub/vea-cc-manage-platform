@@ -2608,6 +2608,7 @@ export default {
               if (maskLifeInfo) {
                 maskLifeInfo.videoInfo = undefined
               }
+              delete item.flagSetFocusPictureUrl
             })
 
           delete contentItem.mallResize
@@ -3177,6 +3178,7 @@ export default {
           } else {
             item.appParams = []
           }
+          item.flagSetFocusPictureUrl = !!item.focusPictureUrl
         }
 
         if (firstPannel) {

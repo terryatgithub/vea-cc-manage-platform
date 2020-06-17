@@ -453,6 +453,8 @@ export function genDefaultContentForm (preset) {
     showSubTitle: 0,
     singleSubTitle: '',
     pictureUrl: '',
+    flagSetFocusPictureUrl: false,
+    focusPictureUrl: '',
     showSeries: 1,
     showScore: 1,
     alternativePictureUrl: '',
