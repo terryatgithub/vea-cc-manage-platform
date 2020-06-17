@@ -21,6 +21,7 @@
             v-if="isUseSelector('video')"
             v-show="activeSelector === 'video'"
             ref="video-selector"
+            :noVideoEpisode="$attrs.noVideoEpisode"
             :disable-partner="disablePartner"
             :source="source"
             :selection-type="selectionType"
@@ -221,6 +222,7 @@ const SELECTORS = [
 ]
 export default {
   name: 'ResourceSelector',
+  inheritAttrs: false,
   components: {
     RemoteSelectorWrapper,
     TopicSelector,

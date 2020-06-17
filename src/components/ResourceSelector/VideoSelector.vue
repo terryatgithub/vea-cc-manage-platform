@@ -258,6 +258,9 @@ export default {
               // const ccVideoSourceEntities = row.ccVideoSourceEntities || []
               // const entity = ccVideoSourceEntities[0]
               // if (entity && entity.currentSegment > 1 && entity.thirdSource === this.efficientFilter.sources) {
+              if (this.noVideoEpisode !== undefined) {
+                return
+              }
               return h('el-button', {
                 on: {
                   'click': (event) => {
@@ -267,7 +270,6 @@ export default {
 
                 }
               }, '选择单集')
-              // }
             }
           }
         ],
@@ -330,7 +332,7 @@ export default {
         .map(({ tagCnName }) => ({ label: tagCnName, value: tagCnName }))
     }
   },
-  props: ['isLive', 'disablePartner', 'selection-type', 'source', 'idType'],
+  props: ['isLive', 'disablePartner', 'selection-type', 'source', 'idType', 'noVideoEpisode'],
   watch: {
     'filter.partner': 'onPartnerChange',
     'filter.sources': 'onSourceChange',

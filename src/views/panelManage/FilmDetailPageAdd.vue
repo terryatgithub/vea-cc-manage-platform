@@ -98,8 +98,9 @@
                   class="orderableTable"
                 />
               </el-form-item>
-              <el-form-item label="选择影片" v-if="form.matchType === 1" :required="true">
+              <el-form-item v-if="form.matchType === 1" class="is-required" label="选择影片">
                 <ResourceSelector
+                  noVideoEpisode
                   ref="resourceSelector"
                   :selectors="['video', 'edu']"
                   :disable-partner="!!resourceSelectorSource"
@@ -168,7 +169,7 @@
                   :readonly="true"
                 />
               </el-form-item>
-              <el-form-item label="选择影片">
+              <el-form-item label="选择影片" v-if="form.matchType === 1">
                 <el-tag v-for="(video, index) in form.videoList"
                   :key="index"
                   class="video-tag" >
@@ -566,11 +567,13 @@ export default {
           })
         }
       }
-      this.$refs.form.validate(valid => {
-        if (!valid) {
-          return cb(Error('请将表单填写完整'))
-        }
+      let valid = true
+      this.$refs.form.validate(v => {
+        valid = v
       })
+      if (!valid) {
+        return cb(Error('请将表单填写完整'))
+      }
       if (form.panelInfoList.length === 0) {
         return cb(Error('请添加版块'))
       }
@@ -746,15 +749,16 @@ export default {
       form.tabId = data.tabId
       form.tabName = data.tabName
       form.tabCategory = data.tabCategory
-      form.priority = data.filmDetailPageInfo.priority
+      const filmDetailPageInfo = data.filmDetailPageInfo || {}
+      form.priority = filmDetailPageInfo.priority || 1
       form.tabResource = data.tabResource
       form.currentVersion = data.currentVersion
       form.currentStatus = data.tabStatus
-      form.matchType = data.filmDetailPageInfo.matchType || 0
-      form.videoList = data.filmDetailPageInfo.videoList
+      form.matchType = filmDetailPageInfo.matchType || 0
+      form.videoList = filmDetailPageInfo.videoList || []
       this.globalTabResource = data.tabResource
-      this.pannel = data.filmDetailPageInfo.channel
-      this.product = data.filmDetailPageInfo.product
+      this.pannel = filmDetailPageInfo.channel
+      this.product = filmDetailPageInfo.product
       // this.table.data = data.panelInfoList
       this.form.panelInfoList = data.panelInfoList.map(item => {
         item.pannelGroupRemark = item.pannelName
@@ -780,36 +784,25 @@ export default {
     },
     handleInputTabCategory (val) {
       this.form.tabCategory = val
-      // 清空内容
-      this.pannel = '0'
-      this.product = '0'
-      this.priority = 1
-      this.form.panelInfoList = []
-      this.form.videoList = []
+      this.clearConfig()
     },
     handleInputConfigWay (val) {
       this.form.matchType = val
-      // 清空内容
+      this.clearConfig()
+    },
+    // 清空配置的内容
+    clearConfig () {
       this.pannel = '0'
       this.product = '0'
-      this.priority = 1
+      this.form.priority = 1
       this.form.panelInfoList = []
       this.form.videoList = []
     },
     handleSelectResourceEnd (selectedResources) {
-      const { video: videoResources, edu: eduResources, episode: selectedEpisode } = selectedResources
-      videoResources.forEach(item => {
-        const id = item.coocaaVId
-        let episodeId
-        let title = item.title
-        if (selectedEpisode[id] !== undefined) {
-          episodeId = selectedEpisode[id].coocaaVId
-          title = selectedEpisode[id].urlTitle
-        }
-        this.form.videoList.push({ videoId: episodeId || id, title })
-      })
-      eduResources.forEach(item => {
-        this.form.videoList.push({ videoId: item.coocaaVId, title: item.title })
+      const { video: videoResources, edu: eduResources } = selectedResources
+      ;[].concat(videoResources, eduResources).forEach(item => {
+        const isExist = this.form.videoList.some(v => v.videoId === item.coocaaVId)
+        !isExist && this.form.videoList.push({ videoId: item.coocaaVId, title: item.title })
       })
     },
     handleRemoveVideo (index) {
