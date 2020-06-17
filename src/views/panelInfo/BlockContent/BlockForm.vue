@@ -971,22 +971,24 @@ export default {
           { required: true, message: '请选择知识', trigger: 'blur' }
         ],
         'tvLiveInfo.channelId': [
-          { required: true, message: '请选择频道/节目', trigger: 'blur' }
+          { required: true, message: '请选择频道/节目', trigger: 'change' }
         ],
         'tvLiveInfo.autoTelecast.regularHour': [
-          { required: true, message: '请填写', trigger: 'blur' }
+          { required: true, message: '请输入6位数字的时间格式', trigger: 'blur' },
+          { len: 6, message: '请输入6位数字的时间格式', trigger: 'blur' }
         ],
         'tvLiveInfo.autoTelecast.weekInfo': [
-          { required: true, message: '请勾选星期', trigger: 'change' }
+          { required: true, message: '请勾选星期轮替', trigger: 'change' }
         ],
         'tvLiveInfo.autoTelecast.firstPlayDate': [
-          { required: true, message: '请填写', trigger: 'blur' }
+          { required: true, message: '请输入8位数字的日期格式', trigger: 'blur' },
+          { len: 8, message: '请输入8位数字的日期格式', trigger: 'blur' }
         ],
         'tvLiveInfo.autoTelecast.aheadSeries': [
-          { required: true, message: '请填写', trigger: 'blur' }
+          { required: true, message: '请填写期数', trigger: 'blur' }
         ],
         'tvLiveInfo.provinceId': [
-          { required: true, message: '请选择省份', trigger: 'blur' }
+          { required: true, message: '请选择省份', trigger: 'change' }
         ]
       },
       beforeSelectBlockCbs: {
@@ -1151,6 +1153,8 @@ export default {
         tvLiveInfo.startTime = selectedSchedules.startTime
         tvLiveInfo.programName = selectedSchedules.thirdScheduleTitle
       }
+      // 校验字段，取消提示
+      this.$refs.contentForm.validateField('tvLiveInfo.channelId')
     },
     initVideoInfo (maskLifeInfo) {
       if (!maskLifeInfo.videoInfo) {
