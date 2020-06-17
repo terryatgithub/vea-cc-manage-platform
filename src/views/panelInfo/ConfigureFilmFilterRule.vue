@@ -228,7 +228,7 @@
           <el-button v-else class="button-new-tag" size="small" @click="showTagInput('company')">+ New Tag</el-button>
         </div>
         <div>(4) 地区</div>
-        <el-checkbox-group v-model="eduFilterForm.teachCategory" class="margin-bottom-20 items-group">
+        <el-checkbox-group v-model="eduFilterForm.teachAreas" class="margin-bottom-20 items-group">
           <el-checkbox
             v-for="(teachArea, index) in teachAreaOptions"
             :key="index"
@@ -743,13 +743,13 @@ export default {
         const { teachCategory, tagsRelation, teachTagCodes, company, teachAreas,
           teachFeatures, teachCreatedTime, teachRecentMonths, feverTop, scoreUp, scoreDown } = eduFilterForm
         desc += '教育业务规则：\n'
-        teachCategory.length !== 0 && (desc += parseRuleLabel(teachCategoryOptions, teachCategory, '、') + '\n')
+        teachCategory.length !== 0 && (desc += '分类：' + parseRuleLabel(teachCategoryOptions, teachCategory, '、') + '\n')
         teachTagCodes.length !== 0 && (desc += '标签：' + eduCodeTagDesc + '(' + ['或', '且'][tagsRelation] + '关系)' + '\n')
         company.length !== 0 && (desc += 'CP名：' + company.join('、') + '\n')
         teachAreas.length !== 0 && (desc += '地区：' + parseRuleLabel(teachAreaOptions, teachAreas, '、') + '\n')
         teachFeatures.length !== 0 && (desc += '视频特点：' +
           parseRuleLabel([{ label: '绘本', value: 1 }, { label: '有声读物', value: 2 }, { label: '视频内容', value: 3 }], teachFeatures, '、') + '\n')
-        ;(scoreUp || scoreDown) && (desc += `评分：${scoreUp || '_'}——${scoreDown || '_'}\n`)
+        ;(scoreUp || scoreDown) && (desc += `评分：${scoreUp || '_'}-${scoreDown || '_'}\n`)
         const createdTimeSelect = this.eduCreatedTimeSelect
         if (createdTimeSelect === 1 && eduFilterForm.teachCreatedTime.length !== 0) {
           desc += '新度：' + teachCreatedTime.join('、') + '\n'
