@@ -140,7 +140,7 @@
                       class="tab-placeholder-info__link"
                       v-if="item.dmpInfo"
                       @click="$emit('change-crowd', index, crowdIndex)">
-                      人群: {{ item.dmpInfo.crowdName }}{{`(${item.dmpInfo.crowdId})`}}
+                      人群: {{ `${item.dmpInfo.policyName}(${item.dmpInfo.policyId}) / ${item.dmpInfo.crowdName}(${item.dmpInfo.crowdId})` }}
                     </div>
                   </div>
                   <div class="tab-placeholder__panel">
