@@ -245,13 +245,14 @@
           <el-checkbox :label="2">仅选取有声读物</el-checkbox>
           <el-checkbox :label="3">仅选取视频内容</el-checkbox>
         </el-checkbox-group>
-        <div>(6) 评分</div>
+        <!-- 媒资没做 -->
+        <!-- <div>(6) 评分</div>
         <div class="margin-bottom-20">
           <el-input :regexp="/^[\d\.]*$/" v-model.number="eduFilterForm.scoreUp" style="width: 100px;margin-right: 5px" />——
           <el-input :regexp="/^[\d\.]*$/" v-model.number="eduFilterForm.scoreDown" style="margin-left: 5px; width: 100px" />
           <span style="font-size: 12px;margin-left: 10px">填写评分范围，精确到小数点后一位</span>
-        </div>
-        <div>(7) 创建时间</div>
+        </div> -->
+        <div>(6) 创建时间</div>
         <el-row :gutter="1" style="width: 100%" class="margin-bottom-20">
           <el-col :span="8">
             <el-select v-model="eduCreatedTimeSelect" @change="handleResetEduTime">
@@ -278,7 +279,7 @@
             </div>
           </el-col>
         </el-row>
-        <div>(8) 热度</div>
+        <div>(7) 热度</div>
         <el-row :gutter="1" class="margin-bottom-20">
           <el-col :span="8">
             <el-select v-model="eduFeverSelect">

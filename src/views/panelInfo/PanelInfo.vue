@@ -1208,10 +1208,10 @@ export default {
       const categoryVideo = 31 // 影视
       const categoryEducation = 60 // 教育
       const categoryCommon = 67 // 不限
-      if (panelGroupCategory === categoryVideo) {
+      if ([categoryVideo, categoryEducation].includes(panelGroupCategory)) {
         return panelFillTypeOptions
       }
-      if ([categoryCommon, categoryEducation].includes(panelGroupCategory)) {
+      if (panelGroupCategory === categoryCommon) {
         return panelFillTypeOptions.filter(item => item.value !== PANEL_FILL_TYPE.mediaRule)
       }
       return panelFillTypeOptions.filter(item => item.value !== PANEL_FILL_TYPE.mediaRule && item.value !== PANEL_FILL_TYPE.ranking)
