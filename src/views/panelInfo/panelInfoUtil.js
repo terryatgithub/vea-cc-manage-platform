@@ -504,12 +504,10 @@ export function genDefaultTvLiveInfo (preset) {
     channelId: undefined,
     startTime: undefined,
     provinceId: undefined,
-    autoTelecast: {
-      regularHour: undefined,
-      weekInfo: [],
-      firstPlayDate: undefined,
-      aheadSeries: undefined
-    },
+    regularHour: undefined,
+    weekInfo: [],
+    firstPlayDate: undefined,
+    aheadSeries: undefined,
     ...preset
   }
 }

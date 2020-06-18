@@ -70,30 +70,30 @@
           </template>
         </el-form-item>
         <template v-if="contentForm.tvLiveInfo.clickType === GD_LIVE_CLICK_TYPES.autoCast">
-          <el-form-item label="时间" prop="tvLiveInfo.autoTelecast.regularHour">
+          <el-form-item label="时间" prop="tvLiveInfo.regularHour">
             <InputPositiveInt
               clearable
-              v-model="contentForm.tvLiveInfo.autoTelecast.regularHour"
+              v-model="contentForm.tvLiveInfo.regularHour"
               :regexp="/^\d{0,6}$/"
               :disabled="isReadonly" />
             <span class="tips">6位数字HHMMSS，类似：190005</span>
           </el-form-item>
-          <el-form-item label="星期轮替" prop="tvLiveInfo.autoTelecast.weekInfo">
-            <el-checkbox-group :disabled="isReadonly" v-model="contentForm.tvLiveInfo.autoTelecast.weekInfo" style="display: inline-block">
+          <el-form-item label="星期轮替" prop="tvLiveInfo.weekInfo">
+            <el-checkbox-group :disabled="isReadonly" v-model="contentForm.tvLiveInfo.weekInfo" style="display: inline-block">
               <el-checkbox v-for="(day, index) in WEEK_OPTIONS" :label="day.value" :key="index">{{day.label}}</el-checkbox>
             </el-checkbox-group>
             <span class="tips">即这个节目每周几更新</span>
           </el-form-item>
-          <el-form-item label="首播日期" prop="tvLiveInfo.autoTelecast.firstPlayDate" >
+          <el-form-item label="首播日期" prop="tvLiveInfo.firstPlayDate" >
             <InputPositiveInt
               clearable
-              v-model="contentForm.tvLiveInfo.autoTelecast.firstPlayDate"
+              v-model="contentForm.tvLiveInfo.firstPlayDate"
               :regexp="/^[1-9]\d{0,7}$/"
               :disabled="isReadonly" />
             <span class="tips">8位数字YYYYMMDD，类似：20200901</span>
           </el-form-item>
-          <el-form-item label="往前多少期" prop="tvLiveInfo.autoTelecast.aheadSeries">
-            <InputPositiveInt v-model="contentForm.tvLiveInfo.autoTelecast.aheadSeries" :disabled="isReadonly" clearable />
+          <el-form-item label="往前多少期" prop="tvLiveInfo.aheadSeries">
+            <InputPositiveInt v-model="contentForm.tvLiveInfo.aheadSeries" :disabled="isReadonly" clearable />
             <span class="tips">1表示上1期，2表示上2期</span>
           </el-form-item>
         </template>
@@ -997,18 +997,18 @@ export default {
         'tvLiveInfo.channelId': [
           { required: true, message: '请选择频道/节目', trigger: 'change' }
         ],
-        'tvLiveInfo.autoTelecast.regularHour': [
+        'tvLiveInfo.regularHour': [
           { required: true, message: '请输入6位数字的时间格式', trigger: 'blur' },
           { len: 6, message: '请输入6位数字的时间格式', trigger: 'blur' }
         ],
-        'tvLiveInfo.autoTelecast.weekInfo': [
+        'tvLiveInfo.weekInfo': [
           { required: true, message: '请勾选星期轮替', trigger: 'change' }
         ],
-        'tvLiveInfo.autoTelecast.firstPlayDate': [
+        'tvLiveInfo.firstPlayDate': [
           { required: true, message: '请输入8位数字的日期格式', trigger: 'blur' },
           { len: 8, message: '请输入8位数字的日期格式', trigger: 'blur' }
         ],
-        'tvLiveInfo.autoTelecast.aheadSeries': [
+        'tvLiveInfo.aheadSeries': [
           { required: true, message: '请填写期数', trigger: 'blur' }
         ],
         'tvLiveInfo.provinceId': [
