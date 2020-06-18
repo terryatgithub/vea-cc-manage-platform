@@ -14,17 +14,18 @@ export default {
   components: {
     FrameDialog
   },
-  props: ['id'],
+  props: ['id', 'partner'],
   data () {
     return {
     }
   },
   computed: {
     url () {
+      const { id, partner } = this
       const server = /^(127|172|beta)/.test(location.host)
         ? 'http://dev-mgr-media.tc.cc0808.com'
         : 'http://mgrnew.media.tc.skysrt.com'
-      return server + `/#/ownMediaResManage/view.html?origin=${location.origin}&reqFrom=1&coocaaVId=` + this.id
+      return server + `/#/ownMediaResManage/view.html?origin=${location.origin}&reqFrom=1&coocaaVId=${id}&partner=${partner}`
     }
   },
   methods: {

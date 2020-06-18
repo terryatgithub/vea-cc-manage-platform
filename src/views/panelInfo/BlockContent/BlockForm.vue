@@ -731,7 +731,7 @@
       :ids="[currentResourceId]"
       @close="showBlockTagDialog = false">
     </TagFrame>
-    <MediaDetailFrame :id="contentForm.extraValue1.slice(5)" v-if="showMediaDetailDialog" @close="showMediaDetailDialog = false" />
+    <MediaDetailFrame :id="contentForm.extraValue1.slice(5)" :partner="$consts.sourceToPartner[source]" v-if="showMediaDetailDialog" @close="showMediaDetailDialog = false" />
   </div>
 </template>
 
