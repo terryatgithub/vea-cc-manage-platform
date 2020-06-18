@@ -11,6 +11,7 @@
         >
             <NewBlockRecStreamSelector
                 title="选择推荐流"
+                :scene="scene"
                 selection-type="single"
                 @select-end="handleSelectBlockRecStreamEnd">
             </NewBlockRecStreamSelector>
@@ -49,6 +50,7 @@ export default {
     // Table,
     // ContentWrapper
   },
+  props: ['scene'],
   data () {
     return {
       contentForm: {
@@ -91,7 +93,7 @@ export default {
       //   return this.$message.error('未选择')
       // }
       let contentForm = {}
-      contentForm.scene = '4'
+      contentForm.scene = this.scene
       contentForm.recStreamId = this.contentForm.id
       contentForm.dmpPolicyId = this.contentForm.dmpPolicyId
       contentForm.dmpCrowdId = this.contentForm.dmpCrowdId

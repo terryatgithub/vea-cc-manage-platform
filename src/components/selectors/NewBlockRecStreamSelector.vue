@@ -16,7 +16,7 @@
         :filter="filter"
         :filterSchema="filterSchema"
         :pagination="pagination"
-        :select-end-on-dbl-click="false"
+        :select-end-on-dbl-click="true"
         @pagination-change="fetchData"
         @filter-change="handleFilterChange"
         @filter-reset="handleResetFilter"

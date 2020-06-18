@@ -11,6 +11,7 @@
       :id="id"
       :version="version"
       :init-mode="mode"
+      :scene="scene"
       :status="status"
       @upsert-end="handleUpsertEnd"
       @go-back="goBack">
@@ -33,7 +34,8 @@ export default {
       id: undefined,
       mode: 'create',
       version: undefined,
-      status: undefined
+      status: undefined,
+      scene: undefined
     }
   },
   methods: {
@@ -45,10 +47,11 @@ export default {
         this.version = undefined
       }
     },
-    handleCreate () {
+    handleCreate (scene) {
       this.id = undefined
       this.mode = 'create'
       this.isShowList = false
+      this.scene = scene
     },
     handleEdit (item) {
       this.id = item.id

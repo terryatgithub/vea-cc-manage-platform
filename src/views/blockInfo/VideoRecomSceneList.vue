@@ -5,15 +5,15 @@
       @filter-change="fetchData"
       :pagination="pagination">
         <template>
-            <el-tabs v-model="activeName" type="card" @tab-click="handleClick(activeName)">
+            <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
                 <el-tab-pane label="主页上版块填充" name="1" disabled></el-tab-pane>
                 <el-tab-pane label="主页上推荐位填充" name="2" disabled></el-tab-pane>
-                <el-tab-pane label="影片相关推荐" name="3" disabled></el-tab-pane>
+                <el-tab-pane label="影片相关推荐" name="3"></el-tab-pane>
                 <el-tab-pane label="搜索页猜你想找" name="4"></el-tab-pane>
             </el-tabs>
         </template>
         <template>
-            <el-button type="primary" @click="$emit('create')">添加推荐流与人群</el-button>
+            <el-button style="margin-bottom: 10px" type="primary" @click="$emit('create', activeName)">添加推荐流与人群</el-button>
             <!--  常规运营-用推荐流填充-选择推荐流 -->
             <!-- 批量填充的banner 点进去 精细化定向内容 关联定向人群-->
         </template>
