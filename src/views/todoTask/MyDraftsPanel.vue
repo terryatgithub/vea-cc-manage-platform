@@ -42,7 +42,7 @@ export default {
             width: '70'
           },
           {
-            label: '名称',
+            label: '名称234',
             width: '170',
             prop: 'pannelGroupRemark',
             sortable: true,

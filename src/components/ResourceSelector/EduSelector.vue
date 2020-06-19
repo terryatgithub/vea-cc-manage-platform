@@ -10,7 +10,7 @@
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
-    @select-end="$emit('select-end')">
+    @select-end="selectEnd">
 
     <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
@@ -74,6 +74,12 @@
                 ></el-option>
               </el-select>
             </el-form-item>
+            <!-- <el-form-item label="权益">
+              <el-select filterable clearable v-model="filter.teachTypes" size="small">
+                <el-option label="教育" value="教育"></el-option>
+                <el-option label="少儿" value="少儿"></el-option>
+              </el-select>
+            </el-form-item> -->
             <el-form-item label="年代">
               <el-input
                 size="small"
@@ -120,20 +126,25 @@
         </el-form>
       </el-collapse-item>
     </el-collapse>
-
+    <EpisodeSelector ref="episodeSelector" :id="currentVideoId" :source="filter.sources" @select-end="handleSelectEpisodeEnd">
+      <span></span>
+    </EpisodeSelector>
   </BaseSelector>
 </template>
 
 <script>
 import BaseSelector from '../BaseSelector'
 import CommonSelector from '@/components/CommonSelector'
+import EpisodeSelector from './EpisodeSelector'
 export default {
   components: {
     BaseSelector,
-    CommonSelector
+    CommonSelector,
+    EpisodeSelector
   },
   data () {
     return {
+      currentVideoId: false,
       isMore: false,
       conditionList: {},
       pagination: {
@@ -198,10 +209,53 @@ export default {
               const videoEntity = ccVideoSourceEntities[0] || {}
               return videoEntity.publishSegment
             }
+          },
+          {
+            prop: 'segment',
+            label: '已选集数',
+            type: 'specialBut',
+            width: '105',
+            mouseStyle: 'hover',
+            fixed: 'right',
+            render: (h, { row }) => {
+              const coocaaVId = row.coocaaVId
+              const selectedEpisodes = this.selectedEpisodes
+              if (selectedEpisodes[coocaaVId]) {
+                return h('el-button', {
+                  attrs: {
+                    type: 'primary',
+                    text: '已选集数',
+                    value: '已选集数',
+                    title: selectedEpisodes[coocaaVId].urlTitle
+                  } }, '已选集数')
+              }
+            }
+          },
+          {
+            prop: 'but',
+            label: '操作',
+            width: '105',
+            fixed: 'right',
+            render: (h, { row }) => {
+              // const ccVideoSourceEntities = row.ccVideoSourceEntities || []
+              // const entity = ccVideoSourceEntities[0]
+              // if (entity && entity.currentSegment > 1 && entity.thirdSource === this.efficientFilter.sources) {
+              return h('el-button', {
+                on: {
+                  'click': (event) => {
+                    event.stopPropagation()
+                    this.handleSelectEpisode(row)
+                  }
+
+                }
+              }, '选择单集')
+              // }
+            }
           }
         ],
         selectionType: 'single'
-      }
+      },
+      selectedEpisodes: {}
     }
   },
   computed: {
@@ -285,6 +339,13 @@ export default {
   },
   props: ['isLive', 'selectionType', 'idType'],
   methods: {
+    selectEnd (data) {
+      data = data.map((e) => {
+        e.selectedEpisodes = this.selectedEpisodes[e.coocaaVId]
+        return e
+      })
+      this.$emit('select-end', data)
+    },
     handleCollapseChange () {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'))
@@ -295,7 +356,7 @@ export default {
         // 筛选条件表单
         resType: 'vod',
         callbackparam: 'result',
-        // sources: this.pannelResource || 'o_tencent', // 内容源
+        sources: 'teach', // 内容源
         contentProviders: undefined, // 内容商
         teachTypes: undefined, // 教育分类
         gradeList: undefined, // 年级
@@ -375,6 +436,34 @@ export default {
       } else {
         this.filter.order = 'asc'
       }
+    },
+    handleSelectEpisode (movie) {
+      this.currentVideoId = movie.coocaaVId
+      this.$nextTick(() => {
+        this.$refs.episodeSelector.$refs.wrapper.handleSelectStart()
+      })
+    },
+    handleSelectEpisodeEnd (episodes) {
+      // this.currentVideoId = education.coocaaVId
+      const currentVideoId = this.currentVideoId
+      this.$set(this.selectedEpisodes, currentVideoId, episodes[0])
+      // 自动勾选当前影片
+      const tableData = this.table.data
+      const index = tableData.findIndex(item => item.coocaaVId === currentVideoId)
+      const Edu = tableData[index]
+      const baseSelector = this.$refs.baseSelector
+      if (this.selectionType === 'single') {
+        if (baseSelector.tableSelected !== index) {
+          baseSelector.handleTableRowSelectionChange(Edu, index)
+        }
+      } else if (this.selectionType === 'multiple') {
+        if (baseSelector.tableSelected.indexOf(index) === -1) {
+          baseSelector.handleTableRowSelectionAdd(Edu, index)
+        }
+      }
+      // this.$nextTick(() => {
+      //   this.$refs.episodeSelector.$refs.wrapper.handleSelectStart()
+      // })
     }
   },
   created () {

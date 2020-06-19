@@ -41,7 +41,7 @@ export function setContentForm (contentForm, options) {
 export function getParams (selected) {
   let param
   // 封装保存的id
-  if (selected.contentType === 'movie') {
+  if (selected.contentType === 'movie' || selected.contentType === 'edu') {
     param = {
       id: selected.thirdIdOrPackageName
     }
@@ -53,7 +53,7 @@ export function getParams (selected) {
     }
   } else if (
     selected.contentType === 'app' ||
-    selected.contentType === 'edu' ||
+    // selected.contentType === 'edu' ||
     selected.contentType === 'txLive'
   ) {
     param = {
@@ -128,9 +128,15 @@ export function parseResourceContent (tabName, selected) {
       break
     }
     case 'edu': {
+      const selectedEpisode = selected.selectedEpisodes
+      if (selectedEpisode) {
+        s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
+        s.vid = selectedEpisode.coocaaMId
+      } else {
+        s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
+      }
       s.contentType = 'edu'
       s.coverType = 'media'
-      s.thirdIdOrPackageName = '_otx_' + selected.coocaaVId
       s.platformId = selected.source
       s.pictureUrl = selected.thumb
       s.title = selected.title

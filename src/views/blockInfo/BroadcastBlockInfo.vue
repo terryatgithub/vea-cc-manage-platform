@@ -1204,6 +1204,7 @@ export default {
       const normalForm = data.normalVersionContent[0]
       const guideConfig = normalForm.guideConfig
       const contentType = normalForm.contentType
+      debugger
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
           this.checkNormalForm(() => {
@@ -1333,7 +1334,12 @@ export default {
           if (item.coverType !== 'custom' && this.basicForm.configModel === 'purePoster') {
             item.onclick = ''
           } else if (item.coverType !== 'custom' && this.basicForm.configModel === 'group') {
-            item.onclick = ''
+            if (item.sign === 'manualSet') {
+              parseParams(item.onclick)
+              item.onclick = JSON.stringify(item.onclick)
+            } else {
+              item.onclick = ''
+            }
           } else {
             parseParams(item.onclick)
             item.onclick = JSON.stringify(item.onclick)
@@ -1494,6 +1500,7 @@ export default {
     }
   },
   created () {
+    console.log(this.$consts.sourceOptionsWithNone)
     this.normalForm = cloneDeep(this.versionForm)
     this.normalVersionContent.push(this.normalForm) // 纯图模式下默认给个值展示左边数据
     this.lowerForm = cloneDeep(this.versionForm)

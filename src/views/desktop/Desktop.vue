@@ -48,6 +48,17 @@
               </div>
             </el-card>
           </div>
+          <div>
+            <el-card class="box-card" style="cursor: pointer;">
+              <div @click="goTo('search')">
+                <img src="../../assets/images/search.png" class="cod-img search">
+                <div class="text-wrap">
+                  <span class="text"> 内容引用检索</span>
+                  <span class="text-num">({{movieNum}})</span>
+                </div>
+              </div>
+            </el-card>
+          </div>
         </div>
 
       </ContentCard>
@@ -161,6 +172,7 @@ export default {
       movieNum: null,
       auditNum: null,
       submitNum: null,
+      searchNum: null,
       mode: undefined,
       title: undefined,
       id: undefined,
@@ -255,6 +267,9 @@ export default {
     this.$service.getTotal('msn').then(data => {
       this.movieNum = data
     })
+    this.$service.getTotal('msn').then(data => {
+      this.searchNum = data
+    })
     if (this.$consts.idPrefix !== '10') {
       this.$service.desktopGetDataSyncInfo().then((data) => {
         this.isAutoSync = data.isOn
@@ -288,4 +303,7 @@ img
     color #2d8cf0
 .data-sync-list__num
   float right
+.search
+  width 64px
+  height 64px
 </style>
