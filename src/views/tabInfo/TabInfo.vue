@@ -1732,7 +1732,7 @@ export default {
       this.tabInfo.collectImg = ''
     },
     handleInputTabType (val) {
-      if (val === 2 || val === 13 || val === 14 || (val === 1 && this.tabInfo.tabType !== 2)) {
+      if (val !== 1 || (val === 1 && this.tabInfo.tabType !== 2)) {
         this.tabInfo.refreshTimeList = []
         this.tabInfo.tabType = val
       }

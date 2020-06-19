@@ -38,6 +38,7 @@ import SysMenu from '../views/sysConfig/SysMenuIndex'
 import UserConfig from '../views/sysConfig/UserConfigIndex'
 import ThemeInfo from '../views/themeManage/ThemeInfoIndex'
 import MovieNotice from '../views/todoTask/MovieNoticeIndex'
+import SearchNotice from '../views/todoTask/SearchNoticeIndex'
 import MyDrafts from '../views/todoTask/MyDraftsIndex'
 import MyReviewTasks from '../views/todoTask/MyReviewTasksIndex'
 import MySubmitTasks from '../views/todoTask/MySubmitTasksIndex'
@@ -667,10 +668,10 @@ const children = [
         meta: { title: '下架影片通知', tagId: 'msn' }
       },
       {
-        name: 'msn',
-        path: '/v1/msn/view.html',
-        component: MovieNotice,
-        meta: { title: '内容引用检索', tagId: 'msn' }
+        name: 'search',
+        path: '/v1/search/view.html',
+        component: SearchNotice,
+        meta: { title: '内容引用检索', tagId: 'search' }
       }
     ]
   },

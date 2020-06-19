@@ -50,7 +50,7 @@
           </div>
           <div>
             <el-card class="box-card" style="cursor: pointer;">
-              <div @click="goTo('msn')">
+              <div @click="goTo('search')">
                 <img src="../../assets/images/search.png" class="cod-img search">
                 <div class="text-wrap">
                   <span class="text"> 内容引用检索</span>
@@ -172,6 +172,7 @@ export default {
       movieNum: null,
       auditNum: null,
       submitNum: null,
+      searchNum: null,
       mode: undefined,
       title: undefined,
       id: undefined,
@@ -265,6 +266,9 @@ export default {
     })
     this.$service.getTotal('msn').then(data => {
       this.movieNum = data
+    })
+    this.$service.getTotal('msn').then(data => {
+      this.searchNum = data
     })
     if (this.$consts.idPrefix !== '10') {
       this.$service.desktopGetDataSyncInfo().then((data) => {
