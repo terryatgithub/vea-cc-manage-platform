@@ -189,9 +189,9 @@ export default {
   },
   created () {
     let filterSchema = _.map({
-      id: _.o.string.other('form', {
+      keyword: _.o.string.other('form', {
         component: 'Input',
-        placeholder: 'ID'
+        placeholder: 'ID/名称名称'
       })
     }).other('form', {
       cols: {
