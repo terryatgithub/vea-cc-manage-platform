@@ -2725,7 +2725,7 @@ export default {
     },
     handleSubmitAudit (timing) {
       const data = this.getFormData()
-      if (data.tabType === 13) {
+      if (data.tabType === 13 || data.tabType === 14) {
         data.hasSubTab = 1
       }
       if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {

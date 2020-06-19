@@ -10,7 +10,7 @@
     @pagination-change="fetchData"
     @filter-reset="handleFilterReset"
     @select-cancel="$emit('select-cancel')"
-    @select-end="$emit('select-end')">
+    @select-end="selectEnd">
 
     <el-collapse slot="filter" value="1" @change="handleCollapseChange">
       <el-collapse-item title="查询条件" name="1">
@@ -211,6 +211,27 @@ export default {
             }
           },
           {
+            prop: 'segment',
+            label: '已选集数',
+            type: 'specialBut',
+            width: '105',
+            mouseStyle: 'hover',
+            fixed: 'right',
+            render: (h, { row }) => {
+              const coocaaVId = row.coocaaVId
+              const selectedEpisodes = this.selectedEpisodes
+              if (selectedEpisodes[coocaaVId]) {
+                return h('el-button', {
+                  attrs: {
+                    type: 'primary',
+                    text: '已选集数',
+                    value: '已选集数',
+                    title: selectedEpisodes[coocaaVId].urlTitle
+                  } }, '已选集数')
+              }
+            }
+          },
+          {
             prop: 'but',
             label: '操作',
             width: '105',
@@ -233,7 +254,8 @@ export default {
           }
         ],
         selectionType: 'single'
-      }
+      },
+      selectedEpisodes: {}
     }
   },
   computed: {
@@ -317,6 +339,13 @@ export default {
   },
   props: ['isLive', 'selectionType', 'idType'],
   methods: {
+    selectEnd (data) {
+      data = data.map((e) => {
+        e.selectedEpisodes = this.selectedEpisodes[e.coocaaVId]
+        return e
+      })
+      this.$emit('select-end', data)
+    },
     handleCollapseChange () {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'))
@@ -421,15 +450,15 @@ export default {
       // 自动勾选当前影片
       const tableData = this.table.data
       const index = tableData.findIndex(item => item.coocaaVId === currentVideoId)
-      const video = tableData[index]
+      const Edu = tableData[index]
       const baseSelector = this.$refs.baseSelector
       if (this.selectionType === 'single') {
         if (baseSelector.tableSelected !== index) {
-          baseSelector.handleTableRowSelectionChange(video, index)
+          baseSelector.handleTableRowSelectionChange(Edu, index)
         }
       } else if (this.selectionType === 'multiple') {
         if (baseSelector.tableSelected.indexOf(index) === -1) {
-          baseSelector.handleTableRowSelectionAdd(video, index)
+          baseSelector.handleTableRowSelectionAdd(Edu, index)
         }
       }
       // this.$nextTick(() => {
