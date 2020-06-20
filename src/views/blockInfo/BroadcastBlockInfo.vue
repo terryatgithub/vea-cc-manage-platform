@@ -1204,7 +1204,6 @@ export default {
       const normalForm = data.normalVersionContent[0]
       const guideConfig = normalForm.guideConfig
       const contentType = normalForm.contentType
-      debugger
       this.$refs.basicForm.validate((valid) => {
         if (valid) {
           this.checkNormalForm(() => {

@@ -2719,8 +2719,7 @@ export default {
         data.hasSubTab = 1
       }
       if (data.tabList.length <= 0) {
-        this.$message.error('请选择版面！')
-        return false
+        return this.$message.error('请选择版面！')
       }
       if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
         return this.$message.error('插件主页最低版本只能输入数字')
