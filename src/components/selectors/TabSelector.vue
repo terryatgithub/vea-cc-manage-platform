@@ -130,6 +130,10 @@ const tabTypeOptions = [
   {
     label: '分页专题版面',
     value: '13'
+  },
+  {
+    label: '专题-tab版面',
+    value: '14'
   }
 ]
 
