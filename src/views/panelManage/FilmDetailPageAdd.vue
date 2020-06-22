@@ -800,10 +800,27 @@ export default {
     },
     handleSelectResourceEnd (selectedResources) {
       const { video: videoResources, edu: eduResources } = selectedResources
-      ;[].concat(videoResources, eduResources).forEach(item => {
-        const isExist = this.form.videoList.some(v => v.videoId === item.coocaaVId)
-        !isExist && this.form.videoList.push({ videoId: item.coocaaVId, title: item.title })
-      })
+      const insertVideoList = (resources, selectedType) => {
+        resources.forEach(item => {
+          const prefix = this.getVideoPrefix(selectedType)
+          const videoId = prefix + item.coocaaVId
+          const isExist = this.form.videoList.some(v => v.videoId === videoId)
+          !isExist && this.form.videoList.push({ videoId, title: item.title })
+        })
+      }
+      insertVideoList(videoResources, 'video')
+      insertVideoList(eduResources, 'edu')
+    },
+    getVideoPrefix (selectedType) {
+      const form = this.form
+      const { tabResource } = form
+      const prefixMap = {
+        qq: '_otx_',
+        iqiyi: '_oqy_',
+        youku: '_oyk_'
+      }
+      const prefix = selectedType === 'video' ? prefixMap[tabResource] : '_otx_'
+      return prefix
     },
     handleRemoveVideo (index) {
       this.form.videoList.splice(index, 1)
