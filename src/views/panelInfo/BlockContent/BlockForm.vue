@@ -93,7 +93,7 @@
             <span class="tips">8位数字YYYYMMDD，类似：20200901</span>
           </el-form-item>
           <el-form-item label="往前多少期" prop="tvLiveInfo.aheadSeries">
-            <InputPositiveInt v-model="contentForm.tvLiveInfo.aheadSeries" :disabled="isReadonly" clearable />
+            <InputPositiveInt v-model.number="contentForm.tvLiveInfo.aheadSeries" :disabled="isReadonly" clearable />
             <span class="tips">1表示上1期，2表示上2期</span>
           </el-form-item>
         </template>

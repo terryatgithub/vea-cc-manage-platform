@@ -56,10 +56,10 @@ export const GD_LIVE_CLICK_TYPE_OPTIONS = [
     label: '启动到节目',
     value: 'telecast'
   },
-  {
-    label: '启动到回看(自动时间)',
-    value: 'autoCast'
-  },
+  // {
+  //   label: '启动到回看(自动时间)',
+  //   value: 'autoCast'
+  // },
   {
     label: '跳转节目单版面',
     value: 'teleTab'
@@ -70,7 +70,7 @@ export const GD_LIVE_CLICK_TYPES = {
   channel: 'channel',
   normal: 'normal',
   telecast: 'telecast',
-  autoCast: 'autoCast',
+  // autoCast: 'autoCast',
   teleTab: 'teleTab'
 }
 

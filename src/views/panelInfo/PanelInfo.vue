@@ -2590,6 +2590,9 @@ export default {
               if (item.coverType !== 'media' && item.coverType !== 'custom') {
                 item.onclick = ''
               }
+              if (item.coverType === 'tvLive') {
+                ;(item.tvLiveInfo.clickType === 'autoCast') && (item.tvLiveInfo.weekInfo = item.tvLiveInfo.weekInfo.join(','))
+              }
 
               item.forceTitle = undefined
               item.picturePreset = undefined
@@ -3179,6 +3182,9 @@ export default {
             item.appParams = []
           }
           item.flagSetFocusPictureUrl = !!item.focusPictureUrl
+          if (item.coverType === 'tvLive') {
+            ;(item.tvLiveInfo.clickType === 'autoCast') && (item.tvLiveInfo.weekInfo = item.tvLiveInfo.weekInfo.split(','))
+          }
         }
 
         if (firstPannel) {
