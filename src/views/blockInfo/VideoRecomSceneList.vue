@@ -63,10 +63,7 @@ export default {
         dmpRegistryInfo: '',
         recStreamPanelRls: ''
       },
-      pagination: {
-        currentPage: 1,
-        pageSize: 10
-      },
+      pagination: this.genDefaultPagination(),
       table: {
         props: {},
         data: [],
@@ -149,6 +146,8 @@ export default {
       })
     },
     handleClick (type) {
+      this.pagination.currentPage = 1
+      this.pagination.pageSize = 10
       this.fetchData()
     },
     handleSelectBlockRecStreamEnd (selected) {
@@ -164,6 +163,12 @@ export default {
       return {
         page: 1,
         rows: 10
+      }
+    },
+    genDefaultPagination () {
+      return {
+        currentPage: 1,
+        pageSize: 10
       }
     },
     parseFilter () {
