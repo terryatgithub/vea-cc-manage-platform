@@ -306,6 +306,36 @@
                     </div>
                   </el-form-item>
                 </template>
+                <template v-if="tabInfo.tabType === 14">
+                  <el-form-item label="活动浮窗" prop="floatWindow">
+                    <cc-float-window-selector
+                      @select-end="handleSelectFloatWindowEnd"
+                      :params="floatWindowParams"
+                    />
+                    <template v-if="tabInfo.activityFloatWindow">
+                      已选择: {{ tabInfo.activityFloatWindow.pluginName }}
+                      <el-button type="danger" size="small" @click="handleRemoveFloatWindow">删除</el-button>
+                    </template>
+                  </el-form-item>
+                  <el-form-item label="选择版面">
+                    <cc-tab-selector-el
+                      ref="tabSelector"
+                      :source="tabInfo.tabResource"
+                      :has-sub-tab="0"
+                      :oneOption='oneOption'
+                      @select-start="handleSelectTabStart"
+                      @select-end="handleSelectTabEnd"
+                    />
+                    <el-button type="primary" plain @click="handleCreateTab">新建版面</el-button>
+                    <div>
+                      <OrderableTable
+                        ref="subTabTable"
+                        v-model="tabInfo.tabList"
+                        :header="subTabTableHeader"
+                      />
+                    </div>
+                  </el-form-item>
+                </template>
                 <template v-if="tabInfo.tabType === 2">
                   <el-form-item label="活动浮窗" prop="floatWindow">
                     <cc-float-window-selector
@@ -400,7 +430,7 @@
                 </el-form-item>
               </div>
 
-              <template v-if="tabInfo.tabType === 2 || tabInfo.tabType === 13">
+              <template v-if="tabInfo.tabType !== 1">
                 <div class="form-legend-header" @click="isCollapseSpec = !isCollapseSpec">
                   <i v-if="isCollapseSpec" class="el-icon-arrow-down"></i>
                   <i v-else class="el-icon-arrow-up"></i>
@@ -431,7 +461,7 @@
                       </div>
                     </div>
                   </el-form-item>
-                  <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg" v-if="tabInfo.tabType !== 13">
+                  <el-form-item label="专题版面长图背景图" prop="alumbTabLongBg" v-if="tabInfo.tabType !== 13 && tabInfo.tabType !== 14">
                     <GlobalPictureSelector
                       title="选择长图素材"
                       @select-end="handleSelectLongBgEnd"
@@ -462,7 +492,7 @@
                       </div>
                     </div>
                   </el-form-item>
-                  <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg">
+                  <el-form-item label="启用高清背景切换模式" prop="flagIsBlockBg" v-if="tabInfo.tabType !== 14">
                     <el-switch
                       :value="!!tabInfo.flagIsBlockBg"
                       @input="tabInfo.flagIsBlockBg = $event ? 1 : 0"
@@ -1256,6 +1286,10 @@ export default {
         {
           label: '分页专题',
           value: 13
+        },
+        {
+          label: '专题-tab版面',
+          value: 14
         }
       ],
       panelListIndexed: {},
@@ -1696,9 +1730,11 @@ export default {
     },
     handleInputChange (val) {
       this.tabInfo.collectImg = ''
+      // this.tabInfo.activityFloatWindow = {}
+      // this.tabInfo.tabList = []
     },
     handleInputTabType (val) {
-      if (val === 2 || val === 13 || (val === 1 && this.tabInfo.tabType !== 2)) {
+      if (val !== 1 || (val === 1 && this.tabInfo.tabType !== 2)) {
         this.tabInfo.refreshTimeList = []
         this.tabInfo.tabType = val
       }
@@ -2679,20 +2715,31 @@ export default {
       data.isTiming = undefined
       data.releaseTime = undefined
       data.tabStatus = this.$consts.status.draft
+      if (data.tabType === 14) {
+        data.hasSubTab = 1
+      }
+      if (data.tabList.length <= 0) {
+        return this.$message.error('请选择版面！')
+      }
       if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
         return this.$message.error('插件主页最低版本只能输入数字')
       }
       if (data.tabPluginInfo.minHomepageVersion && data.tabPluginInfo.minHomepageVersion.length < 7) {
         return this.$message.error('插件主页最低版本不能少于7位数')
       }
+
       this.validateFormData(data, () => {
         this.upsertTabInfo(data)
       })
     },
     handleSubmitAudit (timing) {
       const data = this.getFormData()
-      if (data.tabType === 13) {
+      if (data.tabType === 13 || data.tabType === 14) {
         data.hasSubTab = 1
+      }
+      if (data.tabList.length <= 0) {
+        this.$message.error('请选择版面！')
+        return false
       }
       if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
         return this.$message.error('插件主页最低版本只能输入数字')
