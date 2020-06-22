@@ -2718,7 +2718,7 @@ export default {
       if (data.tabType === 14) {
         data.hasSubTab = 1
       }
-      if (data.tabList.length <= 0) {
+      if (data.tabList.length <= 0 && data.tabType === 14) {
         return this.$message.error('请选择版面！')
       }
       if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
@@ -2737,7 +2737,7 @@ export default {
       if (data.tabType === 13 || data.tabType === 14) {
         data.hasSubTab = 1
       }
-      if (data.tabList.length <= 0) {
+      if (data.tabList.length <= 0 && data.tabType === 14) {
         this.$message.error('请选择版面！')
         return false
       }
