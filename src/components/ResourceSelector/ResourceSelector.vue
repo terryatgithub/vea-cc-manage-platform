@@ -289,6 +289,7 @@ export default {
     },
     handleActivateSelector (name) {
       this.activeSelector = name
+      console.log(this.activeSelector, '--activeSelector')
       this.$nextTick(() => {
         const shouldAutoFetch = this.shouldAutoFetch
         const index = shouldAutoFetch.indexOf(name)
@@ -308,11 +309,12 @@ export default {
       const activeSelector = this.activeSelector
       const $refs = this.$refs
       $refs.wrapper.handleSelectEnd()
+      console.log(this.selectors, '-----selectors')
       const result = this.selectors.reduce((result, item) => {
         const ref = $refs[item + '-selector']
         if (selectionType === 'multiple' || (selectionType === 'single' && item === activeSelector)) {
           result[item] = ref.selected
-          if (item === 'video') {
+          if (item === 'video' || item === 'edu') {
             result.episode = { ...ref.selectedEpisodes }
           }
         } else {

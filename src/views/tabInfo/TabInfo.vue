@@ -323,7 +323,7 @@
                       :source="tabInfo.tabResource"
                       :has-sub-tab="0"
                       :oneOption='oneOption'
-                      @select-start="handleSelectTabStart"
+                      @select-start="handleSelectTabStart(14)"
                       @select-end="handleSelectTabEnd"
                     />
                     <el-button type="primary" plain @click="handleCreateTab">新建版面</el-button>
@@ -527,7 +527,7 @@
               </div>
 
               <div v-if="!tabInfo.hasSubTab"  :style="{display: isCollapseCustom ? 'none' : 'block'}">
-                <el-form-item label="启动版块个性化推荐">
+                <el-form-item label="启动版块个性化推荐" v-if="tabInfo.tabType !== 14">
                   <el-switch
                     :value="!!tabInfo.panelRecommendConfig.enableRecommend"
                     @input="handleInputRecommendFlag" />
@@ -2629,7 +2629,7 @@ export default {
       })
       console.log('panelList', panelList)
     },
-    handleSelectTabStart () {
+    handleSelectTabStart (type) {
       this.$nextTick(
         function () {
           const tabSelector = this.$refs.tabSelector
@@ -2721,6 +2721,9 @@ export default {
       if (data.tabList.length <= 0 && data.tabType === 14) {
         return this.$message.error('请选择版面！')
       }
+      if (data.tabType === 14 && data.collectImg === '') {
+        return this.$message.error('请选择收藏展示图')
+      }
       if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
         return this.$message.error('插件主页最低版本只能输入数字')
       }
@@ -2737,9 +2740,9 @@ export default {
       if (data.tabType === 13 || data.tabType === 14) {
         data.hasSubTab = 1
       }
-      if (data.tabList.length <= 0 && data.tabType === 14) {
-        this.$message.error('请选择版面！')
-        return false
+      if (data.tabType === 14) {
+        if (data.tabList.length <= 0) return this.$message.error('请选择版面！')
+        if (data.collectImg === '') return this.$message.error('请选择收藏展示图')
       }
       if (data.tabPluginInfo.minHomepageVersion && !/^\+?[1-9][0-9]*$/.test(data.tabPluginInfo.minHomepageVersion)) {
         return this.$message.error('插件主页最低版本只能输入数字')
@@ -2747,7 +2750,6 @@ export default {
       if (data.tabPluginInfo.minHomepageVersion && data.tabPluginInfo.minHomepageVersion.length < 7) {
         return this.$message.error('插件主页最低版本不能少于7位数')
       }
-      // debugger
       data.tabStatus = this.$consts.status.waiting
       this.validateFormData(data, () => {
         if (this.couldSetReleaseTime) {
@@ -3204,7 +3206,12 @@ export default {
     upsertTabInfo (tabInfo) {
       const doUpsert = () => {
         const formData = this.parseTabInfo(tabInfo)
-        console.log(tabInfo, '---提交成功')
+        if (tabInfo.tabType === 14) {
+          let defalutList = tabInfo.tabList.filter(item => item.tabType !== 1)
+          if (defalutList.length !== 0) {
+            return this.$message.error('tab专题版面时，只能选择普通版面，请重新选择')
+          }
+        }
         this.$service.tabInfoUpsert(formData, '操作成功').then(() => {
           this.$emit('upsert-end')
         })

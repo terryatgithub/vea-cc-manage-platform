@@ -444,6 +444,7 @@ export default {
       })
     },
     handleSelectEpisodeEnd (episodes) {
+      console.log(episodes, '----单集')
       // this.currentVideoId = education.coocaaVId
       const currentVideoId = this.currentVideoId
       this.$set(this.selectedEpisodes, currentVideoId, episodes[0])

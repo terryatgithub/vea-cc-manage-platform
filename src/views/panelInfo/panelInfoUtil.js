@@ -276,12 +276,18 @@ export function setMediaContent (contentForm, options) {
       // 故事
       3: 'eduListenStory'
     }
+    if (selectedEpisode) {
+      contentForm.title = selectedEpisode.urlTitle
+      contentForm.singleId = selectedEpisode.coocaaMId
+    } else {
+      contentForm.title = selected.title
+      contentForm.singleId = ''
+    }
     contentForm.videoContentType = videoContentTypeMap[selected.contentForm] || 'edu'
     contentForm.extraValue1 = '_otx_' + selected.coocaaVId
     contentForm.platformId = selected.source
     contentForm.pictureUrl = getPictureUrl(blockSize, selected.imageInfoList) || selected.thumb
     contentForm.picturePreset = selected.imageInfoList
-    contentForm.title = selected.title
     contentForm.subTitle = chopSubTitle(selected.subTitle)
     contentForm.singleSubTitle = ''
     contentForm.blockResourceType = 1
