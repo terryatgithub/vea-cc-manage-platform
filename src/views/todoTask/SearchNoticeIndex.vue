@@ -171,7 +171,7 @@ export default {
     parseFilter () {
       const { filter, pagination } = this
       if (pagination) {
-        filter.page = pagination.currentPage
+        filter.currentPage = pagination.currentPage
         filter.pageSize = pagination.pageSize
       }
       return filter
