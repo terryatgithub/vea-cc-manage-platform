@@ -727,7 +727,7 @@ export default {
         if (contentTypes.length > 0) {
           desc += `长短片（第三方）：${parseRuleLabel(filmContentTypeOptions, contentTypes, '、')}\n`
         }
-        ;(scoreDown || scoreUp) && (desc += `评分：${scoreDown || '_'}——${scoreUp || '_'}\n`)
+        ;(scoreDown || scoreUp) && (desc += `评分：${scoreDown || '_'}-${scoreUp || '_'}\n`)
         const createdTimeSelect = this.createdTimeSelect
         if (createdTimeSelect === 1 && movieFilterForm.createdTime.length !== 0) {
           desc += '新度：' + createdTime.join('、') + '\n'
