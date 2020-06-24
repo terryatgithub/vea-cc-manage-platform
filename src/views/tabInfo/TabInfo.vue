@@ -858,7 +858,7 @@
                   />
                 </el-form-item>
 
-                <template v-if="tabInfo.tabType === 2">
+                <template v-if="tabInfo.tabType === 2 || tabInfo.tabType === 14">
                   <div class="form-legend-header">
                     <span>专题配置</span>
                   </div>
