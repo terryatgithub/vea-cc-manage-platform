@@ -172,7 +172,7 @@ export default {
       const { filter, pagination } = this
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
+        filter.pageSize = pagination.pageSize
       }
       return filter
     },
