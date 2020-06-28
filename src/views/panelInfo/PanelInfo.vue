@@ -2630,18 +2630,11 @@ export default {
             timeSlot = startTime + ',' + endTime
           }
         }
-        // 媒资筛选pannelType = 10，自动化pannelType = 11
+        // 自动化pannelType = 11
         let pannelType
         const fillType = item.fillType
         if (pannel.pannelType !== 11) {
-          // item.pannelType 有可能有值 7, 如果是定向版块
-          if (hasSpecific) {
-            pannelType = 7
-          } else {
-            pannelType = panelDataType
-          }
-          // 排行榜填充、筛选规则填充
-          pannelType = fillType === 2 ? 2 : fillType === 3 ? 10 : fillType === 4 ? 13 : pannelType
+          pannelType = hasSpecific ? 7 : fillType === 2 ? 2 : fillType === 3 ? 10 : fillType === 4 ? 13 : panelDataType
         }
 
         const result = {
