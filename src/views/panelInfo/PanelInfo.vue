@@ -2591,7 +2591,7 @@ export default {
                 item.onclick = ''
               }
               if (item.coverType === 'tvLive') {
-                ;(item.tvLiveInfo.clickType === 'autoCast') && (item.tvLiveInfo.weekInfo = item.tvLiveInfo.weekInfo.join(','))
+                item.tvLiveInfo.weekInfo = item.tvLiveInfo.clickType === 'autoCast' ? item.tvLiveInfo.weekInfo.join(',') : ''
               }
 
               item.forceTitle = undefined
@@ -3183,7 +3183,7 @@ export default {
           }
           item.flagSetFocusPictureUrl = !!item.focusPictureUrl
           if (item.coverType === 'tvLive') {
-            ;(item.tvLiveInfo.clickType === 'autoCast') && (item.tvLiveInfo.weekInfo = item.tvLiveInfo.weekInfo.split(','))
+            item.tvLiveInfo.weekInfo = item.tvLiveInfo.clickType === 'autoCast' ? item.tvLiveInfo.weekInfo.split(',') : []
           }
         }
 
