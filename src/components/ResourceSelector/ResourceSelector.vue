@@ -40,6 +40,7 @@
             v-if="isUseSelector('edu')"
             v-show="activeSelector === 'edu'"
             ref="edu-selector"
+            :noEduEpisode="$attrs.noEduEpisode"
             :source="source"
             :selection-type="selectionType"
             :id-type="idType"

@@ -241,6 +241,9 @@ export default {
               // const ccVideoSourceEntities = row.ccVideoSourceEntities || []
               // const entity = ccVideoSourceEntities[0]
               // if (entity && entity.currentSegment > 1 && entity.thirdSource === this.efficientFilter.sources) {
+              if (this.noEduEpisode !== undefined) {
+                return
+              }
               return h('el-button', {
                 on: {
                   'click': (event) => {
@@ -338,7 +341,7 @@ export default {
       ]
     }
   },
-  props: ['isLive', 'selectionType', 'idType'],
+  props: ['isLive', 'selectionType', 'idType', 'noEduEpisode'],
   methods: {
     selectEnd (data) {
       data = data.map((e) => {

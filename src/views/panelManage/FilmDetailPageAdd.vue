@@ -101,6 +101,7 @@
               <el-form-item v-if="form.matchType === 1" class="is-required" label="选择影片">
                 <ResourceSelector
                   noVideoEpisode
+                  noEduEpisode
                   ref="resourceSelector"
                   :selectors="['video', 'edu']"
                   :disable-partner="!!resourceSelectorSource"
