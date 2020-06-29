@@ -410,7 +410,7 @@
           <div
             class="post-box"
             :style="{ height: postSize.height + 'px', width: postSize.width + 'px', cursor: 'pointer' }">
-            <img referrerpolicy="no-referrer" :src="contentForm.alternativePictureUrl" >
+            <img v-if="contentForm.alternativePictureUrl" referrerpolicy="no-referrer" :src="contentForm.alternativePictureUrl" >
           </div>
         </GlobalPictureSelector>
       </el-form-item>
@@ -609,7 +609,7 @@
                 </div>
               </div>
             </Upload>
-            <span>提示:只能上传png/gif/jpg/bmp文件</span>
+            <span>提示:只能上传jpg/jpeg/png/webp文件</span>
           </el-form-item>
         </template>
 
