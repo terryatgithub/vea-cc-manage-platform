@@ -1673,7 +1673,10 @@ export default {
     },
     getProvinceOptions () {
       this.$service.mediaGetChannelProvinceOptions().then(result => {
-        this.provinceOptions = result
+        this.provinceOptions = result.map(item => {
+          item.value = item.value + ''
+          return item
+        })
       })
     }
   },
