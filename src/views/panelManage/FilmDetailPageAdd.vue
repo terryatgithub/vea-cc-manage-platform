@@ -240,13 +240,13 @@ export default {
           this.pannelItems = this.eduProductItems.categoryList
           this.productItems = this.eduProductItems.productList
           if (this.eduProductItems.categoryList.length === 0) {
-            this.pannel = ''
+            this.pannel = '0'
           }
           if (this.tabResourceFlag === 0) {
             this.tabResourceFlag = 1
           } else {
-            this.pannel = ''
-            this.product = ''
+            this.pannel = '0'
+            this.product = '0'
           }
         } else if (newVal === 0) {
           this.handleTabResourceChange(this.form.tabResource)
@@ -672,8 +672,8 @@ export default {
       this.form.currentVersion = data.currentVersion
       this.form.currentStatus = data.tabStatus
       this.globalTabResource = data.tabResource
-      this.pannel = data.filmDetailPageInfo.channel
-      this.product = data.filmDetailPageInfo.product
+      this.pannel = data.filmDetailPageInfo.channel || '0'
+      this.product = data.filmDetailPageInfo.product || '0'
       // this.table.data = data.panelInfoList
       this.form.panelInfoList = data.panelInfoList.map(item => {
         item.pannelGroupRemark = item.pannelName
