@@ -83,7 +83,7 @@
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input placeholder="单片酷开自有ID" clearable v-model.trim="filter['filmDetailPageInfo.videoId']" />
+            <el-input placeholder="单片第三方ID" clearable v-model.trim="filter['filmDetailPageInfo.videoId']" />
           </div>
         </el-form-item>
         <el-form-item>
