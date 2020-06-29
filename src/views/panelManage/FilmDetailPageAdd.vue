@@ -240,7 +240,7 @@ export default {
           this.pannelItems = this.eduProductItems.categoryList
           this.productItems = this.eduProductItems.productList
           if (this.eduProductItems.categoryList.length === 0) {
-            this.pannel = '不限'
+            this.pannel = ''
           }
           if (this.tabResourceFlag === 0) {
             this.tabResourceFlag = 1
@@ -510,7 +510,7 @@ export default {
             tabCnTitle: form.tabName,
             // },
             filmDetailPageInfo: {
-              source: form.tabCategory === 0 ? form.tabResource : '',
+              source: form.tabCategory === 0 ? form.tabResource : 'qq',
               product: this.product || '0',
               channel: this.pannel || '0',
               category: form.tabCategory,
