@@ -81,7 +81,8 @@
 import _ from 'gateschema'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import GlobalPictureBatchAudit from '@/components/GlobalPictureBatchAudit'
-import { ContentWrapper, CardList } from 'admin-toolkit'
+import { ContentWrapper } from 'admin-toolkit'
+import CardList from '@/components/CardList'
 import BaseList from '@/components/BaseList'
 export default {
   extends: BaseList,
