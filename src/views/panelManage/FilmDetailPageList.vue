@@ -51,7 +51,7 @@
           <div class="el-col-20">
             <el-cascader
               placeholder="频道"
-              :value="filter['filmDetailPageInfo.channel']"
+              v-model="filter['filmDetailPageInfo.channel']"
               :options="channelOptions"
               expand-trigger="hover"
               clearable
@@ -427,7 +427,6 @@ export default {
       })
     },
     handleChannelChange (value) {
-      this.filter['filmDetailPageInfo.source'] = ''
       this.filter['filmDetailPageInfo.source'] = value[0]
     }
   },

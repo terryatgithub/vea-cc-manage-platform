@@ -15,7 +15,7 @@
     "admin-toolkit": "git+ssh://git@gitlab.skysri.com:flower/admin-toolkit.git",
     "axios": "^0.18.1",
     "echarts": "^4.2.1",
-    "element-ui": "^2.9.2",
+    "element-ui": "^2.13.2",
     "fuse.js": "^3.4.5",
     "gateschema": "^0.2.0",
     "gateschema-form-vue": "0.2.2",
