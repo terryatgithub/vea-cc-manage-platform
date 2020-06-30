@@ -776,8 +776,7 @@ export default {
       const { video: videoResources, edu: eduResources } = selectedResources
       const insertVideoList = (resources, selectedType) => {
         resources.forEach(item => {
-          const prefix = this.getVideoPrefix(selectedType)
-          const videoId = prefix + item.coocaaVId
+          const videoId = this.getPrefixVideo(selectedType, item)
           const isExist = this.form.videoList.some(v => v.videoId === videoId)
           !isExist && this.form.videoList.push({ videoId, title: item.title })
         })
@@ -785,16 +784,15 @@ export default {
       insertVideoList(videoResources, 'video')
       insertVideoList(eduResources, 'edu')
     },
-    getVideoPrefix (selectedType) {
-      const form = this.form
-      const { tabResource } = form
+    getPrefixVideo (selectedType, video) {
       const prefixMap = {
-        qq: '_otx_',
-        iqiyi: '_oqy_',
+        tencent: '_otx_',
+        yinhe: '_oqy_',
         youku: '_oyk_'
       }
-      const prefix = selectedType === 'video' ? prefixMap[tabResource] : '_otx_'
-      return prefix
+      const partner = video._partner
+      const prefix = selectedType === 'edu' ? '_otx_' : prefixMap[partner]
+      return prefix + video.coocaaVId
     },
     handleRemoveVideo (index) {
       this.form.videoList.splice(index, 1)
