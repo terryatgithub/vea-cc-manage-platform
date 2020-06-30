@@ -277,26 +277,6 @@ export default {
       }
     }
   },
-  watch: {
-    'form.tabCategory': {
-      deep: true,
-      handler: function (newVal, oldVal) {
-        if (newVal === 1) {
-          if (this.tabResourceFlag === 0) {
-            this.tabResourceFlag = 1
-          } else {
-            this.pannel = ''
-            this.product = ''
-          }
-        } else if (newVal === 0) {
-          this.handleTabResourceChange(this.form.tabResource)
-        }
-      }
-    },
-    'form.tabResource': function (value, oldVal) {
-      this.handleTabResourceChange(value)
-    }
-  },
   data () {
     return {
       activePage: 'tab_info',
@@ -336,7 +316,6 @@ export default {
       configWayOptions,
       globalTabResource: '',
       parentResource: '',
-      tabResourceFlag: 1,
       pannel: '0',
       product: '0',
       // 数据字典
@@ -646,6 +625,8 @@ export default {
             type: 'success',
             message: '内容源切换成功!'
           })
+          this.pannel = '0'
+          this.product = '0'
           this.form.tabResource = value
           this.form.panelInfoList = []
           this.form.videoList = []
@@ -737,14 +718,6 @@ export default {
         this.eduDictItems = coocaaSource
       })
     },
-    handleTabResourceChange (value) {
-      if (this.tabResourceFlag === 0 && this.globalTabResource === value) {
-        this.tabResourceFlag = 1
-      } else {
-        this.pannel = '0'
-        this.product = '0'
-      }
-    },
     setFormInfo (data) {
       const form = this.form
       form.tabId = data.tabId
@@ -758,8 +731,8 @@ export default {
       form.matchType = filmDetailPageInfo.matchType || 0
       form.videoList = filmDetailPageInfo.videoList || []
       this.globalTabResource = data.tabResource
-      this.pannel = filmDetailPageInfo.channel
-      this.product = filmDetailPageInfo.product
+      this.pannel = data.filmDetailPageInfo.channel || '0'
+      this.product = data.filmDetailPageInfo.product || '0'
       // this.table.data = data.panelInfoList
       this.form.panelInfoList = data.panelInfoList.map(item => {
         item.pannelGroupRemark = item.pannelName
@@ -773,7 +746,11 @@ export default {
       //   item.pannelGroupRemark = pannelNameList[index]
       //   item.pannelSequence = index + 1
       // })
-      this.tabResourceFlag = 0
+    },
+    handleInputTabCategory (val) {
+      this.form.tabCategory = val
+      this.form.tabResource = 'qq'
+      this.clearConfig()
     },
     handleCopy (status) {
       const STATUS = this.$consts.status
@@ -782,10 +759,6 @@ export default {
       } else {
         this.btnSave()
       }
-    },
-    handleInputTabCategory (val) {
-      this.form.tabCategory = val
-      this.clearConfig()
     },
     handleInputConfigWay (val) {
       this.form.matchType = val
@@ -828,7 +801,7 @@ export default {
     },
     fetchData (version) {
       // if (version !== undefined) { this.form.currentVersion = version }
-      this.$service
+      return this.$service
         .tabInfoGet({ id: this.id, version, tabType: 3 })
         .then(data => {
           this.setFormInfo(data)
@@ -837,14 +810,12 @@ export default {
   },
   created () {
     this.mode = this.initMode || 'create'
-    this.getMediaResourceInfos().then(() => {
-      this.handleTabResourceChange(this.form.tabResource) // 给频道，产品包赋值
-      if (this.id) {
-        this.categoryEdit = true
-        this.form.tabResource = ''
-        this.fetchData(this.version)
-      }
-    })
+    this.getMediaResourceInfos()
+    if (this.id) {
+      this.categoryEdit = true
+      this.form.tabResource = ''
+      this.fetchData(this.version)
+    }
   }
 }
 </script>
