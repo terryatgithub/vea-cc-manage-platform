@@ -44,7 +44,7 @@
   </RemoteSelectorWrapper>
 </template>
 <script>
-import { CardList } from 'admin-toolkit'
+import CardList from '@/components/CardList'
 import RemoteSelectorWrapper from './RemoteSelectorWrapper.vue'
 export default {
   components: {

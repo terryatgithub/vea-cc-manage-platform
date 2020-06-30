@@ -34,7 +34,7 @@
 <script>
 import _ from 'gateschema'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
-import { CardList } from 'admin-toolkit'
+import CardList from '@/components/CardList'
 export default {
   components: {
     CardList,

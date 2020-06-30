@@ -111,7 +111,7 @@
 <script>
 import emitter from 'element-ui/src/mixins/emitter'
 import RemoteSelectorWrapper from '../RemoteSelectorWrapper.vue'
-import { CardList } from 'admin-toolkit'
+import CardList from '@/components/CardList'
 import { debounce } from 'lodash'
 import InputPositiveInt from '@/components/InputPositiveInt'
 export default {

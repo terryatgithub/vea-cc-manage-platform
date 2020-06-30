@@ -91,7 +91,8 @@ import GlobalIconAudit from './GlobalIconAudit'
 import GlobelIconLevel from './GlobelIconLevel'
 import ButtonGroupForListPage from '@/components/ButtonGroupForListPage'
 import GlobalIconBatchAudit from '@/components/GlobalIconBatchAudit'
-import { ContentWrapper, CardList } from 'admin-toolkit'
+import { ContentWrapper } from 'admin-toolkit'
+import CardList from '@/components/CardList'
 import BaseList from '@/components/BaseList'
 export default {
   extends: BaseList,
