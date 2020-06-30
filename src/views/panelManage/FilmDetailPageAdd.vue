@@ -31,7 +31,7 @@
                 <el-input v-model="form.tabName"/>
               </el-form-item>
               <el-form-item label="业务分类">
-                <el-select v-model="form.tabCategory" :disabled="categoryEdit">
+                <el-select :value="form.tabCategory" @input="handleInputTabCategory" :disabled="categoryEdit">
                   <el-option label="影视" :value="0"/>
                   <el-option label="教育" :value="1"/>
                 </el-select>
@@ -232,31 +232,6 @@ export default {
       }
     }
   },
-  watch: {
-    'form.tabCategory': {
-      deep: true,
-      handler: function (newVal, oldVal) {
-        if (newVal === 1) {
-          this.pannelItems = this.eduProductItems.categoryList
-          this.productItems = this.eduProductItems.productList
-          if (this.eduProductItems.categoryList.length === 0) {
-            this.pannel = '0'
-          }
-          if (this.tabResourceFlag === 0) {
-            this.tabResourceFlag = 1
-          } else {
-            this.pannel = '0'
-            this.product = '0'
-          }
-        } else if (newVal === 0) {
-          this.handleTabResourceChange(this.form.tabResource)
-        }
-      }
-    },
-    'form.tabResource': function (value, oldVal) {
-      this.handleTabResourceChange(value)
-    }
-  },
   data () {
     return {
       activePage: 'tab_info',
@@ -293,20 +268,45 @@ export default {
       },
       globalTabResource: '',
       parentResource: '',
-      tabResourceFlag: 1,
       iqiyiSource: [],
       qqSource: [],
       youkuSource: [],
       pannel: '0',
-      pannelItems: [],
       product: '0',
-      productItems: [],
+      // 数据字典
+      videoDictItems: {
+        qq: { categoryList: [], productList: [] },
+        iqiyi: {},
+        youku: {}
+      },
+      eduDictItems: {
+        categoryList: [],
+        productList: []
+      },
       eduProductItems: [],
       blockTable: [], // 版块列表
       categoryEdit: false
     }
   },
   computed: {
+    pannelItems () {
+      const { form, videoDictItems, eduDictItems } = this
+      if (form.tabCategory === 0) {
+        const tabResource = form.tabResource
+        return (videoDictItems[tabResource] || {}).categoryList || []
+      } else {
+        return eduDictItems.categoryList || []
+      }
+    },
+    productItems () {
+      const { form, videoDictItems, eduDictItems } = this
+      if (form.tabCategory === 0) {
+        const tabResource = form.tabResource
+        return (videoDictItems[tabResource] || {}).productList || []
+      } else {
+        return eduDictItems.productList || []
+      }
+    },
     // eslint-disable-next-line
     resourceInfo() {
       const form = this.form
@@ -543,6 +543,8 @@ export default {
             type: 'success',
             message: '内容源切换成功!'
           })
+          this.pannel = '0'
+          this.product = '0'
           this.form.tabResource = value
           this.form.panelInfoList = []
         })
@@ -565,7 +567,7 @@ export default {
         var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
         var videoItemModels = movieData.videoItemModels
         // 内容源：iqiyi
-        var iqiyiSource = {
+        const iqiyiSource = {
           categoryList: [],
           productList: []
         }
@@ -579,10 +581,10 @@ export default {
           'source_name',
           'source_sign'
         )
-        this.iqiyiSource = iqiyiSource
+        this.videoDictItems.iqiyi = iqiyiSource
 
         // 内容源：tencent
-        var qqSource = {
+        const qqSource = {
           categoryList: [],
           productList: []
         }
@@ -596,10 +598,10 @@ export default {
           'source_name',
           'source_sign'
         )
-        this.qqSource = qqSource
+        this.videoDictItems.qq = qqSource
 
         // 内容源：youku
-        var youkuSource = {
+        const youkuSource = {
           categoryList: [],
           productList: []
         }
@@ -613,7 +615,7 @@ export default {
           'source_name',
           'source_sign'
         )
-        this.youkuSource = youkuSource
+        this.videoDictItems.youku = youkuSource
 
         // 教育->产品包
         var coocaaSource = {
@@ -630,38 +632,8 @@ export default {
           'source_name',
           'source_sign'
         )
-        this.eduProductItems = coocaaSource
+        this.eduDictItems = coocaaSource
       })
-    },
-    handleTabResourceChange (value) {
-      const { qqSource, iqiyiSource, youkuSource } = this
-      if (this.tabResourceFlag === 0 && this.globalTabResource === value) {
-        this.tabResourceFlag = 1
-      } else {
-        this.pannel = '0'
-        this.product = '0'
-      }
-      switch (value) {
-        case 'qq': {
-          this.pannelItems = qqSource.categoryList
-          this.productItems = qqSource.productList
-          break
-        }
-        case 'iqiyi': {
-          this.pannelItems = iqiyiSource.categoryList
-          this.productItems = iqiyiSource.productList
-          break
-        }
-        case 'youku': {
-          this.pannelItems = youkuSource.categoryList
-          this.productItems = youkuSource.productList
-          break
-        }
-        default: {
-          this.pannelItems = []
-          this.productItems = []
-        }
-      }
     },
     setFormInfo (data) {
       this.form.tabId = data.tabId
@@ -687,11 +659,22 @@ export default {
       //   item.pannelGroupRemark = pannelNameList[index]
       //   item.pannelSequence = index + 1
       // })
-      this.tabResourceFlag = 0
+    },
+    handleInputTabCategory (val) {
+      this.form.tabCategory = val
+      this.form.tabResource = 'qq'
+      this.clearConfig()
+    },
+    // 清空配置的内容
+    clearConfig () {
+      this.pannel = '0'
+      this.product = '0'
+      this.form.priority = 1
+      this.form.panelInfoList = []
     },
     fetchData (version) {
       // if (version !== undefined) { this.form.currentVersion = version }
-      this.$service
+      return this.$service
         .tabInfoGet({ id: this.id, version, tabType: 3 })
         .then(data => {
           this.setFormInfo(data)
@@ -700,14 +683,12 @@ export default {
   },
   created () {
     this.mode = this.initMode || 'create'
-    this.getMediaResourceInfos().then(() => {
-      this.handleTabResourceChange(this.form.tabResource) // 给频道，产品包赋值
-      if (this.id) {
-        this.categoryEdit = true
-        this.form.tabResource = ''
-        this.fetchData(this.version)
-      }
-    })
+    this.getMediaResourceInfos()
+    if (this.id) {
+      this.categoryEdit = true
+      this.form.tabResource = ''
+      this.fetchData(this.version)
+    }
   }
 }
 </script>
