@@ -91,7 +91,30 @@ export default {
           },
           {
             label: '聚合之中的省份',
-            prop: 'provincesName'
+            prop: 'provincesName',
+            render: (h, { row }) => {
+              const provincesNameList = row.provincesName.split(',').map(province => {
+                return h('el-button', {
+                  attrs: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      row.activeProvince = province
+                    }
+                  }
+                }, province)
+              })
+              if (provincesNameList.length === 1) {
+                row.activeProvince = row.provincesName
+              }
+              return h('div', provincesNameList)
+            }
+          },
+          {
+            label: '已选省份',
+            width: '105',
+            prop: 'activeProvince'
           },
           {
             prop: 'segment',
@@ -120,6 +143,9 @@ export default {
             width: '105',
             fixed: 'right',
             render: (h, { row }) => {
+              if (this.hasSchedule === undefined) {
+                return
+              }
               return h('el-button', {
                 on: {
                   'click': (event) => {
@@ -194,8 +220,11 @@ export default {
       this.$refs.wrapper.handleSelectEnd()
     },
     handleSelectScheduleStart (row) {
+      if (!row.activeProvince) {
+        this.$message.error('请点击聚合之中的省份，选择一个省份')
+      }
       this.currentChannelId = row.ccChannelId
-      this.currentProvincesCode = row.provincesCode
+      this.currentProvincesCode = (this.provinceOptions.find(item => item.label === row.activeProvince) || {}).value + ''
       this.$nextTick(() => {
         this.$refs.gdChannelSelector.$refs.wrapper.handleSelectStart()
       })
@@ -252,9 +281,6 @@ export default {
   },
   created () {
     this.getProvinceOptions()
-    if (this.hasSchedule === undefined) {
-      this.table.header.splice(this.table.header.length - 1, 1)
-    }
   }
 }
 </script>
