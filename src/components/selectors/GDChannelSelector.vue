@@ -93,6 +93,9 @@ export default {
             label: '聚合之中的省份',
             prop: 'provincesName',
             render: (h, { row }) => {
+              if (this.hasSchedule === undefined) {
+                return row.provincesName
+              }
               const provincesNameList = row.provincesName.split(',').map(province => {
                 return h('el-button', {
                   attrs: {
