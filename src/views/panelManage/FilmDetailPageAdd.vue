@@ -579,7 +579,7 @@ export default {
         const isCatelogConfig = form.matchType === 0
         const filmDetailPageInfo = {
           category: form.tabCategory,
-          source: form.tabCategory === 0 ? form.tabResource : '',
+          source: form.tabCategory === 0 ? form.tabResource : 'qq',
           matchType: form.matchType,
           product: this.product || '0'
         }
@@ -596,6 +596,7 @@ export default {
           tabCnTitle: form.tabName,
           tabType: 3,
           tabStatus: status,
+          // tabResource不用管他
           tabResource: form.tabCategory === 0 ? form.tabResource : '',
           currentVersion: (mode === 'replicate' || mode === 'copy') ? '' : form.currentVersion,
           tabCategory: form.tabCategory,
