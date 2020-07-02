@@ -103,13 +103,13 @@ export default {
                   },
                   on: {
                     click: () => {
-                      row.activeProvince = province
+                      this.$set(row, 'activeProvince', province)
                     }
                   }
                 }, province)
               })
               if (provincesNameList.length === 1) {
-                row.activeProvince = row.provincesName
+                this.$set(row, 'activeProvince', row.provincesName)
               }
               return h('div', provincesNameList)
             }
@@ -117,7 +117,14 @@ export default {
           {
             label: '已选省份',
             width: '105',
-            prop: 'activeProvince'
+            prop: 'activeProvince',
+            render: (h, { row }) => {
+              if (!row.activeProvince) { return }
+              return h('el-button', {
+                attrs: {
+                  type: 'text'
+                } }, row.activeProvince)
+            }
           },
           {
             prop: 'segment',
@@ -224,7 +231,7 @@ export default {
     },
     handleSelectScheduleStart (row) {
       if (!row.activeProvince) {
-        this.$message.error('请点击聚合之中的省份，选择一个省份')
+        return this.$message.error('请点击聚合之中的省份，选择一个省份')
       }
       this.currentChannelId = row.ccChannelId
       this.currentProvincesCode = (this.provinceOptions.find(item => item.label === row.activeProvince) || {}).value + ''

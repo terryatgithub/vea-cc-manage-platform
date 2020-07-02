@@ -106,7 +106,7 @@
             clearable
             :disabled="isReadonly"
             v-model="contentForm.tvLiveInfo.provinceId"
-            :options="provinceOptions"
+            :options="selectedProvinceOptions"
           />
         </el-form-item>
       </div>
@@ -1036,7 +1036,8 @@ export default {
       },
       scene: '2',
       provinceOptions: [],
-      showMediaDetailDialog: false
+      showMediaDetailDialog: false,
+      selectProvincesStr: '' // 选择节目之后的聚合省份
     }
   },
   props: [
@@ -1052,6 +1053,11 @@ export default {
     'isInterveneBlock'
   ],
   computed: {
+    selectedProvinceOptions () {
+      const { selectProvincesStr, provinceOptions } = this
+      const selectProvinces = (selectProvincesStr || '').split(',')
+      return selectProvincesStr ? provinceOptions.filter(item => selectProvinces.includes(item.label)) : provinceOptions
+    },
     maskLifeInfo () {
       return this.contentForm.maskLifeInfo
     },
@@ -1157,11 +1163,12 @@ export default {
       this.contentForm.tvLiveInfo = genDefaultTvLiveInfo({
         clickType: val
       })
+      this.selectProvincesStr = ''
       this.contentForm.extraValue1 = undefined
       this.$refs.contentForm.clearValidate()
     },
     handleSelectGDChannelEnd (selected) {
-      const { categoryIds = '', ccChannelId, ccChannelTitle, images, selectedSchedules } = selected[0]
+      const { categoryIds = '', ccChannelId, ccChannelTitle, images, selectedSchedules, provincesName } = selected[0]
       const categoryIdArr = categoryIds.split(',')
       const blockSize = this.resolution
       const contentForm = this.contentForm
@@ -1176,6 +1183,10 @@ export default {
         contentForm.title = selectedSchedules.thirdScheduleTitle
         tvLiveInfo.startTime = selectedSchedules.startTime
         tvLiveInfo.programName = selectedSchedules.thirdScheduleTitle
+      }
+      if (tvLiveInfo.clickType === 'teleTab') {
+        this.selectProvincesStr = provincesName
+        contentForm.tvLiveInfo.provinceId = undefined
       }
       // 校验字段，取消提示
       this.$refs.contentForm.validateField('tvLiveInfo.channelId')
