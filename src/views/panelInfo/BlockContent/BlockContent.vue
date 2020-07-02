@@ -635,7 +635,6 @@ export default {
         content.onclick = (coverType === 'media' && content.onclick) ? content.onclick : onclick
         content.params = params
         if (content.bgParams) {
-          delete content.bgParams.title
           content.bgParams = JSON.stringify(content.bgParams)
         }
 
