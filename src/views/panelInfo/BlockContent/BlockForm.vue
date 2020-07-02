@@ -29,7 +29,7 @@
           :disabled="isReadonly"
           type="radio-button"
           :value="contentForm.coverType"
-          @input="$emit('cover-type-change', $event)"
+          @input="handleInputCoverType"
           :disabledItems="disabledCoverTypes"
           :hiddenItems="hiddenCoverTypes"
           :options="$consts.panelCoverTypeOptions"
@@ -439,7 +439,7 @@
         </GlobalPictureSelector>
       </el-form-item>
 
-      <template v-if="contentForm.coverType === 'media' && !isInterveneBlock">
+      <template v-if="['media', 'custom'].includes(contentForm.coverType) && !isInterveneBlock">
         <el-form-item label="配置高清背景图和视频">
           <el-switch
             :disabled="isReadonly"
@@ -1689,6 +1689,10 @@ export default {
           return item
         })
       })
+    },
+    handleInputCoverType (val) {
+      this.$emit('cover-type-change', val)
+      this.isShowConfigBg = false
     }
   },
   mounted () {
