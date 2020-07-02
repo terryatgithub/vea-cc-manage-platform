@@ -199,6 +199,7 @@ export default {
     handleSelectStart () {
       this.$emit('select-start')
       if (!this.isLive) {
+        this.selectedSchedules = {}
         this.handleResetFilter()
       } else {
         this.fetchData()
