@@ -466,9 +466,7 @@ export default {
           data.redundantParams = redundantParams
         }
 
-        if (data.bgParams) {
-          data.bgParams = JSON.parse(data.bgParams)
-        }
+        data.bgParams = data.bgParams ? JSON.parse(data.bgParams) : { id: undefined }
         return Object.assign({}, defaultContentForm, data)
       }
       this.normalContentList = normalContentList.length > 0

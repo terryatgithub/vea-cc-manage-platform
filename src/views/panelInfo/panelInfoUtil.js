@@ -489,8 +489,7 @@ export function genDefaultContentForm (preset) {
       blockType: 'normal'
     },
     bgParams: {
-      id: '',
-      title: ''
+      id: ''
     },
     bgType: '',
     // 应用参数
