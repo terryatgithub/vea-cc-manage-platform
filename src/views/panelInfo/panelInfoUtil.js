@@ -277,11 +277,20 @@ export function setMediaContent (contentForm, options) {
       3: 'eduListenStory'
     }
     if (selectedEpisode) {
+      const fieldMap = {
+        0: 'extraValue5',
+        1: 'extraValue5',
+        6: 'extraValue4'
+      }
+      const extraIdField =
+        fieldMap[selectedEpisode.urlIsTrailer] || 'extraValue5'
+      contentForm[extraIdField] = selectedEpisode.coocaaMId
       contentForm.title = selectedEpisode.urlTitle
       contentForm.singleId = selectedEpisode.coocaaMId
     } else {
       contentForm.title = selected.title
       contentForm.singleId = ''
+      contentForm.extraValue5 = undefined
     }
     contentForm.videoContentType = videoContentTypeMap[selected.contentForm] || 'edu'
     contentForm.extraValue1 = '_otx_' + selected.coocaaVId
@@ -451,7 +460,7 @@ export function genDefaultContentForm (preset) {
   delete preset.maskLifeInfo
 
   return {
-    coverType: 'media' || 'edu',
+    coverType: 'media',
     title: '',
     showTitle: 0,
     subTitle: '',
