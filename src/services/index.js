@@ -86,7 +86,6 @@ const service = {
   ...policyGroup,
   ...bigdata
 }
-
 export default function install (Vue) {
   const $service = {}
   Object.keys(service).forEach((key) => {

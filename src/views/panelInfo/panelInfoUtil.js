@@ -447,12 +447,11 @@ export function getIdByCoverType (coverType, content) {
 
 export function genDefaultContentForm (preset) {
   preset = preset || {}
-
   const initMaskLifeInfo = preset.maskLifeInfo
   delete preset.maskLifeInfo
 
   return {
-    coverType: 'media',
+    coverType: 'media' || 'edu',
     title: '',
     showTitle: 0,
     subTitle: '',

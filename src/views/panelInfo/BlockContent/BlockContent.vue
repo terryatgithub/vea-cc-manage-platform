@@ -662,6 +662,7 @@ export default {
     }
   },
   created () {
+    console.log(this.genDefaultContentForm)
     this.setContentList()
   }
 }

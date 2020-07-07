@@ -122,7 +122,6 @@
             >{{ isMore ? '收起' : '展开'}}</el-button>
             <el-button size="small" type="primary" @click="handleFilterChange">查询</el-button>
             <el-button size="small" type="warning" @click="handleFilterReset">重置</el-button>
-            {{currentVideoId}}
           </div>
         </el-form>
       </el-collapse-item>

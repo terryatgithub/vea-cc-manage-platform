@@ -1491,6 +1491,7 @@ export default {
       const blockSize = this.resolution
       setMediaContent(this.contentForm, { partner, selectedType, selected, selectedEpisode, blockSize })
       this.$refs.resourceSelector.clearSelected()
+      console.log(this.contentForm, '==contentForm==')
     },
     handleSelectAppEnd (resources) {
       setAppContent(this.contentForm, resources.app[0])
