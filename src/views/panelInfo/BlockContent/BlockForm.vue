@@ -29,7 +29,7 @@
           :disabled="isReadonly"
           type="radio-button"
           :value="contentForm.coverType"
-          @input="$emit('cover-type-change', $event)"
+          @input="handleInputCoverType"
           :disabledItems="disabledCoverTypes"
           :hiddenItems="hiddenCoverTypes"
           :options="$consts.panelCoverTypeOptions"
@@ -439,7 +439,7 @@
         </GlobalPictureSelector>
       </el-form-item>
 
-      <template v-if="contentForm.coverType === 'media' && !isInterveneBlock">
+      <template v-if="['media', 'custom'].includes(contentForm.coverType) && !isInterveneBlock">
         <el-form-item label="配置高清背景图和视频">
           <el-switch
             :disabled="isReadonly"
@@ -1561,7 +1561,6 @@ export default {
 
       const contentForm = this.contentForm
       let mediaId
-      let mediaTitle
       if (selectedType === 'video') {
         // 影视中心
         if (selectedEpisode) {
@@ -1601,11 +1600,7 @@ export default {
         mediaId = selected.id + ''
       }
 
-      mediaTitle = selectedEpisode ? selectedEpisode.urlTitle : selected.title
-      contentForm.bgParams = {
-        id: mediaId,
-        title: mediaTitle
-      }
+      contentForm.bgParams.id = mediaId
       contentForm.bgType = 'res'
     },
     handleRemoveBgMedia () {
@@ -1659,7 +1654,7 @@ export default {
             //   }
             // }
             if (this.isShowConfigBg) {
-              if (!contentForm.bgParams.id || !contentForm.bgParams.title || !contentForm.bgImgUrl) {
+              if (!contentForm.bgParams.id || !contentForm.bgImgUrl) {
                 return cb(Error('已开启配置高清背景图和视频开关，但配置不完整!'))
               }
             }
@@ -1690,6 +1685,10 @@ export default {
           return item
         })
       })
+    },
+    handleInputCoverType (val) {
+      this.$emit('cover-type-change', val)
+      this.isShowConfigBg = false
     }
   },
   mounted () {

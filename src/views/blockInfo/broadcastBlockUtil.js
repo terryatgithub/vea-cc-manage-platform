@@ -158,7 +158,7 @@ export function parseResourceContent (tabName, selected) {
     case 'live': {
       s.contentType = 'txLive'
       s.coverType = 'media'
-      s.thirdIdOrPackageName = '_otx_' + selected.vId + ''
+      s.thirdIdOrPackageName = selected.vId + ''
       s.platformId = selected.source
       s.pictureUrl = selected.thumb
       s.title = selected.title
