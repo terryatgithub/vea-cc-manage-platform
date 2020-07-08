@@ -266,7 +266,6 @@ export default {
             return this.error(`第 ${i + 1} 个通用内容缺少内容海报`)
           }
         }
-
         this.$emit('save', {
           videoContentList: this.parseContentList(this.normalContentList),
           specificContentList: this.parseContentList(this.specificContentList)
