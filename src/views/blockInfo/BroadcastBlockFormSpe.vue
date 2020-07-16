@@ -306,7 +306,6 @@ export default {
       this.normalForm.clickTemplateType = resourceContent.contentType
     },
     handleSelectPostEnd (selected) {
-      alert('123')
       this.normalForm.poster = {
         pictureUrl: selected.pictureUrl,
         pictureId: selected.pictureId

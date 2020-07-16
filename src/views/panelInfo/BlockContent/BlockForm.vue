@@ -1692,6 +1692,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.$consts.idPrefixEnums)
     this.getProvinceOptions()
     const contentForm = this.contentForm
     const redundantParams = contentForm.redundantParams

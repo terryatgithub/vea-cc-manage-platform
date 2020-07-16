@@ -315,6 +315,7 @@ export default {
     }
   },
   created () {
+    console.log(this.$consts.status)
     this.handleFilterChangeDebounce = debounce(this.handleFilterChange, 500)
   }
 }
