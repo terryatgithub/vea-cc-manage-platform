@@ -5,49 +5,29 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-cascader
-              placeholder="客户&品牌"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
-              expand-trigger="hover"
-              clearable
-              @change="handleChannelChange"
-            />
-          </div>
-        </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-cascader
-              placeholder="机芯&机型"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
-              expand-trigger="hover"
-              clearable
-              @change="handleChannelChange"
-            />
-          </div>
-        </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-cascader
-              placeholder="国家"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
-              expand-trigger="hover"
-              clearable
-              @change="handleChannelChange"
-            />
+            <el-input placeholder="海报名" clearable/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
             <el-select
-              v-model="filter['filmDetailPageInfo.type']"
+              placeholder="尺寸类型"
+              clearable
+            >
+              <el-option value="1" label="400*400"/>
+              <el-option value="2" label="400*900"/>
+              <el-option value="3" label="900*1600"/>
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select
               placeholder="状态"
               clearable
             >
-              <el-option value="1" label="生效"/>
               <el-option value="0" label="失效"/>
+              <el-option value="1" label="有效"/>
             </el-select>
           </div>
         </el-form-item>
@@ -103,72 +83,54 @@ export default {
       pagination: {
         currentPage: 1
       },
-      channelOptions: [],
       table: {
         props: {},
         data: [],
         header: [
           {
             prop: 'tabId',
-            label: 'Id',
-            sortable: true,
-            width: 80
+            label: '海报ID',
+            width: 100,
+            sortable: true
           },
           {
             prop: 'auditor',
-            label: '客户',
+            label: '海报名',
             sortable: true,
-            width: 100
-          },
-          {
-            prop: 'modifierName',
-            label: '品牌',
-            sortable: true,
-            width: 100
+            width: 140
           },
           {
             prop: 'auditor',
-            label: '机芯',
-            sortable: true,
-            width: 100
+            label: '海报图',
+            sortable: true
           },
           {
             prop: 'modifierName',
-            label: '机型',
-            sortable: true,
-            width: 100
-          },
-          {
-            prop: 'modifierName',
-            label: '国家',
-            sortable: true,
-            width: 120
+            label: '尺寸类型',
+            width: 120,
+            sortable: true
           },
           {
             prop: 'auditor',
-            label: '区域',
-            sortable: true,
-            width: 120
-          },
-          {
-            prop: 'modifierName',
             label: '状态',
-            sortable: true,
-            width: 100
+            width: 120,
+            sortable: true
           },
           {
             prop: 'auditor',
             label: '操作用户',
+            width: 160,
             sortable: true
           },
           {
             prop: 'lastUpdateDate',
             label: '操作时间',
+            width: 180,
             sortable: true
           },
           {
             label: '操作',
-            width: 120,
+            width: 160,
             fixed: 'right',
             render: this.operation(this)
           }
@@ -188,7 +150,7 @@ export default {
       },
       dialogEditFormVisible: false,
       dialogTitle: '新增',
-      type: 'brand'
+      type: 'model'
     }
   },
 
@@ -224,10 +186,6 @@ export default {
         filter.page = pagination.currentPage
         filter.rows = pagination.pageSize
       }
-      const channel = filter['filmDetailPageInfo.channel'][1]
-      if (channel) {
-        filter['filmDetailPageInfo.channel'] = channel
-      }
       return filter
     },
     handleFilterChange () {
@@ -244,62 +202,6 @@ export default {
       this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
-    },
-    // 获取查询条件
-    getMediaResourceInfo () {
-      return this.$service.getMediaResourceInfo().then(data => {
-        var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
-        var videoItemModels = movieData.videoItemModels
-        // 频道->爱奇艺channelOptions
-        var channelQiyi = {
-          label: '爱奇艺',
-          value: 'iqiyi',
-          children: []
-        }
-        channelQiyi.children = videoItemModels[0].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelTent = {
-          label: '腾讯',
-          value: 'qq',
-          children: []
-        }
-        channelTent.children = videoItemModels[1].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelYouku = {
-          label: '优酷',
-          value: 'youku',
-          children: []
-        }
-        channelYouku.children = videoItemModels[2].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        this.channelOptions.push(channelQiyi)
-        this.channelOptions.push(channelTent)
-        this.channelOptions.push(channelYouku)
-      })
-    },
-    handleChannelChange (value) {
-      this.filter['filmDetailPageInfo.source'] = value[0]
     },
     // 新增
     handleCreate () {
@@ -358,7 +260,6 @@ export default {
     }
   },
   created () {
-    this.getMediaResourceInfo().then(() => {})
     this.fetchData()
   }
 }

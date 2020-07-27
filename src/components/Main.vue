@@ -180,7 +180,8 @@ const routerMap = {
   matchHomepage: 'matchHomepage',
   // 以下LiteOS新增
   parameterManager: 'parameterManager',
-  regionManager: 'regionManager'
+  regionManager: 'regionManager',
+  materialManager: 'materialManager'
 }
 
 const iconMap = {
@@ -440,85 +441,7 @@ export default {
     getMenu () {
       this.$service.getMenu().then(menu => {
         const titles = {}
-        menu = [
-          {
-            text: '版面管理',
-            id: 'panelManage',
-            title: '版面管理',
-            icon: 'icon-folder',
-            url: '#',
-            children: [
-              {
-                text: 'TAB版面管理',
-                id: 'tabInfo',
-                iconCls: 'icon-menu',
-                attributes: {
-                  tabTitle: 'TAB版面管理',
-                  menuId: '41',
-                  tabIcon: 'icon-menu',
-                  modle: '1',
-                  iframeUrl: '/tabInfo/view.html'
-                }
-              },
-              {
-                text: '影片详情页',
-                id: 'filmDetailPage',
-                iconCls: 'icon-menu',
-                attributes: {
-                  tabTitle: '影片详情页',
-                  menuId: '115',
-                  tabIcon: 'icon-menu',
-                  modle: '1',
-                  iframeUrl: '/filmDetailPage/view.html'
-                }
-              }
-            ]
-          },
-          {
-            text: '待处理任务',
-            id: 'todoTask',
-            title: '待处理任务',
-            icon: 'icon_folder',
-            url: '/todoTask/view.html',
-            children: [
-              {
-                text: '我的草稿',
-                id: 'myDrafts',
-                iconCls: 'icon-menu',
-                attributes: {
-                  tabTitle: '我的草稿',
-                  menuId: '96',
-                  tabIcon: 'icon-menu',
-                  modle: '1',
-                  iframeUrl: '/myDrafts/view.html'
-                }
-              },
-              {
-                text: '我提交的任务',
-                id: 'mySubmitTasks',
-                iconCls: 'icon-menu',
-                attributes: {
-                  tabTitle: '我提交的任务',
-                  menuId: '97',
-                  tabIcon: 'icon-menu',
-                  modle: '1',
-                  iframeUrl: '/mySubmitTasks/view.html'
-                }
-              },
-              {
-                text: '我的审核任务',
-                id: 'myReviewTasks',
-                iconCls: 'icon-menu',
-                attributes: {
-                  tabTitle: '我的审核任务',
-                  menuId: '98',
-                  tabIcon: 'icon-menu',
-                  modle: '1',
-                  iframeUrl: '/myReviewTasks/view.html'
-                }
-              }
-            ]
-          },
+        menu.push(
           {
             text: '参数设置',
             id: 'parameterManager',
@@ -532,8 +455,15 @@ export default {
             title: '区域设置',
             icon: 'icon_folder',
             url: 'regionManager/regionManager/view.html'
+          },
+          {
+            text: '素材管理',
+            id: 'materialManager',
+            title: '素材管理',
+            icon: 'icon_folder',
+            url: 'materialManager/materialManager/view.html'
           }
-        ]
+        )
         const parseMenu = menu => {
           if (Array.isArray(menu)) {
             return menu.map(parseMenu)

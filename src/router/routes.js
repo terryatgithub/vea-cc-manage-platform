@@ -56,6 +56,7 @@ import VideoRecomScene from '../views/blockInfo/VideoRecomSceneIndex.vue'
 // 以下LiteOS新增
 import ParameterManager from '../views/parameterManager/index.vue'
 import RegionManager from '../views/regionManager/index.vue'
+import MaterialManager from '../views/materialManager/index.vue'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
 
@@ -748,6 +749,23 @@ const children = [
         meta: {
           title: '区域设置',
           tagId: 'regionManager'
+        }
+      }
+    ]
+  },
+  {
+    path: 'materialManager',
+    name: 'materialManager',
+    component: Wrapper,
+    meta: { title: '素材管理', icon: 'el-icon-cc-daichuli2' },
+    children: [
+      {
+        name: 'materialManager',
+        path: '/materialManager',
+        component: MaterialManager,
+        meta: {
+          title: '素材管理',
+          tagId: 'materialManager'
         }
       }
     ]
