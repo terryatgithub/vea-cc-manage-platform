@@ -2,50 +2,47 @@
   <ContentCard class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <div class="el-row">
-      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-input placeholder="海报名" clearable/>
-          </div>
-        </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-select
-              placeholder="尺寸类型"
-              clearable
-            >
-              <el-option value="1" label="400*400"/>
-              <el-option value="2" label="400*900"/>
-              <el-option value="3" label="900*1600"/>
-            </el-select>
-          </div>
-        </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-select
-              placeholder="状态"
-              clearable
-            >
-              <el-option value="0" label="失效"/>
-              <el-option value="1" label="有效"/>
-            </el-select>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary"  @click="handleFilterChange">查询</el-button>
-          <el-button  @click="handleFilterReset">重置</el-button>
-        </el-form-item>
-      </el-form>
+        <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
+          <el-form-item class="el-col el-col-6">
+            <div class="el-col-20">
+              <el-input placeholder="媒资名称" clearable/>
+            </div>
+          </el-form-item>
+          <el-form-item class="el-col el-col-6">
+            <div class="el-col-20">
+              <el-select
+                placeholder="状态"
+                clearable
+              >
+                <el-option value="0" label="失效"/>
+                <el-option value="1" label="有效"/>
+              </el-select>
+            </div>
+          </el-form-item>
+          <el-form-item class="el-col el-col-6">
+            <div class="el-col-20">
+              <el-select
+                placeholder="类型"
+                clearable
+              >
+                <el-option value="1" label="Movies电影"/>
+                <el-option value="2" label="TV Series电视剧"/>
+                <el-option value="3" label="TV Variety Show综艺"/>
+                <el-option value="4" label="Trailer预告片"/>
+                <el-option value="5" label="Short Film短片"/>
+                <el-option value="6" label="Live直播"/>
+                <el-option value="7" label="Music Video音乐录像"/>
+                <el-option value="8" label="Music Audio音频"/>
+                <el-option value="9" label="Videos视频"/>
+              </el-select>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary"  @click="handleFilterChange">查询</el-button>
+            <el-button  @click="handleFilterReset">重置</el-button>
+          </el-form-item>
+        </el-form>
       </div>
-      <el-button
-        class="filter-item"
-        style="margin-buttom: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
-        新增
-      </el-button>
       <el-dialog
         :title='dialogTitle'
         center
@@ -89,48 +86,36 @@ export default {
         header: [
           {
             prop: 'tabId',
-            label: '海报ID',
-            width: 100,
+            label: '媒资ID',
+            width: 120,
             sortable: true
           },
           {
             prop: 'auditor',
-            label: '海报名',
+            label: '媒资名称',
             sortable: true,
-            width: 140
-          },
-          {
-            prop: 'auditor',
-            label: '海报图',
-            sortable: true
+            width: 300
           },
           {
             prop: 'modifierName',
-            label: '尺寸类型',
-            width: 120,
-            sortable: true
+            label: '类型',
+            sortable: true,
+            width: 160
           },
           {
             prop: 'auditor',
-            label: '状态',
-            width: 120,
-            sortable: true
+            label: '图片',
+            sortable: true,
+            width: 300
           },
           {
             prop: 'auditor',
-            label: '操作用户',
-            width: 160,
-            sortable: true
-          },
-          {
-            prop: 'lastUpdateDate',
-            label: '操作时间',
-            width: 180,
-            sortable: true
+            label: '来源',
+            sortable: true,
+            width: 160
           },
           {
             label: '操作',
-            width: 160,
             fixed: 'right',
             render: this.operation(this)
           }
@@ -147,10 +132,7 @@ export default {
             }
           }
         ]
-      },
-      dialogEditFormVisible: false,
-      dialogTitle: '新增',
-      dialogType: ''
+      }
     }
   },
 
@@ -188,6 +170,7 @@ export default {
       }
       return filter
     },
+    // 查询
     handleFilterChange () {
       this.$refs.filterForm.validate((valid) => {
         if (valid) {
@@ -197,36 +180,16 @@ export default {
         }
       })
     },
+    // 重置
     handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
     },
-    // 新增
-    handleCreate () {
-      this.dialogEditFormVisible = true
-      this.dialogTitle = '新增'
-      this.dialogType = 'posterCreate'
-    },
-    // 编辑
-    handleEdit () {
-      this.dialogEditFormVisible = true
-      this.dialogTitle = '编辑'
-      this.dialogType = 'posterEdit'
-    },
-    // 删除
-    handleDel () {
-      this.$confirm('是否确认删除?', '提示', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '删除成功'
-        })
-      }).catch(() => {})
+    // 查看
+    handleLook () {
+      console.log(111)
     },
     // 列表操作
     operation (obj) {
@@ -238,26 +201,13 @@ export default {
             },
             on: {
               click: () => {
-                obj.handleEdit(row)
+                obj.handleLook(row)
               }
             }
           },
-          '编辑'
+          '查看'
         )
-        let btn2 = h('el-button',
-          {
-            props: {
-              type: 'text'
-            },
-            on: {
-              click: () => {
-                obj.handleDel(row)
-              }
-            }
-          },
-          '删除'
-        )
-        return [btn1, btn2]
+        return [btn1]
       }
     }
   },

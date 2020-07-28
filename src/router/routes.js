@@ -57,6 +57,7 @@ import VideoRecomScene from '../views/blockInfo/VideoRecomSceneIndex.vue'
 import ParameterManager from '../views/parameterManager/index.vue'
 import RegionManager from '../views/regionManager/index.vue'
 import MaterialManager from '../views/materialManager/index.vue'
+import MediaAssetsManager from '../views/mediaAssetsManager/index.vue'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
 
@@ -766,6 +767,23 @@ const children = [
         meta: {
           title: '素材管理',
           tagId: 'materialManager'
+        }
+      }
+    ]
+  },
+  {
+    path: 'mediaAssetsManager',
+    name: 'mediaAssetsManager',
+    component: Wrapper,
+    meta: { title: '媒资管理', icon: 'el-icon-cc-daichuli2' },
+    children: [
+      {
+        name: 'mediaAssetsManager',
+        path: '/mediaAssetsManager',
+        component: MediaAssetsManager,
+        meta: {
+          title: '媒资管理',
+          tagId: 'mediaAssetsManager'
         }
       }
     ]

@@ -181,7 +181,8 @@ const routerMap = {
   // 以下LiteOS新增
   parameterManager: 'parameterManager',
   regionManager: 'regionManager',
-  materialManager: 'materialManager'
+  materialManager: 'materialManager',
+  mediaAssetsManager: 'mediaAssetsManager'
 }
 
 const iconMap = {
@@ -462,6 +463,13 @@ export default {
             title: '素材管理',
             icon: 'icon_folder',
             url: 'materialManager/materialManager/view.html'
+          },
+          {
+            text: '媒资管理',
+            id: 'mediaAssetsManager',
+            title: '媒资管理',
+            icon: 'icon_folder',
+            url: 'mediaAssetsManager/mediaAssetsManager/view.html'
           }
         )
         const parseMenu = menu => {

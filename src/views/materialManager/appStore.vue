@@ -38,9 +38,9 @@
         :title='dialogTitle'
         center
         :visible.sync = 'dialogEditFormVisible'
-        width = '450px'
+        width = '550px'
       >
-        <EditPop :type = 'type'></EditPop>
+        <EditPop :dialogType = 'dialogType'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -157,7 +157,7 @@ export default {
       },
       dialogEditFormVisible: false,
       dialogTitle: '新增',
-      type: 'brand'
+      dialogType: ''
     }
   },
 
@@ -216,11 +216,13 @@ export default {
     handleCreate () {
       this.dialogEditFormVisible = true
       this.dialogTitle = '新增'
+      this.dialogType = 'appCreate'
     },
     // 编辑
     handleEdit () {
       this.dialogEditFormVisible = true
       this.dialogTitle = '编辑'
+      this.dialogType = 'appEdit'
     },
     // 删除
     handleDel () {
