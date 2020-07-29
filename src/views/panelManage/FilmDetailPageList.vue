@@ -173,6 +173,7 @@ export default {
                   },
                   on: {
                     click: () => {
+                      debugger
                       this.handleRead(row)
                     }
                   }

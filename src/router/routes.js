@@ -58,6 +58,9 @@ import ParameterManager from '../views/parameterManager/index.vue'
 import RegionManager from '../views/regionManager/index.vue'
 import MaterialManager from '../views/materialManager/index.vue'
 import MediaAssetsManager from '../views/mediaAssetsManager/index.vue'
+import MediaAssetsDetail from '../views/mediaAssetsManager/detail.vue'
+import LauncherPush from '../views/launcherPush/index.vue'
+import LauncherEdit from '../views/launcherPush/edit.vue'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
 
@@ -784,6 +787,41 @@ const children = [
         meta: {
           title: '媒资管理',
           tagId: 'mediaAssetsManager'
+        }
+      },
+      {
+        name: 'mediaAssetsDetail',
+        path: '/mediaAssetsDetail',
+        component: MediaAssetsDetail,
+        meta: {
+          title: '媒资信息',
+          tagId: 'mediaAssetsDetail'
+        }
+      }
+    ]
+  },
+  {
+    path: 'launcherPush',
+    name: 'launcherPush',
+    component: Wrapper,
+    meta: { title: 'Launcher管理', icon: 'el-icon-cc-daichuli2' },
+    children: [
+      {
+        name: 'launcherPush',
+        path: '/launcherPush',
+        component: LauncherPush,
+        meta: {
+          title: 'Launcher管理',
+          tagId: 'launcherPush'
+        }
+      },
+      {
+        name: 'launcherEdit',
+        path: '/launcherEdit',
+        component: LauncherEdit,
+        meta: {
+          title: 'Launcher编辑',
+          tagId: 'launcherEdit'
         }
       }
     ]

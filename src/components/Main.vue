@@ -182,7 +182,8 @@ const routerMap = {
   parameterManager: 'parameterManager',
   regionManager: 'regionManager',
   materialManager: 'materialManager',
-  mediaAssetsManager: 'mediaAssetsManager'
+  mediaAssetsManager: 'mediaAssetsManager',
+  launcherPush: 'launcherPush'
 }
 
 const iconMap = {
@@ -470,6 +471,13 @@ export default {
             title: '媒资管理',
             icon: 'icon_folder',
             url: 'mediaAssetsManager/mediaAssetsManager/view.html'
+          },
+          {
+            text: 'Launcher管理',
+            id: 'launcherPush',
+            title: 'Launcher管理',
+            icon: 'icon_folder',
+            url: 'launcherPush/launcherPush/view.html'
           }
         )
         const parseMenu = menu => {

@@ -27,7 +27,7 @@
       <el-dialog
         :title='dialogTitle'
         :visible.sync = 'dialogEditFormVisible'
-        width = '550px'
+        width = '650px'
       >
         <EditPop></EditPop>
       </el-dialog>

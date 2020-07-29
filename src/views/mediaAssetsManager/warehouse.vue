@@ -91,9 +91,8 @@ export default {
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'tabName',
             label: '媒资名称',
-            sortable: true,
             width: 300
           },
           {
@@ -188,8 +187,13 @@ export default {
       this.fetchData()
     },
     // 查看
-    handleLook () {
-      console.log(111)
+    handleLook (row) {
+      this.$router.push({
+        path: 'mediaAssetsDetail',
+        query: {
+          id: row.tabId
+        }
+      })
     },
     // 列表操作
     operation (obj) {

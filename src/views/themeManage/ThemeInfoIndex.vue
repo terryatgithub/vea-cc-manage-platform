@@ -37,6 +37,7 @@ export default {
 
   methods: {
     openAddPage (editId, mode, version) {
+      debugger
       this.editId = editId
       this.isShowList = false
       this.mode = mode
