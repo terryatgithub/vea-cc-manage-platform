@@ -1,103 +1,137 @@
 <template>
-    <div>
-      <el-form
-        ref="regionForm"
-        :rules="rules"
-        :model="regionForm"
-        style="width: 400px;text-align: center;"
-        :inline="true"
-        class="regionEdit"
+    <ContentCard title="新增/编辑">
+      <PushForm @regionSel = 'regionSel'></PushForm>
+      <el-dialog
+        :title='dialogRegionTitle'
+        :visible.sync = 'dialogRegionFormVisible'
+        width = '550px'
+        :close-on-click-modal = 'false'
+        :show-close = 'showClose'
       >
-        <el-form-item label='客户&品牌' prop="brand">
-          <el-cascader
-            placeholder='请选择'
-            :options='userOptions'
-            :props="{ expandTrigger: 'hover' }"
-            size='mini'
-            :clearable='true'
-            @change='brandIdSel'
-            v-model="brand"
-          ></el-cascader>
-        </el-form-item>
-        <el-form-item label='机芯&机型' prop="model">
-          <el-cascader
-            placeholder='请选择'
-            :options='userOptions'
-            :props="{ expandTrigger: 'hover' }"
-            size='mini'
-            :clearable='true'
-            @change='brandIdSel'
-            v-model="regionForm.model"
-          ></el-cascader>
-        </el-form-item>
-        <el-form-item label='国家' prop="country">
-          <el-cascader
-            placeholder='请选择'
-            :options='userOptions'
-            :props="{ expandTrigger: 'hover' }"
-            size='mini'
-            :clearable='true'
-            @change='brandIdSel'
-            v-model="regionForm.country"
-          ></el-cascader>
-        </el-form-item>
-        <el-form-item label='状态' class="item-type" prop="type">
-          <el-radio-group v-model="regionForm.type">
-            <el-radio label="生效"></el-radio>
-            <el-radio label="失效"></el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">
-          取消
-        </el-button>
-        <el-button type="primary" @click="create">
-          确定
-        </el-button>
+        <RegionEditPop v-if="region" @regionDetail = 'regionDetail'></RegionEditPop>
+        <RegionDetail v-else @goRegion = 'goRegion'></RegionDetail>
+      </el-dialog>
+      <el-dialog
+        :title='dialogAppTitle'
+        :visible.sync = 'dialogAppFormVisible'
+        width = '650px'
+        :close-on-click-modal = 'false'
+        :show-close = 'showClose'
+      >
+        <AppSelPop v-if="appShow" @appDetail = 'appDetail'></AppSelPop>
+        <AppDetail v-else @goApp = 'goApp'></AppDetail>
+      </el-dialog>
+      <div class="appBox">
+        <div class="label">选择应用</div>
+        <ul>
+          <li v-for='(item, index) in appList' :key='index'>
+            <i
+              class="el-icon-error delIcon"
+              v-if='index !== appList.length-1'
+              @click='appDel(index)'
+            ></i>
+            <div class="grid-content">
+              <i
+                class="el-icon-plus avatar-uploader-icon"
+                v-if="index === appList.length - 1"
+                @click="appSel"
+              ></i>
+              <img :src='item.appLogo' v-if="index !== appList.length - 1 && item.appLogo !== ''" class='appLogo' />
+            </div>
+            <p class="appName" v-if="index !== appList.length - 1">{{item.appName}}</p>
+          </li>
+        </ul>
       </div>
-    </div>
+    </ContentCard>
 </template>
 
 <script>
+import ContentCard from '@/components/ContentCard'
+import PushForm from '@/components/liteOS/pushForm'
+import RegionEditPop from '@/components/liteOS/regionEditPop'
+import RegionDetail from '@/components/liteOS/regionDetail'
+import AppSelPop from '@/components/liteOS/appSelPop'
+import AppDetail from '@/components/liteOS/appDetail'
 export default {
-  components: {},
-  props: {
-    type: {
-      type: String
-    }
+  components: {
+    ContentCard,
+    PushForm,
+    RegionEditPop,
+    RegionDetail,
+    AppSelPop,
+    AppDetail
   },
   data () {
     return {
-      regionForm: {
-        brand: '',
-        model: '',
-        country: '',
-        type: ''
-      },
-      rules: {
-        brand: [
-          { required: true, message: '请选择客户&品牌', trigger: 'change' }
-        ],
-        model: [
-          { required: true, message: '请选择机芯&机型', trigger: 'change' }
-        ],
-        country: [
-          { required: true, message: '请选择国家', trigger: 'change' }
-        ],
-        type: [
-          { required: true, message: '请选择状态', trigger: 'change' }
-        ]
-      },
-      userOptions: [
-        { key: 'CN', displayName: 'China' },
-        { key: 'US', displayName: 'USA' },
-        { key: 'JP', displayName: 'Japan' },
-        { key: 'EU', displayName: 'Eurozone' }
+      dialogRegionTitle: '',
+      dialogRegionFormVisible: false,
+      region: true,
+      showClose: true,
+      dialogAppTitle: '',
+      dialogAppFormVisible: false,
+      appShow: true,
+      appList: [
+        {
+          id: 0,
+          appName: 'xxx',
+          appLogo: ''
+        }
       ]
     }
   },
   methods: {
+    // 弹窗选择区域
+    regionSel () {
+      this.dialogRegionFormVisible = true
+      this.dialogRegionTitle = '选择区域'
+      this.showClose = true
+    },
+    // 显示区域详情
+    regionDetail () {
+      this.region = false
+      this.dialogRegionTitle = ''
+      this.showClose = false
+    },
+    // 返回选择区域
+    goRegion () {
+      this.region = true
+      this.dialogRegionTitle = '选择区域'
+      this.showClose = true
+    },
+    // 弹窗选择应用
+    appSel () {
+      if (this.appList.length === 99) {
+        this.$message({
+          type: 'warning',
+          message: '应用数量已达上限!'
+        })
+      } else {
+        this.appList.splice(this.appList.length - 1, 0, {
+          id: 0,
+          appName: 'xxx',
+          appLogo: ''
+        })
+        this.dialogAppFormVisible = true
+        this.dialogAppTitle = '选择应用'
+        this.showClose = true
+      }
+    },
+    // 显示应用详情
+    appDetail () {
+      this.appShow = false
+      this.dialogAppTitle = ''
+      this.showClose = false
+    },
+    // 返回选择应用
+    goApp () {
+      this.appShow = true
+      this.dialogAppTitle = '选择应用'
+      this.showClose = true
+    },
+    // 删除应用
+    appDel (index) {
+      this.appList.splice(index, 1)
+    },
     cancel () {
 
     },
@@ -114,12 +148,58 @@ export default {
   }
 }
 </script>
-<style lang='stylus' scoped>
-.regionEdit >>> .el-form-item__content
-  width: 170px!important
-.regionEdit >>> .el-form-item .el-form-item__label
-  width: 90px;
-  text-align: left
-.regionEdit >>> .item-type .el-form-item__content
-  text-align: left
+<style lang='scss' scoped>
+.appBox {
+  .label {
+    font-size: 14px;
+    color: #606266;
+    padding: 0 12px 0 0;
+    box-sizing: border-box;
+  }
+  ul {
+    overflow: hidden;
+    padding: 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    li {
+      float: left;
+      margin: 10px;
+      position: relative;
+      .delIcon {
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 20px;
+        color: indianred;
+        cursor: pointer;
+      }
+      .appName {
+        font-size: 16px;
+        text-align: center;
+        margin: 5px 0;
+        line-height: 20px;
+      }
+      .grid-content {
+        border-radius: 4px;
+        border: 2px dashed #f4f4f5;
+        width: 150px;
+        height: 120px;
+        .appLogo {
+          width: 100%;
+          height: 100%;
+        }
+        .avatar-uploader-icon {
+          font-size: 28px;
+          color: #8c939d;
+          width: 150px;
+          height: 120px;
+          line-height: 120px;
+          text-align: center;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
 </style>

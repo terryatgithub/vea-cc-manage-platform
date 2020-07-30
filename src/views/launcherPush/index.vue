@@ -110,14 +110,6 @@
       >
         新增
       </el-button>
-      <el-dialog
-        :title='dialogTitle'
-        center
-        :visible.sync = 'dialogEditFormVisible'
-        width = '450px'
-      >
-        <EditPop :type = 'type'></EditPop>
-      </el-dialog>
       <Table
         :props="table.props"
         :header="table.header"
@@ -131,13 +123,11 @@
 import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
 import { cloneDeep } from 'lodash'
-import EditPop from './edit'
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
-    Table,
-    EditPop
+    Table
   },
 
   data () {
@@ -154,31 +144,13 @@ export default {
         header: [
           {
             prop: 'tabId',
-            label: 'Id',
-            sortable: true,
-            width: 80
-          },
-          {
-            prop: 'auditor',
-            label: '客户',
-            sortable: true,
-            width: 100
-          },
-          {
-            prop: 'modifierName',
-            label: '品牌',
+            label: '策略ID',
             sortable: true,
             width: 100
           },
           {
             prop: 'auditor',
-            label: '机芯',
-            sortable: true,
-            width: 100
-          },
-          {
-            prop: 'modifierName',
-            label: '机型',
+            label: '策略名称',
             sortable: true,
             width: 100
           },
@@ -186,13 +158,25 @@ export default {
             prop: 'modifierName',
             label: '国家',
             sortable: true,
-            width: 120
+            width: 100
           },
           {
             prop: 'auditor',
             label: '区域',
             sortable: true,
-            width: 120
+            width: 180
+          },
+          {
+            prop: 'modifierName',
+            label: '优先级',
+            sortable: true,
+            width: 100
+          },
+          {
+            prop: 'modifierName',
+            label: '支持版本',
+            sortable: true,
+            width: 140
           },
           {
             prop: 'modifierName',
@@ -201,18 +185,32 @@ export default {
             width: 100
           },
           {
-            prop: 'auditor',
-            label: '操作用户',
-            sortable: true
+            prop: 'lastUpdateDate',
+            label: '发布开始时间',
+            sortable: true,
+            width: 180
           },
           {
             prop: 'lastUpdateDate',
-            label: '操作时间',
-            sortable: true
+            label: '发布结束时间',
+            sortable: true,
+            width: 180
+          },
+          {
+            prop: 'auditor',
+            label: '操作用户',
+            sortable: true,
+            width: 100
+          },
+          {
+            prop: 'lastUpdateDate',
+            label: '最近上线时间',
+            sortable: true,
+            width: 180
           },
           {
             label: '操作',
-            width: 120,
+            width: 180,
             fixed: 'right',
             render: this.operation(this)
           }
@@ -230,9 +228,6 @@ export default {
           }
         ]
       },
-      dialogEditFormVisible: false,
-      dialogTitle: '新增',
-      type: 'brand',
       typeOptions: [
         { key: '1', typeName: '财务' },
         { key: '2', typeName: '儿童' },
@@ -354,13 +349,60 @@ export default {
     },
     // 新增
     handleCreate () {
-      this.dialogEditFormVisible = true
-      this.dialogTitle = '新增'
+      this.$router.push({
+        path: 'launcherEdit',
+        query: {
+          id: 0
+        }
+      })
+    },
+    // 发布上线
+    handleUp () {
+      this.$confirm('确认发布上线?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        this.$message({
+          type: 'success',
+          message: '发布成功'
+        })
+      }).catch(() => {})
+    },
+    // 取消发布
+    handleOff () {
+      this.$confirm('确认取消发布?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        this.$message({
+          type: 'success',
+          message: '取消成功'
+        })
+      }).catch(() => {})
+    },
+    // 复制
+    handleCopy () {
+      this.$confirm('确认复制该策略?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        this.$message({
+          type: 'success',
+          message: '复制成功'
+        })
+      }).catch(() => {})
     },
     // 编辑
-    handleEdit () {
-      this.dialogEditFormVisible = true
-      this.dialogTitle = '编辑'
+    handleEdit (row) {
+      this.$router.push({
+        path: 'launcherEdit',
+        query: {
+          id: row.tabId
+        }
+      })
     },
     // 删除
     handleDel () {
@@ -385,13 +427,52 @@ export default {
             },
             on: {
               click: () => {
+                obj.handleUp(row)
+              }
+            }
+          },
+          '发布上线'
+        )
+        let btn2 = h('el-button',
+          {
+            props: {
+              type: 'text'
+            },
+            on: {
+              click: () => {
+                obj.handleOff(row)
+              }
+            }
+          },
+          '取消发布'
+        )
+        let btn3 = h('el-button',
+          {
+            props: {
+              type: 'text'
+            },
+            on: {
+              click: () => {
+                obj.handleCopy(row)
+              }
+            }
+          },
+          '复制'
+        )
+        let btn4 = h('el-button',
+          {
+            props: {
+              type: 'text'
+            },
+            on: {
+              click: () => {
                 obj.handleEdit(row)
               }
             }
           },
           '编辑'
         )
-        let btn2 = h('el-button',
+        let btn5 = h('el-button',
           {
             props: {
               type: 'text'
@@ -404,7 +485,7 @@ export default {
           },
           '删除'
         )
-        return [btn1, btn2]
+        return [btn1, btn2, btn3, btn4, btn5]
       }
     }
   },
