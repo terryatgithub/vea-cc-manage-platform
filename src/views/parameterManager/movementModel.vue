@@ -48,7 +48,7 @@
         :visible.sync = 'dialogEditFormVisible'
         width = '450px'
       >
-        <EditPop :type = 'type'></EditPop>
+        <EditPop :dialogType = 'dialogType' @close = 'close'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -125,7 +125,7 @@ export default {
         ]
       },
       dialogEditFormVisible: false,
-      type: 'model'
+      dialogType: 'model'
     }
   },
 
@@ -241,6 +241,10 @@ export default {
     // 新增
     handleCreate () {
       this.dialogEditFormVisible = true
+    },
+    // 关闭弹窗
+    close () {
+      this.dialogEditFormVisible = false
     }
   },
   created () {

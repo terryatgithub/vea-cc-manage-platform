@@ -2,24 +2,16 @@
     <ContentCard title="新增/编辑">
       <PushForm @regionSel = 'regionSel'></PushForm>
       <el-dialog
-        :title='dialogRegionTitle'
-        :visible.sync = 'dialogRegionFormVisible'
-        width = '550px'
+        :title='dialogTitle'
+        :visible.sync = 'dialogFormVisible'
+        :width = 'dialogWidth'
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
       >
-        <RegionEditPop v-if="region" @regionDetail = 'regionDetail'></RegionEditPop>
-        <RegionDetail v-else @goRegion = 'goRegion'></RegionDetail>
-      </el-dialog>
-      <el-dialog
-        :title='dialogAppTitle'
-        :visible.sync = 'dialogAppFormVisible'
-        width = '650px'
-        :close-on-click-modal = 'false'
-        :show-close = 'showClose'
-      >
-        <AppSelPop v-if="appShow" @appDetail = 'appDetail'></AppSelPop>
-        <AppDetail v-else @goApp = 'goApp'></AppDetail>
+        <RegionEditPop v-if="dialogType === 'regionPop'" @regionDetail = 'regionDetail'></RegionEditPop>
+        <RegionDetail v-if="dialogType === 'regionDetail'" @goRegion = 'goRegion'></RegionDetail>
+        <AppSelPop v-if="dialogType === 'appPop'" @appDetail = 'appDetail'></AppSelPop>
+        <AppDetail v-if="dialogType === 'appDetail'" @goApp = 'goApp'></AppDetail>
       </el-dialog>
       <div class="appBox">
         <div class="label">选择应用</div>
@@ -42,12 +34,14 @@
           </li>
         </ul>
       </div>
+      <FooterForm></FooterForm>
     </ContentCard>
 </template>
 
 <script>
 import ContentCard from '@/components/ContentCard'
 import PushForm from '@/components/liteOS/pushForm'
+import FooterForm from '@/components/liteOS/footerForm'
 import RegionEditPop from '@/components/liteOS/regionEditPop'
 import RegionDetail from '@/components/liteOS/regionDetail'
 import AppSelPop from '@/components/liteOS/appSelPop'
@@ -56,6 +50,7 @@ export default {
   components: {
     ContentCard,
     PushForm,
+    FooterForm,
     RegionEditPop,
     RegionDetail,
     AppSelPop,
@@ -63,13 +58,11 @@ export default {
   },
   data () {
     return {
-      dialogRegionTitle: '',
-      dialogRegionFormVisible: false,
-      region: true,
+      dialogTitle: '',
+      dialogFormVisible: false,
+      dialogType: '',
+      dialogWidth: '550px',
       showClose: true,
-      dialogAppTitle: '',
-      dialogAppFormVisible: false,
-      appShow: true,
       appList: [
         {
           id: 0,
@@ -82,20 +75,24 @@ export default {
   methods: {
     // 弹窗选择区域
     regionSel () {
-      this.dialogRegionFormVisible = true
-      this.dialogRegionTitle = '选择区域'
+      this.dialogFormVisible = true
+      this.dialogType = 'regionPop'
+      this.dialogTitle = '选择区域'
+      this.dialogWidth = '550px'
       this.showClose = true
     },
     // 显示区域详情
     regionDetail () {
-      this.region = false
-      this.dialogRegionTitle = ''
+      this.dialogType = 'regionDetail'
+      this.dialogWidth = '550px'
+      this.dialogTitle = ''
       this.showClose = false
     },
     // 返回选择区域
     goRegion () {
-      this.region = true
-      this.dialogRegionTitle = '选择区域'
+      this.dialogType = 'regionPop'
+      this.dialogWidth = '550px'
+      this.dialogTitle = '选择区域'
       this.showClose = true
     },
     // 弹窗选择应用
@@ -111,21 +108,25 @@ export default {
           appName: 'xxx',
           appLogo: ''
         })
-        this.dialogAppFormVisible = true
-        this.dialogAppTitle = '选择应用'
+        this.dialogFormVisible = true
+        this.dialogType = 'appPop'
+        this.dialogWidth = '650px'
+        this.dialogTitle = '选择应用'
         this.showClose = true
       }
     },
     // 显示应用详情
     appDetail () {
-      this.appShow = false
-      this.dialogAppTitle = ''
+      this.dialogType = 'appDetail'
+      this.dialogWidth = '650px'
+      this.dialogTitle = ''
       this.showClose = false
     },
     // 返回选择应用
     goApp () {
-      this.appShow = true
-      this.dialogAppTitle = '选择应用'
+      this.dialogType = 'appPop'
+      this.dialogWidth = '650px'
+      this.dialogTitle = '选择应用'
       this.showClose = true
     },
     // 删除应用
@@ -150,6 +151,7 @@ export default {
 </script>
 <style lang='scss' scoped>
 .appBox {
+  margin-bottom: 20px;
   .label {
     font-size: 14px;
     color: #606266;

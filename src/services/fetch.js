@@ -1,6 +1,18 @@
 import qs from 'qs'
 import axios from 'axios'
 import Vue from 'vue'
+axios.interceptors.request.use(
+  config => {
+    // if (store.state.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+    // config.headers.Authorization = `token ${store.state.token}`;
+    config.headers.Authorization = `bearercf5f0f6e-fd21-4219-b2a0-68067a6648a1`
+    // }
+    return config
+  },
+  err => {
+    return Promise.reject(err)
+  }
+)
 export default function fetch ({
   method = 'get',
   url,
