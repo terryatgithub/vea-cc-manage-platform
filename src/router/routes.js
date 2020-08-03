@@ -42,7 +42,7 @@ import SearchNotice from '../views/todoTask/SearchNoticeIndex'
 import MyDrafts from '../views/todoTask/MyDraftsIndex'
 import MyReviewTasks from '../views/todoTask/MyReviewTasksIndex'
 import MySubmitTasks from '../views/todoTask/MySubmitTasksIndex'
-import FilmDetailAdBit from '../views/adBitMgr/FilmDetailAdBit.vue'
+// import FilmDetailAdBit from '../views/adBitMgr/FilmDetailAdBit.vue'
 import Main from '@/components/Main'
 import Desktop from '@/views/desktop/Desktop'
 import FramePage from '../views/FramePage'
@@ -52,7 +52,15 @@ import AssignVideoRecom from '../views/blockInfo/AssignVideoRecomIndex.vue'
 import NewVideoRecom from '../views/blockInfo/NewVideoRecomIndex.vue'
 import StreamABTest from '../views/blockInfo/StreamABTestIndex.vue'
 import VideoRecomScene from '../views/blockInfo/VideoRecomSceneIndex.vue'
-import DeviceConfig from '../views/deviceConfig/DeviceConfigIndex.vue'
+// import DeviceConfig from '../views/deviceConfig/DeviceConfigIndex.vue'
+// 以下LiteOS新增
+import ParameterManager from '../views/parameterManager/index.vue'
+import RegionManager from '../views/regionManager/index.vue'
+import MaterialManager from '../views/materialManager/index.vue'
+import MediaAssetsManager from '../views/mediaAssetsManager/index.vue'
+import MediaAssetsDetail from '../views/mediaAssetsManager/detail.vue'
+import LauncherPush from '../views/launcherPush/index.vue'
+import LauncherEdit from '../views/launcherPush/edit.vue'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
 
@@ -605,42 +613,42 @@ const children = [
       }
     ]
   },
-  {
-    path: 'adBitMgr',
-    name: 'adBitMgr',
-    component: Wrapper,
-    meta: { title: '广告位管理', icon: 'el-icon-cc-banner' },
-    children: [
-      {
-        name: 'filmDetailAdBit',
-        path: '/filmDetailAdBit/view.html',
-        component: FilmDetailAdBit,
-        meta: {
-          title: '详情页广告位',
+  // {
+  //   path: 'adBitMgr',
+  //   name: 'adBitMgr',
+  //   component: Wrapper,
+  //   meta: { title: '广告位管理', icon: 'el-icon-cc-banner' },
+  //   children: [
+  //     {
+  //       name: 'filmDetailAdBit',
+  //       path: '/filmDetailAdBit/view.html',
+  //       component: FilmDetailAdBit,
+  //       meta: {
+  //         title: '详情页广告位',
 
-          tagId: 'filmDetailAdBit'
-        }
-      }
-    ]
-  },
-  {
-    path: 'deviceConfig',
-    name: 'deviceConfig',
-    component: Wrapper,
-    meta: { title: '小窗自动播放配置' },
-    children: [
-      {
-        name: 'deviceConfig',
-        path: '/deviceConfig',
-        component: DeviceConfig,
-        meta: {
-          title: '小窗自动播放配置',
+  //         tagId: 'filmDetailAdBit'
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: 'deviceConfig',
+  //   name: 'deviceConfig',
+  //   component: Wrapper,
+  //   meta: { title: '小窗自动播放配置' },
+  //   children: [
+  //     {
+  //       name: 'deviceConfig',
+  //       path: '/deviceConfig',
+  //       component: DeviceConfig,
+  //       meta: {
+  //         title: '小窗自动播放配置',
 
-          tagId: 'deviceConfig'
-        }
-      }
-    ]
-  },
+  //         tagId: 'deviceConfig'
+  //       }
+  //     }
+  //   ]
+  // },
   {
     path: 'todoTask',
     name: 'todoTask',
@@ -713,6 +721,110 @@ const children = [
     path: 'desktop',
     component: Desktop,
     meta: { title: '我的桌面', tagId: 'desktop' }
+  },
+  // 以下新增LiteOS
+  {
+    path: 'parameterManager',
+    name: 'parameterManager',
+    component: Wrapper,
+    meta: { title: '参数设置', icon: 'el-icon-cc-daichuli2' },
+    children: [
+      {
+        name: 'parameterManager',
+        path: '/parameterManager',
+        component: ParameterManager,
+        meta: {
+          title: '参数设置',
+          tagId: 'parameterManager'
+        }
+      }
+    ]
+  },
+  {
+    path: 'regionManager',
+    name: 'regionManager',
+    component: Wrapper,
+    meta: { title: '区域设置', icon: 'el-icon-cc-daichuli2' },
+    children: [
+      {
+        name: 'regionManager',
+        path: '/regionManager',
+        component: RegionManager,
+        meta: {
+          title: '区域设置',
+          tagId: 'regionManager'
+        }
+      }
+    ]
+  },
+  {
+    path: 'materialManager',
+    name: 'materialManager',
+    component: Wrapper,
+    meta: { title: '素材管理', icon: 'el-icon-cc-daichuli2' },
+    children: [
+      {
+        name: 'materialManager',
+        path: '/materialManager',
+        component: MaterialManager,
+        meta: {
+          title: '素材管理',
+          tagId: 'materialManager'
+        }
+      }
+    ]
+  },
+  {
+    path: 'mediaAssetsManager',
+    name: 'mediaAssetsManager',
+    component: Wrapper,
+    meta: { title: '媒资管理', icon: 'el-icon-cc-daichuli2' },
+    children: [
+      {
+        name: 'mediaAssetsManager',
+        path: '/mediaAssetsManager',
+        component: MediaAssetsManager,
+        meta: {
+          title: '媒资管理',
+          tagId: 'mediaAssetsManager'
+        }
+      },
+      {
+        name: 'mediaAssetsDetail',
+        path: '/mediaAssetsDetail',
+        component: MediaAssetsDetail,
+        meta: {
+          title: '媒资信息',
+          tagId: 'mediaAssetsDetail'
+        }
+      }
+    ]
+  },
+  {
+    path: 'launcherPush',
+    name: 'launcherPush',
+    component: Wrapper,
+    meta: { title: 'Launcher管理', icon: 'el-icon-cc-daichuli2' },
+    children: [
+      {
+        name: 'launcherPush',
+        path: '/launcherPush',
+        component: LauncherPush,
+        meta: {
+          title: 'Launcher管理',
+          tagId: 'launcherPush'
+        }
+      },
+      {
+        name: 'launcherEdit',
+        path: '/launcherEdit',
+        component: LauncherEdit,
+        meta: {
+          title: 'Launcher编辑',
+          tagId: 'launcherEdit'
+        }
+      }
+    ]
   }
 ]
 /**/

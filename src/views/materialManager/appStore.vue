@@ -1,0 +1,291 @@
+<template>
+  <ContentCard class="content">
+    <ContentWrapper :pagination="pagination" @filter-change="fetchData">
+      <div class="el-row">
+      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-input placeholder="应用名" clearable/>
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select
+              placeholder="状态"
+              clearable
+            >
+              <el-option value="0" label="失效"/>
+              <el-option value="1" label="有效"/>
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary"  @click="handleFilterChange">查询</el-button>
+          <el-button  @click="handleFilterReset">重置</el-button>
+        </el-form-item>
+      </el-form>
+      </div>
+      <el-button
+        class="filter-item"
+        style="margin-buttom: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      >
+        新增
+      </el-button>
+      <el-dialog
+        :title='dialogTitle'
+        center
+        :visible.sync = 'dialogEditFormVisible'
+        width = '550px'
+      >
+        <EditPop :dialogType = 'dialogType'></EditPop>
+      </el-dialog>
+      <Table
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+      />
+    </ContentWrapper>
+  </ContentCard>
+</template>
+
+<script>
+import { ContentWrapper, Table } from 'admin-toolkit'
+import BaseList from '@/components/BaseList'
+import { cloneDeep } from 'lodash'
+import EditPop from './edit'
+export default {
+  extends: BaseList,
+  components: {
+    ContentWrapper,
+    Table,
+    EditPop
+  },
+
+  data () {
+    return {
+      filter: this.genDefaultFilter(),
+      efficientFilter: this.genDefaultFilter(),
+      pagination: {
+        currentPage: 1
+      },
+      table: {
+        props: {},
+        data: [],
+        header: [
+          {
+            prop: 'tabId',
+            label: '应用ID',
+            width: 100,
+            sortable: true
+          },
+          {
+            prop: 'auditor',
+            label: '应用名',
+            sortable: true,
+            width: 140
+          },
+          {
+            prop: 'modifierName',
+            label: '类型',
+            width: 120,
+            sortable: true
+          },
+          {
+            prop: 'auditor',
+            label: '图标',
+            sortable: true
+          },
+          {
+            prop: 'auditor',
+            label: '状态',
+            width: 120,
+            sortable: true
+            // render: (h, { row }) => {
+            //   // if (!this.canEdit) {
+            //   //   return row.seq
+            //   // }
+            //   return h('el-switch', {
+            //     props: {
+            //       value: row.seq,
+            //       disabled
+            //     },
+            //     on: {
+            //       input: value => {
+            //         row.seq = value
+            //       },
+            //       blur: () => {
+            //         this.$service.updateSeq({ id: row.roleId, seq: row.seq })
+            //       }
+            //     }
+            //   })
+            // }
+          },
+          {
+            prop: 'auditor',
+            label: '操作用户',
+            width: 160,
+            sortable: true
+          },
+          {
+            prop: 'lastUpdateDate',
+            label: '操作时间',
+            width: 180,
+            sortable: true
+          },
+          {
+            label: '操作',
+            width: 160,
+            fixed: 'right',
+            render: this.operation(this)
+          }
+        ]
+      },
+      filterFormRules: {
+        tabId: [
+          {
+            validator (rule, value, cb) {
+              if (value && !/^\d+$/.test(value)) {
+                return cb(Error('请输入数字'))
+              }
+              cb()
+            }
+          }
+        ]
+      },
+      dialogEditFormVisible: false,
+      dialogTitle: '新增',
+      dialogType: ''
+    }
+  },
+
+  methods: {
+    genDefaultFilter () {
+      return {
+        tabType: 3,
+        tabId: undefined,
+        tabName: undefined,
+        tabStatus: undefined,
+        'filmDetailPageInfo.source': undefined,
+        'filmDetailPageInfo.channel': [],
+        'filmDetailPageInfo.category': undefined,
+        'filmDetailPageInfo.product': undefined,
+        'filmDetailPageInfo.matchType': undefined,
+        'filmDetailPageInfo.videoId': undefined
+      }
+    },
+    /**
+     * 获取数据
+     */
+    fetchData () {
+      const filter = this.parseFilter()
+      this.$service.tabInfoList(filter).then(data => {
+        this.pagination.total = data.total
+        this.table.data = data.rows
+      })
+    },
+    parseFilter () {
+      const { pagination } = this
+      const filter = JSON.parse(JSON.stringify(this.efficientFilter))
+      if (pagination) {
+        filter.page = pagination.currentPage
+        filter.rows = pagination.pageSize
+      }
+      return filter
+    },
+    // 查询
+    handleFilterChange () {
+      this.$refs.filterForm.validate((valid) => {
+        if (valid) {
+          this.pagination.currentPage = 1
+          this.efficientFilter = cloneDeep(this.filter)
+          this.fetchData()
+        }
+      })
+    },
+    // 重置
+    handleFilterReset () {
+      this.filter = this.genDefaultFilter()
+      this.efficientFilter = this.genDefaultFilter()
+      this.pagination.currentPage = 1
+      this.fetchData()
+    },
+    // 新增
+    handleCreate () {
+      this.dialogEditFormVisible = true
+      this.dialogTitle = '新增'
+      this.dialogType = 'appCreate'
+    },
+    // 编辑
+    handleEdit () {
+      this.dialogEditFormVisible = true
+      this.dialogTitle = '编辑'
+      this.dialogType = 'appEdit'
+    },
+    // 删除
+    handleDel () {
+      this.$confirm('是否确认删除?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        this.$message({
+          type: 'success',
+          message: '删除成功'
+        })
+      }).catch(() => {})
+    },
+    // 列表操作
+    operation (obj) {
+      return (h, { row }) => {
+        let btn1 = h('el-button',
+          {
+            props: {
+              type: 'text'
+            },
+            on: {
+              click: () => {
+                obj.handleEdit(row)
+              }
+            }
+          },
+          '编辑'
+        )
+        let btn2 = h('el-button',
+          {
+            props: {
+              type: 'text'
+            },
+            on: {
+              click: () => {
+                obj.handleDel(row)
+              }
+            }
+          },
+          '删除'
+        )
+        return [btn1, btn2]
+      }
+    }
+  },
+  created () {
+    this.fetchData()
+  }
+}
+</script>
+
+<style lang='stylus' scoped>
+.content >>> .el-form-item__content
+                width: 100%
+                .el-select,.el-cascader
+                   width 100%
+.content >>> .el-form--inline .el-form-item {
+           margin-right: 0px;
+}
+.content >>> .filter-item
+  justify-content: flex-start;
+  margin: 10px 0px
+
+</style>

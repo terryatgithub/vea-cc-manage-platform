@@ -71,6 +71,7 @@ export default {
      * 新增编辑里面的返回事件
     */
     goBack () {
+      debugger
       this.isShowList = true
       this.mode = 'list'
       this.version = undefined

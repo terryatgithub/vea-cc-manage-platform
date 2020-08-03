@@ -177,7 +177,13 @@ const routerMap = {
 
   testPolicyGroup: 'testPolicyGroup',
   policyGroup: 'policyGroup',
-  matchHomepage: 'matchHomepage'
+  matchHomepage: 'matchHomepage',
+  // 以下LiteOS新增
+  parameterManager: 'parameterManager',
+  regionManager: 'regionManager',
+  materialManager: 'materialManager',
+  mediaAssetsManager: 'mediaAssetsManager',
+  launcherPush: 'launcherPush'
 }
 
 const iconMap = {
@@ -437,6 +443,43 @@ export default {
     getMenu () {
       this.$service.getMenu().then(menu => {
         const titles = {}
+        menu.push(
+          {
+            text: '参数设置',
+            id: 'parameterManager',
+            title: '参数设置',
+            icon: 'icon_folder',
+            url: 'parameterManager/parameterManager/view.html'
+          },
+          {
+            text: '区域设置',
+            id: 'regionManager',
+            title: '区域设置',
+            icon: 'icon_folder',
+            url: 'regionManager/regionManager/view.html'
+          },
+          {
+            text: '素材管理',
+            id: 'materialManager',
+            title: '素材管理',
+            icon: 'icon_folder',
+            url: 'materialManager/materialManager/view.html'
+          },
+          {
+            text: '媒资管理',
+            id: 'mediaAssetsManager',
+            title: '媒资管理',
+            icon: 'icon_folder',
+            url: 'mediaAssetsManager/mediaAssetsManager/view.html'
+          },
+          {
+            text: 'Launcher管理',
+            id: 'launcherPush',
+            title: 'Launcher管理',
+            icon: 'icon_folder',
+            url: 'launcherPush/launcherPush/view.html'
+          }
+        )
         const parseMenu = menu => {
           if (Array.isArray(menu)) {
             return menu.map(parseMenu)
