@@ -62,6 +62,7 @@ import MediaAssetsDetail from '../views/mediaAssetsManager/detail.vue'
 import LauncherPush from '../views/launcherPush/index.vue'
 import LauncherEdit from '../views/launcherPush/edit.vue'
 import CCPlusPushPolicy from '../views/CCPlusPushPolicy'
+import SecondaryEdit from '../views/CCPlusPushPolicy/SecondaryEdit'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
 
@@ -840,6 +841,15 @@ const children = [
         meta: {
           title: 'CC Plus管理child',
           tagId: 'CCPlusPushPolicy'
+        }
+      },
+      {
+        name: 'SecondaryEdit',
+        path: '/SecondaryEdit',
+        component: SecondaryEdit,
+        meta: {
+          title: '二级菜单编辑页',
+          tagId: 'SecondaryEdit'
         }
       }
     ]
