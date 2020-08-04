@@ -12,7 +12,8 @@
           <el-cascader
             placeholder='请选择'
             :options='userOptions'
-            :props="{ expandTrigger: 'hover' }"
+            :props="props"
+            collapse-tags
             size='mini'
             :clearable='true'
             @change='brandIdSel'
@@ -23,7 +24,8 @@
           <el-cascader
             placeholder='请选择'
             :options='userOptions'
-            :props="{ expandTrigger: 'hover' }"
+            :props="props"
+            collapse-tags
             size='mini'
             :clearable='true'
             @change='brandIdSel'
@@ -34,7 +36,8 @@
           <el-cascader
             placeholder='请选择'
             :options='userOptions'
-            :props="{ expandTrigger: 'hover' }"
+            :props="props"
+            collapse-tags
             size='mini'
             :clearable='true'
             @change='brandIdSel'
@@ -69,6 +72,10 @@ export default {
   },
   data () {
     return {
+      props: {
+        multiple: true,
+        expandTrigger: 'hover'
+      },
       regionForm: {
         brand: '',
         model: '',

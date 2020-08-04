@@ -40,6 +40,8 @@ import * as tabInsertionTask from './tabInsertionTask'
 import * as deviceConfig from './deviceConfig'
 import * as policyGroup from './policyGroup'
 import * as bigdata from './bigdata'
+// liteOS新增
+import * as liteApi from './liteOS/liteosApi'
 
 const service = {
   state: {},
@@ -84,7 +86,9 @@ const service = {
   ...tabInsertionTask,
   ...deviceConfig,
   ...policyGroup,
-  ...bigdata
+  ...bigdata,
+  // liteOS新增
+  ...liteApi
 }
 export default function install (Vue) {
   const $service = {}

@@ -6,6 +6,20 @@ export function login (data) {
   }).then((user) => {
     this.state = user
     return user
+  }).catch(() => {
+    // 联调接口用
+    const user = {
+      code: '0',
+      data: { platformType: 'COOCAA', userInfo: { loginName: 'yuanjunnan', userId: 80 }, enableContentAuth: 0 },
+      enableContentAuth: 0,
+      platformType: 'COOCAA',
+      userInfo: { loginName: 'yuanjunnan', userId: 80 },
+      loginName: 'yuanjunnan',
+      userId: 80,
+      success: true
+    }
+    this.state = user
+    return user
   })
 }
 

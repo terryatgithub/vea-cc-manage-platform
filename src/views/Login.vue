@@ -107,19 +107,20 @@ export default {
             this.isDomainActive ? 'domain' : 'normal'
           )
         }
-        this.$login(this.user).then(
-          data => {
-            console.log('redirect=' + this.$route.query.redirect)
-            this.$router.push({
-              path: this.$route.query.redirect || '/desktop'
-            })
-          },
-          () => {
-            if (this.isDomainActive) {
-              this.user.username = this.user.ldapName
-            }
+        this.$router.push({
+          path: this.$route.query.redirect || '/desktop'
+        })
+        this.$login(this.user).then(data => {
+          console.log('redirect=' + this.$route.query.redirect)
+          this.$router.push({
+            path: this.$route.query.redirect || '/desktop'
+          })
+        },
+        () => {
+          if (this.isDomainActive) {
+            this.user.username = this.user.ldapName
           }
-        )
+        })
       }
     },
     updateValicode () {

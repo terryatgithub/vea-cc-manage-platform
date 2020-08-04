@@ -1,12 +1,23 @@
 import Vue from 'vue'
 function getInitData (app) {
-  return app.$service.getEnv().then((env) => {
-    app.$consts.idPrefix = env.idPrefix
-    if (env.userInfo) {
-      const { loginName: name } = env.userInfo
-      app.$appState.user = { name }
-    }
-  })
+  // return app.$service.getEnv().then((env) => {
+  //   app.$consts.idPrefix = env.idPrefix
+  //   if (env.userInfo) {
+  //     const { loginName: name } = env.userInfo
+  //     app.$appState.user = { name }
+  //   }
+  // }).catch(() => {
+  const env = {
+    enableContentAuth: 0,
+    idPrefix: '10',
+    platformType: 'COOCAA'
+  }
+  app.$consts.idPrefix = env.idPrefix
+  if (env.userInfo) {
+    const { loginName: name } = env.userInfo
+    app.$appState.user = { name }
+  }
+  // })
 }
 Vue.prototype.$isLoggedIn = async function () {
   const $appState = this.$appState

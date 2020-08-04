@@ -16,28 +16,15 @@
           />
         </el-form-item>
         <el-form-item label="图标" class="imgUpload">
-          <el-form-item prop="squareImg">
-            <el-upload
-              class="square-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="appForm.squareImg" :src="appForm.squareImg" class="avatar">
-              <i v-else class="el-icon-plus square-uploader-icon"></i>
-            </el-upload>
-          </el-form-item>
-          <el-form-item prop="longImg">
-            <el-upload
-              class="long-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="appForm.longImg" :src="appForm.longImg" class="avatar">
-              <i v-else class="el-icon-plus long-uploader-icon"></i>
-            </el-upload>
-          </el-form-item>
+          <el-upload
+            class="app-uploader"
+            action="https://jsonplaceholder.typicode.com/posts/"
+            list-type="picture-card"
+            :on-remove="handleRemove"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload">
+            <i class="el-icon-plus app-uploader-icon"></i>
+          </el-upload>
         </el-form-item>
         <el-form-item
           label="类型"
@@ -293,7 +280,11 @@ export default {
         })
       }
     },
+    handleRemove (file, fileList) {
+      console.log(file, fileList)
+    },
     handleAvatarSuccess (res, file) {
+      debugger
       this.imageUrl = URL.createObjectURL(file.raw)
     },
     beforeAvatarUpload (file) {
@@ -324,53 +315,35 @@ export default {
       }
     }
     // 上传
-    .square-uploader {
-      .el-upload {
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        &:hover {
-          border-color: #409EFF;
-        }
+    .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      &:hover {
+        border-color: #409EFF;
       }
-      .square-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
-        text-align: center;
-      }
-      .avatar {
-        width: 60px;
-        height: 60px;
-        display: block;
+    }
+    .app-uploader {
+      .el-upload--picture-card {
+        width: 80px;
+        height: 80px;
+        line-height: 88px;
       }
     }
     .long-uploader {
-      .el-upload {
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        &:hover {
-          border-color: #409EFF;
-        }
-      }
       .long-uploader-icon {
         font-size: 28px;
         color: #8c939d;
         width: 90px;
-        height: 60px;
-        line-height: 60px;
+        height: 80px;
+        line-height: 80px;
         text-align: center;
       }
       .avatar {
         width: 90px;
-        height: 60px;
+        height: 80px;
         display: block;
       }
     }

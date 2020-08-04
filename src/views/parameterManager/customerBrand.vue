@@ -5,26 +5,32 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-cascader
-              placeholder="客户"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
-              expand-trigger="hover"
-              clearable
-              @change="handleChannelChange"
-            />
+            <el-select
+              placeholder="请选择客户"
+              v-model="filter['customerId']"
+            >
+              <el-option
+                v-for="item in customerOptions"
+                :key="item.customerId"
+                :label="item.customerName"
+                :value="item.customerId"
+              />
+            </el-select>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-cascader
-              placeholder="品牌"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
-              expand-trigger="hover"
-              clearable
-              @change="handleChannelChange"
-            />
+            <el-select
+              placeholder="请选择品牌"
+              v-model="filter['brandId']"
+            >
+              <el-option
+                v-for="item in brandOptions"
+                :key="item.brandId"
+                :label="item.brandName"
+                :value="item.brandId"
+              />
+            </el-select>
           </div>
         </el-form-item>
         <el-form-item>
@@ -48,7 +54,7 @@
         :visible.sync = 'dialogEditFormVisible'
         width = '450px'
       >
-        <EditPop :type = 'type'></EditPop>
+        <EditPop :dialogType = 'dialogType' @close = 'close'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -77,36 +83,38 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
-      channelOptions: [],
+      customerOptions: [],
+      brandOptions: [],
       table: {
         props: {},
         data: [],
         header: [
           {
-            prop: 'tabId',
-            label: 'tabId',
+            prop: 'brandId',
+            label: 'brandId',
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'customerName',
             label: '客户',
             sortable: true,
             width: 140
           },
           {
-            prop: 'modifierName',
+            prop: 'brandName',
             label: '品牌',
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'creator',
             label: '操作用户',
             sortable: true
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'updateTime',
             label: '操作时间',
             sortable: true
           }
@@ -125,23 +133,15 @@ export default {
         ]
       },
       dialogEditFormVisible: false,
-      type: 'brand'
+      dialogType: 'brand'
     }
   },
 
   methods: {
     genDefaultFilter () {
       return {
-        tabType: 3,
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined,
-        'filmDetailPageInfo.source': undefined,
-        'filmDetailPageInfo.channel': [],
-        'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined,
-        'filmDetailPageInfo.matchType': undefined,
-        'filmDetailPageInfo.videoId': undefined
+        brandId: undefined,
+        customerId: undefined
       }
     },
     /**
@@ -149,9 +149,16 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+      this.$service.queryBrandListPage(filter).then(data => {
+        if (data.code === '0') {
+          this.pagination.total = data.data.total
+          this.table.data = data.data.results
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
       })
     },
     parseFilter () {
@@ -159,11 +166,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
-      }
-      const channel = filter['filmDetailPageInfo.channel'][1]
-      if (channel) {
-        filter['filmDetailPageInfo.channel'] = channel
+        filter.size = pagination.pageSize
       }
       return filter
     },
@@ -184,67 +187,28 @@ export default {
     },
     // 获取查询条件
     getMediaResourceInfo () {
-      return this.$service.getMediaResourceInfo().then(data => {
-        var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
-        var videoItemModels = movieData.videoItemModels
-        // 频道->爱奇艺channelOptions
-        var channelQiyi = {
-          label: '爱奇艺',
-          value: 'iqiyi',
-          children: []
+      this.$service.queryCustomerListAllContainBrands().then(data => {
+        if (data.code === '0') {
+          this.customerOptions = data.data
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
         }
-        channelQiyi.children = videoItemModels[0].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelTent = {
-          label: '腾讯',
-          value: 'qq',
-          children: []
-        }
-        channelTent.children = videoItemModels[1].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelYouku = {
-          label: '优酷',
-          value: 'youku',
-          children: []
-        }
-        channelYouku.children = videoItemModels[2].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        this.channelOptions.push(channelQiyi)
-        this.channelOptions.push(channelTent)
-        this.channelOptions.push(channelYouku)
       })
-    },
-    handleChannelChange (value) {
-      this.filter['filmDetailPageInfo.source'] = value[0]
     },
     // 新增
     handleCreate () {
       this.dialogEditFormVisible = true
+    },
+    // 关闭弹窗
+    close () {
+      this.dialogEditFormVisible = false
     }
   },
   created () {
-    this.getMediaResourceInfo().then(() => {})
+    this.getMediaResourceInfo()
     this.fetchData()
   }
 }
@@ -261,5 +225,9 @@ export default {
 .content >>> .filter-item
   justify-content: flex-start;
   margin: 10px 0px
-
+</style>
+<style lang="scss">
+.el-select-dropdown {
+  max-width: 270px
+}
 </style>
