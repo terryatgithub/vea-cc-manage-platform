@@ -11,18 +11,18 @@
       >
         <el-form-item
           label="选择客户"
-          prop="customer"
+          prop="customerId"
         >
           <el-select
             placeholder="请选择客户"
-            v-model="brandForm.customer"
+            v-model="brandForm.customerId"
             :disabled="isSelect === 1"
           >
             <el-option
-              v-for="item in userOptions"
-              :key="item.key"
-              :label="item.displayName"
-              :value="item.key"
+              v-for="item in customerOptions"
+              :key="item.customerId"
+              :label="item.customerName"
+              :value="item.customerId"
             />
           </el-select>
         </el-form-item>
@@ -52,26 +52,28 @@
         <el-form-item
           label="选择机芯"
           prop="movement"
+          :disabled="isSelect === 1"
         >
           <el-select
             placeholder="请选择机芯"
             v-model="modelForm.movement"
           >
             <el-option
-              v-for="item in userOptions"
-              :key="item.key"
-              :label="item.displayName"
-              :value="item.key"
+              v-for="item in chipOptions"
+              :key="item.chip"
+              :label="item.chip"
+              :value="item.chip"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="输入机芯" prop="movementName">
+        <el-form-item label="输入机芯" prop="chip">
           <el-input
             placeholder="请输入机芯"
-            v-model="modelForm.movementName"
+            v-model="modelForm.chip"
+            :disabled="isSelect === -1"
           />
         </el-form-item>
-        <el-form-item label="输入机型" prop="modelName">
+        <el-form-item label="输入机型" prop="model">
           <el-input
             placeholder="请输入机型"
             v-model="modelForm.model"
@@ -100,12 +102,12 @@ export default {
   data () {
     return {
       brandForm: {
-        customer: '',
+        customerId: '',
         customerName: '',
         brandName: ''
       },
       brandRules: {
-        customer: [{
+        customerId: [{
           required: this.isSelect !== 1,
           message: '请选择客户',
           trigger: ['change'],
@@ -123,8 +125,8 @@ export default {
       },
       modelForm: {
         movement: '',
-        movementName: '',
-        modelName: ''
+        chip: '',
+        model: ''
       },
       modelRules: {
         movement: [{
@@ -133,22 +135,18 @@ export default {
           trigger: ['change'],
           validator: this.check
         }],
-        movementName: [{
+        chip: [{
           required: this.isSelect !== -1,
           message: '请输入机芯',
           trigger: ['change'],
           validator: this.inputName
         }],
-        modelName: [
+        model: [
           { required: true, message: '请输入机型', trigger: 'blur' }
         ]
       },
-      userOptions: [
-        { key: 'CN', displayName: 'China' },
-        { key: 'US', displayName: 'USA' },
-        { key: 'JP', displayName: 'Japan' },
-        { key: 'EU', displayName: 'Eurozone' }
-      ],
+      customerOptions: [],
+      chipOptions: [],
       isSelect: 0
     }
   },
@@ -195,13 +193,86 @@ export default {
       const typeForm = this.dialogType === 'brand' ? 'brandForm' : 'modelForm'
       this.$refs[typeForm].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          const params = this.dialogType === 'brand' ? this.brandForm : this.modelForm
+          params.creator = '管理员'
+          if (this.dialogType === 'brand') {
+            this.$service.addBrand(params).then(data => {
+              if (data.code === '0') {
+                this.$refs[typeForm].clearValidate()
+                this.$refs[typeForm].resetFields()
+                this.isSelect = 0
+                this.$emit('close')
+                this.$message({
+                  type: 'success',
+                  message: '新增成功！'
+                })
+                this.$emit('fetchData')
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: data.msg
+                })
+              }
+            })
+          } else {
+            debugger
+            if (this.isSelect === -1) {
+              params.chip = params.movement
+              delete params.movement
+            } else if (this.isSelect === 1) {
+              delete params.movement
+            }
+            this.$service.addChipModel(params).then(data => {
+              if (data.code === '0') {
+                this.$refs[typeForm].clearValidate()
+                this.$refs[typeForm].resetFields()
+                this.isSelect = 0
+                this.$emit('close')
+                this.$message({
+                  type: 'success',
+                  message: '新增成功！'
+                })
+                this.$emit('fetchData')
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: data.msg
+                })
+              }
+            })
+          }
         } else {
           console.log('error submit!!')
           return false
         }
       })
+    },
+    // 获取下拉数据
+    getMediaResourceInfo () {
+      this.$service.queryCustomerListAll().then(data => {
+        if (data.code === '0') {
+          this.customerOptions = data.data
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+      this.$service.queryModelChipList().then(data => {
+        if (data.code === '0') {
+          this.chipOptions = data.data.chipList
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
     }
+  },
+  created () {
+    this.getMediaResourceInfo()
   }
 }
 </script>

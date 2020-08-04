@@ -101,7 +101,8 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
       channelOptions: [],
       table: {
@@ -109,66 +110,50 @@ export default {
         data: [],
         header: [
           {
-            prop: 'tabId',
-            label: 'Id',
+            prop: 'rlsId',
+            label: '区域ID',
             sortable: true,
-            width: 80
+            width: 120
           },
           {
-            prop: 'auditor',
-            label: '客户',
+            prop: 'ctmDevCtrName',
+            label: '区域名',
             sortable: true,
-            width: 100
+            width: 160
           },
           {
-            prop: 'modifierName',
-            label: '品牌',
+            prop: 'devices',
+            label: '机芯&机型',
             sortable: true,
-            width: 100
+            width: 140
           },
           {
-            prop: 'auditor',
-            label: '机芯',
-            sortable: true,
-            width: 100
-          },
-          {
-            prop: 'modifierName',
-            label: '机型',
-            sortable: true,
-            width: 100
-          },
-          {
-            prop: 'modifierName',
+            prop: 'countryNames',
             label: '国家',
             sortable: true,
-            width: 120
+            width: 180
           },
           {
-            prop: 'auditor',
-            label: '区域',
-            sortable: true,
-            width: 120
-          },
-          {
-            prop: 'modifierName',
+            prop: 'state',
             label: '状态',
             sortable: true,
             width: 100
           },
           {
-            prop: 'auditor',
+            prop: 'creator',
             label: '操作用户',
-            sortable: true
+            sortable: true,
+            width: 120
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'updateTime',
             label: '操作时间',
-            sortable: true
+            sortable: true,
+            width: 160
           },
           {
             label: '操作',
-            width: 120,
+            width: 140,
             fixed: 'right',
             render: this.operation(this)
           }
@@ -195,16 +180,9 @@ export default {
   methods: {
     genDefaultFilter () {
       return {
-        tabType: 3,
         tabId: undefined,
         tabName: undefined,
-        tabStatus: undefined,
-        'filmDetailPageInfo.source': undefined,
-        'filmDetailPageInfo.channel': [],
-        'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined,
-        'filmDetailPageInfo.matchType': undefined,
-        'filmDetailPageInfo.videoId': undefined
+        tabStatus: undefined
       }
     },
     /**
@@ -212,9 +190,16 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+      this.$service.queryAreaManageListPage(filter).then(data => {
+        if (data.code === '0') {
+          this.pagination.total = data.data.total
+          this.table.data = data.data.results
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
       })
     },
     parseFilter () {
@@ -222,11 +207,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
-      }
-      const channel = filter['filmDetailPageInfo.channel'][1]
-      if (channel) {
-        filter['filmDetailPageInfo.channel'] = channel
+        filter.size = pagination.pageSize
       }
       return filter
     },
@@ -247,7 +228,7 @@ export default {
     },
     // 获取查询条件
     getMediaResourceInfo () {
-      return this.$service.getMediaResourceInfo().then(data => {
+      this.$service.getMediaResourceInfo().then(data => {
         var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
         var videoItemModels = movieData.videoItemModels
         // 频道->爱奇艺channelOptions
@@ -358,7 +339,7 @@ export default {
     }
   },
   created () {
-    this.getMediaResourceInfo().then(() => {})
+    this.getMediaResourceInfo()
     this.fetchData()
   }
 }

@@ -5,26 +5,32 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-cascader
-              placeholder="机芯"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
-              expand-trigger="hover"
-              clearable
-              @change="handleChannelChange"
-            />
+            <el-select
+              placeholder="请选择机芯"
+              v-model="filter['chip']"
+            >
+              <el-option
+                v-for="item in chipOptions"
+                :key="item.chip"
+                :label="item.chip"
+                :value="item.chip"
+              />
+            </el-select>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-cascader
-              placeholder="机型"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
-              expand-trigger="hover"
-              clearable
-              @change="handleChannelChange"
-            />
+            <el-select
+              placeholder="请选择机型"
+              v-model="filter['model']"
+            >
+              <el-option
+                v-for="item in modelOptions"
+                :key="item.model"
+                :label="item.model"
+                :value="item.model"
+              />
+            </el-select>
           </div>
         </el-form-item>
         <el-form-item>
@@ -77,36 +83,38 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
-      channelOptions: [],
+      chipOptions: [],
+      modelOptions: [],
       table: {
         props: {},
         data: [],
         header: [
           {
-            prop: 'tabId',
+            prop: 'deviceId',
             label: 'ID',
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'chip',
             label: '机芯',
             sortable: true,
             width: 140
           },
           {
-            prop: 'modifierName',
+            prop: 'model',
             label: '机型',
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'creator',
             label: '操作用户',
             sortable: true
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'updateTime',
             label: '操作时间',
             sortable: true
           }
@@ -132,16 +140,8 @@ export default {
   methods: {
     genDefaultFilter () {
       return {
-        tabType: 3,
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined,
-        'filmDetailPageInfo.source': undefined,
-        'filmDetailPageInfo.channel': [],
-        'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined,
-        'filmDetailPageInfo.matchType': undefined,
-        'filmDetailPageInfo.videoId': undefined
+        chip: undefined,
+        model: undefined
       }
     },
     /**
@@ -149,9 +149,16 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+      this.$service.queryChipModelListPage(filter).then(data => {
+        if (data.code === '0') {
+          this.pagination.total = data.data.total
+          this.table.data = data.data.results
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
       })
     },
     parseFilter () {
@@ -159,11 +166,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
-      }
-      const channel = filter['filmDetailPageInfo.channel'][1]
-      if (channel) {
-        filter['filmDetailPageInfo.channel'] = channel
+        filter.size = pagination.pageSize
       }
       return filter
     },
@@ -184,59 +187,18 @@ export default {
     },
     // 获取查询条件
     getMediaResourceInfo () {
-      return this.$service.getMediaResourceInfo().then(data => {
-        var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
-        var videoItemModels = movieData.videoItemModels
-        // 频道->爱奇艺channelOptions
-        var channelQiyi = {
-          label: '爱奇艺',
-          value: 'iqiyi',
-          children: []
+      const params = { chip: '', model: '' }
+      this.$service.queryModelChipList(params).then(data => {
+        if (data.code === '0') {
+          this.chipOptions = data.data.chipList
+          this.modelOptions = data.data.modelList
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
         }
-        channelQiyi.children = videoItemModels[0].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelTent = {
-          label: '腾讯',
-          value: 'qq',
-          children: []
-        }
-        channelTent.children = videoItemModels[1].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelYouku = {
-          label: '优酷',
-          value: 'youku',
-          children: []
-        }
-        channelYouku.children = videoItemModels[2].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        this.channelOptions.push(channelQiyi)
-        this.channelOptions.push(channelTent)
-        this.channelOptions.push(channelYouku)
       })
-    },
-    handleChannelChange (value) {
-      this.filter['filmDetailPageInfo.source'] = value[0]
     },
     // 新增
     handleCreate () {
@@ -248,7 +210,7 @@ export default {
     }
   },
   created () {
-    this.getMediaResourceInfo().then(() => {})
+    this.getMediaResourceInfo()
     this.fetchData()
   }
 }

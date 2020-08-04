@@ -8,6 +8,12 @@
         :inline="true"
         class="regionEdit"
       >
+        <el-form-item label="区域名" prop="ctmDevCtrName">
+          <el-input
+            placeholder="请输入区域名"
+            v-model="regionForm.ctmDevCtrName"
+          />
+        </el-form-item>
         <el-form-item label='客户&品牌' prop="brand">
           <el-cascader
             placeholder='请选择'
@@ -77,12 +83,16 @@ export default {
         expandTrigger: 'hover'
       },
       regionForm: {
+        ctmDevCtrName: '',
         brand: '',
         model: '',
         country: '',
         type: ''
       },
       rules: {
+        ctmDevCtrName: [
+          { required: true, message: '请输入区域名', trigger: 'blur' }
+        ],
         brand: [
           { required: true, message: '请选择客户&品牌', trigger: 'change' }
         ],
@@ -96,12 +106,7 @@ export default {
           { required: true, message: '请选择状态', trigger: 'change' }
         ]
       },
-      userOptions: [
-        { key: 'CN', displayName: 'China' },
-        { key: 'US', displayName: 'USA' },
-        { key: 'JP', displayName: 'Japan' },
-        { key: 'EU', displayName: 'Eurozone' }
-      ]
+      userOptions: []
     }
   },
   methods: {
@@ -117,16 +122,80 @@ export default {
           return false
         }
       })
+    },
+    transform (oldArray) {
+      const options = []
+      // options[0] = {
+      //   label: '全部客户',
+      //   value: '',
+      //   customerId: '',
+      //   customerName: '',
+      //   children: null,
+      //   brandList: null,
+      // };
+      for (let i = 0; i < oldArray.length; i++) {
+        const brandList = this.filterOptions(oldArray[i].brandList)
+        options[i] = {
+          label: oldArray[i].customerName,
+          value: oldArray[i].customerId,
+          customerId: oldArray[i].customerId,
+          customerName: oldArray[i].customerName,
+          brandList,
+          children: brandList
+        }
+      }
+      return options
+    },
+    filterOptions (oldList) {
+      const options2 = []
+      // options2[0] = {
+      //   label: '全部品牌',
+      //   value: '',
+      //   brandId: '',
+      //   brandName: '',
+      //   customerId: '',
+      // };
+      for (let i = 0; i < oldList.length; i++) {
+        options2[i] = {
+          label: oldList[i].brandName,
+          value: oldList[i].brandId,
+          brandId: oldList[i].brandId,
+          brandName: oldList[i].brandName,
+          customerId: oldList[i].customerId
+        }
+      }
+      return options2
+    },
+    // 获取下拉数据
+    getMediaResourceInfo () {
+      this.$service.queryCustomerListAllContainBrands().then(data => {
+        if (data.code === '0') {
+          this.userOptions = this.transform(data.data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
     }
+  },
+  created () {
+    this.getMediaResourceInfo()
   }
 }
 </script>
 <style lang='stylus' scoped>
 .regionEdit >>> .el-form-item__content
-  width: 170px!important
+  width: 220px!important
 .regionEdit >>> .el-form-item .el-form-item__label
   width: 90px;
   text-align: left
 .regionEdit >>> .item-type .el-form-item__content
   text-align: left
+</style>
+<style lang="scss">
+.el-popper .el-cascader-panel {
+  max-width: 600px
+}
 </style>

@@ -54,7 +54,7 @@
         :visible.sync = 'dialogEditFormVisible'
         width = '450px'
       >
-        <EditPop :dialogType = 'dialogType' @close = 'close'></EditPop>
+        <EditPop :dialogType = 'dialogType' @close = 'close' @fetchData = 'fetchData'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -187,9 +187,19 @@ export default {
     },
     // 获取查询条件
     getMediaResourceInfo () {
-      this.$service.queryCustomerListAllContainBrands().then(data => {
+      this.$service.queryCustomerListAll().then(data => {
         if (data.code === '0') {
           this.customerOptions = data.data
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+      this.$service.queryBrandListAll().then(data => {
+        if (data.code === '0') {
+          this.brandOptions = data.data
         } else {
           this.$message({
             type: 'error',
