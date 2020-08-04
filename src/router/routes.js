@@ -61,6 +61,7 @@ import MediaAssetsManager from '../views/mediaAssetsManager/index.vue'
 import MediaAssetsDetail from '../views/mediaAssetsManager/detail.vue'
 import LauncherPush from '../views/launcherPush/index.vue'
 import LauncherEdit from '../views/launcherPush/edit.vue'
+import CCPlusPushPolicy from '../views/CCPlusPushPolicy'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
 
@@ -822,6 +823,23 @@ const children = [
         meta: {
           title: 'Launcher编辑',
           tagId: 'launcherEdit'
+        }
+      }
+    ]
+  },
+  {
+    path: 'CCPlusPushPolicy',
+    name: 'CCPlusPushPolicy',
+    component: Wrapper,
+    meta: { title: 'CC Plus管理', icon: 'el-icon-cc-renyuanguanli' },
+    children: [
+      {
+        name: 'CCPlusPushPolicy',
+        path: '/CCPlusPushPolicy',
+        component: CCPlusPushPolicy,
+        meta: {
+          title: 'CC Plus管理child',
+          tagId: 'CCPlusPushPolicy'
         }
       }
     ]

@@ -183,7 +183,8 @@ const routerMap = {
   regionManager: 'regionManager',
   materialManager: 'materialManager',
   mediaAssetsManager: 'mediaAssetsManager',
-  launcherPush: 'launcherPush'
+  launcherPush: 'launcherPush',
+  CCPlusPushPolicy: 'CCPlusPushPolicy',
 }
 
 const iconMap = {
@@ -298,7 +299,8 @@ const iconMap = {
   testPolicyGroup: 'el-icon-cc-branches',
   matchHomepage: 'el-icon-cc-pic-center',
 
-  recommendStream: 'el-icon-connection'
+  recommendStream: 'el-icon-connection',
+  CCPlusPushPolicy: 'el-icon-s-check'
 }
 
 export default {
@@ -478,6 +480,13 @@ export default {
             title: 'Launcher管理',
             icon: 'icon_folder',
             url: 'launcherPush/launcherPush/view.html'
+          },
+          {
+            text: 'CC Plus 管理',
+            id: 'CCPlusPushPolicy',
+            title: 'CC Plus 管理',
+            icon: 'icon_folder',
+            url: 'CCPlusPushPolicy/CCPlusPushPolicy/view.html'
           }
         )
         const parseMenu = menu => {
