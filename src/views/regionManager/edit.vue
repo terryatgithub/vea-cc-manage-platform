@@ -14,7 +14,7 @@
             v-model="regionForm.ctmDevCtrName"
           />
         </el-form-item>
-        <el-form-item label='客户&品牌' prop="brand">
+        <el-form-item label='客户&品牌' prop="brandNames">
           <el-cascader
             placeholder='请选择'
             :options='userOptions'
@@ -22,38 +22,39 @@
             collapse-tags
             size='mini'
             :clearable='true'
-            @change='brandIdSel'
-            v-model="brand"
+            v-model="regionForm.brandNames"
+            @change='brandNamesSel'
           ></el-cascader>
         </el-form-item>
-        <el-form-item label='机芯&机型' prop="model">
+        <el-form-item label='机芯&机型' prop="devices">
           <el-cascader
             placeholder='请选择'
-            :options='userOptions'
+            :options='chipModelOptions'
             :props="props"
             collapse-tags
             size='mini'
             :clearable='true'
-            @change='brandIdSel'
-            v-model="regionForm.model"
+            v-model="regionForm.devices"
+            @change='devicesSel'
           ></el-cascader>
         </el-form-item>
-        <el-form-item label='国家' prop="country">
+        <el-form-item label='国家' prop="countryNames">
           <el-cascader
             placeholder='请选择'
-            :options='userOptions'
+            ref="areaCascader"
+            :options='arealOptions'
             :props="props"
             collapse-tags
             size='mini'
             :clearable='true'
-            @change='brandIdSel'
-            v-model="regionForm.country"
+            v-model="regionForm.countryNames"
+            @change='countryNamesSel'
           ></el-cascader>
         </el-form-item>
-        <el-form-item label='状态' class="item-type" prop="type">
-          <el-radio-group v-model="regionForm.type">
-            <el-radio label="生效"></el-radio>
-            <el-radio label="失效"></el-radio>
+        <el-form-item label='状态' class="item-type" prop="state">
+          <el-radio-group v-model="regionForm.state">
+            <el-radio label="1">生效</el-radio>
+            <el-radio label="0">失效</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -69,11 +70,20 @@
 </template>
 
 <script>
+import liteOS from '@/assets/liteOS.js'
 export default {
   components: {},
   props: {
-    type: {
+    rlsId: {
       type: String
+    }
+  },
+  watch: {
+    rlsId: function(newVal, oldVal) {// 使用箭头函数调用方法会失败
+      console.log(newVal + '---' + oldVal)
+      if (newVal !== '0') {
+        this.getAreaRisid()
+      }
     }
   },
   data () {
@@ -84,93 +94,128 @@ export default {
       },
       regionForm: {
         ctmDevCtrName: '',
-        brand: '',
-        model: '',
-        country: '',
-        type: ''
+        brandNames: '',
+        devices: '',
+        countryNames: '',
+        countryThreeCodes: '',
+        state: ''
       },
       rules: {
         ctmDevCtrName: [
           { required: true, message: '请输入区域名', trigger: 'blur' }
         ],
-        brand: [
+        brandNames: [
           { required: true, message: '请选择客户&品牌', trigger: 'change' }
         ],
-        model: [
+        devices: [
           { required: true, message: '请选择机芯&机型', trigger: 'change' }
         ],
-        country: [
+        countryNames: [
           { required: true, message: '请选择国家', trigger: 'change' }
         ],
-        type: [
+        state: [
           { required: true, message: '请选择状态', trigger: 'change' }
         ]
       },
-      userOptions: []
+      userOptions: [],
+      chipModelOptions: [],
+      arealOptions: []
     }
   },
   methods: {
+    getAreaRisid () {
+      debugger
+      this.$service.getAreaManageRlsId({rlsId: this.rlsId}).then(data => {
+        console.log(data)
+      })
+    },
     cancel () {
-
+      this.$refs['regionForm'].clearValidate()
+      this.$refs['regionForm'].resetFields()
+      this.$emit('close')
     },
     create () {
+      var that = this
       this.$refs['regionForm'].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          const params = this.regionForm
+          for (const i in params.brandNames ) {
+            params.brandNames[i] = params.brandNames[i].join('/')
+          }
+          params.brandNames = params.brandNames.join(",")
+          for (const i in params.devices ) {
+            params.devices[i] = params.devices[i].join('/')
+          }
+          params.devices = params.devices.join(",")
+          for (const i in params.countryNames ) {
+            params.countryNames[i] = params.countryNames[i].join('/')
+          }
+          params.countryNames = params.countryNames.join(",")
+          params.creator = '管理员'
+          console.log(params)
+          this.$service.addAreaManage(params).then(data => {
+            if (data.code === '0') {
+              this.$refs['regionForm'].clearValidate()
+              this.$refs['regionForm'].resetFields()
+              this.isSelect = 0
+              this.$emit('close')
+              this.$message({
+                type: 'success',
+                message: '新增成功！'
+              })
+              this.$emit('fetchData')
+            } else {
+              this.$message({
+                type: 'error',
+                message: data.msg
+              })
+            }
+          })
         } else {
           console.log('error submit!!')
           return false
         }
       })
     },
-    transform (oldArray) {
-      const options = []
-      // options[0] = {
-      //   label: '全部客户',
-      //   value: '',
-      //   customerId: '',
-      //   customerName: '',
-      //   children: null,
-      //   brandList: null,
-      // };
-      for (let i = 0; i < oldArray.length; i++) {
-        const brandList = this.filterOptions(oldArray[i].brandList)
-        options[i] = {
-          label: oldArray[i].customerName,
-          value: oldArray[i].customerId,
-          customerId: oldArray[i].customerId,
-          customerName: oldArray[i].customerName,
-          brandList,
-          children: brandList
-        }
-      }
-      return options
+    brandNamesSel (val) {
+
     },
-    filterOptions (oldList) {
-      const options2 = []
-      // options2[0] = {
-      //   label: '全部品牌',
-      //   value: '',
-      //   brandId: '',
-      //   brandName: '',
-      //   customerId: '',
-      // };
-      for (let i = 0; i < oldList.length; i++) {
-        options2[i] = {
-          label: oldList[i].brandName,
-          value: oldList[i].brandId,
-          brandId: oldList[i].brandId,
-          brandName: oldList[i].brandName,
-          customerId: oldList[i].customerId
-        }
+    devicesSel (val) {
+
+    },
+    countryNamesSel (val) {
+      const nodesObj = this.$refs['areaCascader'].getCheckedNodes()
+      const countryThreeCodes = [];
+      for (const i in nodesObj) {
+        countryThreeCodes.push(nodesObj[i].data.countryThreeCode)
       }
-      return options2
+      this.regionForm.countryThreeCodes = countryThreeCodes.join(',')
     },
     // 获取下拉数据
     getMediaResourceInfo () {
       this.$service.queryCustomerListAllContainBrands().then(data => {
         if (data.code === '0') {
-          this.userOptions = this.transform(data.data)
+          this.userOptions = liteOS.userTransform(data.data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+      this.$service.queryChipAllContainModels().then(data => {
+        if (data.code === '0') {
+          this.chipModelOptions = liteOS.chipModelTransform(data.data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+      this.$service.queryAreaCountryListAll().then(data => {
+        if (data.code === '0') {
+          this.arealOptions = liteOS.areaTransform(data.data)
         } else {
           this.$message({
             type: 'error',
@@ -182,6 +227,12 @@ export default {
   },
   created () {
     this.getMediaResourceInfo()
+    // debugger
+    // if (this.rlsId !== '0') {
+    //   this.$service.getAreaManageRlsId({rlsId: this.rlsId}).then(data => {
+    //     console.log(data)
+    //   })
+    // }
   }
 }
 </script>

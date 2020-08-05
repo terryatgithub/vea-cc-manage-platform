@@ -81,49 +81,50 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
       table: {
         props: {},
         data: [],
         header: [
           {
-            prop: 'tabId',
+            prop: 'materialId',
             label: '海报ID',
             width: 100,
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'materialName',
             label: '海报名',
             sortable: true,
             width: 140
           },
           {
-            prop: 'auditor',
+            prop: 'materialPosterPic',
             label: '海报图',
             sortable: true
           },
           {
-            prop: 'modifierName',
+            prop: 'sizeType',
             label: '尺寸类型',
             width: 120,
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'materialState',
             label: '状态',
             width: 120,
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'creator',
             label: '操作用户',
             width: 160,
             sortable: true
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'lastUpdateTime',
             label: '操作时间',
             width: 180,
             sortable: true
@@ -157,16 +158,9 @@ export default {
   methods: {
     genDefaultFilter () {
       return {
-        tabType: 3,
         tabId: undefined,
         tabName: undefined,
-        tabStatus: undefined,
-        'filmDetailPageInfo.source': undefined,
-        'filmDetailPageInfo.channel': [],
-        'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined,
-        'filmDetailPageInfo.matchType': undefined,
-        'filmDetailPageInfo.videoId': undefined
+        tabStatus: undefined
       }
     },
     /**
@@ -174,9 +168,16 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+      this.$service.queryPosterManageListPage(filter).then(data => {
+        if (data.code === '0') {
+          this.pagination.total = data.data.total
+          this.table.data = data.data.results
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
       })
     },
     parseFilter () {
@@ -184,7 +185,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
+        filter.size = pagination.pageSize
       }
       return filter
     },

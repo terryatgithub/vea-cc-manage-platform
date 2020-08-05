@@ -15,9 +15,11 @@ axios.interceptors.request.use(
 )
 export default function fetch ({
   method = 'get',
+  headers,
   url,
   data,
   params,
+  isHeaders = false,
   isJSON = false,
   useLoading = true
 }) {
@@ -30,6 +32,7 @@ export default function fetch ({
   }
   let option = {
     method,
+    headers: isHeaders ? {'Content-Type': 'application/json'} : {'Content-Type': 'application/x-www-form-urlencoded'},
     url,
     data: isJSON ? data : typeof data === 'string' ? data : qs.stringify(data),
     params
