@@ -111,6 +111,9 @@
 </template>
 
 <script>
+/**
+  酷开LiteOS CC Plus二级菜单页面
+ */
 import { ContentWrapper, Table } from "admin-toolkit";
 import BaseList from "@/components/BaseList";
 import { cloneDeep } from "lodash";
@@ -498,7 +501,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.content >>> .el-form-item__content
+.  >>> .el-form-item__content
                 width: 100%
                 .el-select,.el-cascader
                    width 100%

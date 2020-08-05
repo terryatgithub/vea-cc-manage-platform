@@ -443,9 +443,7 @@ export default {
       this.$appState.$set('tags' + '_' + this.$appState.user.name, tags)
     },
     getMenu () {
-      this.$service.getMenu().then(menu => {
-        const titles = {}
-        menu.push(
+       const menuLiteOS = [
           {
             text: '参数设置',
             id: 'parameterManager',
@@ -487,7 +485,11 @@ export default {
             title: 'CC Plus 管理',
             icon: 'icon_folder',
             url: 'CCPlusPushPolicy/CCPlusPushPolicy/view.html'
-          }
+          }]
+      this.$service.getMenu().then(menu => {
+        const titles = {}
+        menu.push(
+         ...menuLiteOS
         )
         const parseMenu = menu => {
           if (Array.isArray(menu)) {
@@ -518,41 +520,6 @@ export default {
         this.scrollMenuIntoView()
       }).catch(() => {
         const titles = {}
-        const menu = [{
-          text: '参数设置',
-          id: 'parameterManager',
-          title: '参数设置',
-          icon: 'icon_folder',
-          url: 'parameterManager/parameterManager/view.html'
-        },
-        {
-          text: '区域设置',
-          id: 'regionManager',
-          title: '区域设置',
-          icon: 'icon_folder',
-          url: 'regionManager/regionManager/view.html'
-        },
-        {
-          text: '素材管理',
-          id: 'materialManager',
-          title: '素材管理',
-          icon: 'icon_folder',
-          url: 'materialManager/materialManager/view.html'
-        },
-        {
-          text: '媒资管理',
-          id: 'mediaAssetsManager',
-          title: '媒资管理',
-          icon: 'icon_folder',
-          url: 'mediaAssetsManager/mediaAssetsManager/view.html'
-        },
-        {
-          text: 'Launcher管理',
-          id: 'launcherPush',
-          title: 'Launcher管理',
-          icon: 'icon_folder',
-          url: 'launcherPush/launcherPush/view.html'
-        }]
         const parseMenu = menu => {
           if (Array.isArray(menu)) {
             return menu.map(parseMenu)
@@ -577,7 +544,7 @@ export default {
           }
           return item
         }
-        this.menu = parseMenu(menu)
+        this.menu = parseMenu(menuLiteOS)
         this.titles = titles
         this.scrollMenuIntoView()
       })

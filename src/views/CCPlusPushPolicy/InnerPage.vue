@@ -5,6 +5,9 @@
 </template>
 
 <script>
+/**
+  酷开LiteOS CC Plus内页
+ */
     export default {
         
     }
