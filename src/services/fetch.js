@@ -5,7 +5,7 @@ axios.interceptors.request.use(
   config => {
     // if (store.state.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
     // config.headers.Authorization = `token ${store.state.token}`;
-    config.headers.Authorization = `bearercf5f0f6e-fd21-4219-b2a0-68067a6648a1`
+    config.headers.Authorization = `bearere9db4341-a92a-4665-adf4-deb55a866c83`
     // }
     return config
   },
@@ -20,6 +20,7 @@ export default function fetch ({
   data,
   params,
   isHeaders = false,
+  isUpload = false,
   isJSON = false,
   useLoading = true
 }) {
@@ -32,7 +33,7 @@ export default function fetch ({
   }
   let option = {
     method,
-    headers: isHeaders ? {'Content-Type': 'application/json'} : {'Content-Type': 'application/x-www-form-urlencoded'},
+    headers: isHeaders ? { 'Content-Type': 'application/json' } : (isUpload ? { 'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryFV5rmXACUWGV5YmA' } : { 'Content-Type': 'application/x-www-form-urlencoded' }),
     url,
     data: isJSON ? data : typeof data === 'string' ? data : qs.stringify(data),
     params

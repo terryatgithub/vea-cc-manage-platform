@@ -213,7 +213,7 @@ export default {
         filter.countryName = filter.countryName.join('/')
       }
       this.$service.queryAreaManageListPage(filter).then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.pagination.total = data.data.total
           this.table.data = data.data.results
         } else {
@@ -261,7 +261,7 @@ export default {
     // 获取查询条件
     getMediaResourceInfo () {
       this.$service.queryCustomerListAllContainBrands().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.userOptions = liteOS.userTransform(data.data)
         } else {
           this.$message({
@@ -271,7 +271,7 @@ export default {
         }
       })
       this.$service.queryChipAllContainModels().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.chipModelOptions = liteOS.chipModelTransform(data.data)
         } else {
           this.$message({
@@ -281,7 +281,7 @@ export default {
         }
       })
       this.$service.queryAreaCountryListAll().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.arealOptions = liteOS.areaTransform(data.data)
         } else {
           this.$message({
@@ -320,7 +320,7 @@ export default {
           creator: '管理员'
         }
         this.$service.deleteAreaManage(params).then(data => {
-          if (data.code === '0') {
+          if (data.code === 0) {
             this.$message({
               type: 'success',
               message: '删除成功'

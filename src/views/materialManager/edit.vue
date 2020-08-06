@@ -9,31 +9,35 @@
         style="width: 500px;text-align: center;"
         v-if="dialogType === 'appCreate' || dialogType === 'appEdit'"
       >
-        <el-form-item label="应用名" prop="appName">
+        <el-form-item label="应用名" prop="materialName">
           <el-input
             placeholder="请输入应用名"
-            v-model="appForm.appName"
+            v-model="appForm.materialName"
           />
         </el-form-item>
-        <el-form-item label="图标" class="imgUpload">
+        <el-form-item label="图标" class="imgUpload" prop="materialPics">
           <el-upload
+            v-model="appForm.materialPics"
             class="app-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
             list-type="picture-card"
+            :action='getActionUrl()'
+            :headers='getAuthHeader()'
+            :http-request='imgUpload'
             :on-remove="handleRemove"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload">
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :before-upload="beforeUpload">
             <i class="el-icon-plus app-uploader-icon"></i>
           </el-upload>
         </el-form-item>
         <el-form-item
           label="类型"
-          prop="type"
+          prop="materialType"
         >
           <el-select
             class="filter-item"
             placeholder="请选择类型"
-            v-model="appForm.type"
+            v-model="appForm.materialType"
           >
             <el-option
               v-for="item in typeOptions"
@@ -43,10 +47,10 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="应用跳转url" prop="skipUrl">
+        <el-form-item label="应用跳转url" prop="materialUrl">
           <el-input
             placeholder="请输入应用跳转url"
-            v-model="appForm.skipUrl"
+            v-model="appForm.materialUrl"
           />
         </el-form-item>
         <el-form-item label="api url" prop="apiUrl">
@@ -55,17 +59,17 @@
             v-model="appForm.apiUrl"
           />
         </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth" prop="remark">
-          <el-input type="textarea" :rows="2" maxlength="200" show-word-limit placeholder="请输入备注" v-model="appForm.remark"></el-input>
+        <el-form-item label="备注" :label-width="formLabelWidth" prop="materialRemark">
+          <el-input type="textarea" :rows="2" maxlength="200" show-word-limit placeholder="请输入备注" v-model="appForm.materialRemark"></el-input>
         </el-form-item>
         <el-form-item
           label="状态"
-          prop="statu"
+          prop="materialState"
         >
           <el-select
             class="filter-item"
             placeholder="请选择状态"
-            v-model="appForm.statu"
+            v-model="appForm.materialState"
           >
             <el-option value="0" label="失效"/>
             <el-option value="1" label="有效"/>
@@ -92,7 +96,8 @@
             class="long-uploader"
             action="https://jsonplaceholder.typicode.com/posts/"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
             :before-upload="beforeAvatarUpload">
             <img v-if="posterForm.posterImg" :src="posterForm.posterImg" class="avatar">
             <i v-else class="el-icon-plus long-uploader-icon"></i>
@@ -155,11 +160,19 @@ export default {
   props: {
     dialogType: {
       type: String
+    },
+    materialId: {
+      type: String
     }
   },
   watch: {
     dialogType: (newVal, oldVal) => {
       console.log(newVal)
+    },
+    materialId: function(newVal, oldVal) {
+      if (newVal !== '0') {
+        this.getAreaRisid()
+      }
     }
   },
   data () {
@@ -190,38 +203,34 @@ export default {
         { key: '3', sizeName: '600*900' }
       ],
       appForm: {
-        appName: '',
-        squareImg: '',
-        longImg: '',
-        type: '',
-        skipUrl: '',
+        materialName: '',
+        materialPics: '',
+        materialType: '',
+        materialUrl: '',
         apiUrl: '',
-        remark: '',
-        statu: ''
+        materialRemark: '',
+        materialState: ''
       },
       appRules: {
-        appName: [
+        materialName: [
           { required: true, message: '请输入应用名', trigger: 'blur' }
         ],
-        squareImg: [
-          { required: true, message: '请上传方logo', trigger: 'change' }
+        materialPics: [
+          { required: true, message: '请上传图标', trigger: 'change' }
         ],
-        longImg: [
-          { required: true, message: '请上传长logo', trigger: 'change' }
-        ],
-        type: [
+        materialType: [
           { required: true, message: '请选择类型', trigger: 'change' }
         ],
-        skipUrl: [
+        materialUrl: [
           { required: true, message: '请输入跳转url', trigger: 'blur' }
         ],
         apiUrl: [
           { required: true, message: '请输入api url', trigger: 'blur' }
         ],
-        remark: [
+        materialRemark: [
           { required: true, message: '请输入备注', trigger: 'blur' }
         ],
-        statu: [
+        materialState: [
           { required: true, message: '请选择状态', trigger: 'change' }
         ]
       },
@@ -257,38 +266,93 @@ export default {
   },
   methods: {
     cancel () {
-
+      console.log(this.appForm)
     },
     create () {
-      if (this.dialogType === 'appCreate' || this.dialogType === 'appEdit') {
-        this.$refs['appForm'].validate((valid) => {
-          if (valid) {
-            alert('submit!')
-          } else {
-            console.log('error submit!!')
-            return false
+      const typeForm = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? 'appForm' : 'posterForm'
+      this.$refs[typeForm].validate((valid) => {
+        if (valid) {
+          const params = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? this.appForm : this.posterForm
+          params.materialPics = params.materialPics.join(',')
+          params.creator = '管理员'
+          if (typeForm === 'appForm') {
+            this.$service.addAppManage(params).then(data => {
+              if (data.code === 0) {
+                this.$refs[typeForm].clearValidate()
+                this.$refs[typeForm].resetFields()
+                this.$emit('close')
+                this.$message({
+                  type: 'success',
+                  message: '新增成功！'
+                })
+                this.$emit('fetchData')
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: data.msg
+                })
+              }
+            })
           }
-        })
-      } else if (this.dialogType === 'posterCreate' || this.dialogType === 'posterEdit') {
-        this.$refs['posterForm'].validate((valid) => {
-          if (valid) {
-            alert('submit!')
-          } else {
-            console.log('error submit!!')
-            return false
-          }
-        })
-      }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    // 文件上传调用
+    imgUpload (file) {
+      const formData = new FormData()
+      formData.file = file.file
+      formData.size = file.file.size
+      formData.checkResolution = false
+      formData.checkImgWidth = false
+      formData.width = 400
+      console.log(formData)
+      this.$service.uploadImg(formData).then(data => {
+        if (data.code === 0) {
+          file.onSuccess(data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      }).catch(({ err }) => {
+          file.onError(err)
+      })
+    },
+    getActionUrl () {
+      const actionUrl = 'http://127.0.0.1:8087/api/lite-os/admin/upload/uploadImg'
+      return actionUrl
+    },
+    getAuthHeader () {
+      const headerInfo = { 'Authorization': 'bearere9db4341-a92a-4665-adf4-deb55a866c83', 'Content-Type': 'multipart/form-data' }
+      return headerInfo
     },
     handleRemove (file, fileList) {
-      console.log(file, fileList)
+      const arr = []
+      for (const i in fileList) {
+        arr.push(fileList[i].url)
+      }
+      this.appForm.materialPics = arr
+      console.log(this.appForm.materialPics)
     },
-    handleAvatarSuccess (res, file) {
-      debugger
-      this.imageUrl = URL.createObjectURL(file.raw)
+    uploadSuccess (res, file, fileList) {
+      console.log('上传成功')
+      const arr = []
+      for (const i in fileList) {
+        arr.push(fileList[i].url)
+      }
+      this.appForm.materialPics = arr
+      console.log(this.appForm.materialPics)
     },
-    beforeAvatarUpload (file) {
-      const isJPG = file.type === 'image/jpeg' || 'image/png'
+    uploadError (res, file) {
+      console.log('上传失败')
+    },
+    // 上传文件之前的钩子
+    beforeUpload (file) {
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 PNG或JPG 格式!')
@@ -327,6 +391,11 @@ export default {
     }
     .app-uploader {
       .el-upload--picture-card {
+        width: 80px;
+        height: 80px;
+        line-height: 88px;
+      }
+      .el-upload-list__item {
         width: 80px;
         height: 80px;
         line-height: 88px;

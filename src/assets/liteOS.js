@@ -129,5 +129,12 @@ export default {
       }
     }
     return options2
+  },
+  echo (selString) {
+    const arr1 = selString.split(',')
+    for (const i in arr1) {
+        arr1[i] = arr1[i].split('/')
+    }
+    return arr1
   }
 }

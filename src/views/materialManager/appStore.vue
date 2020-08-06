@@ -5,7 +5,7 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input placeholder="应用名" clearable/>
+            <el-input placeholder="应用名" clearable v-model="filter['materialName']"/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
@@ -13,9 +13,10 @@
             <el-select
               placeholder="状态"
               clearable
+              v-model="filter['materialState']"
             >
-              <el-option value="0" label="失效"/>
               <el-option value="1" label="有效"/>
+              <el-option value="0" label="失效"/>
             </el-select>
           </div>
         </el-form-item>
@@ -40,7 +41,7 @@
         :visible.sync = 'dialogEditFormVisible'
         width = '550px'
       >
-        <EditPop :dialogType = 'dialogType'></EditPop>
+        <EditPop :dialogType = 'dialogType' :materialId = 'materialId' @close = 'close' @fetchData = 'fetchData'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -158,16 +159,16 @@ export default {
       },
       dialogEditFormVisible: false,
       dialogTitle: '新增',
-      dialogType: ''
+      dialogType: '',
+      materialId: '0'
     }
   },
 
   methods: {
     genDefaultFilter () {
       return {
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined
+        materialName: undefined,
+        materialState: undefined
       }
     },
     /**
@@ -206,6 +207,11 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
+    // 关闭弹窗
+    close () {
+      this.dialogEditFormVisible = false
+      this.materialId = '0'
+    },
     // 新增
     handleCreate () {
       this.dialogEditFormVisible = true
@@ -217,17 +223,32 @@ export default {
       this.dialogEditFormVisible = true
       this.dialogTitle = '编辑'
       this.dialogType = 'appEdit'
+      this.materialId = row.materialId
     },
     // 删除
-    handleDel () {
+    handleDel (row) {
       this.$confirm('是否确认删除?', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '删除成功'
+        const params = {
+          materialId: row.materialId,
+          creator: '管理员'
+        }
+        this.$service.deleteAppManage(params).then(data => {
+          if (data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+          this.fetchData()
         })
       }).catch(() => {})
     },

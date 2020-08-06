@@ -5,7 +5,7 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input placeholder="海报名" clearable/>
+            <el-input placeholder="海报名" clearable v-model="filter['materialName']"/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
@@ -13,6 +13,7 @@
             <el-select
               placeholder="尺寸类型"
               clearable
+              v-model="filter['sizeType']"
             >
               <el-option value="1" label="400*400"/>
               <el-option value="2" label="400*900"/>
@@ -25,6 +26,7 @@
             <el-select
               placeholder="状态"
               clearable
+              v-model="filter['materialState']"
             >
               <el-option value="0" label="失效"/>
               <el-option value="1" label="有效"/>
@@ -158,9 +160,9 @@ export default {
   methods: {
     genDefaultFilter () {
       return {
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined
+        materialName: undefined,
+        sizeType: undefined,
+        materialState: undefined
       }
     },
     /**
@@ -169,7 +171,7 @@ export default {
     fetchData () {
       const filter = this.parseFilter()
       this.$service.queryPosterManageListPage(filter).then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.pagination.total = data.data.total
           this.table.data = data.data.results
         } else {
@@ -217,15 +219,29 @@ export default {
       this.dialogType = 'posterEdit'
     },
     // 删除
-    handleDel () {
+    handleDel (row) {
       this.$confirm('是否确认删除?', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '删除成功'
+        const params = {
+          materialId: row.materialId,
+          creator: '管理员'
+        }
+        this.$service.deletePosterManage(params).then(data => {
+          if (data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+          this.fetchData()
         })
       }).catch(() => {})
     },

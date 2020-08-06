@@ -197,7 +197,7 @@ export default {
           params.creator = '管理员'
           if (this.dialogType === 'brand') {
             this.$service.addBrand(params).then(data => {
-              if (data.code === '0') {
+              if (data.code === 0) {
                 this.$refs[typeForm].clearValidate()
                 this.$refs[typeForm].resetFields()
                 this.isSelect = 0
@@ -223,7 +223,7 @@ export default {
               delete params.movement
             }
             this.$service.addChipModel(params).then(data => {
-              if (data.code === '0') {
+              if (data.code === 0) {
                 this.$refs[typeForm].clearValidate()
                 this.$refs[typeForm].resetFields()
                 this.isSelect = 0
@@ -250,7 +250,7 @@ export default {
     // 获取下拉数据
     getMediaResourceInfo () {
       this.$service.queryCustomerListAll().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.customerOptions = data.data
         } else {
           this.$message({
@@ -260,7 +260,7 @@ export default {
         }
       })
       this.$service.queryModelChipList().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.chipOptions = data.data.chipList
         } else {
           this.$message({

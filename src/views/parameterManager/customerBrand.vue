@@ -149,8 +149,9 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
+      debugger
       this.$service.queryBrandListPage(filter).then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.pagination.total = data.data.total
           this.table.data = data.data.results
         } else {
@@ -188,7 +189,7 @@ export default {
     // 获取查询条件
     getMediaResourceInfo () {
       this.$service.queryCustomerListAll().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.customerOptions = data.data
         } else {
           this.$message({
@@ -198,7 +199,7 @@ export default {
         }
       })
       this.$service.queryBrandListAll().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.brandOptions = data.data
         } else {
           this.$message({

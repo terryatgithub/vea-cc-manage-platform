@@ -79,8 +79,7 @@ export default {
     }
   },
   watch: {
-    rlsId: function(newVal, oldVal) {// 使用箭头函数调用方法会失败
-      console.log(newVal + '---' + oldVal)
+    rlsId: function (newVal, oldVal) { // 使用箭头函数调用方法会失败,this指向不一样
       if (newVal !== '0') {
         this.getAreaRisid()
       }
@@ -124,9 +123,22 @@ export default {
   },
   methods: {
     getAreaRisid () {
-      debugger
-      this.$service.getAreaManageRlsId({rlsId: this.rlsId}).then(data => {
-        console.log(data)
+      this.$service.getAreaManageRlsId({ rlsId: this.rlsId }).then(data => {
+        if (data.code === 0) {
+          const detail = data.data
+          this.regionForm.ctmDevCtrName = detail.ctmDevCtrName
+          this.regionForm.state = detail.state.toString()
+          this.regionForm.countryThreeCodes = detail.countryThreeCodes
+          this.regionForm.brandNames = liteOS.echo(detail.brandNames)
+          this.regionForm.devices = liteOS.echo(detail.devices)
+          this.regionForm.countryNames = liteOS.echo(detail.countryNames)
+          console.log(this.regionForm)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
       })
     },
     cancel () {
@@ -135,42 +147,62 @@ export default {
       this.$emit('close')
     },
     create () {
-      var that = this
       this.$refs['regionForm'].validate((valid) => {
         if (valid) {
           const params = this.regionForm
-          for (const i in params.brandNames ) {
+          for (const i in params.brandNames) {
             params.brandNames[i] = params.brandNames[i].join('/')
           }
-          params.brandNames = params.brandNames.join(",")
-          for (const i in params.devices ) {
+          params.brandNames = params.brandNames.join(',')
+          for (const i in params.devices) {
             params.devices[i] = params.devices[i].join('/')
           }
-          params.devices = params.devices.join(",")
-          for (const i in params.countryNames ) {
+          params.devices = params.devices.join(',')
+          for (const i in params.countryNames) {
             params.countryNames[i] = params.countryNames[i].join('/')
           }
-          params.countryNames = params.countryNames.join(",")
+          params.countryNames = params.countryNames.join(',')
           params.creator = '管理员'
-          console.log(params)
-          this.$service.addAreaManage(params).then(data => {
-            if (data.code === '0') {
-              this.$refs['regionForm'].clearValidate()
-              this.$refs['regionForm'].resetFields()
-              this.isSelect = 0
-              this.$emit('close')
-              this.$message({
-                type: 'success',
-                message: '新增成功！'
-              })
-              this.$emit('fetchData')
-            } else {
-              this.$message({
-                type: 'error',
-                message: data.msg
-              })
-            }
-          })
+          if (this.rlsId !== '0') { // 判断是新增还是编辑
+            params.ctmDevCtrId = this.rlsId
+            this.$service.updateAreaManage(params).then(data => {
+              if (data.code === 0) {
+                this.$refs['regionForm'].clearValidate()
+                this.$refs['regionForm'].resetFields()
+                this.isSelect = 0
+                this.$emit('close')
+                this.$message({
+                  type: 'success',
+                  message: '修改成功！'
+                })
+                this.$emit('fetchData')
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: data.msg
+                })
+              }
+            })
+          } else {
+            this.$service.addAreaManage(params).then(data => {
+              if (data.code === 0) {
+                this.$refs['regionForm'].clearValidate()
+                this.$refs['regionForm'].resetFields()
+                this.isSelect = 0
+                this.$emit('close')
+                this.$message({
+                  type: 'success',
+                  message: '新增成功！'
+                })
+                this.$emit('fetchData')
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: data.msg
+                })
+              }
+            })
+          }
         } else {
           console.log('error submit!!')
           return false
@@ -178,14 +210,14 @@ export default {
       })
     },
     brandNamesSel (val) {
-
+      console.log(val)
     },
     devicesSel (val) {
-
+      console.log(val)
     },
     countryNamesSel (val) {
       const nodesObj = this.$refs['areaCascader'].getCheckedNodes()
-      const countryThreeCodes = [];
+      const countryThreeCodes = []
       for (const i in nodesObj) {
         countryThreeCodes.push(nodesObj[i].data.countryThreeCode)
       }
@@ -194,7 +226,7 @@ export default {
     // 获取下拉数据
     getMediaResourceInfo () {
       this.$service.queryCustomerListAllContainBrands().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.userOptions = liteOS.userTransform(data.data)
         } else {
           this.$message({
@@ -204,7 +236,7 @@ export default {
         }
       })
       this.$service.queryChipAllContainModels().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.chipModelOptions = liteOS.chipModelTransform(data.data)
         } else {
           this.$message({
@@ -214,7 +246,7 @@ export default {
         }
       })
       this.$service.queryAreaCountryListAll().then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.arealOptions = liteOS.areaTransform(data.data)
         } else {
           this.$message({
@@ -227,12 +259,6 @@ export default {
   },
   created () {
     this.getMediaResourceInfo()
-    // debugger
-    // if (this.rlsId !== '0') {
-    //   this.$service.getAreaManageRlsId({rlsId: this.rlsId}).then(data => {
-    //     console.log(data)
-    //   })
-    // }
   }
 }
 </script>
