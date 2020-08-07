@@ -113,6 +113,7 @@ export default {
     handleClose(done) {   
       this.$confirm("确认关闭？")
         .then(() => {
+        this.close(false)
           done();
         })
         .catch(() => {});
