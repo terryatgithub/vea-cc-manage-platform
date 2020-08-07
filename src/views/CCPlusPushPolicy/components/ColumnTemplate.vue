@@ -1,9 +1,6 @@
 <template>
-  <el-form
-    label-width="90px"
-    :model="content"
-    ref="columnTemplateForm"
-  >
+  <el-form label-width="90px" :model="content" ref="columnTemplateForm">
+
     <el-form-item label="栏目模板:">
       <el-select v-model="content.columnTemplate" placeholder="请选择">
         <el-option
@@ -55,19 +52,35 @@
     <el-form-item class="right delete">
       <el-button type="warning" @click="handleDeleteColumn">删除栏目</el-button>
     </el-form-item>
+
     <el-form-item>
       <el-button @click="handleEditMovies">编辑栏目影片</el-button>
     </el-form-item>
 
     <el-form-item>
+      <!-- 图片展示区 -->
+    </el-form-item>
+
+    <el-form-item>
+        <SelectResourceDialog :show="showSelectResourceDialog" @dlg-close="showSelectResourceDialog = false"/>
+    </el-form-item>
+
+    <el-form-item>
       <hr />
     </el-form-item>
+
   </el-form>
 </template>
 
 <script>
 // 添加栏目的'栏目模板组件'
+
+import SelectResourceDialog from "./ColumnResourceSelectDialog.vue";
+
 export default {
+  components: {
+    SelectResourceDialog
+  },
   props: {
     prop: "",
     rules: Object,
@@ -85,22 +98,25 @@ export default {
   },
   data() {
     return {
+        showSelectResourceDialog: false,
       templateOptions: []
     };
   },
 
   methods: {
-    handleSelectColumnResource() {},
+    handleSelectColumnResource() {
+        this.showSelectResourceDialog = true
+    },
     handleEditMovies() {},
     handleDeleteColumn() {},
     async validate() {
-        let res = await this.$refs['columnTemplateForm'].validate()
-        //@todo 子组件的校验问题
-        console.log('sub res', res);
-        return res
+      let res = await this.$refs["columnTemplateForm"].validate();
+      //@todo 子组件的校验问题
+      console.log("sub res", res);
+      return res;
     }
   }
-};
+}
 </script>
 
 <style lang="stylus" scoped>

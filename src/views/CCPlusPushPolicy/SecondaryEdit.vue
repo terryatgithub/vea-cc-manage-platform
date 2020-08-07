@@ -76,14 +76,16 @@
             trigger: ['blur', 'change']
           }"
         ></ColumnTemplate>
-        <el-button
-          type="primary"
-          icon="el-icon-edit"
-          class="el-col el-col-6"
-          @click="handleAddColumn"
-          >添加栏目</el-button
-        >
-        <!-- </el-form-item> -->
+        
+        <el-form-item>
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            class="el-col el-col-6"
+            @click="handleAddColumn"
+            >添加栏目</el-button
+          >
+        </el-form-item>
 
         <el-form-item label="指定设备">
           <el-input
@@ -182,7 +184,7 @@ export default {
       console.log("submit", this.form);
       // let pAll = this.$refs["columnTemplateForm"].map(form => form.validate())
       let res = await this.$refs["columnTemplateForm"][0].validate();
-      console.log('res', res);
+      console.log("res", res);
       if (res) {
         res = await this.$refs[formName].validate();
         if (res) {
