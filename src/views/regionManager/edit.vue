@@ -81,7 +81,7 @@ export default {
   watch: {
     rlsId: function (newVal, oldVal) { // 使用箭头函数调用方法会失败,this指向不一样
       if (newVal !== '0') {
-        this.getAreaRisid()
+      // this.getAreaRisid()
       }
     }
   },
@@ -259,6 +259,9 @@ export default {
   },
   created () {
     this.getMediaResourceInfo()
+    if (this.rlsId !== '0') {
+      this.getAreaRisid()
+    }
   }
 }
 </script>

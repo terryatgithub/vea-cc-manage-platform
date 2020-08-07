@@ -27,6 +27,7 @@
 </template>
 <script>
 import ContentCard from '@/components/ContentCard'
+import Bus from '@/assets/Bus.js'
 export default {
   components: {
     ContentCard
@@ -37,7 +38,16 @@ export default {
   methods: {
     goBack () {
       this.$emit('goRegion')
+    },
+    detail () {
+      debugger
+      Bus.$on('risId', val => {
+        console.log(val)
+      })
     }
+  },
+  created () {
+    this.detail()
   }
 }
 </script>

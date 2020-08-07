@@ -1,6 +1,6 @@
 <template>
     <ContentCard title="新增/编辑">
-      <PushForm @regionSel = 'regionSel'></PushForm>
+      <PushForm @regionSel = 'regionSel' :ctmDevCtrName = 'ctmDevCtrName'></PushForm>
       <el-dialog
         :title='dialogTitle'
         :visible.sync = 'dialogFormVisible'
@@ -8,7 +8,7 @@
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
       >
-        <RegionEditPop v-if="dialogType === 'regionPop'" @regionDetail = 'regionDetail'></RegionEditPop>
+        <RegionEditPop v-if="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion'></RegionEditPop>
         <RegionDetail v-if="dialogType === 'regionDetail'" @goRegion = 'goRegion'></RegionDetail>
         <AppSelPop v-if="dialogType === 'appPop'" @appDetail = 'appDetail'></AppSelPop>
         <AppDetail v-if="dialogType === 'appDetail'" @goApp = 'goApp'></AppDetail>
@@ -69,10 +69,16 @@ export default {
           appName: 'xxx',
           appLogo: ''
         }
-      ]
+      ],
+      ctmDevCtrName: ''
     }
   },
   methods: {
+    // 获取区域选择传值
+    getRegion (val) {
+      console.log(val)
+      this.ctmDevCtrName = val
+    },
     // 弹窗选择区域
     regionSel () {
       this.dialogFormVisible = true
@@ -133,8 +139,8 @@ export default {
     appDel (index) {
       this.appList.splice(index, 1)
     },
-    cancel () {
-
+    close () {
+      this.dialogFormVisible = false
     },
     create () {
       this.$refs['regionForm'].validate((valid) => {

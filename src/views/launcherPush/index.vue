@@ -6,65 +6,9 @@
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
             <el-select
-              placeholder="机芯"
-              clearable
-            >
-              <el-option
-                v-for="item in typeOptions"
-                :key="item.key"
-                :label="item.typeName"
-                :value="item.key"
-              />
-            </el-select>
-          </div>
-        </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-select
-              placeholder="机型"
-              clearable
-            >
-              <el-option
-                v-for="item in typeOptions"
-                :key="item.key"
-                :label="item.typeName"
-                :value="item.key"
-              />
-            </el-select>
-          </div>
-        </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-cascader
-              placeholder="国家"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
-              expand-trigger="hover"
-              clearable
-              @change="handleChannelChange"
-            />
-          </div>
-        </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-select
-              placeholder="版本"
-              clearable
-            >
-              <el-option
-                v-for="item in typeOptions"
-                :key="item.key"
-                :label="item.typeName"
-                :value="item.key"
-              />
-            </el-select>
-          </div>
-        </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-select
               placeholder="品牌"
               clearable
+              v-model="filter['brandName']"
             >
               <el-option
                 v-for="item in typeOptions"
@@ -80,6 +24,7 @@
             <el-select
               placeholder="客户"
               clearable
+              v-model="filter['customer']"
             >
               <el-option
                 v-for="item in typeOptions"
@@ -91,10 +36,91 @@
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
-            <div class="el-col-20">
-              <el-input placeholder="策略名称" clearable/>
-            </div>
-          </el-form-item>
+          <div class="el-col-20">
+            <el-select
+              placeholder="机芯"
+              clearable
+              v-model="filter['chip']"
+            >
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.key"
+                :label="item.typeName"
+                :value="item.key"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select
+              placeholder="机型"
+              clearable
+              v-model="filter['model']"
+            >
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.key"
+                :label="item.typeName"
+                :value="item.key"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-cascader
+              placeholder="国家"
+              v-model="filter['countryName']"
+              :options="channelOptions"
+              expand-trigger="hover"
+              clearable
+              @change="handleChannelChange"
+            />
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select
+              placeholder="版本"
+              clearable
+              v-model="filter['supportVersion']"
+            >
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.key"
+                :label="item.typeName"
+                :value="item.key"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-select
+              placeholder="状态"
+              clearable
+              v-model="filter['releaseStatus']"
+            >
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.key"
+                :label="item.typeName"
+                :value="item.key"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-input placeholder="策略名称" clearable v-model="filter['releaseConfName']"/>
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-input placeholder="区域名" clearable v-model="filter['ctmDevCtrName']"/>
+          </div>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary"  @click="handleFilterChange">查询</el-button>
           <el-button  @click="handleFilterReset">重置</el-button>
@@ -135,75 +161,84 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
-      channelOptions: [],
       table: {
         props: {},
         data: [],
         header: [
           {
-            prop: 'tabId',
+            prop: 'releaseConfId',
             label: '策略ID',
             sortable: true,
             width: 100
           },
           {
-            prop: 'auditor',
+            prop: 'releaseConfName',
             label: '策略名称',
             sortable: true,
             width: 100
           },
           {
-            prop: 'modifierName',
-            label: '国家',
-            sortable: true,
-            width: 100
-          },
-          {
-            prop: 'auditor',
-            label: '区域',
+            prop: 'ctmDevCtrName',
+            label: '区域名',
             sortable: true,
             width: 180
           },
           {
-            prop: 'modifierName',
+            prop: 'ctmDevCtrId',
+            label: '区域详情',
+            sortable: true,
+            width: 100
+          },
+          {
+            prop: 'priority',
             label: '优先级',
             sortable: true,
             width: 100
           },
           {
-            prop: 'modifierName',
+            prop: 'supportVersion',
             label: '支持版本',
             sortable: true,
             width: 140
           },
           {
-            prop: 'modifierName',
+            prop: 'releaseStatus',
             label: '状态',
             sortable: true,
-            width: 100
+            width: 100,
+            render: (h, { row }) => {
+              if (row.releaseStatus === 0) {
+                return '未推送'
+              } else if (row.releaseStatus === 1) {
+                return '推送中'
+              } else if (row.releaseStatus === 2) {
+                return '已取消'
+              }
+            }
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'releaseStartTime',
             label: '发布开始时间',
             sortable: true,
             width: 180
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'releaseEndTime',
             label: '发布结束时间',
             sortable: true,
             width: 180
           },
           {
-            prop: 'auditor',
+            prop: 'creator',
             label: '操作用户',
             sortable: true,
             width: 100
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'lastUpdateTime',
             label: '最近上线时间',
             sortable: true,
             width: 180
@@ -241,16 +276,15 @@ export default {
   methods: {
     genDefaultFilter () {
       return {
-        tabType: 3,
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined,
-        'filmDetailPageInfo.source': undefined,
-        'filmDetailPageInfo.channel': [],
-        'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined,
-        'filmDetailPageInfo.matchType': undefined,
-        'filmDetailPageInfo.videoId': undefined
+        brandName: undefined,
+        customer: undefined,
+        chip: undefined,
+        model: undefined,
+        countryName: undefined,
+        supportVersion: undefined,
+        releaseStatus: undefined,
+        releaseConfName: undefined,
+        ctmDevCtrName: undefined,
       }
     },
     /**
@@ -258,9 +292,16 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+      this.$service.queryLauncherPushListPage(filter).then(data => {
+        if (data.code === 0) {
+          this.pagination.total = data.data.total
+          this.table.data = data.data.results
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
       })
     },
     parseFilter () {
@@ -268,11 +309,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
-      }
-      const channel = filter['filmDetailPageInfo.channel'][1]
-      if (channel) {
-        filter['filmDetailPageInfo.channel'] = channel
+        filter.size = pagination.pageSize
       }
       return filter
     },
@@ -293,59 +330,7 @@ export default {
     },
     // 获取查询条件
     getMediaResourceInfo () {
-      return this.$service.getMediaResourceInfo().then(data => {
-        var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
-        var videoItemModels = movieData.videoItemModels
-        // 频道->爱奇艺channelOptions
-        var channelQiyi = {
-          label: '爱奇艺',
-          value: 'iqiyi',
-          children: []
-        }
-        channelQiyi.children = videoItemModels[0].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelTent = {
-          label: '腾讯',
-          value: 'qq',
-          children: []
-        }
-        channelTent.children = videoItemModels[1].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelYouku = {
-          label: '优酷',
-          value: 'youku',
-          children: []
-        }
-        channelYouku.children = videoItemModels[2].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        this.channelOptions.push(channelQiyi)
-        this.channelOptions.push(channelTent)
-        this.channelOptions.push(channelYouku)
-      })
-    },
-    handleChannelChange (value) {
-      this.filter['filmDetailPageInfo.source'] = value[0]
+      
     },
     // 新增
     handleCreate () {
@@ -485,12 +470,18 @@ export default {
           },
           '删除'
         )
-        return [btn1, btn2, btn3, btn4, btn5]
+        if (row.releaseStatus === 0) {
+          return [btn1, btn3, btn4, btn5]
+        } else if (row.releaseStatus === 1) {
+          return [btn2, btn3]
+        } else if (row.releaseStatus === 2) {
+          return [btn1, btn3, btn4, btn5]
+        }
       }
     }
   },
   created () {
-    this.getMediaResourceInfo().then(() => {})
+    this.getMediaResourceInfo()
     this.fetchData()
   }
 }

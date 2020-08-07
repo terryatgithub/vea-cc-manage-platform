@@ -11,16 +11,16 @@
       <el-table-column
         width="50">
         <template slot-scope="scope">
-          <el-radio :label='scope.row.id' v-model='radio'>&nbsp;</el-radio>
+          <el-radio :label='scope.row.rlsId' v-model='radio'>&nbsp;</el-radio>
         </template>
       </el-table-column>
       <el-table-column
-        property="id"
+        property="rlsId"
         label="区域ID"
         width="100">
       </el-table-column>
       <el-table-column
-        property="name"
+        property="ctmDevCtrName"
         label="区域名"
         width="200">
       </el-table-column>
@@ -44,70 +44,11 @@
   </div>
 </template>
 <script>
+import Bus from '@/assets/Bus.js'
 export default {
   data () {
     return {
-      tableData: [{
-        id: 0,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 1,
-        type: '娱乐',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 2,
-        type: '娱乐',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 3,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 4,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 5,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 6,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 7,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 8,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 9,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }],
+      tableData: [],
       currentRow: null,
       total: 0, // 总记录数
       currentPage: 1, // 当前页码
@@ -116,16 +57,32 @@ export default {
     }
   },
   methods: {
+    fetchData () {
+      const params = {
+        page: this.currentPage,
+        size: this.pageSize
+      }
+      this.$service.queryAreaManageListPage(params).then(data => {
+        if (data.code === 0) {
+          this.tableData = data.data.results
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+    },
     cancel () {
-
+      this.$emit('close')
+      this.$emit('getRegion', '')
     },
     create () {
-
+      this.$emit('close')
     },
-    onSubmit () {
-      console.log('submit!')
-    },
-    handleDetail () {
+    handleDetail (row) {
+      debugger
+      Bus.$emit('rlsId', row.rlsId)
       this.$emit('regionDetail')
     },
     // 列表特定操作时可调用，如取消选择
@@ -134,9 +91,12 @@ export default {
     },
     // 列表选中时触发
     handleCurrentChange (val) {
-      this.currentRow = val
-      this.radio = val.id
+      this.radio = val.rlsId
+      this.$emit('getRegion', val.ctmDevCtrName)
     }
+  },
+  created () {
+    this.fetchData()
   }
 }
 </script>

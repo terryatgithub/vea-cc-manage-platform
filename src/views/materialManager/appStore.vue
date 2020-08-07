@@ -39,6 +39,7 @@
         :title='dialogTitle'
         center
         :visible.sync = 'dialogEditFormVisible'
+        v-if = 'dialogEditFormVisible'
         width = '550px'
       >
         <EditPop :dialogType = 'dialogType' :materialId = 'materialId' @close = 'close' @fetchData = 'fetchData'></EditPop>
@@ -217,9 +218,10 @@ export default {
       this.dialogEditFormVisible = true
       this.dialogTitle = '新增'
       this.dialogType = 'appCreate'
+      this.materialId = '0'
     },
     // 编辑
-    handleEdit () {
+    handleEdit (row) {
       this.dialogEditFormVisible = true
       this.dialogTitle = '编辑'
       this.dialogType = 'appEdit'

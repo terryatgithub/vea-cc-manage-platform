@@ -8,7 +8,7 @@
             <el-input placeholder="海报名" clearable v-model="filter['materialName']"/>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
+        <!-- <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
             <el-select
               placeholder="尺寸类型"
@@ -20,7 +20,7 @@
               <el-option value="3" label="900*1600"/>
             </el-select>
           </div>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
             <el-select
@@ -52,9 +52,10 @@
         :title='dialogTitle'
         center
         :visible.sync = 'dialogEditFormVisible'
+        v-if = 'dialogEditFormVisible'
         width = '550px'
       >
-        <EditPop :dialogType = 'dialogType'></EditPop>
+        <EditPop :dialogType = 'dialogType' :materialId = 'materialId' @close = 'close' @fetchData = 'fetchData'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -107,12 +108,12 @@ export default {
             label: '海报图',
             sortable: true
           },
-          {
-            prop: 'sizeType',
-            label: '尺寸类型',
-            width: 120,
-            sortable: true
-          },
+          // {
+          //   prop: 'sizeType',
+          //   label: '尺寸类型',
+          //   width: 120,
+          //   sortable: true
+          // },
           {
             prop: 'materialState',
             label: '状态',
@@ -153,7 +154,8 @@ export default {
       },
       dialogEditFormVisible: false,
       dialogTitle: '新增',
-      dialogType: ''
+      dialogType: '',
+      materialId: '0'
     }
   },
 
@@ -206,17 +208,24 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
+    // 关闭弹窗
+    close () {
+      this.dialogEditFormVisible = false
+      this.materialId = '0'
+    },
     // 新增
     handleCreate () {
       this.dialogEditFormVisible = true
       this.dialogTitle = '新增'
       this.dialogType = 'posterCreate'
+      this.materialId = '0'
     },
     // 编辑
-    handleEdit () {
+    handleEdit (row) {
       this.dialogEditFormVisible = true
       this.dialogTitle = '编辑'
       this.dialogType = 'posterEdit'
+      this.materialId = row.materialId
     },
     // 删除
     handleDel (row) {

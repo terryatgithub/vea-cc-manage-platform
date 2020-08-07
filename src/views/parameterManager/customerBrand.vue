@@ -149,7 +149,6 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      debugger
       this.$service.queryBrandListPage(filter).then(data => {
         if (data.code === 0) {
           this.pagination.total = data.data.total

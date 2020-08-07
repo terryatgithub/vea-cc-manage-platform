@@ -147,6 +147,7 @@ export function deleteAreaManage (params) {
 }
 
 // 素材设置
+
 // 公共图片上传接口
 export function uploadImg (data) {
   return this.fetch({
@@ -157,11 +158,13 @@ export function uploadImg (data) {
   })
 }
 // 海报素材修改
-export function updatePosterManage (params) {
+export function updatePosterManage (data) {
   return this.fetch({
     method: 'post',
     url: 'api/lite-os/admin/poster-material-manage/update-material-manage',
-    params
+    data,
+    isJSON: true,
+    isHeaders: true
   })
 }
 // 分页获取海报素材管理列表
@@ -173,11 +176,13 @@ export function queryPosterManageListPage (params) {
   })
 }
 // 海报添加
-export function addPosterManage (params) {
+export function addPosterManage (data) {
   return this.fetch({
-    method: 'get',
+    method: 'post',
     url: 'api/lite-os/admin/poster-material-manage/add-material-manage',
-    params
+    data,
+    isJSON: true,
+    isHeaders: true
   })
 }
 // 根据海报管理id获取对应数据
@@ -197,11 +202,13 @@ export function deletePosterManage (params) {
   })
 }
 // 应用修改
-export function updateAppManage (params) {
+export function updateAppManage (data) {
   return this.fetch({
-    method: 'get',
+    method: 'post',
     url: 'api/lite-os/admin/app-material-manage/update-material-manage',
-    params
+    data,
+    isJSON: true,
+    isHeaders: true
   })
 }
 // 分页获取应用素材管理列表
@@ -238,3 +245,58 @@ export function deleteAppManage (params) {
     params
   })
 }
+
+// Launcher推送策略
+
+// 分页获取推送管理列表
+export function queryLauncherPushListPage (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/launcher-push-manage/query-push-manage-list-page',
+    params
+  })
+}
+// 推送管理修改
+export function updateLauncherPushManage (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/launcher-push-manage/update-push-manage',
+    params
+  })
+}
+// 推送管理修改
+// export function updateLauncherPushManage (data) {
+//   return this.fetch({
+//     method: 'post',
+//     url: 'api/lite-os/admin/launcher-push-manage/update-push-manage',
+//     data,
+//     isJSON: true,
+//     isHeaders: true
+//   })
+// }
+// // 推送管理删除
+// export function deleteLauncherPushManage (params) {
+//   return this.fetch({
+//     method: 'get',
+//     url: 'api/lite-os/admin/launcher-push-manage/delete-push-manage',
+//     params
+//   })
+// }
+// // 推送管理添加
+// export function addLauncherPushManage (data) {
+//   return this.fetch({
+//     method: 'post',
+//     url: 'api/lite-os/admin/launcher-push-manage/add-push-manage',
+//     data,
+//     isJSON: true,
+//     isHeaders: true
+//   })
+// }
+// // 根据推送管理id获取对应数据
+// export function getLauncherPushManageReleaseConfId (params) {
+//   return this.fetch({
+//     method: 'get',
+//     url: 'api/lite-os/admin/launcher-push-manage/get-push-manage-releaseConfId',
+//     params
+//   })
+// }

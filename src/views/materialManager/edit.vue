@@ -85,32 +85,36 @@
         style="width: 500px;text-align: center;"
         v-if="dialogType === 'posterCreate' || dialogType === 'posterEdit'"
       >
-        <el-form-item label="海报名" prop="posterName">
+        <el-form-item label="海报名" prop="materialName">
           <el-input
             placeholder="请输入海报名"
-            v-model="posterForm.posterName"
+            v-model="posterForm.materialName"
           />
         </el-form-item>
-        <el-form-item label="图标" class="imgUpload" prop="posterImg">
+        <el-form-item label="图标" class="imgUpload" prop="materialPosterPic">
           <el-upload
+            v-model="posterForm.materialPosterPic"
             class="long-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
             :show-file-list="false"
+            :action='getActionUrl()'
+            :headers='getAuthHeader()'
+            :http-request='imgUpload'
+            :on-remove="handleRemove"
             :on-success="uploadSuccess"
             :on-error="uploadError"
-            :before-upload="beforeAvatarUpload">
+            :before-upload="beforeUpload">
             <img v-if="posterForm.posterImg" :src="posterForm.posterImg" class="avatar">
             <i v-else class="el-icon-plus long-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item
+        <!-- <el-form-item
           label="尺寸类型"
-          prop="type"
+          prop="sizeType"
         >
           <el-select
             class="filter-item"
             placeholder="请选择尺寸类型"
-            v-model="posterForm.type"
+            v-model="posterForm.sizeType"
           >
             <el-option
               v-for="item in sizeOptions"
@@ -119,24 +123,24 @@
               :value="item.key"
             />
           </el-select>
-        </el-form-item>
-        <el-form-item label="关联url" prop="relevanceUrl">
+        </el-form-item> -->
+        <el-form-item label="关联url" prop="materialUrl">
           <el-input
             placeholder="请输入关联url"
-            v-model="posterForm.relevanceUrl"
+            v-model="posterForm.materialUrl"
           />
         </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth" prop="remark">
-          <el-input type="textarea" :rows="2" maxlength="200" show-word-limit placeholder="请输入备注" v-model="posterForm.remark"></el-input>
+        <el-form-item label="备注" :label-width="formLabelWidth" prop="materialRemark">
+          <el-input type="textarea" :rows="2" maxlength="200" show-word-limit placeholder="请输入备注" v-model="posterForm.materialRemark"></el-input>
         </el-form-item>
         <el-form-item
           label="状态"
-          prop="statu"
+          prop="materialState"
         >
           <el-select
             class="filter-item"
             placeholder="请选择状态"
-            v-model="posterForm.statu"
+            v-model="posterForm.materialState"
           >
             <el-option value="0" label="失效"/>
             <el-option value="1" label="有效"/>
@@ -169,9 +173,9 @@ export default {
     dialogType: (newVal, oldVal) => {
       console.log(newVal)
     },
-    materialId: function(newVal, oldVal) {
+    materialId: function (newVal, oldVal) {
       if (newVal !== '0') {
-        this.getAreaRisid()
+        // this.getmaterialId()
       }
     }
   },
@@ -197,11 +201,11 @@ export default {
         { key: '17', typeName: '音乐' },
         { key: '18', typeName: '娱乐' }
       ],
-      sizeOptions: [
-        { key: '1', sizeName: '400*600' },
-        { key: '2', sizeName: '400*600' },
-        { key: '3', sizeName: '600*900' }
-      ],
+      // sizeOptions: [
+      //   { key: '1', sizeName: '400*600' },
+      //   { key: '2', sizeName: '400*600' },
+      //   { key: '3', sizeName: '600*900' }
+      // ],
       appForm: {
         materialName: '',
         materialPics: '',
@@ -235,38 +239,85 @@ export default {
         ]
       },
       posterForm: {
-        posterName: '',
-        posterImg: '',
-        type: '',
-        relevanceUrl: '',
-        remark: '',
-        statu: ''
+        materialName: '',
+        materialPosterPic: '',
+        // sizeType: '',
+        materialUrl: '',
+        materialRemark: '',
+        materialState: ''
       },
       posterRules: {
-        posterName: [
+        materialName: [
           { required: true, message: '请输入海报名', trigger: 'blur' }
         ],
-        posterImg: [
+        materialPosterPic: [
           { required: true, message: '请上传海报图', trigger: 'change' }
         ],
-        type: [
-          { required: true, message: '请选择尺寸类型', trigger: 'change' }
-        ],
-        relevanceUrl: [
+        // sizeType: [
+        //   { required: true, message: '请选择尺寸类型', trigger: 'change' }
+        // ],
+        materialUrl: [
           { required: true, message: '请输入关联url', trigger: 'blur' }
         ],
-        remark: [
+        materialRemark: [
           { required: true, message: '请输入备注', trigger: 'blur' }
         ],
-        statu: [
+        materialState: [
           { required: true, message: '请选择状态', trigger: 'change' }
         ]
       }
     }
   },
   methods: {
+    getmaterialId () {
+      const typeForm = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? 'appForm' : 'posterForm'
+      debugger
+      if (typeForm === 'appForm') {
+        this.$service.getAppManageMaterialId({ materialId: this.materialId }).then(data => {
+          if (data.code === 0) {
+            const detail = data.data
+            this.appForm = {
+              materialName: detail.materialName,
+              materialPics: detail.materialPics,
+              materialType: detail.materialType,
+              materialUrl: detail.materialUrl,
+              apiUrl: detail.apiUrl,
+              materialRemark: detail.materialRemark,
+              materialState: detail.materialState.toString()
+            }
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+        })
+      } else {
+        this.$service.getPosterManageMaterialId({ materialId: this.materialId }).then(data => {
+          if (data.code === 0) {
+            const detail = data.data
+            this.posterForm = {
+              materialName: detail.materialName,
+              materialPosterPic: detail.materialPosterPic,
+              // sizeType: detail.sizeType,
+              materialUrl: detail.materialUrl,
+              materialRemark: detail.materialRemark,
+              materialState: detail.materialState.toString()
+            }
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+        })
+      }
+    },
     cancel () {
-      console.log(this.appForm)
+      const typeForm = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? 'appForm' : 'posterForm'
+      this.$refs[typeForm].clearValidate()
+      this.$refs[typeForm].resetFields()
+      this.$emit('close')
     },
     create () {
       const typeForm = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? 'appForm' : 'posterForm'
@@ -276,23 +327,83 @@ export default {
           params.materialPics = params.materialPics.join(',')
           params.creator = '管理员'
           if (typeForm === 'appForm') {
-            this.$service.addAppManage(params).then(data => {
-              if (data.code === 0) {
-                this.$refs[typeForm].clearValidate()
-                this.$refs[typeForm].resetFields()
-                this.$emit('close')
-                this.$message({
-                  type: 'success',
-                  message: '新增成功！'
-                })
-                this.$emit('fetchData')
-              } else {
-                this.$message({
-                  type: 'error',
-                  message: data.msg
-                })
-              }
-            })
+            if (this.materialId !== '0') { // 判断是新增还是修改
+              params.materialId = this.materialId
+              this.$service.updateAppManage(params).then(data => {
+                if (data.code === 0) {
+                  this.$refs[typeForm].clearValidate()
+                  this.$refs[typeForm].resetFields()
+                  this.$emit('close')
+                  this.$message({
+                    type: 'success',
+                    message: '修改成功！'
+                  })
+                  this.$emit('fetchData')
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: data.msg
+                  })
+                }
+              })
+            } else {
+              this.$service.addPosterManage(params).then(data => {
+                if (data.code === 0) {
+                  this.$refs[typeForm].clearValidate()
+                  this.$refs[typeForm].resetFields()
+                  this.$emit('close')
+                  this.$message({
+                    type: 'success',
+                    message: '新增成功！'
+                  })
+                  this.$emit('fetchData')
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: data.msg
+                  })
+                }
+              })
+            }
+          } else {
+            if (this.materialId !== '0') { // 判断是新增还是修改
+              params.materialId = this.materialId
+              this.$service.updatePosterManage(params).then(data => {
+                if (data.code === 0) {
+                  this.$refs[typeForm].clearValidate()
+                  this.$refs[typeForm].resetFields()
+                  this.$emit('close')
+                  this.$message({
+                    type: 'success',
+                    message: '修改成功！'
+                  })
+                  this.$emit('fetchData')
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: data.msg
+                  })
+                }
+              })
+            } else {
+              this.$service.addPosterManage(params).then(data => {
+                if (data.code === 0) {
+                  this.$refs[typeForm].clearValidate()
+                  this.$refs[typeForm].resetFields()
+                  this.$emit('close')
+                  this.$message({
+                    type: 'success',
+                    message: '新增成功！'
+                  })
+                  this.$emit('fetchData')
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: data.msg
+                  })
+                }
+              })
+            }
           }
         } else {
           console.log('error submit!!')
@@ -303,11 +414,8 @@ export default {
     // 文件上传调用
     imgUpload (file) {
       const formData = new FormData()
-      formData.file = file.file
-      formData.size = file.file.size
-      formData.checkResolution = false
-      formData.checkImgWidth = false
-      formData.width = 400
+      formData.append('file', file.file)
+      formData.append('checkResolution', 'false')
       console.log(formData)
       this.$service.uploadImg(formData).then(data => {
         if (data.code === 0) {
@@ -323,7 +431,7 @@ export default {
       })
     },
     getActionUrl () {
-      const actionUrl = 'http://127.0.0.1:8087/api/lite-os/admin/upload/uploadImg'
+      const actionUrl = 'http://172.20.151.117:7003/api/lite-os/admin/upload/uploadImg'
       return actionUrl
     },
     getAuthHeader () {
@@ -335,8 +443,12 @@ export default {
       for (const i in fileList) {
         arr.push(fileList[i].url)
       }
-      this.appForm.materialPics = arr
-      console.log(this.appForm.materialPics)
+      if (this.dialogType === 'appCreate' || this.dialogType === 'appEdit') {
+        this.appForm.materialPics = arr
+      } else {
+        this.posterForm.materialPosterPic = arr
+      }
+      console.log(this.appForm)
     },
     uploadSuccess (res, file, fileList) {
       console.log('上传成功')
@@ -344,8 +456,12 @@ export default {
       for (const i in fileList) {
         arr.push(fileList[i].url)
       }
-      this.appForm.materialPics = arr
-      console.log(this.appForm.materialPics)
+      if (this.dialogType === 'appCreate' || this.dialogType === 'appEdit') {
+        this.appForm.materialPics = arr
+      } else {
+        this.posterForm.materialPosterPic = arr
+      }
+      console.log(this.appForm)
     },
     uploadError (res, file) {
       console.log('上传失败')
@@ -361,6 +477,11 @@ export default {
         this.$message.error('上传图标图片大小不能超过 2MB!')
       }
       return isJPG && isLt2M
+    }
+  },
+  created () {
+    if (this.materialId !== '0') {
+      this.getmaterialId()
     }
   }
 }

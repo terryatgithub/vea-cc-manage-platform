@@ -23,7 +23,14 @@
         </el-select>
     </el-form-item>
     <el-form-item label='选择区域' prop="region">
-        <el-button type="primary" @click="regionSel">选择区域</el-button>
+        <el-button type="primary" @click="regionSel" v-show="!ctmDevCtrName">选择区域</el-button>
+        <div class="nameBox" v-show="ctmDevCtrName">
+          {{ctmDevCtrName}}
+          <i
+            class="el-icon-error"
+            @click="regionSel"
+          ></i>
+        </div>
     </el-form-item>
     <el-form-item label='推送时间' prop="date">
         <el-date-picker
@@ -52,6 +59,11 @@
 <script>
 export default {
   components: {},
+  props: {
+    ctmDevCtrName: {
+      type: String
+    }
+  },
   data () {
     return {
       pushForm: {
@@ -116,6 +128,18 @@ export default {
         .el-form-item__content {
             width: 200px;
             display: inline-block;
+        }
+        .nameBox {
+          display: inline-block;
+          position: relative;
+          .el-icon-error {
+            position: absolute;
+            font-size: 17px;
+            top: 0;
+            right: -10px;
+            color: indianred;
+            cursor: pointer;
+          }
         }
     }
 }

@@ -78,6 +78,7 @@
         :title='dialogTitle'
         center
         :visible.sync = 'dialogEditFormVisible'
+        v-if = 'dialogEditFormVisible'
         width = '450px'
       >
         <EditPop :rlsId = 'rlsId' @close = 'close' @fetchData = 'fetchData'></EditPop>
@@ -304,9 +305,9 @@ export default {
     },
     // 编辑
     handleEdit (row) {
+      this.rlsId = row.rlsId
       this.dialogEditFormVisible = true
       this.dialogTitle = '编辑'
-      this.rlsId = row.rlsId
     },
     // 删除
     handleDel (row) {
