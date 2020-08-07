@@ -9,7 +9,7 @@ const BACKEND1 = process.env.BACKEND || '172.20.151.117:7003'
 // const path = require('path')
 // const dist = path.resolve('./dist')
 const baseUrl = ENV === 'production' ? '' : `http://${HOST}:${PORT}`
-
+console.log('backend: ', BACKEND1);
 module.exports = {
   publicPath: baseUrl,
   devServer: {

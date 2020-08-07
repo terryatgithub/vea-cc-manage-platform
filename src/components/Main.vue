@@ -443,7 +443,7 @@ export default {
       this.$appState.$set('tags' + '_' + this.$appState.user.name, tags)
     },
     getMenu () {
-       const menuLiteOS = [
+       let menuLiteOS = [
           {
             text: '参数设置',
             id: 'parameterManager',
