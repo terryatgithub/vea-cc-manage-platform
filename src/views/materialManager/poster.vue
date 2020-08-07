@@ -5,7 +5,7 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input placeholder="海报名" clearable/>
+            <el-input placeholder="海报名" clearable v-model="filter['materialName']"/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
@@ -13,6 +13,7 @@
             <el-select
               placeholder="尺寸类型"
               clearable
+              v-model="filter['sizeType']"
             >
               <el-option value="1" label="400*400"/>
               <el-option value="2" label="400*900"/>
@@ -25,6 +26,7 @@
             <el-select
               placeholder="状态"
               clearable
+              v-model="filter['materialState']"
             >
               <el-option value="0" label="失效"/>
               <el-option value="1" label="有效"/>
@@ -81,49 +83,50 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
       table: {
         props: {},
         data: [],
         header: [
           {
-            prop: 'tabId',
+            prop: 'materialId',
             label: '海报ID',
             width: 100,
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'materialName',
             label: '海报名',
             sortable: true,
             width: 140
           },
           {
-            prop: 'auditor',
+            prop: 'materialPosterPic',
             label: '海报图',
             sortable: true
           },
           {
-            prop: 'modifierName',
+            prop: 'sizeType',
             label: '尺寸类型',
             width: 120,
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'materialState',
             label: '状态',
             width: 120,
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'creator',
             label: '操作用户',
             width: 160,
             sortable: true
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'lastUpdateTime',
             label: '操作时间',
             width: 180,
             sortable: true
@@ -157,16 +160,9 @@ export default {
   methods: {
     genDefaultFilter () {
       return {
-        tabType: 3,
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined,
-        'filmDetailPageInfo.source': undefined,
-        'filmDetailPageInfo.channel': [],
-        'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined,
-        'filmDetailPageInfo.matchType': undefined,
-        'filmDetailPageInfo.videoId': undefined
+        materialName: undefined,
+        sizeType: undefined,
+        materialState: undefined
       }
     },
     /**
@@ -174,9 +170,16 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+      this.$service.queryPosterManageListPage(filter).then(data => {
+        if (data.code === 0) {
+          this.pagination.total = data.data.total
+          this.table.data = data.data.results
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
       })
     },
     parseFilter () {
@@ -184,7 +187,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
+        filter.size = pagination.pageSize
       }
       return filter
     },
@@ -216,15 +219,29 @@ export default {
       this.dialogType = 'posterEdit'
     },
     // 删除
-    handleDel () {
+    handleDel (row) {
       this.$confirm('是否确认删除?', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '删除成功'
+        const params = {
+          materialId: row.materialId,
+          creator: '管理员'
+        }
+        this.$service.deletePosterManage(params).then(data => {
+          if (data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+          this.fetchData()
         })
       }).catch(() => {})
     },

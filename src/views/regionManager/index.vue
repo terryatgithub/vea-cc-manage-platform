@@ -5,13 +5,21 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
+            <el-input
+              placeholder="区域名"
+              v-model="filter['areaName']"
+            />
+          </div>
+        </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
             <el-cascader
               placeholder="客户&品牌"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
+              v-model="filter['brandName']"
+              :options="userOptions"
               expand-trigger="hover"
               clearable
-              @change="handleChannelChange"
+              @change="brandNameSel"
             />
           </div>
         </el-form-item>
@@ -19,11 +27,11 @@
           <div class="el-col-20">
             <el-cascader
               placeholder="机芯&机型"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
+              v-model="filter['device']"
+              :options="chipModelOptions"
               expand-trigger="hover"
               clearable
-              @change="handleChannelChange"
+              @change="deviceSel"
             />
           </div>
         </el-form-item>
@@ -31,18 +39,18 @@
           <div class="el-col-20">
             <el-cascader
               placeholder="国家"
-              v-model="filter['filmDetailPageInfo.channel']"
-              :options="channelOptions"
+              v-model="filter['countryName']"
+              :options="arealOptions"
               expand-trigger="hover"
               clearable
-              @change="handleChannelChange"
+              @change="countryNameSel"
             />
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
             <el-select
-              v-model="filter['filmDetailPageInfo.type']"
+              v-model="filter['state']"
               placeholder="状态"
               clearable
             >
@@ -72,7 +80,7 @@
         :visible.sync = 'dialogEditFormVisible'
         width = '450px'
       >
-        <EditPop :type = 'type'></EditPop>
+        <EditPop :rlsId = 'rlsId' @close = 'close' @fetchData = 'fetchData'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -88,6 +96,7 @@ import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
 import { cloneDeep } from 'lodash'
 import EditPop from './edit'
+import liteOS from '@/assets/liteOS.js'
 export default {
   extends: BaseList,
   components: {
@@ -104,7 +113,9 @@ export default {
         currentPage: 1,
         pageSize: 10
       },
-      channelOptions: [],
+      userOptions: [],
+      chipModelOptions: [],
+      arealOptions: [],
       table: {
         props: {},
         data: [],
@@ -173,16 +184,18 @@ export default {
       },
       dialogEditFormVisible: false,
       dialogTitle: '新增',
-      type: 'brand'
+      rlsId: '0'
     }
   },
 
   methods: {
     genDefaultFilter () {
       return {
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined
+        areaName: undefined,
+        brandName: undefined,
+        device: undefined,
+        countryName: undefined,
+        state: undefined
       }
     },
     /**
@@ -190,8 +203,17 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
+      if (filter.brandName) {
+        filter.brandName = filter.brandName.join('/')
+      }
+      if (filter.device) {
+        filter.device = filter.device.join('/')
+      }
+      if (filter.countryName) {
+        filter.countryName = filter.countryName.join('/')
+      }
       this.$service.queryAreaManageListPage(filter).then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.pagination.total = data.data.total
           this.table.data = data.data.results
         } else {
@@ -226,82 +248,90 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
+    // 下拉框选择
+    // brandNameSel (val) {
+    //   debugger
+    // },
+    // deviceSel (val) {
+    //   filter['device'] = val.join('/')
+    // },
+    // countryNameSel (val) {
+
+    // },
     // 获取查询条件
     getMediaResourceInfo () {
-      this.$service.getMediaResourceInfo().then(data => {
-        var movieData = JSON.parse(decodeURI(data.slice(5, -1)))
-        var videoItemModels = movieData.videoItemModels
-        // 频道->爱奇艺channelOptions
-        var channelQiyi = {
-          label: '爱奇艺',
-          value: 'iqiyi',
-          children: []
+      this.$service.queryCustomerListAllContainBrands().then(data => {
+        if (data.code === 0) {
+          this.userOptions = liteOS.userTransform(data.data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
         }
-        channelQiyi.children = videoItemModels[0].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelTent = {
-          label: '腾讯',
-          value: 'qq',
-          children: []
+      })
+      this.$service.queryChipAllContainModels().then(data => {
+        if (data.code === 0) {
+          this.chipModelOptions = liteOS.chipModelTransform(data.data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
         }
-        channelTent.children = videoItemModels[1].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        var channelYouku = {
-          label: '优酷',
-          value: 'youku',
-          children: []
+      })
+      this.$service.queryAreaCountryListAll().then(data => {
+        if (data.code === 0) {
+          this.arealOptions = liteOS.areaTransform(data.data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
         }
-        channelYouku.children = videoItemModels[2].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            })
-          },
-          []
-        )
-        this.channelOptions.push(channelQiyi)
-        this.channelOptions.push(channelTent)
-        this.channelOptions.push(channelYouku)
       })
     },
-    handleChannelChange (value) {
-      this.filter['filmDetailPageInfo.source'] = value[0]
+    // 关闭弹窗
+    close () {
+      this.dialogEditFormVisible = false
+      this.rlsId = '0'
     },
     // 新增
     handleCreate () {
       this.dialogEditFormVisible = true
       this.dialogTitle = '新增'
+      this.rlsId = '0'
     },
     // 编辑
-    handleEdit () {
+    handleEdit (row) {
       this.dialogEditFormVisible = true
       this.dialogTitle = '编辑'
+      this.rlsId = row.rlsId
     },
     // 删除
-    handleDel () {
+    handleDel (row) {
       this.$confirm('是否确认删除?', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '删除成功'
+        const params = {
+          rlsId: row.rlsId,
+          creator: '管理员'
+        }
+        this.$service.deleteAreaManage(params).then(data => {
+          if (data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+          this.fetchData()
         })
       }).catch(() => {})
     },

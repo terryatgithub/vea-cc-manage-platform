@@ -150,7 +150,7 @@ export default {
     fetchData () {
       const filter = this.parseFilter()
       this.$service.queryChipModelListPage(filter).then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.pagination.total = data.data.total
           this.table.data = data.data.results
         } else {
@@ -189,7 +189,7 @@ export default {
     getMediaResourceInfo () {
       const params = { chip: '', model: '' }
       this.$service.queryModelChipList(params).then(data => {
-        if (data.code === '0') {
+        if (data.code === 0) {
           this.chipOptions = data.data.chipList
           this.modelOptions = data.data.modelList
         } else {

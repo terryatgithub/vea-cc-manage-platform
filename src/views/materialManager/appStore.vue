@@ -5,7 +5,7 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input placeholder="应用名" clearable/>
+            <el-input placeholder="应用名" clearable v-model="filter['materialName']"/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
@@ -13,9 +13,10 @@
             <el-select
               placeholder="状态"
               clearable
+              v-model="filter['materialState']"
             >
-              <el-option value="0" label="失效"/>
               <el-option value="1" label="有效"/>
+              <el-option value="0" label="失效"/>
             </el-select>
           </div>
         </el-form-item>
@@ -40,7 +41,7 @@
         :visible.sync = 'dialogEditFormVisible'
         width = '550px'
       >
-        <EditPop :dialogType = 'dialogType'></EditPop>
+        <EditPop :dialogType = 'dialogType' :materialId = 'materialId' @close = 'close' @fetchData = 'fetchData'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -69,37 +70,38 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
       table: {
         props: {},
         data: [],
         header: [
           {
-            prop: 'tabId',
+            prop: 'materialId',
             label: '应用ID',
             width: 100,
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'materialName',
             label: '应用名',
             sortable: true,
             width: 140
           },
           {
-            prop: 'modifierName',
+            prop: 'materialType',
             label: '类型',
             width: 120,
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'materialPics',
             label: '图标',
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'materialState',
             label: '状态',
             width: 120,
             sortable: true
@@ -124,13 +126,13 @@ export default {
             // }
           },
           {
-            prop: 'auditor',
+            prop: 'creator',
             label: '操作用户',
             width: 160,
             sortable: true
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'lastUpdateTime',
             label: '操作时间',
             width: 180,
             sortable: true
@@ -157,23 +159,16 @@ export default {
       },
       dialogEditFormVisible: false,
       dialogTitle: '新增',
-      dialogType: ''
+      dialogType: '',
+      materialId: '0'
     }
   },
 
   methods: {
     genDefaultFilter () {
       return {
-        tabType: 3,
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined,
-        'filmDetailPageInfo.source': undefined,
-        'filmDetailPageInfo.channel': [],
-        'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined,
-        'filmDetailPageInfo.matchType': undefined,
-        'filmDetailPageInfo.videoId': undefined
+        materialName: undefined,
+        materialState: undefined
       }
     },
     /**
@@ -181,9 +176,9 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+      this.$service.queryAppManageListPage(filter).then(data => {
+        this.pagination.total = data.data.total
+        this.table.data = data.data.results
       })
     },
     parseFilter () {
@@ -191,7 +186,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
+        filter.size = pagination.pageSize
       }
       return filter
     },
@@ -212,6 +207,11 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
+    // 关闭弹窗
+    close () {
+      this.dialogEditFormVisible = false
+      this.materialId = '0'
+    },
     // 新增
     handleCreate () {
       this.dialogEditFormVisible = true
@@ -223,17 +223,32 @@ export default {
       this.dialogEditFormVisible = true
       this.dialogTitle = '编辑'
       this.dialogType = 'appEdit'
+      this.materialId = row.materialId
     },
     // 删除
-    handleDel () {
+    handleDel (row) {
       this.$confirm('是否确认删除?', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '删除成功'
+        const params = {
+          materialId: row.materialId,
+          creator: '管理员'
+        }
+        this.$service.deleteAppManage(params).then(data => {
+          if (data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+          this.fetchData()
         })
       }).catch(() => {})
     },
