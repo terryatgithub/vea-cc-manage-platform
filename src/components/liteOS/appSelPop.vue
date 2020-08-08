@@ -2,12 +2,12 @@
   <div>
     <el-form :inline="true" :model="formInline" class="form-inline">
       <el-form-item class="">
-        <el-input v-model="formInline.user" placeholder="请输入应用名"></el-input>
+        <el-input v-model="formInline.materialName" placeholder="请输入应用名" clearable></el-input>
       </el-form-item>
       <el-form-item class="">
-        <el-select v-model="formInline.region" placeholder="请选择应用类型">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+        <el-select v-model="formInline.materialState" placeholder="请选择应用类型" clearable>
+          <el-option value="1" label="有效"/>
+          <el-option value="0" label="失效"/>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -25,30 +25,30 @@
       <el-table-column
         width="50">
         <template slot-scope="scope">
-          <el-radio :label='scope.row.id' v-model='radio'>&nbsp;</el-radio>
+          <el-radio :label='scope.row.materialId' v-model='radio'>&nbsp;</el-radio>
         </template>
       </el-table-column>
       <el-table-column
-        property="id"
+        property="materialId"
         label="应用ID"
         width="80">
       </el-table-column>
       <el-table-column
-        property="name"
+        property="materialName"
         label="应用名"
         width="120">
       </el-table-column>
       <el-table-column
-        property="type"
+        property="materialType"
         label="类型"
         width="100">
       </el-table-column>
       <el-table-column
-        property="address"
+        property="materialUrl"
         label="备注">
       </el-table-column>
       <el-table-column
-        property="api"
+        property="materialUrl"
         label="api">
       </el-table-column>
     </el-table>
@@ -67,70 +67,10 @@ export default {
   data () {
     return {
       formInline: {
-        user: '',
-        region: ''
+        materialName: '',
+        materialState: ''
       },
-      tableData: [{
-        id: 0,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 1,
-        type: '娱乐',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 2,
-        type: '娱乐',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 3,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 4,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 5,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 6,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 7,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 8,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 9,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }],
+      tableData: [],
       currentRow: null,
       total: 0, // 总记录数
       currentPage: 1, // 当前页码
@@ -139,14 +79,39 @@ export default {
     }
   },
   methods: {
+    fetchData () {
+      const params = {
+        page: this.currentPage,
+        size: this.pageSize,
+        materialName: this.formInline.materialName,
+        materialState: this.formInline.materialState
+      }
+      this.$service.queryAppManageListPage(params).then(data => {
+        if (data.code === 0) {
+          this.tableData = data.data.results
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+    },
     cancel () {
-
+      this.$emit('close')
     },
     nextStep () {
-      this.$emit('appDetail')
+      if (this.radio) {
+        this.$emit('appDetail', this.radio)
+      } else {
+        this.$message({
+          type: 'error',
+          message: '请选择一项！'
+        })
+      }
     },
     onSubmit () {
-      console.log('submit!')
+      this.fetchData()
     },
     // 列表特定操作时可调用，如取消选择
     setCurrent (row) {
@@ -155,8 +120,11 @@ export default {
     // 列表选中时触发
     handleCurrentChange (val) {
       this.currentRow = val
-      this.radio = val.id
+      this.radio = val.materialId
     }
+  },
+  created () {
+    this.fetchData()
   }
 }
 </script>

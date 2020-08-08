@@ -44,7 +44,7 @@
   </div>
 </template>
 <script>
-import Bus from '@/assets/Bus.js'
+// import Bus from '@/assets/Bus.js'
 export default {
   data () {
     return {
@@ -78,12 +78,17 @@ export default {
       this.$emit('getRegion', '')
     },
     create () {
-      this.$emit('close')
+      if (this.radio) {
+        this.$emit('close')
+      } else {
+        this.$message({
+          type: 'error',
+          message: '请选择一项！'
+        })
+      }
     },
     handleDetail (row) {
-      debugger
-      Bus.$emit('rlsId', row.rlsId)
-      this.$emit('regionDetail')
+      this.$emit('regionDetail',row.rlsId)
     },
     // 列表特定操作时可调用，如取消选择
     setCurrent (row) {
@@ -92,7 +97,7 @@ export default {
     // 列表选中时触发
     handleCurrentChange (val) {
       this.radio = val.rlsId
-      this.$emit('getRegion', val.ctmDevCtrName)
+      this.$emit('getRegion',val.rlsId , val.ctmDevCtrName)
     }
   },
   created () {

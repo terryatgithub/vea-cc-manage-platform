@@ -2,48 +2,70 @@
   <ContentCard title="区域信息" @go-back="goBack">
     <el-form class="detailForm">
         <el-form-item label="区域名:">
-            哈哈
+            {{regionData.ctmDevCtrName}}
         </el-form-item>
         <el-form-item label="客户&品牌:">
-            <el-tag>标签一</el-tag>
-            <el-tag type="success">标签二</el-tag>
-            <el-tag type="info">标签三</el-tag>
-            <el-tag type="warning">标签四</el-tag>
-            <el-tag type="danger">标签五</el-tag>
+          <el-tag 
+            type="warning" 
+            v-for="item in regionData.brandNames" 
+            :key="item"
+          >{{item}}</el-tag>
         </el-form-item>
         <el-form-item label="机芯&机型:">
-            <el-tag>标签一</el-tag>
-            <el-tag type="success">标签二</el-tag>
-            <el-tag type="info">标签三</el-tag>
-            <el-tag type="warning">标签四</el-tag>
-            <el-tag type="danger">标签五</el-tag>
+          <el-tag 
+            type="warning" 
+            v-for="item in regionData.devices" 
+            :key="item"
+          >{{item}}</el-tag>
         </el-form-item>
         <el-form-item label="国家:">
-            <el-tag>标签一</el-tag>
-            <el-tag type="success">标签二</el-tag>
+          <el-tag 
+            type="warning" 
+            v-for="item in regionData.countryNames" 
+            :key="item"
+          >{{item}}</el-tag>
         </el-form-item>
     </el-form>
   </ContentCard>
 </template>
 <script>
 import ContentCard from '@/components/ContentCard'
-import Bus from '@/assets/Bus.js'
+// import Bus from '@/assets/Bus.js'
 export default {
   components: {
     ContentCard
   },
+  props: {
+    // 没搞明白为啥参数名是id才能传
+    id: {
+      type: String
+    }
+  },
   data () {
-    return {}
+    return {
+      regionData: {}
+    }
   },
   methods: {
     goBack () {
       this.$emit('goRegion')
     },
     detail () {
-      debugger
-      Bus.$on('risId', val => {
-        console.log(val)
-      })
+      if (this.id) {
+        this.$service.getAreaManageRlsId({ rlsId: this.id }).then(data => {
+          if (data.code === 0) {
+            this.regionData = data.data
+            this.regionData.brandNames = this.regionData.brandNames.split(',')
+            this.regionData.devices = this.regionData.devices.split(',')
+            this.regionData.countryNames = this.regionData.countryNames.split(',')
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+        })
+      }
     }
   },
   created () {
@@ -53,15 +75,18 @@ export default {
 </script>
 <style lang='scss'>
 .detailForm {
-    .el-form-item {
-        .el-form-item__label {
-            width: 90px;
-            text-align: right;
-        }
-        .el-form-item__content {
-            width: 200px;
-            display: inline-block;
-        }
+  .el-form-item {
+    .el-form-item__label {
+      width: 90px;
+      text-align: right;
     }
+    .el-form-item__content {
+      width: 350px;
+      display: inline-block;
+    }
+    .el-tag {
+      margin: 0 10px;
+    }
+  }
 }
 </style>

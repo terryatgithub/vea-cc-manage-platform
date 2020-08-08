@@ -1,6 +1,6 @@
 <template>
     <ContentCard title="新增/编辑">
-      <PushForm @regionSel = 'regionSel' :ctmDevCtrName = 'ctmDevCtrName'></PushForm>
+      <PushForm @regionSel = 'regionSel' ref = 'pushChild' :ctmDevCtrName = 'ctmDevCtrName' :risId = 'risId'></PushForm>
       <el-dialog
         :title='dialogTitle'
         :visible.sync = 'dialogFormVisible'
@@ -8,10 +8,10 @@
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
       >
-        <RegionEditPop v-if="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion'></RegionEditPop>
-        <RegionDetail v-if="dialogType === 'regionDetail'" @goRegion = 'goRegion'></RegionDetail>
-        <AppSelPop v-if="dialogType === 'appPop'" @appDetail = 'appDetail'></AppSelPop>
-        <AppDetail v-if="dialogType === 'appDetail'" @goApp = 'goApp'></AppDetail>
+        <RegionEditPop v-if="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)'></RegionEditPop>
+        <RegionDetail v-if="dialogType === 'regionDetail'" @goRegion = 'goRegion' :id = 'risId'></RegionDetail>
+        <AppSelPop v-if="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close'></AppSelPop>
+        <AppDetail v-if="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :materialId = 'materialId' @appSure = 'appSure(arguments)'></AppDetail>
       </el-dialog>
       <div class="appBox">
         <div class="label">选择应用</div>
@@ -34,7 +34,7 @@
           </li>
         </ul>
       </div>
-      <FooterForm></FooterForm>
+      <FooterForm @create = 'create'></FooterForm>
     </ContentCard>
 </template>
 
@@ -65,19 +65,22 @@ export default {
       showClose: true,
       appList: [
         {
-          id: 0,
+          materialId: 0,
           appName: 'xxx',
-          appLogo: ''
+          detailSeq: '',
+          materialPic: ''
         }
       ],
-      ctmDevCtrName: ''
+      ctmDevCtrName: '',
+      risId: '',
+      materialId: ''
     }
   },
   methods: {
     // 获取区域选择传值
     getRegion (val) {
-      console.log(val)
-      this.ctmDevCtrName = val
+      this.risId = val[0]
+      this.ctmDevCtrName = val[1]
     },
     // 弹窗选择区域
     regionSel () {
@@ -88,7 +91,8 @@ export default {
       this.showClose = true
     },
     // 显示区域详情
-    regionDetail () {
+    regionDetail (val) {
+      this.risId = val
       this.dialogType = 'regionDetail'
       this.dialogWidth = '550px'
       this.dialogTitle = ''
@@ -122,7 +126,8 @@ export default {
       }
     },
     // 显示应用详情
-    appDetail () {
+    appDetail (val) {
+      this.materialId = val
       this.dialogType = 'appDetail'
       this.dialogWidth = '650px'
       this.dialogTitle = ''
@@ -139,13 +144,63 @@ export default {
     appDel (index) {
       this.appList.splice(index, 1)
     },
-    close () {
+    // 应用海报选择确定
+    appSure (data) {
+      this.appList[this.appList.length - 2] = {
+        materialId: data[0],
+        appName: data[1],
+        detailSeq: this.appList.length - 2,
+        materialPic: data[2]
+      }
       this.dialogFormVisible = false
     },
-    create () {
-      this.$refs['regionForm'].validate((valid) => {
+    // 关闭弹窗
+    close () {
+      if (this.dialogType === 'appPop' || this.dialogType === 'appDetail') {
+        this.appList.splice(this.appList.length-2, 1)
+      }
+      this.dialogFormVisible = false
+    },
+    create (DeviceID) {
+      let that = this
+      this.$refs['pushChild'].$refs['pushForm'].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          if (this.appList.length === 1) {
+            this.$message({
+              type: 'error',
+              message: '请选择应用！'
+            })
+          } else {
+            debugger
+            const params = this.$refs['pushChild'].pushForm
+            params.releaseStartTime = params.date[0]
+            params.releaseEndTime = params.date[1]
+            delete params.date
+            params.supportVersion = params.supportVersion.join(',')
+            params.creator = '管理员'
+            params.releaseStatus = '0'
+            params.appList = that.appList
+            params.appList.pop()
+            this.$service.addLauncherPushManage(params).then(data => {
+              if (data.code === 0) {
+                this.$refs['pushChild'].$refs['pushForm'].clearValidate()
+                this.$refs['pushChild'].$refs['pushForm'].resetFields()
+                this.$message({
+                  type: 'success',
+                  message: '新增成功！'
+                })
+                this.$router.push({
+                  path: 'launcherPush'
+                })
+                // this.$emit('fetchData')
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: data.msg
+                })
+              }
+            })
+          }
         } else {
           console.log('error submit!!')
           return false

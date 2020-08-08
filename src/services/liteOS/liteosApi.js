@@ -282,16 +282,16 @@ export function updateLauncherPushManage (params) {
 //     params
 //   })
 // }
-// // 推送管理添加
-// export function addLauncherPushManage (data) {
-//   return this.fetch({
-//     method: 'post',
-//     url: 'api/lite-os/admin/launcher-push-manage/add-push-manage',
-//     data,
-//     isJSON: true,
-//     isHeaders: true
-//   })
-// }
+// 推送管理添加
+export function addLauncherPushManage (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/lite-os/admin/launcher-push-manage/add-push-manage',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
 // // 根据推送管理id获取对应数据
 // export function getLauncherPushManageReleaseConfId (params) {
 //   return this.fetch({

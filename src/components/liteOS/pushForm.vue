@@ -5,15 +5,15 @@
   :model="pushForm"
   class="pushEdit"
   >
-    <el-form-item label='策略名称' prop="name">
+    <el-form-item label='策略名称' prop="releaseConfName">
         <el-input
           placeholder="请输入策略名称"
-          v-model="pushForm.name"
+          v-model="pushForm.releaseConfName"
           clearable
         />
     </el-form-item>
-    <el-form-item label='支持版本' prop="versions">
-        <el-select v-model="pushForm.versions" multiple placeholder="请选择版本(支持多选)">
+    <el-form-item label='支持版本' prop="supportVersion">
+        <el-select v-model="pushForm.supportVersion" multiple placeholder="请选择版本(支持多选)">
             <el-option
             v-for="item in versionsOptions"
             :key="item.value"
@@ -22,10 +22,10 @@
             </el-option>
         </el-select>
     </el-form-item>
-    <el-form-item label='选择区域' prop="region">
+    <el-form-item label='选择区域'>
         <el-button type="primary" @click="regionSel" v-show="!ctmDevCtrName">选择区域</el-button>
         <div class="nameBox" v-show="ctmDevCtrName">
-          {{ctmDevCtrName}}
+          {{ctmDevCtrName}}+++{{risId}}
           <i
             class="el-icon-error"
             @click="regionSel"
@@ -62,27 +62,37 @@ export default {
   props: {
     ctmDevCtrName: {
       type: String
+    },
+    risId: {
+      type: String
+    }
+  },
+  watch: {
+    risId: function(newVal, oldVal) {
+      console.log(newVal)
+      debugger
+      this.pushForm.ctmDevCtrId = newVal
     }
   },
   data () {
     return {
       pushForm: {
-        name: '',
-        versions: '',
-        region: '',
+        releaseConfName: '',
+        supportVersion: '',
+        ctmDevCtrId: '',
         date: '',
         priority: ''
       },
       rules: {
-        name: [
+        releaseConfName: [
           { required: true, message: '请输入策略名称', trigger: 'blur' }
         ],
-        versions: [
+        supportVersion: [
           { required: true, message: '请选择版本', trigger: 'change' }
         ],
-        region: [
-          { required: true, message: '请选择区域', trigger: 'blur' }
-        ],
+        // ctmDevCtrId: [
+        //   { required: this.isCtmDevCtrId, message: '请选择区域', trigger: 'change', validator: this.isCtmDevCtrId }
+        // ],
         date: [
           { required: true, message: '请选择推送时间', trigger: 'blur' }
         ],

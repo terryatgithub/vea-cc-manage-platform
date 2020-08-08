@@ -14,7 +14,7 @@
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button type="success" @click="success">
+            <el-button type="success" @click="create">
                 确定
             </el-button>
             <el-button @click="cancel">
@@ -34,8 +34,8 @@ export default {
     }
   },
   methods: {
-    success () {
-
+    create () {
+      this.$emit('create', this.footerForm.DeviceID)
     }
   }
 }
