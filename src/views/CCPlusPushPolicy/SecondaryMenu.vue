@@ -1,8 +1,8 @@
 <template>
   <ContentCard class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
+      <!-- 页头过滤器 -->
       <div class="el-row">
-        <!-- 过滤表单 -->
         <el-form
           ref="filterForm"
           :rules="filterFormRules"
@@ -10,9 +10,43 @@
           inline
           label-width="90px"
         >
-          <el-form-item class="el-col el-col-6">
+          <el-form-item class="el-col el-col-6" label="品牌">
             <div class="el-col-20">
-              <el-select placeholder="机芯" clearable>
+              <el-select
+                placeholder="品牌"
+                clearable
+                v-model="filter.branchName"
+              >
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.key"
+                  :label="item.typeName"
+                  :value="item.key"
+                />
+              </el-select>
+            </div>
+          </el-form-item>
+          
+          <el-form-item class="el-col el-col-6" label="客户">
+            <div class="el-col-20">
+              <el-select
+                placeholder="客户"
+                clearable
+                v-model="filter.customerName"
+              >
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.key"
+                  :label="item.typeName"
+                  :value="item.key"
+                />
+              </el-select>
+            </div>
+          </el-form-item>
+
+          <el-form-item class="el-col el-col-6" label="机芯">
+            <div class="el-col-20">
+              <el-select placeholder="机芯" clearable v-model="filter.chip">
                 <el-option
                   v-for="item in typeOptions"
                   :key="item.key"
@@ -22,9 +56,9 @@
               </el-select>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6">
+          <el-form-item class="el-col el-col-6" label="机型">
             <div class="el-col-20">
-              <el-select placeholder="机型" clearable>
+              <el-select placeholder="机型" clearable v-model="filter.model">
                 <el-option
                   v-for="item in typeOptions"
                   :key="item.key"
@@ -33,11 +67,11 @@
               /></el-select>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6">
+          <el-form-item class="el-col el-col-6" label="国家">
             <div class="el-col-20">
               <el-cascader
                 placeholder="国家"
-                v-model="filter['filmDetailPageInfo.channel']"
+                v-model="filter.countryName"
                 :options="channelOptions"
                 expand-trigger="hover"
                 clearable
@@ -45,9 +79,13 @@
               ></el-cascader>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6">
+          <el-form-item class="el-col el-col-6" label="版本">
             <div class="el-col-20">
-              <el-select placeholder="版本" clearable>
+              <el-select
+                placeholder="版本"
+                clearable
+                v-model="filter.supportVersion"
+              >
                 <el-option
                   v-for="item in typeOptions"
                   :key="item.key"
@@ -57,35 +95,42 @@
               </el-select>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6">
+
+          <el-form-item label="状态">
+            <el-select
+              placeholder="状态"
+              clearable=""
+              v-model="filter.releaseStatus"
+            >
+              <el-option
+                v-for="item in releaseStatusOptions"
+                :key="item.key"
+                :label="item.typeName"
+                :value="item.key"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item class="el-col el-col-6" label="策略名称">
             <div class="el-col-20">
-              <el-select placeholder="品牌" clearable>
-                <el-option
-                  v-for="item in typeOptions"
-                  :key="item.key"
-                  :label="item.typeName"
-                  :value="item.key"
-                />
-              </el-select>
+              <el-input
+                placeholder="策略名称"
+                clearable
+                v-model="filter.releaseConfName"
+              ></el-input>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6">
+
+          <el-form-item class="el-col el-col-6" label="区域名">
             <div class="el-col-20">
-              <el-select placeholder="客户" clearable>
-                <el-option
-                  v-for="item in typeOptions"
-                  :key="item.key"
-                  :label="item.typeName"
-                  :value="item.key"
-                />
-              </el-select>
+              <el-input
+                placeholder="区域名"
+                clearable
+                v-model="filter.ctmDevCtrName"
+              ></el-input>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6">
-            <div class="el-col-20">
-              <el-input placeholder="策略名称" clearable></el-input>
-            </div>
-          </el-form-item>
+
           <el-form-item>
             <el-button type="primary" @click="handleFilterChange"
               >查询</el-button
@@ -129,7 +174,8 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
       channelOptions: [],
       table: {
@@ -228,29 +274,34 @@ export default {
         { key: "3", typeName: "参考" },
         { key: "4", typeName: "工具" },
         { key: "5", typeName: "购物" }
+      ],
+      releaseStatusOptions: [
+        { typeName: '未推送', key: 0},
+        { typeName: '推送中', key: 1},
+        { typeName: '已取消', key: 2},
       ]
     };
   },
   methods: {
     genDefaultFilter() {
       return {
-        tabType: 3,
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined,
-        "filmDetailPageInfo.source": undefined,
-        "filmDetailPageInfo.channel": [],
-        "filmDetailPageInfo.category": undefined,
-        "filmDetailPageInfo.product": undefined,
-        "filmDetailPageInfo.matchType": undefined,
-        "filmDetailPageInfo.videoId": undefined
+        brandName: undefined,
+        customerName: undefined,
+        chip: undefined,
+        model: undefined,
+        countryName: undefined,
+        supportVersion: undefined,
+        releaseStatus: undefined,
+        releaseConfName: undefined,
+        ctmDevCtrName: undefined
       };
     },
     fetchData() {
       const filter = this.parseFilter();
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total;
-        this.table.data = data.rows;
+      this.$service.queryCCPlusPushManageListPage(filter).then(data => {
+        debugger;
+        this.pagination.total = data.data.total;
+        this.table.data = data.data.results;
       });
     },
     parseFilter() {
@@ -258,11 +309,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter));
       if (pagination) {
         filter.page = pagination.currentPage;
-        filter.rows = pagination.pageSize;
-      }
-      const channel = filter["filmDetailPageInfo.channel"][1];
-      if (channel) {
-        filter["filmDetailPageInfo.channel"] = channel;
+        filter.size = pagination.pageSize;
       }
       return filter;
     },
@@ -276,9 +323,9 @@ export default {
       });
     },
     handleFilterReset() {
+      this.pagination.currentPage = 1;
       this.filter = this.genDefaultFilter();
       this.efficientFilter = this.genDefaultFilter();
-      this.pagination.currentPage = 1;
       this.fetchData();
     },
     getMediaResourceInfo() {
