@@ -5,7 +5,7 @@
       <el-form-item label="栏目名称">{{ details.name }}</el-form-item>
       <el-form-item label="影片列表数量">{{ details.movieNum }}</el-form-item>
       <el-form-item>
-        <el-button @click="addMovie">添加影片</el-button>
+        <el-button @click="movieReplace">添加影片</el-button>
       </el-form-item>
       <el-form-item>
         <div class="demo-image__lazy">
@@ -86,11 +86,9 @@ export default {
     this.details;
   },
   methods: {
-    addMovie() {
-      //添加影片
-    },
     movieToTop() {},
     movieReplace() {
+      //添加或替换影片
       this.showOperationDialog = false
       this.showChooseMovieDialog = true
     },

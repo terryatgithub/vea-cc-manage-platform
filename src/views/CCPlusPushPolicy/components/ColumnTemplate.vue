@@ -70,21 +70,32 @@
         <hr />
       </el-form-item>
     </el-form>
-    
-    <SelectResourceDialog
-      :show="showSelectResourceDialog"
-      @dlg-close="showSelectResourceDialog = false"
-    />
+
+    <el-dialog
+      :visible.sync="showSelectResourceDialog"
+      title="栏目资源选择(可多选)(可反选)"
+      :before-close="handleClose"
+    >
+      <ColumnResourceSelectDialog />
+      <span slot="footer">
+        <el-button @click="closeColumnResourceSelectDialog(false)"
+          >取消</el-button
+        >
+        <el-button @click="closeColumnResourceSelectDialog(true)"
+          >完成</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 // 添加栏目的'栏目模板'组件
 
-import SelectResourceDialog from "./ColumnResourceSelectDialog.vue";
+import ColumnResourceSelectDialog from "./ColumnResourceSelectDialog.vue";
 export default {
   components: {
-    SelectResourceDialog,
+    ColumnResourceSelectDialog
   },
   props: {
     prop: "",
@@ -125,6 +136,18 @@ export default {
     }
   },
   methods: {
+    closeColumnResourceSelectDialog(confirm, event) {
+      this.showSelectResourceDialog = false
+      console.log("close: ", confirm, event);
+    },
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then(() => {
+          this.closeColumnResourceSelectDialog(false);
+          done();
+        })
+        .catch(() => {});
+    },
     load() {
       this.loading = true;
       setTimeout(() => {
