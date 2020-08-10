@@ -61,6 +61,7 @@
 </template>
 
 <script>
+//栏目资源选择组件
 export default {
   props: {
     show: Boolean
