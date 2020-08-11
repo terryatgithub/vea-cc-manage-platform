@@ -136,5 +136,22 @@ export default {
         arr1[i] = arr1[i].split('/')
     }
     return arr1
+  },
+  // 标准时间换算
+  p (s) {
+    return s < 10 ? '0' + s : s
+  },
+  date (time) {
+    const d = new Date(time)
+    const resTime = d.getFullYear() + '-' + this.p((d.getMonth() + 1)) + '-' + this.p(d.getDate()) + ' ' + this.p(d.getHours()) + ':' + this.p(d.getMinutes()) + ':' + this.p(d.getSeconds())
+    return resTime
+  },
+  parserDate (date) {
+    const t = Date.parse(date)
+    if (!isNaN(t)) {
+        return new Date(Date.parse(date.replace(/-/g, '/')))
+    } else {
+        return new Date()
+    }
   }
 }

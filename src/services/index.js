@@ -42,6 +42,7 @@ import * as policyGroup from './policyGroup'
 import * as bigdata from './bigdata'
 // liteOS新增
 import * as liteApi from './liteOS/liteosApi'
+import * as liteCCPlusApi from './liteOS/ccplusApi'
 
 const service = {
   state: {},
@@ -88,7 +89,8 @@ const service = {
   ...policyGroup,
   ...bigdata,
   // liteOS新增
-  ...liteApi
+  ...liteApi,
+  ...liteCCPlusApi
 }
 export default function install (Vue) {
   const $service = {}

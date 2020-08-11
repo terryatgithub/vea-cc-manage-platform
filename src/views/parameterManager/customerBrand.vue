@@ -8,6 +8,7 @@
             <el-select
               placeholder="请选择客户"
               v-model="filter['customerId']"
+              clearable
             >
               <el-option
                 v-for="item in customerOptions"
@@ -23,6 +24,7 @@
             <el-select
               placeholder="请选择品牌"
               v-model="filter['brandId']"
+              clearable
             >
               <el-option
                 v-for="item in brandOptions"

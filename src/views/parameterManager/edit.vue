@@ -17,6 +17,7 @@
             placeholder="请选择客户"
             v-model="brandForm.customerId"
             :disabled="isSelect === 1"
+            clearable
           >
             <el-option
               v-for="item in customerOptions"
@@ -31,12 +32,14 @@
             placeholder="请输入客户"
             v-model="brandForm.customerName"
             :disabled="isSelect === -1"
+            clearable
           />
         </el-form-item>
         <el-form-item label="输入品牌" prop="brandName">
           <el-input
             placeholder="请输入品牌"
             v-model="brandForm.brandName"
+            clearable
           />
         </el-form-item>
       </el-form>
@@ -52,11 +55,12 @@
         <el-form-item
           label="选择机芯"
           prop="movement"
-          :disabled="isSelect === 1"
         >
           <el-select
             placeholder="请选择机芯"
             v-model="modelForm.movement"
+            :disabled="isSelect === 1"
+            clearable
           >
             <el-option
               v-for="item in chipOptions"
@@ -71,12 +75,14 @@
             placeholder="请输入机芯"
             v-model="modelForm.chip"
             :disabled="isSelect === -1"
+            clearable
           />
         </el-form-item>
         <el-form-item label="输入机型" prop="model">
           <el-input
             placeholder="请输入机型"
             v-model="modelForm.model"
+            clearable
           />
         </el-form-item>
       </el-form>

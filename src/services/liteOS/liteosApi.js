@@ -256,32 +256,32 @@ export function queryLauncherPushListPage (params) {
     params
   })
 }
-// 推送管理修改
-export function updateLauncherPushManage (params) {
+// 推送状态变更
+export function updateLauncherPushStatus (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/lite-os/admin/launcher-push-manage/update-push-manage',
+    url: 'api/lite-os/admin/launcher-push-manage/update-push-status',
     params
   })
 }
 // 推送管理修改
-// export function updateLauncherPushManage (data) {
-//   return this.fetch({
-//     method: 'post',
-//     url: 'api/lite-os/admin/launcher-push-manage/update-push-manage',
-//     data,
-//     isJSON: true,
-//     isHeaders: true
-//   })
-// }
-// // 推送管理删除
-// export function deleteLauncherPushManage (params) {
-//   return this.fetch({
-//     method: 'get',
-//     url: 'api/lite-os/admin/launcher-push-manage/delete-push-manage',
-//     params
-//   })
-// }
+export function updateLauncherPushManage (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/lite-os/admin/launcher-push-manage/update-push-manage',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
+// 推送管理删除
+export function deleteLauncherPushManage (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/launcher-push-manage/delete-push-manage',
+    params
+  })
+}
 // 推送管理添加
 export function addLauncherPushManage (data) {
   return this.fetch({
@@ -292,11 +292,11 @@ export function addLauncherPushManage (data) {
     isHeaders: true
   })
 }
-// // 根据推送管理id获取对应数据
-// export function getLauncherPushManageReleaseConfId (params) {
-//   return this.fetch({
-//     method: 'get',
-//     url: 'api/lite-os/admin/launcher-push-manage/get-push-manage-releaseConfId',
-//     params
-//   })
-// }
+// 根据推送管理id获取对应数据
+export function getLauncherPushManageReleaseConfId (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/launcher-push-manage/get-push-manage-releaseConfId',
+    params
+  })
+}

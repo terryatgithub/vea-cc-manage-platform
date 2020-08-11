@@ -36,6 +36,9 @@ export default {
   methods: {
     create () {
       this.$emit('create', this.footerForm.DeviceID)
+    },
+    cancel () {
+      this.$emit('cancel')
     }
   }
 }

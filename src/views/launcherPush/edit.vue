@@ -30,11 +30,11 @@
               ></i>
               <img :src='item.appLogo' v-if="index !== appList.length - 1 && item.appLogo !== ''" class='appLogo' />
             </div>
-            <p class="appName" v-if="index !== appList.length - 1">{{item.appName}}</p>
+            <p class="materialName" v-if="index !== appList.length - 1">{{item.materialName}}</p>
           </li>
         </ul>
       </div>
-      <FooterForm @create = 'create'></FooterForm>
+      <FooterForm @create = 'create' @cancel = 'cancel' ref = 'footerChild'></FooterForm>
     </ContentCard>
 </template>
 
@@ -46,6 +46,7 @@ import RegionEditPop from '@/components/liteOS/regionEditPop'
 import RegionDetail from '@/components/liteOS/regionDetail'
 import AppSelPop from '@/components/liteOS/appSelPop'
 import AppDetail from '@/components/liteOS/appDetail'
+import liteOS from '@/assets/liteOS.js'
 export default {
   components: {
     ContentCard,
@@ -55,6 +56,54 @@ export default {
     RegionDetail,
     AppSelPop,
     AppDetail
+  },
+  watch: {
+    $route () {
+      // 判断是否回显数据
+      if (this.$route.query.releaseConfId) {
+        this.$service.getLauncherPushManageReleaseConfId({
+          releaseConfId: this.$route.query.releaseConfId
+        }).then(data => {
+          if (data.code === 0) {
+            const detail = data.data
+            detail.supportVersion = detail.supportVersion.split(',')
+            const date = (liteOS.parserDate(detail.releaseStartTime) + ',' + liteOS.parserDate(detail.releaseEndTime)).split(',')
+            const pushForm = {
+              releaseConfName: detail.releaseConfName,
+              supportVersion: detail.supportVersion,
+              ctmDevCtrId: detail.ctmDevCtrId,
+              date: date,
+              priority: detail.priority.toString()
+            }
+            this.$refs['pushChild'].pushForm = pushForm
+            this.ctmDevCtrName = detail.ctmDevCtrName
+            this.appList = [...detail.appList, ...[{
+              materialId: 0,
+              materialName: 'xxx',
+              detailSeq: '',
+              materialPic: ''
+            }]]
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+        })
+      } else {
+        // 新增前先初始化页面
+        this.$refs['pushChild'].$refs['pushForm'].clearValidate()
+        this.$refs['pushChild'].$refs['pushForm'].resetFields()
+        this.$refs['footerChild'].$refs['footerForm'].resetFields()
+        this.ctmDevCtrName = ''
+        this.appList = [{
+          materialId: 0,
+          materialName: 'xxx',
+          detailSeq: '',
+          materialPic: ''
+        }]
+      }
+    }
   },
   data () {
     return {
@@ -66,7 +115,7 @@ export default {
       appList: [
         {
           materialId: 0,
-          appName: 'xxx',
+          materialName: 'xxx',
           detailSeq: '',
           materialPic: ''
         }
@@ -115,7 +164,7 @@ export default {
       } else {
         this.appList.splice(this.appList.length - 1, 0, {
           id: 0,
-          appName: 'xxx',
+          materialName: 'xxx',
           appLogo: ''
         })
         this.dialogFormVisible = true
@@ -148,7 +197,7 @@ export default {
     appSure (data) {
       this.appList[this.appList.length - 2] = {
         materialId: data[0],
-        appName: data[1],
+        materialName: data[1],
         detailSeq: this.appList.length - 2,
         materialPic: data[2]
       }
@@ -157,7 +206,7 @@ export default {
     // 关闭弹窗
     close () {
       if (this.dialogType === 'appPop' || this.dialogType === 'appDetail') {
-        this.appList.splice(this.appList.length-2, 1)
+        this.appList.splice(this.appList.length - 2, 1)
       }
       this.dialogFormVisible = false
     },
@@ -173,40 +222,69 @@ export default {
           } else {
             debugger
             const params = this.$refs['pushChild'].pushForm
-            params.releaseStartTime = params.date[0]
-            params.releaseEndTime = params.date[1]
+            params.releaseStartTime = liteOS.date(params.date[0])
+            params.releaseEndTime = liteOS.date(params.date[1])
             delete params.date
             params.supportVersion = params.supportVersion.join(',')
             params.creator = '管理员'
             params.releaseStatus = '0'
             params.appList = that.appList
             params.appList.pop()
-            this.$service.addLauncherPushManage(params).then(data => {
-              if (data.code === 0) {
-                this.$refs['pushChild'].$refs['pushForm'].clearValidate()
-                this.$refs['pushChild'].$refs['pushForm'].resetFields()
-                this.$message({
-                  type: 'success',
-                  message: '新增成功！'
-                })
-                this.$router.push({
-                  path: 'launcherPush'
-                })
-                // this.$emit('fetchData')
-              } else {
-                this.$message({
-                  type: 'error',
-                  message: data.msg
-                })
-              }
-            })
+            if (this.$route.query.releaseConfId && this.$route.query.handleType === 'edit') {
+              params.releaseConfId = this.$route.query.releaseConfId
+              this.$service.updateLauncherPushManage(params).then(data => {
+                if (data.code === 0) {
+                  this.$refs['pushChild'].$refs['pushForm'].clearValidate()
+                  this.$refs['pushChild'].$refs['pushForm'].resetFields()
+                  this.$message({
+                    type: 'success',
+                    message: '修改成功！'
+                  })
+                  this.$router.push({
+                    path: 'launcherPush'
+                  })
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: data.msg
+                  })
+                }
+              })
+            } else {
+              this.$service.addLauncherPushManage(params).then(data => {
+                if (data.code === 0) {
+                  this.$refs['pushChild'].$refs['pushForm'].clearValidate()
+                  this.$refs['pushChild'].$refs['pushForm'].resetFields()
+                  const msg = this.$route.query.handleType === 'copy' ? '复制成功！' : '新增成功！'
+                  this.$message({
+                    type: 'success',
+                    message: msg
+                  })
+                  this.$router.push({
+                    path: 'launcherPush'
+                  })
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: data.msg
+                  })
+                }
+              })
+            }
           }
         } else {
           console.log('error submit!!')
           return false
         }
       })
+    },
+    cancel () {
+      this.$router.push({
+        path: 'launcherPush'
+      })
     }
+  },
+  created () {
   }
 }
 </script>
@@ -237,7 +315,7 @@ export default {
         color: indianred;
         cursor: pointer;
       }
-      .appName {
+      .materialName {
         font-size: 16px;
         text-align: center;
         margin: 5px 0;

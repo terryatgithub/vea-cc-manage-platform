@@ -4,6 +4,7 @@ import './utils/plugins'
 import App from './App.vue'
 import router from './router/index'
 import '@/assets/global.styl'
+window.$Bus = new Vue()
 Vue.config.productionTip = false
 
 Vue.use(adminBase)

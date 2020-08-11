@@ -88,7 +88,7 @@ export default {
       }
     },
     handleDetail (row) {
-      this.$emit('regionDetail',row.rlsId)
+      this.$emit('regionDetail', row.rlsId)
     },
     // 列表特定操作时可调用，如取消选择
     setCurrent (row) {
@@ -97,7 +97,7 @@ export default {
     // 列表选中时触发
     handleCurrentChange (val) {
       this.radio = val.rlsId
-      this.$emit('getRegion',val.rlsId , val.ctmDevCtrName)
+      this.$emit('getRegion', val.rlsId, val.ctmDevCtrName)
     }
   },
   created () {

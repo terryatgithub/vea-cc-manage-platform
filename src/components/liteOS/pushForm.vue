@@ -18,14 +18,14 @@
             v-for="item in versionsOptions"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
+            :value="item.label">
             </el-option>
         </el-select>
     </el-form-item>
     <el-form-item label='选择区域'>
         <el-button type="primary" @click="regionSel" v-show="!ctmDevCtrName">选择区域</el-button>
         <div class="nameBox" v-show="ctmDevCtrName">
-          {{ctmDevCtrName}}+++{{risId}}
+          {{ctmDevCtrName}}
           <i
             class="el-icon-error"
             @click="regionSel"
@@ -51,7 +51,7 @@
       >
         <el-option value="0" label="A"/>
         <el-option value="1" label="B"/>
-        <el-option value="2" label="c"/>
+        <el-option value="2" label="C"/>
       </el-select>
     </el-form-item>
   </el-form>
@@ -68,9 +68,8 @@ export default {
     }
   },
   watch: {
-    risId: function(newVal, oldVal) {
+    risId: function (newVal, oldVal) {
       console.log(newVal)
-      debugger
       this.pushForm.ctmDevCtrId = newVal
     }
   },

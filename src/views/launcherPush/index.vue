@@ -41,12 +41,13 @@
               placeholder="机芯"
               clearable
               v-model="filter['chip']"
+              @change='selectChip(filter.chip)'
             >
               <el-option
-                v-for="item in typeOptions"
-                :key="item.key"
-                :label="item.typeName"
-                :value="item.key"
+                v-for="item in chipOptions"
+                :key="item.chip"
+                :label="item.chip"
+                :value="item.chip"
               />
             </el-select>
           </div>
@@ -57,12 +58,13 @@
               placeholder="机型"
               clearable
               v-model="filter['model']"
+              @change='selectModel(filter.model)'
             >
               <el-option
-                v-for="item in typeOptions"
-                :key="item.key"
-                :label="item.typeName"
-                :value="item.key"
+                v-for="item in modelOptions"
+                :key="item.model"
+                :label="item.model"
+                :value="item.model"
               />
             </el-select>
           </div>
@@ -72,7 +74,7 @@
             <el-cascader
               placeholder="国家"
               v-model="filter['countryName']"
-              :options="channelOptions"
+              :options="countryOptions"
               expand-trigger="hover"
               clearable
               @change="handleChannelChange"
@@ -102,12 +104,9 @@
               clearable
               v-model="filter['releaseStatus']"
             >
-              <el-option
-                v-for="item in typeOptions"
-                :key="item.key"
-                :label="item.typeName"
-                :value="item.key"
-              />
+              <el-option value="0" label="未推送"/>
+              <el-option value="1" label="推送中"/>
+              <el-option value="2" label="已取消"/>
             </el-select>
           </div>
         </el-form-item>
@@ -149,13 +148,18 @@
 import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
 import { cloneDeep } from 'lodash'
+import liteOS from '@/assets/liteOS.js'
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
     Table
   },
-
+  watch: {
+    $route () { // 监听路由跳转后刷新列表数据
+      this.fetchData()
+    }
+  },
   data () {
     return {
       filter: this.genDefaultFilter(),
@@ -263,6 +267,9 @@ export default {
           }
         ]
       },
+      countryOptions: [],
+      chipOptions: [],
+      modelOptions: [],
       typeOptions: [
         { key: '1', typeName: '财务' },
         { key: '2', typeName: '儿童' },
@@ -292,6 +299,9 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
+      if (filter.countryName) {
+        filter.countryName = filter.countryName.join('/')
+      }
       this.$service.queryLauncherPushListPage(filter).then(data => {
         if (data.code === 0) {
           this.pagination.total = data.data.total
@@ -328,77 +338,194 @@ export default {
       this.pagination.currentPage = 1
       this.fetchData()
     },
+    // 机芯机型联动
+    selectChip (val) {
+      this.$service.queryModelChipList({ chip: val, model: '' }).then(data => {
+        if (data.code === 0) {
+          if (this.filter.model) {
+            this.modelOptions = data.data.modelList
+          } else {
+            this.chipOptions = data.data.chipList
+            this.modelOptions = data.data.modelList
+          }
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+    },
+    selectModel (val) {
+      this.$service.queryModelChipList({ chip: '', model: val }).then(data => {
+        if (data.code === 0) {
+          if (this.filter.chip) {
+            this.chipOptions = data.data.chipList
+          } else {
+            this.chipOptions = data.data.chipList
+            this.modelOptions = data.data.modelList
+          }
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+    },
+    // chipModel (parameter) {
+    //   this.$service.queryModelChipList(parameter).then(data => {
+    //     if (data.code === 0) {
+    //       this.chipOptions = data.data.chipList
+    //       this.modelOptions = data.data.modelList
+    //     } else {
+    //       this.$message({
+    //         type: 'error',
+    //         message: data.msg
+    //       })
+    //     }
+    //   })
+    // },
     // 获取查询条件
     getMediaResourceInfo () {
-      
+      this.$service.queryAreaCountryListAll().then(data => {
+        if (data.code === 0) {
+          this.countryOptions = liteOS.areaTransform(data.data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+      this.$service.queryModelChipList({ chip: '', model: '' }).then(data => {
+        if (data.code === 0) {
+          this.chipOptions = data.data.chipList
+          this.modelOptions = data.data.modelList
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
     },
     // 新增
     handleCreate () {
       this.$router.push({
-        path: 'launcherEdit',
-        query: {
-          id: 0
-        }
+        path: 'launcherEdit'
       })
     },
     // 发布上线
-    handleUp () {
+    handleUp (row) {
       this.$confirm('确认发布上线?', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '发布成功'
+        const params = {
+          releaseConfId: row.releaseConfId,
+          releaseStatus: '1',
+          creator: '管理员'
+        }
+        this.$service.updateLauncherPushStatus(params).then(data => {
+          if (data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '发布成功!'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+          this.fetchData()
         })
       }).catch(() => {})
     },
     // 取消发布
-    handleOff () {
+    handleOff (row) {
       this.$confirm('确认取消发布?', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '取消成功'
+        const params = {
+          releaseConfId: row.releaseConfId,
+          releaseStatus: '2',
+          creator: '管理员'
+        }
+        this.$service.updateLauncherPushStatus(params).then(data => {
+          if (data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '取消成功!'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+          this.fetchData()
         })
       }).catch(() => {})
     },
     // 复制
-    handleCopy () {
-      this.$confirm('确认复制该策略?', '提示', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '复制成功'
-        })
-      }).catch(() => {})
+    handleCopy (row) {
+      // this.$confirm('确认复制该策略?', '提示', {
+      //   confirmButtonText: '确认',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(async () => {
+      //   this.$message({
+      //     type: 'success',
+      //     message: '复制成功'
+      //   })
+      // }).catch(() => {})
+      this.$router.push({
+        path: 'launcherEdit',
+        query: {
+          releaseConfId: row.releaseConfId,
+          handleType: 'copy'
+        }
+      })
     },
     // 编辑
     handleEdit (row) {
       this.$router.push({
         path: 'launcherEdit',
         query: {
-          id: row.tabId
+          releaseConfId: row.releaseConfId,
+          handleType: 'edit'
         }
       })
     },
     // 删除
-    handleDel () {
+    handleDel (row) {
       this.$confirm('是否确认删除?', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        this.$message({
-          type: 'success',
-          message: '删除成功'
+        const params = {
+          releaseConfId: row.releaseConfId,
+          creator: '管理员'
+        }
+        this.$service.deleteLauncherPushManage(params).then(data => {
+          if (data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '删除成功！'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+          this.fetchData()
         })
       }).catch(() => {})
     },

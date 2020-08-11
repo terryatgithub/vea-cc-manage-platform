@@ -63,6 +63,7 @@ import LauncherPush from '../views/launcherPush/index.vue'
 import LauncherEdit from '../views/launcherPush/edit.vue'
 import CCPlusPushPolicy from '../views/CCPlusPushPolicy'
 import SecondaryEdit from '../views/CCPlusPushPolicy/SecondaryEdit'
+import ColumnTemplateDetail from '../views/CCPlusPushPolicy/components/ColumnTemplateDetail'
 
 const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
 
@@ -850,6 +851,15 @@ const children = [
         meta: {
           title: '二级菜单编辑页',
           tagId: 'SecondaryEdit'
+        }
+      },
+      {
+        name: 'ColumnTemplateDetail',
+        path: '/ColumnTemplateDetail',
+        component: ColumnTemplateDetail,
+        meta: {
+          title: '栏目模板详情',
+          tagId: 'ColumnTemplateDetail'
         }
       }
     ]

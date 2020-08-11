@@ -8,6 +8,7 @@
             <el-select
               placeholder="请选择机芯"
               v-model="filter['chip']"
+              clearable
             >
               <el-option
                 v-for="item in chipOptions"
@@ -23,6 +24,7 @@
             <el-select
               placeholder="请选择机型"
               v-model="filter['model']"
+              clearable
             >
               <el-option
                 v-for="item in modelOptions"
@@ -54,7 +56,7 @@
         :visible.sync = 'dialogEditFormVisible'
         width = '450px'
       >
-        <EditPop :dialogType = 'dialogType' @close = 'close'></EditPop>
+        <EditPop :dialogType = 'dialogType' @close = 'close' @fetchData = 'fetchData'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"

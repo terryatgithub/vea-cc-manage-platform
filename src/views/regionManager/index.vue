@@ -40,7 +40,7 @@
             <el-cascader
               placeholder="国家"
               v-model="filter['countryName']"
-              :options="arealOptions"
+              :options="areaOptions"
               expand-trigger="hover"
               clearable
               @change="countryNameSel"
@@ -116,7 +116,7 @@ export default {
       },
       userOptions: [],
       chipModelOptions: [],
-      arealOptions: [],
+      areaOptions: [],
       table: {
         props: {},
         data: [],
@@ -283,7 +283,7 @@ export default {
       })
       this.$service.queryAreaCountryListAll().then(data => {
         if (data.code === 0) {
-          this.arealOptions = liteOS.areaTransform(data.data)
+          this.areaOptions = liteOS.areaTransform(data.data)
         } else {
           this.$message({
             type: 'error',
