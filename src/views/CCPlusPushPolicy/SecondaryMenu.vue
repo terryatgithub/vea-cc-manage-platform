@@ -16,29 +16,35 @@
                 placeholder="品牌"
                 clearable
                 v-model="filter.branchName"
+                @change="
+                  selectBrandorCustomer({ brand_name: filter.branchName })
+                "
               >
                 <el-option
-                  v-for="item in typeOptions"
-                  :key="item.key"
-                  :label="item.typeName"
-                  :value="item.key"
+                  v-for="item in brandOptions"
+                  :key="item.brandId"
+                  :label="item.brandName"
+                  :value="item.brandName"
                 />
               </el-select>
             </div>
           </el-form-item>
-          
+
           <el-form-item class="el-col el-col-6" label="客户">
             <div class="el-col-20">
               <el-select
                 placeholder="客户"
                 clearable
                 v-model="filter.customerName"
+                @change="
+                  selectBrandorCustomer({ customerName: filter.customerName })
+                "
               >
                 <el-option
-                  v-for="item in typeOptions"
-                  :key="item.key"
-                  :label="item.typeName"
-                  :value="item.key"
+                  v-for="item in customerOptions"
+                  :key="item.customerId"
+                  :label="item.customerName"
+                  :value="item.customerName"
                 />
               </el-select>
             </div>
@@ -46,24 +52,34 @@
 
           <el-form-item class="el-col el-col-6" label="机芯">
             <div class="el-col-20">
-              <el-select placeholder="机芯" clearable v-model="filter.chip">
+              <el-select
+                placeholder="机芯"
+                clearable
+                v-model="filter.chip"
+                @change="selectChip"
+              >
                 <el-option
-                  v-for="item in typeOptions"
-                  :key="item.key"
-                  :label="item.typeName"
-                  :value="item.key"
+                  v-for="item in chipOptions"
+                  :key="item.chip"
+                  :label="item.chip"
+                  :value="item.chip"
                 ></el-option>
               </el-select>
             </div>
           </el-form-item>
           <el-form-item class="el-col el-col-6" label="机型">
             <div class="el-col-20">
-              <el-select placeholder="机型" clearable v-model="filter.model">
+              <el-select
+                placeholder="机型"
+                clearable
+                v-model="filter.model"
+                @change="selectModel"
+              >
                 <el-option
-                  v-for="item in typeOptions"
-                  :key="item.key"
-                  :label="item.typeName"
-                  :value="item.key"
+                  v-for="item in modelOptions"
+                  :key="item.model"
+                  :label="item.model"
+                  :value="item.model"
               /></el-select>
             </div>
           </el-form-item>
@@ -72,7 +88,7 @@
               <el-cascader
                 placeholder="国家"
                 v-model="filter.countryName"
-                :options="channelOptions"
+                :options="countryOptions"
                 expand-trigger="hover"
                 clearable
                 @change="handleChannelChange"
@@ -98,6 +114,7 @@
 
           <el-form-item label="状态">
             <el-select
+              class="el-col-20"
               placeholder="状态"
               clearable=""
               v-model="filter.releaseStatus"
@@ -139,6 +156,7 @@
           </el-form-item>
         </el-form>
       </div>
+
       <!-- 按钮：新增 -->
       <el-button
         class="filter-item"
@@ -149,6 +167,7 @@
       >
         新增
       </el-button>
+
       <!-- Table显示结果列表 -->
       <Table :props="table.props" :header="table.header" :data="table.data" />
     </ContentWrapper>
@@ -162,6 +181,7 @@
 import { ContentWrapper, Table } from "admin-toolkit";
 import BaseList from "@/components/BaseList";
 import { cloneDeep } from "lodash";
+import liteOS from "@/assets/liteOS.js";
 
 export default {
   extends: BaseList,
@@ -182,76 +202,85 @@ export default {
         props: {},
         data: [],
         header: [
-          {
-            prop: "tabId",
-            label: "策略ID",
+           {
+            prop: 'releaseConfId',
+            label: '策略ID',
             sortable: true,
             width: 100
           },
           {
-            prop: "auditor",
-            label: "策略名称",
+            prop: 'releaseConfName',
+            label: '策略名称',
             sortable: true,
             width: 100
           },
           {
-            prop: "modifierName",
-            label: "国家",
-            sortable: true,
-            width: 100
-          },
-          {
-            prop: "auditor",
-            label: "区域",
+            prop: 'ctmDevCtrName',
+            label: '区域名',
             sortable: true,
             width: 180
           },
           {
-            prop: "modifierName",
-            label: "优先级",
+            prop: 'ctmDevCtrId',
+            label: '区域详情',
             sortable: true,
             width: 100
           },
           {
-            prop: "modifierName",
-            label: "支持版本",
+            prop: 'priority',
+            label: '优先级',
+            sortable: true,
+            width: 100
+          },
+          {
+            prop: 'supportVersion',
+            label: '支持版本',
             sortable: true,
             width: 140
           },
           {
-            prop: "modifierName",
-            label: "状态",
+            prop: 'releaseStatus',
+            label: '状态',
+            sortable: true,
+            width: 100,
+            render: (h, { row }) => {
+              if (row.releaseStatus === 0) {
+                return '未推送'
+              } else if (row.releaseStatus === 1) {
+                return '推送中'
+              } else if (row.releaseStatus === 2) {
+                return '已取消'
+              }
+            }
+          },
+          {
+            prop: 'releaseStartTime',
+            label: '发布开始时间',
+            sortable: true,
+            width: 180
+          },
+          {
+            prop: 'releaseEndTime',
+            label: '发布结束时间',
+            sortable: true,
+            width: 180
+          },
+          {
+            prop: 'creator',
+            label: '操作用户',
             sortable: true,
             width: 100
           },
           {
-            prop: "lastUpdateDate",
-            label: "发布开始时间",
+            prop: 'lastUpdateTime',
+            label: '最近上线时间',
             sortable: true,
             width: 180
           },
           {
-            prop: "lastUpdateDate",
-            label: "发布结束时间",
-            sortable: true,
-            width: 180
-          },
-          {
-            prop: "auditor",
-            label: "操作用户",
-            sortable: true,
-            width: 100
-          },
-          {
-            prop: "lastUpdateDate",
-            label: "最近上线时间",
-            sortable: true,
-            width: 180
-          },
-          {
-            label: "操作",
+            label: '操作',
             width: 180,
-            fixed: "right",
+            fixed: 'right',
             render: this.operation(this)
           }
         ]
@@ -268,6 +297,11 @@ export default {
           }
         ]
       },
+      brandOptions: [],
+      customerOptions: [],
+      countryOptions: [],
+      chipOptions: [],
+      modelOptions: [],
       typeOptions: [
         { key: "1", typeName: "财务" },
         { key: "2", typeName: "儿童" },
@@ -276,9 +310,9 @@ export default {
         { key: "5", typeName: "购物" }
       ],
       releaseStatusOptions: [
-        { typeName: '未推送', key: 0},
-        { typeName: '推送中', key: 1},
-        { typeName: '已取消', key: 2},
+        { typeName: "未推送", key: 0 },
+        { typeName: "推送中", key: 1 },
+        { typeName: "已取消", key: 2 }
       ]
     };
   },
@@ -298,8 +332,8 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter();
+      debugger;
       this.$service.queryCCPlusPushManageListPage(filter).then(data => {
-        debugger;
         this.pagination.total = data.data.total;
         this.table.data = data.data.results;
       });
@@ -328,65 +362,97 @@ export default {
       this.efficientFilter = this.genDefaultFilter();
       this.fetchData();
     },
+    selectBrandorCustomer({ customerName = "", brand_name = "" }) {
+      let params = {};
+      customerName && (params.customerName = customerName)
+      brand_name && (params.brand_name = brand_name)
+      this.$service
+        .queryCustomerBrandList(params)
+        .then(data => {
+          if (data.code === 0) {
+            this.brandOptions = data.data.brandList;
+            this.customerOptions = data.data.customerList;
+          } else {
+            this.$message({
+              type: "error",
+              message: data.msg
+            });
+          }
+        });
+    },
+    selectChip(val) {
+      this.$service.queryModelChipList({ chip: val, model: "" }).then(data => {
+        if (data.code === 0) {
+          if (this.filter.model) {
+            this.modelOptions = data.data.modelList;
+          } else {
+            this.chipOptions = data.data.chipList;
+            this.modelOptions = data.data.modelList;
+          }
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
+      });
+    },
+    selectModel(val) {
+      this.$service.queryModelChipList({ chip: "", model: val }).then(data => {
+        if (data.code === 0) {
+          if (this.filter.chip) {
+            this.chipOptions = data.data.chipList;
+          } else {
+            this.chipOptions = data.data.chipList;
+            this.modelOptions = data.data.modelList;
+          }
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
+      });
+    },
     getMediaResourceInfo() {
-      // 获取查询条件
-      //   let data = await this.$service.getMediaResourceInfo();
-      return this.$service.getMediaResourceInfo().then(data => {
-        var movieData = JSON.parse(decodeURI(data.slice(5, -1)));
-        var videoItemModels = movieData.videoItemModels;
-        //频道-爱奇艺 channelOptions
-        var channelQiyi = {
-          label: "爱奇艺",
-          value: "iqiyi",
-          children: []
-        };
-        channelQiyi.children = videoItemModels[0].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            });
-          },
-          []
-        );
-        var channelTent = {
-          label: "腾讯",
-          value: "qq",
-          children: []
-        };
-        channelTent.children = videoItemModels[1].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            });
-          },
-          []
-        );
-        var channelYouku = {
-          label: "优酷",
-          value: "youku",
-          children: []
-        };
-        channelYouku.children = videoItemModels[2].categoryList.reduce(
-          (result, item) => {
-            return result.concat({
-              label: item.category_name,
-              value: item.cc_category_id
-            });
-          },
-          []
-        );
-        this.channelOptions.push(channelQiyi);
-        this.channelOptions.push(channelTent);
-        this.channelOptions.push(channelYouku);
+      this.$service.queryCustomerBrandList().then(data => {
+        if (data.code === 0) {
+          this.brandOptions = data.data.brandList;
+          this.customerOptions = data.data.customerList;
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
+      });
+      this.$service.queryAreaCountryListAll().then(data => {
+        if (data.code === 0) {
+          this.countryOptions = liteOS.areaTransform(data.data);
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
+      });
+      this.$service.queryModelChipList({ chip: "", model: "" }).then(data => {
+        if (data.code === 0) {
+          this.chipOptions = data.data.chipList;
+          this.modelOptions = data.data.modelList;
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
       });
     },
     handleChannelChange(value) {
-      this.filter["filmDetailPageInfo.source"] = value[0];
+      this.filter.countryName = value;
     },
     handleCreate() {
-      //新增
+      // 新增
       this.$router.push({
         path: "SecondaryEdit",
         query: {
@@ -436,11 +502,17 @@ export default {
             type: "success",
             message: "复制成功"
           });
+          this.$router.push({
+            path: "SecondaryEdit",
+            query: {
+              id: row.tabId
+            }
+          });
         })
         .catch(() => {});
     },
     handleEdit(row) {
-      //编辑
+      //编辑 @todo 传数据进去
       this.$router.push({
         path: "SecondaryEdit",
         query: {
@@ -541,8 +613,12 @@ export default {
     }
   },
   created() {
-    this.getMediaResourceInfo().then(() => {});
+    console.log("cc created");
+    this.getMediaResourceInfo();
     this.fetchData();
+  },
+  mounted() {
+    console.log("cc mounted");
   }
 };
 </script>

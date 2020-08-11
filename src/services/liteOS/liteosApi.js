@@ -21,6 +21,14 @@ export function queryCustomerListAllContainBrands () {
     url: 'api/lite-os/admin/select/query-customer-list-all-contain-brands'
   })
 }
+// 根据客户名称与品牌名称查询
+export function queryCustomerBrandList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/lite-os/admin/select/query-customer-brands-list',
+    params
+  })
+}
 // 品牌修改
 export function updateBrand (params) {
   return this.fetch({
