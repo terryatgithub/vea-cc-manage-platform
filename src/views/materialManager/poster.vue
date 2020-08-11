@@ -106,7 +106,15 @@ export default {
           {
             prop: 'materialPosterPic',
             label: '海报图',
-            sortable: true
+            sortable: true,
+            render: (h, { row }) => {
+              return h('img', {
+                attrs: {
+                  src: row.materialPosterPic,
+                  style: 'width:110px; height: 80px'
+                }
+              })
+            }
           },
           // {
           //   prop: 'sizeType',
@@ -118,7 +126,25 @@ export default {
             prop: 'materialState',
             label: '状态',
             width: 120,
-            sortable: true
+            sortable: true,
+            render: (h, { row }) => {
+              // if (!this.canEdit) {
+              //   return row.seq
+              // }
+              return h('el-switch', {
+                props: {
+                  value: row.materialState === 1
+                }
+                // on: {
+                //   input: value => {
+                //     row.seq = value
+                //   },
+                //   blur: () => {
+                //     this.$service.updateSeq({ id: row.roleId, seq: row.seq })
+                //   }
+                // }
+              })
+            }
           },
           {
             prop: 'creator',

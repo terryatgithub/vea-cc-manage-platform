@@ -33,7 +33,7 @@ export default function fetch ({
   }
   let option = {
     method,
-    headers: isHeaders ? { 'Content-Type': 'application/json' } : (isUpload ? { 'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryFV5rmXACUWGV5YmA' } : { 'Content-Type': 'application/x-www-form-urlencoded' }),
+    headers: isHeaders ? { 'Content-Type': 'application/json' } : (isUpload ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/x-www-form-urlencoded' }),
     url,
     data: isJSON ? data : typeof data === 'string' ? data : qs.stringify(data),
     params

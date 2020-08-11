@@ -61,6 +61,8 @@ import MediaAssetsManager from '../views/mediaAssetsManager/index.vue'
 import MediaAssetsDetail from '../views/mediaAssetsManager/detail.vue'
 import LauncherPush from '../views/launcherPush/index.vue'
 import LauncherEdit from '../views/launcherPush/edit.vue'
+import AppStorePush from '../views/appStorePush/index.vue'
+import AppStoreEdit from '../views/appStorePush/edit.vue'
 import CCPlusPushPolicy from '../views/CCPlusPushPolicy'
 import SecondaryEdit from '../views/CCPlusPushPolicy/SecondaryEdit'
 import ColumnTemplateDetail from '../views/CCPlusPushPolicy/components/ColumnTemplateDetail'
@@ -863,7 +865,33 @@ const children = [
         }
       }
     ]
-  }
+  },
+  {
+    path: 'appStore',
+    name: 'appStore',
+    component: Wrapper,
+    meta: { title: 'appStore管理', icon: 'el-icon-cc-daichuli2' },
+    children: [
+      {
+        name: 'appStorePush',
+        path: '/appStorePush',
+        component: AppStorePush,
+        meta: {
+          title: 'appStore管理',
+          tagId: 'appStorePush'
+        }
+      },
+      {
+        name: 'appStoreEdit',
+        path: '/appStoreEdit',
+        component: AppStoreEdit,
+        meta: {
+          title: 'appStore编辑',
+          tagId: 'appStoreEdit'
+        }
+      }
+    ]
+  },
 ]
 /**/
 
