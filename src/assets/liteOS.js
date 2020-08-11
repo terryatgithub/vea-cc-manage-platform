@@ -109,6 +109,24 @@ export default {
     }
     return options
   },
+  versionTransform(oldArray) {
+    const options = []
+    // options[0] = {
+    //   label: '全部客户',
+    //   value: '',
+    //   customerId: '',
+    //   customerName: '',
+    //   children: null,
+    //   brandList: null,
+    // };
+    for (let i = 0; i < oldArray.length; i++) {
+      options[i] = {
+        versionId: oldArray[i].versionId,
+        supportVersion: oldArray[i].supportVersion
+      }
+    }
+    return options
+  },
   filterOptions2 (oldList) {
     const options2 = []
     // options2[0] = {

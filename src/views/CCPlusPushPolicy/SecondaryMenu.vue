@@ -17,7 +17,7 @@
                 clearable
                 v-model="filter.branchName"
                 @change="
-                  selectBrandorCustomer({ brand_name: filter.branchName })
+                  selectBrandorCustomer({ brandName: filter.branchName })
                 "
               >
                 <el-option
@@ -103,10 +103,10 @@
                 v-model="filter.supportVersion"
               >
                 <el-option
-                  v-for="item in typeOptions"
-                  :key="item.key"
-                  :label="item.typeName"
-                  :value="item.key"
+                  v-for="item in versionOptions"
+                  :key="item.versionId"
+                  :label="item.supportVersion"
+                  :value="item.supportVersion"
                 />
               </el-select>
             </div>
@@ -302,6 +302,7 @@ export default {
       countryOptions: [],
       chipOptions: [],
       modelOptions: [],
+      versionOptions: [],
       typeOptions: [
         { key: "1", typeName: "财务" },
         { key: "2", typeName: "儿童" },
@@ -332,7 +333,6 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter();
-      debugger;
       this.$service.queryCCPlusPushManageListPage(filter).then(data => {
         this.pagination.total = data.data.total;
         this.table.data = data.data.results;
@@ -362,10 +362,10 @@ export default {
       this.efficientFilter = this.genDefaultFilter();
       this.fetchData();
     },
-    selectBrandorCustomer({ customerName = "", brand_name = "" }) {
+    selectBrandorCustomer({ customerName = "", brandName = "" }) {
       let params = {};
       customerName && (params.customerName = customerName)
-      brand_name && (params.brand_name = brand_name)
+      brandName && (params.brandName = brandName)
       this.$service
         .queryCustomerBrandList(params)
         .then(data => {
@@ -440,6 +440,16 @@ export default {
         if (data.code === 0) {
           this.chipOptions = data.data.chipList;
           this.modelOptions = data.data.modelList;
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
+      });
+      this.$service.queryVersionList().then(data => {
+        if (data.code === 0) {
+          this.versionOptions = liteOS.versionTransform(data.data);
         } else {
           this.$message({
             type: "error",

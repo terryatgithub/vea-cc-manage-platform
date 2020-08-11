@@ -61,6 +61,18 @@ export function deleteBrand (params) {
     params
   })
 }
+
+// 版本号
+// 查询支持的版本
+export function queryVersionList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/lite-os/admin/version/queryVersionList',
+    params
+  })
+}
+
+
 // 分页获取机芯机型列表
 export function queryChipModelListPage (params) {
   return this.fetch({
