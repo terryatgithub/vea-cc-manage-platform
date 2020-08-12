@@ -459,7 +459,7 @@ export default {
       });
     },
     handleChannelChange(value) {
-      this.filter.countryName = value;
+      this.filter.countryName = value[1];
     },
     handleCreate() {
       // 新增

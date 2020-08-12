@@ -36,18 +36,16 @@
         </el-form-item>
 
         <el-form-item label="选择区域:">
-          <el-select
-            v-model="form.regions"
-            multiple
-            placeholder="请选择(支持多选)"
+          <el-button
+            v-if="!form.ctmDevCtrName"
+            type="primary"
+            @click="selectRegion"
+            >选择区域</el-button
           >
-            <el-option
-              v-for="item in regionOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+          <div v-else class="nameBox">
+            {{ form.ctmDevCtrName }}
+            <i class="el-icon-error" @click="selectRegion"> </i>
+          </div>
         </el-form-item>
 
         <el-form-item label="发布时间:">
@@ -61,6 +59,18 @@
           ></el-date-picker>
         </el-form-item>
 
+        <el-form-item label="选择优先级:">
+          <el-select v-model="form.priority" placeholder="选择优先级">
+            <el-option
+              v-for="item in priorityOptions"
+              :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <!-- 栏目区域 -->
         <el-form-item label="栏目:"> 栏目数 {{ columnsNum }} </el-form-item>
 
         <!-- <el-form-item label-width="10px"> -->
@@ -76,7 +86,7 @@
             trigger: ['blur', 'change']
           }"
         ></ColumnTemplate>
-        
+
         <el-form-item>
           <el-button
             type="primary"
@@ -104,6 +114,17 @@
         </el-form-item>
       </el-form>
     </div>
+    <el-dialog title="选择区域" :visible.sync="showSelectRegionDialog">
+      <SelectRegionComponent @getRegion="getRegion" />
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="showSelectRegionDialog=false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="confirmRegionSelect">
+          确定
+        </el-button>
+      </div>
+    </el-dialog>
   </ContentCard>
 </template>
 
@@ -111,28 +132,19 @@
 /**
   酷开LiteOS CC Plus二级菜单-’新增/编辑’页面
  */
+import SelectRegionComponent from "./components/SelectRegionComponent";
 import ColumnTemplate from "./components/ColumnTemplate";
+import liteOS from "@/assets/liteOS.js";
 
 export default {
   components: {
-    ColumnTemplate
+    ColumnTemplate,
+    SelectRegionComponent
   },
   data() {
     return {
-      versionOptions: [
-        {
-          label: "All",
-          value: 0
-        },
-        {
-          label: "1.0.0",
-          value: 1
-        },
-        {
-          label: "2.0.0",
-          value: 2
-        }
-      ],
+      showSelectRegionDialog: false,
+      versionOptions: [],
       regionOptions: [
         {
           label: "亚太",
@@ -143,10 +155,21 @@ export default {
           value: "NA"
         }
       ],
+      priorityOptions: [
+        {
+          label: "优先级 A",
+          value: "A"
+        },
+        {
+          label: "优先级 B",
+          value: "B"
+        }
+      ],
       form: {
         name: "",
         versions: [],
-        regions: [],
+        ctmDevCtrName: "",
+        priority: "",
         datePublish: [],
         columns: [
           {
@@ -169,7 +192,22 @@ export default {
       return this.form.columns.length;
     }
   },
+  created() {
+    this.init();
+  },
   methods: {
+    init() {
+      this.$service.queryVersionList().then(data => {
+        if (data.code === 0) {
+          this.versionOptions = liteOS.versionTransform(data.data);
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
+      });
+    },
     handleAddColumn() {
       const col = {
         columnTemplate: "媒资模板B: 竖排",
@@ -209,6 +247,22 @@ export default {
           return callback(new Error("模板序号不能重复，请重新设置"));
         }
       });
+    },
+    selectRegion() {
+      this.showSelectRegionDialog = true;
+    },
+    getRegion(...rest) {
+      this.form.ctmDevCtrName = rest[1];
+    },
+    confirmRegionSelect() {
+      if (this.form.ctmDevCtrName) {
+        this.showSelectRegionDialog = false
+      } else {
+        this.$message({
+          type: "error",
+          message: "请选择一项！"
+        });
+      }
     }
   }
 };
