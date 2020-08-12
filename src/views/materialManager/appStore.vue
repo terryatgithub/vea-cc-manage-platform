@@ -99,32 +99,39 @@ export default {
           {
             prop: 'materialPics',
             label: '图标',
-            sortable: true
+            sortable: true,
+            render: (h, { row }) => {
+              return h('img', {
+                attrs: {
+                  src: row.materialPics.split(',')[0],
+                  style: 'width:110px; height: 80px'
+                }
+              })
+            }
           },
           {
             prop: 'materialState',
             label: '状态',
             width: 120,
-            sortable: true
-            // render: (h, { row }) => {
-            //   // if (!this.canEdit) {
-            //   //   return row.seq
-            //   // }
-            //   return h('el-switch', {
-            //     props: {
-            //       value: row.seq,
-            //       disabled
-            //     },
-            //     on: {
-            //       input: value => {
-            //         row.seq = value
-            //       },
-            //       blur: () => {
-            //         this.$service.updateSeq({ id: row.roleId, seq: row.seq })
-            //       }
-            //     }
-            //   })
-            // }
+            sortable: true,
+            render: (h, { row }) => {
+              // if (!this.canEdit) {
+              //   return row.seq
+              // }
+              return h('el-switch', {
+                props: {
+                  value: row.materialState === 1
+                }
+                // on: {
+                //   input: value => {
+                //     row.seq = value
+                //   },
+                //   blur: () => {
+                //     this.$service.updateSeq({ id: row.roleId, seq: row.seq })
+                //   }
+                // }
+              })
+            }
           },
           {
             prop: 'creator',

@@ -122,6 +122,11 @@
             <el-input placeholder="区域名" clearable v-model="filter['ctmDevCtrName']"/>
           </div>
         </el-form-item>
+        <el-form-item class="el-col el-col-6">
+          <div class="el-col-20">
+            <el-input placeholder="页面序号" clearable v-model="filter['ctmDevCtrName']"/>
+          </div>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary"  @click="handleFilterChange">查询</el-button>
           <el-button  @click="handleFilterReset">重置</el-button>
@@ -157,11 +162,7 @@ export default {
     ContentWrapper,
     Table
   },
-  watch: {
-    $route () { // 监听路由跳转后刷新列表数据
-      // this.fetchData()
-    }
-  },
+  watch: {},
   data () {
     return {
       filter: this.genDefaultFilter(),
@@ -306,7 +307,7 @@ export default {
       if (filter.countryName) {
         filter.countryName = filter.countryName.join('/')
       }
-      this.$service.queryLauncherPushListPage(filter).then(data => {
+      this.$service.queryAppStorePushListPage(filter).then(data => {
         if (data.code === 0) {
           this.pagination.total = data.data.total
           this.table.data = data.data.results

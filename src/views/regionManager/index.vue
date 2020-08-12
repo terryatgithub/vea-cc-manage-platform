@@ -149,7 +149,14 @@ export default {
             prop: 'state',
             label: '状态',
             sortable: true,
-            width: 100
+            width: 100,
+            render: (h, { row }) => {
+              return h('el-switch', {
+                props: {
+                  value: row.state === 1
+                }
+              })
+            }
           },
           {
             prop: 'creator',

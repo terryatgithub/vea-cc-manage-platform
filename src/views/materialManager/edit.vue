@@ -23,10 +23,12 @@
             :action='getActionUrl()'
             :headers='getAuthHeader()'
             :http-request='imgUpload'
+            :auto-upload='true'
             :on-remove="handleRemove"
             :on-success="uploadSuccess"
             :on-error="uploadError"
-            :before-upload="beforeUpload">
+            :before-upload="beforeUpload"
+            :file-list="appFileList">
             <i class="el-icon-plus app-uploader-icon"></i>
           </el-upload>
         </el-form-item>
@@ -92,20 +94,32 @@
           />
         </el-form-item>
         <el-form-item label="图标" class="imgUpload" prop="materialPosterPic">
-          <el-upload
-            v-model="posterForm.materialPosterPic"
-            class="long-uploader"
-            :show-file-list="false"
-            :action='getActionUrl()'
-            :headers='getAuthHeader()'
-            :http-request='imgUpload'
-            :on-remove="handleRemove"
-            :on-success="uploadSuccess"
-            :on-error="uploadError"
-            :before-upload="beforeUpload">
-            <img v-if="posterForm.posterImg" :src="posterForm.posterImg" class="avatar">
-            <i v-else class="el-icon-plus long-uploader-icon"></i>
-          </el-upload>
+          <div class='picture-uploader' v-if='isInit'>
+            <el-upload
+              v-if='!posterForm.materialPosterPic'
+              :show-file-list="false"
+              :action='getActionUrl()'
+              :headers='getAuthHeader()'
+              :http-request='imgUpload'
+              :auto-upload='true'
+              :on-success="uploadSuccess"
+              :on-error="uploadError"
+              :before-upload="beforeUpload">
+              <!-- <img v-if="posterForm.materialPosterPic" :src="posterForm.materialPosterPic" class="avatar"> -->
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <div v-else class='el-upload thumbnail-wrap'>
+              <el-dialog :visible.sync='dialogVisible'>
+                <img width='100%' :src='posterForm.materialPosterPic' alt />
+              </el-dialog>
+              <img class='el-upload-list__item-thumbnail' :src='posterForm.materialPosterPic' alt />
+              <div class='el-upload-list__item-actions'>
+                <span class='el-upload-list__item-delete' @click='handleRemove'>
+                  <i class='el-icon-delete'></i>
+                </span>
+              </div>
+            </div>
+          </div>
         </el-form-item>
         <!-- <el-form-item
           label="尺寸类型"
@@ -265,13 +279,15 @@ export default {
         materialState: [
           { required: true, message: '请选择状态', trigger: 'change' }
         ]
-      }
+      },
+      appFileList: [],
+      dialogVisible: false,
+      isInit: true
     }
   },
   methods: {
     getmaterialId () {
       const typeForm = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? 'appForm' : 'posterForm'
-      debugger
       if (typeForm === 'appForm') {
         this.$service.getAppManageMaterialId({ materialId: this.materialId }).then(data => {
           if (data.code === 0) {
@@ -284,6 +300,12 @@ export default {
               apiUrl: detail.apiUrl,
               materialRemark: detail.materialRemark,
               materialState: detail.materialState.toString()
+            }
+            const fileList = detail.materialPics.split(',')
+            for (const i in fileList) {
+              this.appFileList.push({
+                'url': fileList[i]
+              })
             }
           } else {
             this.$message({
@@ -324,9 +346,9 @@ export default {
       this.$refs[typeForm].validate((valid) => {
         if (valid) {
           const params = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? this.appForm : this.posterForm
-          params.materialPics = params.materialPics.join(',')
           params.creator = '管理员'
           if (typeForm === 'appForm') {
+            params.materialPics = params.materialPics.join(',')
             if (this.materialId !== '0') { // 判断是新增还是修改
               params.materialId = this.materialId
               this.$service.updateAppManage(params).then(data => {
@@ -347,7 +369,7 @@ export default {
                 }
               })
             } else {
-              this.$service.addPosterManage(params).then(data => {
+              this.$service.addAppManage(params).then(data => {
                 if (data.code === 0) {
                   this.$refs[typeForm].clearValidate()
                   this.$refs[typeForm].resetFields()
@@ -416,7 +438,6 @@ export default {
       const formData = new FormData()
       formData.append('file', file.file)
       formData.append('checkResolution', 'false')
-      console.log(formData)
       this.$service.uploadImg(formData).then(data => {
         if (data.code === 0) {
           file.onSuccess(data)
@@ -431,7 +452,7 @@ export default {
       })
     },
     getActionUrl () {
-      const actionUrl = 'http://172.20.151.117:7003/api/lite-os/admin/upload/uploadImg'
+      const actionUrl = 'http://172.20.151.117:7003/api/lite-os/admin/poster-material-manage/update-material-manage'
       return actionUrl
     },
     getAuthHeader () {
@@ -439,29 +460,32 @@ export default {
       return headerInfo
     },
     handleRemove (file, fileList) {
-      const arr = []
-      for (const i in fileList) {
-        arr.push(fileList[i].url)
-      }
       if (this.dialogType === 'appCreate' || this.dialogType === 'appEdit') {
+        const arr = []
+        for (const i in fileList) {
+          arr.push(fileList[i].response.data.url)
+        }
         this.appForm.materialPics = arr
       } else {
-        this.posterForm.materialPosterPic = arr
+        this.posterForm.materialPosterPic = ''
       }
       console.log(this.appForm)
     },
     uploadSuccess (res, file, fileList) {
-      console.log('上传成功')
       const arr = []
       for (const i in fileList) {
-        arr.push(fileList[i].url)
+        if (fileList[i].response) {
+          arr.push(fileList[i].response.data.url)
+        } else {
+          arr.push(fileList[i].url)
+        }
       }
       if (this.dialogType === 'appCreate' || this.dialogType === 'appEdit') {
         this.appForm.materialPics = arr
       } else {
-        this.posterForm.materialPosterPic = arr
+        this.posterForm.materialPosterPic = res.data.url
       }
-      console.log(this.appForm)
+      console.log(this.posterForm)
     },
     uploadError (res, file) {
       console.log('上传失败')
@@ -472,9 +496,11 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 2
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 PNG或JPG 格式!')
+        this.setInit()
       }
       if (!isLt2M) {
         this.$message.error('上传图标图片大小不能超过 2MB!')
+        this.setInit()
       }
       return isJPG && isLt2M
     }
@@ -544,6 +570,70 @@ export default {
     }
     .el-form-item__content {
       text-align: left;
+    }
+  }
+}
+.picture-uploader {
+  position: relative;
+  width: 85px;
+  height: 85px;
+  .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    width: 85px;
+    height: 85px;
+    line-height: 97px;
+  }
+  .enabled {
+    .el-upload {
+      cursor: pointer;
+      &:hover {
+        border-color: #409eff;
+      }
+    }
+  }
+  &:hover .el-upload-list__item-actions {
+    opacity: 1;
+    & > span {
+      display: block;
+      right: 5px;
+      top: -35px;
+    }
+  }
+}
+.thumbnail-wrap {
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  .el-upload-list__item-thumbnail {
+    width: 100%;
+    height: 100%;
+  }
+  .el-upload-list__item-actions {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    cursor: default;
+    text-align: center;
+    color: #fff;
+    opacity: 0;
+    font-size: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s;
+    &:after {
+      display: inline-block;
+      content: '';
+      height: 100%;
+      vertical-align: middle;
+    }
+    & > span {
+      cursor: pointer;
+      color: #fff;
     }
   }
 }

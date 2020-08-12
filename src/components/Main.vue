@@ -185,6 +185,7 @@ const routerMap = {
   mediaAssetsManager: 'mediaAssetsManager',
   launcherPush: 'launcherPush',
   CCPlusPushPolicy: 'CCPlusPushPolicy',
+  appStorePush: 'appStorePush'
 }
 
 const iconMap = {
@@ -485,6 +486,13 @@ export default {
             title: 'CC Plus 管理',
             icon: 'icon_folder',
             url: 'CCPlusPushPolicy/CCPlusPushPolicy/view.html'
+          },
+          {
+            text: 'appStore管理',
+            id: 'appStorePush',
+            title: 'appStore管理',
+            icon: 'icon_folder',
+            url: 'appStorePush/appStorePush/view.html'
           }]
       this.$service.getMenu().then(menu => {
         const titles = {}

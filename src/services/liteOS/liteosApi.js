@@ -1,5 +1,14 @@
+import axios from 'axios'
 // 参数设置
 
+// 根据客户名称与品牌名称查询
+export function queryCustomerBrandsList (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/select/query-customer-brands-list',
+    params
+  })
+}
 // 获取全部有效客户
 export function queryCustomerListAll () {
   return this.fetch({
@@ -169,12 +178,22 @@ export function deleteAreaManage (params) {
 // 素材设置
 
 // 公共图片上传接口
-export function uploadImg (data) {
-  return this.fetch({
+export function uploadImg (formData) {
+//   return this.fetch({
+//     method: 'post',
+//     url: 'api/lite-os/admin/upload/uploadImg',
+//     params,
+//     isUpload: true
+//   })
+  return axios({
     method: 'post',
     url: 'api/lite-os/admin/upload/uploadImg',
-    data,
-    isUpload: true
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    data: formData
+  }).then(({ data }) => {
+    return data
   })
 }
 // 海报素材修改
@@ -317,6 +336,61 @@ export function getLauncherPushManageReleaseConfId (params) {
   return this.fetch({
     method: 'get',
     url: 'api/lite-os/admin/launcher-push-manage/get-push-manage-releaseConfId',
+    params
+  })
+}
+
+// appStore推送管理
+
+// 分页获取AppStore推送管理列表
+export function queryAppStorePushListPage (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/app-store-push-manage/query-push-manage-list-page',
+    params
+  })
+}
+// AppStore推送状态变更
+export function updateAppStorePushStatus (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/app-store-push-manage/update-push-status',
+    params
+  })
+}
+// AppStore推送管理修改
+export function updateAppStorePushManage (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/lite-os/admin/app-store-push-manage/update-push-manage',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
+// AppStore推送管理删除
+export function deleteAppStorePushManage (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/app-store-push-manage/delete-push-manage',
+    params
+  })
+}
+// AppStore推送管理添加
+export function addAppStorePushManage (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/lite-os/admin/app-store-push-manage/add-push-manage',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
+// AppStore根据推送管理id获取对应数据
+export function getAppStorePushManageReleaseConfId (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/app-store-push-manage/get-push-manage-releaseConfId',
     params
   })
 }
