@@ -78,6 +78,7 @@
 </template>
 
 <script>
+// ‘区域选择’组件
 export default {
   data() {
     return {

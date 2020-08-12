@@ -76,15 +76,10 @@
         <!-- <el-form-item label-width="10px"> -->
         <!-- 栏目模板 -->
         <ColumnTemplate
-          v-for="(item, index) in form.columns"
+          v-for="item in form.columns"
           ref="columnTemplateForm"
-          :key="item.columnId"
+          :key="item.serialNo"
           :content="item"
-          :prop="'columns.' + index"
-          :rules="{
-            validator: checkColumnSerialNo,
-            trigger: ['blur', 'change']
-          }"
         ></ColumnTemplate>
 
         <el-form-item>
@@ -114,10 +109,11 @@
         </el-form-item>
       </el-form>
     </div>
+
     <el-dialog title="选择区域" :visible.sync="showSelectRegionDialog">
       <SelectRegionComponent @getRegion="getRegion" />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="showSelectRegionDialog=false">
+        <el-button @click="showSelectRegionDialog = false">
           取消
         </el-button>
         <el-button type="primary" @click="confirmRegionSelect">
@@ -168,16 +164,17 @@ export default {
       form: {
         name: "",
         versions: [],
+        ctmDevCtrId: 0,
         ctmDevCtrName: "",
         priority: "",
         datePublish: [],
         columns: [
           {
-            columnTemplate: "媒资模板A: 混排",
-            columnId: 122121,
-            serialNo: 1,
+            columnTemplate: 0,
+            columnId: 0,
+            serialNo: 0,
             columnName: "",
-            moviesNum: "12"
+            moviesNum: "99"
           }
         ],
         devices: ""
@@ -218,45 +215,63 @@ export default {
       };
       this.form.columns.push(col);
     },
+    checkDuplicatedSerialNo() {
+      //判断栏目模板序号是否有重复的
+      let arr = [];
+      this.$refs["columnTemplateForm"].forEach(ref =>
+        arr.push(ref.content.serialNo)
+      );
+      let res = liteOS.findRepeatElementInArr(arr);
+      console.log("查找重复序号:", res);
+      return res;
+    },
     async submitForm(formName) {
       console.log("submit", this.form);
-      // let pAll = this.$refs["columnTemplateForm"].map(form => form.validate())
-      let res = await this.$refs["columnTemplateForm"][0].validate();
-      console.log("res", res);
-      if (res) {
-        res = await this.$refs[formName].validate();
+      debugger;
+      let cols = this.$refs["columnTemplateForm"].map(ref => ref.validate());
+      try {
+        let res = this.checkDuplicatedSerialNo();
+        if (res !== undefined) {
+          throw new Error("栏目模板序号不能重复，重复序号为: " + res);
+        }
+        res = await Promise.all(cols);
+        console.log("res", res);
         if (res) {
-          alert("submit ok");
-          return;
+          //@todo 校验序号重复
+          res = await this.$refs[formName].validate();
+          if (res) {
+            alert("submit ok");
+            return;
+          }
+        }
+        // throw new Error('')
+      } catch (e) {
+        if (e) {
+          this.$message({
+            type: "error",
+            message: e
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: "校验出错，请修改提示错误字段"
+          });
         }
       }
-      alert("error");
-      return false;
     },
     cancelForm(formName) {
       console.log("cancel", this.form);
-    },
-    checkColumnSerialNo: (rule, value, callback) => {
-      //校验模板栏目序列号
-      console.log("check no...");
-      if (!value) {
-        return callback(new Error("请输入栏目序号!"));
-      }
-      this.form.columns.forEach(col => {
-        if (col.serialNo === value) {
-          return callback(new Error("模板序号不能重复，请重新设置"));
-        }
-      });
     },
     selectRegion() {
       this.showSelectRegionDialog = true;
     },
     getRegion(...rest) {
+      this.form.ctmDevCtrId = rest[0];
       this.form.ctmDevCtrName = rest[1];
     },
     confirmRegionSelect() {
       if (this.form.ctmDevCtrName) {
-        this.showSelectRegionDialog = false
+        this.showSelectRegionDialog = false;
       } else {
         this.$message({
           type: "error",

@@ -171,5 +171,14 @@ export default {
     } else {
         return new Date()
     }
+  },
+  findRepeatElementInArr(arr) {
+    //返回数组中第一个重复的元素，如没有默认返回undefined
+    let a = arr.sort()
+    for(let i = 0, l = a.length; i < l; i++) {
+      if(a[i] === a[i+1]) {
+        return a[i]
+      }
+    }
   }
 }
