@@ -103,7 +103,7 @@ export default {
             render: (h, { row }) => {
               return h('img', {
                 attrs: {
-                  src: row.materialPics.split(',')[0],
+                  src: JSON.parse(row.materialPics)[0].pic,
                   style: 'width:110px; height: 80px'
                 }
               })

@@ -85,6 +85,7 @@ export default {
         }
         ul {
             max-height: 230px;
+            min-height: 230px;
             overflow-y: scroll;
             padding: 0;
         }
@@ -98,6 +99,10 @@ export default {
         .grid-content {
             border-radius: 4px;
             text-align: center;
+            .el-image {
+              width: 100%;
+              height: 100px;
+            }
             .el-radio {
                 position: relative;
                 bottom: 10px;

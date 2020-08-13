@@ -12,6 +12,7 @@
           <el-input
             placeholder="请输入区域名"
             v-model="regionForm.ctmDevCtrName"
+            clearable
           />
         </el-form-item>
         <el-form-item label='客户&品牌' prop="brandNames">
@@ -19,9 +20,8 @@
             placeholder='请选择'
             :options='userOptions'
             :props="props"
-            collapse-tags
             size='mini'
-            :clearable='true'
+            clearable
             v-model="regionForm.brandNames"
             @change='brandNamesSel'
           ></el-cascader>
@@ -31,9 +31,8 @@
             placeholder='请选择'
             :options='chipModelOptions'
             :props="props"
-            collapse-tags
             size='mini'
-            :clearable='true'
+            clearable
             v-model="regionForm.devices"
             @change='devicesSel'
           ></el-cascader>
@@ -44,9 +43,8 @@
             ref="areaCascader"
             :options='arealOptions'
             :props="props"
-            collapse-tags
             size='mini'
-            :clearable='true'
+            clearable
             v-model="regionForm.countryNames"
             @change='countryNamesSel'
           ></el-cascader>

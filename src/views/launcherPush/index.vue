@@ -91,10 +91,10 @@
               v-model="filter['supportVersion']"
             >
               <el-option
-                v-for="item in typeOptions"
-                :key="item.key"
-                :label="item.typeName"
-                :value="item.key"
+                v-for="item in versionOptions"
+                :key="item.versionId"
+                :label="item.supportVersion"
+                :value="item.supportVersion"
               />
             </el-select>
           </div>
@@ -274,6 +274,7 @@ export default {
       modelOptions: [],
       customerOptions: [],
       brandOptions: [],
+      versionOptions: [],
       typeOptions: [
         { key: '1', typeName: '财务' },
         { key: '2', typeName: '儿童' },
@@ -444,6 +445,16 @@ export default {
       this.$service.queryAreaCountryListAll().then(data => {
         if (data.code === 0) {
           this.countryOptions = liteOS.areaTransform(data.data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+      this.$service.queryVersionList({ version: '' }).then(data => {
+        if (data.code === 0) {
+          this.versionOptions = data.data
         } else {
           this.$message({
             type: 'error',

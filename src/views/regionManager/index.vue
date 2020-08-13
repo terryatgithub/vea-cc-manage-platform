@@ -8,6 +8,7 @@
             <el-input
               placeholder="区域名"
               v-model="filter['areaName']"
+              clearable
             />
           </div>
         </el-form-item>

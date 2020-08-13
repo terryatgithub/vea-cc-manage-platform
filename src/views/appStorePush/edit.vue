@@ -273,7 +273,6 @@ export default {
             params.releaseStatus = '0'
             params.tvActiveId = DeviceID
             params.itemList = that.itemList
-            debugger
             if (this.$route.query.releaseConfId && this.$route.query.handleType === 'edit') {
               params.releaseConfId = this.$route.query.releaseConfId
               this.$service.updateAppStorePushManage(params).then(data => {

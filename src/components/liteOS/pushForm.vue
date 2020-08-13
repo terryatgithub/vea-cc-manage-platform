@@ -13,13 +13,19 @@
         />
     </el-form-item>
     <el-form-item label='支持版本' prop="supportVersion">
-        <el-select v-model="pushForm.supportVersion" multiple placeholder="请选择版本(支持多选)">
-            <el-option
+        <el-select v-model="pushForm.supportVersion" multiple placeholder="请选择版本(支持多选)" clearable>
+            <!-- <el-option
             v-for="item in versionsOptions"
             :key="item.value"
             :label="item.label"
             :value="item.label">
-            </el-option>
+            </el-option> -->
+            <el-option
+              v-for="item in versionOptions"
+              :key="item.versionId"
+              :label="item.supportVersion"
+              :value="item.supportVersion"
+            />
         </el-select>
     </el-form-item>
     <el-form-item label='选择区域'>
@@ -48,10 +54,11 @@
       <el-select
         placeholder="请选择优先级"
         v-model="pushForm.priority"
+        clearable
       >
-        <el-option value="0" label="A"/>
-        <el-option value="1" label="B"/>
-        <el-option value="2" label="C"/>
+        <el-option value="3" label="A"/>
+        <el-option value="2" label="B"/>
+        <el-option value="1" label="C"/>
       </el-select>
     </el-form-item>
   </el-form>
@@ -99,19 +106,7 @@ export default {
           { required: true, message: '请选择优先级', trigger: 'change' }
         ]
       },
-      versionsOptions: [{
-        value: '1',
-        label: 'All'
-      }, {
-        value: '2',
-        label: '1.0'
-      }, {
-        value: '3',
-        label: '1.0.5'
-      }, {
-        value: '4',
-        label: '2.0'
-      }],
+      versionOptions: [],
       userOptions: [
         { key: 'CN', displayName: 'China' },
         { key: 'US', displayName: 'USA' },
@@ -124,6 +119,18 @@ export default {
     regionSel () {
       this.$emit('regionSel')
     }
+  },
+  created () {
+    this.$service.queryVersionList({ version: '' }).then(data => {
+      if (data.code === 0) {
+        this.versionOptions = data.data
+      } else {
+        this.$message({
+          type: 'error',
+          message: data.msg
+        })
+      }
+    })
   }
 }
 </script>

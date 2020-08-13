@@ -1,57 +1,44 @@
 <template>
   <div>
-    <el-form :inline="true" :model="formInline" class="form-inline">
-      <el-form-item class="">
-        <el-input v-model="formInline.user" placeholder="请输入应用名"></el-input>
+    <el-form
+      class="sourceEdit"
+      ref="formInline"
+      :model="formInline"
+      :rules="rules"
+      :inline="true"
+      style="width: 400px;text-align: center;"
+    >
+      <el-form-item label="当前来源:" prop="mediaSourceId">
+        <div>{{mediaSourceName}}</div>
       </el-form-item>
-      <el-form-item class="">
-        <el-select v-model="formInline.region" placeholder="请选择应用类型">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">查询</el-button>
+      <el-form-item label="关联图片:" class="imgUpload" prop="picture">
+        <div class='picture-uploader' v-if='isInit'>
+          <el-upload
+            v-if='!formInline.picture'
+            :show-file-list="false"
+            :action='getActionUrl()'
+            :http-request='imgUpload'
+            :auto-upload='true'
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :before-upload="beforeUpload">
+            <!-- <img v-if="posterForm.materialPosterPic" :src="posterForm.materialPosterPic" class="avatar"> -->
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <div v-else class='el-upload thumbnail-wrap'>
+            <el-dialog :visible.sync='dialogVisible'>
+              <img width='100%' :src='formInline.picture' alt />
+            </el-dialog>
+            <img class='el-upload-list__item-thumbnail' :src='formInline.picture' alt />
+            <div class='el-upload-list__item-actions'>
+              <span class='el-upload-list__item-delete' @click='handleRemove'>
+                <i class='el-icon-delete'></i>
+              </span>
+            </div>
+          </div>
+        </div>
       </el-form-item>
     </el-form>
-    <el-table
-      ref="singleTable"
-      :data="tableData"
-      highlight-current-row
-      @current-change="handleCurrentChange"
-      style='width: 100%;overflow: auto'
-      height='300'
-    >
-      <el-table-column
-        width="50">
-        <template slot-scope="scope">
-          <el-radio :label='scope.row.id' v-model='radio'>&nbsp;</el-radio>
-        </template>
-      </el-table-column>
-      <el-table-column
-        property="id"
-        label="应用ID"
-        width="80">
-      </el-table-column>
-      <el-table-column
-        property="name"
-        label="应用名"
-        width="150">
-      </el-table-column>
-      <el-table-column
-        property="type"
-        label="类型"
-        width="100">
-      </el-table-column>
-      <el-table-column
-        property="address"
-        label="备注">
-      </el-table-column>
-      <el-table-column
-        property="api"
-        label="api">
-      </el-table-column>
-    </el-table>
     <div slot="footer" class="dialog-footer">
       <el-button @click="cancel">
         取消
@@ -64,114 +51,195 @@
 </template>
 <script>
 export default {
+  props: {
+    mediaSourceId: {
+      type: Number
+    },
+    mediaSourceName: {
+      type: String
+    }
+  },
   data () {
     return {
       formInline: {
-        user: '',
-        region: ''
+        mediaSourceId: 1,
+        picture: ''
       },
-      tableData: [{
-        id: 0,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 1,
-        type: '娱乐',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 2,
-        type: '娱乐',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 3,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 4,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 5,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 6,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 7,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 8,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }, {
-        id: 9,
-        type: '内容',
-        name: '王小虎',
-        address: '上海市普陀区',
-        api: 'xxxx'
-      }],
-      currentRow: null,
-      total: 0, // 总记录数
-      currentPage: 1, // 当前页码
-      pageSize: 10, // 每页显示10条数据
-      radio: null // 如果使用单选框，定义一个model值
+      rules: {
+        mediaSourceId: [
+          { required: true, message: '', trigger: 'change' }
+        ],
+        picture: [
+          { required: true, message: '请上传关联图片', trigger: 'change' }
+        ]
+      },
+      isInit: true
     }
   },
   methods: {
     cancel () {
-
+      this.$refs['formInline'].clearValidate()
+      this.$refs['formInline'].resetFields()
+      this.$emit('close')
     },
     create () {
-
+      this.$refs['formInline'].validate((valid) => {
+        if (valid) {
+          const params = this.formInline
+          params.mediaSourceId = this.mediaSourceId
+          params.creator = '管理员'
+          this.$service.updateSource(params).then(data => {
+            if (data.code === 0) {
+              this.$refs['formInline'].clearValidate()
+              this.$refs['formInline'].resetFields()
+              this.$emit('close')
+              this.$message({
+                type: 'success',
+                message: '关联成功！'
+              })
+              this.$emit('fetchData')
+            } else {
+              this.$message({
+                type: 'error',
+                message: data.msg
+              })
+            }
+          })
+        }
+      })  
+      
     },
-    onSubmit () {
-      console.log('submit!')
+    // 文件上传调用
+    imgUpload (file) {
+      const formData = new FormData()
+      formData.append('file', file.file)
+      formData.append('checkResolution', 'false')
+      this.$service.uploadImg(formData).then(data => {
+        if (data.code === 0) {
+          file.onSuccess(data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      }).catch(({ err }) => {
+          file.onError(err)
+      })
     },
-    // 列表特定操作时可调用，如取消选择
-    setCurrent (row) {
-      this.$refs.singleTable.setCurrentRow(row)
+    getActionUrl () {
+      const actionUrl = ''
+      return actionUrl
     },
-    // 列表选中时触发
-    handleCurrentChange (val) {
-      this.currentRow = val
-      this.radio = val.id
+    handleRemove (file, fileList) {
+      this.formInline.picture = ''
+    },
+    uploadSuccess (res, file, fileList) {
+      this.formInline.picture = res.data.url
+    },
+    uploadError (res, file) {
+      console.log('上传失败')
+    },
+    // 上传文件之前的钩子
+    beforeUpload (file) {
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 PNG或JPG 格式!')
+        this.setInit()
+      }
+      if (!isLt2M) {
+        this.$message.error('上传图标图片大小不能超过 2MB!')
+        this.setInit()
+      }
+      return isJPG && isLt2M
+    },
+    setInit() {
+      this.isInit = false;
+      this.$nextTick(() => {
+        this.isInit = true;
+      });
     }
   }
 }
 </script>
 <style lang="scss">
-.form-inline {
-  display: flex;
+.sourceEdit {
   .el-form-item {
-    flex-grow: 1;
-    margin-right: 15px!important;
+    .el-form-item__label {
+      text-align: left
+    }
+    .el-form-item__content {
+      width: 240px!important;
+      text-align: left;
+      .el-select{
+        margin: 0;
+      }
+    }
   }
 }
-.dialog-footer {
-  margin-top: 20px;
-  .el-button {
-    width: 90px;
+.picture-uploader {
+  position: relative;
+  width: 85px;
+  height: 85px;
+  .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    width: 85px;
+    height: 85px;
+    line-height: 97px;
+  }
+  .enabled {
+    .el-upload {
+      cursor: pointer;
+      &:hover {
+        border-color: #409eff;
+      }
+    }
+  }
+  &:hover .el-upload-list__item-actions {
+    opacity: 1;
+    & > span {
+      display: block;
+      right: 5px;
+      top: -35px;
+    }
+  }
+}
+.thumbnail-wrap {
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  .el-upload-list__item-thumbnail {
+    width: 100%;
+    height: 100%;
+  }
+  .el-upload-list__item-actions {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    cursor: default;
+    text-align: center;
+    color: #fff;
+    opacity: 0;
+    font-size: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s;
+    &:after {
+      display: inline-block;
+      content: '';
+      height: 100%;
+      vertical-align: middle;
+    }
+    & > span {
+      cursor: pointer;
+      color: #fff;
+    }
   }
 }
 </style>

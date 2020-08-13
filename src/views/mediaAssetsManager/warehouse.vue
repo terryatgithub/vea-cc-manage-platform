@@ -5,10 +5,10 @@
         <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
           <el-form-item class="el-col el-col-6">
             <div class="el-col-20">
-              <el-input placeholder="媒资名称" clearable/>
+              <el-input placeholder="媒资名称" clearable v-model="filter['title']"/>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6">
+          <!-- <el-form-item class="el-col el-col-6">
             <div class="el-col-20">
               <el-select
                 placeholder="状态"
@@ -18,12 +18,13 @@
                 <el-option value="1" label="有效"/>
               </el-select>
             </div>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item class="el-col el-col-6">
             <div class="el-col-20">
               <el-select
                 placeholder="类型"
                 clearable
+                v-model="filter['category']"
               >
                 <el-option value="1" label="Movies电影"/>
                 <el-option value="2" label="TV Series电视剧"/>
@@ -78,37 +79,46 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
       table: {
         props: {},
         data: [],
         header: [
           {
-            prop: 'tabId',
+            prop: 'mediaResourcesId',
             label: '媒资ID',
             width: 120,
             sortable: true
           },
           {
-            prop: 'tabName',
+            prop: 'title',
             label: '媒资名称',
             width: 300
           },
           {
-            prop: 'modifierName',
+            prop: 'category',
             label: '类型',
             sortable: true,
             width: 160
           },
           {
-            prop: 'auditor',
+            prop: 'posterHorizontal',
             label: '图片',
             sortable: true,
-            width: 300
+            width: 300,
+            render: (h, { row }) => {
+              return h('img', {
+                attrs: {
+                  src: row.posterHorizontal,
+                  style: 'width:110px; height: 80px'
+                }
+              })
+            }
           },
           {
-            prop: 'auditor',
+            prop: 'supplier',
             label: '来源',
             sortable: true,
             width: 160
@@ -121,16 +131,16 @@ export default {
         ]
       },
       filterFormRules: {
-        tabId: [
-          {
-            validator (rule, value, cb) {
-              if (value && !/^\d+$/.test(value)) {
-                return cb(Error('请输入数字'))
-              }
-              cb()
-            }
-          }
-        ]
+        // tabId: [
+        //   {
+        //     validator (rule, value, cb) {
+        //       if (value && !/^\d+$/.test(value)) {
+        //         return cb(Error('请输入数字'))
+        //       }
+        //       cb()
+        //     }
+        //   }
+        // ]
       }
     }
   },
@@ -138,16 +148,8 @@ export default {
   methods: {
     genDefaultFilter () {
       return {
-        tabType: 3,
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined,
-        'filmDetailPageInfo.source': undefined,
-        'filmDetailPageInfo.channel': [],
-        'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined,
-        'filmDetailPageInfo.matchType': undefined,
-        'filmDetailPageInfo.videoId': undefined
+        title: undefined,
+        category: undefined
       }
     },
     /**
@@ -155,9 +157,9 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+      this.$service.queryResourceListPage(filter).then(data => {
+        this.pagination.total = data.data.total
+        this.table.data = data.data.results
       })
     },
     parseFilter () {
@@ -165,7 +167,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
+        filter.size = pagination.pageSize
       }
       return filter
     },
@@ -191,7 +193,7 @@ export default {
       this.$router.push({
         path: 'mediaAssetsDetail',
         query: {
-          id: row.tabId
+          mediaResourcesId: row.mediaResourcesId
         }
       })
     },

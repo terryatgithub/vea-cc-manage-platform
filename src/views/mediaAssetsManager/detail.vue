@@ -8,9 +8,9 @@
       <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
     </el-row>
     <el-row :gutter="2">
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.title}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.alias}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.mediaUrl}}</div></el-col>
       <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
       <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
     </el-row>
@@ -22,11 +22,11 @@
       <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
     </el-row>
     <el-row :gutter="2">
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light img"><img :src = 'detail.posterVertical'/></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light img"><img :src = 'detail.posterHorizontal'/></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light img"><img :src = 'detail.posterSquare'/></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light img"></div></el-col>
+      <el-col :span="4"><div class="grid-content bg-purple-light img"></div></el-col>
     </el-row>
     <el-row :gutter="2">
       <el-col :span="5"><div class="grid-content bg-purple">来源</div></el-col>
@@ -36,11 +36,11 @@
       <el-col :span="4"><div class="grid-content bg-purple">标签</div></el-col>
     </el-row>
     <el-row :gutter="2">
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.supplier}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.mediaId}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.category}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.genres}}</div></el-col>
+      <el-col :span="4"><div class="grid-content bg-purple-light">{{detail.tags}}</div></el-col>
     </el-row>
     <el-row :gutter="2">
       <el-col :span="5"><div class="grid-content bg-purple">发行日期</div></el-col>
@@ -50,11 +50,11 @@
       <el-col :span="4"><div class="grid-content bg-purple">时长</div></el-col>
     </el-row>
     <el-row :gutter="2">
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.releaseDate}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.releaseYear}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.language}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.areas}}</div></el-col>
+      <el-col :span="4"><div class="grid-content bg-purple-light">{{detail.duration}}</div></el-col>
     </el-row>
     <el-row :gutter="2">
       <el-col :span="5"><div class="grid-content bg-purple">描述</div></el-col>
@@ -64,11 +64,11 @@
       <el-col :span="4"><div class="grid-content bg-purple">评分</div></el-col>
     </el-row>
     <el-row :gutter="2">
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.description}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.briefDescription}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.resolution}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.imdbId}}</div></el-col>
+      <el-col :span="4"><div class="grid-content bg-purple-light">{{detail.score}}</div></el-col>
     </el-row>
     <el-row :gutter="2">
       <el-col :span="5"><div class="grid-content bg-purple">付费观看</div></el-col>
@@ -78,11 +78,11 @@
       <el-col :span="4"><div class="grid-content bg-purple">已经播了几集</div></el-col>
     </el-row>
     <el-row :gutter="2">
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.isPay}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.directors}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.actors}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.episodeTotal}}</div></el-col>
+      <el-col :span="4"><div class="grid-content bg-purple-light">{{detail.updateTotal}}</div></el-col>
     </el-row>
     <el-row :gutter="2">
       <el-col :span="5"><div class="grid-content bg-purple">影片更新时间</div></el-col>
@@ -92,22 +92,24 @@
       <el-col :span="4"><div class="grid-content bg-purple">分级</div></el-col>
     </el-row>
     <el-row :gutter="2">
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.scheduleUpdateTime}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.onLine}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.startTime}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.endTime}}</div></el-col>
+      <el-col :span="4"><div class="grid-content bg-purple-light">{{detail.classification}}</div></el-col>
     </el-row>
     <el-row :gutter="2">
-      <el-col :span="5"><div class="grid-content bg-purple">综艺ID</div></el-col>
+      <!-- <el-col :span="5"><div class="grid-content bg-purple">综艺ID</div></el-col> -->
       <el-col :span="5"><div class="grid-content bg-purple">季ID</div></el-col>
       <el-col :span="5"><div class="grid-content bg-purple">剧ID</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple"></div></el-col>
       <el-col :span="5"><div class="grid-content bg-purple"></div></el-col>
       <el-col :span="4"><div class="grid-content bg-purple"></div></el-col>
     </el-row>
     <el-row :gutter="2">
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
+      <!-- <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col> -->
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.seasonId}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.seriesId}}</div></el-col>
       <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
       <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
       <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
@@ -121,9 +123,27 @@ export default {
     ContentCard
   },
   data () {
-    return {}
+    return {
+      detail: {}
+    }
   },
   methods: {
+    detailById () {
+      if (this.$route.query.mediaResourcesId) {
+        this.$service.getMediaResourcesId({
+          mediaResourcesId: this.$route.query.mediaResourcesId
+        }).then(data => {
+          if (data.code === 0) {
+            this.detail = data.data
+          } else {
+            this.$message({
+              type: 'error',
+              message: data.msg
+            })
+          }
+        })
+      }
+    },
     goBack () {
       this.$router.push({
         path: 'mediaAssetsManager',
@@ -132,6 +152,9 @@ export default {
         }
       })
     }
+  },
+  activated () {
+    this.detailById()
   }
 }
 </script>
@@ -160,9 +183,20 @@ export default {
     line-height: 36px;
     text-align: center;
     font-size: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .row-bg {
     padding: 10px 0;
     background-color: #f9fafc;
+}
+.img {
+  width: 100%;
+  height: 90px;
+  img {
+    width: 150px;
+    height: 90px;
+  }
 }
 </style>

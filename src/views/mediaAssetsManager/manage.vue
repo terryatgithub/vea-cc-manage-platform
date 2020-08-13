@@ -8,12 +8,13 @@
               <el-select
                 placeholder="来源"
                 clearable
+                v-model = "filter['mediaSourceName']"
               >
                 <el-option
                   v-for="item in typeOptions"
-                  :key="item.key"
-                  :label="item.typeName"
-                  :value="item.key"
+                  :key="item.supplier"
+                  :label="item.supplier"
+                  :value="item.supplier"
                 />
               </el-select>
             </div>
@@ -27,9 +28,16 @@
       <el-dialog
         :title='dialogTitle'
         :visible.sync = 'dialogEditFormVisible'
-        width = '650px'
+        width = '400px'
+        @close = 'close'
       >
-        <EditPop></EditPop>
+        <EditPop
+          ref = 'dialogEdit'
+          :mediaSourceId = 'mediaSourceId'
+          :mediaSourceName = 'mediaSourceName'
+          @close = 'close'
+          @fetchData = 'fetchData'
+        ></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -58,44 +66,53 @@ export default {
       filter: this.genDefaultFilter(),
       efficientFilter: this.genDefaultFilter(),
       pagination: {
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 10
       },
       table: {
         props: {},
         data: [],
         header: [
           {
-            prop: 'tabId',
+            prop: 'mediaSourceId',
             label: '来源ID',
             width: 120,
             sortable: true
           },
           {
-            prop: 'auditor',
+            prop: 'mediaSourceName',
             label: '来源名称',
             sortable: true,
             width: 180
           },
           {
-            prop: 'auditor',
+            prop: 'flag',
             label: '关联应用',
             sortable: true,
             width: 160
           },
           {
-            prop: 'auditor',
+            prop: 'mediaSourcePic',
             label: '图片',
             sortable: true,
-            width: 240
+            width: 240,
+            render: (h, { row }) => {
+              return h('img', {
+                attrs: {
+                  src: row.mediaSourcePic,
+                  style: 'width:110px; height: 80px'
+                }
+              })
+            }
           },
           {
-            prop: 'auditor',
+            prop: 'creator',
             label: '操作用户',
             width: 140,
             sortable: true
           },
           {
-            prop: 'lastUpdateDate',
+            prop: 'lastUpdateTime',
             label: '操作时间',
             width: 180,
             sortable: true
@@ -121,30 +138,17 @@ export default {
         ]
       },
       dialogEditFormVisible: false,
-      dialogTitle: '当前来源:xxxx',
-      typeOptions: [
-        { key: '1', typeName: '财务' },
-        { key: '2', typeName: '儿童' },
-        { key: '3', typeName: '参考' },
-        { key: '4', typeName: '工具' },
-        { key: '5', typeName: '购物' }
-      ]
+      dialogTitle: '关联图片',
+      mediaSourceId: '',
+      mediaSourceName: '',
+      typeOptions: []
     }
   },
 
   methods: {
     genDefaultFilter () {
       return {
-        tabType: 3,
-        tabId: undefined,
-        tabName: undefined,
-        tabStatus: undefined,
-        'filmDetailPageInfo.source': undefined,
-        'filmDetailPageInfo.channel': [],
-        'filmDetailPageInfo.category': undefined,
-        'filmDetailPageInfo.product': undefined,
-        'filmDetailPageInfo.matchType': undefined,
-        'filmDetailPageInfo.videoId': undefined
+        mediaSourceName: undefined
       }
     },
     /**
@@ -152,9 +156,9 @@ export default {
      */
     fetchData () {
       const filter = this.parseFilter()
-      this.$service.tabInfoList(filter).then(data => {
-        this.pagination.total = data.total
-        this.table.data = data.rows
+      this.$service.querySourceListPage(filter).then(data => {
+        this.pagination.total = data.data.total
+        this.table.data = data.data.results
       })
     },
     parseFilter () {
@@ -162,7 +166,7 @@ export default {
       const filter = JSON.parse(JSON.stringify(this.efficientFilter))
       if (pagination) {
         filter.page = pagination.currentPage
-        filter.rows = pagination.pageSize
+        filter.size = pagination.pageSize
       }
       return filter
     },
@@ -182,8 +186,16 @@ export default {
       this.fetchData()
     },
     // 编辑
-    handleEdit () {
+    handleEdit (row) {
+      this.mediaSourceId = row.mediaSourceId
+      this.mediaSourceName = row.mediaSourceName
       this.dialogEditFormVisible = true
+    },
+    // 关闭弹窗
+    close () {
+      this.dialogEditFormVisible = false
+      this.$refs['dialogEdit'].$refs['formInline'].clearValidate()
+      this.$refs['dialogEdit'].$refs['formInline'].resetFields()
     },
     // 列表操作
     operation (obj) {
@@ -199,13 +211,27 @@ export default {
               }
             }
           },
-          '编辑'
+          '关联图片'
         )
         return [btn1]
       }
+    },
+    // 获取查询条件
+    getMediaResourceInfo () {
+      this.$service.querySourceAll().then(data => {
+        if (data.code === 0) {
+          this.typeOptions = data.data
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
     }
   },
   created () {
+    this.getMediaResourceInfo()
     this.fetchData()
   }
 }

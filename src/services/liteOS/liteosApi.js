@@ -285,6 +285,51 @@ export function deleteAppManage (params) {
   })
 }
 
+// 媒资管理
+
+// 媒资库分页列表
+export function queryResourceListPage (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/media-resources/query-resource-list-page',
+    params
+  })
+}
+// 媒资库信息--根据ID查询
+export function getMediaResourcesId (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/media-resources/get-mediaResourcesId',
+    params
+  })
+}
+// 媒资来源--分页查询
+export function querySourceListPage (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/media-resources/query-source-list-page',
+    params
+  })
+}
+// 媒资来源--所有名字查询
+export function querySourceAll (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/media-resources/query-source-all',
+    params
+  })
+}
+// 媒资来源--更新
+export function updateSource (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/lite-os/admin/media-resources/update-source',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
+
 // Launcher推送策略
 
 // 分页获取推送管理列表

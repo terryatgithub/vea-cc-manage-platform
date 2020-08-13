@@ -71,7 +71,8 @@ export default {
           materialId: 0,
           materialName: 'xxx',
           detailSeq: '',
-          materialPic: ''
+          materialPic: '',
+          materialPicType: ''
         }
       ],
       ctmDevCtrName: '',
@@ -107,7 +108,8 @@ export default {
               materialId: 0,
               materialName: 'xxx',
               detailSeq: '',
-              materialPic: ''
+              materialPic: '',
+              materialPicType: ''
             }]]
           } else {
             this.$message({
@@ -118,7 +120,6 @@ export default {
         })
       } else {
         // 新增前先初始化页面
-        debugger
         this.$nextTick(() => {
           this.$refs['pushChild'].$refs['pushForm'].clearValidate()
           this.$refs['pushChild'].$refs['pushForm'].resetFields()
@@ -128,7 +129,8 @@ export default {
             materialId: 0,
             materialName: 'xxx',
             detailSeq: '',
-            materialPic: ''
+            materialPic: '',
+            materialPicType: ''
           }]
         })
       }
@@ -206,7 +208,8 @@ export default {
         materialId: data[0],
         materialName: data[1],
         detailSeq: this.appList.length - 2,
-        materialPic: data[2]
+        materialPic: data[2],
+        materialPicType: data[3]
       }
       this.dialogFormVisible = false
     },

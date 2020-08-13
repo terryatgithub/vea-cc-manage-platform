@@ -15,8 +15,8 @@
             v-model="appForm.materialName"
           />
         </el-form-item>
-        <el-form-item label="图标" class="imgUpload" prop="materialPics">
-          <el-upload
+        <el-form-item label="应用横图" class="imgUpload" prop="horizontal">
+          <!-- <el-upload
             v-model="appForm.materialPics"
             class="app-uploader"
             list-type="picture-card"
@@ -30,7 +30,57 @@
             :before-upload="beforeUpload"
             :file-list="appFileList">
             <i class="el-icon-plus app-uploader-icon"></i>
-          </el-upload>
+          </el-upload> -->
+          <div class='picture-uploader' v-if='isInit'>
+            <el-upload
+              v-if='!appForm.horizontal'
+              :show-file-list="false"
+              :action='getActionUrl()'
+              :http-request='imgUpload1'
+              :auto-upload='true'
+              :on-success="uploadSuccess"
+              :on-error="uploadError"
+              :before-upload="beforeUpload">
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <div v-else class='el-upload thumbnail-wrap'>
+              <el-dialog :visible.sync='dialogVisible'>
+                <img width='100%' :src='appForm.horizontal' alt />
+              </el-dialog>
+              <img class='el-upload-list__item-thumbnail' :src='appForm.horizontal' alt />
+              <div class='el-upload-list__item-actions'>
+                <span class='el-upload-list__item-delete' @click="handleRemove('horizontal')">
+                  <i class='el-icon-delete'></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item label="应用横图" class="imgUpload" prop="square">
+          <div class='picture-uploader' v-if='isInit'>
+            <el-upload
+              v-if='!appForm.square'
+              :show-file-list="false"
+              :action='getActionUrl()'
+              :http-request='imgUpload2'
+              :auto-upload='true'
+              :on-success="uploadSuccess"
+              :on-error="uploadError"
+              :before-upload="beforeUpload">
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <div v-else class='el-upload thumbnail-wrap'>
+              <el-dialog :visible.sync='dialogVisible'>
+                <img width='100%' :src='appForm.square' alt />
+              </el-dialog>
+              <img class='el-upload-list__item-thumbnail' :src='appForm.square' alt />
+              <div class='el-upload-list__item-actions'>
+                <span class='el-upload-list__item-delete' @click="handleRemove('square')">
+                  <i class='el-icon-delete'></i>
+                </span>
+              </div>
+            </div>
+          </div>
         </el-form-item>
         <el-form-item
           label="类型"
@@ -99,8 +149,7 @@
               v-if='!posterForm.materialPosterPic'
               :show-file-list="false"
               :action='getActionUrl()'
-              :headers='getAuthHeader()'
-              :http-request='imgUpload'
+              :http-request='imgUpload1'
               :auto-upload='true'
               :on-success="uploadSuccess"
               :on-error="uploadError"
@@ -222,7 +271,9 @@ export default {
       // ],
       appForm: {
         materialName: '',
-        materialPics: '',
+        // materialPics: '',
+        horizontal: '',
+        square: '',
         materialType: '',
         materialUrl: '',
         apiUrl: '',
@@ -233,8 +284,14 @@ export default {
         materialName: [
           { required: true, message: '请输入应用名', trigger: 'blur' }
         ],
-        materialPics: [
-          { required: true, message: '请上传图标', trigger: 'change' }
+        // materialPics: [
+        //   { required: true, message: '请上传图标', trigger: 'change' }
+        // ],
+        horizontal: [
+          { required: true, message: '请上传横图', trigger: 'change' }
+        ],
+        square: [
+          { required: true, message: '请上传方图', trigger: 'change' }
         ],
         materialType: [
           { required: true, message: '请选择类型', trigger: 'change' }
@@ -282,7 +339,8 @@ export default {
       },
       appFileList: [],
       dialogVisible: false,
-      isInit: true
+      isInit: true,
+      imgType: ''
     }
   },
   methods: {
@@ -294,19 +352,27 @@ export default {
             const detail = data.data
             this.appForm = {
               materialName: detail.materialName,
-              materialPics: detail.materialPics,
+              // materialPics: detail.materialPics,
               materialType: detail.materialType,
               materialUrl: detail.materialUrl,
               apiUrl: detail.apiUrl,
               materialRemark: detail.materialRemark,
               materialState: detail.materialState.toString()
             }
-            const fileList = detail.materialPics.split(',')
-            for (const i in fileList) {
-              this.appFileList.push({
-                'url': fileList[i]
-              })
+            const materialPics = JSON.parse(detail.materialPics)
+            for (const i in materialPics) {
+              if (materialPics[i].type === 'horizontal') {
+                this.appForm.horizontal = materialPics[i].pic
+              } else if (materialPics[i].type === 'square') {
+                this.appForm.square = materialPics[i].pic
+              }
             }
+            // const fileList = detail.materialPics.split(',')
+            // for (const i in fileList) {
+            //   this.appFileList.push({
+            //     'url': fileList[i]
+            //   })
+            // }
           } else {
             this.$message({
               type: 'error',
@@ -348,7 +414,12 @@ export default {
           const params = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? this.appForm : this.posterForm
           params.creator = '管理员'
           if (typeForm === 'appForm') {
-            params.materialPics = params.materialPics.join(',')
+            params.materialPics = JSON.stringify([
+              { pic: params.horizontal, type: 'horizontal' },
+              { pic: params.square, type: 'square' },
+            ])
+            delete params.horizontal
+            delete params.square
             if (this.materialId !== '0') { // 判断是新增还是修改
               params.materialId = this.materialId
               this.$service.updateAppManage(params).then(data => {
@@ -434,12 +505,31 @@ export default {
       })
     },
     // 文件上传调用
-    imgUpload (file) {
+    imgUpload1 (file) {
       const formData = new FormData()
       formData.append('file', file.file)
       formData.append('checkResolution', 'false')
       this.$service.uploadImg(formData).then(data => {
         if (data.code === 0) {
+          this.imgType = 'horizontal'
+          file.onSuccess(data)
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      }).catch(({ err }) => {
+          file.onError(err)
+      })
+    },
+    imgUpload2 (file) {
+      const formData = new FormData()
+      formData.append('file', file.file)
+      formData.append('checkResolution', 'false')
+      this.$service.uploadImg(formData).then(data => {
+        if (data.code === 0) {
+          this.imgType = 'square'
           file.onSuccess(data)
         } else {
           this.$message({
@@ -452,40 +542,65 @@ export default {
       })
     },
     getActionUrl () {
-      const actionUrl = 'http://172.20.151.117:7003/api/lite-os/admin/poster-material-manage/update-material-manage'
+      const actionUrl = ''
       return actionUrl
     },
-    getAuthHeader () {
-      const headerInfo = { 'Authorization': 'bearere9db4341-a92a-4665-adf4-deb55a866c83', 'Content-Type': 'multipart/form-data' }
-      return headerInfo
-    },
-    handleRemove (file, fileList) {
+    // handleRemove (file, fileList) {
+    //   if (this.dialogType === 'appCreate' || this.dialogType === 'appEdit') {
+    //     const arr = []
+    //     for (const i in fileList) {
+    //       arr.push(fileList[i].response.data.url)
+    //     }
+    //     this.appForm.materialPics = arr
+    //   } else {
+    //     this.posterForm.materialPosterPic = ''
+    //   }
+    //   console.log(this.appForm)
+    // },
+    handleRemove (type) {
       if (this.dialogType === 'appCreate' || this.dialogType === 'appEdit') {
-        const arr = []
-        for (const i in fileList) {
-          arr.push(fileList[i].response.data.url)
+        if (type === 'horizontal') {
+          this.appForm.horizontal = ''
+          
+          console.log(this.appForm)
+        } else {
+          this.appForm.square = ''
         }
-        this.appForm.materialPics = arr
       } else {
         this.posterForm.materialPosterPic = ''
       }
-      console.log(this.appForm)
+      // 解决编辑删除图片时v-if调用失效，页面不重新渲染问题
+      this.$forceUpdate()
     },
+    // uploadSuccess (res, file, fileList) {
+    //   const arr = []
+    //   for (const i in fileList) {
+    //     if (fileList[i].response) {
+    //       arr.push(fileList[i].response.data.url)
+    //     } else {
+    //       arr.push(fileList[i].url)
+    //     }
+    //   }
+    //   if (this.dialogType === 'appCreate' || this.dialogType === 'appEdit') {
+    //     this.appForm.materialPics = arr
+    //   } else {
+    //     this.posterForm.materialPosterPic = res.data.url
+    //   }
+    //   console.log(this.posterForm)
+    // },
     uploadSuccess (res, file, fileList) {
-      const arr = []
-      for (const i in fileList) {
-        if (fileList[i].response) {
-          arr.push(fileList[i].response.data.url)
-        } else {
-          arr.push(fileList[i].url)
-        }
-      }
       if (this.dialogType === 'appCreate' || this.dialogType === 'appEdit') {
-        this.appForm.materialPics = arr
+        // 判断是横图还是方图，有点麻烦，后续优化
+        if (this.imgType === 'horizontal') {
+          this.appForm.horizontal = res.data.url
+        } else {
+          this.appForm.square = res.data.url
+        }
       } else {
         this.posterForm.materialPosterPic = res.data.url
       }
-      console.log(this.posterForm)
+      // 解决编辑删除图片时v-if调用失效，页面不重新渲染问题
+      this.$forceUpdate()
     },
     uploadError (res, file) {
       console.log('上传失败')
@@ -503,6 +618,12 @@ export default {
         this.setInit()
       }
       return isJPG && isLt2M
+    },
+    setInit() {
+      this.isInit = false;
+      this.$nextTick(() => {
+        this.isInit = true;
+      });
     }
   },
   created () {
