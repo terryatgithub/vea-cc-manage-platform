@@ -391,12 +391,12 @@ export default {
     selectCustomer (val) {
       this.$service.queryCustomerBrandsList({ customerName: val, brandName: '' }).then(data => {
         if (data.code === 0) {
-          if (this.filter.brandName) {
-            this.brandOptions = data.data.brandList
-          } else {
-            this.customerOptions = data.data.customerList
-            this.brandOptions = data.data.brandList
-          }
+          // if (this.filter.brandName) {
+          this.brandOptions = data.data.brandList
+          // } else {
+          //   this.customerOptions = data.data.customerList
+          //   this.brandOptions = data.data.brandList
+          // }
         } else {
           this.$message({
             type: 'error',
@@ -408,12 +408,12 @@ export default {
     selectBrand (val) {
       this.$service.queryCustomerBrandsList({ customerName: '', brandName: val }).then(data => {
         if (data.code === 0) {
-          if (this.filter.customer) {
-            this.customerOptions = data.data.customerList
-          } else {
-            this.customerOptions = data.data.customerList
-            this.brandOptions = data.data.brandList
-          }
+          // if (this.filter.customer) {
+          this.customerOptions = data.data.customerList
+          // } else {
+          //   this.customerOptions = data.data.customerList
+          //   this.brandOptions = data.data.brandList
+          // }
         } else {
           this.$message({
             type: 'error',

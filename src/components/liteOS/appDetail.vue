@@ -8,7 +8,7 @@
             <ul>
                 <li v-for="(url, index) in appData.materialPics" :key="index" @click="radioSel(index)">
                     <div class="grid-content">
-                        <el-image :src="url" lazy></el-image>
+                        <el-image :src="url.pic" lazy></el-image>
                         <el-radio v-model="radio" :label="index">{{''}}</el-radio>
                     </div>
                 </li>
@@ -51,7 +51,7 @@ export default {
         this.$service.getAppManageMaterialId({ materialId: this.materialId }).then(data => {
           if (data.code === 0) {
             this.appData = data.data
-            this.appData.materialPics = this.appData.materialPics.split(',')
+            this.appData.materialPics = JSON.parse(this.appData.materialPics)
           } else {
             this.$message({
               type: 'error',
@@ -68,7 +68,7 @@ export default {
       this.$emit('close')
     },
     create () {
-      this.$emit('appSure', this.appData.materialId, this.appData.materialName, this.appData.materialPics[this.radio])
+      this.$emit('appSure', this.appData.materialId, this.appData.materialName, this.appData.materialPics[this.radio].pic, this.appData.materialPics[this.radio].type)
     }
   },
   created () {

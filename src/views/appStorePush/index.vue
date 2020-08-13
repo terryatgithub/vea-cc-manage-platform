@@ -122,11 +122,6 @@
             <el-input placeholder="区域名" clearable v-model="filter['ctmDevCtrName']"/>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
-            <el-input placeholder="页面序号" clearable v-model="filter['ctmDevCtrName']"/>
-          </div>
-        </el-form-item>
         <el-form-item>
           <el-button type="primary"  @click="handleFilterChange">查询</el-button>
           <el-button  @click="handleFilterReset">重置</el-button>
@@ -458,7 +453,7 @@ export default {
     // 新增
     handleCreate () {
       this.$router.push({
-        path: 'launcherEdit'
+        path: 'appStoreEdit'
       })
     },
     // 发布上线
@@ -473,7 +468,7 @@ export default {
           releaseStatus: '1',
           creator: '管理员'
         }
-        this.$service.updateLauncherPushStatus(params).then(data => {
+        this.$service.updateAppStorePushStatus(params).then(data => {
           if (data.code === 0) {
             this.$message({
               type: 'success',
@@ -501,7 +496,7 @@ export default {
           releaseStatus: '2',
           creator: '管理员'
         }
-        this.$service.updateLauncherPushStatus(params).then(data => {
+        this.$service.updateAppStorePushStatus(params).then(data => {
           if (data.code === 0) {
             this.$message({
               type: 'success',
@@ -530,7 +525,7 @@ export default {
       //   })
       // }).catch(() => {})
       this.$router.push({
-        path: 'launcherEdit',
+        path: 'appStoreEdit',
         query: {
           releaseConfId: row.releaseConfId,
           handleType: 'copy'
@@ -540,7 +535,7 @@ export default {
     // 编辑
     handleEdit (row) {
       this.$router.push({
-        path: 'launcherEdit',
+        path: 'appStoreEdit',
         query: {
           releaseConfId: row.releaseConfId,
           handleType: 'edit'
@@ -558,7 +553,7 @@ export default {
           releaseConfId: row.releaseConfId,
           creator: '管理员'
         }
-        this.$service.deleteLauncherPushManage(params).then(data => {
+        this.$service.deleteAppStorePushManage(params).then(data => {
           if (data.code === 0) {
             this.$message({
               type: 'success',
