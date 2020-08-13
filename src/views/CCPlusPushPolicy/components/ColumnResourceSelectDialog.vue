@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="form" label-width="100px" inline width="30%" :rules="rules">
+  <el-form ref="resourceForm" :model="form" label-width="100px" inline width="30%" :rules="rules">
     <el-col :span="8">
       <el-form-item>
         <el-select
@@ -9,9 +9,9 @@
         >
           <el-option
             v-for="option in sourceOptions"
-            :label="option.label"
-            :key="option.value"
-            :value="option.value"
+            :label="option.supplier"
+            :key="option.supplier"
+            :value="option.supplier"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -22,9 +22,9 @@
         <el-select multiple v-model="form.category" placeholder="类型 category">
           <el-option
             v-for="option in categoryOptions"
-            :label="option.label"
-            :key="option.value"
-            :value="option.value"
+            :label="option.category"
+            :key="option.category"
+            :value="option.category"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -35,9 +35,9 @@
         <el-select multiple v-model="form.tag" placeholder="标签 tags">
           <el-option
             v-for="option in tagOptions"
-            :label="option.label"
-            :key="option.value"
-            :value="option.value"
+            :label="option.tag"
+            :key="option.tag"
+            :value="option.tag"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -64,34 +64,10 @@ export default {
       },
       rules: {},
       sourceOptions: [
-        {
-          label: "奈飞",
-          value: "netflix"
-        },
-        {
-          label: "油管",
-          value: "youtube"
-        }
       ],
       categoryOptions: [
-        {
-          label: "Movies",
-          value: "movie"
-        },
-        {
-          label: "TV",
-          value: "tv"
-        }
       ],
       tagOptions: [
-        {
-          label: "ohio",
-          value: "ohio"
-        },
-        {
-          label: "Goldstate",
-          value: "goldstate"
-        }
       ]
     };
   },
@@ -108,7 +84,24 @@ export default {
       } else {
         this.$emit('get-select-resource')
       }
+      this.$refs.resourceForm.resetFields()
+    },
+    async getAllSelections(){
+      let res = await this.$service.queryCCPlusMediaResourceAllSelect()
+      if(res.code === 0) {
+        this.sourceOptions = res.data.supplierList
+        this.categoryOptions = res.data.categoryList
+        this.tagOptions = res.data.tagList
+      }else {
+        this.$message({
+            type: "error",
+            message: res.msg
+          });
+      }
     }
+  },
+  created() {
+    this.getAllSelections()
   }
 };
 </script>

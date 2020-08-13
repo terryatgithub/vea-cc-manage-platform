@@ -12,25 +12,25 @@
         label-width="90px"
         label-position="left"
       >
-        <el-form-item label="策略名称:" prop="name">
+        <el-form-item label="策略名称:" prop="releaseConfName">
           <el-input
             placeholder="请输入策略名称"
             clearable
-            v-model="form.name"
+            v-model="form.releaseConfName"
           />
         </el-form-item>
 
         <el-form-item label="版本:">
           <el-select
-            v-model="form.versions"
+            v-model="form.supportVersion"
             multiple
             placeholder="请选择(支持多选)"
           >
             <el-option
               v-for="item in versionOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item.supportVersion"
+              :label="item.supportVersion"
+              :value="item.supportVersion"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -76,9 +76,9 @@
         <!-- <el-form-item label-width="10px"> -->
         <!-- 栏目模板 -->
         <ColumnTemplate
-          v-for="item in form.columns"
+          v-for="item in form.itemList"
           ref="columnTemplateForm"
-          :key="item.serialNo"
+          :key="item.itemSeq"
           :content="item"
           @remove-column="handleRemoveColumn"
         ></ColumnTemplate>
@@ -97,7 +97,7 @@
         <el-form-item label="指定设备">
           <el-input
             placeholder="DeviceID,多个用逗号隔开"
-            v-model="form.devices"
+            v-model="form.tvActiveId"
           ></el-input>
         </el-form-item>
 
@@ -143,58 +143,58 @@ export default {
     return {
       showSelectRegionDialog: false,
       versionOptions: [],
-      regionOptions: [
-        {
-          label: "亚太",
-          value: "asian"
-        },
-        {
-          label: "南美",
-          value: "NA"
-        }
-      ],
       priorityOptions: [
         {
           label: "优先级 A",
-          value: "A"
+          value: 3
         },
         {
           label: "优先级 B",
-          value: "B"
+          value: 2
+        },
+        {
+          label: "优先级 C",
+          value: 1
         }
       ],
       form: {
-        name: "",
-        versions: [],
+        releaseConfName: "",
+        supportVersion: [],
+        datePublish: [],
         ctmDevCtrId: 0,
         ctmDevCtrName: "",
-        priority: "",
-        datePublish: [],
-        columns: [
-          {
-            columnTemplate: 0,
-            // columnId: 0,
-            serialNo: 1,
-            columnName: "",
-            moviesNum: "99"
-          }
-        ],
-        devices: ""
+        priority: 2,
+        itemList: [this.getColumnTemplateSample()], //栏目列表
+        tvActiveId: ""
       },
       rules: {
-        name: [{ required: true, message: "请输入策略名称", trigger: "blur" }]
+        releaseConfName: [
+          { required: true, message: "请输入策略名称", trigger: "blur" }
+        ]
       }
     };
   },
   computed: {
     columnsNum() {
-      return this.form.columns.length;
+      return this.form.itemList.length;
     }
   },
   created() {
     this.init();
   },
   methods: {
+    getColumnTemplateSample() {
+      // 获取模板数据样本
+      const sample = {
+        template: "A",
+        // releaseItemId: 0,
+        itemSeq: 1,
+        itemName: "",
+        itemMediaMax: "99",
+        itemMediaList: [] //媒体资源
+      };
+      return Object.assign({}, sample);
+    },
     init() {
       this.$service.queryVersionList().then(data => {
         if (data.code === 0) {
@@ -208,29 +208,44 @@ export default {
       });
     },
     handleAddColumn() {
-      const col = {
-        columnTemplate: 0,
-        // columnId: 0,
-        serialNo: this.form.columns.length + 1,
-        columnName: "",
-        moviesNum: "99"
-      };
-      this.form.columns.push(col);
+      const col = this.getColumnTemplateSample();
+      col.itemSeq = this.form.itemList.length + 1;
+      this.form.itemList.push(col);
     },
     handleRemoveColumn(...rest) {
       let content = rest[0];
-      let idx = this.form.columns.indexOf(content);
-      this.form.columns.splice(idx, 1);
+      let idx = this.form.itemList.indexOf(content);
+      this.form.itemList.splice(idx, 1);
     },
     checkDuplicatedSerialNo() {
       //判断栏目模板序号是否有重复的
       let arr = [];
       this.$refs["columnTemplateForm"].forEach(ref =>
-        arr.push(ref.content.serialNo)
+        arr.push(ref.content.itemSeq)
       );
       let res = liteOS.findRepeatElementInArr(arr);
       console.log("查找重复序号:", res);
       return res;
+    },
+    async createNewPolicy() {
+      let data = Object.assign({}, this.form);
+      delete data.datePublish;
+      data.supportVersion = this.form.supportVersion.join(",");
+      data.releaseStartTime = liteOS.date(this.form.datePublish[0]);
+      data.releaseEndTime = liteOS.date(this.form.datePublish[1]);
+      data.creator = "管理员";
+      data.releaseStatus = "0";
+      let res = await this.$service.queryCCPlusAddPushManage(data);
+      if (res.code === 0) {
+        this.$message.success("创建成功,即将返回上页");
+        //@todo 自动返回上页
+        setTimeout(() => this.$router.back(), 1000);
+      } else {
+        this.$message({
+          type: "error",
+          message: "创建失败，请重试"
+        });
+      }
     },
     async submitForm(formName) {
       console.log("submit", this.form);
@@ -243,14 +258,12 @@ export default {
         res = await Promise.all(cols);
         console.log("res", res);
         if (res) {
-          //@todo 校验序号重复
           res = await this.$refs[formName].validate();
           if (res) {
-            alert("submit ok");
+            await this.createNewPolicy();
             return;
           }
         }
-        // throw new Error('')
       } catch (e) {
         if (e) {
           this.$message({
