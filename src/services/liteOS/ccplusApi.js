@@ -17,3 +17,24 @@ export function queryCCPlusMediaResourceNew (params) {
     params
   })
 }
+
+
+// 媒资信息--新增栏目资源选择项信息查询
+export function queryCCPlusMediaResourceAllSelect (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/lite-os/admin/media-resources/query-all-select',
+    params
+  })
+}
+
+// 媒资信息--CCPlUS推送策略添加
+export function queryCCPlusAddPushManage (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/lite-os/admin/cc-plus-push-manage/add-push-manage',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
