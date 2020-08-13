@@ -157,7 +157,11 @@ export default {
     ContentWrapper,
     Table
   },
-  watch: {},
+  watch: {
+    $route () { // 监听路由跳转后刷新列表数据
+      // this.fetchData()
+    }
+  },
   data () {
     return {
       filter: this.genDefaultFilter(),

@@ -30,6 +30,14 @@ export function queryCustomerListAllContainBrands () {
     url: 'api/lite-os/admin/select/query-customer-list-all-contain-brands'
   })
 }
+// 根据客户名称与品牌名称查询
+export function queryCustomerBrandList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/lite-os/admin/select/query-customer-brands-list',
+    params
+  })
+}
 // 品牌修改
 export function updateBrand (params) {
   return this.fetch({
@@ -62,6 +70,18 @@ export function deleteBrand (params) {
     params
   })
 }
+
+// 版本号
+// 查询支持的版本
+export function queryVersionList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/lite-os/admin/version/queryVersionList',
+    params
+  })
+}
+
+
 // 分页获取机芯机型列表
 export function queryChipModelListPage (params) {
   return this.fetch({

@@ -36,18 +36,16 @@
         </el-form-item>
 
         <el-form-item label="选择区域:">
-          <el-select
-            v-model="form.regions"
-            multiple
-            placeholder="请选择(支持多选)"
+          <el-button
+            v-if="!form.ctmDevCtrName"
+            type="primary"
+            @click="selectRegion"
+            >选择区域</el-button
           >
-            <el-option
-              v-for="item in regionOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+          <div v-else class="nameBox">
+            {{ form.ctmDevCtrName }}
+            <i class="el-icon-error" @click="selectRegion"> </i>
+          </div>
         </el-form-item>
 
         <el-form-item label="发布时间:">
@@ -61,22 +59,29 @@
           ></el-date-picker>
         </el-form-item>
 
+        <el-form-item label="选择优先级:">
+          <el-select v-model="form.priority" placeholder="选择优先级">
+            <el-option
+              v-for="item in priorityOptions"
+              :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <!-- 栏目区域 -->
         <el-form-item label="栏目:"> 栏目数 {{ columnsNum }} </el-form-item>
 
         <!-- <el-form-item label-width="10px"> -->
         <!-- 栏目模板 -->
         <ColumnTemplate
-          v-for="(item, index) in form.columns"
+          v-for="item in form.columns"
           ref="columnTemplateForm"
-          :key="item.columnId"
+          :key="item.serialNo"
           :content="item"
-          :prop="'columns.' + index"
-          :rules="{
-            validator: checkColumnSerialNo,
-            trigger: ['blur', 'change']
-          }"
         ></ColumnTemplate>
-        
+
         <el-form-item>
           <el-button
             type="primary"
@@ -104,6 +109,18 @@
         </el-form-item>
       </el-form>
     </div>
+
+    <el-dialog title="选择区域" :visible.sync="showSelectRegionDialog">
+      <SelectRegionComponent @getRegion="getRegion" />
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="showSelectRegionDialog = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="confirmRegionSelect">
+          确定
+        </el-button>
+      </div>
+    </el-dialog>
   </ContentCard>
 </template>
 
@@ -111,28 +128,19 @@
 /**
   酷开LiteOS CC Plus二级菜单-’新增/编辑’页面
  */
+import SelectRegionComponent from "./components/SelectRegionComponent";
 import ColumnTemplate from "./components/ColumnTemplate";
+import liteOS from "@/assets/liteOS.js";
 
 export default {
   components: {
-    ColumnTemplate
+    ColumnTemplate,
+    SelectRegionComponent
   },
   data() {
     return {
-      versionOptions: [
-        {
-          label: "All",
-          value: 0
-        },
-        {
-          label: "1.0.0",
-          value: 1
-        },
-        {
-          label: "2.0.0",
-          value: 2
-        }
-      ],
+      showSelectRegionDialog: false,
+      versionOptions: [],
       regionOptions: [
         {
           label: "亚太",
@@ -143,18 +151,30 @@ export default {
           value: "NA"
         }
       ],
+      priorityOptions: [
+        {
+          label: "优先级 A",
+          value: "A"
+        },
+        {
+          label: "优先级 B",
+          value: "B"
+        }
+      ],
       form: {
         name: "",
         versions: [],
-        regions: [],
+        ctmDevCtrId: 0,
+        ctmDevCtrName: "",
+        priority: "",
         datePublish: [],
         columns: [
           {
-            columnTemplate: "媒资模板A: 混排",
-            columnId: 122121,
-            serialNo: 1,
+            columnTemplate: 0,
+            columnId: 0,
+            serialNo: 0,
             columnName: "",
-            moviesNum: "12"
+            moviesNum: "99"
           }
         ],
         devices: ""
@@ -169,7 +189,22 @@ export default {
       return this.form.columns.length;
     }
   },
+  created() {
+    this.init();
+  },
   methods: {
+    init() {
+      this.$service.queryVersionList().then(data => {
+        if (data.code === 0) {
+          this.versionOptions = liteOS.versionTransform(data.data);
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
+      });
+    },
     handleAddColumn() {
       const col = {
         columnTemplate: "媒资模板B: 竖排",
@@ -180,35 +215,69 @@ export default {
       };
       this.form.columns.push(col);
     },
+    checkDuplicatedSerialNo() {
+      //判断栏目模板序号是否有重复的
+      let arr = [];
+      this.$refs["columnTemplateForm"].forEach(ref =>
+        arr.push(ref.content.serialNo)
+      );
+      let res = liteOS.findRepeatElementInArr(arr);
+      console.log("查找重复序号:", res);
+      return res;
+    },
     async submitForm(formName) {
       console.log("submit", this.form);
-      // let pAll = this.$refs["columnTemplateForm"].map(form => form.validate())
-      let res = await this.$refs["columnTemplateForm"][0].validate();
-      console.log("res", res);
-      if (res) {
-        res = await this.$refs[formName].validate();
+      debugger;
+      let cols = this.$refs["columnTemplateForm"].map(ref => ref.validate());
+      try {
+        let res = this.checkDuplicatedSerialNo();
+        if (res !== undefined) {
+          throw new Error("栏目模板序号不能重复，重复序号为: " + res);
+        }
+        res = await Promise.all(cols);
+        console.log("res", res);
         if (res) {
-          alert("submit ok");
-          return;
+          //@todo 校验序号重复
+          res = await this.$refs[formName].validate();
+          if (res) {
+            alert("submit ok");
+            return;
+          }
+        }
+        // throw new Error('')
+      } catch (e) {
+        if (e) {
+          this.$message({
+            type: "error",
+            message: e
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: "校验出错，请修改提示错误字段"
+          });
         }
       }
-      alert("error");
-      return false;
     },
     cancelForm(formName) {
       console.log("cancel", this.form);
     },
-    checkColumnSerialNo: (rule, value, callback) => {
-      //校验模板栏目序列号
-      console.log("check no...");
-      if (!value) {
-        return callback(new Error("请输入栏目序号!"));
+    selectRegion() {
+      this.showSelectRegionDialog = true;
+    },
+    getRegion(...rest) {
+      this.form.ctmDevCtrId = rest[0];
+      this.form.ctmDevCtrName = rest[1];
+    },
+    confirmRegionSelect() {
+      if (this.form.ctmDevCtrName) {
+        this.showSelectRegionDialog = false;
+      } else {
+        this.$message({
+          type: "error",
+          message: "请选择一项！"
+        });
       }
-      this.form.columns.forEach(col => {
-        if (col.serialNo === value) {
-          return callback(new Error("模板序号不能重复，请重新设置"));
-        }
-      });
     }
   }
 };

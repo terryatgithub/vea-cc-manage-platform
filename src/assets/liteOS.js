@@ -109,6 +109,24 @@ export default {
     }
     return options
   },
+  versionTransform(oldArray) {
+    const options = []
+    // options[0] = {
+    //   label: '全部客户',
+    //   value: '',
+    //   customerId: '',
+    //   customerName: '',
+    //   children: null,
+    //   brandList: null,
+    // };
+    for (let i = 0; i < oldArray.length; i++) {
+      options[i] = {
+        versionId: oldArray[i].versionId,
+        supportVersion: oldArray[i].supportVersion
+      }
+    }
+    return options
+  },
   filterOptions2 (oldList) {
     const options2 = []
     // options2[0] = {
@@ -152,6 +170,15 @@ export default {
         return new Date(Date.parse(date.replace(/-/g, '/')))
     } else {
         return new Date()
+    }
+  },
+  findRepeatElementInArr(arr) {
+    //返回数组中第一个重复的元素，如没有默认返回undefined
+    let a = arr.sort()
+    for(let i = 0, l = a.length; i < l; i++) {
+      if(a[i] === a[i+1]) {
+        return a[i]
+      }
     }
   }
 }
