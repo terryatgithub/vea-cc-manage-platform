@@ -3,7 +3,7 @@
     <el-form
       label-width="90px"
       :model="content"
-      ref="columnTemplateForm"
+      ref="tempForm"
       :rules="rules"
     >
       <el-form-item label="栏目模板:">
@@ -73,8 +73,8 @@
         <div class="demo-image__lazy">
           <el-image
             v-for="item in content.itemMediaList"
-            :key="item.mediaResourcesId	"
-            :src="item.posterUrl"
+            :key="item.mediaResourcesId"
+            :src="item.mediaPic"
             lazy
           ></el-image>
         </div>
@@ -117,12 +117,12 @@ export default {
       },
       showSelectResourceDialog: false,
       templateOptions: [
-        { label: "模板A 媒资混排", value: 'A' },
-        { label: "模板B 媒资竖图", value: 'B' },
-        { label: "模板C 媒资横图", value: 'C' },
-        { label: "模板D 媒资方图", value: 'D' }
+        { label: "模板A 媒资混排", value: "A" },
+        { label: "模板B 媒资竖图", value: "B" },
+        { label: "模板C 媒资横图", value: "C" },
+        { label: "模板D 媒资方图", value: "D" }
       ],
-      columnResourceSelections: null, //栏目资源标签选择项
+      columnResourceSelections: null //栏目资源标签选择项
     };
   },
   methods: {
@@ -137,13 +137,20 @@ export default {
         page: 1,
         size: 100,
         templateType: this.content.template,
-        supplier: this.columnResourceSelections.source.join(','),
-        category: this.columnResourceSelections.category.join(','),
-        tag: this.columnResourceSelections.tag.join(','),
+        supplier: this.columnResourceSelections.source.join(","),
+        category: this.columnResourceSelections.category.join(","),
+        tag: this.columnResourceSelections.tag.join(",")
       });
       if (res.code === 0) {
-        //@todo 这里要根据模板类型，设置对应图片
-        this.content.itemMediaList = res.data.results;
+        const { results } = res.data;
+        const { itemMediaList } = this.content;
+        results.forEach((item, index) => {
+          itemMediaList[index] = {}
+          itemMediaList[index].mediaResourcesId = item.mediaResourcesId;
+          itemMediaList[index].mediaPicType = item.posterType;
+          itemMediaList[index].mediaPic = item.posterUrl;
+          itemMediaList[index].detailSeq = index;
+        });
       } else {
         this.$message({
           type: "error",
@@ -191,7 +198,7 @@ export default {
     },
     async validate() {
       //@todo 子组件的校验问题
-      let res = await this.$refs["columnTemplateForm"].validate();
+      let res = await this.$refs["tempForm"].validate();
       console.log("sub res", res);
       return res;
     }

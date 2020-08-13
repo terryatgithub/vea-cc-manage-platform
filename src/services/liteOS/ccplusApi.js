@@ -9,6 +9,24 @@ export function queryCCPlusPushManageListPage (params) {
   })
 }
 
+// 推送状态变更
+export function queryCCPlusUpdatePushStatus (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/lite-os/admin/cc-plus-push-manage/update-push-status',
+    params
+  })
+}
+
+// 推送管理删除
+export function queryCCPlusDeletePushManage (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/lite-os/admin/cc-plus-push-manage/delete-push-manage',
+    params
+  })
+}
+
 // 媒资信息--新增栏目资源查询
 export function queryCCPlusMediaResourceNew (params) {
   return this.fetch({
