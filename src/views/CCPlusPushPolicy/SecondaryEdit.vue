@@ -163,7 +163,7 @@ export default {
         datePublish: [],
         ctmDevCtrId: 0,
         ctmDevCtrName: "",
-        priority: 2,
+        priority: 3,
         itemList: [this.getColumnTemplateSample()], //栏目列表
         tvActiveId: ""
       },
@@ -182,7 +182,40 @@ export default {
   created() {
     this.init();
   },
+  activated() {
+    this.init();
+  },
   methods: {
+    async getDetailById() {
+      const { releaseConfId } = this.$route.query;
+      if (!releaseConfId) {
+        return;
+      }
+      //@todo
+      let res = await this.$service.queryCCPlusGetPushManageByReleaseConfId({
+        releaseConfId
+      });
+      if (res.code === 0) {
+        const { form } = this;
+        Object.keys(res.data).forEach(key => {
+          form[key] = res.data[key];
+        });
+        form.supportVersion = form.supportVersion.split(",");
+        const date = (
+          liteOS.parserDate(form.releaseStartTime) +
+          "," +
+          liteOS.parserDate(form.releaseEndTime)
+        ).split(",");
+        delete form.releaseStartTime;
+        delete form.releaseEndTime;
+        form.datePublish = date;
+      } else {
+        this.$message({
+          type: "error",
+          message: data.msg
+        });
+      }
+    },
     getColumnTemplateSample() {
       // 获取模板数据样本
       const sample = {
@@ -206,6 +239,7 @@ export default {
           });
         }
       });
+      this.getDetailById();
     },
     handleAddColumn() {
       const col = this.getColumnTemplateSample();
@@ -227,7 +261,13 @@ export default {
       console.log("查找重复序号:", res);
       return res;
     },
-    async createNewPolicy() {
+    async createOrUpdatePolicy() {
+      //@todo 分辨是修改还是新增（添加或复制）
+      const { handleType } = this.$route.query;
+      let doModify = false; // 区分修改和增加（增加包括复制+新增两种情况）
+      if (handleType === "edit") { 
+        doModify = true;
+      }
       let data = Object.assign({}, this.form);
       delete data.datePublish;
       data.supportVersion = this.form.supportVersion.join(",");
@@ -235,15 +275,22 @@ export default {
       data.releaseEndTime = liteOS.date(this.form.datePublish[1]);
       data.creator = "管理员";
       data.releaseStatus = "0";
-      let res = await this.$service.queryCCPlusAddPushManage(data);
+      if (doModify) {
+        let res = await this.$service.queryCCPlusUpdatePushManage(data);
+      } else {
+        delete data.releaseConfId
+        let res = await this.$service.queryCCPlusAddPushManage(data);
+      }
       if (res.code === 0) {
-        this.$message.success("创建成功,即将返回上页");
+        this.$message.success(
+          doModify ? "修改成功,即将返回上页" : "创建成功,即将返回上页"
+        );
         //@todo 自动返回上页
         setTimeout(() => this.$router.back(), 1000);
       } else {
         this.$message({
           type: "error",
-          message: "创建失败，请重试"
+          message: res.msg
         });
       }
     },
@@ -260,7 +307,8 @@ export default {
         if (res) {
           res = await this.$refs[formName].validate();
           if (res) {
-            await this.createNewPolicy();
+            await this.createOrUpdatePolicy();
+            this.reset();
             return;
           }
         }
@@ -277,7 +325,6 @@ export default {
           });
         }
       } finally {
-        this.reset();
       }
     },
     cancelForm(formName) {
