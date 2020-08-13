@@ -14,25 +14,46 @@
         <AppDetail v-if="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :materialId = 'materialId' @appSure = 'appSure(arguments)'></AppDetail>
       </el-dialog>
       <div class="appBox">
-        <div class="label">选择应用</div>
-        <ul>
-          <li v-for='(item, index) in appList' :key='index'>
-            <i
-              class="el-icon-error delIcon"
-              v-if='index !== appList.length-1'
-              @click='appDel(index)'
-            ></i>
-            <div class="grid-content">
-              <i
-                class="el-icon-plus avatar-uploader-icon"
-                v-if="index === appList.length - 1"
-                @click="appSel"
-              ></i>
-              <img :src='item.materialPic' v-if="index !== appList.length - 1 && item.materialPic !== ''" class='appLogo' />
+        <div class="label">栏目   <span>栏目数：{{itemList.length}}</span></div>
+        <div class="item" v-for='(item, index) in itemList' :key='index'>
+          <el-form
+            :inline="true"
+            :rules="itemRules"
+            :model="itemForm"
+          >
+            <div class="itemTop">
+              <el-form-item label="栏目模板">
+                <el-select placeholder="请选择栏目模板" v-model="itemList[index].template">
+                  <el-option label="模板A:媒资混排" value="A"></el-option>
+                  <el-option label="模板B:媒资竖图" value="B"></el-option>
+                  <el-option label="模板C:媒资横图" value="C"></el-option>
+                  <el-option label="模板D:媒资方图" value="D"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-button type="primary" @click="appSel(index)" round>新增栏目资源</el-button>
+              <el-button type="danger" @click="deleteItem(index)" v-if="itemList.length > 1" round>删除栏目</el-button>
             </div>
-            <p class="materialName" v-if="index !== appList.length - 1">{{item.materialName}}</p>
-          </li>
-        </ul>
+            <el-form-item label="栏目序号">
+              <el-input placeholder="请输入栏目序号" v-model="itemList[index].itemSeq"></el-input>
+            </el-form-item>
+            <el-form-item label="栏目名称">
+              <el-input placeholder="请输入栏目名称" v-model="itemList[index].itemName"></el-input>
+            </el-form-item>
+            <ul>
+              <li v-for='(itemApp, indexApp) in item.itemAppList' :key='indexApp'>
+                <i
+                  class="el-icon-error delIcon"
+                  @click='appDel(index, indexApp)'
+                ></i>
+                <div class="grid-content">
+                  <img :src='itemApp.materialPic' class='appLogo' />
+                </div>
+                <p class="materialName">{{itemApp.materialName}}</p>
+              </li>
+            </ul>
+          </el-form>
+        </div>
+        <div class="addItem"><el-button type="primary" icon="el-icon-plus" @click="addItem">添加栏目</el-button></div>
       </div>
       <FooterForm @create = 'create' @cancel = 'cancel' ref = 'footerChild'></FooterForm>
     </ContentCard>
@@ -66,14 +87,16 @@ export default {
       dialogType: '',
       dialogWidth: '550px',
       showClose: true,
-      appList: [
+      itemList: [
         {
-          materialId: 0,
-          materialName: 'xxx',
-          detailSeq: '',
-          materialPic: ''
+          itemName: '',
+          itemSeq: '',
+          template: '',
+          itemAppList: [],
         }
       ],
+      itemList_index: '',
+      itemAppList_index: '',
       ctmDevCtrName: '',
       risId: '',
       materialId: ''
@@ -83,7 +106,7 @@ export default {
     // 执行详情回显
     detailById () {
       if (this.$route.query.releaseConfId) {
-        this.$service.getLauncherPushManageReleaseConfId({
+        this.$service.getAppStorePushManageReleaseConfId({
           releaseConfId: this.$route.query.releaseConfId
         }).then(data => {
           if (data.code === 0) {
@@ -98,16 +121,15 @@ export default {
               priority: detail.priority.toString()
             }
             this.$refs['pushChild'].pushForm = pushForm
+            this.$refs['footerChild'].footerForm.DeviceID = detail.tvActiveId
             this.ctmDevCtrName = detail.ctmDevCtrName
-            for (const i in detail.appList) {
-              delete detail.appList[i].materialPics
+            for (const i in detail.itemList) {
+              delete detail.itemList[i].itemId
+              for (const n in detail.itemList[i].itemAppList) {
+                delete detail.itemList[i].itemAppList[n].materialPics
+              }
             }
-            this.appList = [...detail.appList, ...[{
-              materialId: 0,
-              materialName: 'xxx',
-              detailSeq: '',
-              materialPic: ''
-            }]]
+            this.itemList = [...detail.itemList]
           } else {
             this.$message({
               type: 'error',
@@ -117,20 +139,31 @@ export default {
         })
       } else {
         // 新增前先初始化页面
-        debugger
         this.$nextTick(() => {
           this.$refs['pushChild'].$refs['pushForm'].clearValidate()
           this.$refs['pushChild'].$refs['pushForm'].resetFields()
-          this.$refs['footerChild'].$refs['footerForm'].resetFields()
+          this.$refs['footerChild'].footerForm.DeviceID = ''
           this.ctmDevCtrName = ''
-          this.appList = [{
-            materialId: 0,
-            materialName: 'xxx',
-            detailSeq: '',
-            materialPic: ''
+          this.itemList = [{
+            itemName: '',
+            itemSeq: '',
+            template: '',
+            itemAppList: []
           }]
         })
       }
+    },
+    // 新增栏目
+    addItem () {
+      this.itemList.push({
+        itemName: '',
+        itemSeq: '',
+        template: '',
+        itemAppList: []
+      })
+    },
+    deleteItem (index) {
+      this.itemList.splice(index, 1)
     },
     // 获取区域选择传值
     getRegion (val) {
@@ -161,18 +194,22 @@ export default {
       this.showClose = true
     },
     // 弹窗选择应用
-    appSel () {
-      if (this.appList.length === 99) {
+    appSel (index) {
+      if (this.itemList[index].length === 99) {
         this.$message({
           type: 'warning',
           message: '应用数量已达上限!'
         })
       } else {
-        this.appList.splice(this.appList.length - 1, 0, {
-          id: 0,
+        this.itemList[index].itemAppList.push({
+          appMaterialId: 0,
+          materialPic: '',
+          materialPicType: '',
           materialName: 'xxx',
-          appLogo: ''
+          detailSeq: ''
         })
+        this.itemList_index = index
+        this.itemAppList_index = this.itemList[index].itemAppList.length - 1
         this.dialogFormVisible = true
         this.dialogType = 'appPop'
         this.dialogWidth = '650px'
@@ -196,23 +233,24 @@ export default {
       this.showClose = true
     },
     // 删除应用
-    appDel (index) {
-      this.appList.splice(index, 1)
+    appDel (itemIndex, appIndex) {
+      this.itemList[itemIndex].itemAppList.splice(appIndex, 1)
     },
     // 应用海报选择确定
     appSure (data) {
-      this.appList[this.appList.length - 2] = {
-        materialId: data[0],
+      this.itemList[this.itemList_index].itemAppList[this.itemAppList_index] = {
+        appMaterialId: data[0],
         materialName: data[1],
-        detailSeq: this.appList.length - 2,
-        materialPic: data[2]
+        detailSeq: this.itemAppList_index,
+        materialPic: data[2],
+        materialPicType: data[3]
       }
       this.dialogFormVisible = false
     },
     // 关闭弹窗
     close () {
       if (this.dialogType === 'appPop' || this.dialogType === 'appDetail') {
-        this.appList.splice(this.appList.length - 2, 1)
+        this.itemList[this.itemList_index].itemAppList.pop()
       }
       this.dialogFormVisible = false
     },
@@ -220,12 +258,12 @@ export default {
       let that = this
       this.$refs['pushChild'].$refs['pushForm'].validate((valid) => {
         if (valid) {
-          if (this.appList.length === 1) {
-            this.$message({
-              type: 'error',
-              message: '请选择应用！'
-            })
-          } else {
+          // if (this.appList.length === 1) {
+          //   this.$message({
+          //     type: 'error',
+          //     message: '请选择应用！'
+          //   })
+          // } else {
             const params = this.$refs['pushChild'].pushForm
             params.releaseStartTime = liteOS.date(params.date[0])
             params.releaseEndTime = liteOS.date(params.date[1])
@@ -234,11 +272,11 @@ export default {
             params.creator = '管理员'
             params.releaseStatus = '0'
             params.tvActiveId = DeviceID
-            params.appList = that.appList
-            params.appList.pop()
+            params.itemList = that.itemList
+            debugger
             if (this.$route.query.releaseConfId && this.$route.query.handleType === 'edit') {
               params.releaseConfId = this.$route.query.releaseConfId
-              this.$service.updateLauncherPushManage(params).then(data => {
+              this.$service.updateAppStorePushManage(params).then(data => {
                 if (data.code === 0) {
                   this.$refs['pushChild'].$refs['pushForm'].clearValidate()
                   this.$refs['pushChild'].$refs['pushForm'].resetFields()
@@ -247,7 +285,7 @@ export default {
                     message: '修改成功！'
                   })
                   this.$router.push({
-                    path: 'launcherPush'
+                    path: 'appStorePush'
                   })
                 } else {
                   this.$message({
@@ -257,7 +295,7 @@ export default {
                 }
               })
             } else {
-              this.$service.addLauncherPushManage(params).then(data => {
+              this.$service.addAppStorePushManage(params).then(data => {
                 if (data.code === 0) {
                   this.$refs['pushChild'].$refs['pushForm'].clearValidate()
                   this.$refs['pushChild'].$refs['pushForm'].resetFields()
@@ -267,7 +305,7 @@ export default {
                     message: msg
                   })
                   this.$router.push({
-                    path: 'launcherPush'
+                    path: 'appStorePush'
                   })
                 } else {
                   this.$message({
@@ -277,7 +315,7 @@ export default {
                 }
               })
             }
-          }
+          // }
         } else {
           console.log('error submit!!')
           return false
@@ -286,7 +324,7 @@ export default {
     },
     cancel () {
       this.$router.push({
-        path: 'launcherPush'
+        path: 'appStorePush'
       })
     }
   },
@@ -306,9 +344,16 @@ export default {
     padding: 0 12px 0 0;
     box-sizing: border-box;
   }
+  .item {
+    border: 1px solid #909399;
+    padding: 20px;
+    box-sizing: border-box;
+    background: #F2F6FC;
+  }
   ul {
     overflow: hidden;
     padding: 0;
+    margin-top: 0;
     &:last-child {
       margin-bottom: 0;
     }
@@ -332,7 +377,7 @@ export default {
       }
       .grid-content {
         border-radius: 4px;
-        border: 2px dashed #f4f4f5;
+        border: 2px dashed #E4E7ED;
         width: 150px;
         height: 120px;
         .appLogo {

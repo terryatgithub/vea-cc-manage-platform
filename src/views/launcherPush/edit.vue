@@ -98,6 +98,7 @@ export default {
               priority: detail.priority.toString()
             }
             this.$refs['pushChild'].pushForm = pushForm
+            this.$refs['footerChild'].footerForm.DeviceID = detail.tvActiveId
             this.ctmDevCtrName = detail.ctmDevCtrName
             for (const i in detail.appList) {
               delete detail.appList[i].materialPics
@@ -121,7 +122,7 @@ export default {
         this.$nextTick(() => {
           this.$refs['pushChild'].$refs['pushForm'].clearValidate()
           this.$refs['pushChild'].$refs['pushForm'].resetFields()
-          this.$refs['footerChild'].$refs['footerForm'].resetFields()
+          this.$refs['footerChild'].footerForm.DeviceID = ''
           this.ctmDevCtrName = ''
           this.appList = [{
             materialId: 0,
