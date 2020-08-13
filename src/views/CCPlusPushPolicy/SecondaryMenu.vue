@@ -202,85 +202,85 @@ export default {
         props: {},
         data: [],
         header: [
-           {
-            prop: 'releaseConfId',
-            label: '策略ID',
+          {
+            prop: "releaseConfId",
+            label: "策略ID",
             sortable: true,
             width: 100
           },
           {
-            prop: 'releaseConfName',
-            label: '策略名称',
+            prop: "releaseConfName",
+            label: "策略名称",
             sortable: true,
             width: 100
           },
           {
-            prop: 'ctmDevCtrName',
-            label: '区域名',
+            prop: "ctmDevCtrName",
+            label: "区域名",
             sortable: true,
             width: 180
           },
           {
-            prop: 'ctmDevCtrId',
-            label: '区域详情',
+            prop: "ctmDevCtrId",
+            label: "区域详情",
             sortable: true,
             width: 100
           },
           {
-            prop: 'priority',
-            label: '优先级',
+            prop: "priority",
+            label: "优先级",
             sortable: true,
             width: 100
           },
           {
-            prop: 'supportVersion',
-            label: '支持版本',
+            prop: "supportVersion",
+            label: "支持版本",
             sortable: true,
             width: 140
           },
           {
-            prop: 'releaseStatus',
-            label: '状态',
+            prop: "releaseStatus",
+            label: "状态",
             sortable: true,
             width: 100,
             render: (h, { row }) => {
               if (row.releaseStatus === 0) {
-                return '未推送'
+                return "未推送";
               } else if (row.releaseStatus === 1) {
-                return '推送中'
+                return "推送中";
               } else if (row.releaseStatus === 2) {
-                return '已取消'
+                return "已取消";
               }
             }
           },
           {
-            prop: 'releaseStartTime',
-            label: '发布开始时间',
+            prop: "releaseStartTime",
+            label: "发布开始时间",
             sortable: true,
             width: 180
           },
           {
-            prop: 'releaseEndTime',
-            label: '发布结束时间',
+            prop: "releaseEndTime",
+            label: "发布结束时间",
             sortable: true,
             width: 180
           },
           {
-            prop: 'creator',
-            label: '操作用户',
+            prop: "creator",
+            label: "操作用户",
             sortable: true,
             width: 100
           },
           {
-            prop: 'lastUpdateTime',
-            label: '最近上线时间',
+            prop: "lastUpdateTime",
+            label: "最近上线时间",
             sortable: true,
             width: 180
           },
           {
-            label: '操作',
+            label: "操作",
             width: 180,
-            fixed: 'right',
+            fixed: "right",
             render: this.operation(this)
           }
         ]
@@ -303,7 +303,9 @@ export default {
       chipOptions: [],
       modelOptions: [],
       versionOptions: [],
+      creator: "管理员",
       typeOptions: [
+        //@todo del
         { key: "1", typeName: "财务" },
         { key: "2", typeName: "儿童" },
         { key: "3", typeName: "参考" },
@@ -364,21 +366,19 @@ export default {
     },
     selectBrandorCustomer({ customerName = "", brandName = "" }) {
       let params = {};
-      customerName && (params.customerName = customerName)
-      brandName && (params.brandName = brandName)
-      this.$service
-        .queryCustomerBrandList(params)
-        .then(data => {
-          if (data.code === 0) {
-            this.brandOptions = data.data.brandList;
-            this.customerOptions = data.data.customerList;
-          } else {
-            this.$message({
-              type: "error",
-              message: data.msg
-            });
-          }
-        });
+      customerName && (params.customerName = customerName);
+      brandName && (params.brandName = brandName);
+      this.$service.queryCustomerBrandList(params).then(data => {
+        if (data.code === 0) {
+          this.brandOptions = data.data.brandList;
+          this.customerOptions = data.data.customerList;
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
+      });
     },
     selectChip(val) {
       this.$service.queryModelChipList({ chip: val, model: "" }).then(data => {
@@ -470,38 +470,80 @@ export default {
         }
       });
     },
-    handleUp() {
+    async handleUp(row) {
       //发布上线
-      this.$confirm("确认发布上线?", "提示", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
+      try {
+        if (row.releaseStatus == "1") {
           this.$message({
             type: "success",
-            message: "发布成功"
+            message: "已上线"
           });
-        })
-        .catch(() => {});
+          return;
+        }
+        let res = await this.$confirm("确认发布上线?", "提示", {
+          confirmButtonText: "确认",
+          cancelButtonText: "取消",
+          type: "warning"
+        });
+        if (res == "confirm") {
+          res = await this.$service.queryCCPlusUpdatePushStatus({
+            releaseConfId: row.releaseConfId,
+            releaseStatus: "1",
+            creator: this.creator
+          });
+          if (res.code === 0) {
+            this.$message({
+              type: "success",
+              message: "发布成功"
+            });
+            this.fetchData();
+          } else {
+            this.$message({
+              type: "error",
+              message: res.msg
+            });
+          }
+        }
+      } catch (e) {}
     },
-    handleOff() {
+    async handleOff(row) {
       // 取消发布
-      this.$confirm("确认取消发布", "提示", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
+      try {
+        if (row.releaseStatus == "2") {
           this.$message({
             type: "success",
-            message: "取消成功"
+            message: "已下线"
           });
-        })
-        .catch(() => {});
+          return;
+        }
+        let res = await this.$confirm("确认取消发布?", "提示", {
+          confirmButtonText: "确认",
+          cancelButtonText: "取消",
+          type: "warning"
+        });
+        if (res == "confirm") {
+          res = await this.$service.queryCCPlusUpdatePushStatus({
+            releaseConfId: row.releaseConfId,
+            releaseStatus: "2",
+            creator: this.creator
+          });
+          if (res.code === 0) {
+            this.$message({
+              type: "success",
+              message: "取消成功"
+            });
+            this.fetchData();
+          } else {
+            this.$message({
+              type: "error",
+              message: res.msg
+            });
+          }
+        }
+      } catch (e) {}
     },
     // 复制
-    handleCopy() {
+    async handleCopy(row) {
       this.$confirm("确认复制该策略?", "提示", {
         confirmButtonText: "确认",
         cancelButtonText: "取消",
@@ -521,7 +563,7 @@ export default {
         })
         .catch(() => {});
     },
-    handleEdit(row) {
+    async handleEdit(row) {
       //编辑 @todo 传数据进去
       this.$router.push({
         path: "SecondaryEdit",
@@ -531,19 +573,32 @@ export default {
       });
     },
     // 删除
-    handleDel() {
-      this.$confirm("是否确认删除?", "提示", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          this.$message({
-            type: "success",
-            message: "删除成功"
+    async handleDel(row) {
+     try {
+        let res = await this.$confirm("是否确认删除?", "提示", {
+          confirmButtonText: "确认",
+          cancelButtonText: "取消",
+          type: "warning"
+        });
+        if (res == "confirm") {
+          res = await this.$service.queryCCPlusDeletePushManage({
+            releaseConfId: row.releaseConfId,
+            creator: this.creator
           });
-        })
-        .catch(() => {});
+          if (res.code === 0) {
+            this.$message({
+              type: "success",
+              message: "删除成功！"
+            });
+            this.fetchData();
+          } else {
+            this.$message({
+              type: "error",
+              message: res.msg
+            });
+          }
+        }
+      } catch (e) {}
     },
     //列表操作
     operation(obj) {
@@ -625,6 +680,9 @@ export default {
   created() {
     console.log("cc created");
     this.getMediaResourceInfo();
+    this.fetchData();
+  },
+  activated() {
     this.fetchData();
   },
   mounted() {

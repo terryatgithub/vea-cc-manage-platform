@@ -2,7 +2,7 @@
   <ContentCard
     class="content"
     title="新增推荐内容策略"
-    @go-back="$router.back()"
+    @go-back="cancelForm('ccplusSecondaryEditForm')"
   >
     <div class="el-row">
       <el-form
@@ -193,7 +193,7 @@ export default {
         itemMediaMax: "99",
         itemMediaList: [] //媒体资源
       };
-      return Object.assign({}, sample);
+      return sample;
     },
     init() {
       this.$service.queryVersionList().then(data => {
@@ -276,6 +276,8 @@ export default {
             message: "校验出错，请修改提示错误字段"
           });
         }
+      } finally {
+        this.reset();
       }
     },
     cancelForm(formName) {
@@ -285,7 +287,16 @@ export default {
         type: "warning"
       })
         .then(() => this.$router.back())
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => this.reset());
+    },
+    reset() {
+      this.$refs["columnTemplateForm"].forEach(ref => {
+        ref.$refs["tempForm"].clearValidate();
+        ref.$refs["tempForm"].resetFields();
+      });
+      this.$refs["ccplusSecondaryEditForm"].clearValidate();
+      this.$refs["ccplusSecondaryEditForm"].resetFields();
     },
     selectRegion() {
       this.showSelectRegionDialog = true;
