@@ -544,37 +544,27 @@ export default {
     },
     // 复制
     async handleCopy(row) {
-      this.$confirm("确认复制该策略?", "提示", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          this.$message({
-            type: "success",
-            message: "复制成功"
-          });
-          this.$router.push({
-            path: "SecondaryEdit",
-            query: {
-              id: row.tabId
-            }
-          });
-        })
-        .catch(() => {});
+      this.$router.push({
+        path: "SecondaryEdit",
+        query: {
+          releaseConfId: row.releaseConfId,
+          handleType: "copy"
+        }
+      });
     },
     async handleEdit(row) {
       //编辑 @todo 传数据进去
       this.$router.push({
         path: "SecondaryEdit",
         query: {
-          id: row.tabId
+          releaseConfId: row.releaseConfId,
+          handleType: "edit"
         }
       });
     },
     // 删除
     async handleDel(row) {
-     try {
+      try {
         let res = await this.$confirm("是否确认删除?", "提示", {
           confirmButtonText: "确认",
           cancelButtonText: "取消",
