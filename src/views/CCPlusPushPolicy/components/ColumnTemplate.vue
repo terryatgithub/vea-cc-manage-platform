@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="column-template-wrapper">
     <el-form
       label-width="90px"
       :model="content"
@@ -18,7 +18,7 @@
       </el-form-item>
 
       <el-form-item label-width="0" style="margin-left:90px;">
-        <el-button @click="handleSelectColumnResource">栏目资源选择</el-button>
+        <el-button @click="handleSelectColumnResource" type="primary" plain>新增栏目资源</el-button>
       </el-form-item>
 
       <!-- <el-form-item label="栏目ID:">
@@ -54,15 +54,16 @@
         <el-input placeholder="" clearable v-model="content.moviesNum" />
       </el-form-item>
 
-      <el-form-item class="right delete">
-        <el-button type="warning" @click="handleDeleteColumn"
+      <el-form-item>
+        <el-button @click="handleEditMovies" type="primary" plain>编辑栏目影片</el-button>
+      </el-form-item>
+
+      <el-form-item>
+        <el-button type="danger" plain @click="handleDeleteColumn"
           >删除栏目</el-button
         >
       </el-form-item>
 
-      <el-form-item>
-        <el-button @click="handleEditMovies">编辑栏目影片</el-button>
-      </el-form-item>
 
       <!-- 图片展示区 -->
       <el-form-item>
@@ -97,7 +98,7 @@
 
 <script>
 // 添加栏目的'栏目模板'组件
-
+import ccplusApi from "@/services/liteOS/ccplusApi.js";
 import ColumnResourceSelectDialog from "./ColumnResourceSelectDialog.vue";
 export default {
   components: {
@@ -109,31 +110,18 @@ export default {
       required: true,
       default: () => ({
         columnTemplate: 0,
-        columnId: 0,
-        serialNo: 0, //@todo v-for key用这个，可能会有啥问题吗？
+        // columnId: 0,
+        serialNo: 1, //@todo v-for key用这个，可能会有啥问题吗？
         columnName: "",
         moviesNum: "99"
       })
     }
   },
   data() {
-    // const checkColumnSerialNo = (rule, value, callback) => {
-    //   //校验模板栏目序列号
-    //   console.log("check no...");
-    //   if (!value) {
-    //     return callback(new Error("请输入栏目序号!"));
-    //   }
-    //   this.form.columns.forEach(col => {
-    //     if (col.serialNo === value) {
-    //       return callback(new Error("模板序号不能重复，请重新设置"));
-    //     }
-    //   });
-    // }
     return {
       rules: {
         serialNo: [
           { required: true, message: "请输入栏目序号", trigger: "blur" }
-          // { validator: checkColumnSerialNo, trigger: ["blur", "change"] }
         ]
       },
       showSelectResourceDialog: false,
@@ -143,7 +131,16 @@ export default {
         { label: "模板C 媒资横图", value: 2 },
         { label: "模板D 媒资方图", value: 3 }
       ],
-      urls: [
+      columnResource: null, //栏目资源标签
+      columnPostes: [], //栏目影片列表
+      urls: [ //需要删除
+        "https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg",
+        "https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg",
+        "https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg",
+        "https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg",
+        "https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg",
+        "https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg",
+        "https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg",
         "https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg",
         "https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg",
         "https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg",
@@ -151,16 +148,27 @@ export default {
         "https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg",
         "https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg",
         "https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg"
-      ],
-      columnResource: null //栏目资源标签
+      ]
     };
   },
   methods: {
-    getSelectResource(...rest) {
+    async getSelectResource(...rest) {
       // 获取选择的资源类型
       this.showSelectResourceDialog = false;
-      if(rest[0]) {
-        this.columnResource = rest[0];
+      if (!rest[0]) {
+        return;
+      }
+      this.columnResource = rest[0];
+      let res = await ccplusApi.queryCCPlusMediaResourceNew(
+        this.columnResource
+      );
+      if (res.code === 0) {
+        this.columnPostes = res.data.results;
+      } else {
+        this.$message({
+          type: "error",
+          message: res.msg
+        });
       }
     },
     // handleClose(done) {
@@ -184,30 +192,42 @@ export default {
     handleEditMovies() {
       this.$router.push({
         path: "ColumnTemplateDetail",
-        query: {
+        //@todo 带海报参数过去，直接带对象可以吗？
+        query: { 
           id: 1 //row.tabId
         }
       });
     },
-    handleDeleteColumn() {},
+    handleDeleteColumn() {
+      this.$confirm("确认删除该模板吗？", "提示", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$emit('remove-column', this.content)
+        })
+        .catch(() => {});
+    },
     async validate() {
       //@todo 子组件的校验问题
-        let res = await this.$refs["columnTemplateForm"].validate();
-        console.log("sub res", res);
-        return res;        
+      let res = await this.$refs["columnTemplateForm"].validate();
+      console.log("sub res", res);
+      return res;
     }
   }
 };
 </script>
 
 <style lang="stylus" scoped>
-.column
-  .right
-    float right
-  .edit
-    right 100px
-  .delete
-    right 10px
+.column-template-wrapper
+  background lightgray 
+.el-form
+  display flex
+  flex-wrap wrap
+  .el-form-item
+    margin 5px
+
 .demo-image__lazy
   height 100px
   width 100%

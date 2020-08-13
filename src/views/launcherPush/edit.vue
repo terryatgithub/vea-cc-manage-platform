@@ -117,7 +117,7 @@ export default {
         })
       } else {
         // 新增前先初始化页面
-        debugger
+        // debugger
         this.$nextTick(() => {
           this.$refs['pushChild'].$refs['pushForm'].clearValidate()
           this.$refs['pushChild'].$refs['pushForm'].resetFields()

@@ -80,11 +80,13 @@
           ref="columnTemplateForm"
           :key="item.serialNo"
           :content="item"
+          @remove-column="handleRemoveColumn"
         ></ColumnTemplate>
 
         <el-form-item>
           <el-button
-            type="primary"
+            type="success"
+            plain
             icon="el-icon-edit"
             class="el-col el-col-6"
             @click="handleAddColumn"
@@ -171,8 +173,8 @@ export default {
         columns: [
           {
             columnTemplate: 0,
-            columnId: 0,
-            serialNo: 0,
+            // columnId: 0,
+            serialNo: 1,
             columnName: "",
             moviesNum: "99"
           }
@@ -207,13 +209,18 @@ export default {
     },
     handleAddColumn() {
       const col = {
-        columnTemplate: "媒资模板B: 竖排",
-        columnId: 122121,
-        serialNo: 2,
+        columnTemplate: 0,
+        // columnId: 0,
+        serialNo: this.form.columns.length + 1,
         columnName: "",
-        moviesNum: "20"
+        moviesNum: "99"
       };
       this.form.columns.push(col);
+    },
+    handleRemoveColumn(...rest) {
+      let content = rest[0];
+      let idx = this.form.columns.indexOf(content);
+      this.form.columns.splice(idx, 1);
     },
     checkDuplicatedSerialNo() {
       //判断栏目模板序号是否有重复的
@@ -227,7 +234,6 @@ export default {
     },
     async submitForm(formName) {
       console.log("submit", this.form);
-      debugger;
       let cols = this.$refs["columnTemplateForm"].map(ref => ref.validate());
       try {
         let res = this.checkDuplicatedSerialNo();
@@ -260,7 +266,13 @@ export default {
       }
     },
     cancelForm(formName) {
-      console.log("cancel", this.form);
+      this.$confirm("退出后修改内容会全部丢失，确认退出吗？", "提示", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => this.$router.back())
+        .catch(() => {});
     },
     selectRegion() {
       this.showSelectRegionDialog = true;
@@ -284,14 +296,15 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.content >>> .el-form-item__content
-                width: 100%
+.content .el-form-item__content
+                width: 25%
                 .el-select,.el-cascader
                    width 100%
-.content >>> .el-form--inline .el-form-item {
+.content .el-form--inline .el-form-item {
            margin-right: 0px;
 }
-.content >>> .filter-item
+
+.content .filter-item
   justify-content: flex-start;
   margin: 10px 0px
 </style>
