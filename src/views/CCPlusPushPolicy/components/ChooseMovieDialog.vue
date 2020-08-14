@@ -199,6 +199,7 @@ export default {
       if (res.code === 0) {
         this.pagination.total = res.total;
         const { results } = res.data;
+        this.table.data.splice(0)
         const { data } = this.table;
         results.forEach((item, index) => {
           data.push({});
