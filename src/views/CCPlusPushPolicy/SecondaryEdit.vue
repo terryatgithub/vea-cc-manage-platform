@@ -275,11 +275,12 @@ export default {
       data.releaseEndTime = liteOS.date(this.form.datePublish[1]);
       data.creator = "管理员";
       data.releaseStatus = "0";
+      let res
       if (doModify) {
-        let res = await this.$service.queryCCPlusUpdatePushManage(data);
+        res = await this.$service.queryCCPlusUpdatePushManage(data);
       } else {
         delete data.releaseConfId
-        let res = await this.$service.queryCCPlusAddPushManage(data);
+        res = await this.$service.queryCCPlusAddPushManage(data);
       }
       if (res.code === 0) {
         this.$message.success(

@@ -1,11 +1,6 @@
 <template>
   <div class="column-template-wrapper">
-    <el-form
-      label-width="90px"
-      :model="content"
-      ref="tempForm"
-      :rules="rules"
-    >
+    <el-form label-width="90px" :model="content" ref="tempForm" :rules="rules">
       <el-form-item label="栏目模板:">
         <el-select v-model="content.template" placeholder="请选择">
           <el-option
@@ -92,15 +87,31 @@
     >
       <ColumnResourceSelectDialog @get-select-resource="getSelectResource" />
     </el-dialog>
+
+    <el-dialog
+      :visible.sync="showEditDetailPage"
+      title="编辑栏目详情"
+      width="100%"
+      :show-close="false"
+    >
+      <ColumnTemplateDetail
+        :itemMediaList="content.itemMediaList"
+        :templateType="content.template"
+        @done-pic-operation="donePicOperation"
+      />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 // 添加栏目的'栏目模板'组件
 import ColumnResourceSelectDialog from "./ColumnResourceSelectDialog.vue";
+import ColumnTemplateDetail from "./ColumnTemplateDetail";
+
 export default {
   components: {
-    ColumnResourceSelectDialog
+    ColumnResourceSelectDialog,
+    ColumnTemplateDetail
   },
   props: {
     content: {
@@ -116,6 +127,7 @@ export default {
         ]
       },
       showSelectResourceDialog: false,
+      showEditDetailPage: false,
       templateOptions: [
         { label: "模板A 媒资混排", value: "A" },
         { label: "模板B 媒资竖图", value: "B" },
@@ -126,6 +138,9 @@ export default {
     };
   },
   methods: {
+    async donePicOperation(...rest) {
+      this.showEditDetailPage = false;
+    },
     async getSelectResource(...rest) {
       // 获取选择的资源类型
       this.showSelectResourceDialog = false;
@@ -145,7 +160,7 @@ export default {
         const { results } = res.data;
         const { itemMediaList } = this.content;
         results.forEach((item, index) => {
-          itemMediaList[index] = {}
+          itemMediaList[index] = {};
           itemMediaList[index].mediaResourcesId = item.mediaResourcesId;
           itemMediaList[index].mediaPicType = item.posterType;
           itemMediaList[index].mediaPic = item.posterUrl;
@@ -177,13 +192,14 @@ export default {
       this.showSelectResourceDialog = true;
     },
     handleEditMovies() {
-      this.$router.push({
+      this.showEditDetailPage = true;
+      /*  this.$router.push({
         path: "ColumnTemplateDetail",
         //@todo 带海报参数过去，直接带对象可以吗？
         query: {
           id: 1 //row.tabId
         }
-      });
+      }); */
     },
     handleDeleteColumn() {
       this.$confirm("确认删除该模板吗？", "提示", {

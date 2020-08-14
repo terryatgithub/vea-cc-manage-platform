@@ -1,5 +1,12 @@
 <template>
-  <el-form ref="resourceForm" :model="form" label-width="100px" inline width="30%" :rules="rules">
+  <el-form
+    ref="resourceForm"
+    :model="form"
+    label-width="100px"
+    inline
+    width="30%"
+    :rules="rules"
+  >
     <el-col :span="8">
       <el-form-item>
         <el-select
@@ -63,45 +70,44 @@ export default {
         tag: []
       },
       rules: {},
-      sourceOptions: [
-      ],
-      categoryOptions: [
-      ],
-      tagOptions: [
-      ]
+      sourceOptions: [],
+      categoryOptions: [],
+      tagOptions: []
     };
   },
   methods: {
     closeColumnResourceSelectDialog(confirm) {
       console.log("close: ", confirm);
-      if(confirm) {
-        let res = Object.keys(this.form).filter(key => this.form[key].length !== 0)
+      if (confirm) {
+        let res = Object.keys(this.form).filter(
+          key => this.form[key].length !== 0
+        );
         if (!res.length) {
-          this.$message({type:'error', message: '请选择至少一个类别'})
+          this.$message({ type: "error", message: "请选择至少一个类别" });
         } else {
-          this.$emit('get-select-resource', this.form)
+          this.$emit("get-select-resource", this.form);
         }
       } else {
-        this.$emit('get-select-resource')
+        this.$emit("get-select-resource");
       }
-      this.$refs.resourceForm.resetFields()
+      this.$refs.resourceForm.resetFields();
     },
-    async getAllSelections(){
-      let res = await this.$service.queryCCPlusMediaResourceAllSelect()
-      if(res.code === 0) {
-        this.sourceOptions = res.data.supplierList
-        this.categoryOptions = res.data.categoryList
-        this.tagOptions = res.data.tagList
-      }else {
+    async getAllSelections() {
+      let res = await this.$service.queryCCPlusMediaResourceAllSelect();
+      if (res.code === 0) {
+        this.sourceOptions = res.data.supplierList;
+        this.categoryOptions = res.data.categoryList;
+        this.tagOptions = res.data.tagList;
+      } else {
         this.$message({
-            type: "error",
-            message: res.msg
-          });
+          type: "error",
+          message: res.msg
+        });
       }
     }
   },
   created() {
-    this.getAllSelections()
+    this.getAllSelections();
   }
 };
 </script>
