@@ -97,13 +97,13 @@ export default {
           {
             prop: 'deviceId',
             label: 'ID',
-            sortable: true
+            sortable: true,
+            width: 120
           },
           {
             prop: 'chip',
             label: '机芯',
-            sortable: true,
-            width: 140
+            sortable: true
           },
           {
             prop: 'model',

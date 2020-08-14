@@ -97,13 +97,13 @@ export default {
           {
             prop: 'brandId',
             label: 'brandId',
-            sortable: true
+            sortable: true,
+            width: 120
           },
           {
             prop: 'customerName',
             label: '客户',
-            sortable: true,
-            width: 140
+            sortable: true
           },
           {
             prop: 'brandName',

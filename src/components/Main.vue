@@ -494,8 +494,9 @@ export default {
             icon: 'icon_folder',
             url: 'appStorePush/appStorePush/view.html'
           }]
-      this.$service.getMenu().then(menu => {
+      // this.$service.getMenu().then(menu => {
         const titles = {}
+        const menu = []
         menu.push(
          ...menuLiteOS
         )
@@ -526,44 +527,44 @@ export default {
         this.menu = parseMenu(menu)
         this.titles = titles
         this.scrollMenuIntoView()
-      }).catch(() => {
-        const titles = {}
-        const parseMenu = menu => {
-          if (Array.isArray(menu)) {
-            return menu.map(parseMenu)
-          }
-          titles[menu.id] = menu.text
-          const item = {
-            icon: iconMap[menu.id],
-            route: menu.id,
-            title: menu.text
-          }
-          const attr = menu.attributes
-          if (attr && attr.modle === '3') {
-            // 如果是外部的链接
-            item.openType = attr.iframeUrl
-            item.query = {
-              url: attr.iframeUrl
-            }
-          }
-          const children = menu.children
-          if (children && children.length > 0) {
-            item.children = parseMenu(children)
-          }
-          return item
-        }
-        this.menu = parseMenu(menuLiteOS)
-        this.titles = titles
-        this.scrollMenuIntoView()
-      })
+      // }).catch(() => {
+      //   const titles = {}
+      //   const parseMenu = menu => {
+      //     if (Array.isArray(menu)) {
+      //       return menu.map(parseMenu)
+      //     }
+      //     titles[menu.id] = menu.text
+      //     const item = {
+      //       icon: iconMap[menu.id],
+      //       route: menu.id,
+      //       title: menu.text
+      //     }
+      //     const attr = menu.attributes
+      //     if (attr && attr.modle === '3') {
+      //       // 如果是外部的链接
+      //       item.openType = attr.iframeUrl
+      //       item.query = {
+      //         url: attr.iframeUrl
+      //       }
+      //     }
+      //     const children = menu.children
+      //     if (children && children.length > 0) {
+      //       item.children = parseMenu(children)
+      //     }
+      //     return item
+      //   }
+      //   this.menu = parseMenu(menuLiteOS)
+      //   this.titles = titles
+      //   this.scrollMenuIntoView()
+      // })
     },
     handleNavigate (route) {
-      this.$sendEvent({
-        type: 'menu_click',
-        payload: {
-          menu_name: this.titles[route.name]
-        }
-      })
+      // this.$sendEvent({
+      //   type: 'menu_click',
+      //   payload: {
+      //     menu_name: this.titles[route.name]
+      //   }
+      // })
       this.scrollMenuIntoView()
     },
     scrollMenuIntoView () {
