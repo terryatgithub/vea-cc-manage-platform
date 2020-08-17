@@ -4,7 +4,7 @@
 export function queryCCPlusPushManageListPage (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/lite-os/admin/cc-plus-push-manage/query-push-manage-list-page',
+    url: 'api/lite-os/admin/cc-plus-push-manage/query-push-manage-list-page',
     params
   })
 }
@@ -13,7 +13,7 @@ export function queryCCPlusPushManageListPage (params) {
 export function queryCCPlusGetPushManageByReleaseConfId (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/lite-os/admin/cc-plus-push-manage/get-push-manage-releaseConfId',
+    url: 'api/lite-os/admin/cc-plus-push-manage/get-push-manage-releaseConfId',
     params
   })
 }
@@ -22,7 +22,7 @@ export function queryCCPlusGetPushManageByReleaseConfId (params) {
 export function queryCCPlusUpdatePushStatus (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/lite-os/admin/cc-plus-push-manage/update-push-status',
+    url: 'api/lite-os/admin/cc-plus-push-manage/update-push-status',
     params
   })
 }
@@ -31,7 +31,7 @@ export function queryCCPlusUpdatePushStatus (params) {
 export function queryCCPlusDeletePushManage (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/lite-os/admin/cc-plus-push-manage/delete-push-manage',
+    url: 'api/lite-os/admin/cc-plus-push-manage/delete-push-manage',
     params
   })
 }
@@ -40,7 +40,7 @@ export function queryCCPlusDeletePushManage (params) {
 export function queryCCPlusMediaResourceNew (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/lite-os/admin/media-resources/query-resource-new',
+    url: 'api/lite-os/admin/media-resources/query-resource-new',
     params
   })
 }
@@ -50,7 +50,7 @@ export function queryCCPlusMediaResourceNew (params) {
 export function queryCCPlusMediaResourceAllSelect (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/lite-os/admin/media-resources/query-all-select',
+    url: 'api/lite-os/admin/media-resources/query-all-select',
     params
   })
 }
@@ -59,7 +59,7 @@ export function queryCCPlusMediaResourceAllSelect (params) {
 export function queryCCPlusAddPushManage (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/lite-os/admin/cc-plus-push-manage/add-push-manage',
+    url: 'api/lite-os/admin/cc-plus-push-manage/add-push-manage',
     data,
     isJSON: true,
     isHeaders: true
@@ -70,7 +70,7 @@ export function queryCCPlusAddPushManage (data) {
 export function queryCCPlusUpdatePushManage (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/lite-os/admin/cc-plus-push-manage/update-push-manage',
+    url: 'api/lite-os/admin/cc-plus-push-manage/update-push-manage',
     data,
     isJSON: true,
     isHeaders: true

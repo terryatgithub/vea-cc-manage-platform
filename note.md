@@ -17,3 +17,45 @@
 
 
 todo. el 关联组件
+
+## 部署
+1. nginx代理 vs webpack配置
+
+### webpack配置：
+
+
+### nginx代理：
+#### 客户端代码修改
+1. 添加timestamp/noncestr随机数，防止服务器缓存‘对接口的请求’
+
+#### 服务器端部署配置：
+1. 先确定部署在测试服务器哪个位置
+2. 拉取远程代码
+3. 部署nginx
+4. 如果后端有两个环境，设置两个端口转发代理
+
+部署前端项目
+下面以一个 vue 项目为例子，仅供参考 
+
+1. 拉取项目
+cd /var/www
+// 拉取项目 
+// 注意在 'http://' 和 'gitlab' 之间要加上用户名
+git clone http://liangweiliang@gitlab.skysri.com/liangweiliang/coocaa-activity.git
+2. 修改 nginx 配置
+修改文件 /etc/nginx/conf.d/default.conf, 在 server 节点，添加下面配置
+sudo vim /etc/nginx/conf.d/default.conf
+
+location /coocaa-activity/ {
+    alias /var/www/coocaa-activity/dist/;
+}
+# 转发后端的请求的配置，如果不需要转发，则不用
+location /admin-api/ {
+    proxy_pass http://172.20.139.237:3085;
+}
+3. 热重启 nginx
+# 检查 nginx 配置是否有错误 
+sudo nginx -t
+# 如果没提示有错误， 用下面命令热重启
+sudo nginx -s reload
+

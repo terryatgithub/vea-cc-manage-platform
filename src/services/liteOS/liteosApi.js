@@ -34,7 +34,7 @@ export function queryCustomerListAllContainBrands () {
 export function queryCustomerBrandList (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/lite-os/admin/select/query-customer-brands-list',
+    url: 'api/lite-os/admin/select/query-customer-brands-list',
     params
   })
 }
@@ -76,7 +76,7 @@ export function deleteBrand (params) {
 export function queryVersionList (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/lite-os/admin/version/queryVersionList',
+    url: 'api/lite-os/admin/version/queryVersionList',
     params
   })
 }
@@ -110,7 +110,7 @@ export function addChipModel (params) {
 export function queryChipListAll () {
   return this.fetch({
     method: 'get',
-    url: '/api/lite-os/admin/select/query-chip-list-all'
+    url: 'api/lite-os/admin/select/query-chip-list-all'
   })
 }
 
