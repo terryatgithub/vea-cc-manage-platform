@@ -1,6 +1,7 @@
 <template>
   <PageWrapper>
-    <PageContentWrapper v-show="activePage === 'desktop'">
+    这就是首页。。。
+    <!-- <PageContentWrapper v-show="activePage === 'desktop'">
       <ContentCard class="content">
         <h2>待处理任务</h2>
         <div class="list">
@@ -92,8 +93,8 @@
           </div>
         </div>
       </ContentCard>
-    </PageContentWrapper>
-    <PageContentWrapper v-if="activePage === 'panel-list'">
+    </PageContentWrapper> -->
+    <!-- <PageContentWrapper v-if="activePage === 'panel-list'">
       <keep-alive>
         <PanelList @read="handleReadPanel" @go-back="goBack" />
       </keep-alive>
@@ -140,7 +141,7 @@
         @upsert-end="goBack('tab-list')"
         @go-back="goBack('tab-list')">
       </TabInfo>
-    </PageContentWrapper>
+    </PageContentWrapper> -->
   </PageWrapper>
 </template>
 <script>
@@ -255,26 +256,26 @@ export default {
     }
   },
   created () {
-    this.$service.getTotal('myDrafts').then(data => {
-      this.draftNum = data
-    })
-    this.$service.getTotal('mySubmittedTasks').then(data => {
-      this.submitNum = data
-    })
-    this.$service.getTotal('myAuditTasks').then(data => {
-      this.auditNum = data
-    })
-    this.$service.getTotal('msn').then(data => {
-      this.movieNum = data
-    })
-    this.$service.getTotal('msn').then(data => {
-      this.searchNum = data
-    })
-    if (this.$consts.idPrefix !== '10') {
-      this.$service.desktopGetDataSyncInfo().then((data) => {
-        this.isAutoSync = data.isOn
-      })
-    }
+    // this.$service.getTotal('myDrafts').then(data => {
+    //   this.draftNum = data
+    // })
+    // this.$service.getTotal('mySubmittedTasks').then(data => {
+    //   this.submitNum = data
+    // })
+    // this.$service.getTotal('myAuditTasks').then(data => {
+    //   this.auditNum = data
+    // })
+    // this.$service.getTotal('msn').then(data => {
+    //   this.movieNum = data
+    // })
+    // this.$service.getTotal('msn').then(data => {
+    //   this.searchNum = data
+    // })
+    // if (this.$consts.idPrefix !== '10') {
+    //   this.$service.desktopGetDataSyncInfo().then((data) => {
+    //     this.isAutoSync = data.isOn
+    //   })
+    // }
   }
 }
 </script>

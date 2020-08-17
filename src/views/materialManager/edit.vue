@@ -56,7 +56,7 @@
             </div>
           </div>
         </el-form-item>
-        <el-form-item label="应用横图" class="imgUpload" prop="square">
+        <el-form-item label="应用方图" class="imgUpload" prop="square">
           <div class='picture-uploader' v-if='isInit'>
             <el-upload
               v-if='!appForm.square'

@@ -83,12 +83,12 @@ export default {
       this.itemsIndexed = index
     },
     handleClickMenu (name) {
-      this.$sendEvent({
-        type: 'menu_click',
-        payload: {
-          menu_name: name
-        }
-      })
+      // this.$sendEvent({
+      //   type: 'menu_click',
+      //   payload: {
+      //     menu_name: name
+      //   }
+      // })
     }
   },
   created () {

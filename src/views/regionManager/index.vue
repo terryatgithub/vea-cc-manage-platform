@@ -154,7 +154,7 @@ export default {
             render: (h, { row }) => {
               return h('el-switch', {
                 props: {
-                  value: row.state === 1
+                  value: row.state === '1'
                 }
               })
             }

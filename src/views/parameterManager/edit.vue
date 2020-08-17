@@ -221,7 +221,6 @@ export default {
               }
             })
           } else {
-            debugger
             if (this.isSelect === -1) {
               params.chip = params.movement
               delete params.movement
