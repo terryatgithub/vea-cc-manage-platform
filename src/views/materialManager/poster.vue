@@ -100,8 +100,7 @@ export default {
           {
             prop: 'materialName',
             label: '海报名',
-            sortable: true,
-            width: 140
+            sortable: true
           },
           {
             prop: 'materialPosterPic',
@@ -149,18 +148,15 @@ export default {
           {
             prop: 'creator',
             label: '操作用户',
-            width: 160,
             sortable: true
           },
           {
             prop: 'lastUpdateTime',
             label: '操作时间',
-            width: 180,
             sortable: true
           },
           {
             label: '操作',
-            width: 160,
             fixed: 'right',
             render: this.operation(this)
           }

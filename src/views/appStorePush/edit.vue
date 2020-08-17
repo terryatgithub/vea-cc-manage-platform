@@ -1,5 +1,5 @@
 <template>
-    <ContentCard title="新增/编辑">
+    <ContentCard title="新增/编辑" @go-back="goBack">
       <PushForm @regionSel = 'regionSel' ref = 'pushChild' :ctmDevCtrName = 'ctmDevCtrName' :risId = 'risId'></PushForm>
       <el-dialog
         :title='dialogTitle'
@@ -325,6 +325,15 @@ export default {
       this.$router.push({
         path: 'appStorePush'
       })
+    },
+    goBack () {
+      this.$confirm('退出后修改内容会全部丢失，确认退出吗？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => this.$router.back())
+        .catch(() => {})
     }
   },
   created () {

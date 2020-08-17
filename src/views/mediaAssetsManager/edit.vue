@@ -106,8 +106,7 @@ export default {
             }
           })
         }
-      })  
-      
+      })
     },
     // 文件上传调用
     imgUpload (file) {
@@ -154,11 +153,11 @@ export default {
       }
       return isJPG && isLt2M
     },
-    setInit() {
-      this.isInit = false;
+    setInit () {
+      this.isInit = false
       this.$nextTick(() => {
-        this.isInit = true;
-      });
+        this.isInit = true
+      })
     }
   }
 }
@@ -190,7 +189,7 @@ export default {
     cursor: default;
     width: 85px;
     height: 85px;
-    line-height: 97px;
+    line-height: 89px;
   }
   .enabled {
     .el-upload {

@@ -9,6 +9,7 @@
               placeholder="请选择机芯"
               v-model="filter['chip']"
               clearable
+              @change='selectChip(filter.chip)'
             >
               <el-option
                 v-for="item in chipOptions"
@@ -25,6 +26,7 @@
               placeholder="请选择机型"
               v-model="filter['model']"
               clearable
+              @change='selectModel(filter.model)'
             >
               <el-option
                 v-for="item in modelOptions"
@@ -186,11 +188,45 @@ export default {
       this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
+      this.getMediaResourceInfo()
     },
-    // 获取查询条件
-    getMediaResourceInfo () {
-      const params = { chip: '', model: '' }
-      this.$service.queryModelChipList(params).then(data => {
+    // 机芯机型联动
+    selectChip (val) {
+      this.$service.queryModelChipList({ chip: val, model: '' }).then(data => {
+        if (data.code === 0) {
+          if (this.filter.model) {
+            this.modelOptions = data.data.modelList
+          } else {
+            this.chipOptions = data.data.chipList
+            this.modelOptions = data.data.modelList
+          }
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+    },
+    selectModel (val) {
+      this.$service.queryModelChipList({ chip: '', model: val }).then(data => {
+        if (data.code === 0) {
+          if (this.filter.chip) {
+            this.chipOptions = data.data.chipList
+          } else {
+            this.chipOptions = data.data.chipList
+            this.modelOptions = data.data.modelList
+          }
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+    },
+    chipModel (parameter) {
+      this.$service.queryModelChipList(parameter).then(data => {
         if (data.code === 0) {
           this.chipOptions = data.data.chipList
           this.modelOptions = data.data.modelList
@@ -201,6 +237,22 @@ export default {
           })
         }
       })
+    },
+    // 获取查询条件
+    getMediaResourceInfo () {
+      this.chipModel({ chip: '', model: '' })
+      // const params = { chip: '', model: '' }
+      // this.$service.queryModelChipList(params).then(data => {
+      //   if (data.code === 0) {
+      //     this.chipOptions = data.data.chipList
+      //     this.modelOptions = data.data.modelList
+      //   } else {
+      //     this.$message({
+      //       type: 'error',
+      //       message: data.msg
+      //     })
+      //   }
+      // })
     },
     // 新增
     handleCreate () {

@@ -186,7 +186,7 @@ export default {
             prop: 'ctmDevCtrName',
             label: '区域名',
             sortable: true,
-            width: 180
+            width: 150
           },
           {
             prop: 'ctmDevCtrId',
@@ -247,7 +247,6 @@ export default {
           },
           {
             label: '操作',
-            width: 180,
             fixed: 'right',
             render: this.operation(this)
           }

@@ -81,7 +81,6 @@ export function queryVersionList (params) {
   })
 }
 
-
 // 分页获取机芯机型列表
 export function queryChipModelListPage (params) {
   return this.fetch({
@@ -185,9 +184,13 @@ export function uploadImg (formData) {
 //     params,
 //     isUpload: true
 //   })
+  let url = 'api/lite-os/admin/upload/uploadImg'
+  if (process.env.NODE_ENV === 'production') {
+    url = process.env.VUE_APP_BASEURL + url
+  }
   return axios({
     method: 'post',
-    url: 'api/lite-os/admin/upload/uploadImg',
+    url: url,
     headers: {
       'Content-Type': 'multipart/form-data',
     },

@@ -92,8 +92,8 @@ export default {
         li {
             width: 22%;
             height: 110px;
+            display: inline-block;
             margin: 0 5px;
-            float: left;
             border-radius: 4px;
         }
         .grid-content {

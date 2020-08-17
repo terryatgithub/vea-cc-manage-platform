@@ -10,7 +10,7 @@
     <el-row :gutter="2">
       <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.title}}</div></el-col>
       <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.alias}}</div></el-col>
-      <el-col :span="5"><div class="grid-content bg-purple-light">{{detail.mediaUrl}}</div></el-col>
+      <el-col :span="5"><div class="grid-content bg-purple-light a-href" @click='href'>{{detail.mediaUrl}}</div></el-col>
       <el-col :span="5"><div class="grid-content bg-purple-light"></div></el-col>
       <el-col :span="4"><div class="grid-content bg-purple-light"></div></el-col>
     </el-row>
@@ -144,6 +144,9 @@ export default {
         })
       }
     },
+    href () {
+      window.location.href = this.detail.mediaUrl
+    },
     goBack () {
       this.$router.push({
         path: 'mediaAssetsManager',
@@ -186,6 +189,10 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+.a-href {
+  color: #86aee7;
+  cursor: pointer;
 }
 .row-bg {
     padding: 10px 0;

@@ -87,13 +87,12 @@ export default {
           {
             prop: 'materialName',
             label: '应用名',
-            sortable: true,
-            width: 140
+            sortable: true
           },
           {
             prop: 'materialType',
             label: '类型',
-            width: 120,
+            width: 100,
             sortable: true
           },
           {
@@ -112,7 +111,6 @@ export default {
           {
             prop: 'materialState',
             label: '状态',
-            width: 120,
             sortable: true,
             render: (h, { row }) => {
               // if (!this.canEdit) {
@@ -136,18 +134,15 @@ export default {
           {
             prop: 'creator',
             label: '操作用户',
-            width: 160,
             sortable: true
           },
           {
             prop: 'lastUpdateTime',
             label: '操作时间',
-            width: 180,
             sortable: true
           },
           {
             label: '操作',
-            width: 160,
             fixed: 'right',
             render: this.operation(this)
           }

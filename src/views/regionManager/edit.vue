@@ -11,6 +11,7 @@
         <el-form-item label="区域名" prop="ctmDevCtrName">
           <el-input
             placeholder="请输入区域名"
+            size='mini'
             v-model="regionForm.ctmDevCtrName"
             clearable
           />

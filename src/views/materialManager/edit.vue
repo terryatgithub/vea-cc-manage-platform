@@ -15,7 +15,7 @@
             v-model="appForm.materialName"
           />
         </el-form-item>
-        <el-form-item label="应用横图" class="imgUpload" prop="horizontal">
+        <el-form-item label="应用横图" class="horizontalImg" prop="horizontal">
           <!-- <el-upload
             v-model="appForm.materialPics"
             class="app-uploader"
@@ -56,7 +56,7 @@
             </div>
           </div>
         </el-form-item>
-        <el-form-item label="应用方图" class="imgUpload" prop="square">
+        <el-form-item label="应用方图" class="squareImg" prop="square">
           <div class='picture-uploader' v-if='isInit'>
             <el-upload
               v-if='!appForm.square'
@@ -706,7 +706,7 @@ export default {
     cursor: default;
     width: 85px;
     height: 85px;
-    line-height: 97px;
+    line-height: 89px;
   }
   .enabled {
     .el-upload {
@@ -725,6 +725,36 @@ export default {
     }
   }
 }
+.horizontalImg {
+  .picture-uploader {
+    width: 110px;
+    height: 85px;
+    .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      width: 110px;
+      height: 85px;
+      line-height: 89px;
+    }
+  }
+}
+.squareImg {
+  .picture-uploader {
+    width: 85px;
+    height: 85px;
+    .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      width: 85px;
+      height: 85px;
+      line-height: 89px;
+    }
+  }
+}
 .thumbnail-wrap {
   width: 100%;
   height: 100%;
@@ -739,7 +769,6 @@ export default {
     height: 100%;
     left: 0;
     top: 0;
-    cursor: default;
     text-align: center;
     color: #fff;
     opacity: 0;

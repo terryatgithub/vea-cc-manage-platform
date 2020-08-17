@@ -1,6 +1,9 @@
 <template>
   <PageWrapper>
-    这就是首页。。。
+    <div class="dashboard-container">
+      <div class="dashboard-text">欢迎使用liteOS海外运营服务平台</div>
+      <div class="dashboard-text">登录账号:{{ $appState.user.name }}</div>
+    </div>
     <!-- <PageContentWrapper v-show="activePage === 'desktop'">
       <ContentCard class="content">
         <h2>待处理任务</h2>
@@ -145,26 +148,26 @@
   </PageWrapper>
 </template>
 <script>
-import ContentCard from '@/components/ContentCard'
-import PanelInfo from '../panelInfo/PanelInfo'
-import TabInfo from '../tabInfo/TabInfo'
-import PageWrapper from '@/components/PageWrapper'
-import PageContentWrapper from '@/components/PageContentWrapper'
-import PanelList from './dataSync/Panel'
-import AlbumList from './dataSync/Album'
-import TabList from './dataSync/Tab'
-import FilmPageList from './dataSync/FilmPage'
+// import ContentCard from '@/components/ContentCard'
+// import PanelInfo from '../panelInfo/PanelInfo'
+// import TabInfo from '../tabInfo/TabInfo'
+// import PageWrapper from '@/components/PageWrapper'
+// import PageContentWrapper from '@/components/PageContentWrapper'
+// import PanelList from './dataSync/Panel'
+// import AlbumList from './dataSync/Album'
+// import TabList from './dataSync/Tab'
+// import FilmPageList from './dataSync/FilmPage'
 export default {
   components: {
-    ContentCard,
-    PanelList,
-    AlbumList,
-    TabList,
-    FilmPageList,
-    PanelInfo,
-    TabInfo,
-    PageWrapper,
-    PageContentWrapper
+    // ContentCard,
+    // PanelList,
+    // AlbumList,
+    // TabList,
+    // FilmPageList,
+    // PanelInfo,
+    // TabInfo,
+    // PageWrapper,
+    // PageContentWrapper
   },
   data () {
     return {
@@ -279,32 +282,14 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-.list
-  display: flex
-  >div
-    margin-right: 10px
-  .text-num
-    color: red
-img
-  display: block
-  margin: auto
-.text-wrap
-  margin-top: 15px
-
-.data-sync-list
-  border 1px solid #f2f2f2
-.data-sync-list__item
-  cursor pointer
-  padding 10px
-  border-bottom 1px solid #f2f2f2
-  &:last-child
-    border none
-  &:hover
-    color #2d8cf0
-.data-sync-list__num
-  float right
-.search
-  width 64px
-  height 64px
+<style lang="scss" scoped>
+.dashboard {
+  &-container {
+    margin: 30px;
+  }
+  &-text {
+    font-size: 30px;
+    line-height: 46px;
+  }
+}
 </style>

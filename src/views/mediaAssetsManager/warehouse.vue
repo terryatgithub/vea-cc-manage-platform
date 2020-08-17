@@ -94,20 +94,17 @@ export default {
           },
           {
             prop: 'title',
-            label: '媒资名称',
-            width: 300
+            label: '媒资名称'
           },
           {
             prop: 'category',
             label: '类型',
-            sortable: true,
-            width: 160
+            sortable: true
           },
           {
             prop: 'posterHorizontal',
             label: '图片',
             sortable: true,
-            width: 300,
             render: (h, { row }) => {
               return h('img', {
                 attrs: {
@@ -120,8 +117,7 @@ export default {
           {
             prop: 'supplier',
             label: '来源',
-            sortable: true,
-            width: 160
+            sortable: true
           },
           {
             label: '操作',
@@ -204,6 +200,9 @@ export default {
           {
             props: {
               type: 'text'
+            },
+            attrs: {
+              style: 'text-align: center'
             },
             on: {
               click: () => {

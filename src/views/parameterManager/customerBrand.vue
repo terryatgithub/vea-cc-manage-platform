@@ -7,14 +7,15 @@
           <div class="el-col-20">
             <el-select
               placeholder="请选择客户"
-              v-model="filter['customerId']"
+              v-model="filter['customerName']"
               clearable
+              @change='selectCustomer(filter.customerName)'
             >
               <el-option
                 v-for="item in customerOptions"
                 :key="item.customerId"
                 :label="item.customerName"
-                :value="item.customerId"
+                :value="item.customerName"
               />
             </el-select>
           </div>
@@ -23,14 +24,15 @@
           <div class="el-col-20">
             <el-select
               placeholder="请选择品牌"
-              v-model="filter['brandId']"
+              v-model="filter['brandName']"
               clearable
+              @change='selectBrand(filter.brandName)'
             >
               <el-option
                 v-for="item in brandOptions"
                 :key="item.brandId"
                 :label="item.brandName"
-                :value="item.brandId"
+                :value="item.brandName"
               />
             </el-select>
           </div>
@@ -186,29 +188,49 @@ export default {
       this.efficientFilter = this.genDefaultFilter()
       this.pagination.currentPage = 1
       this.fetchData()
+      this.getMediaResourceInfo()
+    },
+    // 客户品牌联动
+    selectCustomer (val) {
+      this.$service.queryCustomerBrandsList({ customerName: val, brandName: '' }).then(data => {
+        if (data.code === 0) {
+          this.brandOptions = data.data.brandList
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+    },
+    selectBrand (val) {
+      this.$service.queryCustomerBrandsList({ customerName: '', brandName: val }).then(data => {
+        if (data.code === 0) {
+          this.customerOptions = data.data.customerList
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+    },
+    customerBrand (parameter) {
+      this.$service.queryCustomerBrandsList(parameter).then(data => {
+        if (data.code === 0) {
+          this.customerOptions = data.data.customerList
+          this.brandOptions = data.data.brandList
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
     },
     // 获取查询条件
     getMediaResourceInfo () {
-      this.$service.queryCustomerListAll().then(data => {
-        if (data.code === 0) {
-          this.customerOptions = data.data
-        } else {
-          this.$message({
-            type: 'error',
-            message: data.msg
-          })
-        }
-      })
-      this.$service.queryBrandListAll().then(data => {
-        if (data.code === 0) {
-          this.brandOptions = data.data
-        } else {
-          this.$message({
-            type: 'error',
-            message: data.msg
-          })
-        }
-      })
+      this.customerBrand({ customerName: '', brandName: '' })
     },
     // 新增
     handleCreate () {

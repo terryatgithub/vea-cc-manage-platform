@@ -131,20 +131,18 @@ export default {
           {
             prop: 'ctmDevCtrName',
             label: '区域名',
-            sortable: true,
-            width: 160
+            sortable: true
           },
           {
             prop: 'devices',
             label: '机芯&机型',
-            sortable: true,
-            width: 140
+            sortable: true
           },
           {
             prop: 'countryNames',
             label: '国家',
             sortable: true,
-            width: 180
+            width:200
           },
           {
             prop: 'state',
@@ -162,18 +160,15 @@ export default {
           {
             prop: 'creator',
             label: '操作用户',
-            sortable: true,
-            width: 120
+            sortable: true
           },
           {
             prop: 'updateTime',
             label: '操作时间',
-            sortable: true,
-            width: 160
+            sortable: true
           },
           {
             label: '操作',
-            width: 140,
             fixed: 'right',
             render: this.operation(this)
           }

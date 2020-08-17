@@ -82,20 +82,17 @@ export default {
           {
             prop: 'mediaSourceName',
             label: '来源名称',
-            sortable: true,
-            width: 180
+            sortable: true
           },
           {
             prop: 'flag',
             label: '关联应用',
-            sortable: true,
-            width: 160
+            sortable: true
           },
           {
             prop: 'mediaSourcePic',
             label: '图片',
             sortable: true,
-            width: 240,
             render: (h, { row }) => {
               return h('img', {
                 attrs: {
@@ -108,18 +105,15 @@ export default {
           {
             prop: 'creator',
             label: '操作用户',
-            width: 140,
             sortable: true
           },
           {
             prop: 'lastUpdateTime',
             label: '操作时间',
-            width: 180,
             sortable: true
           },
           {
             label: '操作',
-            width: 160,
             fixed: 'right',
             render: this.operation(this)
           }

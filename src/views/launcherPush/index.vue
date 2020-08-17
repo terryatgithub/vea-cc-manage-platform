@@ -251,7 +251,6 @@ export default {
           },
           {
             label: '操作',
-            width: 180,
             fixed: 'right',
             render: this.operation(this)
           }
