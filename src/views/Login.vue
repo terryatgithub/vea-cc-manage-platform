@@ -94,7 +94,7 @@ export default {
       }
     },
     handleLogin (err) {
-      let that = this; 
+      let that = this
       if (err.length === 0) {
         // if (this.isDomainActive) {
         //   this.user.ldapName = this.user.username
