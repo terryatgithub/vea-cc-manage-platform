@@ -25,6 +25,10 @@ module.exports = {
         target: 'http://' + BACKEND1,
         pathRewrite: { '^/api': '/api' }
       },
+      '/ums': {
+        target: 'http://' + BACKEND1,
+        pathRewrite: { '^/ums': '/ums' }
+      },
       'captcha.jpg': {
         target: 'http://' + BACKEND1
       }

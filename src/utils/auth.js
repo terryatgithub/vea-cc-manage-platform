@@ -33,12 +33,15 @@ Vue.prototype.$isLoggedIn = async function () {
 }
 Vue.prototype.$login = async function (data) {
   return this.$service.login(data).then(res => {
+    console.log(res)
     const user = {
       name: data.username
     }
     this.$service.state = user
     this.$appState.user = user
     this.$appState.$set('user', user)
+    const token = res.token_type + res.access_token
+    this.$store.commit('saveCurrDbSource', token)
     return getInitData(this)
   })
 }

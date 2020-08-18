@@ -1,25 +1,25 @@
-export function login (data) {
+export function login (params) {
   return this.fetch({
-    method: 'post',
-    url: 'api/v1/userlogin.html',
-    data
+    method: 'get',
+    url: 'ums/oauth/token',
+    params
   }).then((user) => {
     this.state = user
     return user
-  }).catch(() => {
+  }).catch((data) => {
     // 联调接口用
-    const user = {
-      code: '0',
-      data: { platformType: 'COOCAA', userInfo: { loginName: 'yuanjunnan', userId: 80 }, enableContentAuth: 0 },
-      enableContentAuth: 0,
-      platformType: 'COOCAA',
-      userInfo: { loginName: 'yuanjunnan', userId: 80 },
-      loginName: 'yuanjunnan',
-      userId: 80,
-      success: true
-    }
-    this.state = user
-    return user
+    // const user = {
+    //   code: '0',
+    //   data: { platformType: 'COOCAA', userInfo: { loginName: 'yuanjunnan', userId: 80 }, enableContentAuth: 0 },
+    //   enableContentAuth: 0,
+    //   platformType: 'COOCAA',
+    //   userInfo: { loginName: 'yuanjunnan', userId: 80 },
+    //   loginName: 'yuanjunnan',
+    //   userId: 80,
+    //   success: true
+    // }
+    // this.state = user
+    // return user
   })
 }
 

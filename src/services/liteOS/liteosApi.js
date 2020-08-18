@@ -306,6 +306,13 @@ export function getMediaResourcesId (params) {
     params
   })
 }
+// 媒资类别--查询所有
+export function queryCategoryAll () {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/media-resources/query-category-all'
+  })
+}
 // 媒资来源--分页查询
 export function querySourceListPage (params) {
   return this.fetch({
@@ -441,4 +448,27 @@ export function getAppStorePushManageReleaseConfId (params) {
     url: 'api/lite-os/admin/app-store-push-manage/get-push-manage-releaseConfId',
     params
   })
+}
+
+// 登录接口
+export function loginToken (params) {
+  let url = 'ums/oauth/token'
+  if (process.env.NODE_ENV === 'production') {
+    url = process.env.VUE_APP_BASEURL + url
+  }
+  return axios({
+    method: 'get',
+    url: url,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    data: params
+  }).then(({ data }) => {
+    return data
+  })
+  // return this.fetch({
+  //   method: 'get',
+  //   url: 'ums/oauth/token',
+  //   params
+  // })
 }

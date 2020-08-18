@@ -94,32 +94,33 @@ export default {
       }
     },
     handleLogin (err) {
+      let that = this; 
       if (err.length === 0) {
-        if (this.isDomainActive) {
-          this.user.ldapName = this.user.username
-          delete this.user.username
-        } else {
-          delete this.user.ldapName
-        }
+        // if (this.isDomainActive) {
+        //   this.user.ldapName = this.user.username
+        //   delete this.user.username
+        // } else {
+        //   delete this.user.ldapName
+        // }
         if (window.localStorage) {
           window.localStorage.setItem(
             'loginType',
             this.isDomainActive ? 'domain' : 'normal'
           )
         }
-        this.$router.push({
-          path: this.$route.query.redirect || '/desktop'
-        })
-        this.$login(this.user).then(data => {
+        // this.$router.push({
+        //   path: this.$route.query.redirect || '/desktop'
+        // })
+        this.$login(that.user).then(data => {
           console.log('redirect=' + this.$route.query.redirect)
           this.$router.push({
             path: this.$route.query.redirect || '/desktop'
           })
         },
         () => {
-          if (this.isDomainActive) {
-            this.user.username = this.user.ldapName
-          }
+          // if (this.isDomainActive) {
+          //   this.user.username = this.user.ldapName
+          // }
         })
       }
     },

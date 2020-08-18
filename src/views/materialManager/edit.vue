@@ -95,7 +95,7 @@
               v-for="item in typeOptions"
               :key="item.key"
               :label="item.typeName"
-              :value="item.key"
+              :value="item.typeName"
             />
           </el-select>
         </el-form-item>
@@ -418,8 +418,6 @@ export default {
               { pic: params.horizontal, type: 'horizontal' },
               { pic: params.square, type: 'square' },
             ])
-            delete params.horizontal
-            delete params.square
             if (this.materialId !== '0') { // 判断是新增还是修改
               params.materialId = this.materialId
               this.$service.updateAppManage(params).then(data => {
@@ -619,11 +617,11 @@ export default {
       }
       return isJPG && isLt2M
     },
-    setInit() {
-      this.isInit = false;
+    setInit () {
+      this.isInit = false
       this.$nextTick(() => {
-        this.isInit = true;
-      });
+        this.isInit = true
+      })
     }
   },
   created () {

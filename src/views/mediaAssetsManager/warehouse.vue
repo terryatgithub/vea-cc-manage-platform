@@ -26,15 +26,21 @@
                 clearable
                 v-model="filter['category']"
               >
-                <el-option value="1" label="Movies电影"/>
-                <el-option value="2" label="TV Series电视剧"/>
-                <el-option value="3" label="TV Variety Show综艺"/>
-                <el-option value="4" label="Trailer预告片"/>
-                <el-option value="5" label="Short Film短片"/>
-                <el-option value="6" label="Live直播"/>
-                <el-option value="7" label="Music Video音乐录像"/>
-                <el-option value="8" label="Music Audio音频"/>
-                <el-option value="9" label="Videos视频"/>
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.category"
+                  :label="item.category"
+                  :value="item.category"
+                />
+                <!-- <el-option value="Movies电影" label="Movies电影"/>
+                <el-option value="TV Series电视剧" label="TV Series电视剧"/>
+                <el-option value="TV Variety Show综艺" label="TV Variety Show综艺"/>
+                <el-option value="Trailer预告片" label="Trailer预告片"/>
+                <el-option value="Short Film短片" label="Short Film短片"/>
+                <el-option value="Live直播" label="Live直播"/>
+                <el-option value="Music Video音乐录像" label="Music Video音乐录像"/>
+                <el-option value="Music Audio音频" label="Music Audio音频"/>
+                <el-option value="Videos视频" label="Videos视频"/> -->
               </el-select>
             </div>
           </el-form-item>
@@ -126,6 +132,7 @@ export default {
           }
         ]
       },
+      typeOptions: [],
       filterFormRules: {
         // tabId: [
         //   {
@@ -214,9 +221,23 @@ export default {
         )
         return [btn1]
       }
+    },
+    // 获取查询条件
+    getMediaResourceInfo () {
+      this.$service.queryCategoryAll().then(data => {
+        if (data.code === 0) {
+          this.typeOptions = data.data
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
     }
   },
   created () {
+    this.getMediaResourceInfo()
     this.fetchData()
   }
 }

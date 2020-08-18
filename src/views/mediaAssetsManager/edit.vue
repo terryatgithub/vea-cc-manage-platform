@@ -57,6 +57,9 @@ export default {
     },
     mediaSourceName: {
       type: String
+    },
+    mediaSourcePic: {
+      type: String
     }
   },
   data () {
@@ -144,10 +147,9 @@ export default {
       const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
       if (!isJPG) {
-        this.$message.error('上传头像图片只能是 PNG或JPG 格式!')
+        this.$message.error('上传关联图片只能是 PNG或JPG 格式!')
         this.setInit()
-      }
-      if (!isLt2M) {
+      } else if (!isLt2M) {
         this.$message.error('上传图标图片大小不能超过 2MB!')
         this.setInit()
       }
@@ -158,6 +160,11 @@ export default {
       this.$nextTick(() => {
         this.isInit = true
       })
+    }
+  },
+  created () {
+    if (this.mediaSourcePic) {
+      this.formInline.picture = this.mediaSourcePic
     }
   }
 }
@@ -186,7 +193,7 @@ export default {
     border-radius: 6px;
     position: relative;
     overflow: hidden;
-    cursor: default;
+    cursor: pointer;
     width: 85px;
     height: 85px;
     line-height: 89px;
@@ -222,7 +229,7 @@ export default {
     height: 100%;
     left: 0;
     top: 0;
-    cursor: default;
+    cursor: pointer;
     text-align: center;
     color: #fff;
     opacity: 0;

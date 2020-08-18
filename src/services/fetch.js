@@ -1,12 +1,15 @@
 import qs from "qs";
 import axios from "axios";
 import Vue from "vue";
+import store from '@/store'
 axios.interceptors.request.use(
   config => {
-    // if (store.state.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
-    // config.headers.Authorization = `token ${store.state.token}`;
-    config.headers.Authorization = `bearere9db4341-a92a-4665-adf4-deb55a866c83`;
-    // }
+    const token = store.state.currDbSource
+    console.log(token)
+    if (token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+      config.headers.Authorization = token
+      // config.headers.Authorization = `bearere9db4341-a92a-4665-adf4-deb55a866c83`
+    }
     return config;
   },
   err => {

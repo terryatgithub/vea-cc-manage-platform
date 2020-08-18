@@ -30,11 +30,13 @@
         :visible.sync = 'dialogEditFormVisible'
         width = '400px'
         @close = 'close'
+        v-if = 'dialogEditFormVisible'
       >
         <EditPop
           ref = 'dialogEdit'
           :mediaSourceId = 'mediaSourceId'
           :mediaSourceName = 'mediaSourceName'
+          :mediaSourcePic = 'mediaSourcePic'
           @close = 'close'
           @fetchData = 'fetchData'
         ></EditPop>
@@ -135,6 +137,7 @@ export default {
       dialogTitle: '关联图片',
       mediaSourceId: '',
       mediaSourceName: '',
+      mediaSourcePic: '',
       typeOptions: []
     }
   },
@@ -183,6 +186,7 @@ export default {
     handleEdit (row) {
       this.mediaSourceId = row.mediaSourceId
       this.mediaSourceName = row.mediaSourceName
+      this.mediaSourcePic = row.mediaSourcePic
       this.dialogEditFormVisible = true
     },
     // 关闭弹窗
