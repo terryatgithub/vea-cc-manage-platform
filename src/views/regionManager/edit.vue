@@ -14,6 +14,7 @@
             size='mini'
             v-model="regionForm.ctmDevCtrName"
             clearable
+            maxlength="99"
           />
         </el-form-item>
         <el-form-item label='客户&品牌' prop="brandNames">
@@ -148,7 +149,8 @@ export default {
     create () {
       this.$refs['regionForm'].validate((valid) => {
         if (valid) {
-          const params = this.regionForm
+          // 坑：对象直接赋值两边会双向绑定，深浅拷贝的原理
+          const params = JSON.parse(JSON.stringify(this.regionForm))
           for (const i in params.brandNames) {
             params.brandNames[i] = params.brandNames[i].join('/')
           }
@@ -161,7 +163,7 @@ export default {
             params.countryNames[i] = params.countryNames[i].join('/')
           }
           params.countryNames = params.countryNames.join(',')
-          params.creator = '管理员'
+          params.creator = this.$appState.user.name
           if (this.rlsId !== '0') { // 判断是新增还是编辑
             params.ctmDevCtrId = this.rlsId
             this.$service.updateAreaManage(params).then(data => {

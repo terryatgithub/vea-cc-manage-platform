@@ -231,12 +231,12 @@ export default {
               message: '请选择应用！'
             })
           } else {
-            const params = this.$refs['pushChild'].pushForm
+            const params = JSON.parse(JSON.stringify(this.$refs['pushChild'].pushForm))
             params.releaseStartTime = liteOS.date(params.date[0])
             params.releaseEndTime = liteOS.date(params.date[1])
             delete params.date
             params.supportVersion = params.supportVersion.join(',')
-            params.creator = '管理员'
+            params.creator = this.$appState.user.name
             params.releaseStatus = '0'
             params.tvActiveId = DeviceID
             params.appList = that.appList

@@ -301,7 +301,14 @@ const iconMap = {
   matchHomepage: 'el-icon-cc-pic-center',
 
   recommendStream: 'el-icon-connection',
-  CCPlusPushPolicy: 'el-icon-s-check'
+  // 以下liteOS的icon设置
+  CCPlusPushPolicy: 'el-icon-s-check',
+  parameterManager: 'el-icon-connection',
+  regionManager: 'el-icon-cc-fork',
+  materialManager: 'el-icon-cc-fund',
+  mediaAssetsManager: 'el-icon-cc-video',
+  launcherPush: 'el-icon-cc-border-outer',
+  appStorePush: 'el-icon-cc-appstore'
 }
 
 export default {

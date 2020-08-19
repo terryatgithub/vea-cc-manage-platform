@@ -5,7 +5,7 @@
         <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
           <el-form-item class="el-col el-col-6">
             <div class="el-col-20">
-              <el-input placeholder="媒资名称" clearable v-model="filter['title']"/>
+              <el-input placeholder="媒资名称" clearable v-model="filter['title']" maxlength="99"/>
             </div>
           </el-form-item>
           <!-- <el-form-item class="el-col el-col-6">
@@ -50,14 +50,6 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-dialog
-        :title='dialogTitle'
-        center
-        :visible.sync = 'dialogEditFormVisible'
-        width = '550px'
-      >
-        <EditPop :dialogType = 'dialogType'></EditPop>
-      </el-dialog>
       <Table
         :props="table.props"
         :header="table.header"
@@ -71,13 +63,11 @@
 import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
 import { cloneDeep } from 'lodash'
-import EditPop from './edit'
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
-    Table,
-    EditPop
+    Table
   },
 
   data () {

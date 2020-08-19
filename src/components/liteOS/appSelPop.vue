@@ -2,7 +2,7 @@
   <div>
     <el-form :inline="true" :model="formInline" class="form-inline">
       <el-form-item class="">
-        <el-input v-model="formInline.materialName" placeholder="请输入应用名" clearable></el-input>
+        <el-input v-model="formInline.materialName" placeholder="请输入应用名" clearable maxlength="99"></el-input>
       </el-form-item>
       <el-form-item class="">
         <el-select v-model="formInline.materialState" placeholder="请选择应用类型" clearable>
@@ -21,6 +21,7 @@
       @current-change="handleCurrentChange"
       style='width: 100%;overflow: auto'
       height='300'
+      v-el-table-infinite-scroll="load"
     >
       <el-table-column
         width="50">
@@ -75,7 +76,8 @@ export default {
       total: 0, // 总记录数
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页显示10条数据
-      radio: null // 如果使用单选框，定义一个model值
+      radio: null, // 如果使用单选框，定义一个model值
+      isLoad: false
     }
   },
   methods: {
@@ -88,7 +90,14 @@ export default {
       }
       this.$service.queryAppManageListPage(params).then(data => {
         if (data.code === 0) {
-          this.tableData = data.data.results
+          this.currentPage !== 1
+            ? this.tableData = this.tableData.concat(data.data.results)
+            : this.tableData = data.data.results
+          if (this.tableData.length < data.data.total) {
+            this.isLoad = true
+          } else {
+            this.isLoad = false
+          }
         } else {
           this.$message({
             type: 'error',
@@ -96,6 +105,13 @@ export default {
           })
         }
       })
+    },
+    // 滚动加载
+    load () {
+      if (this.isLoad) {
+        this.currentPage += 1
+        this.fetchData()
+      }
     },
     cancel () {
       this.$emit('close')
@@ -111,6 +127,8 @@ export default {
       }
     },
     onSubmit () {
+      this.currentPage = 1
+      this.$refs.singleTable.bodyWrapper.scrollTop = 0
       this.fetchData()
     },
     // 列表特定操作时可调用，如取消选择

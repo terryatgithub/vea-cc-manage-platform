@@ -17,6 +17,7 @@
     "admin-toolkit": "^0.5.1",
     "axios": "^0.18.1",
     "echarts": "^4.2.1",
+    "el-table-infinite-scroll": "^1.0.10",
     "element-ui": "^2.13.2",
     "fuse.js": "^3.4.5",
     "gateschema": "^0.2.0",

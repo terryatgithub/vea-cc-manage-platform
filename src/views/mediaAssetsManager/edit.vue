@@ -88,9 +88,9 @@ export default {
     create () {
       this.$refs['formInline'].validate((valid) => {
         if (valid) {
-          const params = this.formInline
+          const params = JSON.parse(JSON.stringify(this.formInline))
           params.mediaSourceId = this.mediaSourceId
-          params.creator = '管理员'
+          params.creator = this.$appState.user.name
           this.$service.updateSource(params).then(data => {
             if (data.code === 0) {
               this.$refs['formInline'].clearValidate()

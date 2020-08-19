@@ -34,10 +34,10 @@
               <el-button type="danger" @click="deleteItem(index)" v-if="itemList.length > 1" round>删除栏目</el-button>
             </div>
             <el-form-item label="栏目序号">
-              <el-input placeholder="请输入栏目序号" v-model="itemList[index].itemSeq"></el-input>
+              <el-input placeholder="请输入栏目序号" v-model="itemList[index].itemSeq" clearable maxlength="99"></el-input>
             </el-form-item>
             <el-form-item label="栏目名称">
-              <el-input placeholder="请输入栏目名称" v-model="itemList[index].itemName"></el-input>
+              <el-input placeholder="请输入栏目名称" v-model="itemList[index].itemName" clearable maxlength="99"></el-input>
             </el-form-item>
             <ul>
               <li v-for='(itemApp, indexApp) in item.itemAppList' :key='indexApp'>
@@ -264,12 +264,12 @@ export default {
           //     message: '请选择应用！'
           //   })
           // } else {
-            const params = this.$refs['pushChild'].pushForm
+            const params = JSON.parse(JSON.stringify(this.$refs['pushChild'].pushForm))
             params.releaseStartTime = liteOS.date(params.date[0])
             params.releaseEndTime = liteOS.date(params.date[1])
             delete params.date
             params.supportVersion = params.supportVersion.join(',')
-            params.creator = '管理员'
+            params.creator = this.$appState.user.name
             params.releaseStatus = '0'
             params.tvActiveId = DeviceID
             params.itemList = that.itemList

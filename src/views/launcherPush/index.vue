@@ -114,12 +114,12 @@
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input placeholder="策略名称" clearable v-model="filter['releaseConfName']"/>
+            <el-input placeholder="策略名称" clearable v-model="filter['releaseConfName']" maxlength="99"/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input placeholder="区域名" clearable v-model="filter['ctmDevCtrName']"/>
+            <el-input placeholder="区域名" clearable v-model="filter['ctmDevCtrName']" maxlength="99"/>
           </div>
         </el-form-item>
         <el-form-item>
@@ -137,6 +137,16 @@
       >
         新增
       </el-button>
+      <el-dialog
+        title='区域信息'
+        :visible.sync = 'dialogFormVisible'
+        width = '550px'
+        :close-on-click-modal = 'false'
+        :show-close = 'showClose'
+        v-if = 'dialogFormVisible'
+      >
+        <RegionDetail :id = 'risId'></RegionDetail>
+      </el-dialog>
       <Table
         :props="table.props"
         :header="table.header"
@@ -150,11 +160,13 @@
 import { ContentWrapper, Table } from 'admin-toolkit'
 import BaseList from '@/components/BaseList'
 import { cloneDeep } from 'lodash'
+import RegionDetail from '@/components/liteOS/regionDetail2'
 import liteOS from '@/assets/liteOS.js'
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
+    RegionDetail,
     Table
   },
   watch: {
@@ -196,7 +208,21 @@ export default {
             prop: 'ctmDevCtrId',
             label: '区域详情',
             sortable: true,
-            width: 100
+            width: 100,
+            align: 'center',
+            render: (h, { row }) => {
+              return h('i', {
+                attrs: {
+                  class: 'el-icon-view',
+                  style: 'font-size: 20px; cursor: pointer;'
+                },
+                on: {
+                  click: () => {
+                    this.handleDetail(row.ctmDevCtrId)
+                  }
+                }
+              })
+            }
           },
           {
             prop: 'priority',
@@ -280,7 +306,9 @@ export default {
         { key: '3', typeName: '参考' },
         { key: '4', typeName: '工具' },
         { key: '5', typeName: '购物' }
-      ]
+      ],
+      dialogFormVisible: false,
+      risId: ''
     }
   },
 
@@ -469,6 +497,11 @@ export default {
       this.$router.push({
         path: 'launcherEdit'
       })
+    },
+    // 区域详情
+    handleDetail (val) {
+      this.dialogFormVisible = true
+      this.risId = val
     },
     // 发布上线
     handleUp (row) {

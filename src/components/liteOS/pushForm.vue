@@ -10,25 +10,20 @@
           placeholder="请输入策略名称"
           v-model="pushForm.releaseConfName"
           clearable
+          maxlength="99"
         />
     </el-form-item>
     <el-form-item label='支持版本' prop="supportVersion">
-        <el-select v-model="pushForm.supportVersion" multiple placeholder="请选择版本(支持多选)" clearable>
-            <!-- <el-option
-            v-for="item in versionsOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.label">
-            </el-option> -->
-            <el-option
-              v-for="item in versionOptions"
-              :key="item.versionId"
-              :label="item.supportVersion"
-              :value="item.supportVersion"
-            />
-        </el-select>
+      <el-select v-model="pushForm.supportVersion" multiple placeholder="请选择版本(支持多选)" clearable>
+        <el-option
+          v-for="item in versionOptions"
+          :key="item.versionId"
+          :label="item.supportVersion"
+          :value="item.supportVersion"
+        />
+      </el-select>
     </el-form-item>
-    <el-form-item label='选择区域'>
+    <el-form-item label='选择区域' prop="ctmDevCtrId">
         <el-button type="primary" @click="regionSel" v-show="!ctmDevCtrName">选择区域</el-button>
         <div class="nameBox" v-show="ctmDevCtrName">
           {{ctmDevCtrName}}
@@ -96,9 +91,9 @@ export default {
         supportVersion: [
           { required: true, message: '请选择版本', trigger: 'change' }
         ],
-        // ctmDevCtrId: [
-        //   { required: this.isCtmDevCtrId, message: '请选择区域', trigger: 'change', validator: this.isCtmDevCtrId }
-        // ],
+        ctmDevCtrId: [
+          { required: true, message: '请选择区域', trigger: 'change' }
+        ],
         date: [
           { required: true, message: '请选择推送时间', trigger: 'blur' }
         ],

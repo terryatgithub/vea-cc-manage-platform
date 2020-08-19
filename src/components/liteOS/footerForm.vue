@@ -6,6 +6,7 @@
           placeholder="DeviceID,多个用逗号隔开"
           v-model="footerForm.DeviceID"
           clearable
+          maxlength="99"
         />
       </el-form-item>
     </el-form>
@@ -22,22 +23,22 @@
 <script>
 export default {
   components: {},
-  data() {
+  data () {
     return {
       footerForm: {
-        DeviceID: ""
+        DeviceID: ''
       }
-    };
+    }
   },
   methods: {
-    create() {
-      this.$emit("create", this.footerForm.DeviceID);
+    create () {
+      this.$emit('create', this.footerForm.DeviceID)
     },
-    cancel() {
-      this.$emit("cancel");
+    cancel () {
+      this.$emit('cancel')
     }
   }
-};
+}
 </script>
 <style lang="scss">
 .footerEdit {

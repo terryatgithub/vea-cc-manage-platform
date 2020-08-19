@@ -33,6 +33,7 @@
             v-model="brandForm.customerName"
             :disabled="isSelect === -1"
             clearable
+            maxlength="99"
           />
         </el-form-item>
         <el-form-item label="输入品牌" prop="brandName">
@@ -40,6 +41,7 @@
             placeholder="请输入品牌"
             v-model="brandForm.brandName"
             clearable
+            maxlength="99"
           />
         </el-form-item>
       </el-form>
@@ -76,6 +78,7 @@
             v-model="modelForm.chip"
             :disabled="isSelect === -1"
             clearable
+            maxlength="99"
           />
         </el-form-item>
         <el-form-item label="输入机型" prop="model">
@@ -83,6 +86,7 @@
             placeholder="请输入机型"
             v-model="modelForm.model"
             clearable
+            maxlength="99"
           />
         </el-form-item>
       </el-form>
@@ -199,8 +203,8 @@ export default {
       const typeForm = this.dialogType === 'brand' ? 'brandForm' : 'modelForm'
       this.$refs[typeForm].validate((valid) => {
         if (valid) {
-          const params = this.dialogType === 'brand' ? this.brandForm : this.modelForm
-          params.creator = '管理员'
+          const params = this.dialogType === 'brand' ? JSON.parse(JSON.stringify(this.brandForm)) : JSON.parse(JSON.stringify(this.modelForm))
+          params.creator = this.$appState.user.name
           if (this.dialogType === 'brand') {
             this.$service.addBrand(params).then(data => {
               if (data.code === 0) {

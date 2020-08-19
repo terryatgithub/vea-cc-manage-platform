@@ -5,7 +5,7 @@
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
           <div class="el-col-20">
-            <el-input placeholder="应用名" clearable v-model="filter['materialName']"/>
+            <el-input placeholder="应用名" clearable v-model="filter['materialName']" maxlength="99"/>
           </div>
         </el-form-item>
         <el-form-item class="el-col el-col-6">

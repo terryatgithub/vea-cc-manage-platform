@@ -7,6 +7,7 @@
       @current-change="handleCurrentChange"
       style='width: 100%;overflow: auto'
       height='300'
+      v-el-table-infinite-scroll="load"
     >
       <el-table-column
         width="50">
@@ -53,7 +54,8 @@ export default {
       total: 0, // 总记录数
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页显示10条数据
-      radio: null // 如果使用单选框，定义一个model值
+      radio: null, // 如果使用单选框，定义一个model值
+      isLoad: false
     }
   },
   methods: {
@@ -64,7 +66,12 @@ export default {
       }
       this.$service.queryAreaManageListPage(params).then(data => {
         if (data.code === 0) {
-          this.tableData = data.data.results
+          if (this.tableData.length < data.data.total) {
+            this.tableData = this.tableData.concat(data.data.results)
+            this.isLoad = true
+          } else {
+            this.isLoad = false
+          }
         } else {
           this.$message({
             type: 'error',
@@ -72,6 +79,13 @@ export default {
           })
         }
       })
+    },
+    // 滚动加载
+    load () {
+      if (this.isLoad) {
+        this.currentPage += 1
+        this.fetchData()
+      }
     },
     cancel () {
       this.$emit('close')

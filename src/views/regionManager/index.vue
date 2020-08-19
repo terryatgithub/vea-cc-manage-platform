@@ -9,6 +9,7 @@
               placeholder="区域名"
               v-model="filter['areaName']"
               clearable
+              maxlength="99"
             />
           </div>
         </el-form-item>
@@ -142,7 +143,7 @@ export default {
             prop: 'countryNames',
             label: '国家',
             sortable: true,
-            width:200
+            width: 200
           },
           {
             prop: 'state',

@@ -13,6 +13,8 @@
           <el-input
             placeholder="请输入应用名"
             v-model="appForm.materialName"
+            clearable
+            maxlength="99"
           />
         </el-form-item>
         <el-form-item label="应用横图" class="horizontalImg" prop="horizontal">
@@ -90,6 +92,7 @@
             class="filter-item"
             placeholder="请选择类型"
             v-model="appForm.materialType"
+            clearable
           >
             <el-option
               v-for="item in typeOptions"
@@ -103,16 +106,18 @@
           <el-input
             placeholder="请输入应用跳转url"
             v-model="appForm.materialUrl"
+            clearable
           />
         </el-form-item>
         <el-form-item label="api url" prop="apiUrl">
           <el-input
             placeholder="请输入api url"
             v-model="appForm.apiUrl"
+            clearable
           />
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth" prop="materialRemark">
-          <el-input type="textarea" :rows="2" maxlength="200" show-word-limit placeholder="请输入备注" v-model="appForm.materialRemark"></el-input>
+          <el-input type="textarea" :rows="2" clearable maxlength="99" show-word-limit placeholder="请输入备注" v-model="appForm.materialRemark"></el-input>
         </el-form-item>
         <el-form-item
           label="状态"
@@ -141,6 +146,8 @@
           <el-input
             placeholder="请输入海报名"
             v-model="posterForm.materialName"
+            clearable
+            maxlength="99"
           />
         </el-form-item>
         <el-form-item label="图标" class="imgUpload" prop="materialPosterPic">
@@ -191,10 +198,11 @@
           <el-input
             placeholder="请输入关联url"
             v-model="posterForm.materialUrl"
+            clearable
           />
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth" prop="materialRemark">
-          <el-input type="textarea" :rows="2" maxlength="200" show-word-limit placeholder="请输入备注" v-model="posterForm.materialRemark"></el-input>
+          <el-input type="textarea" :rows="2" clearable maxlength='99' show-word-limit placeholder="请输入备注" v-model="posterForm.materialRemark"></el-input>
         </el-form-item>
         <el-form-item
           label="状态"
@@ -411,8 +419,8 @@ export default {
       const typeForm = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? 'appForm' : 'posterForm'
       this.$refs[typeForm].validate((valid) => {
         if (valid) {
-          const params = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? this.appForm : this.posterForm
-          params.creator = '管理员'
+          const params = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? JSON.parse(JSON.stringify(this.appForm)) : JSON.parse(JSON.stringify(this.posterForm))
+          params.creator = this.$appState.user.name
           if (typeForm === 'appForm') {
             params.materialPics = JSON.stringify([
               { pic: params.horizontal, type: 'horizontal' },
