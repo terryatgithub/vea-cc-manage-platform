@@ -8,7 +8,7 @@
     :rules="rules"
   >
     <el-col :span="8">
-      <el-form-item>
+      <el-form-item prop="source">
         <el-select
           multiple
           v-model="form.source"
@@ -25,7 +25,7 @@
     </el-col>
 
     <el-col :span="8">
-      <el-form-item>
+      <el-form-item prop="category">
         <el-select multiple v-model="form.category" placeholder="类型 category">
           <el-option
             v-for="option in categoryOptions"
@@ -38,7 +38,7 @@
     </el-col>
 
     <el-col :span="8">
-      <el-form-item>
+      <el-form-item prop="tag">
         <el-select multiple v-model="form.tag" placeholder="标签 tags">
           <el-option
             v-for="option in tagOptions"

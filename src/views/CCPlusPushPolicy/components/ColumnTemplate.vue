@@ -2,7 +2,7 @@
   <div class="column-template-wrapper">
     <el-form label-width="90px" :model="content" ref="tempForm" :rules="rules">
       <el-form-item label="栏目模板:">
-        <el-select v-model="content.template" placeholder="请选择">
+        <el-select v-model="content.template" placeholder="请选择" prop="template">
           <el-option
             v-for="item in templateOptions"
             :key="item.value"
@@ -156,8 +156,7 @@ export default {
     async donePicOperation(...rest) {
       this.showEditDetailPage = false;
     },
-    async getSelectResource(...rest) {
-      // 获取选择的资源类型
+    async getSelectResource(...rest) {// 获取选择的资源类型
       this.showSelectResourceDialog = false;
       if (!rest[0]) {
         return;
@@ -175,7 +174,7 @@ export default {
         const { results } = res.data;
         const { itemMediaList } = this.content;
         results.forEach((item, index) => {
-          itemMediaList[index] = {};
+          this.$set(itemMediaList, index, {})
           itemMediaList[index].mediaResourcesId = item.mediaResourcesId;
           itemMediaList[index].mediaPicType = item.posterType;
           itemMediaList[index].mediaPic = item.posterUrl;
