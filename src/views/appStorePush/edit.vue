@@ -8,10 +8,10 @@
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
       >
-        <RegionEditPop v-if="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)'></RegionEditPop>
-        <RegionDetail v-if="dialogType === 'regionDetail'" @goRegion = 'goRegion' :id = 'risId'></RegionDetail>
-        <AppSelPop v-if="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close'></AppSelPop>
-        <AppDetail v-if="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :materialId = 'materialId' @appSure = 'appSure(arguments)'></AppDetail>
+        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)'></RegionEditPop>
+        <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
+        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close'></AppSelPop>
+        <AppDetail v-show="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :material = 'material' @appSure = 'appSure(arguments)'></AppDetail>
       </el-dialog>
       <div class="appBox">
         <div class="label">栏目   <span>栏目数：{{itemList.length}}</span></div>
@@ -24,17 +24,23 @@
             <div class="itemTop">
               <el-form-item label="栏目模板">
                 <el-select placeholder="请选择栏目模板" v-model="itemList[index].template">
-                  <el-option label="模板A:媒资混排" value="A"></el-option>
-                  <el-option label="模板B:媒资竖图" value="B"></el-option>
+                  <el-option label="模板I:应用模板" value="I"></el-option>
+                  <!-- <el-option label="模板B:媒资竖图" value="B"></el-option>
                   <el-option label="模板C:媒资横图" value="C"></el-option>
-                  <el-option label="模板D:媒资方图" value="D"></el-option>
+                  <el-option label="模板D:媒资方图" value="D"></el-option> -->
                 </el-select>
               </el-form-item>
               <el-button type="primary" @click="appSel(index)" round>新增栏目资源</el-button>
               <el-button type="danger" @click="deleteItem(index)" v-if="itemList.length > 1" round>删除栏目</el-button>
             </div>
             <el-form-item label="栏目序号">
-              <el-input placeholder="请输入栏目序号" v-model="itemList[index].itemSeq" clearable maxlength="99"></el-input>
+              <el-input 
+                placeholder="请输入栏目序号"
+                type="number"
+                onKeypress="return (/^+?(([1-9]\d?)|(100)|(0))$/.test(String.fromCharCode(event.keyCode)))"
+                v-model="itemList[index].itemSeq"
+                clearable maxlength="99"
+              ></el-input>
             </el-form-item>
             <el-form-item label="栏目名称">
               <el-input placeholder="请输入栏目名称" v-model="itemList[index].itemName" clearable maxlength="99"></el-input>
@@ -99,7 +105,8 @@ export default {
       itemAppList_index: '',
       ctmDevCtrName: '',
       risId: '',
-      materialId: ''
+      area: null,
+      material: null
     }
   },
   methods: {
@@ -111,6 +118,13 @@ export default {
         }).then(data => {
           if (data.code === 0) {
             const detail = data.data
+            // 判断是否回显全部版本
+            if (detail.supportVersion === 'all') {
+              detail.supportVersion = 'All'
+              this.$refs['pushChild'].versionOptions.map((item) => {
+                detail.supportVersion += (',' + item.supportVersion)
+              })
+            }
             detail.supportVersion = detail.supportVersion.split(',')
             const date = (liteOS.parserDate(detail.releaseStartTime) + ',' + liteOS.parserDate(detail.releaseEndTime)).split(',')
             const pushForm = {
@@ -155,12 +169,19 @@ export default {
     },
     // 新增栏目
     addItem () {
-      this.itemList.push({
-        itemName: '',
-        itemSeq: '',
-        template: '',
-        itemAppList: []
-      })
+      if (this.itemList.length < 50) {
+        this.itemList.push({
+          itemName: '',
+          itemSeq: '',
+          template: '',
+          itemAppList: []
+        })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '栏目数量已达上限!'
+        })
+      }
     },
     deleteItem (index) {
       this.itemList.splice(index, 1)
@@ -180,7 +201,10 @@ export default {
     },
     // 显示区域详情
     regionDetail (val) {
-      this.risId = val
+      this.area = {
+        risId: val,
+        random: Math.random()
+      }
       this.dialogType = 'regionDetail'
       this.dialogWidth = '550px'
       this.dialogTitle = ''
@@ -195,7 +219,7 @@ export default {
     },
     // 弹窗选择应用
     appSel (index) {
-      if (this.itemList[index].length === 99) {
+      if (this.itemList[index].itemAppList.length === 99) {
         this.$message({
           type: 'warning',
           message: '应用数量已达上限!'
@@ -219,7 +243,10 @@ export default {
     },
     // 显示应用详情
     appDetail (val) {
-      this.materialId = val
+      this.material = {
+        materialId: val,
+        random: Math.random()
+      }
       this.dialogType = 'appDetail'
       this.dialogWidth = '650px'
       this.dialogTitle = ''
@@ -234,7 +261,14 @@ export default {
     },
     // 删除应用
     appDel (itemIndex, appIndex) {
-      this.itemList[itemIndex].itemAppList.splice(appIndex, 1)
+      if (this.itemList[itemIndex].itemAppList.length === 1) {
+        this.$message({
+          type: 'warning',
+          message: '至少保留一个应用!'
+        })
+      } else {
+        this.itemList[itemIndex].itemAppList.splice(appIndex, 1)
+      }
     },
     // 应用海报选择确定
     appSure (data) {
@@ -268,7 +302,12 @@ export default {
             params.releaseStartTime = liteOS.date(params.date[0])
             params.releaseEndTime = liteOS.date(params.date[1])
             delete params.date
-            params.supportVersion = params.supportVersion.join(',')
+            // 判断是否全选版本
+            if (params.supportVersion.includes('All')) {
+              params.supportVersion = 'all'
+            } else {
+              params.supportVersion = params.supportVersion.join(',')
+            }
             params.creator = this.$appState.user.name
             params.releaseStatus = '0'
             params.tvActiveId = DeviceID
@@ -345,7 +384,14 @@ export default {
 </script>
 <style lang='scss' scoped>
 .appBox {
+  position: relative;
   margin-bottom: 20px;
+  .addItem {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    bottom: -53px;
+  }
   .label {
     font-size: 14px;
     color: #606266;

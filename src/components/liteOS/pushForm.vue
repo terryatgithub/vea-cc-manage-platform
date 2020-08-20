@@ -14,7 +14,8 @@
         />
     </el-form-item>
     <el-form-item label='支持版本' prop="supportVersion">
-      <el-select v-model="pushForm.supportVersion" multiple placeholder="请选择版本(支持多选)" clearable>
+      <el-select v-model="pushForm.supportVersion" multiple placeholder="请选择版本(支持多选)" @change='changeSelect' @remove-tag='removeTag' clearable>
+        <el-option label='All' value='All' @click.native='selectAll'></el-option>
         <el-option
           v-for="item in versionOptions"
           :key="item.versionId"
@@ -79,7 +80,7 @@ export default {
     return {
       pushForm: {
         releaseConfName: '',
-        supportVersion: '',
+        supportVersion: [],
         ctmDevCtrId: '',
         date: '',
         priority: ''
@@ -101,18 +102,37 @@ export default {
           { required: true, message: '请选择优先级', trigger: 'change' }
         ]
       },
-      versionOptions: [],
-      userOptions: [
-        { key: 'CN', displayName: 'China' },
-        { key: 'US', displayName: 'USA' },
-        { key: 'JP', displayName: 'Japan' },
-        { key: 'EU', displayName: 'Eurozone' }
-      ]
+      versionOptions: []
     }
   },
   methods: {
     regionSel () {
       this.$emit('regionSel')
+    },
+    selectAll () {
+      if (this.pushForm.supportVersion.length < this.versionOptions.length) {
+        this.pushForm.supportVersion = []
+        this.versionOptions.map((item) => {
+          this.pushForm.supportVersion.push(item.supportVersion)
+        })
+        this.pushForm.supportVersion.unshift('All')
+      } else {
+        this.pushForm.supportVersion = []
+      }
+    },
+    changeSelect (val) {
+      if (!val.includes('All') && val.length === this.versionOptions.length) {
+        this.pushForm.supportVersion.unshift('All')
+      } else if (val.includes('All') && (val.length - 1) < this.versionOptions.length) {
+        this.pushForm.supportVersion = this.pushForm.supportVersion.filter((item) => {
+          return item !== 'All'
+        })
+      }
+    },
+    removeTag (val) {
+      if (val === 'All') {
+        this.pushForm.supportVersion = []
+      }
     }
   },
   created () {

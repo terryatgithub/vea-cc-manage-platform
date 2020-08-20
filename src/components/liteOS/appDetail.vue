@@ -32,8 +32,17 @@ export default {
     ContentCard
   },
   props: {
-    materialId: {
-      type: String
+    material: {
+      type: Object,
+      default: () => ({
+        materialId: '',
+        random: ''
+      })
+    }
+  },
+  watch: {
+    'material.random' (newVal, oldVal) {
+      this.detail()
     }
   },
   data () {
@@ -44,11 +53,12 @@ export default {
   },
   methods: {
     goBack () {
+      this.appData = {}
       this.$emit('goApp')
     },
     detail () {
-      if (this.materialId) {
-        this.$service.getAppManageMaterialId({ materialId: this.materialId }).then(data => {
+      if (this.material.materialId) {
+        this.$service.getAppManageMaterialId({ materialId: this.material.materialId }).then(data => {
           if (data.code === 0) {
             this.appData = data.data
             this.appData.materialPics = JSON.parse(this.appData.materialPics)

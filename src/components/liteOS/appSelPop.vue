@@ -5,9 +5,13 @@
         <el-input v-model="formInline.materialName" placeholder="请输入应用名" clearable maxlength="99"></el-input>
       </el-form-item>
       <el-form-item class="">
-        <el-select v-model="formInline.materialState" placeholder="请选择应用类型" clearable>
-          <el-option value="1" label="有效"/>
-          <el-option value="0" label="失效"/>
+        <el-select v-model="formInline.materialType" placeholder="请选择应用类型" clearable>
+          <el-option
+            v-for="item in typeOptions"
+            :key="item.key"
+            :label="item.typeName"
+            :value="item.typeName"
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -71,6 +75,26 @@ export default {
         materialName: '',
         materialState: ''
       },
+      typeOptions: [
+        { key: '1', typeName: '财务' },
+        { key: '2', typeName: '儿童' },
+        { key: '3', typeName: '参考' },
+        { key: '4', typeName: '工具' },
+        { key: '5', typeName: '购物' },
+        { key: '6', typeName: '健康健美' },
+        { key: '7', typeName: '教育' },
+        { key: '8', typeName: '旅游' },
+        { key: '9', typeName: '美食' },
+        { key: '10', typeName: '商务' },
+        { key: '11', typeName: '社交' },
+        { key: '12', typeName: '生活' },
+        { key: '13', typeName: '体育' },
+        { key: '14', typeName: '天气' },
+        { key: '15', typeName: '图书' },
+        { key: '16', typeName: '新闻' },
+        { key: '17', typeName: '音乐' },
+        { key: '18', typeName: '娱乐' }
+      ],
       tableData: [],
       currentRow: null,
       total: 0, // 总记录数
@@ -85,8 +109,9 @@ export default {
       const params = {
         page: this.currentPage,
         size: this.pageSize,
+        materialState: 1,
         materialName: this.formInline.materialName,
-        materialState: this.formInline.materialState
+        materialType: this.formInline.materialType
       }
       this.$service.queryAppManageListPage(params).then(data => {
         if (data.code === 0) {
@@ -114,6 +139,7 @@ export default {
       }
     },
     cancel () {
+      this.radio = null
       this.$emit('close')
     },
     nextStep () {

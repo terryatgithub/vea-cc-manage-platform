@@ -79,7 +79,6 @@
               :options="countryOptions"
               expand-trigger="hover"
               clearable
-              @change="handleChannelChange"
             />
           </div>
         </el-form-item>
@@ -106,8 +105,8 @@
               clearable
               v-model="filter['releaseStatus']"
             >
-              <el-option value="0" label="未推送"/>
-              <el-option value="1" label="推送中"/>
+              <el-option value="0" label="未发布"/>
+              <el-option value="1" label="已发布"/>
               <el-option value="2" label="已取消"/>
             </el-select>
           </div>
@@ -240,9 +239,9 @@ export default {
             width: 100,
             render: (h, { row }) => {
               if (row.releaseStatus === 0) {
-                return '未推送'
+                return '未发布'
               } else if (row.releaseStatus === 1) {
-                return '推送中'
+                return '已发布'
               } else if (row.releaseStatus === 2) {
                 return '已取消'
               }
@@ -510,7 +509,7 @@ export default {
         const params = {
           releaseConfId: row.releaseConfId,
           releaseStatus: '1',
-          creator: '管理员'
+          creator: this.$appState.user.name
         }
         this.$service.updateAppStorePushStatus(params).then(data => {
           if (data.code === 0) {
@@ -538,7 +537,7 @@ export default {
         const params = {
           releaseConfId: row.releaseConfId,
           releaseStatus: '2',
-          creator: '管理员'
+          creator: this.$appState.user.name
         }
         this.$service.updateAppStorePushStatus(params).then(data => {
           if (data.code === 0) {
@@ -595,7 +594,7 @@ export default {
       }).then(async () => {
         const params = {
           releaseConfId: row.releaseConfId,
-          creator: '管理员'
+          creator: this.$appState.user.name
         }
         this.$service.deleteAppStorePushManage(params).then(data => {
           if (data.code === 0) {
@@ -691,11 +690,12 @@ export default {
       }
     }
   },
-  created () {
-    this.getMediaResourceInfo()
-    this.fetchData()
-  },
+  // created () {
+  //   this.getMediaResourceInfo()
+  //   this.fetchData()
+  // },
   activated () {
+    this.getMediaResourceInfo()
     this.fetchData()
   }
 }

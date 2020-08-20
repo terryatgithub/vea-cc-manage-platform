@@ -8,10 +8,10 @@
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
       >
-        <RegionEditPop v-if="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)'></RegionEditPop>
-        <RegionDetail v-if="dialogType === 'regionDetail'" @goRegion = 'goRegion' :id = 'risId'></RegionDetail>
-        <AppSelPop v-if="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close'></AppSelPop>
-        <AppDetail v-if="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :materialId = 'materialId' @appSure = 'appSure(arguments)'></AppDetail>
+        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)'></RegionEditPop>
+        <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
+        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close'></AppSelPop>
+        <AppDetail v-show="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :material = 'material' @appSure = 'appSure(arguments)'></AppDetail>
       </el-dialog>
       <div class="appBox">
         <div class="label">选择应用</div>
@@ -77,7 +77,8 @@ export default {
       ],
       ctmDevCtrName: '',
       risId: '',
-      materialId: ''
+      area: null,
+      material: null
     }
   },
   methods: {
@@ -89,6 +90,13 @@ export default {
         }).then(data => {
           if (data.code === 0) {
             const detail = data.data
+            // 判断是否回显全部版本
+            if (detail.supportVersion === 'all') {
+              detail.supportVersion = 'All'
+              this.$refs['pushChild'].versionOptions.map((item) => {
+                detail.supportVersion += (',' + item.supportVersion)
+              })
+            }
             detail.supportVersion = detail.supportVersion.split(',')
             const date = (liteOS.parserDate(detail.releaseStartTime) + ',' + liteOS.parserDate(detail.releaseEndTime)).split(',')
             const pushForm = {
@@ -151,7 +159,10 @@ export default {
     },
     // 显示区域详情
     regionDetail (val) {
-      this.risId = val
+      this.area = {
+        risId: val,
+        random: Math.random()
+      }
       this.dialogType = 'regionDetail'
       this.dialogWidth = '550px'
       this.dialogTitle = ''
@@ -186,7 +197,10 @@ export default {
     },
     // 显示应用详情
     appDetail (val) {
-      this.materialId = val
+      this.material = {
+        materialId: val,
+        random: Math.random()
+      }
       this.dialogType = 'appDetail'
       this.dialogWidth = '650px'
       this.dialogTitle = ''
@@ -235,7 +249,12 @@ export default {
             params.releaseStartTime = liteOS.date(params.date[0])
             params.releaseEndTime = liteOS.date(params.date[1])
             delete params.date
-            params.supportVersion = params.supportVersion.join(',')
+            // 判断是否全选版本
+            if (params.supportVersion.includes('All')) {
+              params.supportVersion = 'all'
+            } else {
+              params.supportVersion = params.supportVersion.join(',')
+            }
             params.creator = this.$appState.user.name
             params.releaseStatus = '0'
             params.tvActiveId = DeviceID
