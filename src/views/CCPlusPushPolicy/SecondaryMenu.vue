@@ -669,11 +669,14 @@ export default {
   },
   created() {
     console.log("cc created");
+  },
+  activated() {
+    console.log("cc activated");
     this.getMediaResourceInfo();
     this.fetchData();
   },
-  activated() {
-    this.fetchData();
+  deactivated() {
+    console.log("cc deactivated");
   },
   mounted() {
     console.log("cc mounted");

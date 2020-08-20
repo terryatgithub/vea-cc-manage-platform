@@ -20,7 +20,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="版本:">
+        <el-form-item label="版本:" prop="supportVersion">
           <el-select
             v-model="form.supportVersion"
             multiple
@@ -35,7 +35,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="选择区域:">
+        <el-form-item label="选择区域:" prop="ctmDevCtrName">
           <el-button
             v-if="!form.ctmDevCtrName"
             type="primary"
@@ -48,7 +48,7 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="发布时间:">
+        <el-form-item label="发布时间:" prop="datePublish">
           <el-date-picker
             v-model="form.datePublish"
             type="datetimerange"
@@ -59,7 +59,7 @@
           ></el-date-picker>
         </el-form-item>
 
-        <el-form-item label="选择优先级:">
+        <el-form-item label="选择优先级:" prop="priority">
           <el-select v-model="form.priority" placeholder="选择优先级">
             <el-option
               v-for="item in priorityOptions"
@@ -94,7 +94,7 @@
           >
         </el-form-item>
 
-        <el-form-item label="指定设备">
+        <el-form-item label="指定设备" prop="tvActiveId">
           <el-input
             placeholder="DeviceID,多个用逗号隔开"
             v-model="form.tvActiveId"
@@ -157,20 +157,24 @@ export default {
           value: 1
         }
       ],
-      form: {
-        releaseConfName: "",
-        supportVersion: [],
-        datePublish: [],
-        ctmDevCtrId: 0,
-        ctmDevCtrName: "",
-        priority: 3,
-        itemList: [this.getColumnTemplateSample()], //栏目列表
-        tvActiveId: ""
-      },
+      form: this.getDefaultForm(),
       rules: {
         releaseConfName: [
           { required: true, message: "请输入策略名称", trigger: "blur" }
-        ]
+        ],
+        supportVersion: [
+          { required: true, message: "请选择版本信息", trigger: "blur" }
+        ],
+        ctmDevCtrName: [
+          { required: true, message: "请设置区域信息", trigger: "blur" }
+        ],
+        datePublish: [
+          { required: true, message: "请选择发布时间", trigger: "blur" }
+        ],
+        priority: [{ required: true, message: "请选择优先级", trigger: "blur" }]
+        // tvActiveId: [
+        //   { required: true, message: "请输入设备信息", trigger: "blur" }
+        // ],
       }
     };
   },
@@ -180,18 +184,44 @@ export default {
     }
   },
   created() {
-    this.init();
   },
   activated() {
     this.init();
   },
+  deactivated(){
+    this.form = this.getDefaultForm()
+  },
   methods: {
+    init() {
+      this.$service.queryVersionList().then(data => {
+        if (data.code === 0) {
+          this.versionOptions = liteOS.versionTransform(data.data);
+        } else {
+          this.$message({
+            type: "error",
+            message: data.msg
+          });
+        }
+      });
+      this.getDetailById();
+    },
+    getDefaultForm() {
+      return {
+        releaseConfName: "",
+        supportVersion: [],
+        datePublish: [],
+        ctmDevCtrId: 0,
+        ctmDevCtrName: "",
+        priority: 3,
+        itemList: [this.getColumnTemplateSample()], //栏目列表
+        tvActiveId: ""
+      };
+    },
     async getDetailById() {
       const { releaseConfId } = this.$route.query;
       if (!releaseConfId) {
         return;
       }
-      //@todo
       let res = await this.$service.queryCCPlusGetPushManageByReleaseConfId({
         releaseConfId
       });
@@ -218,7 +248,7 @@ export default {
     },
     getColumnTemplateSample() {
       // 获取模板数据样本
-      const sample = {
+      return {
         template: "A",
         // releaseItemId: 0,
         itemSeq: 1,
@@ -226,20 +256,6 @@ export default {
         itemMediaMax: "99",
         itemMediaList: [] //媒体资源
       };
-      return sample;
-    },
-    init() {
-      this.$service.queryVersionList().then(data => {
-        if (data.code === 0) {
-          this.versionOptions = liteOS.versionTransform(data.data);
-        } else {
-          this.$message({
-            type: "error",
-            message: data.msg
-          });
-        }
-      });
-      this.getDetailById();
     },
     handleAddColumn() {
       const col = this.getColumnTemplateSample();
@@ -252,20 +268,19 @@ export default {
       this.form.itemList.splice(idx, 1);
     },
     checkDuplicatedSerialNo() {
-      //判断栏目模板序号是否有重复的
+      // 判断栏目模板序号是否有重复的
       let arr = [];
       this.$refs["columnTemplateForm"].forEach(ref =>
         arr.push(ref.content.itemSeq)
       );
       let res = liteOS.findRepeatElementInArr(arr);
-      console.log("查找重复序号:", res);
+      console.log("查找模板是否有重复序号:", res);
       return res;
     },
     async createOrUpdatePolicy() {
-      //@todo 分辨是修改还是新增（添加或复制）
       const { handleType } = this.$route.query;
       let doModify = false; // 区分修改和增加（增加包括复制+新增两种情况）
-      if (handleType === "edit") { 
+      if (handleType === "edit") {
         doModify = true;
       }
       let data = Object.assign({}, this.form);
@@ -275,18 +290,17 @@ export default {
       data.releaseEndTime = liteOS.date(this.form.datePublish[1]);
       data.creator = "管理员";
       data.releaseStatus = "0";
-      let res
+      let res;
       if (doModify) {
         res = await this.$service.queryCCPlusUpdatePushManage(data);
       } else {
-        delete data.releaseConfId
+        delete data.releaseConfId;
         res = await this.$service.queryCCPlusAddPushManage(data);
       }
       if (res.code === 0) {
         this.$message.success(
           doModify ? "修改成功,即将返回上页" : "创建成功,即将返回上页"
         );
-        //@todo 自动返回上页
         setTimeout(() => this.$router.back(), 1000);
       } else {
         this.$message({
@@ -334,9 +348,11 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => this.$router.back())
-        .catch(() => {})
-        .finally(() => this.reset());
+        .then(() => {
+          this.reset();
+          this.$router.back();
+        })
+        .catch();
     },
     reset() {
       this.$refs["columnTemplateForm"].forEach(ref => {

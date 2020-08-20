@@ -115,8 +115,23 @@ export default {
   },
   props: {
     content: {
+      //prop会在一个组件实例创建之前进行验证，所以实例的property（如data、computed等)在default/validator函数中是不可用的
       type: Object,
-      required: true
+      required: true,
+      default: function() {
+        //对象或数组默认值必须从一个工厂函数获取
+        return {
+          template: "A",
+          // releaseItemId: 0,
+          itemSeq: 1,
+          itemName: "",
+          itemMediaMax: "99",
+          itemMediaList: [] //媒体资源
+        };
+      },
+      // validator: function(value) {
+      //   return ['success', 'warning', 'error'].indexOf(value) !== -1
+      // }
     }
   },
   data() {
