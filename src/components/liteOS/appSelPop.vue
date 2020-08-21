@@ -58,11 +58,11 @@
       </el-table-column>
     </el-table>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="cancel">
-        取消
-      </el-button>
       <el-button type="primary" @click="nextStep">
         下一步
+      </el-button>
+      <el-button @click="cancel">
+        取消
       </el-button>
     </div>
   </div>

@@ -128,8 +128,8 @@
             placeholder="请选择状态"
             v-model="appForm.materialState"
           >
-            <el-option value="0" label="失效"/>
             <el-option value="1" label="有效"/>
+            <el-option value="0" label="失效"/>
           </el-select>
         </el-form-item>
       </el-form>
@@ -213,17 +213,17 @@
             placeholder="请选择状态"
             v-model="posterForm.materialState"
           >
-            <el-option value="0" label="失效"/>
             <el-option value="1" label="有效"/>
+            <el-option value="0" label="失效"/>
           </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="create">
+          确认
+        </el-button>
         <el-button @click="cancel">
           取消
-        </el-button>
-        <el-button type="primary" @click="create">
-          确定
         </el-button>
       </div>
     </div>

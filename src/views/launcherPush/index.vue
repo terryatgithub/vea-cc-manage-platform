@@ -25,8 +25,8 @@
             <el-select
               placeholder="客户"
               clearable
-              v-model="filter['customer']"
-              @change='selectCustomer(filter.customer)'
+              v-model="filter['customerName']"
+              @change='selectCustomer(filter.customerName)'
             >
               <el-option
                 v-for="item in customerOptions"
@@ -315,7 +315,7 @@ export default {
     genDefaultFilter () {
       return {
         brandName: undefined,
-        customer: undefined,
+        customerName: undefined,
         chip: undefined,
         model: undefined,
         countryName: undefined,

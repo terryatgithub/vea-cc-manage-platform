@@ -91,11 +91,11 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="create">
+          确认
+        </el-button>
         <el-button @click="cancel">
           取消
-        </el-button>
-        <el-button type="primary" @click="create">
-          确定
         </el-button>
       </div>
     </div>
@@ -181,14 +181,11 @@ export default {
         return
       }
       if (value.trim() === '') {
-        const msg = this.dialogType === 'brand' ? '请输入客户名称' : '请输入机芯名称'
+        const msg = this.dialogType === 'brand' ? '请输入客户' : '请输入机芯'
         callback(new Error(msg))
         this.isSelect = 0
       } else {
         this.isSelect = 1
-        if (value.length > 60) {
-          return callback(new Error('长度超出限制，60字以内'))
-        }
         callback()
       }
     },

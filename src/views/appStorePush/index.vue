@@ -25,8 +25,8 @@
             <el-select
               placeholder="客户"
               clearable
-              v-model="filter['customer']"
-              @change='selectCustomer(filter.customer)'
+              v-model="filter['customerName']"
+              @change='selectCustomer(filter.customerName)'
             >
               <el-option
                 v-for="item in customerOptions"
@@ -296,13 +296,6 @@ export default {
       customerOptions: [],
       brandOptions: [],
       versionOptions: [],
-      typeOptions: [
-        { key: '1', typeName: '财务' },
-        { key: '2', typeName: '儿童' },
-        { key: '3', typeName: '参考' },
-        { key: '4', typeName: '工具' },
-        { key: '5', typeName: '购物' }
-      ],
       dialogFormVisible: false,
       risId: ''
     }
@@ -312,7 +305,7 @@ export default {
     genDefaultFilter () {
       return {
         brandName: undefined,
-        customer: undefined,
+        customerName: undefined,
         chip: undefined,
         model: undefined,
         countryName: undefined,
@@ -419,12 +412,7 @@ export default {
     selectCustomer (val) {
       this.$service.queryCustomerBrandsList({ customerName: val, brandName: '' }).then(data => {
         if (data.code === 0) {
-          if (this.filter.brandName) {
             this.brandOptions = data.data.brandList
-          } else {
-            this.customerOptions = data.data.customerList
-            this.brandOptions = data.data.brandList
-          }
         } else {
           this.$message({
             type: 'error',
@@ -436,12 +424,7 @@ export default {
     selectBrand (val) {
       this.$service.queryCustomerBrandsList({ customerName: '', brandName: val }).then(data => {
         if (data.code === 0) {
-          if (this.filter.customer) {
             this.customerOptions = data.data.customerList
-          } else {
-            this.customerOptions = data.data.customerList
-            this.brandOptions = data.data.brandList
-          }
         } else {
           this.$message({
             type: 'error',

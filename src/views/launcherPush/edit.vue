@@ -8,9 +8,9 @@
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
       >
-        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)'></RegionEditPop>
+        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = 'isInit'></RegionEditPop>
         <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
-        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close'></AppSelPop>
+        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close' :key = 'isInit'></AppSelPop>
         <AppDetail v-show="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :material = 'material' @appSure = 'appSure(arguments)'></AppDetail>
       </el-dialog>
       <div class="appBox">
@@ -78,7 +78,8 @@ export default {
       ctmDevCtrName: '',
       risId: '',
       area: null,
-      material: null
+      material: null,
+      isInit: 0
     }
   },
   methods: {
@@ -156,6 +157,8 @@ export default {
       this.dialogTitle = '选择区域'
       this.dialogWidth = '550px'
       this.showClose = true
+      // 改变弹窗key值，使弹窗列表初始化
+      this.isInit = Math.random()
     },
     // 显示区域详情
     regionDetail (val) {
@@ -193,6 +196,8 @@ export default {
         this.dialogWidth = '650px'
         this.dialogTitle = '选择应用'
         this.showClose = true
+        // 改变弹窗key值，使弹窗列表初始化
+        this.isInit = Math.random()
       }
     },
     // 显示应用详情

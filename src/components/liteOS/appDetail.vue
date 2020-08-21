@@ -16,11 +16,11 @@
         </el-form-item>
     </el-form>
     <div class="dialog-footer">
+      <el-button type="primary" @click="create">
+        确认
+      </el-button>
       <el-button @click="cancel">
         取消
-      </el-button>
-      <el-button type="primary" @click="create">
-        确定
       </el-button>
     </div>
   </ContentCard>

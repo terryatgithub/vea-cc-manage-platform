@@ -8,9 +8,9 @@
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
       >
-        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)'></RegionEditPop>
+        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = 'isInit'></RegionEditPop>
         <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
-        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close'></AppSelPop>
+        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close' :key = 'isInit'></AppSelPop>
         <AppDetail v-show="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :material = 'material' @appSure = 'appSure(arguments)'></AppDetail>
       </el-dialog>
       <div class="appBox">
@@ -37,9 +37,8 @@
               <el-input 
                 placeholder="请输入栏目序号"
                 type="number"
-                onKeypress="return (/^+?(([1-9]\d?)|(100)|(0))$/.test(String.fromCharCode(event.keyCode)))"
                 v-model="itemList[index].itemSeq"
-                clearable maxlength="99"
+                clearable
               ></el-input>
             </el-form-item>
             <el-form-item label="栏目名称">
@@ -106,7 +105,8 @@ export default {
       ctmDevCtrName: '',
       risId: '',
       area: null,
-      material: null
+      material: null,
+      isInit: 0
     }
   },
   methods: {
@@ -198,6 +198,8 @@ export default {
       this.dialogTitle = '选择区域'
       this.dialogWidth = '550px'
       this.showClose = true
+      // 改变弹窗key值，使弹窗列表初始化
+      this.isInit = Math.random()
     },
     // 显示区域详情
     regionDetail (val) {
@@ -239,6 +241,8 @@ export default {
         this.dialogWidth = '650px'
         this.dialogTitle = '选择应用'
         this.showClose = true
+        // 改变弹窗key值，使弹窗列表初始化
+        this.isInit = Math.random()
       }
     },
     // 显示应用详情
@@ -290,70 +294,80 @@ export default {
     },
     create (DeviceID) {
       let that = this
-      this.$refs['pushChild'].$refs['pushForm'].validate((valid) => {
+      that.$refs['pushChild'].$refs['pushForm'].validate(async (valid) => {
         if (valid) {
-          // if (this.appList.length === 1) {
-          //   this.$message({
-          //     type: 'error',
-          //     message: '请选择应用！'
-          //   })
-          // } else {
-            const params = JSON.parse(JSON.stringify(this.$refs['pushChild'].pushForm))
-            params.releaseStartTime = liteOS.date(params.date[0])
-            params.releaseEndTime = liteOS.date(params.date[1])
-            delete params.date
-            // 判断是否全选版本
-            if (params.supportVersion.includes('All')) {
-              params.supportVersion = 'all'
-            } else {
-              params.supportVersion = params.supportVersion.join(',')
-            }
-            params.creator = this.$appState.user.name
-            params.releaseStatus = '0'
-            params.tvActiveId = DeviceID
-            params.itemList = that.itemList
-            if (this.$route.query.releaseConfId && this.$route.query.handleType === 'edit') {
-              params.releaseConfId = this.$route.query.releaseConfId
-              this.$service.updateAppStorePushManage(params).then(data => {
-                if (data.code === 0) {
-                  this.$refs['pushChild'].$refs['pushForm'].clearValidate()
-                  this.$refs['pushChild'].$refs['pushForm'].resetFields()
-                  this.$message({
-                    type: 'success',
-                    message: '修改成功！'
-                  })
-                  this.$router.push({
-                    path: 'appStorePush'
-                  })
-                } else {
-                  this.$message({
-                    type: 'error',
-                    message: data.msg
-                  })
-                }
+          // 轮询校验栏目的必填项
+          for (const key in that.itemList) {
+            if (that.itemList[key].template === '') {
+              this.$message({
+                type: 'error',
+                message: '栏目' + (parseInt(key) + 1) + '请选择模板！'
               })
-            } else {
-              this.$service.addAppStorePushManage(params).then(data => {
-                if (data.code === 0) {
-                  this.$refs['pushChild'].$refs['pushForm'].clearValidate()
-                  this.$refs['pushChild'].$refs['pushForm'].resetFields()
-                  const msg = this.$route.query.handleType === 'copy' ? '复制成功！' : '新增成功！'
-                  this.$message({
-                    type: 'success',
-                    message: msg
-                  })
-                  this.$router.push({
-                    path: 'appStorePush'
-                  })
-                } else {
-                  this.$message({
-                    type: 'error',
-                    message: data.msg
-                  })
-                }
+              return false
+            } else if (that.itemList[key].itemName === '') {
+              this.$message({
+                type: 'error',
+                message: '栏目' + (parseInt(key) + 1) + '请输入栏目名称！'
               })
+              return false
+            } else if (that.itemList[key].itemSeq === '') {
+              this.$message({
+                type: 'error',
+                message: '栏目' + (parseInt(key) + 1) + '请输入栏目序号！'
+              })
+              return false
+            } else if (that.itemList[key].itemAppList.length === 0) {
+              this.$message({
+                type: 'error',
+                message: '栏目' + (parseInt(key) + 1) + '请至少新增一个栏目资源！'
+              })
+              return false
+            } else {
+              const params = JSON.parse(JSON.stringify(that.$refs['pushChild'].pushForm))
+              params.releaseStartTime = liteOS.date(params.date[0])
+              params.releaseEndTime = liteOS.date(params.date[1])
+              delete params.date
+              // 判断是否全选版本
+              if (params.supportVersion.includes('All')) {
+                params.supportVersion = 'all'
+              } else {
+                params.supportVersion = params.supportVersion.join(',')
+              }
+              params.creator = that.$appState.user.name
+              params.releaseStatus = '0'
+              params.tvActiveId = DeviceID
+              params.itemList = that.itemList
+              let data
+              // 判断是编辑、复制、新增
+              if (that.$route.query.releaseConfId && that.$route.query.handleType === 'edit') {
+                params.releaseConfId = that.$route.query.releaseConfId
+                data = await this.$service.updateAppStorePushManage(params)
+              } else {
+                data = await this.$service.addAppStorePushManage(params)
+              }
+              if (data.code === 0) {
+                that.$refs['pushChild'].$refs['pushForm'].clearValidate()
+                that.$refs['pushChild'].$refs['pushForm'].resetFields()
+                const msg = that.$route.query.handleType === 'edit'
+                  ? '修改成功！'
+                  : that.$route.query.handleType === 'copy'
+                  ? '复制成功！'
+                  : '新增成功！'
+                that.$message({
+                  type: 'success',
+                  message: msg
+                })
+                that.$router.push({
+                  path: 'appStorePush'
+                })
+              } else {
+                that.$message({
+                  type: 'error',
+                  message: data.msg
+                })
+              }
             }
-          // }
+          }
         } else {
           console.log('error submit!!')
           return false

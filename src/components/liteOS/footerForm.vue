@@ -12,7 +12,7 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button type="success" @click="create">
-        确定
+        确认
       </el-button>
       <el-button @click="cancel">
         取消
