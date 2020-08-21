@@ -183,13 +183,12 @@ export default {
       return this.form.itemList.length;
     }
   },
-  created() {
-  },
+  created() {},
   activated() {
     this.init();
   },
-  deactivated(){
-    this.form = this.getDefaultForm()
+  deactivated() {
+    this.form = this.getDefaultForm();
   },
   methods: {
     init() {
@@ -311,12 +310,19 @@ export default {
     },
     async submitForm(formName) {
       console.log("submit", this.form);
-      let cols = this.$refs["columnTemplateForm"].map(ref => ref.validate());
       try {
-        let res = this.checkDuplicatedSerialNo();
-        if (res !== undefined) {
-          throw new Error("栏目模板序号不能重复，重复序号为: " + res);
+        let colNum = this.$refs["columnTemplateForm"].length;
+        if (colNum === 0) {
+          throw new Error('必须至少有一个栏目模板')
         }
+        let res;
+        if (colNum > 1) {
+          res = this.checkDuplicatedSerialNo();
+          if (res !== undefined) {
+            throw new Error("栏目模板序号不能重复，重复序号为: " + res);
+          }
+        }
+        let cols = this.$refs["columnTemplateForm"].map(ref => ref.validate());
         res = await Promise.all(cols);
         console.log("res", res);
         if (res) {

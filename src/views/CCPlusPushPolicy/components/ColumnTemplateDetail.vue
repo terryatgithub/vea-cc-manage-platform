@@ -5,30 +5,30 @@
     @go-back="completePicOperation(false)"
   >
     <el-form inline>
-      <el-form-item label="栏目序号">{{ details.id }}</el-form-item>
-      <el-form-item label="栏目名称">{{ details.name }}</el-form-item>
-      <el-form-item label="影片列表数量">{{ details.movieNum }}</el-form-item>
+      <el-form-item label="栏目序号">{{ content.itemSeq }}</el-form-item>
+      <el-form-item label="栏目名称">{{ content.itemName }}</el-form-item>
+      <el-form-item label="影片列表数量">{{
+        content.itemMediaMax
+      }}</el-form-item>
       <el-form-item>
         <el-button @click="movieReplace(true)">添加影片</el-button>
       </el-form-item>
-      <el-form-item>
-        <div class="demo-image__lazy">
-          <el-image
-            v-for="(item, idx) in itemMediaList"
-            :key="item.mediaResourcesId"
-            :src="item.mediaPic"
-            lazy
-            @click="showOperations(idx)"
-          ></el-image>
-        </div>
-      </el-form-item>
-
-      <el-form-item>
-        <el-button @click="completePicOperation(true)">完成</el-button>
-        <el-button @click="completePicOperation(false)">取消</el-button>
-      </el-form-item>
     </el-form>
 
+    <div class="demo-image__lazy">
+      <el-image
+        v-for="(item, idx) in content.itemMediaList"
+        :key="item.mediaResourcesId"
+        :src="item.mediaPic"
+        lazy
+        @click="showOperations(idx)"
+      ></el-image>
+    </div>
+    <div>
+      <el-button @click="completePicOperation(true)">完成</el-button>
+      <el-button @click="completePicOperation(false)">取消</el-button>
+    </div>
+    
     <el-dialog :visible.sync="showOperationDialog" append-to-body>
       <el-button @click="movieToTop">置顶影片</el-button>
       <el-button @click="movieReplace(false)">替换影片</el-button>
@@ -58,27 +58,18 @@ export default {
     Table
   },
   props: {
-    itemMediaList: {
-      type: Array,
+    content: {
+      type: Object,
       required: true
     }
   },
   data() {
     return {
-      details: {
-        id: 3,
-        name: "Action Movie",
-        movieNum: 12
-      },
       showOperationDialog: false,
       currentMovieIdx: -1,
       flagAddOrReplace: true, // flag: true 添加影片 false 删除影片
       showChooseMovieDialog: false
     };
-  },
-  created() {
-    //get all pic
-    this.details;
   },
   methods: {
     handleReplaceMovie(...rest) {
@@ -87,9 +78,9 @@ export default {
         return;
       }
       if (this.flagAddOrReplace) {
-        this.itemMediaList.push(rest[0]);
+        this.content.itemMediaList.push(rest[0]);
       } else {
-        this.itemMediaList.splice(this.currentMovieIdx, 1, rest[0]);
+        this.content.itemMediaList.splice(this.currentMovieIdx, 1, rest[0]);
       }
     },
     completePicOperation(confirm) {
@@ -97,8 +88,8 @@ export default {
     },
     movieToTop() {
       if (this.currentMovieIdx !== -1) {
-        let top = this.itemMediaList.splice(this.currentMovieIdx, 1);
-        this.itemMediaList.unshift(top[0]);
+        let top = this.content.itemMediaList.splice(this.currentMovieIdx, 1);
+        this.content.itemMediaList.unshift(top[0]);
       }
     },
     movieReplace(add) {
@@ -109,7 +100,7 @@ export default {
     },
     movieRemove() {
       if (this.currentMovieIdx !== -1) {
-        this.itemMediaList.splice(this.currentMovieIdx, 1);
+        this.content.itemMediaList.splice(this.currentMovieIdx, 1);
       }
     },
     showOperations(idx) {
@@ -125,10 +116,13 @@ export default {
 .demo-image__lazy
   width 100%
   max-height 50vh
+  min-height 10vh
   display flex
-  flex-wrap: wrap;
+  flex-wrap wrap
   overflow: scroll;
   .el-image
+    display inline-flex
+    align-items center
     flex-shrink 0
     margin 5px
     width 100px

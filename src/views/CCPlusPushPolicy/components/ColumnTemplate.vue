@@ -99,7 +99,8 @@
       :show-close="false"
     >
       <ColumnTemplateDetail
-        :itemMediaList="content.itemMediaList"
+        v-if="showEditDetailPage"
+        :content="content"
         :templateType="content.template"
         @done-pic-operation="donePicOperation"
       />
@@ -279,14 +280,14 @@ export default {
     margin 5px
 
 .image-wrapper
-  width: 100%;
   overflow: hidden;
   .demo-image__lazy
-    width 100%
     display flex
     overflow-x scroll
     .el-image
       flex-shrink 0
+      display inline-flex
+      align-items center
       margin 5px
       width 100px
       >>> .el-image__inner
