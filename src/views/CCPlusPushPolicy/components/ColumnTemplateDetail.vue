@@ -123,12 +123,15 @@ export default {
 
 <style lang="stylus" scoped>
 .demo-image__lazy
-  height 100px
   width 100%
+  max-height 50vh
   display flex
-  overflow-x auto
+  flex-wrap: wrap;
+  overflow: scroll;
   .el-image
     flex-shrink 0
     margin 5px
     width 100px
+    >>> .el-image__inner
+      height auto
 </style>

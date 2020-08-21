@@ -2,7 +2,11 @@
   <div class="column-template-wrapper">
     <el-form label-width="90px" :model="content" ref="tempForm" :rules="rules">
       <el-form-item label="栏目模板:">
-        <el-select v-model="content.template" placeholder="请选择" prop="template">
+        <el-select
+          v-model="content.template"
+          placeholder="请选择"
+          prop="template"
+        >
           <el-option
             v-for="item in templateOptions"
             :key="item.value"
@@ -64,7 +68,7 @@
       </el-form-item>
 
       <!-- 图片展示区 -->
-      <el-form-item>
+      <el-form-item class="image-wrapper">
         <div class="demo-image__lazy">
           <el-image
             v-for="item in content.itemMediaList"
@@ -82,7 +86,7 @@
 
     <el-dialog
       :visible.sync="showSelectResourceDialog"
-      title="栏目资源选择(可多选)(可反选)"
+      title="新增栏目资源(可多选)(可反选)"
       :show-close="false"
     >
       <ColumnResourceSelectDialog @get-select-resource="getSelectResource" />
@@ -128,7 +132,7 @@ export default {
           itemMediaMax: "99",
           itemMediaList: [] //媒体资源
         };
-      },
+      }
       // validator: function(value) {
       //   return ['success', 'warning', 'error'].indexOf(value) !== -1
       // }
@@ -156,7 +160,8 @@ export default {
     async donePicOperation(...rest) {
       this.showEditDetailPage = false;
     },
-    async getSelectResource(...rest) {// 获取选择的资源类型
+    async getSelectResource(...rest) {
+      // 获取选择的资源类型
       this.showSelectResourceDialog = false;
       if (!rest[0]) {
         return;
@@ -173,12 +178,14 @@ export default {
       if (res.code === 0) {
         const { results } = res.data;
         const { itemMediaList } = this.content;
+        let len = itemMediaList.length;
         results.forEach((item, index) => {
-          this.$set(itemMediaList, index, {})
-          itemMediaList[index].mediaResourcesId = item.mediaResourcesId;
-          itemMediaList[index].mediaPicType = item.posterType;
-          itemMediaList[index].mediaPic = item.posterUrl;
-          itemMediaList[index].detailSeq = index;
+          this.$set(itemMediaList, len, {});
+          itemMediaList[len].mediaResourcesId = item.mediaResourcesId;
+          itemMediaList[len].mediaPicType = item.posterType;
+          itemMediaList[len].mediaPic = item.posterUrl;
+          itemMediaList[len].detailSeq = len;
+          len++;
         });
       } else {
         this.$message({
@@ -245,13 +252,17 @@ export default {
   .el-form-item
     margin 5px
 
-.demo-image__lazy
-  height 100px
-  width 100%
-  display flex
-  overflow-x auto
-  .el-image
-    flex-shrink 0
-    margin 5px
-    width 100px
+.image-wrapper
+  width: 100%;
+  overflow: hidden;
+  .demo-image__lazy
+    width 100%
+    display flex
+    overflow-x scroll
+    .el-image
+      flex-shrink 0
+      margin 5px
+      width 100px
+      >>> .el-image__inner
+        height auto
 </style>
