@@ -37,8 +37,17 @@ export default {
   },
   props: {
     // 没搞明白为啥参数名是id才能传
-    id: {
-      type: String
+    area: {
+      type: Object,
+      default: () => ({
+        risId: '',
+        random: ''
+      })
+    }
+  },
+  watch: {
+    'area.random' (newVal, oldVal) {
+      this.detail()
     }
   },
   data () {
@@ -48,11 +57,12 @@ export default {
   },
   methods: {
     goBack () {
+      this.regionData = {}
       this.$emit('goRegion')
     },
     detail () {
-      if (this.id) {
-        this.$service.getAreaManageRlsId({ rlsId: this.id }).then(data => {
+      if (this.area.risId) {
+        this.$service.getAreaManageRlsId({ rlsId: this.area.risId }).then(data => {
           if (data.code === 0) {
             this.regionData = data.data
             this.regionData.brandNames = this.regionData.brandNames.split(',')

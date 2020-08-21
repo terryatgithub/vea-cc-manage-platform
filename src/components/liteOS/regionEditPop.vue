@@ -28,9 +28,10 @@
       <el-table-column
         property="address"
         label="区域详情"
+        align="center"
         width="120">
         <template slot-scope="scope">
-          <el-button @click="handleDetail(scope.row)" type="text" size="small">查看</el-button>
+          <el-button @click="handleDetail(scope.row)" type="text" size="medium" icon="el-icon-view"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -55,6 +56,7 @@ export default {
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页显示10条数据
       radio: null, // 如果使用单选框，定义一个model值
+      oldVal: null,
       isLoad: false
     }
   },
@@ -62,7 +64,8 @@ export default {
     fetchData () {
       const params = {
         page: this.currentPage,
-        size: this.pageSize
+        size: this.pageSize,
+        state: '1'
       }
       this.$service.queryAreaManageListPage(params).then(data => {
         if (data.code === 0) {
@@ -88,8 +91,15 @@ export default {
       }
     },
     cancel () {
+      this.radio = null
+      this.$refs.singleTable.setCurrentRow()
       this.$emit('close')
-      this.$emit('getRegion', '')
+      // // 判断是否之前选中过
+      // if (this.oldVal) {
+      //   this.$emit('getRegion', this.oldVal.rlsId, this.oldVal.ctmDevCtrName)
+      // } else {
+        this.$emit('getRegion', '')
+      // }
     },
     create () {
       if (this.radio) {
@@ -105,12 +115,13 @@ export default {
       this.$emit('regionDetail', row.rlsId)
     },
     // 列表特定操作时可调用，如取消选择
-    setCurrent (row) {
-      this.$refs.singleTable.setCurrentRow(row)
-    },
+    // setCurrent (row) {
+    //   this.$refs.singleTable.setCurrentRow(row)
+    // },
     // 列表选中时触发
     handleCurrentChange (val) {
       this.radio = val.rlsId
+      // this.oldVal = val
       this.$emit('getRegion', val.rlsId, val.ctmDevCtrName)
     }
   },
