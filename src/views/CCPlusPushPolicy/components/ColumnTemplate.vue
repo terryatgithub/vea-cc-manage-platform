@@ -184,15 +184,41 @@ export default {
           itemMediaList[len].mediaResourcesId = item.mediaResourcesId;
           itemMediaList[len].mediaPicType = item.posterType;
           itemMediaList[len].mediaPic = item.posterUrl;
+          itemMediaList[len].releaseDate = item.releaseDate;
+          itemMediaList[len].score = item.score;
           itemMediaList[len].detailSeq = len;
           len++;
         });
+        this.sortAndDedupItemMediaList();
       } else {
         this.$message({
           type: "error",
           message: res.msg
         });
       }
+    },
+    sortAndDedupItemMediaList() {
+      const { itemMediaList } = this.content;
+      //dedup
+      let s = new Set();
+      for (let i = itemMediaList.length - 1; i >= 0; i--) {
+        let v = itemMediaList[i];
+        if (s.has(v.mediaResourcesId)) {
+          itemMediaList.splice(i, 1);
+        } else {
+          s.add(v.mediaResourcesId);
+        }
+      }
+      //sort
+      const fDate = d => new Date(d).getTime();
+      const sort = (a, b) =>
+        fDate(a.releaseDate) > fDate(b.releaseDate)
+          ? -1
+          : fDate(a.releaseDate) === fDate(b.releaseDate) &&
+            parseInt(a.score) > parseInt(b.score)
+          ? -1
+          : 1;
+      itemMediaList.sort(sort);
     },
     // handleClose(done) {
     //   this.$confirm("确认关闭？")
