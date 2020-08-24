@@ -169,16 +169,15 @@
       </el-button>
 
       <el-dialog
-        title='区域信息'
-        :visible.sync = 'dialogFormVisible'
-        width = '550px'
-        :close-on-click-modal = 'false'
-        :show-close = 'showClose'
-        v-if = 'dialogFormVisible'
+        title="区域信息"
+        :visible.sync="dialogFormVisible"
+        width="550px"
+        :close-on-click-modal="false"
+        :show-close="showClose"
+        v-if="dialogFormVisible"
       >
-        <RegionDetail :id = 'risId'></RegionDetail>
+        <RegionDetail :id="risId"></RegionDetail>
       </el-dialog>
-
 
       <!-- Table显示结果列表 -->
       <Table :props="table.props" :header="table.header" :data="table.data" />
@@ -193,7 +192,7 @@
 import { ContentWrapper, Table } from "admin-toolkit";
 import BaseList from "@/components/BaseList";
 import { cloneDeep } from "lodash";
-import RegionDetail from '@/components/liteOS/regionDetail2'
+import RegionDetail from "@/components/liteOS/regionDetail2";
 import liteOS from "@/assets/liteOS.js";
 
 export default {
@@ -304,7 +303,6 @@ export default {
           },
           {
             label: "操作",
-            width: 180,
             fixed: "right",
             render: this.operation(this)
           }
@@ -343,7 +341,7 @@ export default {
         { typeName: "已取消", key: 2 }
       ],
       dialogFormVisible: false,
-      risId: ''
+      risId: ""
     };
   },
   methods: {
@@ -694,7 +692,8 @@ export default {
           },
           "删除"
         );
-        return [btn1, btn2, btn3, btn4, btn5];
+
+        return row.releaseStatus === 1 ? [btn2, btn3] : [btn1, btn3, btn4, btn5];
       };
     }
   },
