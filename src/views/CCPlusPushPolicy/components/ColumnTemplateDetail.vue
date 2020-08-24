@@ -28,11 +28,11 @@
       <el-button @click="completePicOperation(true)">完成</el-button>
       <el-button @click="completePicOperation(false)">取消</el-button>
     </div>
-    
+
     <el-dialog :visible.sync="showOperationDialog" append-to-body>
       <el-button @click="movieToTop">置顶影片</el-button>
       <el-button @click="movieReplace(false)">替换影片</el-button>
-      <el-button @click="movieRemove">删除影片</el-button>z
+      <el-button @click="movieRemove">删除影片</el-button>
     </el-dialog>
 
     <el-dialog :visible.sync="showChooseMovieDialog" append-to-body>
@@ -75,10 +75,14 @@ export default {
     handleReplaceMovie(...rest) {
       this.showChooseMovieDialog = false;
       if (!rest[0]) {
+         this.$message({
+            type: "error",
+            message: '请先选择替换的影片'
+          });
         return;
       }
       if (this.flagAddOrReplace) {
-        this.content.itemMediaList.push(rest[0]);
+        this.content.itemMediaList.unshift(rest[0]);
       } else {
         this.content.itemMediaList.splice(this.currentMovieIdx, 1, rest[0]);
       }
@@ -87,10 +91,12 @@ export default {
       this.$emit("done-pic-operation");
     },
     movieToTop() {
-      if (this.currentMovieIdx !== -1) {
-        let top = this.content.itemMediaList.splice(this.currentMovieIdx, 1);
-        this.content.itemMediaList.unshift(top[0]);
+      if (this.currentMovieIdx === -1) {
+        return;
       }
+      let top = this.content.itemMediaList.splice(this.currentMovieIdx, 1);
+      this.content.itemMediaList.unshift(top[0]);
+      this.currentMovieIdx = 0;
     },
     movieReplace(add) {
       //添加或替换影片
@@ -99,9 +105,12 @@ export default {
       this.showChooseMovieDialog = true;
     },
     movieRemove() {
-      if (this.currentMovieIdx !== -1) {
-        this.content.itemMediaList.splice(this.currentMovieIdx, 1);
+      if (this.currentMovieIdx === -1) {
+        return;
       }
+      this.content.itemMediaList.splice(this.currentMovieIdx, 1);
+      this.currentMovieIdx = -1
+      this.showOperationDialog = false
     },
     showOperations(idx) {
       console.log("点击影片: ", idx);

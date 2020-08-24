@@ -154,8 +154,29 @@ export default {
         { label: "模板C 媒资横图", value: "C" },
         { label: "模板D 媒资方图", value: "D" }
       ],
+      flagMunualSet: false,
       columnResourceSelections: null //栏目资源标签选择项
     };
+  },
+  watch: {
+    "content.template": function(newVal, oldVal) {
+      if (this.flagMunualSet) {
+        this.flagMunualSet = false;
+        return;
+      }
+      this.$confirm("更改模板将会清空所有图片，确认更改吗？", "提示", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.content.itemMediaList.splice(0);
+        })
+        .catch(() => { //取消时恢复oldvalue
+          this.content.template = oldVal;
+          this.flagMunualSet = true;
+        });
+    }
   },
   methods: {
     async donePicOperation(...rest) {

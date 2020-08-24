@@ -2,7 +2,7 @@
   <ContentCard class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <el-form ref="CCChooseMovieForm" :model="filter" inline>
-        <el-form-item>
+        <el-form-item prop="supplier">
           <el-select placeholder="来源" clearable="" v-model="filter.supplier">
             <el-option
               v-for="option in sourceOptions"
@@ -13,7 +13,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item>
+        <el-form-item prop="category">
           <el-select placeholder="类型" clearable="" v-model="filter.category">
             <el-option
               v-for="option in categoryOptions"
@@ -24,7 +24,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item>
+        <el-form-item prop="tag">
           <el-select placeholder="标签" clearable="" v-model="filter.tag">
             <el-option
               v-for="option in tagOptions"
@@ -35,7 +35,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="影片名称">
+        <el-form-item label="影片名称" prop="title">
           <el-input
             v-model="filter.title"
             placeholder="请输入影片名称，支持模糊查询"
@@ -155,19 +155,21 @@ export default {
     this.getAllSelections();
   },
   deactivated() {
-    this.$refs.CCChooseMovieForm.resetFields();
-    this.table.data = [];
+    this.uninit();
   },
   methods: {
+    uninit() {
+      // this.$refs.CCChooseMovieForm.resetFields();
+      this.table.data = [];
+      this.radioUserSelect = -1;
+    },
     handlerFinish(confirm) {
       let selected = null;
       if (confirm && this.radioUserSelect !== -1) {
         selected = Object.assign({}, this.table.data[this.radioUserSelect]);
       }
       this.$emit("done-movie-replace", selected);
-    },
-    userSelectHandler(...rest) {
-      this.radioUserSelect = rest[0];
+      this.uninit()
     },
     async getAllSelections() {
       let res = await this.$service.queryCCPlusMediaResourceAllSelect();
@@ -197,9 +199,10 @@ export default {
       const filter = this.parseFilter();
       let res = await this.$service.queryCCPlusMediaResourceNew(filter);
       if (res.code === 0) {
+        this.radioUserSelect = -1; //reset index
         this.pagination.total = res.total;
         const { results } = res.data;
-        this.table.data.splice(0)
+        this.table.data.splice(0);
         const { data } = this.table;
         results.forEach((item, index) => {
           data.push({});
