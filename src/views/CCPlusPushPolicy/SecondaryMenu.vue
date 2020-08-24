@@ -168,6 +168,18 @@
         新增
       </el-button>
 
+      <el-dialog
+        title='区域信息'
+        :visible.sync = 'dialogFormVisible'
+        width = '550px'
+        :close-on-click-modal = 'false'
+        :show-close = 'showClose'
+        v-if = 'dialogFormVisible'
+      >
+        <RegionDetail :id = 'risId'></RegionDetail>
+      </el-dialog>
+
+
       <!-- Table显示结果列表 -->
       <Table :props="table.props" :header="table.header" :data="table.data" />
     </ContentWrapper>
@@ -181,13 +193,15 @@
 import { ContentWrapper, Table } from "admin-toolkit";
 import BaseList from "@/components/BaseList";
 import { cloneDeep } from "lodash";
+import RegionDetail from '@/components/liteOS/regionDetail2'
 import liteOS from "@/assets/liteOS.js";
 
 export default {
   extends: BaseList,
   components: {
     ContentWrapper,
-    Table
+    Table,
+    RegionDetail
   },
   data() {
     return {
@@ -224,7 +238,18 @@ export default {
             prop: "ctmDevCtrId",
             label: "区域详情",
             sortable: true,
-            width: 100
+            width: 100,
+            render: (h, { row }) => {
+              return h("i", {
+                attrs: {
+                  class: "el-icon-view",
+                  style: "font-size: 20px; cursor: pointer;"
+                },
+                on: {
+                  click: this.handleShowRegionDetail.bind(this, row.ctmDevCtrId)
+                }
+              });
+            }
           },
           {
             prop: "priority",
@@ -245,9 +270,9 @@ export default {
             width: 100,
             render: (h, { row }) => {
               if (row.releaseStatus === 0) {
-                return "未推送";
+                return "未发布";
               } else if (row.releaseStatus === 1) {
-                return "推送中";
+                return "已发布";
               } else if (row.releaseStatus === 2) {
                 return "已取消";
               }
@@ -316,10 +341,16 @@ export default {
         { typeName: "未推送", key: 0 },
         { typeName: "推送中", key: 1 },
         { typeName: "已取消", key: 2 }
-      ]
+      ],
+      dialogFormVisible: false,
+      risId: ''
     };
   },
   methods: {
+    handleShowRegionDetail(val) {
+      this.dialogFormVisible = true;
+      this.risId = val;
+    },
     genDefaultFilter() {
       return {
         brandName: undefined,
