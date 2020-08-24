@@ -25,7 +25,15 @@
             v-model="form.supportVersion"
             multiple
             placeholder="请选择(支持多选)"
+            @change="handleVersionChange"
+            @remove-tag="handleVersionRemoveTag"
           >
+            <el-option
+              key="All"
+              label="All"
+              value="All"
+              @click.native="handleVersionClickAll"
+            ></el-option>
             <el-option
               v-for="item in versionOptions"
               :key="item.supportVersion"
@@ -204,6 +212,40 @@ export default {
       });
       this.getDetailById();
     },
+    handleVersionClickAll() {
+      //在这里处理All的click, 点击all只有2种case：
+      // case 1. 不满的情况下点all
+      // case 2: 满的情况下点all
+      if (this.form.supportVersion.length < this.versionOptions.length) {
+        this.form.supportVersion = [];
+        this.versionOptions.map(item => {
+          this.form.supportVersion.push(item.supportVersion);
+        });
+        this.form.supportVersion.unshift("All");
+      } else {
+        this.form.supportVersion = [];
+      }
+    },
+    handleVersionChange(val) {
+      //这里处理其他option的click，有以下case
+      //1. 包含all，但长度不够，说明用户反选了选项
+      //2. 不包含all，但长度够了，说明用户选择了所有选项，那自动把all选上
+      if (!val.includes("All") && val.length === this.versionOptions.length) {
+        this.form.supportVersion.unshift("All");
+      } else if (
+        val.includes("All") &&
+        val.length - 1 < this.versionOptions.length
+      ) {
+        this.form.supportVersion = this.form.supportVersion.filter(item => {
+          return item !== "All";
+        });
+      }
+    },
+    handleVersionRemoveTag(val) {
+      if (val === "All") {
+        this.pushForm.supportVersion = [];
+      }
+    },
     getDefaultForm() {
       return {
         releaseConfName: "",
@@ -230,6 +272,13 @@ export default {
           form[key] = res.data[key];
         });
         form.supportVersion = form.supportVersion.split(",");
+        //如果版本信息包含'all'
+        if (form.supportVersion.includes("all")) {
+          this.versionOptions.forEach(item => {
+            !form.supportVersion.includes(item.supportVersion) &&
+              form.supportVersion.push(item.supportVersion);
+          });
+        }
         const date = (
           liteOS.parserDate(form.releaseStartTime) +
           "," +
@@ -284,7 +333,11 @@ export default {
       }
       let data = Object.assign({}, this.form);
       delete data.datePublish;
-      data.supportVersion = this.form.supportVersion.join(",");
+      if (data.supportVersion.includes("All")) {
+        data.supportVersion = "all";
+      } else {
+        data.supportVersion = this.form.supportVersion.join(",");
+      }
       data.releaseStartTime = liteOS.date(this.form.datePublish[0]);
       data.releaseEndTime = liteOS.date(this.form.datePublish[1]);
       data.creator = "管理员";
@@ -313,7 +366,7 @@ export default {
       try {
         let colNum = this.$refs["columnTemplateForm"].length;
         if (colNum === 0) {
-          throw new Error('必须至少有一个栏目模板')
+          throw new Error("必须至少有一个栏目模板");
         }
         let res;
         if (colNum > 1) {
