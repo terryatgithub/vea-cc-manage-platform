@@ -123,10 +123,10 @@
     <el-dialog title="选择区域" :visible.sync="showSelectRegionDialog">
       <SelectRegionComponent @getRegion="getRegion" />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="showSelectRegionDialog = false">
+        <el-button @click="confirmRegionSelect(false)">
           取消
         </el-button>
-        <el-button type="primary" @click="confirmRegionSelect">
+        <el-button type="primary" @click="confirmRegionSelect(true)">
           确定
         </el-button>
       </div>
@@ -171,7 +171,11 @@ export default {
           { required: true, message: "请输入策略名称", trigger: "blur" }
         ],
         supportVersion: [
-          { required: true, message: "请选择版本信息", trigger: "blur" }
+          {
+            required: true,
+            message: "请选择版本信息",
+            trigger: ["blur", "change"]
+          }
         ],
         ctmDevCtrName: [
           { required: true, message: "请设置区域信息", trigger: "blur" }
@@ -183,6 +187,11 @@ export default {
         // tvActiveId: [
         //   { required: true, message: "请输入设备信息", trigger: "blur" }
         // ],
+      },
+      regionBakup: {
+        //区域备份
+        ctmDevCtrId: 0,
+        ctmDevCtrName: ""
       }
     };
   },
@@ -243,7 +252,7 @@ export default {
     },
     handleVersionRemoveTag(val) {
       if (val === "All") {
-        this.pushForm.supportVersion = [];
+        this.form.supportVersion = [];
       }
     },
     getDefaultForm() {
@@ -340,7 +349,7 @@ export default {
       }
       data.releaseStartTime = liteOS.date(this.form.datePublish[0]);
       data.releaseEndTime = liteOS.date(this.form.datePublish[1]);
-      data.creator = "管理员";
+      data.creator = this.$appState.user.name;
       data.releaseStatus = "0";
       let res;
       if (doModify) {
@@ -422,13 +431,21 @@ export default {
       this.$refs["ccplusSecondaryEditForm"].resetFields();
     },
     selectRegion() {
+      this.regionBakup.ctmDevCtrName = this.form.ctmDevCtrName;
+      this.regionBakup.ctmDevCtrId = this.form.ctmDevCtrId;
       this.showSelectRegionDialog = true;
     },
     getRegion(...rest) {
       this.form.ctmDevCtrId = rest[0];
       this.form.ctmDevCtrName = rest[1];
     },
-    confirmRegionSelect() {
+    confirmRegionSelect(confirm) {
+      if (!confirm) {
+        this.form.ctmDevCtrName = this.regionBakup.ctmDevCtrName;
+        this.form.ctmDevCtrId = this.regionBakup.ctmDevCtrId;
+        this.showSelectRegionDialog = false;
+        return;
+      }
       if (this.form.ctmDevCtrName) {
         this.showSelectRegionDialog = false;
       } else {

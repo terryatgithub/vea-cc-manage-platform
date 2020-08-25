@@ -128,7 +128,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6" label="策略名称">
+          <el-form-item class="el-col el-col-6" label="策略名称" prop="releaseConfName">
             <div class="el-col-20">
               <el-input
                 placeholder="策略名称"
@@ -138,7 +138,7 @@
             </div>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6" label="区域名">
+          <el-form-item class="el-col el-col-6" label="区域名" prop="ctmDevCtrName">
             <div class="el-col-20">
               <el-input
                 placeholder="区域名"
@@ -318,6 +318,12 @@ export default {
               cb();
             }
           }
+        ],
+        releaseConfName: [
+          {min: 0, max: 99, message:'有效长度为0-99个字符', trigger: ['blur', 'change']}
+        ],
+        ctmDevCtrName: [
+          {min: 0, max: 99, message:'有效长度为0-99个字符', trigger: ['blur', 'change']}
         ]
       },
       brandOptions: [],
@@ -326,7 +332,7 @@ export default {
       chipOptions: [],
       modelOptions: [],
       versionOptions: [],
-      creator: "管理员",
+      creator: this.$appState.user.name,
       typeOptions: [
         //@todo del
         { key: "1", typeName: "财务" },

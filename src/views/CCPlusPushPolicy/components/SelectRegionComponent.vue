@@ -23,9 +23,9 @@
 
       <el-table-column property="address" label="区域详情" width="120">
         <template slot-scope="scope">
-          <el-button @click="handleDetail(scope.row)" type="text" size="small"
-            >查看</el-button
-          >
+          <el-button @click="handleDetail(scope.row)" type="text" size="small">
+            <i class="el-icon-view"></i>
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
