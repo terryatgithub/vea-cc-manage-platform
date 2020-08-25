@@ -1,6 +1,6 @@
 <template>
   <ContentCard class="content">
-    <ContentWrapper :pagination="pagination" @filter-change="fetchData">
+    <!-- <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <div class="el-row">
       <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
         <el-form-item class="el-col el-col-6">
@@ -122,6 +122,158 @@
           </div>
         </el-form-item>
         <el-form-item>
+          <el-button type="primary"  @click="handleFilterChange">查询</el-button>
+          <el-button  @click="handleFilterReset">重置</el-button>
+        </el-form-item>
+      </el-form>
+      </div>
+      <el-button
+        class="filter-item"
+        style="margin-buttom: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      >
+        新增
+      </el-button>
+      <el-dialog
+        title='区域信息'
+        :visible.sync = 'dialogFormVisible'
+        width = '550px'
+        :close-on-click-modal = 'false'
+        :show-close = 'showClose'
+        v-if = 'dialogFormVisible'
+      >
+        <RegionDetail :id = 'risId'></RegionDetail>
+      </el-dialog>
+      <Table
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+      />
+    </ContentWrapper> -->
+    <ContentWrapper :pagination="pagination" @filter-change="fetchData">
+      <div class="el-row">
+      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px">
+        <el-form-item label="品牌">
+          <div>
+            <el-select
+              placeholder="品牌"
+              clearable
+              v-model="filter['brandName']"
+              @change='selectBrand(filter.brandName)'
+            >
+              <el-option
+                v-for="item in brandOptions"
+                :key="item.brandId"
+                :label="item.brandName"
+                :value="item.brandName"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item label="客户">
+          <div>
+            <el-select
+              placeholder="客户"
+              clearable
+              v-model="filter['customerName']"
+              @change='selectCustomer(filter.customerName)'
+            >
+              <el-option
+                v-for="item in customerOptions"
+                :key="item.customerId"
+                :label="item.customerName"
+                :value="item.customerName"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item label="机芯">
+          <div>
+            <el-select
+              placeholder="机芯"
+              clearable
+              v-model="filter['chip']"
+              @change='selectChip(filter.chip)'
+            >
+              <el-option
+                v-for="item in chipOptions"
+                :key="item.chip"
+                :label="item.chip"
+                :value="item.chip"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item label="机型">
+          <div>
+            <el-select
+              placeholder="机型"
+              clearable
+              v-model="filter['model']"
+              @change='selectModel(filter.model)'
+            >
+              <el-option
+                v-for="item in modelOptions"
+                :key="item.model"
+                :label="item.model"
+                :value="item.model"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item label="国家">
+          <div>
+            <el-cascader
+              placeholder="国家"
+              v-model="filter['countryName']"
+              :options="countryOptions"
+              expand-trigger="hover"
+              clearable
+            />
+          </div>
+        </el-form-item>
+        <el-form-item label="版本">
+          <div>
+            <el-select
+              placeholder="版本"
+              clearable
+              v-model="filter['supportVersion']"
+            >
+              <el-option
+                v-for="item in versionOptions"
+                :key="item.versionId"
+                :label="item.supportVersion"
+                :value="item.supportVersion"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item label="状态">
+          <div>
+            <el-select
+              placeholder="状态"
+              clearable
+              v-model="filter['releaseStatus']"
+            >
+              <el-option value="0" label="未发布"/>
+              <el-option value="1" label="已发布"/>
+              <el-option value="2" label="已取消"/>
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item label="策略名称">
+          <div>
+            <el-input placeholder="策略名称" clearable v-model="filter['releaseConfName']" maxlength="99"/>
+          </div>
+        </el-form-item>
+        <el-form-item label="区域名">
+          <div>
+            <el-input placeholder="区域名" clearable v-model="filter['ctmDevCtrName']" maxlength="99"/>
+          </div>
+        </el-form-item>
+        <el-form-item class="btnBox">
           <el-button type="primary"  @click="handleFilterChange">查询</el-button>
           <el-button  @click="handleFilterReset">重置</el-button>
         </el-form-item>
@@ -686,7 +838,7 @@ export default {
 
 <style lang='stylus' scoped>
 .content >>> .el-form-item__content
-                width: 100%
+                
                 .el-select,.el-cascader
                    width 100%
 .content >>> .el-form--inline .el-form-item {
@@ -696,4 +848,12 @@ export default {
   justify-content: flex-start;
   margin: 10px 0px
 
+</style>
+<style lang="scss">
+.btnBox {
+  margin-left: 15px;
+  .el-form-item__content {
+    width: 100%!important;
+  }
+}
 </style>

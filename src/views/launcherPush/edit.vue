@@ -1,12 +1,13 @@
 <template>
     <ContentCard title="新增/编辑" @go-back="goBack">
-      <PushForm @regionSel = 'regionSel' ref = 'pushChild' :ctmDevCtrName = 'ctmDevCtrName' :risId = 'risId'></PushForm>
+      <PushForm @regionSel = 'regionSel' @clearRegion = 'clearRegion' ref = 'pushChild' :ctmDevCtrName = 'ctmDevCtrName' :risId = 'risId'></PushForm>
       <el-dialog
         :title='dialogTitle'
         :visible.sync = 'dialogFormVisible'
         :width = 'dialogWidth'
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
+        @close = 'close'
       >
         <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = 'isInit'></RegionEditPop>
         <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
@@ -150,6 +151,11 @@ export default {
       this.risId = val[0]
       this.ctmDevCtrName = val[1]
     },
+    // 删除选择区域
+    clearRegion () {
+      this.ctmDevCtrName = ''
+      this.risId = ''
+    },
     // 弹窗选择区域
     regionSel () {
       this.dialogFormVisible = true
@@ -180,7 +186,7 @@ export default {
     },
     // 弹窗选择应用
     appSel () {
-      if (this.appList.length === 99) {
+      if (this.appList.length === 100) {
         this.$message({
           type: 'warning',
           message: '应用数量已达上限!'
@@ -193,7 +199,7 @@ export default {
         })
         this.dialogFormVisible = true
         this.dialogType = 'appPop'
-        this.dialogWidth = '650px'
+        this.dialogWidth = '700px'
         this.dialogTitle = '选择应用'
         this.showClose = true
         // 改变弹窗key值，使弹窗列表初始化
@@ -207,14 +213,14 @@ export default {
         random: Math.random()
       }
       this.dialogType = 'appDetail'
-      this.dialogWidth = '650px'
+      this.dialogWidth = '700px'
       this.dialogTitle = ''
       this.showClose = false
     },
     // 返回选择应用
     goApp () {
       this.dialogType = 'appPop'
-      this.dialogWidth = '650px'
+      this.dialogWidth = '700px'
       this.dialogTitle = '选择应用'
       this.showClose = true
     },

@@ -144,10 +144,10 @@ export default {
     },
     // 上传文件之前的钩子
     beforeUpload (file) {
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/webp'
       const isLt2M = file.size / 1024 / 1024 < 2
       if (!isJPG) {
-        this.$message.error('上传关联图片只能是 PNG或JPG 格式!')
+        this.$message.error('异常错误：图片必须为.jpg.jpeg.png.webp格式!')
         this.setInit()
       } else if (!isLt2M) {
         this.$message.error('上传图标图片大小不能超过 2MB!')

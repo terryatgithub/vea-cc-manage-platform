@@ -214,6 +214,7 @@ export default {
                   message: '新增成功！'
                 })
                 this.$emit('fetchData')
+                this.$emit('getMediaResourceInfo')
               } else {
                 this.$message({
                   type: 'error',
@@ -239,6 +240,7 @@ export default {
                   message: '新增成功！'
                 })
                 this.$emit('fetchData')
+                this.$emit('getMediaResourceInfo')
               } else {
                 this.$message({
                   type: 'error',

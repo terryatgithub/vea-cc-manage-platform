@@ -3,13 +3,13 @@ export default {
   userTransform (oldArray) {
     const options = []
     // options[0] = {
-    //   label: '全部客户',
-    //   value: '',
-    //   customerId: '',
-    //   customerName: '',
+    //   label: 'All',
+    //   value: 'All',
+    //   customerId: 'All',
+    //   customerName: 'All',
     //   children: null,
-    //   brandList: null,
-    // };
+    //   brandList: null
+    // }
     for (let i = 0; i < oldArray.length; i++) {
       const brandList = this.filterOptions(oldArray[i].brandList)
       options[i] = {

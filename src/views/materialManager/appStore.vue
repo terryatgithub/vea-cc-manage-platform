@@ -2,14 +2,14 @@
   <ContentCard class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <div class="el-row">
-      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px">
+        <el-form-item label="应用名">
+          <div>
             <el-input placeholder="应用名" clearable v-model="filter['materialName']" maxlength="99"/>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="状态">
+          <div>
             <el-select
               placeholder="状态"
               clearable
@@ -20,8 +20,20 @@
             </el-select>
           </div>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary"  @click="handleFilterChange">查询</el-button>
+        <el-form-item label="类型">
+          <div>
+            <el-select v-model="filter['materialType']" placeholder="类型" clearable>
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.key"
+                :label="item.typeName"
+                :value="item.typeName"
+              />
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item class="btnBox">
+          <el-button type="primary" @click="handleFilterChange">查询</el-button>
           <el-button  @click="handleFilterReset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -41,8 +53,9 @@
         :visible.sync = 'dialogEditFormVisible'
         v-if = 'dialogEditFormVisible'
         width = '550px'
+        @close = 'close'
       >
-        <EditPop :dialogType = 'dialogType' :materialId = 'materialId' @close = 'close' @fetchData = 'fetchData'></EditPop>
+        <EditPop :dialogType = 'dialogType' :materialId = 'materialId' @close = 'close' @fetchData = 'fetchData' ref='dialogEdit'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -97,7 +110,7 @@ export default {
           },
           {
             prop: 'materialPics',
-            label: '图标',
+            label: '应用横图',
             sortable: true,
             render: (h, { row }) => {
               return h('img', {
@@ -148,6 +161,26 @@ export default {
           }
         ]
       },
+      typeOptions: [
+        { key: '1', typeName: '财务' },
+        { key: '2', typeName: '儿童' },
+        { key: '3', typeName: '参考' },
+        { key: '4', typeName: '工具' },
+        { key: '5', typeName: '购物' },
+        { key: '6', typeName: '健康健美' },
+        { key: '7', typeName: '教育' },
+        { key: '8', typeName: '旅游' },
+        { key: '9', typeName: '美食' },
+        { key: '10', typeName: '商务' },
+        { key: '11', typeName: '社交' },
+        { key: '12', typeName: '生活' },
+        { key: '13', typeName: '体育' },
+        { key: '14', typeName: '天气' },
+        { key: '15', typeName: '图书' },
+        { key: '16', typeName: '新闻' },
+        { key: '17', typeName: '音乐' },
+        { key: '18', typeName: '娱乐' }
+      ],
       filterFormRules: {
         tabId: [
           {
@@ -171,7 +204,8 @@ export default {
     genDefaultFilter () {
       return {
         materialName: undefined,
-        materialState: undefined
+        materialState: undefined,
+        materialType: undefined
       }
     },
     /**
@@ -214,6 +248,8 @@ export default {
     close () {
       this.dialogEditFormVisible = false
       this.materialId = '0'
+      this.$refs['dialogEdit'].$refs['appForm'].clearValidate()
+      this.$refs['dialogEdit'].$refs['appForm'].resetFields()
     },
     // 新增
     handleCreate () {
@@ -297,7 +333,7 @@ export default {
 
 <style lang='stylus' scoped>
 .content >>> .el-form-item__content
-                width: 100%
+                
                 .el-select,.el-cascader
                    width 100%
 .content >>> .el-form--inline .el-form-item {
@@ -307,4 +343,12 @@ export default {
   justify-content: flex-start;
   margin: 10px 0px
 
+</style>
+<style lang="scss">
+.btnBox {
+  margin-left: 15px;
+  .el-form-item__content {
+    width: 100%!important;
+  }
+}
 </style>

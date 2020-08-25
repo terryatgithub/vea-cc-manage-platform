@@ -30,7 +30,7 @@
           {{ctmDevCtrName}}
           <i
             class="el-icon-error"
-            @click="regionSel"
+            @click="clearRegion"
           ></i>
         </div>
     </el-form-item>
@@ -108,6 +108,11 @@ export default {
   methods: {
     regionSel () {
       this.$emit('regionSel')
+    },
+    clearRegion () {
+      this.ctmDevCtrName = ''
+      this.pushForm.ctmDevCtrId = ''
+      this.$emit('clearRegion')
     },
     selectAll () {
       if (this.pushForm.supportVersion.length < this.versionOptions.length) {

@@ -2,9 +2,9 @@
   <ContentCard class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <div class="el-row">
-      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px">
+        <el-form-item label="品牌">
+          <div>
             <el-select
               placeholder="品牌"
               clearable
@@ -20,8 +20,8 @@
             </el-select>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="客户">
+          <div>
             <el-select
               placeholder="客户"
               clearable
@@ -37,8 +37,8 @@
             </el-select>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="机芯">
+          <div>
             <el-select
               placeholder="机芯"
               clearable
@@ -54,8 +54,8 @@
             </el-select>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="机型">
+          <div>
             <el-select
               placeholder="机型"
               clearable
@@ -71,8 +71,8 @@
             </el-select>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="国家">
+          <div>
             <el-cascader
               placeholder="国家"
               v-model="filter['countryName']"
@@ -82,8 +82,8 @@
             />
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="版本">
+          <div>
             <el-select
               placeholder="版本"
               clearable
@@ -98,8 +98,8 @@
             </el-select>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="状态">
+          <div>
             <el-select
               placeholder="状态"
               clearable
@@ -111,17 +111,17 @@
             </el-select>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="策略名称">
+          <div>
             <el-input placeholder="策略名称" clearable v-model="filter['releaseConfName']" maxlength="99"/>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="区域名">
+          <div>
             <el-input placeholder="区域名" clearable v-model="filter['ctmDevCtrName']" maxlength="99"/>
           </div>
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="btnBox">
           <el-button type="primary"  @click="handleFilterChange">查询</el-button>
           <el-button  @click="handleFilterReset">重置</el-button>
         </el-form-item>
@@ -706,7 +706,7 @@ export default {
 
 <style lang='stylus' scoped>
 .content >>> .el-form-item__content
-                width: 100%
+                
                 .el-select,.el-cascader
                    width 100%
 .content >>> .el-form--inline .el-form-item {
@@ -716,4 +716,12 @@ export default {
   justify-content: flex-start;
   margin: 10px 0px
 
+</style>
+<style lang="scss">
+.btnBox {
+  margin-left: 15px;
+  .el-form-item__content {
+    width: 100%!important;
+  }
+}
 </style>

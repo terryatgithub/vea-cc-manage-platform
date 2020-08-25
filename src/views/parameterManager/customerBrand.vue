@@ -2,9 +2,9 @@
   <ContentCard class="content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
       <div class="el-row">
-      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px" >
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+      <el-form ref="filterForm" :rules="filterFormRules" :model="filter" inline label-width="90px">
+        <el-form-item label="客户">
+          <div>
             <el-select
               placeholder="请选择客户"
               v-model="filter['customerName']"
@@ -20,8 +20,8 @@
             </el-select>
           </div>
         </el-form-item>
-        <el-form-item class="el-col el-col-6">
-          <div class="el-col-20">
+        <el-form-item label="品牌">
+          <div>
             <el-select
               placeholder="请选择品牌"
               v-model="filter['brandName']"
@@ -37,7 +37,7 @@
             </el-select>
           </div>
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="btnBox">
           <el-button type="primary"  @click="handleFilterChange">查询</el-button>
           <el-button  @click="handleFilterReset">重置</el-button>
         </el-form-item>
@@ -58,8 +58,9 @@
         :close-on-click-modal = 'false'
         :visible.sync = 'dialogEditFormVisible'
         width = '450px'
+        @close = 'close'
       >
-        <EditPop :dialogType = 'dialogType' @close = 'close' @fetchData = 'fetchData'></EditPop>
+        <EditPop :dialogType = 'dialogType' @close = 'close' @fetchData = 'fetchData' @getMediaResourceInfo = 'getMediaResourceInfo' ref = 'dialogEdit'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -240,6 +241,9 @@ export default {
     // 关闭弹窗
     close () {
       this.dialogEditFormVisible = false
+      this.$refs['dialogEdit'].$refs['brandForm'].clearValidate()
+      this.$refs['dialogEdit'].$refs['brandForm'].resetFields()
+      this.$refs['dialogEdit'].isSelect = 0
     }
   },
   created () {
@@ -251,7 +255,7 @@ export default {
 
 <style lang='stylus' scoped>
 .content >>> .el-form-item__content
-                width: 100%
+                
                 .el-select,.el-cascader
                    width 100%
 .content >>> .el-form--inline .el-form-item {
@@ -262,6 +266,12 @@ export default {
   margin: 10px 0px
 </style>
 <style lang="scss">
+.btnBox {
+  margin-left: 15px;
+  .el-form-item__content {
+    width: 100%!important;
+  }
+}
 .el-select-dropdown {
   max-width: 270px
 }

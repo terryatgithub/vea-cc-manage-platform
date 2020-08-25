@@ -43,6 +43,7 @@ export default {
   watch: {
     'material.random' (newVal, oldVal) {
       this.detail()
+      this.radio = 0
     }
   },
   data () {
@@ -75,7 +76,9 @@ export default {
       this.radio = index
     },
     cancel () {
-      this.$emit('close')
+      // this.$emit('close')
+      this.appData = {}
+      this.$emit('goApp')
     },
     create () {
       this.$emit('appSure', this.appData.materialId, this.appData.materialName, this.appData.materialPics[this.radio].pic, this.appData.materialPics[this.radio].type)

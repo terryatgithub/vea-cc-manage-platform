@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-form :inline="true" :model="formInline" class="form-inline">
-      <el-form-item class="">
+      <el-form-item class="" label="应用名">
         <el-input v-model="formInline.materialName" placeholder="请输入应用名" clearable maxlength="99"></el-input>
       </el-form-item>
-      <el-form-item class="">
+      <el-form-item class="" label="应用类型">
         <el-select v-model="formInline.materialType" placeholder="请选择应用类型" clearable>
           <el-option
             v-for="item in typeOptions"
@@ -49,7 +49,7 @@
         width="100">
       </el-table-column>
       <el-table-column
-        property="materialUrl"
+        property="materialRemark"
         label="备注">
       </el-table-column>
       <el-table-column

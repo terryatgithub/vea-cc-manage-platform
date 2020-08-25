@@ -7,6 +7,7 @@
         :width = 'dialogWidth'
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
+        @close = 'close'
       >
         <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = 'isInit'></RegionEditPop>
         <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
@@ -238,7 +239,7 @@ export default {
         this.itemAppList_index = this.itemList[index].itemAppList.length - 1
         this.dialogFormVisible = true
         this.dialogType = 'appPop'
-        this.dialogWidth = '650px'
+        this.dialogWidth = '700px'
         this.dialogTitle = '选择应用'
         this.showClose = true
         // 改变弹窗key值，使弹窗列表初始化
@@ -252,14 +253,14 @@ export default {
         random: Math.random()
       }
       this.dialogType = 'appDetail'
-      this.dialogWidth = '650px'
+      this.dialogWidth = '700px'
       this.dialogTitle = ''
       this.showClose = false
     },
     // 返回选择应用
     goApp () {
       this.dialogType = 'appPop'
-      this.dialogWidth = '650px'
+      this.dialogWidth = '700px'
       this.dialogTitle = '选择应用'
       this.showClose = true
     },
