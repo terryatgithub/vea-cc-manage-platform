@@ -97,6 +97,7 @@
       title="编辑栏目详情"
       width="100%"
       :show-close="false"
+      :before-close="beforeDonePicOperation"
     >
       <ColumnTemplateDetail
         v-if="showEditDetailPage"
@@ -179,8 +180,18 @@ export default {
     }
   },
   methods: {
+    reSortSequence() {
+        const { itemMediaList } = this.content;
+        itemMediaList.forEach((v, i) => v.detailSeq = i)
+    },
+    beforeDonePicOperation(done){
+      console.log('beforeDonePicOperation');
+      this.reSortSequence()
+      done()
+    },
     async donePicOperation(...rest) {
       this.showEditDetailPage = false;
+      this.reSortSequence()
     },
     async getSelectResource(...rest) {
       // 获取选择的资源类型
