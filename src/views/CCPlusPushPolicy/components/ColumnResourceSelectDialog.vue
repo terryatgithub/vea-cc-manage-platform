@@ -62,6 +62,7 @@
 <script>
 //栏目资源选择组件
 export default {
+  name: 'ColumnResourceSelectDialog',
   data() {
     return {
       form: {

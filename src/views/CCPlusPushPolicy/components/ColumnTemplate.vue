@@ -30,15 +30,7 @@
         <el-input placeholder="" clearable v-model.number="content.itemSeq" />
       </el-form-item>
 
-      <el-form-item
-        label="栏目名称:"
-        prop="itemName"
-        :rules="{
-          required: true,
-          message: '请输入栏目名称',
-          trigger: 'blur'
-        }"
-      >
+      <el-form-item label="栏目名称:" prop="itemName">
         <el-input placeholder="" clearable v-model="content.itemName" />
       </el-form-item>
 
@@ -46,13 +38,12 @@
         label="影片列表数量:"
         label-width="120px"
         prop="itemMediaMax"
-        :rules="{
-          required: true,
-          message: '请输入影片数量',
-          trigger: 'blur'
-        }"
       >
-        <el-input placeholder="" clearable v-model="content.itemMediaMax" />
+        <el-input
+          placeholder=""
+          clearable
+          v-model.number="content.itemMediaMax"
+        />
       </el-form-item>
 
       <el-form-item>
@@ -115,6 +106,7 @@ import ColumnResourceSelectDialog from "./ColumnResourceSelectDialog.vue";
 import ColumnTemplateDetail from "./ColumnTemplateDetail";
 
 export default {
+  name: "ColumnTemplate",
   components: {
     ColumnResourceSelectDialog,
     ColumnTemplateDetail
@@ -131,7 +123,7 @@ export default {
           // releaseItemId: 0,
           itemSeq: 1,
           itemName: "",
-          itemMediaMax: "99",
+          itemMediaMax: 99,
           itemMediaList: [] //媒体资源
         };
       }
@@ -141,10 +133,29 @@ export default {
     }
   },
   data() {
+    var checkMax = (rule, value, callback) => {
+      if (value > 100) {
+        this.content.itemMediaMax = parseInt(value.toString().slice(0, 2));
+      }
+    };
     return {
       rules: {
         itemSeq: [
           { required: true, message: "请输入栏目序号", trigger: "blur" }
+        ],
+        itemName: [
+          { required: true, message: "请输入栏目名称", trigger: "blur" }
+        ],
+        itemMediaMax: [
+          { required: true, message: "请输入影片数量", trigger: "blur" },
+          { validator: checkMax, trigger: "change" },
+          {
+            type: "number",
+            min: 1,
+            max: 99,
+            message: "影片数量最小为1，最大为99",
+            trigger: ["blur", "change"]
+          }
         ]
       },
       showSelectResourceDialog: false,
@@ -173,7 +184,8 @@ export default {
         .then(() => {
           this.content.itemMediaList.splice(0);
         })
-        .catch(() => { //取消时恢复oldvalue
+        .catch(() => {
+          //取消时恢复oldvalue
           this.content.template = oldVal;
           this.flagMunualSet = true;
         });
@@ -181,17 +193,17 @@ export default {
   },
   methods: {
     reSortSequence() {
-        const { itemMediaList } = this.content;
-        itemMediaList.forEach((v, i) => v.detailSeq = i)
+      const { itemMediaList } = this.content;
+      itemMediaList.forEach((v, i) => (v.detailSeq = i));
     },
-    beforeDonePicOperation(done){
-      console.log('beforeDonePicOperation');
-      this.reSortSequence()
-      done()
+    beforeDonePicOperation(done) {
+      console.log("beforeDonePicOperation");
+      this.reSortSequence();
+      done();
     },
     async donePicOperation(...rest) {
       this.showEditDetailPage = false;
-      this.reSortSequence()
+      this.reSortSequence();
     },
     async getSelectResource(...rest) {
       // 获取选择的资源类型

@@ -80,6 +80,7 @@
 <script>
 // ‘区域选择’组件
 export default {
+  name: 'SelectRegionComponent',
   data() {
     return {
       tableData: [],

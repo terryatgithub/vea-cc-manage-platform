@@ -143,6 +143,7 @@ import ColumnTemplate from "./components/ColumnTemplate";
 import liteOS from "@/assets/liteOS.js";
 
 export default {
+  name: "SecondaryEdit",
   components: {
     ColumnTemplate,
     SelectRegionComponent
@@ -310,7 +311,7 @@ export default {
         // releaseItemId: 0,
         itemSeq: 1,
         itemName: "",
-        itemMediaMax: "99",
+        itemMediaMax: 99,
         itemMediaList: [] //媒体资源
       };
     },

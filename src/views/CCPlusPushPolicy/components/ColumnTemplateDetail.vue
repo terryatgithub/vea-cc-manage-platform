@@ -7,7 +7,7 @@
     <el-form inline>
       <el-form-item label="栏目序号">{{ content.itemSeq }}</el-form-item>
       <el-form-item label="栏目名称">{{ content.itemName }}</el-form-item>
-      <el-form-item label="影片列表数量">{{
+      <el-form-item label="影片数量上限">{{
         content.itemMediaMax
       }}</el-form-item>
       <el-form-item>
@@ -51,6 +51,7 @@ import BaseList from "@/components/BaseList";
 import ChooseMovieDialog from "./ChooseMovieDialog";
 
 export default {
+  name:'ColumnTemplateDetail',
   extends: BaseList,
   components: {
     ChooseMovieDialog,
@@ -75,10 +76,10 @@ export default {
     handleReplaceMovie(...rest) {
       this.showChooseMovieDialog = false;
       if (!rest[0]) {
-         this.$message({
-            type: "error",
-            message: '请先选择替换的影片'
-          });
+        this.$message({
+          type: "error",
+          message: "请先选择替换的影片"
+        });
         return;
       }
       if (this.flagAddOrReplace) {
@@ -104,13 +105,25 @@ export default {
       this.showOperationDialog = false;
       this.showChooseMovieDialog = true;
     },
-    movieRemove() {
+    async movieRemove() {
       if (this.currentMovieIdx === -1) {
         return;
       }
-      this.content.itemMediaList.splice(this.currentMovieIdx, 1);
-      this.currentMovieIdx = -1
-      this.showOperationDialog = false
+      try {
+        let res = await this.$confirm("确定删除吗", "提示", {
+          confirmButtonText: "确认",
+          cancelButtonText: "取消",
+          type: "warning"
+        });
+        if (res !== "confirm") {
+          return;
+        }
+        this.content.itemMediaList.splice(this.currentMovieIdx, 1);
+        this.currentMovieIdx = -1;
+        this.showOperationDialog = false;
+      } catch (e) {
+        console.warn(e);
+      }
     },
     showOperations(idx) {
       console.log("点击影片: ", idx);

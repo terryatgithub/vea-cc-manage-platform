@@ -128,7 +128,11 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6" label="策略名称" prop="releaseConfName">
+          <el-form-item
+            class="el-col el-col-6"
+            label="策略名称"
+            prop="releaseConfName"
+          >
             <div class="el-col-20">
               <el-input
                 placeholder="策略名称"
@@ -138,7 +142,11 @@
             </div>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6" label="区域名" prop="ctmDevCtrName">
+          <el-form-item
+            class="el-col el-col-6"
+            label="区域名"
+            prop="ctmDevCtrName"
+          >
             <div class="el-col-20">
               <el-input
                 placeholder="区域名"
@@ -196,6 +204,7 @@ import RegionDetail from "@/components/liteOS/regionDetail2";
 import liteOS from "@/assets/liteOS.js";
 
 export default {
+  name: "SecondaryMenu",
   extends: BaseList,
   components: {
     ContentWrapper,
@@ -320,10 +329,20 @@ export default {
           }
         ],
         releaseConfName: [
-          {min: 0, max: 99, message:'有效长度为0-99个字符', trigger: ['blur', 'change']}
+          {
+            min: 0,
+            max: 99,
+            message: "有效长度为0-99个字符",
+            trigger: ["blur", "change"]
+          }
         ],
         ctmDevCtrName: [
-          {min: 0, max: 99, message:'有效长度为0-99个字符', trigger: ['blur', 'change']}
+          {
+            min: 0,
+            max: 99,
+            message: "有效长度为0-99个字符",
+            trigger: ["blur", "change"]
+          }
         ]
       },
       brandOptions: [],
@@ -699,7 +718,9 @@ export default {
           "删除"
         );
 
-        return row.releaseStatus === 1 ? [btn2, btn3] : [btn1, btn3, btn4, btn5];
+        return row.releaseStatus === 1
+          ? [btn2, btn3]
+          : [btn1, btn3, btn4, btn5];
       };
     }
   },

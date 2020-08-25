@@ -67,6 +67,7 @@ import BaseList from "@/components/BaseList";
 import { cloneDeep } from "lodash";
 
 export default {
+  name: 'ChooseMovieDialog',
   extends: BaseList,
   components: {
     ContentWrapper,
