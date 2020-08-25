@@ -26,8 +26,9 @@
         {{ content.releaseItemId }}
       </el-form-item> -->
 
+      <!-- todo 这里输入为什么会失焦？ -->
       <el-form-item label="栏目序号:" prop="itemSeq">
-        <el-input placeholder="" clearable v-model.number="content.itemSeq" />
+        <el-input placeholder="" clearable v-model="content.itemSeq" />
       </el-form-item>
 
       <el-form-item label="栏目名称:" prop="itemName">
@@ -39,11 +40,21 @@
         label-width="120px"
         prop="itemMediaMax"
       >
-        <el-input
-          placeholder=""
-          clearable
-          v-model.number="content.itemMediaMax"
-        />
+        <el-popover
+          ref="popover"
+          placement="top-start"
+          title="限制输入两位数"
+          trigger="manual"
+          v-model="showPopover"
+          popper-class="popover"
+        >
+          <el-input
+            slot="reference"
+            placeholder=""
+            clearable
+            v-model.number="content.itemMediaMax"
+          />
+        </el-popover>
       </el-form-item>
 
       <el-form-item>
@@ -136,6 +147,12 @@ export default {
     var checkMax = (rule, value, callback) => {
       if (value > 100) {
         this.content.itemMediaMax = parseInt(value.toString().slice(0, 2));
+        if (!this.showPopover) {
+          this.showPopover = true;
+          setTimeout(() => {
+            this.showPopover = false;
+          }, 1500);
+        }
       }
     };
     return {
@@ -158,6 +175,7 @@ export default {
           }
         ]
       },
+      showPopover: false,
       showSelectResourceDialog: false,
       showEditDetailPage: false,
       templateOptions: [
@@ -336,4 +354,9 @@ export default {
       width 100px
       >>> .el-image__inner
         height auto
+// todo 为什么无法穿透进去？
+.el-popover >>> .el-popover__title
+  color red
+  text-align center
+  font-size 16px        
 </style>
