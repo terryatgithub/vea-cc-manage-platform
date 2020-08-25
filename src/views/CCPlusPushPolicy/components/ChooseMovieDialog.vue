@@ -67,7 +67,7 @@ import BaseList from "@/components/BaseList";
 import { cloneDeep } from "lodash";
 
 export default {
-  name: 'ChooseMovieDialog',
+  name: "ChooseMovieDialog",
   extends: BaseList,
   components: {
     ContentWrapper,
@@ -160,17 +160,24 @@ export default {
   },
   methods: {
     uninit() {
-      // this.$refs.CCChooseMovieForm.resetFields();
+      this.$refs.CCChooseMovieForm.resetFields();
       this.table.data = [];
       this.radioUserSelect = -1;
     },
     handlerFinish(confirm) {
       let selected = null;
-      if (confirm && this.radioUserSelect !== -1) {
+      if (confirm) {
+        if (this.radioUserSelect === -1) {
+          this.$message({
+            type: "error",
+            message: "请先选择替换的影片"
+          });
+          return;
+        }
         selected = Object.assign({}, this.table.data[this.radioUserSelect]);
       }
       this.$emit("done-movie-replace", selected);
-      this.uninit()
+      this.uninit();
     },
     async getAllSelections() {
       let res = await this.$service.queryCCPlusMediaResourceAllSelect();

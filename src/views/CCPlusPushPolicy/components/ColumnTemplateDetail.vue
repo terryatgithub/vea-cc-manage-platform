@@ -11,7 +11,9 @@
         content.itemMediaMax
       }}</el-form-item>
       <el-form-item>
-        <el-button @click="movieReplace(true)">添加影片</el-button>
+        <el-button @click="movieReplace(true)" :disabled="reachMaxNum"
+          >添加影片</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -35,7 +37,13 @@
       <el-button @click="movieRemove">删除影片</el-button>
     </el-dialog>
 
-    <el-dialog :visible.sync="showChooseMovieDialog" append-to-body>
+    <el-dialog
+      :visible.sync="showChooseMovieDialog"
+      append-to-body
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
       <ChooseMovieDialog
         v-bind="$attrs"
         @done-movie-replace="handleReplaceMovie"
@@ -51,7 +59,7 @@ import BaseList from "@/components/BaseList";
 import ChooseMovieDialog from "./ChooseMovieDialog";
 
 export default {
-  name:'ColumnTemplateDetail',
+  name: "ColumnTemplateDetail",
   extends: BaseList,
   components: {
     ChooseMovieDialog,
@@ -72,14 +80,15 @@ export default {
       showChooseMovieDialog: false
     };
   },
+  computed: {
+    reachMaxNum: function() {
+      return this.content.itemMediaList.length >= this.content.itemMediaMax;
+    }
+  },
   methods: {
     handleReplaceMovie(...rest) {
       this.showChooseMovieDialog = false;
       if (!rest[0]) {
-        this.$message({
-          type: "error",
-          message: "请先选择替换的影片"
-        });
         return;
       }
       if (this.flagAddOrReplace) {

@@ -240,9 +240,9 @@ export default {
       });
       if (res.code === 0) {
         const { results } = res.data;
-        const { itemMediaList } = this.content;
-        let len = itemMediaList.length;
-        results.forEach((item, index) => {
+        const { itemMediaList, itemMediaMax } = this.content;
+        let len = itemMediaList.length, end = itemMediaMax - len; //图片数量不能超过指定上限
+        results.slice(0, end > 0 ? end : 0).forEach((item, index) => {
           this.$set(itemMediaList, len, {});
           itemMediaList[len].mediaResourcesId = item.mediaResourcesId;
           itemMediaList[len].mediaPicType = item.posterType;
