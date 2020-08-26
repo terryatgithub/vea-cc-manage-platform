@@ -92,14 +92,23 @@
         ></ColumnTemplate>
 
         <el-form-item>
-          <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            class="el-col el-col-6"
-            @click="handleAddColumn"
-            >添加栏目</el-button
+          <el-tooltip
+            placement="top-start"
+            :content="'栏目数最多为' + columnsMaxNum + '个'"
+            :disabled="columnsNum < columnsMaxNum"
           >
+            <div>
+              <el-button
+                type="success"
+                plain
+                icon="el-icon-edit"
+                class="el-col el-col-6"
+                @click="handleAddColumn"
+                :disabled="columnsNum >= columnsMaxNum"
+                >添加栏目</el-button
+              >
+            </div>
+          </el-tooltip>
         </el-form-item>
 
         <el-form-item label="指定设备" prop="tvActiveId">
@@ -193,7 +202,8 @@ export default {
         //区域备份
         ctmDevCtrId: 0,
         ctmDevCtrName: ""
-      }
+      },
+      columnsMaxNum: 50 //栏目数最多为50
     };
   },
   computed: {

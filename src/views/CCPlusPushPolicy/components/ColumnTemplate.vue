@@ -35,7 +35,7 @@
       </el-form-item>
 
       <el-form-item
-        label="影片列表数量:"
+        label="影片数量上限:"
         label-width="120px"
         prop="itemMediaMax"
       >
