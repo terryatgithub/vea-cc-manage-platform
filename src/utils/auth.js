@@ -22,6 +22,7 @@ function getInitData (app) {
 Vue.prototype.$isLoggedIn = async function () {
   const $appState = this.$appState
   // memory
+  // debugger
   if ($appState.user) {
     return
   }

@@ -35,6 +35,7 @@ export function queryCustomerBrandList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/lite-os/admin/select/query-customer-brands-list',
+    useLoading: false,
     params
   })
 }
@@ -94,6 +95,7 @@ export function queryModelChipList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/lite-os/admin/select/query-model-chip-list',
+    useLoading: false,
     params
   })
 }

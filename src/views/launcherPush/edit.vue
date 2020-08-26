@@ -7,7 +7,7 @@
         :width = 'dialogWidth'
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
-        @close = 'close'
+        @close = 'closeX'
       >
         <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = 'isInit'></RegionEditPop>
         <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
@@ -15,7 +15,7 @@
         <AppDetail v-show="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :material = 'material' @appSure = 'appSure(arguments)'></AppDetail>
       </el-dialog>
       <div class="appBox">
-        <div class="label">选择应用</div>
+        <div class="label"><span class="tag">*</span>选择应用</div>
         <ul>
           <li v-for='(item, index) in appList' :key='index'>
             <i
@@ -80,7 +80,8 @@ export default {
       risId: '',
       area: null,
       material: null,
-      isInit: 0
+      isInit: 0,
+      isX: true
     }
   },
   methods: {
@@ -101,13 +102,14 @@ export default {
             }
             detail.supportVersion = detail.supportVersion.split(',')
             const date = (liteOS.parserDate(detail.releaseStartTime) + ',' + liteOS.parserDate(detail.releaseEndTime)).split(',')
-            const pushForm = {
+            let pushForm
+            pushForm = Object.assign({}, pushForm, {
               releaseConfName: detail.releaseConfName,
               supportVersion: detail.supportVersion,
               ctmDevCtrId: detail.ctmDevCtrId,
               date: date,
               priority: detail.priority.toString()
-            }
+            })
             this.$refs['pushChild'].pushForm = pushForm
             this.$refs['footerChild'].footerForm.DeviceID = detail.tvActiveId
             this.ctmDevCtrName = detail.ctmDevCtrName
@@ -158,6 +160,7 @@ export default {
     },
     // 弹窗选择区域
     regionSel () {
+      this.isX = true
       this.dialogFormVisible = true
       this.dialogType = 'regionPop'
       this.dialogTitle = '选择区域'
@@ -186,6 +189,7 @@ export default {
     },
     // 弹窗选择应用
     appSel () {
+      this.isX = true
       if (this.appList.length === 100) {
         this.$message({
           type: 'warning',
@@ -230,14 +234,15 @@ export default {
     },
     // 应用海报选择确定
     appSure (data) {
-      this.appList[this.appList.length - 2] = {
+      this.appList[this.appList.length - 2] = Object.assign({}, this.appList[this.appList.length - 2], {
         materialId: data[0],
         materialName: data[1],
         detailSeq: this.appList.length - 2,
         materialPic: data[2],
         materialPicType: data[3]
-      }
+      })
       this.dialogFormVisible = false
+      this.isX = false
     },
     // 关闭弹窗
     close () {
@@ -245,6 +250,18 @@ export default {
         this.appList.splice(this.appList.length - 2, 1)
       }
       this.dialogFormVisible = false
+      this.isX = false
+    },
+    // 弹窗X事件
+    closeX () {
+      if (this.isX) {
+        if (this.dialogType === 'appPop' || this.dialogType === 'appDetail') {
+          this.appList.splice(this.appList.length - 2, 1)
+        } else if (this.dialogType === 'regionPop' || this.dialogType === 'regionDetail') {
+          this.ctmDevCtrName = ''
+          this.risId = ''
+        }
+      }
     },
     create (DeviceID) {
       let that = this
@@ -344,6 +361,10 @@ export default {
 <style lang='scss' scoped>
 .appBox {
   margin-bottom: 20px;
+  .tag {
+    color: #F56C6C;
+    margin-right: 4px;
+  }
   .label {
     font-size: 14px;
     color: #606266;

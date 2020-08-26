@@ -36,6 +36,7 @@
     </el-form-item>
     <el-form-item label='推送时间' prop="date">
         <el-date-picker
+            unlink-panels='true'
             v-model="pushForm.date"
             type="datetimerange"
             range-separator="至"

@@ -309,9 +309,9 @@ export default {
         // apiUrl: [
         //   { required: true, message: '请输入api url', trigger: 'blur' }
         // ],
-        materialRemark: [
-          { required: true, message: '请输入备注', trigger: 'blur' }
-        ],
+        // materialRemark: [
+        //   { required: true, message: '请输入备注', trigger: 'blur' }
+        // ],
         materialState: [
           { required: true, message: '请选择状态', trigger: 'change' }
         ]
@@ -337,9 +337,9 @@ export default {
         materialUrl: [
           { required: true, message: '请输入关联url', trigger: 'blur' }
         ],
-        materialRemark: [
-          { required: true, message: '请输入备注', trigger: 'blur' }
-        ],
+        // materialRemark: [
+        //   { required: true, message: '请输入备注', trigger: 'blur' }
+        // ],
         materialState: [
           { required: true, message: '请选择状态', trigger: 'change' }
         ]
@@ -390,14 +390,14 @@ export default {
         this.$service.getPosterManageMaterialId({ materialId: this.materialId }).then(data => {
           if (data.code === 0) {
             const detail = data.data
-            this.posterForm = {
+            this.posterForm = Object.assign({}, this.posterForm, {
               materialName: detail.materialName,
               materialPosterPic: detail.materialPosterPic,
               // sizeType: detail.sizeType,
               materialUrl: detail.materialUrl,
               materialRemark: detail.materialRemark,
               materialState: detail.materialState.toString()
-            }
+            })
           } else {
             this.$message({
               type: 'error',
@@ -416,7 +416,6 @@ export default {
     create () {
       const typeForm = this.dialogType === 'appCreate' || this.dialogType === 'appEdit' ? 'appForm' : 'posterForm'
       this.$refs[typeForm].validate((valid, props) => {
-        props
         if (valid) {
           const params = this.dialogType === 'appCreate' || this.dialogType === 'appEdit'
             ? JSON.parse(JSON.stringify(this.appForm)) 

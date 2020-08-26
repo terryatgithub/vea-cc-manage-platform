@@ -1,13 +1,13 @@
 <template>
     <ContentCard title="新增/编辑" @go-back="goBack">
-      <PushForm @regionSel = 'regionSel' ref = 'pushChild' :ctmDevCtrName = 'ctmDevCtrName' :risId = 'risId'></PushForm>
+      <PushForm @regionSel = 'regionSel' @clearRegion = 'clearRegion' ref = 'pushChild' :ctmDevCtrName = 'ctmDevCtrName' :risId = 'risId'></PushForm>
       <el-dialog
         :title='dialogTitle'
         :visible.sync = 'dialogFormVisible'
         :width = 'dialogWidth'
         :close-on-click-modal = 'false'
         :show-close = 'showClose'
-        @close = 'close'
+        @close = 'closeX'
       >
         <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = 'isInit'></RegionEditPop>
         <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
@@ -35,11 +35,13 @@
               <el-button type="danger" @click="deleteItem(index)" v-if="itemList.length > 1" round>删除栏目</el-button>
             </div>
             <el-form-item label="栏目序号">
-              <el-input 
+              <el-input
                 placeholder="请输入栏目序号"
                 type="number"
                 v-model="itemList[index].itemSeq"
                 clearable
+                @input.native="itemSeqMsg(index)"
+                onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"
               ></el-input>
             </el-form-item>
             <el-form-item label="栏目名称">
@@ -107,7 +109,8 @@ export default {
       risId: '',
       area: null,
       material: null,
-      isInit: 0
+      isInit: 0,
+      isX: true
     }
   },
   methods: {
@@ -128,13 +131,14 @@ export default {
             }
             detail.supportVersion = detail.supportVersion.split(',')
             const date = (liteOS.parserDate(detail.releaseStartTime) + ',' + liteOS.parserDate(detail.releaseEndTime)).split(',')
-            const pushForm = {
+            let pushForm
+            pushForm = Object.assign({}, pushForm, {
               releaseConfName: detail.releaseConfName,
               supportVersion: detail.supportVersion,
               ctmDevCtrId: detail.ctmDevCtrId,
               date: date,
               priority: detail.priority.toString()
-            }
+            })
             this.$refs['pushChild'].pushForm = pushForm
             this.$refs['footerChild'].footerForm.DeviceID = detail.tvActiveId
             this.ctmDevCtrName = detail.ctmDevCtrName
@@ -184,6 +188,15 @@ export default {
         })
       }
     },
+    itemSeqMsg (index) {
+      if (parseInt(this.itemList[index].itemSeq) > 99 || parseInt(this.itemList[index].itemSeq) <= 0) {
+        this.itemList[index].itemSeq = ''
+        this.$message({
+          type: 'warning',
+          message: '栏目序号仅限1~99!'
+        })
+      }
+    },
     deleteItem (index) {
       this.itemList.splice(index, 1)
     },
@@ -192,8 +205,14 @@ export default {
       this.risId = val[0]
       this.ctmDevCtrName = val[1]
     },
+    // 删除选择区域
+    clearRegion () {
+      this.ctmDevCtrName = ''
+      this.risId = ''
+    },
     // 弹窗选择区域
     regionSel () {
+      this.isX = true
       this.dialogFormVisible = true
       this.dialogType = 'regionPop'
       this.dialogTitle = '选择区域'
@@ -222,6 +241,7 @@ export default {
     },
     // 弹窗选择应用
     appSel (index) {
+      this.isX = true
       if (this.itemList[index].itemAppList.length === 99) {
         this.$message({
           type: 'warning',
@@ -277,14 +297,15 @@ export default {
     },
     // 应用海报选择确定
     appSure (data) {
-      this.itemList[this.itemList_index].itemAppList[this.itemAppList_index] = {
+      this.itemList[this.itemList_index].itemAppList[this.itemAppList_index] = Object.assign({}, this.itemList[this.itemList_index].itemAppList[this.itemAppList_index], {
         appMaterialId: data[0],
         materialName: data[1],
         detailSeq: this.itemAppList_index,
         materialPic: data[2],
         materialPicType: data[3]
-      }
+      })
       this.dialogFormVisible = false
+      this.isX = false
     },
     // 关闭弹窗
     close () {
@@ -292,6 +313,18 @@ export default {
         this.itemList[this.itemList_index].itemAppList.pop()
       }
       this.dialogFormVisible = false
+      this.isX = false
+    },
+    // 弹窗X事件
+    closeX () {
+      if (this.isX) {
+        if (this.dialogType === 'appPop' || this.dialogType === 'appDetail') {
+          this.itemList[this.itemList_index].itemAppList.pop()
+        } else if (this.dialogType === 'regionPop' || this.dialogType === 'regionDetail') {
+          this.ctmDevCtrName = ''
+          this.risId = ''
+        }
+      }
     },
     create (DeviceID) {
       let that = this

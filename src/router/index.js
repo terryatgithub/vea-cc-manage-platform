@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import routes from './routes'
 Vue.use(Router)
 function beforeEach (to, from, next) {
+  // debugger
   const app = this.app
   app.$isLoggedIn().then(() => {
     next(to.name !== 'login'
