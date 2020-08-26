@@ -5,6 +5,8 @@
         <el-select
           v-model="content.template"
           placeholder="请选择"
+          @change="handleTemplateChange"
+          @visible-change="handleTemplateVisibleChange"
         >
           <el-option
             v-for="item in templateOptions"
@@ -171,12 +173,12 @@ export default {
         { label: "模板C 媒资横图", value: "C" },
         { label: "模板D 媒资方图", value: "D" }
       ],
-      flagMunualSet: false,
+      prevTemplateType: this.content.template,
       columnResourceSelections: null //栏目资源标签选择项
     };
   },
   watch: {
-      'content.itemMediaMax': function(newVal, oldVal) {
+    "content.itemMediaMax": function(newVal, oldVal) {
       if (newVal > 100) {
         this.content.itemMediaMax = parseInt(newVal.toString().slice(0, 2));
         if (!this.showPopover) {
@@ -186,10 +188,16 @@ export default {
           }, 1500);
         }
       }
+    }
+  },
+  methods: {
+    handleTemplateVisibleChange(val) {
+      if (val) {
+        this.prevTemplateType = this.content.template;
+      }
     },
-    "content.template": function(newVal, oldVal) {
-      if (this.flagMunualSet) {
-        this.flagMunualSet = false;
+    handleTemplateChange(val) {
+      if (!this.content.itemMediaList.length) {
         return;
       }
       this.$confirm("更改模板将会清空所有图片，确认更改吗？", "提示", {
@@ -198,16 +206,13 @@ export default {
         type: "warning"
       })
         .then(() => {
+          this.prevTemplateType = this.content.template; //确定时保存值
           this.content.itemMediaList.splice(0);
         })
         .catch(() => {
-          //取消时恢复oldvalue
-          this.content.template = oldVal;
-          this.flagMunualSet = true;
+          this.content.template = this.prevTemplateType; //取消时恢复oldvalue
         });
-    }
-  },
-  methods: {
+    },
     reSortSequence() {
       const { itemMediaList } = this.content;
       itemMediaList.forEach((v, i) => (v.detailSeq = i));
@@ -239,7 +244,8 @@ export default {
       if (res.code === 0) {
         const { results } = res.data;
         const { itemMediaList, itemMediaMax } = this.content;
-        let len = itemMediaList.length, end = itemMediaMax - len; //图片数量不能超过指定上限
+        let len = itemMediaList.length,
+          end = itemMediaMax - len; //图片数量不能超过指定上限
         results.slice(0, end > 0 ? end : 0).forEach((item, index) => {
           this.$set(itemMediaList, len, {});
           itemMediaList[len].mediaResourcesId = item.mediaResourcesId;
@@ -356,5 +362,5 @@ export default {
 .el-popover >>> .el-popover__title
   color red
   text-align center
-  font-size 16px        
+  font-size 16px
 </style>

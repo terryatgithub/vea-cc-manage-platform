@@ -23,6 +23,7 @@ todo. el 关联组件
 1. el-popover css 为什么无法穿透进去？
 2. ColumnTemplate 栏目序号 input
       <!-- todo 这里输入为什么会失焦？ -->
+3. 新增图片时，分多次处理（size改为合理值）
 
 ## 部署
 1. nginx代理 vs webpack配置
