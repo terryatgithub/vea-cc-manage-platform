@@ -24,7 +24,6 @@ todo. el 关联组件
 2. ColumnTemplate 栏目序号 input
       <!-- todo 这里输入为什么会失焦？ -->
 
-
 ## 部署
 1. nginx代理 vs webpack配置
 

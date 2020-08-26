@@ -5,7 +5,6 @@
         <el-select
           v-model="content.template"
           placeholder="请选择"
-          prop="template"
         >
           <el-option
             v-for="item in templateOptions"
@@ -144,17 +143,6 @@ export default {
     }
   },
   data() {
-    var checkMax = (rule, value, callback) => {
-      if (value > 100) {
-        this.content.itemMediaMax = parseInt(value.toString().slice(0, 2));
-        if (!this.showPopover) {
-          this.showPopover = true;
-          setTimeout(() => {
-            this.showPopover = false;
-          }, 1500);
-        }
-      }
-    };
     return {
       rules: {
         itemSeq: [
@@ -165,7 +153,6 @@ export default {
         ],
         itemMediaMax: [
           { required: true, message: "请输入影片数量", trigger: "blur" },
-          { validator: checkMax, trigger: "change" },
           {
             type: "number",
             min: 1,
@@ -189,6 +176,17 @@ export default {
     };
   },
   watch: {
+      'content.itemMediaMax': function(newVal, oldVal) {
+      if (newVal > 100) {
+        this.content.itemMediaMax = parseInt(newVal.toString().slice(0, 2));
+        if (!this.showPopover) {
+          this.showPopover = true;
+          setTimeout(() => {
+            this.showPopover = false;
+          }, 1500);
+        }
+      }
+    },
     "content.template": function(newVal, oldVal) {
       if (this.flagMunualSet) {
         this.flagMunualSet = false;
