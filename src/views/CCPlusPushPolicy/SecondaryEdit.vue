@@ -52,7 +52,7 @@
           >
           <div v-else class="nameBox">
             {{ form.ctmDevCtrName }}
-            <i class="el-icon-error" @click="selectRegion"> </i>
+            <i class="el-icon-error" @click="removeRegion"></i>
           </div>
         </el-form-item>
 
@@ -131,14 +131,6 @@
 
     <el-dialog title="选择区域" :visible.sync="showSelectRegionDialog">
       <SelectRegionComponent @getRegion="getRegion" />
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="confirmRegionSelect(false)">
-          取消
-        </el-button>
-        <el-button type="primary" @click="confirmRegionSelect(true)">
-          确定
-        </el-button>
-      </div>
     </el-dialog>
   </ContentCard>
 </template>
@@ -446,26 +438,17 @@ export default {
       this.regionBakup.ctmDevCtrId = this.form.ctmDevCtrId;
       this.showSelectRegionDialog = true;
     },
-    getRegion(...rest) {
-      this.form.ctmDevCtrId = rest[0];
-      this.form.ctmDevCtrName = rest[1];
+    removeRegion() {
+      this.form.ctmDevCtrName = "";
+      this.form.ctmDevCtrId = 0;
     },
-    confirmRegionSelect(confirm) {
-      if (!confirm) {
-        this.form.ctmDevCtrName = this.regionBakup.ctmDevCtrName;
-        this.form.ctmDevCtrId = this.regionBakup.ctmDevCtrId;
-        this.showSelectRegionDialog = false;
-        return;
+    getRegion(...rest) {
+      if(rest[1]) {
+        this.form.ctmDevCtrId = rest[0];
+        this.form.ctmDevCtrName = rest[1];
       }
-      if (this.form.ctmDevCtrName) {
-        this.showSelectRegionDialog = false;
-      } else {
-        this.$message({
-          type: "error",
-          message: "请选择一项！"
-        });
-      }
-    }
+      this.showSelectRegionDialog = false
+    },
   }
 };
 </script>

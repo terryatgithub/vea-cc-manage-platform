@@ -8,6 +8,7 @@
       @current-change="handleCurrentChange"
       style="width: 100%;overflow: auto"
       height="300"
+      v-el-table-infinite-scroll="loadNewData"
     >
       <el-table-column width="50">
         <template slot-scope="scope">
@@ -29,6 +30,14 @@
         </template>
       </el-table-column>
     </el-table>
+    <div>
+      <el-button @click="confirmRegionSelect(false)">
+        取消
+      </el-button>
+      <el-button type="primary" @click="confirmRegionSelect(true)">
+        确定
+      </el-button>
+    </div>
 
     <!-- 查看区域详情 -->
     <el-dialog
@@ -80,28 +89,40 @@
 <script>
 // ‘区域选择’组件
 export default {
-  name: 'SelectRegionComponent',
+  name: "SelectRegionComponent",
   data() {
     return {
       tableData: [],
       currentRow: null,
       total: 0, // 总记录数
-      currentPage: 1, // 当前页码
+      currentPage: 0, // 当前页码
       pageSize: 10, // 每页显示10条数据
       radio: null, // 如果使用单选框，定义一个model值
+      rlsId: 0,
+      ctmDevCtrName: "",
       showRegionDetailDialog: false, //显示区域详情对话框
-      regionData: {}
+      regionData: {},
+      noMore: true //是否有更多數據
     };
   },
   methods: {
+    loadNewData() {
+      this.noMore && this.fetchData();
+    },
     fetchData() {
       const params = {
-        page: this.currentPage,
-        size: this.pageSize
+        page: ++this.currentPage,
+        size: this.pageSize,
+        state: "1"
       };
       this.$service.queryAreaManageListPage(params).then(data => {
         if (data.code === 0) {
-          this.tableData = data.data.results;
+          this.tableData = this.tableData.concat(data.data.results);
+          this.currentPage = data.data.page;
+          this.total = data.data.total;
+          if (this.tableData.length >= this.total) {
+            this.noMore = false;
+          }
         } else {
           this.$message({
             type: "error",
@@ -114,10 +135,25 @@ export default {
     setCurrent(row) {
       this.$refs.singleTable.setCurrentRow(row);
     },
-    // 列表选中时触发
+    confirmRegionSelect(confirm) {
+      if (confirm && !this.ctmDevCtrName) {
+        this.$message({
+          type: "error",
+          message: "请选择一项！"
+        });
+        return;
+      }
+      if (confirm) {
+        this.$emit("getRegion", this.rlsId, this.ctmDevCtrName);
+      } else {
+        this.$emit("getRegion");
+      }
+    },
     handleCurrentChange(val) {
+      // 列表选中时触发
       this.radio = val.rlsId;
-      this.$emit("getRegion", val.rlsId, val.ctmDevCtrName);
+      this.rlsId = val.rlsId;
+      this.ctmDevCtrName = val.ctmDevCtrName;
     },
     handleDetail(row) {
       this.showRegionDetailDialog = true;
