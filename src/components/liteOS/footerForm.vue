@@ -55,3 +55,9 @@ export default {
   }
 }
 </style>
+<style lang="scss" scoped>
+.dialog-footer {
+  margin-top: 20px;
+  text-align: left;
+}
+</style>

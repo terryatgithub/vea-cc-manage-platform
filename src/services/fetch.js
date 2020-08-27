@@ -2,6 +2,7 @@ import qs from 'qs'
 import axios from 'axios'
 import Vue from 'vue'
 import store from '@/store'
+import { Message } from 'element-ui'
 axios.interceptors.request.use(
   config => {
     const token = store.state.currDbSource
@@ -96,7 +97,10 @@ export default function fetch ({
         } else {
           // eslint-disable-next-line
           if (typeof data.code !== 'undefined' && data.code != '0') {
-            throw new Error(data.msg)
+            // throw new Error(data.msg)
+            if (data.code !== 10013) {
+              Message.error(data.msg)
+            }
           } else {
             return data
           }

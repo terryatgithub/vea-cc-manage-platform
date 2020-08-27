@@ -19,12 +19,14 @@
         </el-form-item>
         <el-form-item label='客户&品牌' prop="brandNames">
           <el-cascader
+            ref="cascader"
             placeholder='请选择'
             :options='userOptions'
             :props="props"
             size='mini'
             clearable
             v-model="regionForm.brandNames"
+            @change="changeSelect"
           ></el-cascader>
         </el-form-item>
         <el-form-item label='机芯&机型' prop="devices">
@@ -46,6 +48,7 @@
             size='mini'
             clearable
             v-model="regionForm.countryNames"
+            @change="countryNamesSel"
           ></el-cascader>
         </el-form-item>
         <el-form-item label='状态' class="item-type" prop="state">
@@ -214,67 +217,45 @@ export default {
       }
       return itemArr
     },
-    // changeSelect (val) {
-    //   let that = this
-    //   // if (this.regionForm.brandNames.length < this.userOptions.length) {
-    //   //   this.regionForm.brandNames = []
-    //   //   this.userOptions.map((item) => {
-    //   //     console.log(that.regionForm.brandNames)
-    //   //     if (item.brandList) {
-    //   //       that.regionForm.brandNames = that.regionForm.brandNames.concat(that.assemble(item))
-    //   //     } else {
-    //   //       that.regionForm.brandNames.push(['All'])
-    //   //     }
-    //   //   })
-    //   //   console.log(that.regionForm.brandNames)
-    //   // } else {
-    //   //   this.regionForm.brandNames = []
-    //   // }
-    //   let brandLength = 0
-    //   this.userOptions.map((item) => {
-    //     if (item.brandList) {
-    //       brandLength += item.brandList.length
-    //     } else {
-    //       brandLength += 1
-    //     }
-    //   })
-    //   console.log(brandLength)
-    //   debugger
-    //   if (val[0].join(',').includes('All')) {
-    //     if (val.length < brandLength) {
-    //       that.regionForm.brandNames = []
-    //       that.userOptions.map((item) => {
-    //         if (item.brandList) {
-    //           that.regionForm.brandNames = that.regionForm.brandNames.concat(that.assemble(item))
-    //         } else {
-    //           that.regionForm.brandNames.push(['All'])
-    //         }
-    //       })
-    //     }
-    //   } else if (val.length === brandLength - 1) {
-    //     this.regionForm.brandNames.unshift(['All'])
-    //   } else {
+    changeSelect (val) {
+      // let that = this
+      // let nodesObj = this.$refs['cascader'].getCheckedNodes()
+      // let brandLength = 0
+      // this.userOptions.map((item) => {
+      //   if (item.brandList) {
+      //     brandLength += item.brandList.length
+      //   } else {
+      //     brandLength += 1
+      //   }
+      // })
+      // debugger
+      // if (val[0].join(',') === 'All') {
+      //   if (val.length < brandLength) {
+      //     that.regionForm.brandNames = []
+      //     that.userOptions.map((item) => {
+      //       if (item.brandList) {
+      //         that.regionForm.brandNames = that.regionForm.brandNames.concat(that.assemble(item))
+      //       } else {
+      //         that.regionForm.brandNames.push(['All'])
+      //       }
+      //     })
+      //   }
+      // } else if (val.length === brandLength - 1) {
+      //   this.regionForm.brandNames.unshift(['All'])
+      // } else {
         
-    //   }
-    //   console.log(that.regionForm.brandNames)
-    //   // if (!val.includes(['All']) && val.length === this.userOptions.length) {
-    //   //   this.regionForm.brandNames.unshift(['All'])
-    //   // } else if (val.includes(['All']) && (val.length - 1) < this.userOptions.length) {
-    //   //   this.regionForm.brandNames = this.regionForm.brandNames.filter((item) => {
-    //   //     return item !== ['All']
-    //   //   })
-    //   // }
-    // },
-    // removeTag (val) {
-    //   debugger
-    //   if (val[0] === 'All') {
-    //     this.regionForm.brandNames = []
-    //   } else {
-    //     if (this.regionForm.brandNames[0].join(',') === 'All') {
-    //       this.regionForm.brandNames.shift()
-    //     }
-    //   }
-    // },
+      // }
+    },
+    removeTag (val) {
+      debugger
+      if (val[0] === 'All') {
+        this.regionForm.brandNames = []
+      } else {
+        if (this.regionForm.brandNames[0].join(',') === 'All') {
+          this.regionForm.brandNames.shift()
+        }
+      }
+    },
     devicesSel (val) {
       console.log(val)
     },

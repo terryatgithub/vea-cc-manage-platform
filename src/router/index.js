@@ -6,6 +6,7 @@ function beforeEach (to, from, next) {
   // debugger
   const app = this.app
   app.$isLoggedIn().then(() => {
+    // debugger
     next(to.name !== 'login'
       ? to.matched.length === 0 && app.$router.getMatchedComponents(to.fullPath).length > 0
         ? { path: to.fullPath }
@@ -13,15 +14,23 @@ function beforeEach (to, from, next) {
       : { name: '/' }
     )
   }).catch((e) => {
+    // debugger
     next(to.name === 'login'
       ? undefined
       : { name: 'login', query: { redirect: to.fullPath } }
     )
+    // next(to.name !== 'login'
+    //   ? to.matched.length === 0 && app.$router.getMatchedComponents(to.fullPath).length > 0
+    //     ? { path: to.fullPath }
+    //     : undefined
+    //   : { name: '/' }
+    // )
   })
 }
 
 function afterEach (to) {
   const app = this.app
+  // debugger
   const breadcrumb = to.matched.slice(1).map(({ name, meta }) => {
     return {
       name: meta.title,

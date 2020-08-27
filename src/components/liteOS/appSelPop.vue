@@ -182,8 +182,10 @@ export default {
 }
 .dialog-footer {
   margin-top: 20px;
+  text-align: center;
   .el-button {
     width: 90px;
+    margin: 0 25px;
   }
 }
 </style>
