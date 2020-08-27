@@ -19,7 +19,7 @@
 
     <div class="demo-image__lazy">
       <el-image
-        v-for="(item, idx) in content.itemMediaList"
+        v-for="(item, idx) in itemMediaListInUse"
         :key="item.mediaResourcesId"
         :src="item.mediaPic"
         lazy
@@ -77,12 +77,13 @@ export default {
       showOperationDialog: false,
       currentMovieIdx: -1,
       flagAddOrReplace: true, // flag: true 添加影片 false 删除影片
-      showChooseMovieDialog: false
+      showChooseMovieDialog: false,
+      itemMediaListInUse: Array.from(this.content.itemMediaList) //实际操作的数组副本
     };
   },
   computed: {
     reachMaxNum: function() {
-      return this.content.itemMediaList.length >= this.content.itemMediaMax;
+      return this.itemMediaListInUse.length >= this.content.itemMediaMax;
     }
   },
   methods: {
@@ -92,20 +93,23 @@ export default {
         return;
       }
       if (this.flagAddOrReplace) {
-        this.content.itemMediaList.unshift(rest[0]);
+        this.itemMediaListInUse.unshift(rest[0]);
       } else {
-        this.content.itemMediaList.splice(this.currentMovieIdx, 1, rest[0]);
+        this.itemMediaListInUse.splice(this.currentMovieIdx, 1, rest[0]);
       }
     },
     completePicOperation(confirm) {
-      this.$emit("done-pic-operation");
+      if (confirm) {
+        this.content.itemMediaList = this.itemMediaListInUse;
+      }
+      this.$emit("done-pic-operation", confirm);
     },
     movieToTop() {
       if (this.currentMovieIdx === -1) {
         return;
       }
-      let top = this.content.itemMediaList.splice(this.currentMovieIdx, 1);
-      this.content.itemMediaList.unshift(top[0]);
+      let top = this.itemMediaListInUse.splice(this.currentMovieIdx, 1);
+      this.itemMediaListInUse.unshift(top[0]);
       this.currentMovieIdx = 0;
     },
     movieReplace(add) {
@@ -127,7 +131,7 @@ export default {
         if (res !== "confirm") {
           return;
         }
-        this.content.itemMediaList.splice(this.currentMovieIdx, 1);
+        this.itemMediaListInUse.splice(this.currentMovieIdx, 1);
         this.currentMovieIdx = -1;
         this.showOperationDialog = false;
       } catch (e) {

@@ -361,8 +361,8 @@ export default {
         { key: "5", typeName: "购物" }
       ],
       releaseStatusOptions: [
-        { typeName: "未推送", key: 0 },
-        { typeName: "推送中", key: 1 },
+        { typeName: "未发布", key: 0 },
+        { typeName: "已发布", key: 1 },
         { typeName: "已取消", key: 2 }
       ],
       dialogFormVisible: false,
