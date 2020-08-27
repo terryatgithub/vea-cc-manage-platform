@@ -20,11 +20,11 @@
           />
         </el-form-item>
 
-        <el-form-item label="版本:" prop="supportVersion">
+        <el-form-item label="支持版本:" prop="supportVersion">
           <el-select
             v-model="form.supportVersion"
             multiple
-            placeholder="请选择(支持多选)"
+            placeholder="请选择版本(支持多选)"
             @change="handleVersionChange"
             @remove-tag="handleVersionRemoveTag"
           >
@@ -56,19 +56,19 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="发布时间:" prop="datePublish">
+        <el-form-item label="推送时间:" prop="datePublish">
           <el-date-picker
             v-model="form.datePublish"
             type="datetimerange"
             range-separator="至"
-            start-placeholde="开始时间"
-            end-placeholde="结束时间"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
             align="right"
           ></el-date-picker>
         </el-form-item>
 
-        <el-form-item label="选择优先级:" prop="priority">
-          <el-select v-model="form.priority" placeholder="选择优先级">
+        <el-form-item label="优先级:" prop="priority">
+          <el-select v-model="form.priority" placeholder="请选择优先级">
             <el-option
               v-for="item in priorityOptions"
               :key="item.label"
@@ -265,7 +265,7 @@ export default {
         datePublish: [],
         ctmDevCtrId: 0,
         ctmDevCtrName: "",
-        priority: 3,
+        priority: '',
         itemList: [this.getColumnTemplateSample()], //栏目列表
         tvActiveId: ""
       };

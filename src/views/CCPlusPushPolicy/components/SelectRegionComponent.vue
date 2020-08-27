@@ -30,12 +30,12 @@
         </template>
       </el-table-column>
     </el-table>
-    <div>
-      <el-button @click="confirmRegionSelect(false)">
-        取消
-      </el-button>
+    <div class="footer">
       <el-button type="primary" @click="confirmRegionSelect(true)">
-        确定
+        确 认
+      </el-button>
+      <el-button @click="confirmRegionSelect(false)">
+        取 消
       </el-button>
     </div>
 
@@ -79,7 +79,7 @@
       <span slot="footer" class="dialog-footer">
         <!-- <el-button @click="showRegionDetailDialog = false">取 消</el-button> -->
         <el-button type="primary" @click="showRegionDetailDialog = false"
-          >确 定</el-button
+          >确 认</el-button
         >
       </span>
     </el-dialog>
@@ -183,12 +183,10 @@ export default {
 };
 </script>
 <style lang="scss">
-.form-inline {
+.footer {
+  width: 100%;
   display: flex;
-  .el-form-item {
-    flex-grow: 1;
-    margin-right: 15px !important;
-  }
+  justify-content: center;
 }
 .dialog-footer {
   margin-top: 20px;
