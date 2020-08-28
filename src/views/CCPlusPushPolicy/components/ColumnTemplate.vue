@@ -98,7 +98,6 @@
     <el-dialog
       :visible.sync="showEditDetailPage"
       title="编辑栏目详情"
-      width="100%"
       :show-close="false"
     >
       <ColumnTemplateDetail
@@ -232,7 +231,7 @@ export default {
       this.columnResourceSelections = rest[0];
       let res = await this.$service.queryCCPlusMediaResourceNew({
         page: 1,
-        size: 100,
+        size: 100, //todo 完善size为更精确值
         templateType: this.content.template,
         supplier: this.columnResourceSelections.source.join(","),
         category: this.columnResourceSelections.category.join(","),

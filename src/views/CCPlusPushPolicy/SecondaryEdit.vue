@@ -63,6 +63,7 @@
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            unlink-panels
             align="right"
           ></el-date-picker>
         </el-form-item>

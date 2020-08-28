@@ -10,19 +10,19 @@
       height="300"
       v-el-table-infinite-scroll="loadNewData"
     >
-      <el-table-column width="50">
+      <el-table-column min-width="50">
         <template slot-scope="scope">
           <el-radio :label="scope.row.rlsId" v-model="radio">&nbsp;</el-radio>
         </template>
       </el-table-column>
 
-      <el-table-column property="rlsId" label="区域ID" width="100">
+      <el-table-column property="rlsId" label="区域ID" min-width="100">
       </el-table-column>
 
-      <el-table-column property="ctmDevCtrName" label="区域名" width="200">
+      <el-table-column property="ctmDevCtrName" label="区域名" min-width="200">
       </el-table-column>
 
-      <el-table-column property="address" label="区域详情" width="120">
+      <el-table-column property="address" label="区域详情" min-width="120">
         <template slot-scope="scope">
           <el-button @click="handleDetail(scope.row)" type="text" size="small">
             <i class="el-icon-view"></i>
@@ -149,8 +149,7 @@ export default {
         this.$emit("getRegion");
       }
     },
-    handleCurrentChange(val) {
-      // 列表选中时触发
+    handleCurrentChange(val) {// 列表选中时触发
       this.radio = val.rlsId;
       this.rlsId = val.rlsId;
       this.ctmDevCtrName = val.ctmDevCtrName;

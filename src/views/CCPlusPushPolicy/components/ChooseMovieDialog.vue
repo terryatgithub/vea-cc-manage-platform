@@ -1,9 +1,15 @@
 <template>
-  <ContentCard class="content">
+  <ContentCard class="ccplus-choose-movie-dialog-content">
     <ContentWrapper :pagination="pagination" @filter-change="fetchData">
+      <h2>选择影片</h2>
       <el-form ref="CCChooseMovieForm" :model="filter" inline>
-        <el-form-item prop="supplier">
-          <el-select placeholder="来源" clearable="" v-model="filter.supplier">
+        <el-form-item prop="supplier" class="el-form-width">
+          <el-select
+            placeholder="来源"
+            clearable=""
+            v-model="filter.supplier"
+            multiple
+          >
             <el-option
               v-for="option in sourceOptions"
               :label="option.supplier"
@@ -13,8 +19,13 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item prop="category">
-          <el-select placeholder="类型" clearable="" v-model="filter.category">
+        <el-form-item prop="category" class="el-form-width">
+          <el-select
+            placeholder="类型"
+            clearable=""
+            v-model="filter.category"
+            multiple
+          >
             <el-option
               v-for="option in categoryOptions"
               :label="option.category"
@@ -24,8 +35,13 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item prop="tag">
-          <el-select placeholder="标签" clearable="" v-model="filter.tag">
+        <el-form-item prop="tag" class="el-form-width">
+          <el-select
+            placeholder="标签"
+            clearable=""
+            v-model="filter.tag"
+            multiple
+          >
             <el-option
               v-for="option in tagOptions"
               :label="option.tag"
@@ -35,7 +51,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="影片名称" prop="title">
+        <el-form-item label="影片名称" prop="title" class="el-form-searchbar">
           <el-input
             v-model="filter.title"
             placeholder="请输入影片名称，支持模糊查询"
@@ -43,20 +59,24 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button @click="handleFilterChange">搜索</el-button>
+          <el-button @click="handleFilterChange" type="primary"
+            >搜 索</el-button
+          >
         </el-form-item>
       </el-form>
       <hr />
 
-      <Table :props="table.props" :header="table.header" :data="table.data" />
-
-      <div>
-        <br />
-        <br />
-        <el-button type="primary" @click="handlerFinish(true)">确定</el-button>
-        <el-button @click="handlerFinish(false)">取消</el-button>
-      </div>
+      <Table
+        ref="tableScroll"
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+      />
     </ContentWrapper>
+    <div class="footer">
+      <el-button type="primary" @click="handlerFinish(true)">确 认</el-button>
+      <el-button @click="handlerFinish(false)">取 消</el-button>
+    </div>
   </ContentCard>
 </template>
 
@@ -86,13 +106,16 @@ export default {
         pageSize: 10
       },
       table: {
-        props: {},
+        props: {
+          height: 300 //bug 高度设置大于300（比如450）时会有到第二页或其它页时没有滚动条的bug
+        },
         data: [],
         header: [
           {
             // prop: '',
             label: "选择",
-            width: 50,
+            "min-width": 50,
+            align: "center",
             render: (h, { row }) => {
               const self = this;
               return h(
@@ -117,26 +140,15 @@ export default {
             prop: "title",
             label: "影片名称",
             // sortable: true,
-            width: 100
-          },
-          {
-            prop: "mediaPicType",
-            label: "海报类型",
-            // sortable: true,
-            width: 100,
-            render(h, { row }) {
-              return row.mediaPicType === "vertical"
-                ? "竖图"
-                : row.mediaPicType === "horizontal"
-                ? "横图"
-                : "方图";
-            }
+            "min-width": 100,
+            align: "center"
           },
           {
             prop: "mediaPic",
             label: "海报",
             // sortable: true,
-            width: 100,
+            "min-width": 100,
+            align: "center",
             render: (h, { row }) => {
               return h("el-image", {
                 attrs: {
@@ -197,30 +209,42 @@ export default {
         page: 1,
         size: 10,
         templateType: "",
-        supplier: "",
-        category: "",
-        tag: "",
+        supplier: [],
+        category: [],
+        tag: [],
         title: ""
       };
+    },
+    scrollTableTop() {
+      //bugfix 翻页后不能滚动，不能完全解决
+      // document
+      //   .getElementsByClassName("el-table")[0]
+      //   .classList.add("el-table--scrollable-y");
+      document.getElementsByClassName( //换页后滚动到顶部
+        "el-table__body-wrapper"
+      )[0].scrollTop = 0;
+    },
+    resetTableData() {
+      this.radioUserSelect = -1; //reset index
+      this.table.data.splice(0)
     },
     async fetchData() {
       const filter = this.parseFilter();
       let res = await this.$service.queryCCPlusMediaResourceNew(filter);
       if (res.code === 0) {
-        this.radioUserSelect = -1; //reset index
-        this.pagination.total = res.total;
+        this.resetTableData();
+        this.pagination.total = res.data.total;
         const { results } = res.data;
-        this.table.data.splice(0);
         const { data } = this.table;
         results.forEach((item, index) => {
           data.push({});
-          let len = data.length - 1;
-          data[len].mediaResourcesId = item.mediaResourcesId;
-          data[len].title = item.title;
-          data[len].mediaPicType = item.posterType;
-          data[len].mediaPic = item.posterUrl;
-          data[len].detailSeq = index;
+          data[index].mediaResourcesId = item.mediaResourcesId;
+          data[index].title = item.title;
+          data[index].mediaPicType = item.posterType;
+          data[index].mediaPic = item.posterUrl;
+          data[index].detailSeq = index;
         });
+        this.scrollTableTop();
       } else {
         this.$message({
           type: "error",
@@ -231,22 +255,22 @@ export default {
     parseFilter() {
       const { pagination } = this;
       const filter = JSON.parse(JSON.stringify(this.efficientFilter));
-      if (pagination) {
-        filter.page = pagination.currentPage;
-        filter.size = pagination.pageSize;
-      }
-      filter.templateType = this.$attrs.templateType;
-      // filter.supplier = this.filter.supplier.join(",")
-      // filter.category = this.filter.category.join(",")
-      // filter.tag = this.filter.tag.join(",")
-      // filter.title = this.filter.title
+      filter.page = pagination.currentPage;
+      filter.size = pagination.pageSize;
       return filter;
     },
     handleFilterChange() {
       this.$refs.CCChooseMovieForm.validate(valid => {
         if (valid) {
           this.pagination.currentPage = 1;
-          this.efficientFilter = cloneDeep(this.filter);
+          this.pagination.total = 0;
+          let filter = {};
+          filter.templateType = this.$attrs.templateType;
+          filter.supplier = this.filter.supplier.join(",");
+          filter.category = this.filter.category.join(",");
+          filter.tag = this.filter.tag.join(",");
+          this.filter.title && (filter.title = this.filter.title);
+          this.efficientFilter = cloneDeep(filter);
           this.fetchData();
         }
       });
@@ -255,4 +279,21 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+.el-form-width
+  width 30%
+.el-form-searchbar
+  width 75%
+  >>> .el-form-item__content
+    width calc(100% - 70px)
+.footer
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+</style>
+<style lang="stylus">
+.ccplus-choose-movie-dialog-content .el-table .el-image
+  img 
+    max-height 100px
+    width auto
+</style>

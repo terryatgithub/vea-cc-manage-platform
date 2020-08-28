@@ -21,6 +21,8 @@ todo. el 关联组件
 
 ### buglist
 1. el-popover css 为什么无法穿透进去？
+    样式的穿透问题
+        选择图片弹窗的图片高度
 2. ColumnTemplate 栏目序号 input
       <!-- todo 这里输入为什么会失焦？ -->
 3. 新增图片时，分多次处理（size改为合理值）
