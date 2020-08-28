@@ -9,13 +9,13 @@
         :model="form"
         :rules="rules"
         ref="ccplusSecondaryEditForm"
-        label-width="90px"
-        label-position="left"
+        class="secondary-edit"
       >
         <el-form-item label="策略名称:" prop="releaseConfName">
           <el-input
             placeholder="请输入策略名称"
             clearable
+            maxlength="99"
             v-model="form.releaseConfName"
           />
         </el-form-item>
@@ -171,7 +171,8 @@ export default {
       form: this.getDefaultForm(),
       rules: {
         releaseConfName: [
-          { required: true, message: "请输入策略名称", trigger: "blur" }
+          { required: true, message: "请输入策略名称", trigger: "blur" },
+          {min: 1, max: 99, message: '最大长度为99', trigger: ['blur', 'change']},
         ],
         supportVersion: [
           {
@@ -266,7 +267,7 @@ export default {
         datePublish: [],
         ctmDevCtrId: 0,
         ctmDevCtrName: "",
-        priority: '',
+        priority: "",
         itemList: [this.getColumnTemplateSample()], //栏目列表
         tvActiveId: ""
       };
@@ -444,26 +445,26 @@ export default {
       this.form.ctmDevCtrId = 0;
     },
     getRegion(...rest) {
-      if(rest[1]) {
+      if (rest[1]) {
         this.form.ctmDevCtrId = rest[0];
         this.form.ctmDevCtrName = rest[1];
       }
-      this.showSelectRegionDialog = false
-    },
+      this.showSelectRegionDialog = false;
+    }
   }
 };
 </script>
 
-<style lang="stylus" scoped>
-.content .el-form-item__content
-                width: 25%
-                .el-select,.el-cascader
-                   width 100%
-.content .el-form--inline .el-form-item {
-           margin-right: 0px;
-}
-
-.content .filter-item
-  justify-content: flex-start;
-  margin: 10px 0px
+<style lang="scss">
+.secondary-edit
+    > .el-form-item {
+        > .el-form-item__label {
+            width: 90px;
+            text-align: left;
+        }
+        > .el-form-item__content {
+            width: 200px;
+            display: inline-block;
+        }
+    }
 </style>

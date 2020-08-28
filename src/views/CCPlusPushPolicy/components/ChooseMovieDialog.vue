@@ -107,7 +107,7 @@ export default {
       },
       table: {
         props: {
-          height: 300 //bug 高度设置大于300（比如450）时会有到第二页或其它页时没有滚动条的bug
+          height: 400
         },
         data: [],
         header: [
@@ -151,8 +151,15 @@ export default {
             align: "center",
             render: (h, { row }) => {
               return h("el-image", {
+                style: {
+                  height: "100px"
+                },
                 attrs: {
                   src: row.mediaPic
+                },
+                props: {
+                  fit: "contain",
+                  'preview-src-list': [row.mediaPic]
                 }
               });
             }
@@ -162,7 +169,7 @@ export default {
     };
   },
   created() {
-    this.getAllSelections();
+    // this.getAllSelections();
   },
   activated() {
     this.getAllSelections();
@@ -216,17 +223,14 @@ export default {
       };
     },
     scrollTableTop() {
-      //bugfix 翻页后不能滚动，不能完全解决
-      // document
-      //   .getElementsByClassName("el-table")[0]
-      //   .classList.add("el-table--scrollable-y");
-      document.getElementsByClassName( //换页后滚动到顶部
+      document.getElementsByClassName(
+        //换页后滚动到顶部
         "el-table__body-wrapper"
       )[0].scrollTop = 0;
     },
     resetTableData() {
       this.radioUserSelect = -1; //reset index
-      this.table.data.splice(0)
+      this.table.data.splice(0);
     },
     async fetchData() {
       const filter = this.parseFilter();
@@ -291,9 +295,4 @@ export default {
   display: flex;
   justify-content: flex-end;
 </style>
-<style lang="stylus">
-.ccplus-choose-movie-dialog-content .el-table .el-image
-  img 
-    max-height 100px
-    width auto
-</style>
+<style lang="stylus"></style>

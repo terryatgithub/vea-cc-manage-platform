@@ -43,6 +43,7 @@
       :show-close="false"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
+      width="60%"
     >
       <ChooseMovieDialog
         v-bind="$attrs"

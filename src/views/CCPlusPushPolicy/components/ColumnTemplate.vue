@@ -33,7 +33,12 @@
       </el-form-item>
 
       <el-form-item label="栏目名称:" prop="itemName">
-        <el-input placeholder="" clearable v-model="content.itemName" />
+        <el-input
+          placeholder=""
+          clearable
+          v-model="content.itemName"
+          maxlength="99"
+        />
       </el-form-item>
 
       <el-form-item
@@ -149,7 +154,13 @@ export default {
           { required: true, message: "请输入栏目序号", trigger: "blur" }
         ],
         itemName: [
-          { required: true, message: "请输入栏目名称", trigger: "blur" }
+          { required: true, message: "请输入栏目名称", trigger: "blur" },
+          {
+            min: 1,
+            max: 99,
+            message: "最大长度99",
+            trigger: ["blur", "change"]
+          }
         ],
         itemMediaMax: [
           { required: true, message: "请输入影片数量", trigger: "blur" },

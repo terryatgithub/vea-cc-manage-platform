@@ -9,6 +9,7 @@
           :model="filter"
           inline
           label-width="90px"
+          label-position="left"
         >
           <el-form-item class="el-col el-col-6" label="品牌">
             <div class="el-col-20">
@@ -112,7 +113,7 @@
             </div>
           </el-form-item>
 
-          <el-form-item label="状态">
+          <el-form-item class="el-col el-col-6" label="状态" >
             <el-select
               class="el-col-20"
               placeholder="状态"
@@ -137,6 +138,7 @@
               <el-input
                 placeholder="策略名称"
                 clearable
+                maxlength="99"
                 v-model="filter.releaseConfName"
               ></el-input>
             </div>
@@ -151,12 +153,13 @@
               <el-input
                 placeholder="区域名"
                 clearable
+                maxlength="99"
                 v-model="filter.ctmDevCtrName"
               ></el-input>
             </div>
           </el-form-item>
 
-          <el-form-item>
+          <el-form-item class="el-col el-col-6">
             <el-button type="primary" @click="handleFilterChange"
               >查询</el-button
             >
@@ -180,8 +183,6 @@
         title="区域信息"
         :visible.sync="dialogFormVisible"
         width="550px"
-        :close-on-click-modal="false"
-        :show-close="showClose"
         v-if="dialogFormVisible"
       >
         <RegionDetail :id="risId"></RegionDetail>
