@@ -169,7 +169,7 @@ export default {
     };
   },
   created() {
-    // this.getAllSelections();
+    this.getAllSelections();
   },
   activated() {
     this.getAllSelections();
