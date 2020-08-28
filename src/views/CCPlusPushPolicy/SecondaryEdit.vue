@@ -85,9 +85,9 @@
         <!-- <el-form-item label-width="10px"> -->
         <!-- 栏目模板 -->
         <ColumnTemplate
-          v-for="item in form.itemList"
+          v-for="(item, index) in form.itemList"
           ref="columnTemplateForm"
-          :key="item.itemSeq"
+          :key="index"
           :content="item"
           @remove-column="handleRemoveColumn"
         ></ColumnTemplate>

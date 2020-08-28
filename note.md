@@ -23,8 +23,6 @@ todo. el 关联组件
 1. el-popover css 为什么无法穿透进去？
     样式的穿透问题
         选择图片弹窗的图片高度
-2. ColumnTemplate 栏目序号 input
-      <!-- todo 这里输入为什么会失焦？ -->
 3. 新增图片时，分多次处理（size改为合理值）
 4. data对象里的值可以用prop的值
     created里可以用data prop的值？ beforecreate呢？ 看下生命周期这部分
