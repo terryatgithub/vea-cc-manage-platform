@@ -107,7 +107,7 @@ export default {
       },
       table: {
         props: {
-          height: 400
+          'max-height': 400
         },
         data: [],
         header: [

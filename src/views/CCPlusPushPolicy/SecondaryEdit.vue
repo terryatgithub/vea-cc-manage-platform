@@ -103,7 +103,6 @@
                 type="success"
                 plain
                 icon="el-icon-edit"
-                class="el-col el-col-6"
                 @click="handleAddColumn"
                 :disabled="columnsNum >= columnsMaxNum"
                 >添加栏目</el-button

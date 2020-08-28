@@ -149,7 +149,8 @@ export default {
         this.$emit("getRegion");
       }
     },
-    handleCurrentChange(val) {// 列表选中时触发
+    handleCurrentChange(val) {
+      // 列表选中时触发
       this.radio = val.rlsId;
       this.rlsId = val.rlsId;
       this.ctmDevCtrName = val.ctmDevCtrName;
@@ -181,11 +182,15 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .footer {
   width: 100%;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
+  /deep/ .el-button {
+    margin: 10px 20px 0;
+  }
 }
 .dialog-footer {
   margin-top: 20px;
