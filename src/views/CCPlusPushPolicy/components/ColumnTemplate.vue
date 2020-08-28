@@ -29,7 +29,12 @@
 
       <!-- todo 这里输入为什么会失焦？ -->
       <el-form-item label="栏目序号:" prop="itemSeq">
-        <el-input placeholder="" clearable v-model="content.itemSeq" />
+        <el-input
+          placeholder=""
+          clearable
+          @input="handleInputOnlyNumberItemSeq"
+          v-model.number="content.itemSeq"
+        />
       </el-form-item>
 
       <el-form-item label="栏目名称:" prop="itemName">
@@ -58,6 +63,7 @@
             slot="reference"
             placeholder=""
             clearable
+            @input="handleInputOnlyNumberItemMediaMax"
             v-model.number="content.itemMediaMax"
           />
         </el-popover>
@@ -200,6 +206,17 @@ export default {
     }
   },
   methods: {
+    onlyNumber(val) {
+      return parseInt(val.toString().replace(/[^\d]/g, "")) || ''
+    },
+    handleInputOnlyNumberItemSeq(val) {
+      this.content.itemSeq = this.onlyNumber(val);
+    },
+     handleInputOnlyNumberItemMediaMax(val) {
+      // return val =>
+      //   (this.content[field] = parseInt(val.toString().replace(/[^\d]/g, "")) || '')
+      this.content.itemMediaMax = this.onlyNumber(val);
+    },
     handleTemplateVisibleChange(val) {
       if (val) {
         this.prevTemplateType = this.content.template;

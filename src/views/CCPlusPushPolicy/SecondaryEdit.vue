@@ -171,7 +171,12 @@ export default {
       rules: {
         releaseConfName: [
           { required: true, message: "请输入策略名称", trigger: "blur" },
-          {min: 1, max: 99, message: '最大长度为99', trigger: ['blur', 'change']},
+          {
+            min: 1,
+            max: 99,
+            message: "最大长度为99",
+            trigger: ["blur", "change"]
+          }
         ],
         supportVersion: [
           {
@@ -210,6 +215,7 @@ export default {
   },
   deactivated() {
     this.form = this.getDefaultForm();
+    this.reset();
   },
   methods: {
     init() {
@@ -395,7 +401,6 @@ export default {
           res = await this.$refs[formName].validate();
           if (res) {
             await this.createOrUpdatePolicy();
-            this.reset();
             return;
           }
         }
@@ -421,17 +426,16 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.reset();
           this.$router.back();
         })
         .catch();
     },
     reset() {
       this.$refs["columnTemplateForm"].forEach(ref => {
-        ref.$refs["tempForm"].clearValidate();
+        // ref.$refs["tempForm"].clearValidate();
         ref.$refs["tempForm"].resetFields();
       });
-      this.$refs["ccplusSecondaryEditForm"].clearValidate();
+      // this.$refs["ccplusSecondaryEditForm"].clearValidate();
       this.$refs["ccplusSecondaryEditForm"].resetFields();
     },
     selectRegion() {
@@ -455,15 +459,14 @@ export default {
 </script>
 
 <style lang="scss">
-.secondary-edit
-    > .el-form-item {
-        > .el-form-item__label {
-            width: 90px;
-            text-align: left;
-        }
-        > .el-form-item__content {
-            width: 200px;
-            display: inline-block;
-        }
-    }
+.secondary-edit > .el-form-item {
+  > .el-form-item__label {
+    width: 90px;
+    text-align: left;
+  }
+  > .el-form-item__content {
+    width: 200px;
+    display: inline-block;
+  }
+}
 </style>
