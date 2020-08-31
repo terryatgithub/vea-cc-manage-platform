@@ -74,6 +74,8 @@
             placeholder=""
             clearable
             @input="handleInputOnlyNumberItemMediaMax"
+            @focus="handleMediaMaxFocus"
+            @blur="handleMediaMaxBlur"
             v-model.number="content.itemMediaMax"
           />
         </el-popover>
@@ -191,6 +193,7 @@ export default {
       },
       showPopover: false,
       showPopoverSeq: false,
+      mediaMaxPrev: 0, //保存影片上限旧值，供恢复旧值用
       showSelectResourceDialog: false,
       showEditDetailPage: false,
       templateOptions: [
@@ -238,6 +241,28 @@ export default {
       // return val =>
       //   (this.content[field] = parseInt(val.toString().replace(/[^\d]/g, "")) || '')
       this.content.itemMediaMax = this.onlyNumber(val);
+    },
+    handleMediaMaxFocus() {
+      this.mediaMaxPrev = this.content.itemMediaMax
+    },
+    handleMediaMaxBlur() {
+      if (this.content.itemMediaMax < this.content.itemMediaList.length) {
+        this.$confirm(
+          "上限值小于当前影片数量, 将会删掉列表最后多余的影片，是否继续操作？",
+          "提示",
+          {
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        )
+          .then(() => {
+            this.content.itemMediaList.splice(this.content.itemMediaMax);
+          })
+          .catch(() => {
+            this.content.itemMediaMax = this.mediaMaxPrev;
+          });
+      }
     },
     handleTemplateVisibleChange(val) {
       if (val) {
