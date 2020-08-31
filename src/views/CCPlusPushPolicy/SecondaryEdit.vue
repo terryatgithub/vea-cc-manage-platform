@@ -129,7 +129,7 @@
       </el-form>
     </div>
 
-    <el-dialog title="选择区域" :visible.sync="showSelectRegionDialog">
+    <el-dialog title="选择区域" :visible.sync="showSelectRegionDialog" v-if="showSelectRegionDialog">
       <SelectRegionComponent @getRegion="getRegion" />
     </el-dialog>
   </ContentCard>
