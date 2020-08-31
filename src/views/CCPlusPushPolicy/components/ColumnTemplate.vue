@@ -29,12 +29,22 @@
 
       <!-- todo 这里输入为什么会失焦？ -->
       <el-form-item label="栏目序号:" prop="itemSeq">
-        <el-input
-          placeholder=""
-          clearable
-          @input="handleInputOnlyNumberItemSeq"
-          v-model.number="content.itemSeq"
-        />
+        <el-popover
+          ref="popoverSeq"
+          placement="top-start"
+          title="限制输入两位数"
+          trigger="manual"
+          v-model="showPopoverSeq"
+          popper-class="popover"
+        >
+          <el-input
+            slot="reference"
+            placeholder=""
+            clearable
+            @input="handleInputOnlyNumberItemSeq"
+            v-model.number="content.itemSeq"
+          />
+        </el-popover>
       </el-form-item>
 
       <el-form-item label="栏目名称:" prop="itemName">
@@ -180,6 +190,7 @@ export default {
         ]
       },
       showPopover: false,
+      showPopoverSeq: false,
       showSelectResourceDialog: false,
       showEditDetailPage: false,
       templateOptions: [
@@ -203,16 +214,27 @@ export default {
           }, 1500);
         }
       }
+    },
+    "content.itemSeq": function(newVal, oldVal) {
+      if (newVal > 100) {
+        this.content.itemSeq = parseInt(newVal.toString().slice(0, 2));
+        if (!this.showPopoverSeq) {
+          this.showPopoverSeq = true;
+          setTimeout(() => {
+            this.showPopoverSeq = false;
+          }, 1500);
+        }
+      }
     }
   },
   methods: {
     onlyNumber(val) {
-      return parseInt(val.toString().replace(/[^\d]/g, "")) || ''
+      return parseInt(val.toString().replace(/[^\d]/g, "")) || "";
     },
     handleInputOnlyNumberItemSeq(val) {
       this.content.itemSeq = this.onlyNumber(val);
     },
-     handleInputOnlyNumberItemMediaMax(val) {
+    handleInputOnlyNumberItemMediaMax(val) {
       // return val =>
       //   (this.content[field] = parseInt(val.toString().replace(/[^\d]/g, "")) || '')
       this.content.itemMediaMax = this.onlyNumber(val);
