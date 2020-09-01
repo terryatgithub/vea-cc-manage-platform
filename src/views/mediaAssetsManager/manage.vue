@@ -27,6 +27,7 @@
       </div>
       <el-dialog
         :title='dialogTitle'
+        :close-on-click-modal = 'false'
         :visible.sync = 'dialogEditFormVisible'
         width = '400px'
         @close = 'close'

@@ -6,7 +6,7 @@
           <div class="log_logo">
             <img v-if="$consts.idPrefix == '11'" src="@/assets/logo-jscn.png">
             <img v-else src="@/assets/logo-coocaa.png">
-            <span>内容运营平台</span>
+            <span>liteOS管理平台</span>
           </div>
           <div class="log-box">
             <div id="accout">

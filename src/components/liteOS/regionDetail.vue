@@ -96,6 +96,10 @@ export default {
     }
     .el-tag {
       margin: 0 10px;
+      max-width: 350px;
+      overflow: hidden;
+      text-overflow:ellipsis;
+      white-space: nowrap;
     }
   }
 }

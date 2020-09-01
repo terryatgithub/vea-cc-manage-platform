@@ -21,15 +21,15 @@
         <div class="logo" direction="vertical">
           <div class="logo__img">
             <i class="el-icon-location"></i>
-            {{ companyMap[$consts.idPrefix] }}内容运营平台
+            {{ companyMap[$consts.idPrefix] }}liteOS管理平台
           </div>
         </div>
         <span role="presentation" class="el-breadcrumb__separator">/</span>
         <Breadcrumb class="breadcrumb" :items="breadcrumb" />
         <div class="user-info">
-          <a href="http://wiki.skyoss.com/pages/viewpage.action?pageId=33481206" target="_blank">
+          <!-- <a href="http://wiki.skyoss.com/pages/viewpage.action?pageId=33481206" target="_blank">
             <el-button type="danger" style="margin-right: 10px;">不好用，我要反馈</el-button>
-          </a>
+          </a> -->
           <el-dropdown :hide-on-click="false" @command="handleDropdownCommand">
             <span class="el-dropdown-link">
               <i class="el-icon-cc-user"></i>
@@ -37,7 +37,7 @@
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="modifyPassword" @click.native="modifyPwd">修改密码</el-dropdown-item>
+              <!-- <el-dropdown-item command="modifyPassword" @click.native="modifyPwd">修改密码</el-dropdown-item> -->
               <el-dropdown-item command="logout">退出</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>

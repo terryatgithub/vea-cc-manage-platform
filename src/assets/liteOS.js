@@ -2,15 +2,30 @@ export default {
   // liteOS新增
   userTransform (oldArray) {
     const options = []
-    // options[0] = {
-    //   label: 'All',
-    //   value: 'All',
-    //   customerId: 'All',
-    //   customerName: 'All',
-    //   children: null,
-    //   brandList: null
-    // }
     for (let i = 0; i < oldArray.length; i++) {
+      const brandList = this.filterOptions(oldArray[i].brandList)
+      options[i] = {
+        label: oldArray[i].customerName,
+        value: oldArray[i].customerName,
+        customerId: oldArray[i].customerId,
+        customerName: oldArray[i].customerName,
+        brandList,
+        children: brandList
+      }
+    }
+    return options
+  },
+  userTransformAll (oldArray) {
+    const options = []
+    options[0] = {
+      label: 'All',
+      value: 'All',
+      customerId: 'All',
+      customerName: 'All',
+      children: null,
+      brandList: null
+    }
+    for (let i = 1; i < oldArray.length; i++) {
       const brandList = this.filterOptions(oldArray[i].brandList)
       options[i] = {
         label: oldArray[i].customerName,
@@ -45,15 +60,30 @@ export default {
   },
   chipModelTransform (oldArray) {
     const options = []
-    // options[0] = {
-    //   label: '全部客户',
-    //   value: '',
-    //   customerId: '',
-    //   customerName: '',
-    //   children: null,
-    //   brandList: null,
-    // };
     for (let i = 0; i < oldArray.length; i++) {
+      const modelVOList = this.filterOptions1(oldArray[i].modelVOList)
+      options[i] = {
+        label: oldArray[i].chip,
+        value: oldArray[i].chip,
+        // areaId: oldArray[i].areaId,
+        chip: oldArray[i].chip,
+        modelVOList,
+        children: modelVOList
+      }
+    }
+    return options
+  },
+  chipModelTransformAll (oldArray) {
+    const options = []
+    options[0] = {
+      label: 'All',
+      value: 'All',
+      // customerId: 'All',
+      // customerName: 'All',
+      children: null,
+      modelVOList: null,
+    };
+    for (let i = 1; i < oldArray.length; i++) {
       const modelVOList = this.filterOptions1(oldArray[i].modelVOList)
       options[i] = {
         label: oldArray[i].chip,
@@ -88,15 +118,30 @@ export default {
   },
   areaTransform (oldArray) {
     const options = []
-    // options[0] = {
-    //   label: '全部客户',
-    //   value: '',
-    //   customerId: '',
-    //   customerName: '',
-    //   children: null,
-    //   brandList: null,
-    // };
     for (let i = 0; i < oldArray.length; i++) {
+      const countryList = this.filterOptions2(oldArray[i].countryList)
+      options[i] = {
+        label: oldArray[i].areaName,
+        value: oldArray[i].areaName,
+        areaId: oldArray[i].areaId,
+        areaName: oldArray[i].areaName,
+        countryList,
+        children: countryList
+      }
+    }
+    return options
+  },
+  areaTransformAll (oldArray) {
+    const options = []
+    options[0] = {
+      label: 'All',
+      value: 'All',
+      // customerId: 'All',
+      // customerName: 'All',
+      children: null,
+      countryList: null,
+    };
+    for (let i = 1; i < oldArray.length; i++) {
       const countryList = this.filterOptions2(oldArray[i].countryList)
       options[i] = {
         label: oldArray[i].areaName,

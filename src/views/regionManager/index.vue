@@ -76,6 +76,7 @@
       <el-dialog
         :title='dialogTitle'
         center
+        :close-on-click-modal = 'false'
         :visible.sync = 'dialogEditFormVisible'
         v-if = 'dialogEditFormVisible'
         width = '450px'
@@ -187,7 +188,39 @@ export default {
       },
       dialogEditFormVisible: false,
       dialogTitle: '新增',
-      rlsId: '0'
+      rlsId: '0',
+      list: [
+        {
+          label: '北京市',
+          value: 11,
+          children: [
+            {
+              label: '北京市',
+              value: 21,
+            }
+          ]
+        },
+        {
+          label: '上海市',
+          value: 12,
+          children: [
+            {
+              label: '上海市',
+              value: 22,
+            }
+          ]
+        },
+        {
+          label: '深圳市',
+          value: 13,
+          children: [
+            {
+              label: '深圳市',
+              value: 23,
+            }
+          ]
+        }
+      ]
     }
   },
 

@@ -51,6 +51,7 @@
       <el-dialog
         :title='dialogTitle'
         center
+        :close-on-click-modal = 'false'
         :visible.sync = 'dialogEditFormVisible'
         v-if = 'dialogEditFormVisible'
         width = '550px'

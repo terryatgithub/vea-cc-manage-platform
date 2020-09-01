@@ -331,6 +331,7 @@ export default {
       that.$refs['pushChild'].$refs['pushForm'].validate(async (valid) => {
         if (valid) {
           // 轮询校验栏目的必填项
+          let isAdd = false
           for (const key in that.itemList) {
             if (that.itemList[key].template === '') {
               this.$message({
@@ -357,49 +358,52 @@ export default {
               })
               return false
             } else {
-              const params = JSON.parse(JSON.stringify(that.$refs['pushChild'].pushForm))
-              params.releaseStartTime = liteOS.date(params.date[0])
-              params.releaseEndTime = liteOS.date(params.date[1])
-              delete params.date
-              // 判断是否全选版本
-              if (params.supportVersion.includes('All')) {
-                params.supportVersion = 'all'
-              } else {
-                params.supportVersion = params.supportVersion.join(',')
-              }
-              params.creator = that.$appState.user.name
-              params.releaseStatus = '0'
-              params.tvActiveId = DeviceID
-              params.itemList = that.itemList
-              let data
-              // 判断是编辑、复制、新增
-              if (that.$route.query.releaseConfId && that.$route.query.handleType === 'edit') {
-                params.releaseConfId = that.$route.query.releaseConfId
-                data = await this.$service.updateAppStorePushManage(params)
-              } else {
-                data = await this.$service.addAppStorePushManage(params)
-              }
-              if (data.code === 0) {
-                that.$refs['pushChild'].$refs['pushForm'].clearValidate()
-                that.$refs['pushChild'].$refs['pushForm'].resetFields()
-                const msg = that.$route.query.handleType === 'edit'
-                  ? '修改成功！'
-                  : that.$route.query.handleType === 'copy'
-                  ? '复制成功！'
-                  : '新增成功！'
-                that.$message({
-                  type: 'success',
-                  message: msg
-                })
-                that.$router.push({
-                  path: 'appStorePush'
-                })
-              } else {
-                that.$message({
-                  type: 'error',
-                  message: data.msg
-                })
-              }
+              isAdd = true
+            }
+          }
+          if (isAdd) {
+            const params = JSON.parse(JSON.stringify(that.$refs['pushChild'].pushForm))
+            params.releaseStartTime = liteOS.date(params.date[0])
+            params.releaseEndTime = liteOS.date(params.date[1])
+            delete params.date
+            // 判断是否全选版本
+            if (params.supportVersion.includes('All')) {
+              params.supportVersion = 'all'
+            } else {
+              params.supportVersion = params.supportVersion.join(',')
+            }
+            params.creator = that.$appState.user.name
+            params.releaseStatus = '0'
+            params.tvActiveId = DeviceID
+            params.itemList = that.itemList
+            let data
+            // 判断是编辑、复制、新增
+            if (that.$route.query.releaseConfId && that.$route.query.handleType === 'edit') {
+              params.releaseConfId = that.$route.query.releaseConfId
+              data = await this.$service.updateAppStorePushManage(params)
+            } else {
+              data = await this.$service.addAppStorePushManage(params)
+            }
+            if (data.code === 0) {
+              that.$refs['pushChild'].$refs['pushForm'].clearValidate()
+              that.$refs['pushChild'].$refs['pushForm'].resetFields()
+              const msg = that.$route.query.handleType === 'edit'
+                ? '修改成功！'
+                : that.$route.query.handleType === 'copy'
+                ? '复制成功！'
+                : '新增成功！'
+              that.$message({
+                type: 'success',
+                message: msg
+              })
+              that.$router.push({
+                path: 'appStorePush'
+              })
+            } else {
+              that.$message({
+                type: 'error',
+                message: data.msg
+              })
             }
           }
         } else {
