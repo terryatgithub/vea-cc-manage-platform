@@ -139,9 +139,6 @@ export default {
     // 数据组装
     assemble (item, refName) {
       const itemArr = []
-      // for (const i in item.brandList) {
-      //   itemArr.push([item.customerName, item.brandList[i].brandName])
-      // }
       if (refName === 'brandNames') {
         for (const i in item.brandList) {
           itemArr.push([item.customerName, item.brandList[i].brandName])
@@ -184,79 +181,61 @@ export default {
             let optionsLength = 0
             options.map((item) => {
               if (refName === 'brandNames') {
-                if (item.brandList) {
-                  optionsLength += item.brandList.length
-                } else {
-                  optionsLength += 1
-                }
+                item.brandList
+                  ? optionsLength += item.brandList.length
+                  : optionsLength += 1
               } else if (refName === 'devices') {
-                if (item.modelVOList) {
-                  optionsLength += item.modelVOList.length
-                } else {
-                  optionsLength += 1
-                }
+                item.modelVOList
+                  ? optionsLength += item.modelVOList.length
+                  : optionsLength += 1
               } else if (refName === 'countryNames') {
-                if (item.countryList) {
-                  optionsLength += item.countryList.length
-                } else {
-                  optionsLength += 1
-                }
+                item.countryList
+                  ? optionsLength += item.countryList.length
+                  : optionsLength += 1
               }
             })
             if (refName === 'brandNames') {
-              if (that.regionForm.brandNames.length < optionsLength) {
-                that.regionForm.brandNames = []
+              if (this.regionForm.brandNames.length < optionsLength) {
+                this.regionForm.brandNames = []
                 options.map((item) => {
-                  if (item.brandList) {
-                    that.regionForm.brandNames = that.regionForm.brandNames.concat(this.assemble(item, refName))
-                  } else {
-                    that.regionForm.brandNames.unshift(['All'])
-                  }
+                  item.brandList
+                    ? this.regionForm.brandNames = this.regionForm.brandNames.concat(this.assemble(item, refName))
+                    : this.regionForm.brandNames.unshift(['All'])
                 })
               } else {
-                that.regionForm.brandNames = []
+                this.regionForm.brandNames = []
               }
-              if (that.regionForm.brandNames.length > 20) {
-                this.collapseTags1 = true
-              } else {
-                this.collapseTags1 = false
-              }
+              this.regionForm.brandNames.length > 20
+                ? this.collapseTags1 = true
+                : this.collapseTags1 = false
             } else if (refName === 'devices') {
-              if (that.regionForm.devices.length < optionsLength) {
-                that.regionForm.devices = []
+              if (this.regionForm.devices.length < optionsLength) {
+                this.regionForm.devices = []
                 options.map((item) => {
-                  if (item.modelVOList) {
-                    that.regionForm.devices = that.regionForm.devices.concat(this.assemble(item, refName))
-                  } else {
-                    that.regionForm.devices.unshift(['All'])
-                  }
+                  item.modelVOList
+                    ? this.regionForm.devices = this.regionForm.devices.concat(this.assemble(item, refName))
+                    : this.regionForm.devices.unshift(['All'])
                 })
               } else {
-                that.regionForm.devices = []
+                this.regionForm.devices = []
               }
-              if (that.regionForm.devices.length > 20) {
-                this.collapseTags2 = true
-              } else {
-                this.collapseTags2 = false
-              }
+              this.regionForm.devices.length > 20
+                ? this.collapseTags2 = true
+                : this.collapseTags2 = false
             } else if (refName === 'countryNames') {
-              if (that.regionForm.countryNames.length < optionsLength) {
-                that.regionForm.countryNames = []
+              if (this.regionForm.countryNames.length < optionsLength) {
+                this.regionForm.countryNames = []
                 options.map((item) => {
-                  if (item.countryList) {
-                    that.regionForm.countryNames = that.regionForm.countryNames.concat(this.assemble(item, refName))
-                  } else {
-                    that.regionForm.countryNames.unshift(['All'])
-                  }
+                  item.countryList
+                    ? this.regionForm.countryNames = this.regionForm.countryNames.concat(this.assemble(item, refName))
+                    : this.regionForm.countryNames.unshift(['All'])
                 })
               } else {
-                that.regionForm.countryNames = []
+                this.regionForm.countryNames = []
               }
-              if (that.regionForm.countryNames.length > 20) {
-                this.collapseTags3 = true
-              } else {
-                this.collapseTags3 = false
-              }
+              this.regionForm.countryNames.length > 20
+                ? this.collapseTags3 = true
+                : this.collapseTags3 = false
             }
           }
         }
@@ -265,23 +244,17 @@ export default {
     changeSelect (val, refName) {
       // 当多选超过20时折叠展示
       if (refName === 'brandNames') {
-        if (val.length > 20) {
-          this.collapseTags1 = true
-        } else {
-          this.collapseTags1 = false
-        }
+        val.length > 20
+          ? this.collapseTags1 = true
+          : this.collapseTags1 = false
       } else if (refName === 'devices') {
-        if (val.length > 20) {
-          this.collapseTags2 = true
-        } else {
-          this.collapseTags2 = false
-        }
+        val.length > 20
+          ? this.collapseTags2 = true
+          : this.collapseTags2 = false
       } else if (refName === 'countryNames') {
-        if (val.length > 20) {
-          this.collapseTags3 = true
-        } else {
-          this.collapseTags3 = false
-        }
+        val.length > 20
+          ? this.collapseTags3 = true
+          : this.collapseTags3 = false
       }
       // 选择国家要多传参数countryThreeCodes
       if (refName === 'countryNames') {
@@ -297,69 +270,39 @@ export default {
         : refName === 'devices'
         ? this.chipModelOptions
         : this.arealOptions
-      // let that.regionForm.brandNames = refName === 'brandNames'
-      //   ? this.regionForm.brandNames
-      //   : refName === 'devices'
-      //   ? this.regionForm.devices
-      //   : this.regionForm.countryNames
       let optionsLength = 0
       options.map((item) => {
-        // if (item.brandList) {
-        //   optionsLength += item.brandList.length
-        // } else {
-        //   optionsLength += 1
-        // }
         if (refName === 'brandNames') {
-          if (item.brandList) {
-            optionsLength += item.brandList.length
-          } else {
-            optionsLength += 1
-          }
+          item.brandList
+            ? optionsLength += item.brandList.length
+            : optionsLength += 1
         } else if (refName === 'devices') {
-          if (item.modelVOList) {
-            optionsLength += item.modelVOList.length
-          } else {
-            optionsLength += 1
-          }
+          item.modelVOList
+            ? optionsLength += item.modelVOList.length
+            : optionsLength += 1
         } else if (refName === 'countryNames') {
-          if (item.countryList) {
-            optionsLength += item.countryList.length
-          } else {
-            optionsLength += 1
-          }
+          item.countryList
+            ? optionsLength += item.countryList.length
+            : optionsLength += 1
         }
       })
       if (!(val[0][0] === 'All') && val.length === optionsLength - 1) {
         options.map((item) => {
-          // if (item.brandList) {
-          //   this.regionForm.brandNames = this.regionForm.brandNames.concat(this.assemble(item))
-          // } else {
-          //   this.regionForm.brandNames.unshift(['All']) // 只用这句赋值All选中效果有问题
-          // }
           if (refName === 'brandNames') {
-            if (item.brandList) {
-              this.regionForm.brandNames = this.regionForm.brandNames.concat(this.assemble(item, refName))
-            } else {
-              this.regionForm.brandNames.unshift(['All'])
-            }
+            item.brandList
+              ? this.regionForm.brandNames = this.regionForm.brandNames.concat(this.assemble(item, refName))
+              : this.regionForm.brandNames.unshift(['All'])
           } else if (refName === 'devices') {
-            if (item.modelVOList) {
-              this.regionForm.devices = this.regionForm.devices.concat(this.assemble(item, refName))
-            } else {
-              this.regionForm.devices.unshift(['All'])
-            }
+            item.modelVOList
+              ? this.regionForm.devices = this.regionForm.devices.concat(this.assemble(item, refName))
+              : this.regionForm.devices.unshift(['All'])
           } else if (refName === 'countryNames') {
-            if (item.countryList) {
-              this.regionForm.countryNames = this.regionForm.countryNames.concat(this.assemble(item, refName))
-            } else {
-              this.regionForm.countryNames.unshift(['All'])
-            }
+            item.countryList
+              ? this.regionForm.countryNames = this.regionForm.countryNames.concat(this.assemble(item, refName))
+              : this.regionForm.countryNames.unshift(['All'])
           }
         })
       } else if (val[0][0] === 'All' && val.length < optionsLength) {
-        // this.regionForm.brandNames = this.regionForm.brandNames.filter((item) => {
-        //   return item[0] !== 'All'
-        // })
         if (refName === 'brandNames') {
           this.regionForm.brandNames = this.regionForm.brandNames.filter((item) => {
             return item[0] !== 'All'
@@ -376,9 +319,6 @@ export default {
       }
     },
     removeTag (val, refName) {
-      // if (val[0][0] === 'All') {
-      //   that.regionForm.brandNames = []
-      // }
       if (refName === 'brandNames') {
         if (val[0] === 'All') {
           this.regionForm.brandNames = []
@@ -401,13 +341,11 @@ export default {
           this.regionForm.ctmDevCtrName = detail.ctmDevCtrName
           this.regionForm.state = detail.state.toString()
           if (detail.brandNames === 'all') {
-            that.regionForm.brandNames = []
-            that.userOptions.map((item) => {
-              if (item.brandList) {
-                that.regionForm.brandNames = that.regionForm.brandNames.concat(that.assemble(item, 'brandNames'))
-              } else {
-                that.regionForm.brandNames.unshift(['All'])
-              }
+            this.regionForm.brandNames = []
+            this.userOptions.map((item) => {
+              item.brandList
+                ? that.regionForm.brandNames = that.regionForm.brandNames.concat(that.assemble(item, 'brandNames'))
+                : that.regionForm.brandNames.unshift(['All'])
             })
           } else {
             this.regionForm.brandNames = liteOS.echo(detail.brandNames)
@@ -415,11 +353,9 @@ export default {
           if (detail.devices === 'all') {
             this.regionForm.devices = []
             this.chipModelOptions.map((item) => {
-              if (item.modelVOList) {
-                this.regionForm.devices = this.regionForm.devices.concat(this.assemble(item, 'devices'))
-              } else {
-                this.regionForm.devices.unshift(['All'])
-              }
+              item.modelVOList
+                ? this.regionForm.devices = this.regionForm.devices.concat(this.assemble(item, 'devices'))
+                : this.regionForm.devices.unshift(['All'])
             })
           } else {
             this.regionForm.devices = liteOS.echo(detail.devices)
@@ -427,36 +363,26 @@ export default {
           if (detail.countryNames === 'all') {
             this.regionForm.countryNames = []
             this.arealOptions.map((item) => {
-              if (item.countryList) {
-                this.regionForm.countryNames = this.regionForm.countryNames.concat(this.assemble(item, 'countryNames'))
-              } else {
-                this.regionForm.countryNames.unshift(['All'])
-              }
+              item.countryList
+                ? this.regionForm.countryNames = this.regionForm.countryNames.concat(this.assemble(item, 'countryNames'))
+                : this.regionForm.countryNames.unshift(['All'])
             })
-            if (that.regionForm.countryNames.length > 20) {
-              this.collapseTags3 = true
-            } else {
-              this.collapseTags3 = false
-            }
+            this.regionForm.countryNames.length > 20
+              ? this.collapseTags3 = true
+              : this.collapseTags3 = false
           } else {
             this.regionForm.countryNames = liteOS.echo(detail.countryNames)
           }
           this.regionForm.countryThreeCodes = detail.countryThreeCodes
-          if (that.regionForm.brandNames.length > 20) {
-            this.collapseTags1 = true
-          } else {
-            this.collapseTags1 = false
-          }
-          if (that.regionForm.devices.length > 20) {
-            this.collapseTags2 = true
-          } else {
-            this.collapseTags2 = false
-          }
-          if (that.regionForm.countryNames.length > 20) {
-            this.collapseTags3 = true
-          } else {
-            this.collapseTags3 = false
-          }
+          this.regionForm.brandNames.length > 20
+            ? this.collapseTags1 = true
+            : this.collapseTags1 = false
+          this.regionForm.devices.length > 20
+            ? this.collapseTags2 = true
+            : this.collapseTags2 = false
+          this.regionForm.countryNames.length > 20
+            ? this.collapseTags3 = true
+            : this.collapseTags3 = false
           console.log(this.regionForm)
         } else {
           this.$message({
