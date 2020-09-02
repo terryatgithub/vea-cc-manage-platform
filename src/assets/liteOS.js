@@ -25,9 +25,9 @@ export default {
       children: null,
       brandList: null
     }
-    for (let i = 1; i < oldArray.length; i++) {
+    for (let i = 0; i < oldArray.length; i++) {
       const brandList = this.filterOptions(oldArray[i].brandList)
-      options[i] = {
+      options[i + 1] = {
         label: oldArray[i].customerName,
         value: oldArray[i].customerName,
         customerId: oldArray[i].customerId,
@@ -83,9 +83,9 @@ export default {
       children: null,
       modelVOList: null,
     };
-    for (let i = 1; i < oldArray.length; i++) {
+    for (let i = 0; i < oldArray.length; i++) {
       const modelVOList = this.filterOptions1(oldArray[i].modelVOList)
-      options[i] = {
+      options[i + 1] = {
         label: oldArray[i].chip,
         value: oldArray[i].chip,
         // areaId: oldArray[i].areaId,
@@ -141,9 +141,9 @@ export default {
       children: null,
       countryList: null,
     };
-    for (let i = 1; i < oldArray.length; i++) {
+    for (let i = 0; i < oldArray.length; i++) {
       const countryList = this.filterOptions2(oldArray[i].countryList)
-      options[i] = {
+      options[i + 1] = {
         label: oldArray[i].areaName,
         value: oldArray[i].areaName,
         areaId: oldArray[i].areaId,

@@ -197,7 +197,7 @@ export default {
       dialogEditFormVisible: false,
       dialogTitle: '新增',
       dialogType: '',
-      materialId: '0'
+      materialId: 0
     }
   },
 
@@ -248,7 +248,7 @@ export default {
     // 关闭弹窗
     close () {
       this.dialogEditFormVisible = false
-      this.materialId = '0'
+      this.materialId = 0
       this.$refs['dialogEdit'].$refs['appForm'].clearValidate()
       this.$refs['dialogEdit'].$refs['appForm'].resetFields()
     },
@@ -257,7 +257,7 @@ export default {
       this.dialogEditFormVisible = true
       this.dialogTitle = '新增'
       this.dialogType = 'appCreate'
-      this.materialId = '0'
+      this.materialId = 0
     },
     // 编辑
     handleEdit (row) {

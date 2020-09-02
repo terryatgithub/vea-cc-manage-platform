@@ -161,17 +161,16 @@ export default {
      * @param onClick  底部操作按钮点击监听
      */
     visibleChange (visible, refName) {
-      let that = this
       if (visible) {
         const ref = this.$refs[refName]
         let popper = ref.$refs.popper.getElementsByTagName('ul')[0].firstChild.firstChild
         let options = refName === 'brandNames'
-          ? that.userOptions
+          ? this.userOptions
           : refName === 'devices'
-          ? that.chipModelOptions
-          : that.arealOptions
-        // const obj = Object.assign({}, that.regionForm)
-        // let that.regionForm.brandNames = refName === 'brandNames'
+          ? this.chipModelOptions
+          : this.arealOptions
+        // const obj = Object.assign({}, this.regionForm)
+        // let this.regionForm.brandNames = refName === 'brandNames'
         // ? obj.brandNames
         // : refName === 'devices'
         // ? obj.devices
@@ -334,7 +333,6 @@ export default {
       }
     },
     getAreaRisid () {
-      let that = this
       this.$service.getAreaManageRlsId({ rlsId: this.rlsId }).then(data => {
         if (data.code === 0) {
           const detail = data.data
@@ -344,8 +342,8 @@ export default {
             this.regionForm.brandNames = []
             this.userOptions.map((item) => {
               item.brandList
-                ? that.regionForm.brandNames = that.regionForm.brandNames.concat(that.assemble(item, 'brandNames'))
-                : that.regionForm.brandNames.unshift(['All'])
+                ? this.regionForm.brandNames = this.regionForm.brandNames.concat(this.assemble(item, 'brandNames'))
+                : this.regionForm.brandNames.unshift(['All'])
             })
           } else {
             this.regionForm.brandNames = liteOS.echo(detail.brandNames)
@@ -402,9 +400,12 @@ export default {
         if (valid) {
           // 坑：对象直接赋值两边会双向绑定，深浅拷贝的原理
           const params = JSON.parse(JSON.stringify(this.regionForm))
+          params.brand = []
           for (const i in params.brandNames) {
+            params.brand[i] = params.brandNames[i][1]
             params.brandNames[i] = params.brandNames[i].join('/')
           }
+          params.brand = params.brand.join(',')
           params.brandNames = params.brandNames.join(',')
           for (const i in params.devices) {
             params.devices[i] = params.devices[i].join('/')
@@ -417,6 +418,7 @@ export default {
           // 判断是否是全选
           if (params.brandNames.indexOf('All') !== -1) {
             params.brandNames = 'all'
+            params.brand = 'all'
           }
           if (params.devices.indexOf('All') !== -1) {
             params.devices = 'all'
@@ -482,7 +484,6 @@ export default {
     },
     // 获取下拉数据
     async getMediaResourceInfo () {
-      let that = this
       let res1, res2, res3
       res1 = await this.$service.queryCustomerListAllContainBrands()
       res2 = await this.$service.queryChipAllContainModels()
@@ -495,36 +496,6 @@ export default {
           this.getAreaRisid()
         }
       }
-      // this.$service.queryCustomerListAllContainBrands().then(data => {
-      //   if (data.code === 0) {
-      //     this.userOptions = liteOS.userTransformAll(data.data)
-      //   } else {
-      //     this.$message({
-      //       type: 'error',
-      //       message: data.msg
-      //     })
-      //   }
-      // })
-      // this.$service.queryChipAllContainModels().then(data => {
-      //   if (data.code === 0) {
-      //     this.chipModelOptions = liteOS.chipModelTransformAll(data.data)
-      //   } else {
-      //     this.$message({
-      //       type: 'error',
-      //       message: data.msg
-      //     })
-      //   }
-      // })
-      // this.$service.queryAreaCountryListAll().then(data => {
-      //   if (data.code === 0) {
-      //     this.arealOptions = liteOS.areaTransformAll(data.data)
-      //   } else {
-      //     this.$message({
-      //       type: 'error',
-      //       message: data.msg
-      //     })
-      //   }
-      // })
     }
   },
   created () {

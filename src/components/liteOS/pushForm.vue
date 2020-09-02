@@ -14,7 +14,7 @@
         />
     </el-form-item>
     <el-form-item label='支持版本' prop="supportVersion">
-      <el-select v-model="pushForm.supportVersion" multiple placeholder="请选择版本(支持多选)" @change='changeSelect' @remove-tag='removeTag' clearable>
+      <el-select v-model="pushForm.supportVersion" multiple placeholder="请选择版本(支持多选)" @click.native='getData' @change='changeSelect' @remove-tag='removeTag' clearable>
         <el-option label='All' value='All' @click.native='selectAll'></el-option>
         <el-option
           v-for="item in versionOptions"
@@ -36,7 +36,7 @@
     </el-form-item>
     <el-form-item label='推送时间' prop="date">
         <el-date-picker
-            unlink-panels='true'
+            unlink-panels
             v-model="pushForm.date"
             type="datetimerange"
             range-separator="至"
@@ -68,13 +68,21 @@ export default {
       type: String
     },
     risId: {
-      type: String
+      type: Object,
+      default: () => ({
+        id: '',
+        random: ''
+      })
     }
   },
   watch: {
-    risId: function (newVal, oldVal) {
-      console.log(newVal)
-      this.pushForm.ctmDevCtrId = newVal
+    // risId: function (newVal, oldVal) {
+    //   console.log(newVal)
+    //   debugger
+    //   this.pushForm.ctmDevCtrId = newVal
+    // }
+    'risId.random' (newVal, oldVal) {
+      this.pushForm.ctmDevCtrId = this.risId.id
     }
   },
   data () {
@@ -115,6 +123,18 @@ export default {
       this.pushForm.ctmDevCtrId = ''
       this.$emit('clearRegion')
     },
+    getData () {
+      this.$service.queryVersionList({ version: '' }).then(data => {
+        if (data.code === 0) {
+          this.versionOptions = data.data
+        } else {
+          this.$message({
+            type: 'error',
+            message: data.msg
+          })
+        }
+      })
+    },
     selectAll () {
       if (this.pushForm.supportVersion.length < this.versionOptions.length) {
         this.pushForm.supportVersion = []
@@ -142,16 +162,16 @@ export default {
     }
   },
   created () {
-    this.$service.queryVersionList({ version: '' }).then(data => {
-      if (data.code === 0) {
-        this.versionOptions = data.data
-      } else {
-        this.$message({
-          type: 'error',
-          message: data.msg
-        })
-      }
-    })
+    // this.$service.queryVersionList({ version: '' }).then(data => {
+    //   if (data.code === 0) {
+    //     this.versionOptions = data.data
+    //   } else {
+    //     this.$message({
+    //       type: 'error',
+    //       message: data.msg
+    //     })
+    //   }
+    // })
   }
 }
 </script>

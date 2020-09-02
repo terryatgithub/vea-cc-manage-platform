@@ -118,7 +118,7 @@
             maxlength="99"
           />
         </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth" prop="materialRemark">
+        <el-form-item label="备注" prop="materialRemark">
           <el-input type="textarea" :rows="4" clearable maxlength="99" show-word-limit placeholder="请输入备注" v-model="appForm.materialRemark"></el-input>
         </el-form-item>
         <el-form-item
@@ -205,7 +205,7 @@
             maxlength="99"
           />
         </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth" prop="materialRemark">
+        <el-form-item label="备注" prop="materialRemark">
           <el-input type="textarea" :rows="4" clearable maxlength='99' show-word-limit placeholder="请输入备注" v-model="posterForm.materialRemark"></el-input>
         </el-form-item>
         <el-form-item
@@ -241,18 +241,14 @@ export default {
       type: String
     },
     materialId: {
-      type: String
+      type: Number
     }
   },
   watch: {
     dialogType: (newVal, oldVal) => {
       console.log(newVal)
     },
-    materialId: function (newVal, oldVal) {
-      if (newVal !== '0') {
-        // this.getmaterialId()
-      }
-    }
+    materialId: function (newVal, oldVal) {}
   },
   data () {
     return {
@@ -373,12 +369,6 @@ export default {
                 this.appForm.square = materialPics[i].pic
               }
             }
-            // const fileList = detail.materialPics.split(',')
-            // for (const i in fileList) {
-            //   this.appFileList.push({
-            //     'url': fileList[i]
-            //   })
-            // }
           } else {
             this.$message({
               type: 'error',
@@ -626,7 +616,7 @@ export default {
     },
   },
   created () {
-    if (this.materialId !== '0') {
+    if (this.materialId !== 0) {
       this.getmaterialId()
     }
   }
