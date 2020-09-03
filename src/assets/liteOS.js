@@ -200,6 +200,13 @@ export default {
     }
     return arr1
   },
+  echoSemicolon (selString) {
+    const arr1 = selString.split(';')
+    for (const i in arr1) {
+        arr1[i] = arr1[i].split('|')
+    }
+    return arr1
+  },
   // 标准时间换算
   p (s) {
     return s < 10 ? '0' + s : s

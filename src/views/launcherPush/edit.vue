@@ -238,6 +238,9 @@ export default {
     // 删除应用
     appDel (index) {
       this.appList.splice(index, 1)
+      for (const i in this.appList) {
+        this.appList[i].detailSeq = parseInt(i)
+      }
     },
     // 应用海报选择确定
     appSure (data) {
@@ -248,6 +251,7 @@ export default {
         materialPic: data[2],
         materialPicType: data[3]
       })
+      console.log(this.appList)
       this.dialogFormVisible = false
       this.isX = false
     },

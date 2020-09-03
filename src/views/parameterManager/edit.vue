@@ -120,17 +120,16 @@ export default {
         customerId: [{
           required: this.isSelect !== 1,
           message: '请选择客户',
-          trigger: ['change'],
+          trigger: 'change',
           validator: this.check
         }],
         customerName: [{
           required: this.isSelect !== -1,
-          message: '请输入客户',
-          trigger: ['change'],
+          trigger: 'change',
           validator: this.inputName
         }],
         brandName: [
-          { required: true, message: '请输入品牌', trigger: 'blur' }
+          { required: true, trigger: 'change', validator: this.inputCharacter }
         ]
       },
       modelForm: {
@@ -142,17 +141,16 @@ export default {
         movement: [{
           required: this.isSelect !== 1,
           message: '请选择机芯',
-          trigger: ['change'],
+          trigger: 'change',
           validator: this.check
         }],
         chip: [{
           required: this.isSelect !== -1,
-          message: '请输入机芯',
-          trigger: ['change'],
+          trigger: 'change',
           validator: this.inputName
         }],
         model: [
-          { required: true, message: '请输入机型', trigger: 'blur' }
+          { required: true, trigger: 'change', validator: this.inputCharacter }
         ]
       },
       customerOptions: [],
@@ -184,8 +182,21 @@ export default {
         const msg = this.dialogType === 'brand' ? '请输入客户' : '请输入机芯'
         callback(new Error(msg))
         this.isSelect = 0
+      } else if (/[`~!@#$%^*()_\-=<>?:"{}|\/;'\\[\]·~！@#￥%……*（）——\-={}|《》？：“”【】、；‘'。、]/.test(value.trim())) {
+        callback(new Error('请勿输入特殊字符'))
+        this.isSelect = 1
       } else {
         this.isSelect = 1
+        callback()
+      }
+    },
+    inputCharacter (rule, value, callback) {
+      if (value.trim() === '') {
+        const msg = this.dialogType === 'brand' ? '请输入品牌' : '请输入机型'
+        callback(new Error(msg))
+      } else if (/[`~!@#$%^*()_\-=<>?:"{}|\/;'\\[\]·~！@#￥%……*（）——\-={}|《》？：“”【】、；‘'。、]/.test(value.trim())) {
+        callback(new Error('请勿输入特殊字符'))
+      } else {
         callback()
       }
     },

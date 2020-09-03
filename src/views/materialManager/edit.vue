@@ -416,7 +416,7 @@ export default {
               { pic: params.horizontal, type: 'horizontal' },
               { pic: params.square, type: 'square' },
             ])
-            if (this.materialId !== '0') { // 判断是新增还是修改
+            if (this.materialId !== 0) { // 判断是新增还是修改
               params.materialId = this.materialId
               this.$service.updateAppManage(params).then(data => {
                 if (data.code === 0) {
@@ -455,7 +455,7 @@ export default {
               })
             }
           } else {
-            if (this.materialId !== '0') { // 判断是新增还是修改
+            if (this.materialId !== 0) { // 判断是新增还是修改
               params.materialId = this.materialId
               this.$service.updatePosterManage(params).then(data => {
                 if (data.code === 0) {

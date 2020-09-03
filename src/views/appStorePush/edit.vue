@@ -106,7 +106,7 @@ export default {
       itemList_index: '',
       itemAppList_index: '',
       ctmDevCtrName: '',
-      risId: '',
+      risId: null,
       area: null,
       material: null,
       isInit: 0,
@@ -202,13 +202,21 @@ export default {
     },
     // 获取区域选择传值
     getRegion (val) {
-      this.risId = val[0]
+      // this.risId = val[0]
+      this.risId = {
+        id: val[0],
+        random: Math.random()
+      }
       this.ctmDevCtrName = val[1]
     },
     // 删除选择区域
     clearRegion () {
       this.ctmDevCtrName = ''
-      this.risId = ''
+      // this.risId = ''
+      this.risId = {
+        id: '',
+        random: Math.random()
+      }
     },
     // 弹窗选择区域
     regionSel () {
@@ -293,6 +301,9 @@ export default {
         })
       } else {
         this.itemList[itemIndex].itemAppList.splice(appIndex, 1)
+        for (const i in this.itemList[itemIndex].itemAppList) {
+          this.itemList[itemIndex].itemAppList[i].detailSeq = parseInt(i)
+        }
       }
     },
     // 应用海报选择确定
@@ -304,6 +315,7 @@ export default {
         materialPic: data[2],
         materialPicType: data[3]
       })
+      console.log(this.itemList)
       this.dialogFormVisible = false
       this.isX = false
     },
@@ -322,7 +334,11 @@ export default {
           this.itemList[this.itemList_index].itemAppList.pop()
         } else if (this.dialogType === 'regionPop' || this.dialogType === 'regionDetail') {
           this.ctmDevCtrName = ''
-          this.risId = ''
+          // this.risId = ''
+          this.risId = {
+            id: '',
+            random: Math.random()
+          }
         }
       }
     },

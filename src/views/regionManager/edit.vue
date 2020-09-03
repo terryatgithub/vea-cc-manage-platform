@@ -346,7 +346,7 @@ export default {
                 : this.regionForm.brandNames.unshift(['All'])
             })
           } else {
-            this.regionForm.brandNames = liteOS.echo(detail.brandNames)
+            this.regionForm.brandNames = liteOS.echoSemicolon(detail.brandNames)
           }
           if (detail.devices === 'all') {
             this.regionForm.devices = []
@@ -381,7 +381,6 @@ export default {
           this.regionForm.countryNames.length > 20
             ? this.collapseTags3 = true
             : this.collapseTags3 = false
-          console.log(this.regionForm)
         } else {
           this.$message({
             type: 'error',
@@ -403,10 +402,10 @@ export default {
           params.brand = []
           for (const i in params.brandNames) {
             params.brand[i] = params.brandNames[i][1]
-            params.brandNames[i] = params.brandNames[i].join('/')
+            params.brandNames[i] = params.brandNames[i].join('|')
           }
           params.brand = params.brand.join(',')
-          params.brandNames = params.brandNames.join(',')
+          params.brandNames = params.brandNames.join(';')
           for (const i in params.devices) {
             params.devices[i] = params.devices[i].join('/')
           }

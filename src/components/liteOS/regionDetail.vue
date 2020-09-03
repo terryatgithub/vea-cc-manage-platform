@@ -65,7 +65,8 @@ export default {
         this.$service.getAreaManageRlsId({ rlsId: this.area.risId }).then(data => {
           if (data.code === 0) {
             this.regionData = data.data
-            this.regionData.brandNames = this.regionData.brandNames.split(',')
+            // this.regionData.brandNames = this.regionData.brandNames.split(',')
+            this.regionData.brandNames = this.regionData.brandNames.split(';')
             this.regionData.devices = this.regionData.devices.split(',')
             this.regionData.countryNames = this.regionData.countryNames.split(',')
           } else {
