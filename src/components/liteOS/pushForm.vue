@@ -83,6 +83,7 @@ export default {
     // }
     'risId.random' (newVal, oldVal) {
       this.pushForm.ctmDevCtrId = this.risId.id
+      this.$refs.pushForm.validateField('ctmDevCtrId')
     }
   },
   data () {

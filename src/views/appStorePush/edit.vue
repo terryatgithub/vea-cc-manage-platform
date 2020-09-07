@@ -19,8 +19,6 @@
         <div class="item" v-for='(item, index) in itemList' :key='index'>
           <el-form
             :inline="true"
-            :rules="itemRules"
-            :model="itemForm"
           >
             <div class="itemTop">
               <el-form-item label="栏目模板">
@@ -492,10 +490,14 @@ export default {
         cursor: pointer;
       }
       .materialName {
+        width: 150px;
         font-size: 16px;
         text-align: center;
         margin: 5px 0;
         line-height: 20px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
       }
       .grid-content {
         border-radius: 4px;

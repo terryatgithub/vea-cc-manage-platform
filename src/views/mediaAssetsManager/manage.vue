@@ -9,6 +9,7 @@
                 placeholder="来源"
                 clearable
                 v-model = "filter['mediaSourceName']"
+                @click.native='typeOptionsUpdata'
               >
                 <el-option
                   v-for="item in typeOptions"
@@ -215,8 +216,8 @@ export default {
         return [btn1]
       }
     },
-    // 获取查询条件
-    getMediaResourceInfo () {
+    // 下拉框每次更新数据
+    typeOptionsUpdata () {
       this.$service.querySourceAll().then(data => {
         if (data.code === 0) {
           this.typeOptions = data.data
@@ -227,7 +228,9 @@ export default {
           })
         }
       })
-    }
+    },
+    // 获取查询条件
+    getMediaResourceInfo () {}
   },
   created () {
     this.getMediaResourceInfo()

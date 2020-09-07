@@ -27,7 +27,8 @@ export function queryBrandListAll () {
 export function queryCustomerListAllContainBrands () {
   return this.fetch({
     method: 'get',
-    url: 'api/lite-os/admin/select/query-customer-list-all-contain-brands'
+    url: 'api/lite-os/admin/select/query-customer-list-all-contain-brands',
+    useLoading: false
   })
 }
 // 根据客户名称与品牌名称查询
@@ -121,7 +122,8 @@ export function queryChipListAll () {
 export function queryChipAllContainModels () {
   return this.fetch({
     method: 'get',
-    url: 'api/lite-os/admin/select/query-chip-all-contain-models'
+    url: 'api/lite-os/admin/select/query-chip-all-contain-models',
+    useLoading: false
   })
 }
 // 获取有效的区域国家列表
@@ -312,7 +314,8 @@ export function getMediaResourcesId (params) {
 export function queryCategoryAll () {
   return this.fetch({
     method: 'get',
-    url: 'api/lite-os/admin/media-resources/query-category-all'
+    url: 'api/lite-os/admin/media-resources/query-category-all',
+    useLoading: false
   })
 }
 // 媒资来源--分页查询
@@ -328,6 +331,7 @@ export function querySourceAll (params) {
   return this.fetch({
     method: 'get',
     url: 'api/lite-os/admin/media-resources/query-source-all',
+    useLoading: false,
     params
   })
 }

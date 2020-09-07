@@ -57,6 +57,7 @@
         center
         :close-on-click-modal = 'false'
         :visible.sync = 'dialogEditFormVisible'
+        v-if = 'dialogEditFormVisible'
         width = '450px'
         @close = 'close'
       >

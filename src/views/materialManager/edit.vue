@@ -294,7 +294,7 @@ export default {
           { required: true, message: '请上传横图', trigger: ['blur', 'change'] }
         ],
         square: [
-          { required: true, message: '请上传横图', trigger: ['blur', 'change'] }
+          { required: true, message: '请上传方图', trigger: ['blur', 'change'] }
         ],
         materialType: [
           { required: true, message: '请选择类型', trigger: 'change' }

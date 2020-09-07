@@ -21,6 +21,7 @@
               :options="userOptions"
               expand-trigger="hover"
               clearable
+              @click.native='userOptionsUpdata'
             />
           </div>
         </el-form-item>
@@ -32,6 +33,7 @@
               :options="chipModelOptions"
               expand-trigger="hover"
               clearable
+              @click.native='chipModelOptionsUpdata'
             />
           </div>
         </el-form-item>
@@ -294,8 +296,8 @@ export default {
     // countryNameSel (val) {
 
     // },
-    // 获取查询条件
-    getMediaResourceInfo () {
+    // 每次下拉框重新获取数据
+    userOptionsUpdata () {
       this.$service.queryCustomerListAllContainBrands().then(data => {
         if (data.code === 0) {
           this.userOptions = liteOS.userTransform(data.data)
@@ -306,6 +308,8 @@ export default {
           })
         }
       })
+    },
+    chipModelOptionsUpdata () {
       this.$service.queryChipAllContainModels().then(data => {
         if (data.code === 0) {
           this.chipModelOptions = liteOS.chipModelTransform(data.data)
@@ -316,6 +320,9 @@ export default {
           })
         }
       })
+    },
+    // 获取查询条件
+    getMediaResourceInfo () {
       this.$service.queryAreaCountryListAll().then(data => {
         if (data.code === 0) {
           this.areaOptions = liteOS.areaTransform(data.data)
