@@ -1,620 +1,624 @@
-import Login from '@/views/Login'
+import Login from "@/views/Login";
 
-import Wrapper from '@/components/Wrapper.vue'
-import BroadcastBlock from '../views/blockInfo/BroadcastBlockIndex'
-import MultiFunctionBlock from '../views/blockInfo/MultiFunctionBlockIndex'
-import SysPlugin from '../views/blockInfo/SysPluginIndex'
-import AlbumPannelInfo from '../views/blockManage/AlbumPannelInfoIndex'
-import MarkPanel from '../views/blockManage/MarkPanelIndex'
-import PannelInfo from '../views/panelInfo/PannelInfoIndex'
-import RuleCreatePanel from '../views/panelInfo/RuleCreatePanelIndex'
-import PrivatePannelInfo from '../views/blockManage/PrivatePannelInfoIndex'
-import CommonOnclickInfo from '../views/commonModule/CommonOnclickInfoIndex'
-import GlobalCornerIcon from '../views/commonModule/GlobalCornerIconIndex'
-import GlobalCornerIconType from '../views/commonModule/GlobalCornerIconTypeIndex'
-import GlobalPicture from '../views/commonModule/GlobalPictureIndex'
-import LayoutInfo from '../views/commonModule/LayoutInfoIndex'
-import CommonAlbumPanelUser from '../views/commonResource/CommonAlbumPanelUserIndex'
-import CommonPannelUser from '../views/commonResource/CommonPannelUserIndex'
-import CommonTabUser from '../views/commonResource/CommonTabUserIndex'
+import Wrapper from "@/components/Wrapper.vue";
+import BroadcastBlock from "../views/blockInfo/BroadcastBlockIndex";
+import MultiFunctionBlock from "../views/blockInfo/MultiFunctionBlockIndex";
+import SysPlugin from "../views/blockInfo/SysPluginIndex";
+import AlbumPannelInfo from "../views/blockManage/AlbumPannelInfoIndex";
+import MarkPanel from "../views/blockManage/MarkPanelIndex";
+import PannelInfo from "../views/panelInfo/PannelInfoIndex";
+import RuleCreatePanel from "../views/panelInfo/RuleCreatePanelIndex";
+import PrivatePannelInfo from "../views/blockManage/PrivatePannelInfoIndex";
+import CommonOnclickInfo from "../views/commonModule/CommonOnclickInfoIndex";
+import GlobalCornerIcon from "../views/commonModule/GlobalCornerIconIndex";
+import GlobalCornerIconType from "../views/commonModule/GlobalCornerIconTypeIndex";
+import GlobalPicture from "../views/commonModule/GlobalPictureIndex";
+import LayoutInfo from "../views/commonModule/LayoutInfoIndex";
+import CommonAlbumPanelUser from "../views/commonResource/CommonAlbumPanelUserIndex";
+import CommonPannelUser from "../views/commonResource/CommonPannelUserIndex";
+import CommonTabUser from "../views/commonResource/CommonTabUserIndex";
 // import DataSync from '../views/dataSyncMgr/DataSyncIndex'
 // import SlaveBizErrLog from '../views/dataSyncMgr/SlaveBizErrLogIndex'
 // import SlaveSecondAudit from '../views/dataSyncMgr/SlaveSecondAuditIndex'
-import ActDmpGroupInfo from '../views/dirCrowdManager/ActDmpGroupInfoIndex'
-import HomePageInfo from '../views/homePageManage/HomePageInfoIndex'
-import PolicyManage from '../views/homePageManage/PolicyManageIndex'
-import TestPolicyManage from '../views/homePageManage/TestPolicyManageIndex'
-import BusinessTab from '../views/panelManage/BusinessTabIndex'
-import FilmDetailPage from '../views/panelManage/FilmDetailPageIndex'
-import TabInfo from '../views/tabInfo/TabInfoIndex'
-import VideoContent from '../views/resourceManage/VideoContentIndex'
+import ActDmpGroupInfo from "../views/dirCrowdManager/ActDmpGroupInfoIndex";
+import HomePageInfo from "../views/homePageManage/HomePageInfoIndex";
+import PolicyManage from "../views/homePageManage/PolicyManageIndex";
+import TestPolicyManage from "../views/homePageManage/TestPolicyManageIndex";
+import BusinessTab from "../views/panelManage/BusinessTabIndex";
+import FilmDetailPage from "../views/panelManage/FilmDetailPageIndex";
+import TabInfo from "../views/tabInfo/TabInfoIndex";
+import VideoContent from "../views/resourceManage/VideoContentIndex";
 // import AdminMasterControl from '../views/sysConfig/AdminMasterControlIndex'
 // import DataDictionary from '../views/sysConfig/DataDictionaryIndex'
-import DepartmentManage from '../views/sysConfig/DepartmentManageIndex'
-import RoleConfig from '../views/sysConfig/RoleConfigIndex'
-import SysLogLogin from '../views/sysConfig/SysLogLoginIndex'
-import SysLogOp from '../views/sysConfig/SysLogOpIndex'
-import SysMenu from '../views/sysConfig/SysMenuIndex'
-import UserConfig from '../views/sysConfig/UserConfigIndex'
-import ThemeInfo from '../views/themeManage/ThemeInfoIndex'
-import MovieNotice from '../views/todoTask/MovieNoticeIndex'
-import SearchNotice from '../views/todoTask/SearchNoticeIndex'
-import MyDrafts from '../views/todoTask/MyDraftsIndex'
-import MyReviewTasks from '../views/todoTask/MyReviewTasksIndex'
-import MySubmitTasks from '../views/todoTask/MySubmitTasksIndex'
+import DepartmentManage from "../views/sysConfig/DepartmentManageIndex";
+import RoleConfig from "../views/sysConfig/RoleConfigIndex";
+import SysLogLogin from "../views/sysConfig/SysLogLoginIndex";
+import SysLogOp from "../views/sysConfig/SysLogOpIndex";
+import SysMenu from "../views/sysConfig/SysMenuIndex";
+import UserConfig from "../views/sysConfig/UserConfigIndex";
+import ThemeInfo from "../views/themeManage/ThemeInfoIndex";
+import MovieNotice from "../views/todoTask/MovieNoticeIndex";
+import SearchNotice from "../views/todoTask/SearchNoticeIndex";
+import MyDrafts from "../views/todoTask/MyDraftsIndex";
+import MyReviewTasks from "../views/todoTask/MyReviewTasksIndex";
+import MySubmitTasks from "../views/todoTask/MySubmitTasksIndex";
 // import FilmDetailAdBit from '../views/adBitMgr/FilmDetailAdBit.vue'
-import Main from '@/components/Main'
-import Desktop from '@/views/desktop/Desktop'
-import FramePage from '../views/FramePage'
-import CrowdRel from '../views/crowdRel/Index.vue'
-import PanelRecommend from '../views/panelRecommend/PanelRecommendIndex.vue'
-import AssignVideoRecom from '../views/blockInfo/AssignVideoRecomIndex.vue'
-import NewVideoRecom from '../views/blockInfo/NewVideoRecomIndex.vue'
-import StreamABTest from '../views/blockInfo/StreamABTestIndex.vue'
-import VideoRecomScene from '../views/blockInfo/VideoRecomSceneIndex.vue'
+import Main from "@/components/Main";
+import Desktop from "@/views/desktop/Desktop";
+import FramePage from "../views/FramePage";
+import CrowdRel from "../views/crowdRel/Index.vue";
+import PanelRecommend from "../views/panelRecommend/PanelRecommendIndex.vue";
+import AssignVideoRecom from "../views/blockInfo/AssignVideoRecomIndex.vue";
+import NewVideoRecom from "../views/blockInfo/NewVideoRecomIndex.vue";
+import StreamABTest from "../views/blockInfo/StreamABTestIndex.vue";
+import VideoRecomScene from "../views/blockInfo/VideoRecomSceneIndex.vue";
 // import DeviceConfig from '../views/deviceConfig/DeviceConfigIndex.vue'
 // 以下LiteOS新增
-import ParameterManager from '../views/parameterManager/index.vue'
-import RegionManager from '../views/regionManager/index.vue'
-import MaterialManager from '../views/materialManager/index.vue'
-import MediaAssetsManager from '../views/mediaAssetsManager/index.vue'
-import MediaAssetsDetail from '../views/mediaAssetsManager/detail.vue'
-import LauncherPush from '../views/launcherPush/index.vue'
-import LauncherEdit from '../views/launcherPush/edit.vue'
-import AppStorePush from '../views/appStorePush/index.vue'
-import AppStoreEdit from '../views/appStorePush/edit.vue'
-import CCPlusPushPolicy from '../views/CCPlusPushPolicy'
-import SecondaryEdit from '../views/CCPlusPushPolicy/SecondaryEdit'
-import ColumnTemplateDetail from '../views/CCPlusPushPolicy/components/ColumnTemplateDetail'
+import ParameterManager from "../views/parameterManager/index.vue";
+import RegionManager from "../views/regionManager/index.vue";
+import MaterialManager from "../views/materialManager/index.vue";
+import MediaAssetsManager from "../views/mediaAssetsManager/index.vue";
+import MediaAssetsDetail from "../views/mediaAssetsManager/detail.vue";
+import LauncherPush from "../views/launcherPush/index.vue";
+import LauncherEdit from "../views/launcherPush/edit.vue";
+import AppStorePush from "../views/appStorePush/index.vue";
+import AppStoreEdit from "../views/appStorePush/edit.vue";
+import CCPlusPushPolicy from "../views/CCPlusPushPolicy";
+import SecondaryEdit from "../views/CCPlusPushPolicy/SecondaryEdit";
+import InnerPageEdit from "../views/CCPlusPushPolicy/InnerPageEdit";
 
-const TabInsertionTask = () => import('../views/tabInsertionTask/TabInsertionTaskIndex.vue')
+const TabInsertionTask = () =>
+  import("../views/tabInsertionTask/TabInsertionTaskIndex.vue");
 
-const Topic = () => import('../views/topic/Index')
-const TopicConfig = () => import('../views/topicConfig/Index')
+const Topic = () => import("../views/topic/Index");
+const TopicConfig = () => import("../views/topicConfig/Index");
 
-const PanelRecommendStat = () => import('../views/panelRecommend/PanelRecommendStat.vue')
-const PanelRecommendFeedback = () => import('../views/panelRecommend/PanelRecommendFeedback.vue')
+const PanelRecommendStat = () =>
+  import("../views/panelRecommend/PanelRecommendStat.vue");
+const PanelRecommendFeedback = () =>
+  import("../views/panelRecommend/PanelRecommendFeedback.vue");
 
-const ChildPolicy = () => import('../views/homePageManage/child-policy/ChildPolicyManageIndex')
+const ChildPolicy = () =>
+  import("../views/homePageManage/child-policy/ChildPolicyManageIndex");
 
-const Policy = () => import('../views/policy/PolicyIndex.vue')
-const TestPolicy = () => import('../views/policy/TestPolicyIndex.vue')
+const Policy = () => import("../views/policy/PolicyIndex.vue");
+const TestPolicy = () => import("../views/policy/TestPolicyIndex.vue");
 
-const HomeageMatchingList = () => import('../views/policy/HomeageMatchingList')
+const HomeageMatchingList = () => import("../views/policy/HomeageMatchingList");
 
 /** */
 const children = [
   {
-    path: 'commonResource',
-    name: 'commonResource',
+    path: "commonResource",
+    name: "commonResource",
     component: Wrapper,
-    meta: { title: '常用文件', icon: 'el-icon-cc-file' },
+    meta: { title: "常用文件", icon: "el-icon-cc-file" },
     children: [
       {
-        name: 'commonTopPannelUser',
-        path: '/commonResourceUser/TopPannel/view.html',
+        name: "commonTopPannelUser",
+        path: "/commonResourceUser/TopPannel/view.html",
         component: undefined,
         meta: {
-          title: '常用排行榜',
-          tagId: 'commonTopPannelUser'
+          title: "常用排行榜",
+          tagId: "commonTopPannelUser"
         }
       },
       {
-        name: 'commonPannelUser',
-        path: '/commonResourceUser/Pannel/view.html',
+        name: "commonPannelUser",
+        path: "/commonResourceUser/Pannel/view.html",
         component: CommonPannelUser,
         meta: {
-          title: '常用常规运营版块',
-          tagId: 'commonPannelUser'
+          title: "常用常规运营版块",
+          tagId: "commonPannelUser"
         }
       },
       {
-        name: 'commonAlbumPanneleUser',
-        path: '/commonResourceUser/AlbumPannel/view.html',
+        name: "commonAlbumPanneleUser",
+        path: "/commonResourceUser/AlbumPannel/view.html",
         component: CommonAlbumPanelUser,
         meta: {
-          title: '常用业务专辑',
-          tagId: 'commonAlbumPanneleUser'
+          title: "常用业务专辑",
+          tagId: "commonAlbumPanneleUser"
         }
       },
       {
-        name: 'commonTabUser',
-        path: '/commonResourceUser/Tab/view.html',
+        name: "commonTabUser",
+        path: "/commonResourceUser/Tab/view.html",
         component: CommonTabUser,
         meta: {
-          title: '常用Tab版面',
-          tagId: 'commonTabUser'
+          title: "常用Tab版面",
+          tagId: "commonTabUser"
         }
       }
     ]
   },
   {
-    path: 'homePageManage',
-    name: 'homePageManage',
+    path: "homePageManage",
+    name: "homePageManage",
     component: Wrapper,
-    meta: { title: '首页方案管理', icon: 'el-icon-cc-toufangfangan' },
+    meta: { title: "首页方案管理", icon: "el-icon-cc-toufangfangan" },
     children: [
       {
-        name: 'homepageInfo',
-        path: '/homepageInfo/view.html',
+        name: "homepageInfo",
+        path: "/homepageInfo/view.html",
         component: HomePageInfo,
-        meta: { title: '首页方案', tagId: 'homepageInfo' }
+        meta: { title: "首页方案", tagId: "homepageInfo" }
       },
       {
-        name: 'childPolicy',
-        path: '/childPolicy/view.html',
+        name: "childPolicy",
+        path: "/childPolicy/view.html",
         component: ChildPolicy,
-        meta: { title: '儿童策略管理', tagId: 'childPolicy' }
+        meta: { title: "儿童策略管理", tagId: "childPolicy" }
       },
       {
-        name: 'policyConf',
-        path: '/policyConf/view.html',
+        name: "policyConf",
+        path: "/policyConf/view.html",
         component: PolicyManage,
-        meta: { title: '策略管理', tagId: 'policyConf' }
+        meta: { title: "策略管理", tagId: "policyConf" }
       },
       {
-        name: 'policyGroup',
-        path: '/policyGroup/view.html',
+        name: "policyGroup",
+        path: "/policyGroup/view.html",
         component: Policy,
-        meta: { title: '保底策略', tagId: 'policyGroup' }
+        meta: { title: "保底策略", tagId: "policyGroup" }
       },
       {
-        name: 'testPolicyGroup',
-        path: '/testPolicyGroup/view.html',
+        name: "testPolicyGroup",
+        path: "/testPolicyGroup/view.html",
         component: TestPolicy,
-        meta: { title: '定向策略', tagId: 'testPolicyGroup' }
+        meta: { title: "定向策略", tagId: "testPolicyGroup" }
       },
       {
-        name: 'testPolicyConf',
-        path: '/testPolicyConf/view.html',
+        name: "testPolicyConf",
+        path: "/testPolicyConf/view.html",
         component: TestPolicyManage,
         meta: {
-          title: '测试策略',
+          title: "测试策略",
 
-          tagId: 'testPolicyConf'
+          tagId: "testPolicyConf"
         }
       },
       {
-        name: 'matchHomepage',
-        path: '/matchHomepage.html',
+        name: "matchHomepage",
+        path: "/matchHomepage.html",
         component: HomeageMatchingList,
         meta: {
-          title: '主页匹配首页',
-          tagId: 'matchHomepage'
+          title: "主页匹配首页",
+          tagId: "matchHomepage"
         }
       }
     ]
   },
   {
-    path: 'panelManage',
-    name: 'panelManage',
+    path: "panelManage",
+    name: "panelManage",
     component: Wrapper,
-    meta: { title: '版面管理', icon: 'el-icon-cc-banmianguanli-' },
+    meta: { title: "版面管理", icon: "el-icon-cc-banmianguanli-" },
     children: [
       {
-        name: 'tabInfo',
-        path: '/tabInfo/view.html',
+        name: "tabInfo",
+        path: "/tabInfo/view.html",
         component: TabInfo,
-        meta: { title: 'TAB版面管理', tagId: 'tabInfo' }
+        meta: { title: "TAB版面管理", tagId: "tabInfo" }
       },
       {
-        name: 'businessTab',
-        path: '/businessTab/view.html',
+        name: "businessTab",
+        path: "/businessTab/view.html",
         component: BusinessTab,
         meta: {
-          title: '业务版面',
+          title: "业务版面",
 
-          tagId: 'businessTab'
+          tagId: "businessTab"
         }
       },
       {
-        name: 'filmDetailPage',
-        path: '/filmDetailPage/view.html',
+        name: "filmDetailPage",
+        path: "/filmDetailPage/view.html",
         component: FilmDetailPage,
         meta: {
-          title: '影片详情页',
+          title: "影片详情页",
 
-          tagId: 'filmDetailPage'
+          tagId: "filmDetailPage"
         }
       },
       {
-        name: 'tabForceInsert',
-        path: '/tabInsertionTask',
+        name: "tabForceInsert",
+        path: "/tabInsertionTask",
         component: TabInsertionTask,
         meta: {
-          title: '版面强插任务',
-          tagId: 'tabForceInsert'
+          title: "版面强插任务",
+          tagId: "tabForceInsert"
         }
       }
     ]
   },
   {
-    path: 'blockManage',
-    name: 'blockManage',
+    path: "blockManage",
+    name: "blockManage",
     component: Wrapper,
-    meta: { title: '版块管理', icon: 'el-icon-cc-bankuaiguanli' },
+    meta: { title: "版块管理", icon: "el-icon-cc-bankuaiguanli" },
     children: [
       {
-        name: 'pannelInfo',
-        path: '/pannelInfo/view.html',
+        name: "pannelInfo",
+        path: "/pannelInfo/view.html",
         component: PannelInfo,
-        meta: { title: '常规运营', tagId: 'pannelInfo' }
+        meta: { title: "常规运营", tagId: "pannelInfo" }
       },
       {
-        name: 'ruleCreatePanel',
-        path: '/ruleCreatePanel/view.html',
+        name: "ruleCreatePanel",
+        path: "/ruleCreatePanel/view.html",
         component: RuleCreatePanel,
-        meta: { title: '筛选规则版块管理', tagId: 'ruleCreatePanel' }
+        meta: { title: "筛选规则版块管理", tagId: "ruleCreatePanel" }
       },
       {
-        name: 'markPanel',
-        path: '/markPanel/view.html',
+        name: "markPanel",
+        path: "/markPanel/view.html",
         component: MarkPanel,
-        meta: { title: '功能版块', tagId: 'markPanel' }
+        meta: { title: "功能版块", tagId: "markPanel" }
       },
       {
-        name: 'albumPannelInfo',
-        path: '/albumPannelInfo/view.html',
+        name: "albumPannelInfo",
+        path: "/albumPannelInfo/view.html",
         component: AlbumPannelInfo,
         meta: {
-          title: '业务专辑',
+          title: "业务专辑",
 
-          tagId: 'albumPannelInfo'
+          tagId: "albumPannelInfo"
         }
       },
       {
-        name: 'privatePannelInfo',
-        path: '/privatePannelInfo/view.html',
+        name: "privatePannelInfo",
+        path: "/privatePannelInfo/view.html",
         component: PrivatePannelInfo,
         meta: {
-          title: '专属影院',
+          title: "专属影院",
 
-          tagId: 'privatePannelInfo'
+          tagId: "privatePannelInfo"
         }
       },
       {
-        name: 'intelliReccomendPannel',
-        path: '/intelliReccomendPannel/view.html',
+        name: "intelliReccomendPannel",
+        path: "/intelliReccomendPannel/view.html",
         component: undefined,
         meta: {
-          title: '智能化推荐',
-          tagId: 'intelliReccomendPannel'
+          title: "智能化推荐",
+          tagId: "intelliReccomendPannel"
         }
       },
       {
-        name: 'panelRecommend',
-        path: '/panelRecommend',
+        name: "panelRecommend",
+        path: "/panelRecommend",
         component: PanelRecommend,
         meta: {
-          title: '版块推荐流管理',
-          tagId: 'panelRecommend'
+          title: "版块推荐流管理",
+          tagId: "panelRecommend"
         }
       },
       {
-        name: 'panelRecommendCoreData',
-        path: '/panelRecommendCoreData',
+        name: "panelRecommendCoreData",
+        path: "/panelRecommendCoreData",
         component: PanelRecommendStat,
         meta: {
-          title: '个性化推荐核心指标',
-          tagId: 'panelRecommendCoreData'
+          title: "个性化推荐核心指标",
+          tagId: "panelRecommendCoreData"
         }
       },
       {
-        name: 'panelRecommendFeedback',
-        path: '/panelRecommendFeedback',
+        name: "panelRecommendFeedback",
+        path: "/panelRecommendFeedback",
         component: PanelRecommendFeedback,
         meta: {
-          title: '个性化推荐反馈',
-          tagId: 'panelRecommendFeedback'
+          title: "个性化推荐反馈",
+          tagId: "panelRecommendFeedback"
         }
       }
     ]
   },
   {
-    path: 'rotateStation',
-    name: 'rotateStation',
+    path: "rotateStation",
+    name: "rotateStation",
     component: Wrapper,
-    meta: { title: '轮播管理' },
+    meta: { title: "轮播管理" },
     children: [
       {
-        path: 'rotateStationCategory',
-        name: 'rotateStationCategory',
+        path: "rotateStationCategory",
+        name: "rotateStationCategory",
         component: FramePage,
         meta: {
-          tagId: 'rotateStationCategory'
+          tagId: "rotateStationCategory"
         }
       },
       {
-        path: 'rotateStationCategory_viewStation',
-        name: 'rotateStationCategory_viewStation',
+        path: "rotateStationCategory_viewStation",
+        name: "rotateStationCategory_viewStation",
         component: FramePage,
         meta: {
-          tagId: 'rotateStationCategory_viewStation'
+          tagId: "rotateStationCategory_viewStation"
         }
       },
       {
-        path: 'frame-page',
-        name: 'rotateTopicInfo',
+        path: "frame-page",
+        name: "rotateTopicInfo",
         component: FramePage,
         meta: {
-          tagId: 'rotateTopicInfo'
+          tagId: "rotateTopicInfo"
         }
       }
     ]
   },
   {
-    path: 'commonModule',
-    name: 'commonModule',
+    path: "commonModule",
+    name: "commonModule",
     component: Wrapper,
-    meta: { title: '公共模块' },
+    meta: { title: "公共模块" },
     children: [
       {
-        name: 'layoutInfo',
-        path: '/layoutInfo/view.html',
+        name: "layoutInfo",
+        path: "/layoutInfo/view.html",
         component: LayoutInfo,
-        meta: { title: '布局管理', tagId: 'layoutInfo' }
+        meta: { title: "布局管理", tagId: "layoutInfo" }
       },
       {
-        name: 'globalPicture',
-        path: '/globalPicture/view.html',
+        name: "globalPicture",
+        path: "/globalPicture/view.html",
         component: GlobalPicture,
         meta: {
-          title: '素材管理',
-          tagId: 'GlobalPicture'
+          title: "素材管理",
+          tagId: "GlobalPicture"
         }
       },
       {
-        name: 'globalCornerIcon',
-        path: '/globalCornerIcon/view.html',
+        name: "globalCornerIcon",
+        path: "/globalCornerIcon/view.html",
         component: GlobalCornerIcon,
         meta: {
-          title: '角标素材管理',
-          tagId: 'globalCornerIcon'
+          title: "角标素材管理",
+          tagId: "globalCornerIcon"
         }
       },
       {
-        name: 'globalCornerIconType',
-        path: '/globalCornerIconType/view.html',
+        name: "globalCornerIconType",
+        path: "/globalCornerIconType/view.html",
         component: GlobalCornerIconType,
         meta: {
-          title: '角标分类管理',
-          tagId: 'globalCornerIconType'
+          title: "角标分类管理",
+          tagId: "globalCornerIconType"
         }
       },
       {
-        name: 'commonOnclickInfo',
-        path: '/commonOnclickInfo/view.html',
+        name: "commonOnclickInfo",
+        path: "/commonOnclickInfo/view.html",
         component: CommonOnclickInfo,
         meta: {
-          title: '点击事件管理',
-          tagId: 'commonOnclickInfo'
+          title: "点击事件管理",
+          tagId: "commonOnclickInfo"
         }
       }
     ]
   },
   {
-    path: 'resourceMgr',
-    name: 'resourceMgr',
+    path: "resourceMgr",
+    name: "resourceMgr",
     component: Wrapper,
-    meta: { title: '资源管理', icon: 'el-icon-cc-huaban' },
+    meta: { title: "资源管理", icon: "el-icon-cc-huaban" },
     children: [
       {
-        name: 'videoContent',
-        path: '/videoContent/view.html',
+        name: "videoContent",
+        path: "/videoContent/view.html",
         component: VideoContent,
         meta: {
-          title: '影片资源库',
-          tagId: 'videoContent'
+          title: "影片资源库",
+          tagId: "videoContent"
         }
       },
       {
-        name: 'videoDataList',
-        path: '/videoDataList/view.html',
+        name: "videoDataList",
+        path: "/videoDataList/view.html",
         component: undefined,
         meta: {
-          title: '数据列表',
-          tagId: 'videoDataList'
+          title: "数据列表",
+          tagId: "videoDataList"
         }
       }
     ]
   },
   {
-    path: 'blockInfo',
-    name: 'blockInfo',
+    path: "blockInfo",
+    name: "blockInfo",
     component: Wrapper,
-    meta: { title: '推荐位管理', icon: 'el-icon-cc-ziyuanguanli' },
+    meta: { title: "推荐位管理", icon: "el-icon-cc-ziyuanguanli" },
     children: [
       {
-        name: 'broadcastBlock',
-        path: '/broadcastBlock/view.html',
+        name: "broadcastBlock",
+        path: "/broadcastBlock/view.html",
         component: BroadcastBlock,
         meta: {
-          title: '轮播推荐位',
-          tagId: 'BroadcastBlock'
+          title: "轮播推荐位",
+          tagId: "BroadcastBlock"
         }
       },
       {
-        name: 'sysPlugin',
-        path: '/sysPlugin/view.html',
+        name: "sysPlugin",
+        path: "/sysPlugin/view.html",
         component: SysPlugin,
         meta: {
-          title: '系统插件(状态栏)',
-          tagId: 'SysPlugin'
+          title: "系统插件(状态栏)",
+          tagId: "SysPlugin"
         }
       },
       {
-        name: 'multiFunctionBlock',
-        path: '/multiFunctionBlock/view.html',
+        name: "multiFunctionBlock",
+        path: "/multiFunctionBlock/view.html",
         component: MultiFunctionBlock,
         meta: {
-          title: '多功能推荐位',
-          tagId: 'multiFunctionBlock'
+          title: "多功能推荐位",
+          tagId: "multiFunctionBlock"
         }
       },
       {
-        name: 'mediaAutomation',
-        path: '/mediaAutomation/view.html',
+        name: "mediaAutomation",
+        path: "/mediaAutomation/view.html",
         component: AssignVideoRecom,
         meta: {
-          title: '指定影片推荐流',
-          tagId: 'mediaAutomation'
+          title: "指定影片推荐流",
+          tagId: "mediaAutomation"
         }
       },
       {
-        name: 'recStream',
-        path: '/recStream/view.html',
+        name: "recStream",
+        path: "/recStream/view.html",
         component: NewVideoRecom,
         meta: {
-          title: '新影片推荐流',
-          tagId: 'recStream'
+          title: "新影片推荐流",
+          tagId: "recStream"
         }
       },
       {
-        name: 'recommendStreamABTest',
-        path: '/recommendStreamABTest/view.html',
+        name: "recommendStreamABTest",
+        path: "/recommendStreamABTest/view.html",
         component: StreamABTest,
         meta: {
-          title: '推荐流AB测试',
-          tagId: 'recommendStreamABTest'
+          title: "推荐流AB测试",
+          tagId: "recommendStreamABTest"
         }
       },
       {
-        name: 'recommendStreamScene',
-        path: '/recommendStreamScene/view.html',
+        name: "recommendStreamScene",
+        path: "/recommendStreamScene/view.html",
         component: VideoRecomScene,
         meta: {
-          title: '影片推荐流应用场景',
-          tagId: 'recommendStreamScene'
+          title: "影片推荐流应用场景",
+          tagId: "recommendStreamScene"
         }
       }
     ]
   },
   {
-    path: 'videoOnDemand',
-    name: 'videoOnDemand',
+    path: "videoOnDemand",
+    name: "videoOnDemand",
     component: Wrapper,
-    meta: { title: '点播资源管理', icon: 'el-icon-cc-huaban' },
+    meta: { title: "点播资源管理", icon: "el-icon-cc-huaban" },
     children: [
       {
-        path: 'ownMediaResManage',
-        name: 'ownMediaResManage',
+        path: "ownMediaResManage",
+        name: "ownMediaResManage",
         component: FramePage,
         meta: {
-          tagId: 'ownMediaResManage'
+          tagId: "ownMediaResManage"
         }
       },
       {
-        path: 'rankingListManage',
-        name: 'rankingListManage',
+        path: "rankingListManage",
+        name: "rankingListManage",
         component: FramePage,
         meta: {
-          tagId: 'rankingListManage'
+          tagId: "rankingListManage"
         }
       },
       {
-        path: 'ccShortVideoConnectPositiveDetail',
-        name: 'ccShortVideoConnectPositiveDetail',
+        path: "ccShortVideoConnectPositiveDetail",
+        name: "ccShortVideoConnectPositiveDetail",
         component: FramePage,
         meta: {
-          tagId: 'ccShortVideoConnectPositiveDetail'
+          tagId: "ccShortVideoConnectPositiveDetail"
         }
       },
       {
-        path: 'rightsContentManage',
-        name: 'rightsContentManage',
+        path: "rightsContentManage",
+        name: "rightsContentManage",
         component: FramePage,
         meta: {
-          tagId: 'rightsContentManage'
+          tagId: "rightsContentManage"
         }
       }
     ]
   },
   {
-    path: 'themeManage',
-    name: 'themeManage',
+    path: "themeManage",
+    name: "themeManage",
     component: Wrapper,
-    meta: { title: '主题管理', icon: 'el-icon-cc-zhuti' },
+    meta: { title: "主题管理", icon: "el-icon-cc-zhuti" },
     children: [
       {
-        name: 'themeInfo',
-        path: '/themeInfo/view.html',
+        name: "themeInfo",
+        path: "/themeInfo/view.html",
         component: ThemeInfo,
         meta: {
-          title: '主题皮肤管理',
-          tagId: 'themeInfo'
+          title: "主题皮肤管理",
+          tagId: "themeInfo"
         }
       }
     ]
   },
   {
-    path: 'dirCrowdManager',
-    name: 'dirCrowdManager',
+    path: "dirCrowdManager",
+    name: "dirCrowdManager",
     component: Wrapper,
-    meta: { title: '定向人群管理', icon: 'el-icon-cc-institute' },
+    meta: { title: "定向人群管理", icon: "el-icon-cc-institute" },
     children: [
       {
-        name: 'actDmpGroupInfo',
-        path: '/actDmpGroupInfo/view.html',
+        name: "actDmpGroupInfo",
+        path: "/actDmpGroupInfo/view.html",
         component: ActDmpGroupInfo,
         meta: {
-          title: 'RPC人群列表',
-          tagId: 'actDmpGroupInfo'
+          title: "RPC人群列表",
+          tagId: "actDmpGroupInfo"
         }
       },
       {
-        name: 'dmpMgr',
-        path: '/dmpMgr',
+        name: "dmpMgr",
+        path: "/dmpMgr",
         component: CrowdRel,
         meta: {
-          tagId: 'dmpMgr'
+          tagId: "dmpMgr"
         }
       }
     ]
   },
   {
-    path: 'sysConfig',
-    name: 'sysConfig',
+    path: "sysConfig",
+    name: "sysConfig",
     component: Wrapper,
-    meta: { title: '系统设置', icon: 'el-icon-cc-renyuanguanli' },
+    meta: { title: "系统设置", icon: "el-icon-cc-renyuanguanli" },
     children: [
       {
-        name: 'sysMenu',
-        path: '/sysMenu/view.html',
+        name: "sysMenu",
+        path: "/sysMenu/view.html",
         component: SysMenu,
-        meta: { title: '系统菜单', tagId: 'sysMenu' }
+        meta: { title: "系统菜单", tagId: "sysMenu" }
       },
       {
-        name: 'userConfig',
-        path: '/sysUser/view.html',
+        name: "userConfig",
+        path: "/sysUser/view.html",
         component: UserConfig,
-        meta: { title: '用户管理', tagId: 'userConfig' }
+        meta: { title: "用户管理", tagId: "userConfig" }
       },
       {
-        name: 'baDept',
-        path: '/sysDept/view.html',
+        name: "baDept",
+        path: "/sysDept/view.html",
         component: DepartmentManage,
-        meta: { title: '部门管理', tagId: 'baDept' }
+        meta: { title: "部门管理", tagId: "baDept" }
       },
       {
-        name: 'sysLogLogin',
-        path: '/sysLogLogin/view.html',
+        name: "sysLogLogin",
+        path: "/sysLogLogin/view.html",
         component: SysLogLogin,
         meta: {
-          title: '登录日志',
-          tagId: 'sysLogLogin'
+          title: "登录日志",
+          tagId: "sysLogLogin"
         }
       },
       {
-        name: 'sysLogOp',
-        path: '/sysLogOp/view.html',
+        name: "sysLogOp",
+        path: "/sysLogOp/view.html",
         component: SysLogOp,
-        meta: { title: '操作日志', tagId: 'sysLogOp' }
+        meta: { title: "操作日志", tagId: "sysLogOp" }
       },
       {
-        name: 'roleConfig',
-        path: '/sysRole/view.html',
+        name: "roleConfig",
+        path: "/sysRole/view.html",
         component: RoleConfig,
-        meta: { title: '角色管理', tagId: 'roleConfig' }
+        meta: { title: "角色管理", tagId: "roleConfig" }
       }
     ]
   },
@@ -655,261 +659,261 @@ const children = [
   //   ]
   // },
   {
-    path: 'todoTask',
-    name: 'todoTask',
+    path: "todoTask",
+    name: "todoTask",
     component: Wrapper,
-    meta: { title: '待处理任务', icon: 'el-icon-cc-daichuli2' },
+    meta: { title: "待处理任务", icon: "el-icon-cc-daichuli2" },
     children: [
       {
-        name: 'myDrafts',
-        path: '/myDrafts/view.html',
+        name: "myDrafts",
+        path: "/myDrafts/view.html",
         component: MyDrafts,
-        meta: { title: '我的草稿', tagId: 'myDrafts' }
+        meta: { title: "我的草稿", tagId: "myDrafts" }
       },
       {
-        name: 'mySubmitTasks',
-        path: '/mySubmitTasks/view.html',
+        name: "mySubmitTasks",
+        path: "/mySubmitTasks/view.html",
         component: MySubmitTasks,
         meta: {
-          title: '我提交的任务',
-          tagId: 'mySubmitTasks'
+          title: "我提交的任务",
+          tagId: "mySubmitTasks"
         }
       },
       {
-        name: 'myReviewTasks',
-        path: '/myReviewTasks/view.html',
+        name: "myReviewTasks",
+        path: "/myReviewTasks/view.html",
         component: MyReviewTasks,
         meta: {
-          title: '我的审核任务',
-          tagId: 'myReviewTasks'
+          title: "我的审核任务",
+          tagId: "myReviewTasks"
         }
       },
       {
-        name: 'msn',
-        path: '/v1/msn/view.html',
+        name: "msn",
+        path: "/v1/msn/view.html",
         component: MovieNotice,
-        meta: { title: '下架影片通知', tagId: 'msn' }
+        meta: { title: "下架影片通知", tagId: "msn" }
       },
       {
-        name: 'search',
-        path: '/v1/search/view.html',
+        name: "search",
+        path: "/v1/search/view.html",
         component: SearchNotice,
-        meta: { title: '内容引用检索', tagId: 'search' }
+        meta: { title: "内容引用检索", tagId: "search" }
       }
     ]
   },
   {
-    path: 'svMgr',
-    name: 'svMgr',
+    path: "svMgr",
+    name: "svMgr",
     component: Wrapper,
     children: [
       {
-        name: 'topic',
-        path: '/svMgr/topic',
+        name: "topic",
+        path: "/svMgr/topic",
         component: Topic,
         meta: {
-          tagId: 'topic'
+          tagId: "topic"
         }
       },
       {
-        name: 'topicConfig',
-        path: '/svMgr/topic-config',
+        name: "topicConfig",
+        path: "/svMgr/topic-config",
         component: TopicConfig,
         meta: {
-          tagId: 'topic-config'
+          tagId: "topic-config"
         }
       }
     ]
   },
   {
-    name: 'desktop',
-    path: 'desktop',
+    name: "desktop",
+    path: "desktop",
     component: Desktop,
-    meta: { title: '我的桌面', tagId: 'desktop' }
+    meta: { title: "我的桌面", tagId: "desktop" }
   },
   // 以下新增LiteOS
   {
-    path: 'parameterManager',
-    name: 'parameterManager',
+    path: "parameterManager",
+    name: "parameterManager",
     component: Wrapper,
-    meta: { title: '参数设置', icon: 'el-icon-cc-daichuli2' },
+    meta: { title: "参数设置", icon: "el-icon-cc-daichuli2" },
     children: [
       {
-        name: 'parameterManager',
-        path: '/parameterManager',
+        name: "parameterManager",
+        path: "/parameterManager",
         component: ParameterManager,
         meta: {
-          title: '参数设置',
-          tagId: 'parameterManager'
+          title: "参数设置",
+          tagId: "parameterManager"
         }
       }
     ]
   },
   {
-    path: 'regionManager',
-    name: 'regionManager',
+    path: "regionManager",
+    name: "regionManager",
     component: Wrapper,
-    meta: { title: '区域设置', icon: 'el-icon-cc-daichuli2' },
+    meta: { title: "区域设置", icon: "el-icon-cc-daichuli2" },
     children: [
       {
-        name: 'regionManager',
-        path: '/regionManager',
+        name: "regionManager",
+        path: "/regionManager",
         component: RegionManager,
         meta: {
-          title: '区域设置',
-          tagId: 'regionManager'
+          title: "区域设置",
+          tagId: "regionManager"
         }
       }
     ]
   },
   {
-    path: 'materialManager',
-    name: 'materialManager',
+    path: "materialManager",
+    name: "materialManager",
     component: Wrapper,
-    meta: { title: '素材管理', icon: 'el-icon-cc-daichuli2' },
+    meta: { title: "素材管理", icon: "el-icon-cc-daichuli2" },
     children: [
       {
-        name: 'materialManager',
-        path: '/materialManager',
+        name: "materialManager",
+        path: "/materialManager",
         component: MaterialManager,
         meta: {
-          title: '素材管理',
-          tagId: 'materialManager'
+          title: "素材管理",
+          tagId: "materialManager"
         }
       }
     ]
   },
   {
-    path: 'mediaAssetsManager',
-    name: 'mediaAssetsManager',
+    path: "mediaAssetsManager",
+    name: "mediaAssetsManager",
     component: Wrapper,
-    meta: { title: '媒资管理', icon: 'el-icon-cc-daichuli2' },
+    meta: { title: "媒资管理", icon: "el-icon-cc-daichuli2" },
     children: [
       {
-        name: 'mediaAssetsManager',
-        path: '/mediaAssetsManager',
+        name: "mediaAssetsManager",
+        path: "/mediaAssetsManager",
         component: MediaAssetsManager,
         meta: {
-          title: '媒资管理',
-          tagId: 'mediaAssetsManager'
+          title: "媒资管理",
+          tagId: "mediaAssetsManager"
         }
       },
       {
-        name: 'mediaAssetsDetail',
-        path: '/mediaAssetsDetail',
+        name: "mediaAssetsDetail",
+        path: "/mediaAssetsDetail",
         component: MediaAssetsDetail,
         meta: {
-          title: '媒资信息',
-          tagId: 'mediaAssetsDetail'
+          title: "媒资信息",
+          tagId: "mediaAssetsDetail"
         }
       }
     ]
   },
   {
-    path: 'launcherPush',
-    name: 'launcherPush',
+    path: "launcherPush",
+    name: "launcherPush",
     component: Wrapper,
-    meta: { title: 'Launcher管理', icon: 'el-icon-cc-daichuli2' },
+    meta: { title: "Launcher管理", icon: "el-icon-cc-daichuli2" },
     children: [
       {
-        name: 'launcherPush',
-        path: '/launcherPush',
+        name: "launcherPush",
+        path: "/launcherPush",
         component: LauncherPush,
         meta: {
-          title: 'Launcher管理',
-          tagId: 'launcherPush'
+          title: "Launcher管理",
+          tagId: "launcherPush"
         }
       },
       {
-        name: 'launcherEdit',
-        path: '/launcherEdit',
+        name: "launcherEdit",
+        path: "/launcherEdit",
         component: LauncherEdit,
         meta: {
-          title: 'Launcher编辑',
-          tagId: 'launcherEdit'
+          title: "Launcher编辑",
+          tagId: "launcherEdit"
         }
       }
     ]
   },
   {
-    path: 'CCPlusPushPolicy',
-    name: 'CCPlusPushPolicy',
+    path: "CCPlusPushPolicy",
+    name: "CCPlusPushPolicy",
     component: Wrapper,
-    meta: { title: 'CC Plus管理', icon: 'el-icon-cc-renyuanguanli' },
+    meta: { title: "CC Plus管理", icon: "el-icon-cc-renyuanguanli" },
     children: [
       {
-        name: 'CCPlusPushPolicy',
-        path: '/CCPlusPushPolicy',
+        name: "CCPlusPushPolicy",
+        path: "/CCPlusPushPolicy",
         component: CCPlusPushPolicy,
         meta: {
-          title: 'CC Plus管理child',
-          tagId: 'CCPlusPushPolicy'
+          title: "CC Plus管理child",
+          tagId: "CCPlusPushPolicy"
         }
       },
       {
-        name: 'SecondaryEdit',
-        path: '/SecondaryEdit',
+        name: "SecondaryEdit",
+        path: "/SecondaryEdit",
         component: SecondaryEdit,
         meta: {
-          title: '二级菜单编辑页',
-          tagId: 'SecondaryEdit'
+          title: "二级菜单编辑页",
+          tagId: "SecondaryEdit"
         }
       },
       {
-        name: 'ColumnTemplateDetail',
-        path: '/ColumnTemplateDetail',
-        component: ColumnTemplateDetail,
+        name: "InnerPageEdit",
+        path: "/InnerPageEdit",
+        component: InnerPageEdit,
         meta: {
-          title: '栏目模板详情',
-          tagId: 'ColumnTemplateDetail'
+          title: "CC Plus 内页新增编辑页",
+          tagId: "InnerPageEdit"
         }
       }
     ]
   },
   {
-    path: 'appStore',
-    name: 'appStore',
+    path: "appStore",
+    name: "appStore",
     component: Wrapper,
-    meta: { title: 'appStore管理', icon: 'el-icon-cc-daichuli2' },
+    meta: { title: "appStore管理", icon: "el-icon-cc-daichuli2" },
     children: [
       {
-        name: 'appStorePush',
-        path: '/appStorePush',
+        name: "appStorePush",
+        path: "/appStorePush",
         component: AppStorePush,
         meta: {
-          title: 'appStore管理',
-          tagId: 'appStorePush'
+          title: "appStore管理",
+          tagId: "appStorePush"
         }
       },
       {
-        name: 'appStoreEdit',
-        path: '/appStoreEdit',
+        name: "appStoreEdit",
+        path: "/appStoreEdit",
         component: AppStoreEdit,
         meta: {
-          title: 'appStore编辑',
-          tagId: 'appStoreEdit'
+          title: "appStore编辑",
+          tagId: "appStoreEdit"
         }
       }
     ]
-  },
-]
+  }
+];
 /**/
 
 const routes = [
   {
-    path: '/',
+    path: "/",
     component: Main,
-    redirect: '/desktop',
+    redirect: "/desktop",
     children
   },
   {
-    name: 'login',
-    path: '/login',
+    name: "login",
+    path: "/login",
     component: Login,
     meta: {
-      title: '登录'
+      title: "登录"
     }
   }
-]
+];
 
-export default routes
+export default routes;

@@ -390,7 +390,7 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter();
-      this.$service.queryCCPlusPushManageListPage(filter).then(data => {
+      this.$service.queryCCPlusInnerPagePushManageListPage(filter).then(data => {
         this.pagination.total = data.data.total;
         this.table.data = data.data.results;
       });
@@ -519,7 +519,7 @@ export default {
     handleCreate() {
       // 新增
       this.$router.push({
-        path: "SecondaryEdit",
+        path: "InnerPageEdit",
         query: {
           id: 0
         }
@@ -541,7 +541,7 @@ export default {
           type: "warning"
         });
         if (res == "confirm") {
-          res = await this.$service.queryCCPlusUpdatePushStatus({
+          res = await this.$service.queryCCPlusInnerPageUpdatePushStatus({
             releaseConfId: row.releaseConfId,
             releaseStatus: "1",
             creator: this.creator
@@ -577,7 +577,7 @@ export default {
           type: "warning"
         });
         if (res == "confirm") {
-          res = await this.$service.queryCCPlusUpdatePushStatus({
+          res = await this.$service.queryCCPlusInnerPageUpdatePushStatus({
             releaseConfId: row.releaseConfId,
             releaseStatus: "2",
             creator: this.creator
@@ -600,7 +600,7 @@ export default {
     // 复制
     async handleCopy(row) {
       this.$router.push({
-        path: "SecondaryEdit",
+        path: "InnerPageEdit",
         query: {
           releaseConfId: row.releaseConfId,
           handleType: "copy"
@@ -610,7 +610,7 @@ export default {
     async handleEdit(row) {
       //编辑 @todo 传数据进去
       this.$router.push({
-        path: "SecondaryEdit",
+        path: "InnerPageEdit",
         query: {
           releaseConfId: row.releaseConfId,
           handleType: "edit"
@@ -626,7 +626,7 @@ export default {
           type: "warning"
         });
         if (res == "confirm") {
-          res = await this.$service.queryCCPlusDeletePushManage({
+          res = await this.$service.queryCCPlusInnerPageDeletePushManage({
             releaseConfId: row.releaseConfId,
             creator: this.creator
           });

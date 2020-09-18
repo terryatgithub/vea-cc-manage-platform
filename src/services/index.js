@@ -43,6 +43,7 @@ import * as bigdata from './bigdata'
 // liteOS新增
 import * as liteApi from './liteOS/liteosApi'
 import * as liteCCPlusApi from './liteOS/ccplusApi'
+import * as liteCCPlusInnerPageApi from './liteOS/ccplusInnerPageApi'
 
 const service = {
   state: {},
@@ -90,7 +91,8 @@ const service = {
   ...bigdata,
   // liteOS新增
   ...liteApi,
-  ...liteCCPlusApi
+  ...liteCCPlusApi,
+  ...liteCCPlusInnerPageApi
 }
 export default function install (Vue) {
   const $service = {}
