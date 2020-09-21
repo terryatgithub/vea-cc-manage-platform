@@ -626,7 +626,7 @@ export default {
     // 新增
     handleCreate () {
       this.$router.push({
-        path: 'appStoreEdit'
+        path: 'AppStoreSecondaryMenuEdit'
       })
     },
     // 区域详情
@@ -703,7 +703,7 @@ export default {
       //   })
       // }).catch(() => {})
       this.$router.push({
-        path: 'appStoreEdit',
+        path: 'AppStoreSecondaryMenuEdit',
         query: {
           releaseConfId: row.releaseConfId,
           handleType: 'copy'
@@ -713,7 +713,7 @@ export default {
     // 编辑
     handleEdit (row) {
       this.$router.push({
-        path: 'appStoreEdit',
+        path: 'AppStoreSecondaryMenuEdit',
         query: {
           releaseConfId: row.releaseConfId,
           handleType: 'edit'

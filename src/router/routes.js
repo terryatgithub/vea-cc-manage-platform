@@ -62,10 +62,11 @@ import MediaAssetsDetail from "../views/mediaAssetsManager/detail.vue";
 import LauncherPush from "../views/launcherPush/index.vue";
 import LauncherEdit from "../views/launcherPush/edit.vue";
 import AppStorePush from "../views/appStorePush/index.vue";
-import AppStoreEdit from "../views/appStorePush/edit.vue";
+import AppStoreSecondaryMenuEdit from "../views/appStorePush/secondaryEdit.vue";
+import AppStoreInnerPageEdit from "../views/appStorePush/innerPageEdit.vue";
 import CCPlusPushPolicy from "../views/CCPlusPushPolicy";
-import SecondaryEdit from "../views/CCPlusPushPolicy/SecondaryEdit";
-import InnerPageEdit from "../views/CCPlusPushPolicy/InnerPageEdit";
+import CCPlusSecondaryEdit from "../views/CCPlusPushPolicy/SecondaryEdit";
+import CCPlusInnerPageEdit from "../views/CCPlusPushPolicy/InnerPageEdit";
 
 const TabInsertionTask = () =>
   import("../views/tabInsertionTask/TabInsertionTaskIndex.vue");
@@ -851,21 +852,21 @@ const children = [
         }
       },
       {
-        name: "SecondaryEdit",
-        path: "/SecondaryEdit",
-        component: SecondaryEdit,
+        name: "CCPlusSecondaryEdit",
+        path: "/CCPlusSecondaryEdit",
+        component: CCPlusSecondaryEdit,
         meta: {
           title: "二级菜单编辑页",
-          tagId: "SecondaryEdit"
+          tagId: "CCPlusSecondaryEdit"
         }
       },
       {
-        name: "InnerPageEdit",
-        path: "/InnerPageEdit",
-        component: InnerPageEdit,
+        name: "CCPlusInnerPageEdit",
+        path: "/CCPlusInnerPageEdit",
+        component: CCPlusInnerPageEdit,
         meta: {
           title: "CC Plus 内页新增编辑页",
-          tagId: "InnerPageEdit"
+          tagId: "CCPlusInnerPageEdit"
         }
       }
     ]
@@ -886,12 +887,21 @@ const children = [
         }
       },
       {
-        name: "appStoreEdit",
-        path: "/appStoreEdit",
-        component: AppStoreEdit,
+        name: "AppStoreSecondaryMenuEdit",
+        path: "/AppStoreSecondaryMenuEdit",
+        component: AppStoreSecondaryMenuEdit,
         meta: {
-          title: "appStore编辑",
-          tagId: "appStoreEdit"
+          title: "appStore二级菜单编辑",
+          tagId: "AppStoreSecondaryMenuEdit"
+        }
+      },
+      {
+        name: "AppStoreInnerPageEdit",
+        path: "/AppStoreInnerPageEdit",
+        component: AppStoreInnerPageEdit,
+        meta: {
+          title: "appStore内页编辑",
+          tagId: "AppStoreInnerPageEdit"
         }
       }
     ]

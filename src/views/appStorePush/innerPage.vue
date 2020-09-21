@@ -323,7 +323,7 @@ export default {
       if (filter.countryName) {
         filter.countryName = filter.countryName.join('/')
       }
-      this.$service.queryAppStorePushListPage(filter).then(data => {
+      this.$service.queryAppStoreInnerPagePushListPage(filter).then(data => {
         if (data.code === 0) {
           this.pagination.total = data.data.total
           this.table.data = data.data.results
@@ -474,7 +474,7 @@ export default {
     // 新增
     handleCreate () {
       this.$router.push({
-        path: 'appStoreEdit'
+        path: 'AppStoreInnerPageEdit'
       })
     },
     // 区域详情
@@ -494,7 +494,7 @@ export default {
           releaseStatus: '1',
           creator: this.$appState.user.name
         }
-        this.$service.updateAppStorePushStatus(params).then(data => {
+        this.$service.updateAppStoreInnerPagePushStatus(params).then(data => {
           if (data.code === 0) {
             this.$message({
               type: 'success',
@@ -522,7 +522,7 @@ export default {
           releaseStatus: '2',
           creator: this.$appState.user.name
         }
-        this.$service.updateAppStorePushStatus(params).then(data => {
+        this.$service.updateAppStoreInnerPagePushStatus(params).then(data => {
           if (data.code === 0) {
             this.$message({
               type: 'success',
@@ -551,7 +551,7 @@ export default {
       //   })
       // }).catch(() => {})
       this.$router.push({
-        path: 'appStoreEdit',
+        path: 'AppStoreInnerPageEdit',
         query: {
           releaseConfId: row.releaseConfId,
           handleType: 'copy'
@@ -561,7 +561,7 @@ export default {
     // 编辑
     handleEdit (row) {
       this.$router.push({
-        path: 'appStoreEdit',
+        path: 'AppStoreInnerPageEdit',
         query: {
           releaseConfId: row.releaseConfId,
           handleType: 'edit'
@@ -579,7 +579,7 @@ export default {
           releaseConfId: row.releaseConfId,
           creator: this.$appState.user.name
         }
-        this.$service.deleteAppStorePushManage(params).then(data => {
+        this.$service.deleteAppStoreInnerPagePushManage(params).then(data => {
           if (data.code === 0) {
             this.$message({
               type: 'success',

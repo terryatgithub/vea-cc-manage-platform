@@ -456,6 +456,64 @@ export function getAppStorePushManageReleaseConfId (params) {
   })
 }
 
+// appStore 内页管理
+
+// 分页获取AppStore推送管理列表
+export function queryAppStoreInnerPagePushListPage (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/app-store-inside-page-push/query-push-list-page',
+    params
+  })
+}
+// AppStore推送状态变更
+export function updateAppStoreInnerPagePushStatus (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/lite-os/admin/app-store-inside-page-push/update-push-status',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
+// AppStore推送管理修改
+export function updateAppStoreInnerPagePushManage (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/lite-os/admin/app-store-inside-page-push/update-push',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
+// AppStore推送管理删除
+export function deleteAppStoreInnerPagePushManage (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/lite-os/admin/app-store-inside-page-push/delete-push',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
+// AppStore推送管理添加
+export function addAppStoreInnerPagePushManage (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/lite-os/admin/app-store-inside-page-push/add-push',
+    data,
+    isJSON: true,
+    isHeaders: true
+  })
+}
+// AppStore根据推送管理id获取对应数据
+export function getAppStoreInnerPagePushManageReleaseConfId (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/lite-os/admin/app-store-inside-page-push/query-push-by-releaseConfId',
+    params
+  })
+}
 // 登录接口
 export function loginToken (params) {
   let url = 'ums/oauth/token'
