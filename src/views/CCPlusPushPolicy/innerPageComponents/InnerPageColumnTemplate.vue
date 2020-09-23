@@ -96,11 +96,18 @@
       <!-- 图片展示区 -->
       <el-form-item class="image-wrapper">
         <div class="demo-image__lazy">
-          <el-image
+          <div
+            style="width: 110px;"
             v-for="item in content.itemMediaList"
             :key="item.mediaResourcesId"
-            :src="item.mediaPic"
-          ></el-image>
+          >
+            <el-image :src="item.mediaPic"></el-image>
+            <span
+              style="display:inline-block;white-space:nowrap;text-overflow:ellipsis;width:100%;
+              overflow:hidden;"
+              >{{ item.title }}</span
+            >
+          </div>
         </div>
       </el-form-item>
 
@@ -243,7 +250,7 @@ export default {
       this.content.itemMediaMax = this.onlyNumber(val);
     },
     handleMediaMaxFocus() {
-      this.mediaMaxPrev = this.content.itemMediaMax
+      this.mediaMaxPrev = this.content.itemMediaMax;
     },
     handleMediaMaxBlur() {
       if (this.content.itemMediaMax < this.content.itemMediaList.length) {
