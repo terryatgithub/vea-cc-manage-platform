@@ -92,13 +92,13 @@
           >
           <el-tabs type="border-card">
             <el-tab-pane
-              v-for="(list, pageIndex) in form.pageInfoList"
+              v-for="(list, pIndex) in form.pageInfoList"
               :key="list.sort"
               :label="list.pageName"
               class="column-template-tab-pane"
             >
               <el-button
-                @click="delCurrentPage(pageIndex)"
+                @click="delCurrentPage(pIndex)"
                 style="position:absolute;top:0;right:0;"
                 >删除当前页</el-button
               >
@@ -113,7 +113,7 @@
               <!-- 栏目区域 -->
               栏目数 {{ list.itemList.length }}
               <el-button
-                @click="showColumnSortDlg(pageIndex)"
+                @click="showColumnSortDlg(pIndex)"
                 class="btn-column-sort"
                 >栏目排序</el-button
               >
@@ -128,7 +128,7 @@
                     type="success"
                     plain
                     icon="el-icon-edit"
-                    @click="handleAddColumn(pageIndex)"
+                    @click="handleAddColumn(pIndex)"
                     :disabled="list.itemList.length >= columnsMaxNum"
                     >新增栏目</el-button
                   >
@@ -141,7 +141,7 @@
                 ref="columnTemplateForm"
                 :key="index"
                 :content="item"
-                :pageIndex="pageIndex"
+                :pageIndex="pIndex"
                 @remove-column="handleRemoveColumn"
               ></InnerPageColumnTemplate>
             </el-tab-pane>
@@ -181,6 +181,8 @@
     >
       <InnerPageSortDialog
         :sortList="sortList"
+        :sortName="sortName"
+        :pageIndex="pageIndex"
         @done-sort-list="doneSortList"
       />
     </el-dialog>
@@ -208,6 +210,7 @@ export default {
       showSelectRegionDialog: false,
       showPageListSort: false,
       sortTitle: "",
+      sortType: "",
       sortList: [],
       versionOptions: [],
       priorityOptions: [
@@ -351,21 +354,37 @@ export default {
     },
     showPageListSortDlg() {
       //显示页面排序弹窗
+      this.sortType = "pageList";
       this.sortTitle = "页面排序";
+      this.sortName = "pageName";
       this.sortList = this.form.pageInfoList;
       this.showPageListSort = true;
     },
-    resortPageList() {
-      this.form.pageInfoList.forEach((item, index) => {
+    resortList(list) {
+      list.forEach((item, index) => {
         item.sort = index;
       });
+    },
+    showColumnSortDlg(pageIndex) {
+      // 显示栏目排序弹窗
+      this.sortType = "columnList";
+      this.sortTitle = "栏目排序";
+      this.sortName = "itemName";
+      this.pageIndex = pageIndex;
+      this.sortList = this.form.pageInfoList[pageIndex].itemList;
+      this.showPageListSort = true;
     },
     doneSortList(confirm, list) {
       this.showPageListSort = false;
       if (confirm) {
-        this.form.pageInfoList = list
-        this.resortPageList();
+        this.resortList(list);
+        if (this.sortType === "pageList") {
+          this.form.pageInfoList = list;
+        } else if (this.sortType === "columnList") {
+          this.form.pageInfoList[this.pageIndex].itemList = list;
+        }
       }
+      this.sortType = "";
     },
     addNewPage() {
       // 新增页面
@@ -375,12 +394,6 @@ export default {
     },
     delCurrentPage(index) {
       this.form.pageInfoList.splice(index, 1);
-    },
-    showColumnSortDlg(pageIndex) {
-      // 显示栏目排序弹窗
-      this.sortTitle = "栏目排序";
-      this.sortList = this.form.pageInfoList[pageIndex].itemList;
-      this.showPageListSort = true;
     },
     async getDetailById() {
       const { releaseConfId } = this.$route.query;
@@ -429,11 +442,6 @@ export default {
       let [content, pageIndex] = rest;
       let idx = this.form.pageInfoList[pageIndex].itemList.indexOf(content);
       this.form.pageInfoList[pageIndex].itemList.splice(idx, 1);
-    },
-    handleRemoveColumnOld(...rest) {
-      let content = rest[0];
-      let idx = this.form.itemList.indexOf(content);
-      this.form.itemList.splice(idx, 1);
     },
     checkDuplicatedSerialNo() {
       // 判断栏目模板序号是否有重复的

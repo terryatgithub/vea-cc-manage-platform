@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-table :data="sortListInUse" style="width: 100%" highlight-current-row>
-      <el-table-column prop="pageName" label="名称"></el-table-column>
+      <el-table-column :prop="sortName" label="名称"></el-table-column>
       <el-table-column label="往前">
         <template v-slot:default="scope">
           <el-button @click="moveUp(scope)">
@@ -24,6 +24,7 @@
 export default {
   name: "InnerPageSortDialog",
   props: {
+    sortName: "",
     sortList: {
       type: Array,
       default: []
