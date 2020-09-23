@@ -112,7 +112,9 @@
 
               <!-- 栏目区域 -->
               栏目数 {{ list.itemList.length }}
-              <el-button @click="showColumnSortDlg" class="btn-column-sort"
+              <el-button
+                @click="showColumnSortDlg(pageIndex)"
+                class="btn-column-sort"
                 >栏目排序</el-button
               >
               <el-tooltip
@@ -171,6 +173,17 @@
     >
       <SelectRegionComponent @getRegion="getRegion" />
     </el-dialog>
+
+    <el-dialog
+      :title="sortTitle"
+      :visible.sync="showPageListSort"
+      v-if="showPageListSort"
+    >
+      <InnerPageSortDialog
+        :sortList="sortList"
+        @done-sort-list="doneSortList"
+      />
+    </el-dialog>
   </ContentCard>
 </template>
 
@@ -180,17 +193,22 @@
  */
 import SelectRegionComponent from "./components/SelectRegionComponent";
 import InnerPageColumnTemplate from "./innerPageComponents/InnerPageColumnTemplate";
+import InnerPageSortDialog from "./components/SortDialog";
 import liteOS from "@/assets/liteOS.js";
 
 export default {
   name: "InnerPageEdit",
   components: {
     InnerPageColumnTemplate,
-    SelectRegionComponent
+    SelectRegionComponent,
+    InnerPageSortDialog
   },
   data() {
     return {
       showSelectRegionDialog: false,
+      showPageListSort: false,
+      sortTitle: "",
+      sortList: [],
       versionOptions: [],
       priorityOptions: [
         {
@@ -333,6 +351,21 @@ export default {
     },
     showPageListSortDlg() {
       //显示页面排序弹窗
+      this.sortTitle = "页面排序";
+      this.sortList = this.form.pageInfoList;
+      this.showPageListSort = true;
+    },
+    resortPageList() {
+      this.form.pageInfoList.forEach((item, index) => {
+        item.sort = index;
+      });
+    },
+    doneSortList(confirm, list) {
+      this.showPageListSort = false;
+      if (confirm) {
+        this.form.pageInfoList = list
+        this.resortPageList();
+      }
     },
     addNewPage() {
       // 新增页面
@@ -343,8 +376,11 @@ export default {
     delCurrentPage(index) {
       this.form.pageInfoList.splice(index, 1);
     },
-    showColumnSortDlg() {
+    showColumnSortDlg(pageIndex) {
       // 显示栏目排序弹窗
+      this.sortTitle = "栏目排序";
+      this.sortList = this.form.pageInfoList[pageIndex].itemList;
+      this.showPageListSort = true;
     },
     async getDetailById() {
       const { releaseConfId } = this.$route.query;
