@@ -9,7 +9,7 @@
         :model="form"
         :rules="rules"
         ref="ccplusInnerPageEditForm"
-        class="secondary-edit"
+        class="ccplus-inner-page-edit"
       >
         <el-form-item label="策略名称:" prop="releaseConfName">
           <el-input
@@ -79,36 +79,71 @@
           </el-select>
         </el-form-item>
 
-        <!-- 栏目区域 -->
-        <el-form-item label="栏目:"> 栏目数 {{ columnsNum }} </el-form-item>
-
-        <!-- <el-form-item label-width="10px"> -->
-        <!-- 栏目模板 -->
-        <ColumnTemplate
-          v-for="(item, index) in form.itemList"
-          ref="columnTemplateForm"
-          :key="index"
-          :content="item"
-          @remove-column="handleRemoveColumn"
-        ></ColumnTemplate>
-
-        <el-form-item>
-          <el-tooltip
-            placement="top-start"
-            :content="'栏目数最多为' + columnsMaxNum + '个'"
-            :disabled="columnsNum < columnsMaxNum"
+        <el-form-item class="page-info-tabs">
+          <el-button
+            @click="showPageListSortDlg"
+            style="position:absolute;z-index:1;right:80px;"
+            >页面排序</el-button
           >
-            <div>
+          <el-button
+            @click="addNewPage"
+            style="position:absolute;z-index:1;right:0;"
+            >新增页面</el-button
+          >
+          <el-tabs type="border-card">
+            <el-tab-pane
+              v-for="(list, pageIndex) in form.pageInfoList"
+              :key="list.sort"
+              :label="list.pageName"
+              class="column-template-tab-pane"
+            >
               <el-button
-                type="success"
-                plain
-                icon="el-icon-edit"
-                @click="handleAddColumn"
-                :disabled="columnsNum >= columnsMaxNum"
-                >添加栏目</el-button
+                @click="delCurrentPage(pageIndex)"
+                style="position:absolute;top:0;right:0;"
+                >删除当前页</el-button
               >
-            </div>
-          </el-tooltip>
+              页面名称* :
+              <el-input v-model="list.pageName"></el-input>
+              页面描述 :
+              <el-input
+                v-model="list.pageDes"
+                placeholder="请填写页面描述"
+              ></el-input>
+
+              <!-- 栏目区域 -->
+              栏目数 {{ list.itemList.length }}
+              <el-button @click="showColumnSortDlg" class="btn-column-sort"
+                >栏目排序</el-button
+              >
+              <el-tooltip
+                placement="top-start"
+                :content="'栏目数最多为' + columnsMaxNum + '个'"
+                :disabled="list.itemList.length < columnsMaxNum"
+                class="btn-column-addnew"
+              >
+                <div>
+                  <el-button
+                    type="success"
+                    plain
+                    icon="el-icon-edit"
+                    @click="handleAddColumn(pageIndex)"
+                    :disabled="list.itemList.length >= columnsMaxNum"
+                    >新增栏目</el-button
+                  >
+                </div>
+              </el-tooltip>
+
+              <!-- 栏目模板 -->
+              <InnerPageColumnTemplate
+                v-for="(item, index) in list.itemList"
+                ref="columnTemplateForm"
+                :key="index"
+                :content="item"
+                :pageIndex="pageIndex"
+                @remove-column="handleRemoveColumn"
+              ></InnerPageColumnTemplate>
+            </el-tab-pane>
+          </el-tabs>
         </el-form-item>
 
         <el-form-item label="指定设备" prop="tvActiveId">
@@ -129,7 +164,11 @@
       </el-form>
     </div>
 
-    <el-dialog title="选择区域" :visible.sync="showSelectRegionDialog" v-if="showSelectRegionDialog">
+    <el-dialog
+      title="选择区域"
+      :visible.sync="showSelectRegionDialog"
+      v-if="showSelectRegionDialog"
+    >
       <SelectRegionComponent @getRegion="getRegion" />
     </el-dialog>
   </ContentCard>
@@ -140,13 +179,13 @@
   酷开LiteOS CC Plus二级菜单-’新增/编辑’页面
  */
 import SelectRegionComponent from "./components/SelectRegionComponent";
-import ColumnTemplate from "./components/ColumnTemplate";
+import InnerPageColumnTemplate from "./innerPageComponents/InnerPageColumnTemplate";
 import liteOS from "@/assets/liteOS.js";
 
 export default {
   name: "InnerPageEdit",
   components: {
-    ColumnTemplate,
+    InnerPageColumnTemplate,
     SelectRegionComponent
   },
   data() {
@@ -204,11 +243,7 @@ export default {
       columnsMaxNum: 50 //栏目数最多为50
     };
   },
-  computed: {
-    columnsNum() {
-      return this.form.itemList.length;
-    }
-  },
+  computed: {},
   created() {},
   activated() {
     this.init();
@@ -265,6 +300,25 @@ export default {
         this.form.supportVersion = [];
       }
     },
+    getColumnTemplateSample() {
+      //获取模板数据样本
+      return {
+        template: "A",
+        // releaseItemId: 0,
+        itemSeq: 1,
+        itemName: "",
+        itemMediaMax: 99,
+        itemMediaList: [] //媒体资源
+      };
+    },
+    getPageInfoListSample() {
+      return {
+        pageName: "新页面",
+        pageDes: "",
+        sort: 0,
+        itemList: [this.getColumnTemplateSample()] //栏目列表
+      };
+    },
     getDefaultForm() {
       return {
         releaseConfName: "",
@@ -273,18 +327,35 @@ export default {
         ctmDevCtrId: 0,
         ctmDevCtrName: "",
         priority: "",
-        itemList: [this.getColumnTemplateSample()], //栏目列表
+        pageInfoList: [this.getPageInfoListSample()],
         tvActiveId: ""
       };
+    },
+    showPageListSortDlg() {
+      //显示页面排序弹窗
+    },
+    addNewPage() {
+      // 新增页面
+      const page = this.getPageInfoListSample();
+      page.sort = this.form.pageInfoList.length + 1;
+      this.form.pageInfoList.push(page);
+    },
+    delCurrentPage(index) {
+      this.form.pageInfoList.splice(index, 1);
+    },
+    showColumnSortDlg() {
+      // 显示栏目排序弹窗
     },
     async getDetailById() {
       const { releaseConfId } = this.$route.query;
       if (!releaseConfId) {
         return;
       }
-      let res = await this.$service.queryCCPlusInnerPageGetPushManageByReleaseConfId({
-        releaseConfId
-      });
+      let res = await this.$service.queryCCPlusInnerPageGetPushManageByReleaseConfId(
+        {
+          releaseConfId
+        }
+      );
       if (res.code === 0) {
         const { form } = this;
         Object.keys(res.data).forEach(key => {
@@ -313,23 +384,17 @@ export default {
         });
       }
     },
-    getColumnTemplateSample() {
-      // 获取模板数据样本
-      return {
-        template: "A",
-        // releaseItemId: 0,
-        itemSeq: 1,
-        itemName: "",
-        itemMediaMax: 99,
-        itemMediaList: [] //媒体资源
-      };
-    },
-    handleAddColumn() {
+    handleAddColumn(index) {
       const col = this.getColumnTemplateSample();
-      col.itemSeq = this.form.itemList.length + 1;
-      this.form.itemList.push(col);
+      col.itemSeq = this.form.pageInfoList[index].itemList.length + 1;
+      this.form.pageInfoList[index].itemList.push(col);
     },
     handleRemoveColumn(...rest) {
+      let [content, pageIndex] = rest;
+      let idx = this.form.pageInfoList[pageIndex].itemList.indexOf(content);
+      this.form.pageInfoList[pageIndex].itemList.splice(idx, 1);
+    },
+    handleRemoveColumnOld(...rest) {
       let content = rest[0];
       let idx = this.form.itemList.indexOf(content);
       this.form.itemList.splice(idx, 1);
@@ -459,14 +524,32 @@ export default {
 </script>
 
 <style lang="scss">
-.secondary-edit > .el-form-item {
+.ccplus-inner-page-edit > .el-form-item {
   > .el-form-item__label {
     width: 90px;
     text-align: left;
   }
-  > .el-form-item__content {
-    width: 200px;
-    display: inline-block;
+  // > .el-form-item__content {
+  //   width: 200px;
+  //   display: inline-block;
+  // }
+  .page-info-tabs {
+    position: relative;
+  }
+  .column-template-tab-pane {
+    position: relative;
+    .btn-column-sort,
+    .btn-column-addnew {
+      // position: absolute;
+      // top: 0;
+      // right: 0;
+    }
+    .btn-column-addnew {
+      display: inline-block;
+    }
+    .btn-column-sort {
+      // right: 100px;
+    }
   }
 }
 </style>

@@ -519,7 +519,7 @@ export default {
     handleCreate() {
       // 新增
       this.$router.push({
-        path: "InnerPageEdit",
+        path: "CCPlusInnerPageEdit",
         query: {
           id: 0
         }
@@ -600,7 +600,7 @@ export default {
     // 复制
     async handleCopy(row) {
       this.$router.push({
-        path: "InnerPageEdit",
+        path: "CCPlusInnerPageEdit",
         query: {
           releaseConfId: row.releaseConfId,
           handleType: "copy"
@@ -610,7 +610,7 @@ export default {
     async handleEdit(row) {
       //编辑 @todo 传数据进去
       this.$router.push({
-        path: "InnerPageEdit",
+        path: "CCPlusInnerPageEdit",
         query: {
           releaseConfId: row.releaseConfId,
           handleType: "edit"
