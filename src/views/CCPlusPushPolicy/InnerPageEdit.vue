@@ -337,7 +337,7 @@ export default {
     addNewPage() {
       // 新增页面
       const page = this.getPageInfoListSample();
-      page.sort = this.form.pageInfoList.length + 1;
+      page.sort = this.form.pageInfoList.length;
       this.form.pageInfoList.push(page);
     },
     delCurrentPage(index) {

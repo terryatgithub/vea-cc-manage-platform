@@ -100,7 +100,6 @@
             v-for="item in content.itemMediaList"
             :key="item.mediaResourcesId"
             :src="item.mediaPic"
-            lazy
           ></el-image>
         </div>
       </el-form-item>
@@ -139,7 +138,7 @@ import ColumnResourceSelectDialog from "../components/ColumnResourceSelectDialog
 import ColumnTemplateDetail from "../components/ColumnTemplateDetail";
 
 export default {
-  name: "ColumnTemplate",
+  name: "InnerPageColumnTemplate",
   components: {
     ColumnResourceSelectDialog,
     ColumnTemplateDetail
