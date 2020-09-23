@@ -11,7 +11,9 @@
       </el-table-column>
       <el-table-column label="往后">
         <template v-slot:default="scope">
-          <i class="el-icon-caret-bottom" @click="moveDown(scope)"></i>
+          <el-button @click="moveDown(scope)">
+            <i class="el-icon-caret-bottom"></i>
+          </el-button>
         </template>
       </el-table-column>
     </el-table>

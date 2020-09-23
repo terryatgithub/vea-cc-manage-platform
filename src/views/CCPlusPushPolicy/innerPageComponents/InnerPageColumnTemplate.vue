@@ -151,7 +151,6 @@ export default {
     ColumnTemplateDetail
   },
   props: {
-    pageIndex: 0,
     content: {
       //prop会在一个组件实例创建之前进行验证，所以实例的property（如data、computed等)在default/validator函数中是不可用的
       type: Object,
@@ -400,7 +399,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$emit("remove-column", this.content, this.pageIndex);
+          this.$emit("remove-column", this.content);
         })
         .catch(() => {});
     },

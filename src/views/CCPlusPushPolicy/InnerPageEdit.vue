@@ -90,10 +90,11 @@
             style="position:absolute;z-index:1;right:0;"
             >新增页面</el-button
           >
-          <el-tabs type="border-card">
+          <el-tabs type="border-card" v-model="pageIndex" @tab-click="handleClickTab">
             <el-tab-pane
               v-for="(list, pIndex) in form.pageInfoList"
               :key="list.sort"
+              :name="list.sort+''"
               :label="list.pageName"
               class="column-template-tab-pane"
             >
@@ -113,7 +114,7 @@
               <!-- 栏目区域 -->
               栏目数 {{ list.itemList.length }}
               <el-button
-                @click="showColumnSortDlg(pIndex)"
+                @click="showColumnSortDlg()"
                 class="btn-column-sort"
                 >栏目排序</el-button
               >
@@ -141,7 +142,6 @@
                 ref="columnTemplateForm"
                 :key="index"
                 :content="item"
-                :pageIndex="pIndex"
                 @remove-column="handleRemoveColumn"
               ></InnerPageColumnTemplate>
             </el-tab-pane>
@@ -182,7 +182,6 @@
       <InnerPageSortDialog
         :sortList="sortList"
         :sortName="sortName"
-        :pageIndex="pageIndex"
         @done-sort-list="doneSortList"
       />
     </el-dialog>
@@ -209,6 +208,7 @@ export default {
     return {
       showSelectRegionDialog: false,
       showPageListSort: false,
+      pageIndex: 0,
       sortTitle: "",
       sortType: "",
       sortList: [],
@@ -321,6 +321,9 @@ export default {
         this.form.supportVersion = [];
       }
     },
+    handleClickTab(tab, event) {
+      this.pageIndex = tab.index;
+    },
     getColumnTemplateSample() {
       //获取模板数据样本
       return {
@@ -365,13 +368,12 @@ export default {
         item.sort = index;
       });
     },
-    showColumnSortDlg(pageIndex) {
+    showColumnSortDlg() {
       // 显示栏目排序弹窗
       this.sortType = "columnList";
       this.sortTitle = "栏目排序";
       this.sortName = "itemName";
-      this.pageIndex = pageIndex;
-      this.sortList = this.form.pageInfoList[pageIndex].itemList;
+      this.sortList = this.form.pageInfoList[this.pageIndex].itemList;
       this.showPageListSort = true;
     },
     doneSortList(confirm, list) {
@@ -391,6 +393,7 @@ export default {
       const page = this.getPageInfoListSample();
       page.sort = this.form.pageInfoList.length;
       this.form.pageInfoList.push(page);
+      this.pageIndex = page.sort + ''
     },
     delCurrentPage(index) {
       this.form.pageInfoList.splice(index, 1);
@@ -439,9 +442,9 @@ export default {
       this.form.pageInfoList[index].itemList.push(col);
     },
     handleRemoveColumn(...rest) {
-      let [content, pageIndex] = rest;
-      let idx = this.form.pageInfoList[pageIndex].itemList.indexOf(content);
-      this.form.pageInfoList[pageIndex].itemList.splice(idx, 1);
+      let [content] = rest;
+      let idx = this.form.pageInfoList[this.pageIndex].itemList.indexOf(content);
+      this.form.pageInfoList[this.pageIndex].itemList.splice(idx, 1);
     },
     checkDuplicatedSerialNo() {
       // 判断栏目模板序号是否有重复的
