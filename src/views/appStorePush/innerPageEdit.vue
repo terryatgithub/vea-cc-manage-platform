@@ -14,13 +14,27 @@
         <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close' :key = 'isInit'></AppSelPop>
         <AppDetail v-show="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :material = 'material' @appSure = 'appSure(arguments)'></AppDetail>
         <PosterSelPop v-show="dialogType === 'posterPop'" @posterSure = 'posterSure(arguments)' @close = 'close' :key = 'isInit'></PosterSelPop>
+        <InnerPageSortDialog
+          ref = 'sortChild'
+          v-show="dialogType === 'sort'"
+          @done-sort-list = "doneSortList"
+          @close = 'close'
+        ></InnerPageSortDialog>
       </el-dialog>
-      <div style="margin-bottom: 20px;">
+      <div class="handlePage">
         <el-button
+          type="primary"
+          size="small"
+          @click="pageSort"
+        >
+          页面排序
+        </el-button>
+        <el-button
+          type="primary"
           size="small"
           @click="addTab(editableTabsValue)"
         >
-          add tab
+          新增页面
         </el-button>
       </div>
       <el-tabs v-model="editableTabsValue" type="border-card" class="tabBox">
@@ -41,6 +55,10 @@
           <div class="appBox">
             <div class="label">栏目</div>
             <div class="item" v-for='(item, index) in itemTabs.itemList' :key='index'>
+              <div class="handleItem">
+                <el-button type="primary" @click="pageSort(indexTabs)">栏目排序</el-button>
+                <el-button type="primary" @click="addItem(indexTabs)">新增栏目</el-button>
+              </div>
               <el-form
                 :inline="true"
               >
@@ -56,7 +74,7 @@
                   <el-button type="primary" @click="materialSel(indexTabs, index)" round>新增栏目资源</el-button>
                   <el-button type="danger" @click="deleteItem(indexTabs, index)" v-if="item.length > 1" round>删除栏目</el-button>
                 </div>
-                <el-form-item label="栏目序号">
+                <!-- <el-form-item label="栏目序号">
                   <el-input
                     placeholder="请输入栏目序号"
                     type="number"
@@ -65,7 +83,7 @@
                     @input.native="itemSeqMsg(indexTabs, index)"
                     onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"
                   ></el-input>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="栏目名称">
                   <el-input placeholder="请输入栏目名称" v-model="item.itemName" clearable maxlength="99"></el-input>
                 </el-form-item>
@@ -83,7 +101,6 @@
                 </ul>
               </el-form>
             </div>
-            <div class="addItem"><el-button type="primary" icon="el-icon-plus" @click="addItem(indexTabs)">添加栏目</el-button></div>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -100,6 +117,7 @@ import RegionDetail from '@/components/liteOS/regionDetail'
 import AppSelPop from '@/components/liteOS/appSelPop'
 import AppDetail from '@/components/liteOS/appDetail'
 import PosterSelPop from '@/components/liteOS/posterSelPop'
+import InnerPageSortDialog from '@/components/liteOS/SortDialog'
 import liteOS from '@/assets/liteOS.js'
 export default {
   components: {
@@ -110,7 +128,8 @@ export default {
     RegionDetail,
     AppSelPop,
     AppDetail,
-    PosterSelPop
+    PosterSelPop,
+    InnerPageSortDialog
   },
   watch: {
   },
@@ -130,15 +149,16 @@ export default {
       material: null,
       isInit: 0,
       isX: true,
+      sortList: [],
       editableTabsValue: '1',
       pageInfoList: [{
         sort: '1',
-        pageName: 'new Tab',
+        pageName: '新页面',
         pageDes: '',
         itemList: [
           {
             itemName: '',
-            itemSeq: '',
+            itemSeq: 1,
             template: 'I',
             itemAppList: []
           }
@@ -166,8 +186,8 @@ export default {
             detail.supportVersion = detail.supportVersion.split(',')
             const date = (liteOS.parserDate(detail.releaseStartTime) + ',' + liteOS.parserDate(detail.releaseEndTime)).split(',')
             detail.tvActiveId === null
-              ? this.$refs['pushChild'].mac = '1'
-              : this.$refs['pushChild'].mac = '0'
+              ? this.$refs['pushChild'].mac = '0'
+              : this.$refs['pushChild'].mac = '1'
             let pushForm = Object.assign({}, {
               releaseConfName: detail.releaseConfName,
               supportVersion: detail.supportVersion,
@@ -178,15 +198,16 @@ export default {
             })
             this.$refs['pushChild'].pushForm = pushForm
             this.ctmDevCtrName = detail.ctmDevCtrName
-            // for (const i in detail.pageInfoList) {
-            //   // delete detail.pageInfoList[i].itemId
-            //   for (const n in detail.pageInfoList[i].itemList) {
-            //     // delete detail.itemList[i].itemAppList[n].materialPics
-            //     for (const z in detail.pageInfoList[i].itemList[n]) {
-                  
-            //     }
-            //   }
-            // }
+            for (const i in detail.pageInfoList) {
+              detail.pageInfoList[i].sort = detail.pageInfoList[i].sort.toString()
+              for (const n in detail.pageInfoList[i].itemList) {
+                if (detail.pageInfoList[i].itemList[n].template === 'H' || detail.pageInfoList[i].itemList[n].template === 'J') {
+                  for (const z in detail.pageInfoList[i].itemList[n].itemAppList) {
+                    detail.pageInfoList[i].itemList[n].itemAppList[z].materialName = detail.pageInfoList[i].itemList[n].itemAppList[z].posterName
+                  }
+                }
+              }
+            }
             this.pageInfoList = [...detail.pageInfoList]
             this.editableTabsValue = '1'
           } else {
@@ -202,13 +223,14 @@ export default {
           this.$refs['pushChild'].$refs['pushForm'].clearValidate()
           this.$refs['pushChild'].$refs['pushForm'].resetFields()
           this.$refs['pushChild'].mac = '0'
+          this.ctmDevCtrName = ''
           this.pageInfoList = [{
             sort: '1',
-            pageName: 'new Tab',
+            pageName: '新页面',
             pageDes: '',
             itemList: [{
               itemName: '',
-              itemSeq: '',
+              itemSeq: 1,
               template: 'I',
               itemAppList: []
             }]
@@ -223,7 +245,7 @@ export default {
       if (this.pageInfoList[indexTabs].itemList.length < 50) {
         this.pageInfoList[indexTabs].itemList.push({
           itemName: '',
-          itemSeq: '',
+          itemSeq: parseInt(this.pageInfoList[indexTabs].itemList.length + 1),
           template: 'I',
           itemAppList: []
         })
@@ -495,7 +517,6 @@ export default {
             params.releaseStatus = '0'
             params.tvActiveId = DeviceID
             params.pageInfoList = that.pageInfoList
-            debugger
             let data
             // 判断是编辑、复制、新增
             if (that.$route.query.releaseConfId && that.$route.query.handleType === 'edit') {
@@ -515,7 +536,10 @@ export default {
                 message: msg
               })
               that.$router.push({
-                path: 'appStorePush'
+                path: 'appStorePush',
+                query: {
+                  tabType: 'innerPage'
+                }
               })
             } else {
               that.$message({
@@ -531,9 +555,7 @@ export default {
       })
     },
     cancel () {
-      this.$router.push({
-        path: 'appStorePush'
-      })
+      this.$router.back()
     },
     goBack () {
       this.$confirm('退出后修改内容会全部丢失，确认退出吗？', '提示', {
@@ -544,16 +566,43 @@ export default {
         .then(() => this.$router.back())
         .catch(() => {})
     },
+    // 弹窗排序
+    pageSort (indexTabs) {
+      this.dialogFormVisible = true
+      this.dialogType = 'sort'
+      this.dialogWidth = '500px'
+      this.showClose = true
+      if (indexTabs) {
+        this.dialogTitle = '页面排序'
+        this.$nextTick(() => {
+          this.$refs['sortChild'].sortListInUse = [...this.pageInfoList]
+        })
+      } else {
+        this.dialogTitle = '栏目排序'
+        this.$nextTick(() => {
+          this.$refs['sortChild'].sortListInUse = [...this.pageInfoList[indexTabs].itemList]
+        })
+      }
+    },
+    // 排序完成
+    doneSortList (list) {
+      for (const i in list) {
+        list[i].sort = parseInt(i) + 1 + ''
+      }
+      this.pageInfoList = list
+      this.dialogFormVisible = false
+      this.isX = false
+    },
     addTab (targetName) {
       let newTabName = ++this.tabIndex + ''
       this.pageInfoList.push({
         sort: newTabName,
-        pageName: 'new Tab',
+        pageName: '新页面',
         pageDes: '',
         itemList: [
           {
             itemName: '',
-            itemSeq: '',
+            itemSeq: 1,
             template: '',
             itemAppList: []
           }
@@ -593,17 +642,28 @@ export default {
   display: block;
 </style>
 <style lang='scss' scoped>
+.handlePage {
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  right: 36px;
+  z-index: 999;
+  .el-button {
+    margin-top: 5px;
+  }
+}
 .appBox {
   position: relative;
   margin-bottom: 20px;
-  .addItem {
+  .handleItem {
     display: inline-block;
     position: absolute;
     right: 0;
-    bottom: -53px;
+    top: 0;
   }
   .label {
     font-size: 14px;
+    line-height: 32px;
     color: #606266;
     padding: 0 12px 0 0;
     box-sizing: border-box;

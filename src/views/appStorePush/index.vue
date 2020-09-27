@@ -10,25 +10,30 @@
 </template>
 
 <script>
-import AppStorePushSecondaryMenu from "./secondaryMenu.vue";
-import AppStorePushInnerPage from "./innerPage.vue";
+import AppStorePushSecondaryMenu from './secondaryMenu.vue'
+import AppStorePushInnerPage from './innerPage.vue'
 export default {
-  name: "appStorePushIndex",
+  name: 'appStorePushIndex',
   components: {
     AppStorePushSecondaryMenu,
     AppStorePushInnerPage
   },
-  data() {
+  data () {
     return {
-      activeName: "first"
-    };
+      activeName: 'first'
+    }
   },
   methods: {
-    handleClick() {
-      console.log("handleClick...");
+    handleClick () {
+      console.log('handleClick...')
+    }
+  },
+  activated () {
+    if (this.$route.query.tabType === 'innerPage') {
+      this.activeName = 'second'
     }
   }
-};
+}
 </script>
 
 <style lang="stylus" scoped>

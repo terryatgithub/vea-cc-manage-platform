@@ -79,6 +79,7 @@ export function queryVersionList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/lite-os/admin/version/queryVersionList',
+    useLoading: false,
     params
   })
 }
