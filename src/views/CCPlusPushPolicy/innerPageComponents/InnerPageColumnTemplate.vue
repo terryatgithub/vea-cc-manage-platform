@@ -1,6 +1,15 @@
 <template>
   <div class="column-template-wrapper">
     <el-form label-width="90px" :model="content" ref="tempForm" :rules="rules">
+      <el-form-item label="栏目名称:" prop="itemName">
+        <el-input
+          placeholder=""
+          clearable
+          v-model="content.itemName"
+          maxlength="99"
+        />
+      </el-form-item>
+
       <el-form-item label="栏目模板:">
         <el-select
           v-model="content.template"
@@ -21,39 +30,6 @@
         <el-button @click="handleSelectColumnResource" type="primary" plain
           >新增栏目资源</el-button
         >
-      </el-form-item>
-
-      <!-- <el-form-item label="栏目ID:">
-        {{ content.releaseItemId }}
-      </el-form-item> -->
-
-      <!-- todo 这里输入为什么会失焦？ -->
-      <el-form-item label="栏目序号:" prop="itemSeq">
-        <el-popover
-          ref="popoverSeq"
-          placement="top-start"
-          title="限制输入两位数"
-          trigger="manual"
-          v-model="showPopoverSeq"
-          popper-class="popover"
-        >
-          <el-input
-            slot="reference"
-            placeholder=""
-            clearable
-            @input="handleInputOnlyNumberItemSeq"
-            v-model.number="content.itemSeq"
-          />
-        </el-popover>
-      </el-form-item>
-
-      <el-form-item label="栏目名称:" prop="itemName">
-        <el-input
-          placeholder=""
-          clearable
-          v-model="content.itemName"
-          maxlength="99"
-        />
       </el-form-item>
 
       <el-form-item
@@ -166,7 +142,6 @@ export default {
         return {
           template: "A",
           // releaseItemId: 0,
-          itemSeq: 1,
           itemName: "",
           itemMediaMax: 99,
           itemMediaList: [] //媒体资源
@@ -180,9 +155,6 @@ export default {
   data() {
     return {
       rules: {
-        itemSeq: [
-          { required: true, message: "请输入栏目序号", trigger: "blur" }
-        ],
         itemName: [
           { required: true, message: "请输入栏目名称", trigger: "blur" },
           {
@@ -233,24 +205,10 @@ export default {
         }
       }
     },
-    "content.itemSeq": function(newVal, oldVal) {
-      if (newVal > 100) {
-        this.content.itemSeq = parseInt(newVal.toString().slice(0, 2));
-        if (!this.showPopoverSeq) {
-          this.showPopoverSeq = true;
-          setTimeout(() => {
-            this.showPopoverSeq = false;
-          }, 1500);
-        }
-      }
-    }
   },
   methods: {
     onlyNumber(val) {
       return parseInt(val.toString().replace(/[^\d]/g, "")) || "";
-    },
-    handleInputOnlyNumberItemSeq(val) {
-      this.content.itemSeq = this.onlyNumber(val);
     },
     handleInputOnlyNumberItemMediaMax(val) {
       // return val =>
@@ -357,11 +315,11 @@ export default {
       let len = itemMediaList.length;
       this.$set(itemMediaList, len, {});
       itemMediaList[len].mediaResourcesId = data[0]; //媒资id
-      itemMediaList[len].mediaPicType = ''; //todo 
+      itemMediaList[len].mediaPicType = ""; //todo
       itemMediaList[len].mediaPic = data[2]; //媒资图片url
       itemMediaList[len].posterId = data[0]; //海报id
       itemMediaList[len].detailSeq = len;
-      itemMediaList[len].title = data[1]; 
+      itemMediaList[len].title = data[1];
     },
     posterClose() {
       this.showSelectResourceDialog = false;

@@ -90,11 +90,15 @@
             style="position:absolute;z-index:1;right:0;"
             >新增页面</el-button
           >
-          <el-tabs type="border-card" v-model="pageIndex" @tab-click="handleClickTab">
+          <el-tabs
+            type="border-card"
+            v-model="pageIndex"
+            @tab-click="handleClickTab"
+          >
             <el-tab-pane
               v-for="(list, pIndex) in form.pageInfoList"
               :key="list.sort"
-              :name="list.sort+''"
+              :name="list.sort + ''"
               :label="list.pageName"
               class="column-template-tab-pane"
             >
@@ -113,9 +117,7 @@
 
               <!-- 栏目区域 -->
               栏目数 {{ list.itemList.length }}
-              <el-button
-                @click="showColumnSortDlg()"
-                class="btn-column-sort"
+              <el-button @click="showColumnSortDlg()" class="btn-column-sort"
                 >栏目排序</el-button
               >
               <el-tooltip
@@ -363,9 +365,9 @@ export default {
       this.sortList = this.form.pageInfoList;
       this.showPageListSort = true;
     },
-    resortList(list) {
+    resortList(list, sortkey) {
       list.forEach((item, index) => {
-        item.sort = index;
+        item[sortkey] = index;
       });
     },
     showColumnSortDlg() {
@@ -379,10 +381,11 @@ export default {
     doneSortList(confirm, list) {
       this.showPageListSort = false;
       if (confirm) {
-        this.resortList(list);
         if (this.sortType === "pageList") {
+          this.resortList(list, "sort");
           this.form.pageInfoList = list;
         } else if (this.sortType === "columnList") {
+          this.resortList(list, "itemSeq");
           this.form.pageInfoList[this.pageIndex].itemList = list;
         }
       }
@@ -393,7 +396,7 @@ export default {
       const page = this.getPageInfoListSample();
       page.sort = this.form.pageInfoList.length;
       this.form.pageInfoList.push(page);
-      this.pageIndex = page.sort + ''
+      this.pageIndex = page.sort + "";
     },
     delCurrentPage(index) {
       this.form.pageInfoList.splice(index, 1);
@@ -443,18 +446,10 @@ export default {
     },
     handleRemoveColumn(...rest) {
       let [content] = rest;
-      let idx = this.form.pageInfoList[this.pageIndex].itemList.indexOf(content);
-      this.form.pageInfoList[this.pageIndex].itemList.splice(idx, 1);
-    },
-    checkDuplicatedSerialNo() {
-      // 判断栏目模板序号是否有重复的
-      let arr = [];
-      this.$refs["columnTemplateForm"].forEach(ref =>
-        arr.push(ref.content.itemSeq)
+      let idx = this.form.pageInfoList[this.pageIndex].itemList.indexOf(
+        content
       );
-      let res = liteOS.findRepeatElementInArr(arr);
-      console.log("查找模板是否有重复序号:", res);
-      return res;
+      this.form.pageInfoList[this.pageIndex].itemList.splice(idx, 1);
     },
     async createOrUpdatePolicy() {
       const { handleType } = this.$route.query;
@@ -500,12 +495,6 @@ export default {
           throw new Error("必须至少有一个栏目模板");
         }
         let res;
-        if (colNum > 1) {
-          res = this.checkDuplicatedSerialNo();
-          if (res !== undefined) {
-            throw new Error("栏目模板序号不能重复，重复序号为: " + res);
-          }
-        }
         let cols = this.$refs["columnTemplateForm"].map(ref => ref.validate());
         res = await Promise.all(cols);
         console.log("res", res);
