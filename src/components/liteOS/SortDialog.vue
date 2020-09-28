@@ -1,8 +1,12 @@
 <template>
   <div>
     <el-table :data="sortListInUse" style="width: 100%" highlight-current-row>
-      <el-table-column prop="pageName" label="名称" v-if="sortListInUse.pageName"></el-table-column>
-      <el-table-column prop="itemName" label="名称" v-if="!sortListInUse.pageName"></el-table-column>
+      <el-table-column label="名称">
+        <template slot-scope="scope">
+          <span v-if="typeof (scope.row.pageName) !== 'undefined'">{{scope.row.pageName}}</span>
+          <span v-else>{{scope.row.itemName}}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="升序">
         <template slot-scope="scope">
           <el-button @click="moveUp(scope.$index, scope.row)">
@@ -32,24 +36,9 @@
 <script>
 export default {
   name: 'InnerPageSortDialog',
-  // props: {
-  //   sortList: {
-  //     type: Array,
-  //     default: []
-  //   }
-  // },
-  // watch: {
-  //   sortList: function (newVal, oldVal) {
-  //     console.log(newVal)
-  //     debugger
-  //   }
-  //   // 'risId.random' (newVal, oldVal) {
-  //   //   this.pushForm.ctmDevCtrId = this.risId.id
-  //   //   this.$refs.pushForm.validateField('ctmDevCtrId')
-  //   // }
-  // },
   data () {
     return {
+      sortType: '',
       sortListInUse: []
     }
   },
@@ -75,7 +64,7 @@ export default {
       }
     },
     create () {
-      this.$emit('done-sort-list', this.sortListInUse)
+      this.$emit('done-sort-list', this.sortListInUse, this.sortType)
     },
     cancel () {
       this.$emit('close')

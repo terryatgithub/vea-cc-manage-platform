@@ -182,7 +182,7 @@ export default {
         const msg = this.dialogType === 'brand' ? '请输入客户' : '请输入机芯'
         callback(new Error(msg))
         this.isSelect = 0
-      } else if (/[`~!@#$%^*()_\-=<>?:"{}|\/;'\\[\]·~！@#￥%……*（）——\-={}|《》？：“”【】、；‘'。、]/.test(value.trim())) {
+      } else if (/[`~!@#$%^*()_\-=<>?:"{}|\/;'\\[\]·~！@#￥%……*（）——\-={}|《》？：“”【】、；‘'。、,，]/.test(value.trim())) {
         callback(new Error('请勿输入特殊字符'))
         this.isSelect = 1
       } else {
@@ -194,7 +194,7 @@ export default {
       if (value.trim() === '') {
         const msg = this.dialogType === 'brand' ? '请输入品牌' : '请输入机型'
         callback(new Error(msg))
-      } else if (/[`~!@#$%^*()_\-=<>?:"{}|\/;'\\[\]·~！@#￥%……*（）——\-={}|《》？：“”【】、；‘'。、]/.test(value.trim())) {
+      } else if (/[`~!@#$%^*()_\-=<>?:"{}|\/;'\\[\]·~！@#￥%……*（）——\-={}|《》？：“”【】、；‘'。、,，]/.test(value.trim())) {
         callback(new Error('请勿输入特殊字符'))
       } else {
         callback()

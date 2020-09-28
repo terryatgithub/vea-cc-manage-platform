@@ -842,16 +842,19 @@ export default {
                 .el-select,.el-cascader
                    width 100%
 .content >>> .el-form--inline .el-form-item {
-           margin-right: 0px;
+           margin-right: 5px;
+}
+.content >>> .el-form--inline .el-form-item__label {
+           text-align: left;
 }
 .content >>> .filter-item
   justify-content: flex-start;
   margin: 10px 0px
-
+.content >>> .btnBox
+  margin-left: 0px;
 </style>
 <style lang="scss">
 .btnBox {
-  margin-left: 15px;
   .el-form-item__content {
     width: 100%!important;
   }

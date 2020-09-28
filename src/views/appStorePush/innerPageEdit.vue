@@ -17,7 +17,7 @@
         <InnerPageSortDialog
           ref = 'sortChild'
           v-show="dialogType === 'sort'"
-          @done-sort-list = "doneSortList"
+          @done-sort-list = "doneSortList(arguments)"
           @close = 'close'
         ></InnerPageSortDialog>
       </el-dialog>
@@ -25,7 +25,7 @@
         <el-button
           type="primary"
           size="small"
-          @click="pageSort"
+          @click="pageSort('')"
         >
           页面排序
         </el-button>
@@ -51,6 +51,9 @@
             <el-form-item label="页面说明">
               <el-input placeholder="请输入页面说明" v-model="itemTabs.pageDes" clearable maxlength="99"></el-input>
             </el-form-item>
+            <el-form-item class="delPage" v-show="pageInfoList.length > 1">
+              <el-button type="danger" size="small" @click="removeTab(editableTabsValue)">删除当前页</el-button>
+            </el-form-item>
           </el-form>  
           <div class="appBox">
             <div class="label">栏目</div>
@@ -59,31 +62,26 @@
                 <el-button type="primary" @click="pageSort(indexTabs)">栏目排序</el-button>
                 <el-button type="primary" @click="addItem(indexTabs)">新增栏目</el-button>
               </div>
-              <el-form
-                :inline="true"
-              >
+              <el-form :inline="true">
+                <!-- <el-form-item class="delItem" v-show="itemTabs.itemList.length > 1">
+                  <el-button type="danger" size="small" @click="removeItem()">删除栏目</el-button>
+                </el-form-item> -->
                 <div class="itemTop">
                   <el-form-item label="栏目模板">
-                    <el-select placeholder="请选择栏目模板" v-model="item.template">
+                    <el-select
+                      placeholder="请选择栏目模板"
+                      v-model="item.template"
+                      @change="handleTemplateChange(indexTabs, index)"
+                      @visible-change="handleTemplateVisibleChange($event, indexTabs, index)"
+                    >
                       <el-option label="模板I:应用模板" value="I"></el-option>
                       <el-option label="模板H:普通一张图Banner" value="H"></el-option>
                       <el-option label="模板J:普通两张图Banner" value="J"></el-option>
-                      <!-- <el-option label="模板D:媒资方图" value="D"></el-option> -->
                     </el-select>
                   </el-form-item>
                   <el-button type="primary" @click="materialSel(indexTabs, index)" round>新增栏目资源</el-button>
-                  <el-button type="danger" @click="deleteItem(indexTabs, index)" v-if="item.length > 1" round>删除栏目</el-button>
+                  <el-button class="delItem" type="danger" @click="delItem(indexTabs, index)" v-if="itemTabs.itemList.length > 1" round>删除栏目</el-button>
                 </div>
-                <!-- <el-form-item label="栏目序号">
-                  <el-input
-                    placeholder="请输入栏目序号"
-                    type="number"
-                    v-model="item.itemSeq"
-                    clearable
-                    @input.native="itemSeqMsg(indexTabs, index)"
-                    onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"
-                  ></el-input>
-                </el-form-item> -->
                 <el-form-item label="栏目名称">
                   <el-input placeholder="请输入栏目名称" v-model="item.itemName" clearable maxlength="99"></el-input>
                 </el-form-item>
@@ -164,7 +162,8 @@ export default {
           }
         ]
       }],
-      tabIndex: 1
+      tabIndex: 1,
+      prevTemplateType: ''
     }
   },
   methods: {
@@ -210,6 +209,7 @@ export default {
             }
             this.pageInfoList = [...detail.pageInfoList]
             this.editableTabsValue = '1'
+            this.tabIndex = detail.pageInfoList.length
           } else {
             this.$message({
               type: 'error',
@@ -220,9 +220,9 @@ export default {
       } else {
         // 新增前先初始化页面
         this.$nextTick(() => {
+          this.$refs['pushChild'].mac = '0'
           this.$refs['pushChild'].$refs['pushForm'].clearValidate()
           this.$refs['pushChild'].$refs['pushForm'].resetFields()
-          this.$refs['pushChild'].mac = '0'
           this.ctmDevCtrName = ''
           this.pageInfoList = [{
             sort: '1',
@@ -256,17 +256,37 @@ export default {
         })
       }
     },
-    itemSeqMsg (indexTabs, index) {
-      if (parseInt(this.pageInfoList[indexTabs].itemList[index].itemSeq) > 99 || parseInt(this.pageInfoList[indexTabs].itemList[index].itemSeq) <= 0) {
-        this.pageInfoList[indexTabs].itemList[index].itemSeq = ''
-        this.$message({
-          type: 'warning',
-          message: '栏目序号仅限1~99!'
-        })
+    // 删除栏目
+    delItem (indexTabs, index) {
+      this.pageInfoList[indexTabs].itemList.splice(index, 1)
+      for (const i in this.pageInfoList[indexTabs].itemList) {
+        this.pageInfoList[indexTabs].itemList[i].itemSeq = parseInt(i) + 1
+      }
+      console.log(this.pageInfoList[indexTabs])
+    },
+    handleTemplateVisibleChange ($event, indexTabs, index) {
+      // 保存切换前的值
+      if ($event) {
+        this.prevTemplateType = this.pageInfoList[indexTabs].itemList[index].template
       }
     },
-    deleteItem (indexTabs, index) {
-      this.pageInfoList[indexTabs].itemList.splice(index, 1)
+    // 栏目模板切换
+    handleTemplateChange (indexTabs, index) {
+      if (!this.pageInfoList[indexTabs].itemList[index].itemAppList.length) {
+        return
+      }
+      this.$confirm('更改模板将会清空所有图片，确认更改吗？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.pageInfoList[indexTabs].itemList[index].itemAppList.splice(0)
+          console.log(this.pageInfoList[indexTabs].itemList[index].itemAppList)
+        })
+        .catch(() => {
+          this.pageInfoList[indexTabs].itemList[index].template = this.prevTemplateType
+        })
     },
     // 获取区域选择传值
     getRegion (val) {
@@ -399,10 +419,14 @@ export default {
         ? msg = '至少保留一个应用!'
         : msg = '至少保留一张海报!'
       if (this.pageInfoList[indexTabs].itemList[itemIndex].itemAppList.length === 1) {
-        this.$message({
-          type: 'warning',
-          message: msg
-        })
+        if (this.pageInfoList[indexTabs].itemList[itemIndex].template !== 'H') {
+          this.$message({
+            type: 'warning',
+            message: msg
+          })
+        } else {
+          this.pageInfoList[indexTabs].itemList[itemIndex].itemAppList.splice(appIndex, 1)
+        }
       } else {
         this.pageInfoList[indexTabs].itemList[itemIndex].itemAppList.splice(appIndex, 1)
         for (const i in this.pageInfoList[indexTabs].itemList[itemIndex].itemAppList) {
@@ -456,7 +480,7 @@ export default {
         }
       }
     },
-    create (DeviceID) {
+    create () {
       let that = this
       that.$refs['pushChild'].$refs['pushForm'].validate(async (valid) => {
         if (valid) {
@@ -515,7 +539,6 @@ export default {
             }
             params.creator = that.$appState.user.name
             params.releaseStatus = '0'
-            params.tvActiveId = DeviceID
             params.pageInfoList = that.pageInfoList
             let data
             // 判断是编辑、复制、新增
@@ -572,27 +595,39 @@ export default {
       this.dialogType = 'sort'
       this.dialogWidth = '500px'
       this.showClose = true
-      if (indexTabs) {
-        this.dialogTitle = '页面排序'
-        this.$nextTick(() => {
-          this.$refs['sortChild'].sortListInUse = [...this.pageInfoList]
-        })
-      } else {
+      if (indexTabs !== '') {
+        this.pageInfoList_index = indexTabs
         this.dialogTitle = '栏目排序'
         this.$nextTick(() => {
+          this.$refs['sortChild'].sortType = 'item'
           this.$refs['sortChild'].sortListInUse = [...this.pageInfoList[indexTabs].itemList]
+        })
+      } else {
+        this.dialogTitle = '页面排序'
+        this.$nextTick(() => {
+          this.$refs['sortChild'].sortType = 'page'
+          this.$refs['sortChild'].sortListInUse = [...this.pageInfoList]
         })
       }
     },
     // 排序完成
-    doneSortList (list) {
-      for (const i in list) {
-        list[i].sort = parseInt(i) + 1 + ''
+    doneSortList (data) {
+      let list = data[0]
+      if (data[1] === 'page') {
+        for (const p in list) {
+          list[p].sort = parseInt(p) + 1 + ''
+        }
+        this.pageInfoList = list
+      } else {
+        for (const i in list) {
+          list[i].itemSeq = parseInt(i) + 1
+        }
+        this.pageInfoList[this.pageInfoList_index].itemList = list
       }
-      this.pageInfoList = list
       this.dialogFormVisible = false
       this.isX = false
     },
+    // 增加页面
     addTab (targetName) {
       let newTabName = ++this.tabIndex + ''
       this.pageInfoList.push({
@@ -603,32 +638,33 @@ export default {
           {
             itemName: '',
             itemSeq: 1,
-            template: '',
+            template: 'I',
             itemAppList: []
           }
         ]
       })
       this.editableTabsValue = newTabName
     },
+    // 删除当前页
     removeTab (targetName) {
       let tabs = this.pageInfoList
       let activeName = this.editableTabsValue
       if (activeName === targetName) {
         tabs.forEach((tab, index) => {
-          if (tab.name === targetName) {
+          if (tab.sort === targetName) {
             let nextTab = tabs[index + 1] || tabs[index - 1]
             if (nextTab) {
-              activeName = nextTab.name
+              activeName = nextTab.sort
             }
           }
         })
       }
-      
       this.editableTabsValue = activeName
-      this.pageInfoList = tabs.filter(tab => tab.name !== targetName)
+      this.pageInfoList = tabs.filter(tab => tab.sort !== targetName)
+      for (const i in this.pageInfoList) {
+        this.pageInfoList[i].sort = parseInt(i) + 1 + ''
+      }
     }
-  },
-  created () {
   },
   activated () {
     this.detailById()
@@ -636,8 +672,13 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.tabBox >>> .el-tabs__content
-  padding-bottom: 40px;
+.tabBox >>> .el-tabs__header
+  padding-right: 200px;
+.tabBox >>> .el-tabs__item
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
 .pageForm >>> .el-form-item
   display: block;
 </style>
@@ -650,6 +691,14 @@ export default {
   z-index: 999;
   .el-button {
     margin-top: 5px;
+  }
+}
+.pageForm {
+  position: relative;
+  .delPage {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 }
 .appBox {
@@ -673,6 +722,10 @@ export default {
     padding: 20px;
     box-sizing: border-box;
     background: #F2F6FC;
+    margin-bottom: 5px;
+    .delItem {
+      float: right;
+    }
   }
   ul {
     overflow: hidden;
