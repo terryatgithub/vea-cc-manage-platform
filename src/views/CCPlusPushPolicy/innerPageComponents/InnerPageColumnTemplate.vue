@@ -36,6 +36,7 @@
         label="影片数量上限:"
         label-width="120px"
         prop="itemMediaMax"
+        v-if="!specialTemplates.includes(content.template)"
       >
         <el-popover
           ref="popover"
@@ -73,8 +74,8 @@
       <el-form-item class="image-wrapper">
         <div class="demo-image__lazy">
           <div
-            style="width: 110px;"
-            v-for="item in content.itemMediaList"
+            style="width: 110px; position:relative;"
+            v-for="(item, index) in content.itemMediaList"
             :key="item.mediaResourcesId"
           >
             <el-image :src="item.mediaPic"></el-image>
@@ -83,6 +84,24 @@
               overflow:hidden;"
               >{{ item.title }}</span
             >
+            <p v-if="content.template === 'G'">
+              <span v-if="item.posterId">
+                <i
+                  class="el-icon-close"
+                  @click="removeCurPostForGTemplate(index)"
+                ></i>
+                {{ item.title }}
+              </span>
+              <button v-else @click="addPosterForGTemplate(index)">
+                关联海报
+              </button>
+            </p>
+            <i
+              v-if="content.template > 'G'"
+              style="position: absolute; font-size: 20px; top: -2px;right: -5px;"
+              class="el-icon-close"
+              @click="removeCurPostForHJTemplate(index)"
+            ></i>
           </div>
         </div>
       </el-form-item>
@@ -97,11 +116,15 @@
       title="新增栏目资源(可多选)(可反选)"
       :show-close="false"
     >
-      <ColumnResourceSelectDialog
-        v-if="content.template <= 'D'"
-        @get-select-resource="getSelectResource"
-      />
-      <PosterSelPop v-else @posterSure="posterSure" @close="posterClose" />
+      <ColumnResourceSelectDialog @get-select-resource="getSelectResource" />
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="showSelectPosterDialog"
+      title="选择海报"
+      :show-close="false"
+    >
+      <PosterSelPop @posterSure="posterSure" @close="posterClose" />
     </el-dialog>
 
     <el-dialog
@@ -179,7 +202,10 @@ export default {
       showPopoverSeq: false,
       mediaMaxPrev: 0, //保存影片上限旧值，供恢复旧值用
       showSelectResourceDialog: false,
+      showSelectPosterDialog: false,
+      adheredPosterIndex: -1,
       showEditDetailPage: false,
+      specialTemplates: ["H", "J"],
       templateOptions: [
         { label: "模板A 媒资混排", value: "A" },
         { label: "模板B 媒资竖图", value: "B" },
@@ -204,7 +230,7 @@ export default {
           }, 1500);
         }
       }
-    },
+    }
   },
   methods: {
     onlyNumber(val) {
@@ -242,6 +268,10 @@ export default {
         this.prevTemplateType = this.content.template;
       }
     },
+    removeCurPostForHJTemplate(index) {
+      // 删除模板H/J的海报
+      this.content.itemMediaList.splice(index, 1);
+    },
     handleTemplateChange(val) {
       if (!this.content.itemMediaList.length) {
         return;
@@ -254,6 +284,9 @@ export default {
         .then(() => {
           this.prevTemplateType = this.content.template; //确定时保存值
           this.content.itemMediaList.splice(0);
+          if (this.specialTemplates.includes(this.content.template)) {
+            this.content.itemMediaMax = this.content.template === "H" ? 1 : 2;
+          }
         })
         .catch(() => {
           this.content.template = this.prevTemplateType; //取消时恢复oldvalue
@@ -280,7 +313,8 @@ export default {
       let res = await this.$service.queryCCPlusMediaResourceNew({
         page: 1,
         size: 100, //todo 完善size为更精确值
-        templateType: this.content.template,
+        templateType:
+          this.content.template === "G" ? "A" : this.content.template, //todo 修改为后台确认后的值
         supplier: this.columnResourceSelections.source.join(","),
         category: this.columnResourceSelections.category.join(","),
         tag: this.columnResourceSelections.tag.join(",")
@@ -310,19 +344,28 @@ export default {
       }
     },
     posterSure(...data) {
-      this.showSelectResourceDialog = false;
-      const { itemMediaList } = this.content;
-      let len = itemMediaList.length;
-      this.$set(itemMediaList, len, {});
-      itemMediaList[len].mediaResourcesId = data[0]; //媒资id
-      itemMediaList[len].mediaPicType = ""; //todo
-      itemMediaList[len].mediaPic = data[2]; //媒资图片url
-      itemMediaList[len].posterId = data[0]; //海报id
-      itemMediaList[len].detailSeq = len;
-      itemMediaList[len].title = data[1];
+      this.showSelectPosterDialog = false;
+      if (this.content.template === "G") {
+        if (this.adheredPosterIndex !== -1) {
+          this.content.itemMediaList[this.adheredPosterIndex].posterId =
+            data[0];
+          this.adheredPosterIndex = -1;
+        }
+      } else {
+        // for template 'H', 'J'
+        const { itemMediaList } = this.content;
+        let len = itemMediaList.length;
+        this.$set(itemMediaList, len, {});
+        itemMediaList[len].mediaResourcesId = data[0]; //媒资id
+        itemMediaList[len].mediaPicType = ""; //todo
+        itemMediaList[len].mediaPic = data[2]; //媒资图片url
+        itemMediaList[len].posterId = data[0]; //海报id
+        itemMediaList[len].detailSeq = len;
+        itemMediaList[len].title = data[1];
+      }
     },
     posterClose() {
-      this.showSelectResourceDialog = false;
+      this.showSelectPosterDialog = false;
     },
     sortAndDedupItemMediaList() {
       const { itemMediaList } = this.content;
@@ -363,7 +406,20 @@ export default {
       }, 2000);
     },
     handleSelectColumnResource() {
-      this.showSelectResourceDialog = true;
+      let type = this.content.template > "G";
+      if (type) {
+        this.showSelectPosterDialog = true;
+      } else {
+        this.showSelectResourceDialog = true;
+      }
+    },
+    addPosterForGTemplate(index) {
+      this.showSelectPosterDialog = true;
+      this.adheredPosterIndex = index;
+    },
+    removeCurPostForGTemplate(index) {
+      this.content.itemMediaList[index].posterId = null;
+      this.$forceUpdate(); //todo why need this?
     },
     handleEditMovies() {
       this.showEditDetailPage = true;
