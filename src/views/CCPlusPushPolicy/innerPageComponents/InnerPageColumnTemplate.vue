@@ -121,7 +121,11 @@
       title="新增栏目资源(可多选)(可反选)"
       :show-close="false"
     >
-      <ColumnResourceSelectDialog @get-select-resource="getSelectResource" />
+      <ColumnResourceSelectDialog
+        v-if="content.template <= 'D'"
+        @get-select-resource="getSelectResource"
+      />
+      <PosterSelPop v-else @posterSure="posterSure" @close="posterClose" />
     </el-dialog>
 
     <el-dialog
@@ -143,12 +147,14 @@
 // 添加栏目的'栏目模板'组件
 import ColumnResourceSelectDialog from "../components/ColumnResourceSelectDialog.vue";
 import ColumnTemplateDetail from "../components/ColumnTemplateDetail";
+import PosterSelPop from "@/components/liteOS/posterSelPop";
 
 export default {
   name: "InnerPageColumnTemplate",
   components: {
     ColumnResourceSelectDialog,
-    ColumnTemplateDetail
+    ColumnTemplateDetail,
+    PosterSelPop
   },
   props: {
     content: {
@@ -206,7 +212,10 @@ export default {
         { label: "模板A 媒资混排", value: "A" },
         { label: "模板B 媒资竖图", value: "B" },
         { label: "模板C 媒资横图", value: "C" },
-        { label: "模板D 媒资方图", value: "D" }
+        { label: "模板D 媒资方图", value: "D" },
+        { label: "模板G 媒资大背景banner", value: "G" },
+        { label: "模板H 普通一张图banner", value: "H" },
+        { label: "模板J 普通两张图banner", value: "J" }
       ],
       prevTemplateType: this.content.template,
       columnResourceSelections: null //栏目资源标签选择项
@@ -330,6 +339,7 @@ export default {
           itemMediaList[len].mediaPic = item.posterUrl;
           itemMediaList[len].releaseDate = item.releaseDate;
           itemMediaList[len].score = item.score;
+          itemMediaList[len].title = item.title;
           itemMediaList[len].detailSeq = len;
           len++;
         });
@@ -340,6 +350,21 @@ export default {
           message: res.msg
         });
       }
+    },
+    posterSure(...data) {
+      this.showSelectResourceDialog = false;
+      const { itemMediaList } = this.content;
+      let len = itemMediaList.length;
+      this.$set(itemMediaList, len, {});
+      itemMediaList[len].mediaResourcesId = data[0]; //媒资id
+      itemMediaList[len].mediaPicType = ''; //todo 
+      itemMediaList[len].mediaPic = data[2]; //媒资图片url
+      itemMediaList[len].posterId = data[0]; //海报id
+      itemMediaList[len].detailSeq = len;
+      itemMediaList[len].title = data[1]; 
+    },
+    posterClose() {
+      this.showSelectResourceDialog = false;
     },
     sortAndDedupItemMediaList() {
       const { itemMediaList } = this.content;
