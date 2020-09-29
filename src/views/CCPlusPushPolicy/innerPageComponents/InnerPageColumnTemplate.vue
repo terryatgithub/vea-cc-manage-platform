@@ -92,9 +92,9 @@
                 ></i>
                 {{ item.title }}
               </span>
-              <button v-else @click="addPosterForGTemplate(index)">
+              <el-button v-else @click="addPosterForGTemplate(index)">
                 关联海报
-              </button>
+              </el-button>
             </p>
             <i
               v-if="content.template > 'G'"
@@ -314,7 +314,7 @@ export default {
         page: 1,
         size: 100, //todo 完善size为更精确值
         templateType:
-          this.content.template === "G" ? "A" : this.content.template, //todo 修改为后台确认后的值
+          this.content.template === "G" ? "C" : this.content.template, //后台要求G模板传横图
         supplier: this.columnResourceSelections.source.join(","),
         category: this.columnResourceSelections.category.join(","),
         tag: this.columnResourceSelections.tag.join(",")
