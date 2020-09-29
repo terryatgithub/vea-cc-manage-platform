@@ -325,14 +325,16 @@ export default {
         let len = itemMediaList.length,
           end = itemMediaMax - len; //图片数量不能超过指定上限
         results.slice(0, end > 0 ? end : 0).forEach((item, index) => {
-          this.$set(itemMediaList, len, {});
-          itemMediaList[len].mediaResourcesId = item.mediaResourcesId;
-          itemMediaList[len].mediaPicType = item.posterType;
-          itemMediaList[len].mediaPic = item.posterUrl;
-          itemMediaList[len].releaseDate = item.releaseDate;
-          itemMediaList[len].score = item.score;
-          itemMediaList[len].title = item.title;
-          itemMediaList[len].detailSeq = len;
+          itemMediaList.splice(len, 0, {
+            mediaResourcesId: item.mediaResourcesId,
+            mediaPicType: item.posterType,
+            mediaPic: item.posterUrl,
+            releaseDate: item.releaseDate,
+            score: item.score,
+            title: item.title,
+            detailSeq: len,
+            posterId: null //海报id
+          });
           len++;
         });
         this.sortAndDedupItemMediaList();
@@ -355,13 +357,14 @@ export default {
         // for template 'H', 'J'
         const { itemMediaList } = this.content;
         let len = itemMediaList.length;
-        this.$set(itemMediaList, len, {});
-        itemMediaList[len].mediaResourcesId = data[0]; //媒资id
-        itemMediaList[len].mediaPicType = ""; //todo
-        itemMediaList[len].mediaPic = data[2]; //媒资图片url
-        itemMediaList[len].posterId = data[0]; //海报id
-        itemMediaList[len].detailSeq = len;
-        itemMediaList[len].title = data[1];
+        itemMediaList.splice(len, 0, {
+          mediaResourcesId : data[0], //媒资id
+          mediaPicType : "", //todo
+          mediaPic : data[2], //媒资图片url
+          posterId : data[0], //海报id
+          detailSeq : len,
+          title : data[1],
+        })
       }
     },
     posterClose() {
@@ -419,7 +422,6 @@ export default {
     },
     removeCurPostForGTemplate(index) {
       this.content.itemMediaList[index].posterId = null;
-      this.$forceUpdate(); //todo why need this?
     },
     handleEditMovies() {
       this.showEditDetailPage = true;
