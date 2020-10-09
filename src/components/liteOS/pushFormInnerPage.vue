@@ -58,8 +58,8 @@
         <el-option value="1" label="C"/>
       </el-select>
     </el-form-item>
-    <el-form-item label="使用MAC地址">
-        <el-radio-group v-model="mac">
+    <el-form-item label="使用MAC地址" prop="tvActiveId">
+        <el-radio-group v-model="mac" @change="selectMac">
           <el-radio label="0">否</el-radio>
           <el-radio label="1">是</el-radio>
         </el-radio-group>
@@ -112,19 +112,22 @@ export default {
       },
       rules: {
         releaseConfName: [
-          { required: true, message: '请输入策略名称', trigger: 'blur' }
+          { required: true, message: '请输入策略名称', trigger: ['blur', 'change'] }
         ],
         supportVersion: [
-          { required: true, message: '请选择版本', trigger: 'change' }
+          { required: true, message: '请选择版本', trigger: ['blur', 'change'] }
         ],
         ctmDevCtrId: [
-          { required: true, message: '请选择区域', trigger: 'change' }
+          { required: true, message: '请选择区域', trigger: ['blur', 'change'] }
         ],
         date: [
-          { required: true, message: '请选择推送时间', trigger: 'blur' }
+          { required: true, message: '请选择推送时间', trigger: ['blur', 'change'] }
         ],
         priority: [
-          { required: true, message: '请选择优先级', trigger: 'change' }
+          { required: true, message: '请选择优先级', trigger: ['blur', 'change'] }
+        ],
+        tvActiveId: [
+          { required: true, trigger: ['blur', 'change'], validator: this.macAlter }
         ]
       },
       versionOptions: []
@@ -175,19 +178,24 @@ export default {
       if (val === 'All') {
         this.pushForm.supportVersion = []
       }
+    },
+    selectMac (val) {
+      if (val === '0') {
+        this.pushForm.tvActiveId = ''
+      }
+    },
+    macAlter (rule, value, callback) {
+      if (this.mac === '1') {
+        value.trim() === ''
+          ? callback(new Error('请输入mac地址'))
+          : callback()
+      } else {
+        callback()
+      }
     }
   },
   created () {
-    // this.$service.queryVersionList({ version: '' }).then(data => {
-    //   if (data.code === 0) {
-    //     this.versionOptions = data.data
-    //   } else {
-    //     this.$message({
-    //       type: 'error',
-    //       message: data.msg
-    //     })
-    //   }
-    // })
+    this.getData()
   }
 }
 </script>
@@ -195,7 +203,7 @@ export default {
 .pushEdit {
   .el-form-item {
       .el-form-item__label {
-          width: 100px;
+          width: 110px;
           text-align: left;
       }
       .el-form-item__content {

@@ -163,16 +163,7 @@ export default {
     }
   },
   created () {
-    // this.$service.queryVersionList({ version: '' }).then(data => {
-    //   if (data.code === 0) {
-    //     this.versionOptions = data.data
-    //   } else {
-    //     this.$message({
-    //       type: 'error',
-    //       message: data.msg
-    //     })
-    //   }
-    // })
+    this.getData()
   }
 }
 </script>

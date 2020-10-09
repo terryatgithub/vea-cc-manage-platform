@@ -9,11 +9,11 @@
         :show-close = 'showClose'
         @close = 'closeX'
       >
-        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = 'isInit'></RegionEditPop>
+        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = "isInit + '-region'"></RegionEditPop>
         <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
-        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close' :key = 'isInit'></AppSelPop>
+        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close' :key = "isInit + '-app'"></AppSelPop>
         <AppDetail v-show="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :material = 'material' @appSure = 'appSure(arguments)'></AppDetail>
-        <PosterSelPop v-show="dialogType === 'posterPop'" @posterSure = 'posterSure(arguments)' @close = 'close' :key = 'isInit'></PosterSelPop>
+        <PosterSelPop v-show="dialogType === 'posterPop'" @posterSure = 'posterSure(arguments)' @close = 'close' :key = "isInit + '-poster'"></PosterSelPop>
         <InnerPageSortDialog
           ref = 'sortChild'
           v-show="dialogType === 'sort'"
@@ -45,8 +45,9 @@
           :name="itemTabs.sort"
         >
           <el-form :inline="true" class="pageForm">
-            <el-form-item label="页面名称">
-              <el-input placeholder="请输入页面名称" v-model="itemTabs.pageName" clearable maxlength="99"></el-input>
+            <el-form-item label="页面名称" prop="pageName">
+              <span class="tag">*</span>
+              <el-input placeholder="请输入页面名称" v-model="itemTabs.pageName" clearable maxlength="99" minlength="1" @change="pageNameAlter" @focus="pageNameOld(indexTabs)"></el-input>
             </el-form-item>
             <el-form-item label="页面说明">
               <el-input placeholder="请输入页面说明" v-model="itemTabs.pageDes" clearable maxlength="99"></el-input>
@@ -68,6 +69,7 @@
                 </el-form-item> -->
                 <div class="itemTop">
                   <el-form-item label="栏目模板">
+                    <span class="tag">*</span>
                     <el-select
                       placeholder="请选择栏目模板"
                       v-model="item.template"
@@ -83,6 +85,7 @@
                   <el-button class="delItem" type="danger" @click="delItem(indexTabs, index)" v-if="itemTabs.itemList.length > 1" round>删除栏目</el-button>
                 </div>
                 <el-form-item label="栏目名称">
+                  <span class="tag">*</span>
                   <el-input placeholder="请输入栏目名称" v-model="item.itemName" clearable maxlength="99"></el-input>
                 </el-form-item>
                 <ul>
@@ -142,9 +145,9 @@ export default {
       itemList_index: '',
       itemAppList_index: '',
       ctmDevCtrName: '',
-      risId: null,
-      area: null,
-      material: null,
+      risId: {},
+      area: {},
+      material: {},
       isInit: 0,
       isX: true,
       sortList: [],
@@ -163,7 +166,8 @@ export default {
         ]
       }],
       tabIndex: 1,
-      prevTemplateType: ''
+      prevTemplateType: '',
+      oldPageName: ''
     }
   },
   methods: {
@@ -184,7 +188,7 @@ export default {
             }
             detail.supportVersion = detail.supportVersion.split(',')
             const date = (liteOS.parserDate(detail.releaseStartTime) + ',' + liteOS.parserDate(detail.releaseEndTime)).split(',')
-            detail.tvActiveId === null
+            detail.tvActiveId === null || detail.tvActiveId === ''
               ? this.$refs['pushChild'].mac = '0'
               : this.$refs['pushChild'].mac = '1'
             let pushForm = Object.assign({}, {
@@ -251,7 +255,7 @@ export default {
         })
       } else {
         this.$message({
-          type: 'warning',
+          type: 'error',
           message: '栏目数量已达上限!'
         })
       }
@@ -278,7 +282,7 @@ export default {
       this.$confirm('更改模板将会清空所有图片，确认更改吗？', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'error'
       })
         .then(() => {
           this.pageInfoList[indexTabs].itemList[index].itemAppList.splice(0)
@@ -341,7 +345,7 @@ export default {
       if (this.pageInfoList[indexTabs].itemList[index].template === 'I') {
         if (this.pageInfoList[indexTabs].itemList[index].itemAppList.length === 99) {
           this.$message({
-            type: 'warning',
+            type: 'error',
             message: '应用数量已达上限!'
           })
         } else {
@@ -366,11 +370,11 @@ export default {
         }
       } else if (this.pageInfoList[indexTabs].itemList[index].template === 'H') {
         this.pageInfoList[indexTabs].itemList[index].itemAppList.length === 1
-          ? this.$message({ type: 'warning', message: '海报数量已达上限!' })
+          ? this.$message({ type: 'error', message: '海报数量已达上限!' })
           : this.posterAdd(indexTabs, index)
       } else if (this.pageInfoList[indexTabs].itemList[index].template === 'J') {
         this.pageInfoList[indexTabs].itemList[index].itemAppList.length === 2
-          ? this.$message({ type: 'warning', message: '海报数量已达上限!' })
+          ? this.$message({ type: 'error', message: '海报数量已达上限!' })
           : this.posterAdd(indexTabs, index)
       }
     },
@@ -421,7 +425,7 @@ export default {
       if (this.pageInfoList[indexTabs].itemList[itemIndex].itemAppList.length === 1) {
         if (this.pageInfoList[indexTabs].itemList[itemIndex].template !== 'H') {
           this.$message({
-            type: 'warning',
+            type: 'error',
             message: msg
           })
         } else {
@@ -519,6 +523,16 @@ export default {
                     message: '栏目' + (parseInt(key2) + 1) + '请至少新增一个栏目资源！'
                   })
                   return false
+                } else if (that.pageInfoList[key].itemList[key2].template === 'J') {
+                  if (that.pageInfoList[key].itemList[key2].itemAppList.length !== 2) {
+                    this.$message({
+                      type: 'error',
+                      message: '栏目' + (parseInt(key2) + 1) + '中J模板下必须两张海报！'
+                    })
+                    return false
+                  } else {
+                    isAdd = true
+                  }
                 } else {
                   isAdd = true
                 }
@@ -584,7 +598,7 @@ export default {
       this.$confirm('退出后修改内容会全部丢失，确认退出吗？', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'error'
       })
         .then(() => this.$router.back())
         .catch(() => {})
@@ -664,6 +678,19 @@ export default {
       for (const i in this.pageInfoList) {
         this.pageInfoList[i].sort = parseInt(i) + 1 + ''
       }
+    },
+    pageNameOld (val) {
+      this.pageInfoList_index = val
+      this.oldPageName = this.pageInfoList[val].pageName
+    },
+    pageNameAlter (val) {
+      if (val === '') {
+        this.pageInfoList[this.pageInfoList_index].pageName = this.oldPageName
+        this.$message({
+          type: 'error',
+          message: '页面名称不可为空！'
+        })
+      }
     }
   },
   activated () {
@@ -679,8 +706,15 @@ export default {
   overflow: hidden;
   text-overflow:ellipsis;
   white-space: nowrap;
+.appBox >>> .el-form-item
+  margin-left: 20px;
 .pageForm >>> .el-form-item
   display: block;
+  margin-left: 20px;
+.pageForm >>> .tag
+  position: absolute;
+  color: #F56C6C;
+  left: -80px
 </style>
 <style lang='scss' scoped>
 .handlePage {
@@ -704,6 +738,11 @@ export default {
 .appBox {
   position: relative;
   margin-bottom: 20px;
+  .tag {
+    position: absolute;
+    color: #F56C6C;
+    left: -80px;
+  }
   .handleItem {
     display: inline-block;
     position: absolute;

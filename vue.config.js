@@ -15,7 +15,8 @@ console.log('VUE_APP_BASEURL: ', process.env.VUE_APP_BASEURL);
 module.exports = {
   publicPath: baseUrl,
   devServer: {
-    host: HOST,
+    // host: HOST,
+    host: '0.0.0.0',
     port: PORT,
     headers: {
       'Access-Control-Allow-Origin': '*'
@@ -32,6 +33,12 @@ module.exports = {
       'captcha.jpg': {
         target: 'http://' + BACKEND1
       }
+    }
+  },
+  configureWebpack: (config) => {
+    // 开启 source-map 方便调试
+    if (process.env.NODE_ENV === 'development') {
+        config.devtool = 'source-map'
     }
   }
 }

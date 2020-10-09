@@ -9,9 +9,9 @@
         :show-close = 'showClose'
         @close = 'closeX'
       >
-        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = 'isInit'></RegionEditPop>
+        <RegionEditPop v-show="dialogType === 'regionPop'" @regionDetail = 'regionDetail' @close = 'close' @getRegion = 'getRegion(arguments)' :key = "isInit + '-region'"></RegionEditPop>
         <RegionDetail v-show="dialogType === 'regionDetail'" @goRegion = 'goRegion' :area = 'area'></RegionDetail>
-        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close' :key = 'isInit'></AppSelPop>
+        <AppSelPop v-show="dialogType === 'appPop'" @appDetail = 'appDetail' @close = 'close' :key = "isInit + '-app'"></AppSelPop>
         <AppDetail v-show="dialogType === 'appDetail'" @goApp = 'goApp' @close = 'close' :material = 'material' @appSure = 'appSure(arguments)'></AppDetail>
       </el-dialog>
       <div class="appBox">
@@ -77,9 +77,9 @@ export default {
         }
       ],
       ctmDevCtrName: '',
-      risId: null,
-      area: null,
-      material: null,
+      risId: {},
+      area: {},
+      material: {},
       isInit: 0,
       isX: true
     }
@@ -199,7 +199,7 @@ export default {
       this.isX = true
       if (this.appList.length === 100) {
         this.$message({
-          type: 'warning',
+          type: 'error',
           message: '应用数量已达上限!'
         })
       } else {
@@ -360,7 +360,7 @@ export default {
       this.$confirm('退出后修改内容会全部丢失，确认退出吗？', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'error'
       })
         .then(() => this.$router.back())
         .catch(() => {})
