@@ -17,6 +17,16 @@ axios.interceptors.request.use(
     return Promise.reject(err)
   }
 )
+axios.interceptors.response.use((response) => {
+  return response
+}, (err) => {
+  if(err.message === 'Request failed with status code 401') {
+    Message.error('登录信息过期，请重新登录')
+    localStorage.removeItem('APP_STATE//currDbSource') // remove expired token
+    location.reload()
+  }
+})
+
 export default function fetch ({
   method = 'get',
   headers,
