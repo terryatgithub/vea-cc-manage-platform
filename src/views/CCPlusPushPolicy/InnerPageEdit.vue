@@ -561,6 +561,9 @@ export default {
 
 <style lang="scss">
 .ccplus-inner-page-edit > .el-form-item {
+  /deep/ .el-tabs__nav-scroll {
+    width: calc(100% - 160px);
+  }
   > .el-form-item__label {
     width: 90px;
     text-align: left;
