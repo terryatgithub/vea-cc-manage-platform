@@ -421,7 +421,7 @@ export default {
       let msg
       this.pageInfoList[indexTabs].itemList[itemIndex].template === 'I'
         ? msg = '至少保留一个应用!'
-        : msg = '至少保留一张海报!'
+        : msg = '栏目' + (itemIndex + 1) + '中J模板下必须两张海报!'
       if (this.pageInfoList[indexTabs].itemList[itemIndex].itemAppList.length === 1) {
         if (this.pageInfoList[indexTabs].itemList[itemIndex].template !== 'H') {
           this.$message({
@@ -517,12 +517,6 @@ export default {
                     message: '栏目' + (parseInt(key2) + 1) + '请输入栏目序号！'
                   })
                   return false
-                } else if (that.pageInfoList[key].itemList[key2].itemAppList.length === 0) {
-                  this.$message({
-                    type: 'error',
-                    message: '栏目' + (parseInt(key2) + 1) + '请至少新增一个栏目资源！'
-                  })
-                  return false
                 } else if (that.pageInfoList[key].itemList[key2].template === 'J') {
                   if (that.pageInfoList[key].itemList[key2].itemAppList.length !== 2) {
                     this.$message({
@@ -533,6 +527,12 @@ export default {
                   } else {
                     isAdd = true
                   }
+                } else if (that.pageInfoList[key].itemList[key2].itemAppList.length === 0) {
+                  this.$message({
+                    type: 'error',
+                    message: '栏目' + (parseInt(key2) + 1) + '请至少新增一个栏目资源！'
+                  })
+                  return false
                 } else {
                   isAdd = true
                 }
