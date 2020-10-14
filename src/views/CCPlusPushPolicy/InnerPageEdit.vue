@@ -10,7 +10,6 @@
         :rules="rules"
         ref="ccplusInnerPageEditForm"
         class="ccplus-inner-page-edit"
-        label-width="120px"
       >
         <el-form-item label="策略名称:" prop="releaseConfName">
           <el-input
@@ -90,7 +89,7 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item class="page-info-tabs" label-width="0">
+        <div class="page-info-tabs">
           <el-button
             @click="showPageListSortDlg"
             style="position:absolute;z-index:1;right:80px;"
@@ -124,12 +123,16 @@
                   <el-input
                     v-model="list.pageName"
                     placeholder="请输入页面名称"
+                    clearable
+                    maxlength="99"
                   ></el-input>
                 </el-form-item>
                 <el-form-item label="页面描述" prop="pageDes">
                   <el-input
                     v-model="list.pageDes"
                     placeholder="请输入页面描述"
+                    clearable
+                    maxlength="99"
                   ></el-input>
                 </el-form-item>
                 <!-- 栏目区域 -->
@@ -168,7 +171,7 @@
               ></InnerPageColumnTemplate>
             </el-tab-pane>
           </el-tabs>
-        </el-form-item>
+        </div>
 
         <el-form-item>
           <el-button @click="submitForm('ccplusInnerPageEditForm')"
@@ -648,22 +651,9 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.ccplus-inner-page-edit > .el-form-item {
-  /deep/ .el-tabs__nav-scroll {
-    width: calc(100% - 160px);
-  }
-  > .el-form-item__label {
-    width: 90px;
-    text-align: left;
-  }
-  // > .el-form-item__content {
-  //   width: 200px;
-  //   display: inline-block;
-  // }
-  .page-info-tabs {
-    position: relative;
-  }
+<style lang="scss" scoped>
+.page-info-tabs {
+  position: relative;
   .column-template-tab-pane {
     position: relative;
     .btn-column-sort,
@@ -678,6 +668,20 @@ export default {
     .btn-column-sort {
       // right: 100px;
     }
+  }
+}
+.ccplus-inner-page-edit > .el-form-item,
+.page-info-tabs > .el-form-item {
+  > .el-form-item__label {
+    width: 120px;
+    text-align: left;
+  }
+  > .el-form-item__content {
+    width: 200px;
+    display: inline-block;
+  }
+  /deep/ .el-tabs__nav-scroll {
+    width: calc(100% - 160px);
   }
 }
 </style>
