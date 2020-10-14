@@ -211,7 +211,7 @@ export default {
     return {
       showSelectRegionDialog: false,
       showPageListSort: false,
-      pageIndex: 0,
+      pageIndex: '0',
       sortTitle: "",
       sortType: "",
       sortList: [],
@@ -397,10 +397,14 @@ export default {
       const page = this.getPageInfoListSample();
       page.sort = this.form.pageInfoList.length;
       this.form.pageInfoList.push(page);
+      this.resortList(this.form.pageInfoList, "sort");
       this.pageIndex = page.sort + "";
     },
     delCurrentPage(index) {
       this.form.pageInfoList.splice(index, 1);
+      this.resortList(this.form.pageInfoList, "sort");
+      index = index >= this.form.pageInfoList.length ? 0 : index;
+      this.pageIndex = index + "";
     },
     async getDetailById() {
       const { releaseConfId } = this.$route.query;
@@ -444,6 +448,7 @@ export default {
       const col = this.getColumnTemplateSample();
       col.itemSeq = this.form.pageInfoList[index].itemList.length + 1;
       this.form.pageInfoList[index].itemList.push(col);
+      this.resortList(this.form.pageInfoList[index].itemList, "itemSeq");
     },
     handleRemoveColumn(...rest) {
       let [content] = rest;
@@ -451,6 +456,7 @@ export default {
         content
       );
       this.form.pageInfoList[this.pageIndex].itemList.splice(idx, 1);
+      this.resortList(this.form.pageInfoList[this.pageIndex].itemList, "itemSeq");
     },
     handleNewGTemplate() {
       // 如果选择G模板，需要
@@ -464,10 +470,10 @@ export default {
       });
       if (gCnt > 1) {
         // 提示G模板的非唯一性
-        this.$bus.$emit('ccplus-innerpage-gtemplate-verify-result', false)
+        this.$bus.$emit("ccplus-innerpage-gtemplate-verify-result", false);
         return;
       } else {
-        this.$bus.$emit('ccplus-innerpage-gtemplate-verify-result', true)
+        this.$bus.$emit("ccplus-innerpage-gtemplate-verify-result", true);
       }
       if (
         gCnt === 1 &&
