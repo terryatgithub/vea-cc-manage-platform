@@ -263,6 +263,10 @@ export default {
     handleVersionRemoveTag(val) {
       if (val === "All") {
         this.form.supportVersion = [];
+      } else {
+        this.form.supportVersion = this.form.supportVersion.filter(item => {
+          return (item !== "All" && item !== val);
+        });
       }
     },
     getDefaultForm() {
