@@ -197,7 +197,7 @@
  */
 import SelectRegionComponent from "./components/SelectRegionComponent";
 import InnerPageColumnTemplate from "./innerPageComponents/InnerPageColumnTemplate";
-import InnerPageSortDialog from "./components/SortDialog";
+import InnerPageSortDialog from "./innerPageComponents/InnerPageSortDialog";
 import liteOS from "@/assets/liteOS.js";
 
 export default {
