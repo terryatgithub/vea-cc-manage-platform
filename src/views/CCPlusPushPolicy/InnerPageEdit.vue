@@ -115,39 +115,47 @@
             >
               <el-button
                 @click="delCurrentPage(pIndex)"
-                style="position:absolute;top:0;right:0;"
+                style="position:absolute;top:0;right:0;z-index:1;"
                 >删除当前页</el-button
               >
-              页面名称* :
-              <el-input v-model="list.pageName"></el-input>
-              页面描述 :
-              <el-input
-                v-model="list.pageDes"
-                placeholder="请填写页面描述"
-              ></el-input>
 
-              <!-- 栏目区域 -->
-              栏目数 {{ list.itemList.length }}
-              <el-button @click="showColumnSortDlg()" class="btn-column-sort"
-                >栏目排序</el-button
-              >
-              <el-tooltip
-                placement="top-start"
-                :content="'栏目数最多为' + columnsMaxNum + '个'"
-                :disabled="list.itemList.length < columnsMaxNum"
-                class="btn-column-addnew"
-              >
-                <div>
-                  <el-button
-                    type="success"
-                    plain
-                    icon="el-icon-edit"
-                    @click="handleAddColumn(pIndex)"
-                    :disabled="list.itemList.length >= columnsMaxNum"
-                    >新增栏目</el-button
-                  >
-                </div>
-              </el-tooltip>
+              <el-form :model="list" :rules="pageRules" ref="pageForm">
+                <el-form-item label="页面名称" prop="pageName">
+                  <el-input
+                    v-model="list.pageName"
+                    placeholder="请输入页面名称"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item label="页面描述" prop="pageDes">
+                  <el-input
+                    v-model="list.pageDes"
+                    placeholder="请输入页面描述"
+                  ></el-input>
+                </el-form-item>
+                <!-- 栏目区域 -->
+                <span> 栏目数: {{ list.itemList.length }} </span>
+
+                <el-button @click="showColumnSortDlg()" class="btn-column-sort"
+                  >栏目排序</el-button
+                >
+                <el-tooltip
+                  placement="top-start"
+                  :content="'栏目数最多为' + columnsMaxNum + '个'"
+                  :disabled="list.itemList.length < columnsMaxNum"
+                  class="btn-column-addnew"
+                >
+                  <div>
+                    <el-button
+                      type="success"
+                      plain
+                      icon="el-icon-edit"
+                      @click="handleAddColumn(pIndex)"
+                      :disabled="list.itemList.length >= columnsMaxNum"
+                      >新增栏目</el-button
+                    >
+                  </div>
+                </el-tooltip>
+              </el-form>
 
               <!-- 栏目模板 -->
               <InnerPageColumnTemplate
@@ -214,13 +222,13 @@ export default {
   data() {
     const validateMacAddress = (rule, value, callback) => {
       if (!this.isUseMacAddress) {
-        this.form.tvActiveId = '' //清空值
+        this.form.tvActiveId = ""; //清空值
         return callback();
       }
       if (!value) {
         return callback("MAC地址不能为空");
       }
-      callback()
+      callback();
     };
     return {
       showSelectRegionDialog: false,
@@ -273,6 +281,11 @@ export default {
           { required: true, message: "请选择优先级", trigger: "blur" }
         ],
         tvActiveId: [{ validator: validateMacAddress, trigger: "blur" }]
+      },
+      pageRules: {
+        pageName: [
+          { required: true, message: "请输入页面名称", trigger: "blur" }
+        ]
       },
       regionBakup: {
         //区域备份
@@ -553,6 +566,10 @@ export default {
         }
       }
     },
+    async checkPageInfo() {
+      const list = this.$refs['pageForm'].map(ref => ref.validate())
+      await Promise.all(list)
+    },
     async submitForm(formName) {
       console.log("submit", this.form);
       try {
@@ -560,6 +577,7 @@ export default {
         if (colNum === 0) {
           throw new Error("必须至少有一个栏目模板");
         }
+        await this.checkPageInfo();
         this.checkIfColumnHasMedia();
         let res;
         let cols = this.$refs["columnTemplateForm"].map(ref => ref.validate());
