@@ -347,6 +347,10 @@ export default {
       });
       if (res.code === 0) {
         const { results } = res.data;
+        if(results.length === 0) {
+          this.$message.warning('当前搜索条件下，媒资资源为空~')
+          return 
+        }
         const { itemMediaList, itemMediaMax } = this.content;
         let len = itemMediaList.length,
           end = itemMediaMax - len; //图片数量不能超过指定上限

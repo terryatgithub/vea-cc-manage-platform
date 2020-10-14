@@ -384,13 +384,21 @@ export default {
         });
       }
     },
+    checkIfColumnHasMedia() { //检查所有栏目模板，是否包含了媒资资源
+      for(let i = 0, len = this.form.itemList.length; i < len; i++) {
+        if(this.form.itemList[i].itemMediaList.length === 0){
+          throw new Error("栏目模板必须添加媒资资源，请检查");
+        }
+      }
+    },
     async submitForm(formName) {
       console.log("submit", this.form);
       try {
         let colNum = this.$refs["columnTemplateForm"].length;
         if (colNum === 0) {
-          throw new Error("必须至少有一个栏目模板");
+          throw new Error("必须有至少一个栏目模板");
         }
+        this.checkIfColumnHasMedia()
         let res;
         if (colNum > 1) {
           res = this.checkDuplicatedSerialNo();

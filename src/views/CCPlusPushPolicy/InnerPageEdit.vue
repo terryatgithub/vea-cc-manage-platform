@@ -211,7 +211,7 @@ export default {
     return {
       showSelectRegionDialog: false,
       showPageListSort: false,
-      pageIndex: '0',
+      pageIndex: "0",
       sortTitle: "",
       sortType: "",
       sortList: [],
@@ -456,7 +456,10 @@ export default {
         content
       );
       this.form.pageInfoList[this.pageIndex].itemList.splice(idx, 1);
-      this.resortList(this.form.pageInfoList[this.pageIndex].itemList, "itemSeq");
+      this.resortList(
+        this.form.pageInfoList[this.pageIndex].itemList,
+        "itemSeq"
+      );
     },
     handleNewGTemplate() {
       // 如果选择G模板，需要
@@ -524,6 +527,17 @@ export default {
         });
       }
     },
+    checkIfColumnHasMedia() {
+      //检查所有栏目模板，是否包含了媒资资源
+      const { pageInfoList } = this.form;
+      for (let i = 0, len = pageInfoList.length; i < len; i++) {
+        for (let j = 0, len2 = pageInfoList[i].itemList.length; j < len2; j++) {
+          if (pageInfoList[i].itemList[j].itemMediaList.length === 0) {
+            throw new Error("栏目模板必须添加媒资资源，请检查");
+          }
+        }
+      }
+    },
     async submitForm(formName) {
       console.log("submit", this.form);
       try {
@@ -531,6 +545,7 @@ export default {
         if (colNum === 0) {
           throw new Error("必须至少有一个栏目模板");
         }
+        this.checkIfColumnHasMedia();
         let res;
         let cols = this.$refs["columnTemplateForm"].map(ref => ref.validate());
         res = await Promise.all(cols);
