@@ -79,11 +79,7 @@
             :key="item.mediaResourcesId"
           >
             <el-image :src="item.mediaPic"></el-image>
-            <span
-              style="display:inline-block;white-space:nowrap;text-overflow:ellipsis;width:100%;
-              overflow:hidden;"
-              >{{ item.title }}</span
-            >
+            <span class="demo-image-title">{{ item.title }}</span>
             <p v-if="content.template === 'G'">
               <span v-if="item.posterId">
                 <i
@@ -506,6 +502,13 @@ export default {
       width 100px
       >>> .el-image__inner
         height auto
+    .demo-image-title
+      display:inline-block;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      width:100%;
+      text-align: center;
+      overflow:hidden;
 // todo 为什么无法穿透进去？
 .el-popover >>> .el-popover__title
   color red
