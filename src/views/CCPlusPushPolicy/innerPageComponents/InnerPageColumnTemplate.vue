@@ -281,7 +281,7 @@ export default {
           this.$emit("gtemplate-selected");
         });
         if (!isUnique) {
-          this.$message.warning("G模板只能创建一个~");
+          this.$message.warning("同一页面仅支持一个模板G: 大背景banner栏目");
           this.content.template = this.prevTemplateType; //取消时恢复oldvalue
           return false;
         }

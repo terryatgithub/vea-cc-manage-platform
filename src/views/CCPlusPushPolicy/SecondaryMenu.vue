@@ -113,7 +113,7 @@
             </div>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6" label="状态" >
+          <el-form-item class="el-col el-col-6" label="状态">
             <el-select
               class="el-col-20"
               placeholder="状态"
@@ -728,6 +728,9 @@ export default {
   created() {
     console.log("cc created");
   },
+  mounted() {
+    console.log("cc mounted");
+  },
   activated() {
     console.log("cc activated");
     this.getMediaResourceInfo();
@@ -735,9 +738,6 @@ export default {
   },
   deactivated() {
     console.log("cc deactivated");
-  },
-  mounted() {
-    console.log("cc mounted");
   }
 };
 </script>

@@ -113,7 +113,7 @@
             </div>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6" label="状态" >
+          <el-form-item class="el-col el-col-6" label="状态">
             <el-select
               class="el-col-20"
               placeholder="状态"
@@ -390,10 +390,12 @@ export default {
     },
     fetchData() {
       const filter = this.parseFilter();
-      this.$service.queryCCPlusInnerPagePushManageListPage(filter).then(data => {
-        this.pagination.total = data.data.total;
-        this.table.data = data.data.results;
-      });
+      this.$service
+        .queryCCPlusInnerPagePushManageListPage(filter)
+        .then(data => {
+          this.pagination.total = data.data.total;
+          this.table.data = data.data.results;
+        });
     },
     parseFilter() {
       const { pagination } = this;
@@ -726,18 +728,18 @@ export default {
     }
   },
   created() {
-    console.log("cc created");
-  },
-  activated() {
-    console.log("cc activated");
+    console.log("cc innerpage created");
     this.getMediaResourceInfo();
     this.fetchData();
   },
-  deactivated() {
-    console.log("cc deactivated");
-  },
   mounted() {
-    console.log("cc mounted");
+    console.log("cc innerpage mounted");
+  },
+  activated() {
+    console.log("cc innerpage activated");
+  },
+  deactivated() {
+    console.log("cc innerpage deactivated");
   }
 };
 </script>

@@ -3,7 +3,7 @@
     <el-tab-pane label="二级菜单" name="first">
       <SecondaryMenu class="el-tab-pane-preview" />
     </el-tab-pane>
-    <el-tab-pane label="内页" name="second">
+    <el-tab-pane label="内页" name="second" :lazy="true">
       <InnerPage class="el-tab-pane-preview" />
     </el-tab-pane>
   </el-tabs>
