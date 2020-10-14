@@ -423,7 +423,7 @@ export default {
         ? msg = '至少保留一个应用!'
         : msg = '栏目' + (itemIndex + 1) + '中J模板下必须两张海报!'
       if (this.pageInfoList[indexTabs].itemList[itemIndex].itemAppList.length === 1) {
-        if (this.pageInfoList[indexTabs].itemList[itemIndex].template !== 'H') {
+        if (this.pageInfoList[indexTabs].itemList[itemIndex].template === 'I') {
           this.$message({
             type: 'error',
             message: msg
