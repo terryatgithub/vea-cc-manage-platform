@@ -74,7 +74,7 @@
       <el-form-item class="image-wrapper">
         <div class="demo-image__lazy">
           <div
-            style="width: 110px; position:relative;"
+            class="image-wrapper"
             v-for="(item, index) in content.itemMediaList"
             :key="item.mediaResourcesId"
           >
@@ -494,6 +494,13 @@ export default {
   .demo-image__lazy
     display flex
     overflow-x scroll
+    .image-wrapper
+      width: 110px; 
+      position:relative;
+      display: flex;
+      flex-direction: column;
+      flex-shrink 0
+      justify-content: center;
     .el-image
       flex-shrink 0
       display inline-flex
