@@ -16,6 +16,7 @@
         <el-form-item label="客户&品牌">
           <div>
             <el-cascader
+              ref="cascader1"
               placeholder="客户&品牌"
               v-model="filter['brandName']"
               :options="userOptions"
@@ -28,6 +29,7 @@
         <el-form-item label="机芯&机型">
           <div>
             <el-cascader
+              ref="cascader2"
               placeholder="机芯&机型"
               v-model="filter['device']"
               :options="chipModelOptions"
@@ -40,6 +42,7 @@
         <el-form-item label="国家">
           <div>
             <el-cascader
+              ref="cascader3"
               placeholder="国家"
               v-model="filter['countryName']"
               :options="areaOptions"
@@ -242,7 +245,7 @@ export default {
     fetchData () {
       const filter = this.parseFilter()
       if (filter.brandName) {
-        filter.brandName = filter.brandName.join('/')
+        filter.brandName = filter.brandName.join('|')
       }
       if (filter.device) {
         filter.device = filter.device.join('/')
@@ -283,6 +286,14 @@ export default {
     handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.efficientFilter = this.genDefaultFilter()
+      // 清空选中的节点
+      this.$refs.cascader1.$refs.panel.clearCheckedNodes()
+      // 设置为空可以让节点不高亮显示
+      this.$refs.cascader1.$refs.panel.activePath = []
+      this.$refs.cascader2.$refs.panel.clearCheckedNodes()
+      this.$refs.cascader2.$refs.panel.activePath = []
+      this.$refs.cascader3.$refs.panel.clearCheckedNodes()
+      this.$refs.cascader3.$refs.panel.activePath = []
       this.pagination.currentPage = 1
       this.fetchData()
     },
