@@ -350,6 +350,10 @@ export default {
     handleVersionRemoveTag(val) {
       if (val === "All") {
         this.form.supportVersion = [];
+      } else {
+        this.form.supportVersion = this.form.supportVersion.filter(item => {
+          return item !== "All" && item !== val;
+        });
       }
     },
     handleClickTab(tab, event) {
@@ -567,8 +571,8 @@ export default {
       }
     },
     async checkPageInfo() {
-      const list = this.$refs['pageForm'].map(ref => ref.validate())
-      await Promise.all(list)
+      const list = this.$refs["pageForm"].map(ref => ref.validate());
+      await Promise.all(list);
     },
     async submitForm(formName) {
       console.log("submit", this.form);
