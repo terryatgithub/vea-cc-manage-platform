@@ -10,6 +10,7 @@
         :rules="rules"
         ref="ccplusInnerPageEditForm"
         class="ccplus-inner-page-edit"
+        label-width="120px"
       >
         <el-form-item label="策略名称:" prop="releaseConfName">
           <el-input
@@ -79,7 +80,17 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item class="page-info-tabs">
+        <el-form-item label="使用MAC地址" prop="tvActiveId">
+          <el-radio v-model="isUseMacAddress" :label="false">否</el-radio>
+          <el-radio v-model="isUseMacAddress" :label="true">是</el-radio>
+          <el-input
+            placeholder="输入MAC地址,多个以英文逗号隔开"
+            v-model="form.tvActiveId"
+            :disabled="!isUseMacAddress"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item class="page-info-tabs" label-width="0">
           <el-button
             @click="showPageListSortDlg"
             style="position:absolute;z-index:1;right:80px;"
@@ -151,13 +162,6 @@
           </el-tabs>
         </el-form-item>
 
-        <el-form-item label="指定设备" prop="tvActiveId">
-          <el-input
-            placeholder="DeviceID,多个用逗号隔开"
-            v-model="form.tvActiveId"
-          ></el-input>
-        </el-form-item>
-
         <el-form-item>
           <el-button @click="submitForm('ccplusInnerPageEditForm')"
             >完成</el-button
@@ -208,6 +212,16 @@ export default {
     InnerPageSortDialog
   },
   data() {
+    const validateMacAddress = (rule, value, callback) => {
+      if (!this.isUseMacAddress) {
+        this.form.tvActiveId = '' //清空值
+        return callback();
+      }
+      if (!value) {
+        return callback("MAC地址不能为空");
+      }
+      callback()
+    };
     return {
       showSelectRegionDialog: false,
       showPageListSort: false,
@@ -230,6 +244,7 @@ export default {
           value: 1
         }
       ],
+      isUseMacAddress: false,
       form: this.getDefaultForm(),
       rules: {
         releaseConfName: [
@@ -254,10 +269,10 @@ export default {
         datePublish: [
           { required: true, message: "请选择发布时间", trigger: "blur" }
         ],
-        priority: [{ required: true, message: "请选择优先级", trigger: "blur" }]
-        // tvActiveId: [
-        //   { required: true, message: "请输入设备信息", trigger: "blur" }
-        // ],
+        priority: [
+          { required: true, message: "请选择优先级", trigger: "blur" }
+        ],
+        tvActiveId: [{ validator: validateMacAddress, trigger: "blur" }]
       },
       regionBakup: {
         //区域备份
