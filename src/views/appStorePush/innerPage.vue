@@ -74,6 +74,7 @@
         <el-form-item label="国家">
           <div>
             <el-cascader
+              ref="cascader3"
               placeholder="国家"
               v-model="filter['countryName']"
               :options="countryOptions"
@@ -356,6 +357,10 @@ export default {
     handleFilterReset () {
       this.filter = this.genDefaultFilter()
       this.efficientFilter = this.genDefaultFilter()
+      // 清空选中的节点
+      this.$refs.cascader3.$refs.panel.clearCheckedNodes()
+      // 设置为空可以让节点不高亮显示
+      this.$refs.cascader3.$refs.panel.activePath = []
       this.pagination.currentPage = 1
       this.fetchData()
       this.getMediaResourceInfo()
