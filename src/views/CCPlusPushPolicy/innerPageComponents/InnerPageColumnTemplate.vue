@@ -58,7 +58,7 @@
         </el-popover>
       </el-form-item>
 
-      <el-form-item>
+      <el-form-item v-if="content.template < 'G'">
         <el-button @click="handleEditMovies" type="primary" plain
           >编辑栏目影片</el-button
         >
@@ -272,8 +272,33 @@ export default {
       // 删除模板H/J的海报
       this.content.itemMediaList.splice(index, 1);
     },
-    handleTemplateChange(val) {
+    async verifyGTemplateUnique() {
+      // 如果选择G，需要: 1. 判断是否唯一  2. 置顶
+      if (this.content.template === "G") {
+        let isUnique = await new Promise((resolve, reject) => {
+          this.$bus.$once(
+            "ccplus-innerpage-gtemplate-verify-result",
+            result => {
+              resolve(result);
+            }
+          );
+          this.$emit("gtemplate-selected");
+        });
+        if (!isUnique) {
+          this.$message.warning("G模板只能创建一个~");
+          this.content.template = this.prevTemplateType; //取消时恢复oldvalue
+          return false;
+        }
+      } else {
+        // bugfix 避免模板1先选G再改为其它，此时新增一个G模板2，模板1的值也会变为旧值
+        this.$bus.$off("ccplus-innerpage-gtemplate-verify-result");
+      }
+      return true;
+    },
+    async handleTemplateChange(val) {
       if (!this.content.itemMediaList.length) {
+        // 无图片，直接判断
+        await this.verifyGTemplateUnique();
         return;
       }
       this.$confirm("更改模板将会清空所有图片，确认更改吗？", "提示", {
@@ -281,7 +306,12 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
+        .then(async () => {
+          // 有图片，在用户确认更改时再判断
+          let GUnique = await this.verifyGTemplateUnique();
+          if (!GUnique) {
+            throw new Error("G template 只能有一个");
+          }
           this.prevTemplateType = this.content.template; //确定时保存值
           this.content.itemMediaList.splice(0);
           if (this.specialTemplates.includes(this.content.template)) {
@@ -358,13 +388,13 @@ export default {
         const { itemMediaList } = this.content;
         let len = itemMediaList.length;
         itemMediaList.splice(len, 0, {
-          mediaResourcesId : data[0], //媒资id
-          mediaPicType : "", //todo
-          mediaPic : data[2], //媒资图片url
-          posterId : data[0], //海报id
-          detailSeq : len,
-          title : data[1],
-        })
+          mediaResourcesId: data[0], //媒资id
+          mediaPicType: "", //todo
+          mediaPic: data[2], //媒资图片url
+          posterId: data[0], //海报id
+          detailSeq: len,
+          title: data[1]
+        });
       }
     },
     posterClose() {

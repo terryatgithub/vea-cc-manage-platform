@@ -145,6 +145,7 @@
                 :key="index"
                 :content="item"
                 @remove-column="handleRemoveColumn"
+                @gtemplate-selected="handleNewGTemplate"
               ></InnerPageColumnTemplate>
             </el-tab-pane>
           </el-tabs>
@@ -331,7 +332,7 @@ export default {
       return {
         template: "A",
         // releaseItemId: 0,
-        itemSeq: 1,
+        itemSeq: 0,
         itemName: "",
         itemMediaMax: 99,
         itemMediaList: [] //媒体资源
@@ -450,6 +451,36 @@ export default {
         content
       );
       this.form.pageInfoList[this.pageIndex].itemList.splice(idx, 1);
+    },
+    handleNewGTemplate() {
+      // 如果选择G模板，需要
+      // 1. 判断G模板是否唯一
+      // 2. 置顶G模板
+      let gCnt = 0;
+      this.form.pageInfoList[this.pageIndex].itemList.forEach(item => {
+        if (item.template === "G") {
+          gCnt++;
+        }
+      });
+      if (gCnt > 1) {
+        // 提示G模板的非唯一性
+        this.$bus.$emit('ccplus-innerpage-gtemplate-verify-result', false)
+        return;
+      } else {
+        this.$bus.$emit('ccplus-innerpage-gtemplate-verify-result', true)
+      }
+      if (
+        gCnt === 1 &&
+        this.form.pageInfoList[this.pageIndex].itemList[0].template !== "G"
+      ) {
+        // G模板如果只有一个，确保G模板置顶
+        let list = this.form.pageInfoList[this.pageIndex].itemList;
+        const gIndex = [].findIndex(item => item.template === "G");
+        const gItem = list.splice(gIndex, 1);
+        list.unshift(gItem[0]);
+        this.resortList(list, "itemSeq");
+      }
+      // return true;
     },
     async createOrUpdatePolicy() {
       const { handleType } = this.$route.query;
