@@ -83,13 +83,16 @@
           >
             <el-image :src="item.mediaPic"></el-image>
             <span class="demo-image-title">{{ item.title }}</span>
-            <p v-if="content.template === 'G'">
+            <p
+              v-if="content.template === 'G'"
+              style="height: 32px;display: flex;justify-content: center;"
+            >
               <span v-if="item.posterId">
                 <i
                   class="el-icon-close"
                   @click="removeCurPostForGTemplate(index)"
                 ></i>
-                {{ item.title }}
+                {{ item.posterName }}
               </span>
               <el-button v-else @click="addPosterForGTemplate(index)">
                 关联海报
@@ -362,7 +365,8 @@ export default {
             score: item.score,
             title: item.title,
             detailSeq: len,
-            posterId: null //海报id
+            posterId: null, //海报id
+            posterName: "" //海报名称
           });
           len++;
         });
@@ -380,6 +384,8 @@ export default {
         if (this.adheredPosterIndex !== -1) {
           this.content.itemMediaList[this.adheredPosterIndex].posterId =
             data[0];
+          this.content.itemMediaList[this.adheredPosterIndex].posterName =
+            data[1];
           this.adheredPosterIndex = -1;
         }
       } else {
@@ -451,6 +457,7 @@ export default {
     },
     removeCurPostForGTemplate(index) {
       this.content.itemMediaList[index].posterId = null;
+      this.content.itemMediaList[index].posterName = "";
     },
     handleEditMovies() {
       this.showEditDetailPage = true;

@@ -426,10 +426,10 @@ export default {
     },
     addNewPage() {
       // 新增页面
-      const len = this.form.pageInfoList.length
-      if(len > 20) {
-        this.$message.warning('页面上限为20个~')
-        return
+      const len = this.form.pageInfoList.length;
+      if (len > 20) {
+        this.$message.warning("页面上限为20个~");
+        return;
       }
       const page = this.getPageInfoListSample();
       page.sort = len;
@@ -438,10 +438,10 @@ export default {
       this.pageIndex = page.sort + "";
     },
     delCurrentPage(index) {
-      const len = this.form.pageInfoList.length
-      if(len <= 1) {
-        this.$message.warning('至少需要一个页面~')
-        return
+      const len = this.form.pageInfoList.length;
+      if (len <= 1) {
+        this.$message.warning("至少需要一个页面~");
+        return;
       }
       this.form.pageInfoList.splice(index, 1);
       this.resortList(this.form.pageInfoList, "sort");
@@ -577,6 +577,19 @@ export default {
           if (pageInfoList[i].itemList[j].itemMediaList.length === 0) {
             throw new Error("栏目模板必须添加媒资资源，请检查");
           }
+          // 判断G模板是否关联海报
+          if (pageInfoList[i].itemList[j].template === "G") {
+            for (
+              let k = 0,
+                lenk = pageInfoList[i].itemList[j].itemMediaList.length;
+              k < lenk;
+              k++
+            ) {
+              if (!pageInfoList[i].itemList[j].itemMediaList[k].posterId) {
+                throw new Error("G模板必须关联海报，请检查");
+              }
+            }
+          }
         }
       }
     },
@@ -591,7 +604,7 @@ export default {
         if (colNum === 0) {
           throw new Error("必须至少有一个栏目模板");
         }
-        await this.checkPageInfo();
+        await this.checkPageInfo(); //页面字段校验
         this.checkIfColumnHasMedia();
         let res;
         let cols = this.$refs["columnTemplateForm"].map(ref => ref.validate());
@@ -637,7 +650,7 @@ export default {
       });
       // this.$refs["ccplusInnerPageEditForm"].clearValidate();
       this.$refs["ccplusInnerPageEditForm"].resetFields();
-      this.pageIndex = '0'
+      this.pageIndex = "0";
     },
     selectRegion() {
       this.regionBakup.ctmDevCtrName = this.form.ctmDevCtrName;
