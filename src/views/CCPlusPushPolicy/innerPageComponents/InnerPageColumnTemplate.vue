@@ -297,28 +297,29 @@ export default {
       if (!this.content.itemMediaList.length) {
         // 无图片，直接判断
         await this.verifyGTemplateUnique();
-        return;
-      }
-      this.$confirm("更改模板将会清空所有图片，确认更改吗？", "提示", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          // 有图片，在用户确认更改时再判断
-          let GUnique = await this.verifyGTemplateUnique();
-          if (!GUnique) {
-            throw new Error("G template 只能有一个");
-          }
-          this.prevTemplateType = this.content.template; //确定时保存值
-          this.content.itemMediaList.splice(0);
-          if (this.specialTemplates.includes(this.content.template)) {
-            this.content.itemMediaMax = this.content.template === "H" ? 1 : 2;
-          }
+      } else {
+        this.$confirm("更改模板将会清空所有图片，确认更改吗？", "提示", {
+          confirmButtonText: "确认",
+          cancelButtonText: "取消",
+          type: "warning"
         })
-        .catch(() => {
-          this.content.template = this.prevTemplateType; //取消时恢复oldvalue
-        });
+          .then(async () => {
+            // 有图片，在用户确认更改时再判断
+            let GUnique = await this.verifyGTemplateUnique();
+            if (!GUnique) {
+              throw new Error("G template 只能有一个");
+            }
+            this.prevTemplateType = this.content.template; //确定时保存值
+            this.content.itemMediaList.splice(0);
+          })
+          .catch(() => {
+            this.content.template = this.prevTemplateType; //取消时恢复oldvalue
+          });
+      }
+      // For 'H' 'J' 模板，设置最大数量
+      if (this.specialTemplates.includes(this.content.template)) {
+        this.content.itemMediaMax = this.content.template === "H" ? 1 : 2;
+      }
     },
     reSortSequence() {
       const { itemMediaList } = this.content;
@@ -389,9 +390,13 @@ export default {
           this.adheredPosterIndex = -1;
         }
       } else {
-        // for template 'H', 'J'
-        const { itemMediaList } = this.content;
-        let len = itemMediaList.length;
+        // for template 'H', 'J'  判断是否超过限定图片数
+        const { itemMediaList, itemMediaMax } = this.content;
+        let len = itemMediaList.length; //图片数量不能超过指定上限
+        if (len >= itemMediaMax) {
+          this.$message.error("栏目资源个数超过限制");
+          return;
+        }
         itemMediaList.splice(len, 0, {
           mediaResourcesId: data[0], //媒资id
           mediaPicType: "", //todo
