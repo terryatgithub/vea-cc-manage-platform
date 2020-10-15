@@ -1,77 +1,80 @@
 <template>
   <div class="column-template-wrapper">
-    <el-form label-width="90px" :model="content" ref="tempForm" :rules="rules">
-      <el-form-item label="栏目名称:" prop="itemName">
-        <el-input
-          placeholder=""
-          clearable
-          v-model="content.itemName"
-          maxlength="99"
-        />
-      </el-form-item>
-
-      <el-form-item label="栏目模板:">
-        <el-select
-          v-model="content.template"
-          placeholder="请选择"
-          @change="handleTemplateChange"
-          @visible-change="handleTemplateVisibleChange"
-        >
-          <el-option
-            v-for="item in templateOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-
-      <el-form-item label-width="0" style="margin-left:90px;">
-        <el-button @click="handleSelectColumnResource" type="primary" plain
-          >新增栏目资源</el-button
-        >
-      </el-form-item>
-
-      <el-form-item
-        label="影片数量上限:"
-        label-width="120px"
-        prop="itemMediaMax"
-        v-if="!specialTemplates.includes(content.template)"
-      >
-        <el-popover
-          ref="popover"
-          placement="top-start"
-          title="限制输入两位数"
-          trigger="manual"
-          v-model="showPopover"
-          popper-class="popover"
-        >
+    <el-form :model="content" ref="tempForm" :rules="rules">
+      <div class="one-line">
+        <el-form-item label="栏目名称:" prop="itemName">
           <el-input
-            slot="reference"
             placeholder=""
             clearable
-            @input="handleInputOnlyNumberItemMediaMax"
-            @focus="handleMediaMaxFocus"
-            @blur="handleMediaMaxBlur"
-            v-model.number="content.itemMediaMax"
+            v-model="content.itemName"
+            maxlength="99"
           />
-        </el-popover>
-      </el-form-item>
+        </el-form-item>
 
-      <el-form-item v-if="content.template < 'G'">
-        <el-button @click="handleEditMovies" type="primary" plain
-          >编辑栏目影片</el-button
-        >
-      </el-form-item>
+        <el-form-item label="栏目模板:">
+          <el-select
+            v-model="content.template"
+            placeholder="请选择"
+            @change="handleTemplateChange"
+            @visible-change="handleTemplateVisibleChange"
+          >
+            <el-option
+              v-for="item in templateOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
 
-      <el-form-item>
-        <el-button type="danger" plain @click="handleDeleteColumn"
-          >删除栏目</el-button
+        <el-form-item>
+          <el-button @click="handleSelectColumnResource" type="primary" plain
+            >新增栏目资源</el-button
+          >
+        </el-form-item>
+      </div>
+
+      <div class="one-line">
+        <el-form-item
+          label="影片数量上限:"
+          prop="itemMediaMax"
+          v-if="!specialTemplates.includes(content.template)"
         >
-      </el-form-item>
+          <el-popover
+            ref="popover"
+            placement="top-start"
+            title="限制输入两位数"
+            trigger="manual"
+            v-model="showPopover"
+            popper-class="popover"
+          >
+            <el-input
+              slot="reference"
+              placeholder=""
+              clearable
+              @input="handleInputOnlyNumberItemMediaMax"
+              @focus="handleMediaMaxFocus"
+              @blur="handleMediaMaxBlur"
+              v-model.number="content.itemMediaMax"
+            />
+          </el-popover>
+        </el-form-item>
+
+        <el-form-item v-if="content.template < 'G'">
+          <el-button @click="handleEditMovies" type="primary" plain
+            >编辑栏目影片</el-button
+          >
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="danger" plain @click="handleDeleteColumn"
+            >删除栏目</el-button
+          >
+        </el-form-item>
+      </div>
 
       <!-- 图片展示区 -->
-      <el-form-item class="image-wrapper">
+      <div class="image-container">
         <div class="demo-image__lazy">
           <div
             class="image-wrapper"
@@ -100,11 +103,7 @@
             ></i>
           </div>
         </div>
-      </el-form-item>
-
-      <el-form-item>
-        <hr />
-      </el-form-item>
+      </div>
     </el-form>
 
     <el-dialog
@@ -347,9 +346,9 @@ export default {
       });
       if (res.code === 0) {
         const { results } = res.data;
-        if(results.length === 0) {
-          this.$message.warning('当前搜索条件下，媒资资源为空~')
-          return 
+        if (results.length === 0) {
+          this.$message.warning("当前搜索条件下，媒资资源为空~");
+          return;
         }
         const { itemMediaList, itemMediaMax } = this.content;
         let len = itemMediaList.length,
@@ -487,19 +486,20 @@ export default {
 <style lang="stylus" scoped>
 .column-template-wrapper
   background lightgray
-.el-form
-  display flex
-  flex-wrap wrap
-  .el-form-item
-    margin 5px
+  margin-bottom 10px
+  .el-form
+    .el-form-item
+      margin 10px
+  .one-line
+    display flex
 
-.image-wrapper
+.image-container
   overflow: hidden;
   .demo-image__lazy
     display flex
     overflow-x scroll
     .image-wrapper
-      width: 110px; 
+      width: 110px;
       position:relative;
       display: flex;
       flex-direction: column;

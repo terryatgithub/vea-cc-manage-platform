@@ -4,185 +4,183 @@
     title="新增推荐内容策略"
     @go-back="cancelForm('ccplusInnerPageEditForm')"
   >
-    <div class="el-row">
-      <el-form
-        :model="form"
-        :rules="rules"
-        ref="ccplusInnerPageEditForm"
-        class="ccplus-inner-page-edit"
-      >
-        <el-form-item label="策略名称:" prop="releaseConfName">
-          <el-input
-            placeholder="请输入策略名称"
-            clearable
-            maxlength="99"
-            v-model="form.releaseConfName"
-          />
-        </el-form-item>
+    <el-form
+      :model="form"
+      :rules="rules"
+      ref="ccplusInnerPageEditForm"
+      class="ccplus-inner-page-edit"
+    >
+      <el-form-item label="策略名称:" prop="releaseConfName">
+        <el-input
+          placeholder="请输入策略名称"
+          clearable
+          maxlength="99"
+          v-model="form.releaseConfName"
+        />
+      </el-form-item>
 
-        <el-form-item label="支持版本:" prop="supportVersion">
-          <el-select
-            v-model="form.supportVersion"
-            multiple
-            placeholder="请选择版本(支持多选)"
-            @change="handleVersionChange"
-            @remove-tag="handleVersionRemoveTag"
-          >
-            <el-option
-              key="All"
-              label="All"
-              value="All"
-              @click.native="handleVersionClickAll"
-            ></el-option>
-            <el-option
-              v-for="item in versionOptions"
-              :key="item.supportVersion"
-              :label="item.supportVersion"
-              :value="item.supportVersion"
-            ></el-option>
-          </el-select>
-        </el-form-item>
+      <el-form-item label="支持版本:" prop="supportVersion">
+        <el-select
+          v-model="form.supportVersion"
+          multiple
+          placeholder="请选择版本(支持多选)"
+          @change="handleVersionChange"
+          @remove-tag="handleVersionRemoveTag"
+        >
+          <el-option
+            key="All"
+            label="All"
+            value="All"
+            @click.native="handleVersionClickAll"
+          ></el-option>
+          <el-option
+            v-for="item in versionOptions"
+            :key="item.supportVersion"
+            :label="item.supportVersion"
+            :value="item.supportVersion"
+          ></el-option>
+        </el-select>
+      </el-form-item>
 
-        <el-form-item label="选择区域:" prop="ctmDevCtrName">
-          <el-button
-            v-if="!form.ctmDevCtrName"
-            type="primary"
-            @click="selectRegion"
-            >选择区域</el-button
-          >
-          <div v-else class="nameBox">
-            {{ form.ctmDevCtrName }}
-            <i class="el-icon-error" @click="removeRegion"></i>
-          </div>
-        </el-form-item>
-
-        <el-form-item label="推送时间:" prop="datePublish">
-          <el-date-picker
-            v-model="form.datePublish"
-            type="datetimerange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            unlink-panels
-            align="right"
-          ></el-date-picker>
-        </el-form-item>
-
-        <el-form-item label="优先级:" prop="priority">
-          <el-select v-model="form.priority" placeholder="请选择优先级">
-            <el-option
-              v-for="item in priorityOptions"
-              :key="item.label"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="使用MAC地址" prop="tvActiveId">
-          <el-radio v-model="isUseMacAddress" :label="false">否</el-radio>
-          <el-radio v-model="isUseMacAddress" :label="true">是</el-radio>
-          <el-input
-            placeholder="输入MAC地址,多个以英文逗号隔开"
-            v-model="form.tvActiveId"
-            :disabled="!isUseMacAddress"
-          ></el-input>
-        </el-form-item>
-
-        <div class="page-info-tabs">
-          <el-button
-            @click="showPageListSortDlg"
-            style="position:absolute;z-index:1;right:80px;"
-            >页面排序</el-button
-          >
-          <el-button
-            @click="addNewPage"
-            style="position:absolute;z-index:1;right:0;"
-            >新增页面</el-button
-          >
-          <el-tabs
-            type="border-card"
-            v-model="pageIndex"
-            @tab-click="handleClickTab"
-          >
-            <el-tab-pane
-              v-for="(list, pIndex) in form.pageInfoList"
-              :key="list.sort"
-              :name="list.sort + ''"
-              :label="list.pageName"
-              class="column-template-tab-pane"
-            >
-              <el-button
-                @click="delCurrentPage(pIndex)"
-                style="position:absolute;top:0;right:0;z-index:1;"
-                >删除当前页</el-button
-              >
-
-              <el-form :model="list" :rules="pageRules" ref="pageForm">
-                <el-form-item label="页面名称" prop="pageName">
-                  <el-input
-                    v-model="list.pageName"
-                    placeholder="请输入页面名称"
-                    clearable
-                    maxlength="99"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="页面描述" prop="pageDes">
-                  <el-input
-                    v-model="list.pageDes"
-                    placeholder="请输入页面描述"
-                    clearable
-                    maxlength="99"
-                  ></el-input>
-                </el-form-item>
-                <!-- 栏目区域 -->
-                <span> 栏目数: {{ list.itemList.length }} </span>
-
-                <el-button @click="showColumnSortDlg()" class="btn-column-sort"
-                  >栏目排序</el-button
-                >
-                <el-tooltip
-                  placement="top-start"
-                  :content="'栏目数最多为' + columnsMaxNum + '个'"
-                  :disabled="list.itemList.length < columnsMaxNum"
-                  class="btn-column-addnew"
-                >
-                  <div>
-                    <el-button
-                      type="success"
-                      plain
-                      icon="el-icon-edit"
-                      @click="handleAddColumn(pIndex)"
-                      :disabled="list.itemList.length >= columnsMaxNum"
-                      >新增栏目</el-button
-                    >
-                  </div>
-                </el-tooltip>
-              </el-form>
-
-              <!-- 栏目模板 -->
-              <InnerPageColumnTemplate
-                v-for="(item, index) in list.itemList"
-                ref="columnTemplateForm"
-                :key="index"
-                :content="item"
-                @remove-column="handleRemoveColumn"
-                @gtemplate-selected="handleNewGTemplate"
-              ></InnerPageColumnTemplate>
-            </el-tab-pane>
-          </el-tabs>
+      <el-form-item label="选择区域:" prop="ctmDevCtrName">
+        <el-button
+          v-if="!form.ctmDevCtrName"
+          type="primary"
+          @click="selectRegion"
+          >选择区域</el-button
+        >
+        <div v-else class="nameBox">
+          {{ form.ctmDevCtrName }}
+          <i class="el-icon-error" @click="removeRegion"></i>
         </div>
+      </el-form-item>
 
-        <el-form-item>
-          <el-button @click="submitForm('ccplusInnerPageEditForm')"
-            >完成</el-button
+      <el-form-item label="推送时间:" prop="datePublish">
+        <el-date-picker
+          v-model="form.datePublish"
+          type="datetimerange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          unlink-panels
+          align="right"
+        ></el-date-picker>
+      </el-form-item>
+
+      <el-form-item label="优先级:" prop="priority">
+        <el-select v-model="form.priority" placeholder="请选择优先级">
+          <el-option
+            v-for="item in priorityOptions"
+            :key="item.label"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="使用MAC地址" prop="tvActiveId">
+        <el-radio v-model="isUseMacAddress" :label="false">否</el-radio>
+        <el-radio v-model="isUseMacAddress" :label="true">是</el-radio>
+        <el-input
+          placeholder="输入MAC地址,多个以英文逗号隔开"
+          v-model="form.tvActiveId"
+          :disabled="!isUseMacAddress"
+        ></el-input>
+      </el-form-item>
+
+      <div class="page-info-tabs">
+        <el-button
+          @click="showPageListSortDlg"
+          style="position:absolute;z-index:1;right:80px;"
+          >页面排序</el-button
+        >
+        <el-button
+          @click="addNewPage"
+          style="position:absolute;z-index:1;right:0;"
+          >新增页面</el-button
+        >
+        <el-tabs
+          type="border-card"
+          v-model="pageIndex"
+          @tab-click="handleClickTab"
+        >
+          <el-tab-pane
+            v-for="(list, pIndex) in form.pageInfoList"
+            :key="list.sort"
+            :name="list.sort + ''"
+            :label="list.pageName"
+            class="column-template-tab-pane"
           >
-          <el-button @click="cancelForm('ccplusInnerPageEditForm')"
-            >取消</el-button
-          >
-        </el-form-item>
-      </el-form>
-    </div>
+            <el-button
+              @click="delCurrentPage(pIndex)"
+              style="position:absolute;top:0;right:0;z-index:1;"
+              >删除当前页</el-button
+            >
+
+            <el-form :model="list" :rules="pageRules" ref="pageForm">
+              <el-form-item label="页面名称" prop="pageName">
+                <el-input
+                  v-model="list.pageName"
+                  placeholder="请输入页面名称"
+                  clearable
+                  maxlength="99"
+                ></el-input>
+              </el-form-item>
+              <el-form-item label="页面描述" prop="pageDes">
+                <el-input
+                  v-model="list.pageDes"
+                  placeholder="请输入页面描述"
+                  clearable
+                  maxlength="99"
+                ></el-input>
+              </el-form-item>
+              <!-- 栏目区域 -->
+              <span> 栏目数: {{ list.itemList.length }} </span>
+
+              <el-button @click="showColumnSortDlg()" class="btn-column-sort"
+                >栏目排序</el-button
+              >
+              <el-tooltip
+                placement="top-start"
+                :content="'栏目数最多为' + columnsMaxNum + '个'"
+                :disabled="list.itemList.length < columnsMaxNum"
+                class="btn-column-addnew"
+              >
+                <div>
+                  <el-button
+                    type="success"
+                    plain
+                    icon="el-icon-edit"
+                    @click="handleAddColumn(pIndex)"
+                    :disabled="list.itemList.length >= columnsMaxNum"
+                    >新增栏目</el-button
+                  >
+                </div>
+              </el-tooltip>
+            </el-form>
+
+            <!-- 栏目模板 -->
+            <InnerPageColumnTemplate
+              v-for="(item, index) in list.itemList"
+              ref="columnTemplateForm"
+              :key="index"
+              :content="item"
+              @remove-column="handleRemoveColumn"
+              @gtemplate-selected="handleNewGTemplate"
+            ></InnerPageColumnTemplate>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+
+      <el-form-item>
+        <el-button @click="submitForm('ccplusInnerPageEditForm')"
+          >完成</el-button
+        >
+        <el-button @click="cancelForm('ccplusInnerPageEditForm')"
+          >取消</el-button
+        >
+      </el-form-item>
+    </el-form>
 
     <el-dialog
       title="选择区域"
@@ -654,34 +652,34 @@ export default {
 <style lang="scss" scoped>
 .page-info-tabs {
   position: relative;
+  /deep/ .el-tabs__nav-scroll {
+    width: calc(100% - 160px);
+  }
+
   .column-template-tab-pane {
     position: relative;
     .btn-column-sort,
     .btn-column-addnew {
-      // position: absolute;
-      // top: 0;
-      // right: 0;
+      position: relative;
+      top: -13px;
+      right: 0;
+      float: right;
     }
     .btn-column-addnew {
       display: inline-block;
     }
-    .btn-column-sort {
-      // right: 100px;
-    }
   }
 }
-.ccplus-inner-page-edit > .el-form-item,
-.page-info-tabs > .el-form-item {
-  > .el-form-item__label {
-    width: 120px;
-    text-align: left;
-  }
-  > .el-form-item__content {
-    width: 200px;
-    display: inline-block;
-  }
-  /deep/ .el-tabs__nav-scroll {
-    width: calc(100% - 160px);
+.ccplus-inner-page-edit {
+  /deep/ .el-form-item {
+    /deep/ .el-form-item__label {
+      width: 120px;
+      text-align: left;
+    }
+    /deep/ .el-form-item__content {
+      width: 200px;
+      display: inline-block;
+    }
   }
 }
 </style>
