@@ -361,6 +361,8 @@ export default {
           ? -1
           : 1;
       itemMediaList.sort(sort);
+      // 重新设置detailSeq 
+      this.reSortSequence();
     },
     // handleClose(done) {
     //   this.$confirm("确认关闭？")

@@ -426,16 +426,26 @@ export default {
     },
     addNewPage() {
       // 新增页面
+      const len = this.form.pageInfoList.length
+      if(len > 20) {
+        this.$message.warning('页面上限为20个~')
+        return
+      }
       const page = this.getPageInfoListSample();
-      page.sort = this.form.pageInfoList.length;
+      page.sort = len;
       this.form.pageInfoList.push(page);
       this.resortList(this.form.pageInfoList, "sort");
       this.pageIndex = page.sort + "";
     },
     delCurrentPage(index) {
+      const len = this.form.pageInfoList.length
+      if(len <= 1) {
+        this.$message.warning('至少需要一个页面~')
+        return
+      }
       this.form.pageInfoList.splice(index, 1);
       this.resortList(this.form.pageInfoList, "sort");
-      index = index >= this.form.pageInfoList.length ? 0 : index;
+      index = index >= len ? 0 : index;
       this.pageIndex = index + "";
     },
     async getDetailById() {
