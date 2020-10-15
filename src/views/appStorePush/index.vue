@@ -1,10 +1,10 @@
 <template>
   <el-tabs v-model="activeName" @tab-click="handleClick">
     <el-tab-pane label="二级菜单" name="first">
-      <AppStorePushSecondaryMenu class="el-tab-pane-preview" />
+      <AppStorePushSecondaryMenu class="el-tab-pane-preview" v-if="activeName === 'first'" />
     </el-tab-pane>
     <el-tab-pane label="内页" name="second">
-      <AppStorePushInnerPage class="el-tab-pane-preview" />
+      <AppStorePushInnerPage class="el-tab-pane-preview" v-if="activeName === 'second'" />
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -24,13 +24,8 @@ export default {
     }
   },
   methods: {
-    handleClick () {
-      console.log('handleClick...')
-    }
-  },
-  activated () {
-    if (this.$route.query.tabType === 'innerPage') {
-      this.activeName = 'second'
+    handleClick (tab, event) {
+      this.activeName = tab.name
     }
   }
 }

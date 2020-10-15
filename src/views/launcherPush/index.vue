@@ -704,13 +704,13 @@ export default {
            margin-right: 5px;
 }
 .content >>> .el-form--inline .el-form-item__label {
-           text-align: left;
+           text-align: right;
 }
 .content >>> .filter-item
   justify-content: flex-start;
   margin: 10px 0px
 .content >>> .btnBox
-  margin-left: 0px;
+  margin-left: 50px;
 </style>
 <style lang="scss">
 .btnBox {
