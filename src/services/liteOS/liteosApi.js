@@ -6,6 +6,7 @@ export function queryCustomerBrandsList (params) {
   return this.fetch({
     method: 'get',
     url: 'api/lite-os/admin/select/query-customer-brands-list',
+    useLoading: false,
     params
   })
 }
@@ -131,7 +132,8 @@ export function queryChipAllContainModels () {
 export function queryAreaCountryListAll () {
   return this.fetch({
     method: 'get',
-    url: 'api/lite-os/admin/select/query-area-country-list-all'
+    url: 'api/lite-os/admin/select/query-area-country-list-all',
+    useLoading: false
   })
 }
 // 区域管理修改
@@ -167,6 +169,7 @@ export function getAreaManageRlsId (params) {
   return this.fetch({
     method: 'get',
     url: 'api/lite-os/admin/area-manage/get-area-manage-rlsId',
+    useLoading: false,
     params
   })
 }

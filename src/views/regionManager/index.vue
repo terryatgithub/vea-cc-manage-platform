@@ -86,8 +86,9 @@
         v-if = 'dialogEditFormVisible'
         width = '450px'
         @close = 'close'
+        v-loading="loading"
       >
-        <EditPop :rlsId = 'rlsId' @close = 'close' @fetchData = 'fetchData' ref = 'dialogEdit'></EditPop>
+        <EditPop :rlsId = 'rlsId' @close = 'close' @fetchData = 'fetchData' @load = 'load' ref = 'dialogEdit'></EditPop>
       </el-dialog>
       <Table
         :props="table.props"
@@ -191,6 +192,7 @@ export default {
           }
         ]
       },
+      loading: true,
       dialogEditFormVisible: false,
       dialogTitle: '新增',
       rlsId: '0',
@@ -345,6 +347,10 @@ export default {
         }
       })
     },
+    // 关闭loading
+    load () {
+      this.loading = false
+    },
     // 关闭弹窗
     close () {
       this.dialogEditFormVisible = false
@@ -361,6 +367,7 @@ export default {
     // 编辑
     handleEdit (row) {
       this.rlsId = row.rlsId
+      this.loading = true
       this.dialogEditFormVisible = true
       this.dialogTitle = '编辑'
     },

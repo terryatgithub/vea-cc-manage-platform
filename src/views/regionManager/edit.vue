@@ -381,6 +381,7 @@ export default {
           this.regionForm.countryNames.length > 20
             ? this.collapseTags3 = true
             : this.collapseTags3 = false
+          this.$emit('load')
         } else {
           this.$message({
             type: 'error',
