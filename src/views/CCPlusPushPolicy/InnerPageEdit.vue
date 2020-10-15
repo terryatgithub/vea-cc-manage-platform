@@ -297,7 +297,6 @@ export default {
     };
   },
   computed: {},
-  created() {},
   activated() {
     this.init();
   },
@@ -628,6 +627,7 @@ export default {
       });
       // this.$refs["ccplusInnerPageEditForm"].clearValidate();
       this.$refs["ccplusInnerPageEditForm"].resetFields();
+      this.pageIndex = '0'
     },
     selectRegion() {
       this.regionBakup.ctmDevCtrName = this.form.ctmDevCtrName;
