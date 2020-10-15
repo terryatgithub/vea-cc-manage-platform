@@ -9,10 +9,9 @@
           :model="filter"
           inline
           label-width="90px"
-          label-position="left"
         >
-          <el-form-item class="el-col el-col-6" label="品牌">
-            <div class="el-col-20">
+          <el-form-item label="品牌">
+            <div>
               <el-select
                 placeholder="品牌"
                 clearable
@@ -31,8 +30,8 @@
             </div>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6" label="客户">
-            <div class="el-col-20">
+          <el-form-item label="客户">
+            <div>
               <el-select
                 placeholder="客户"
                 clearable
@@ -51,8 +50,8 @@
             </div>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6" label="机芯">
-            <div class="el-col-20">
+          <el-form-item label="机芯">
+            <div>
               <el-select
                 placeholder="机芯"
                 clearable
@@ -68,8 +67,8 @@
               </el-select>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6" label="机型">
-            <div class="el-col-20">
+          <el-form-item label="机型">
+            <div>
               <el-select
                 placeholder="机型"
                 clearable
@@ -84,8 +83,8 @@
               /></el-select>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6" label="国家">
-            <div class="el-col-20">
+          <el-form-item label="国家">
+            <div>
               <el-cascader
                 placeholder="国家"
                 v-model="filter.countryName"
@@ -96,8 +95,8 @@
               ></el-cascader>
             </div>
           </el-form-item>
-          <el-form-item class="el-col el-col-6" label="版本">
-            <div class="el-col-20">
+          <el-form-item label="版本">
+            <div>
               <el-select
                 placeholder="版本"
                 clearable
@@ -113,9 +112,8 @@
             </div>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6" label="状态">
+          <el-form-item label="状态">
             <el-select
-              class="el-col-20"
               placeholder="状态"
               clearable=""
               v-model="filter.releaseStatus"
@@ -129,12 +127,8 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item
-            class="el-col el-col-6"
-            label="策略名称"
-            prop="releaseConfName"
-          >
-            <div class="el-col-20">
+          <el-form-item label="策略名称" prop="releaseConfName">
+            <div>
               <el-input
                 placeholder="策略名称"
                 clearable
@@ -144,12 +138,8 @@
             </div>
           </el-form-item>
 
-          <el-form-item
-            class="el-col el-col-6"
-            label="区域名"
-            prop="ctmDevCtrName"
-          >
-            <div class="el-col-20">
+          <el-form-item label="区域名" prop="ctmDevCtrName">
+            <div>
               <el-input
                 placeholder="区域名"
                 clearable
@@ -159,7 +149,7 @@
             </div>
           </el-form-item>
 
-          <el-form-item class="el-col el-col-6">
+          <el-form-item class="btnBox">
             <el-button type="primary" @click="handleFilterChange"
               >查询</el-button
             >
@@ -743,14 +733,21 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.  >>> .el-form-item__content
-                width: 100%
-                .el-select,.el-cascader
-                   width 100%
-.content >>> .el-form--inline .el-form-item {
-           margin-right: 0px;
-}
+.content  >>> .el-form-item__content
+  .el-select,.el-cascader
+      width 100%
+.content >>> .el-form--inline .el-form-item
+  margin-right: 5px;
+
+.content >>> .el-form--inline .el-form-item__label
+  text-align: left;
+
 .content >>> .filter-item
   justify-content: flex-start;
   margin: 10px 0px
+.content >>> .btnBox
+  margin-left: 0px;
+.content >>> .btnBox
+  .el-form-item__content
+    width: 100%
 </style>
