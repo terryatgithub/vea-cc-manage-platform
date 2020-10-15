@@ -1,6 +1,10 @@
 <template>
   <div>
-    <el-table :data="sortListInUse" style="width: 100%" highlight-current-row>
+    <el-table
+      :data="sortListInUse"
+      class="table-container"
+      highlight-current-row
+    >
       <el-table-column :prop="sortName" label="名称"></el-table-column>
       <el-table-column label="往前">
         <template v-slot:default="scope">
@@ -64,4 +68,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.table-container {
+  width: 100%;
+  /deep/ .el-table__body-wrapper {
+    /deep/ .cell {
+      white-space: nowrap;
+    }
+  }
+}
+</style>

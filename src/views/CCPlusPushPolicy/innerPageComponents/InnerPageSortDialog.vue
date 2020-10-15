@@ -1,13 +1,14 @@
 <template>
   <div>
-    <el-table :data="sortListInUse" style="width: 100%" highlight-current-row>
+    <el-table
+      :data="sortListInUse"
+      class="table-container"
+      highlight-current-row
+    >
       <el-table-column :prop="sortName" label="名称"></el-table-column>
       <el-table-column label="往前">
         <template v-slot:default="scope">
-          <el-button
-            @click="moveUp(scope)"
-            :disabled="isGTemplate(scope.row)"
-          >
+          <el-button @click="moveUp(scope)" :disabled="isGTemplate(scope.row)">
             <i class="el-icon-caret-top"></i>
           </el-button>
         </template>
@@ -45,16 +46,16 @@ export default {
   },
   methods: {
     isGTemplate(row) {
-      return row.template === 'G'
+      return row.template === "G";
     },
     moveUp(scope) {
       let index = scope.$index;
       if (index === 0) {
         return;
       }
-      if(this.isGTemplate(this.sortListInUse[index-1])) {
-        this.$message.warning('G模板默认置顶~不能被超越')
-        return 
+      if (this.isGTemplate(this.sortListInUse[index - 1])) {
+        this.$message.warning("G模板默认置顶~不能被超越");
+        return;
       }
       let prev = this.sortListInUse.splice(index - 1, 1);
       this.sortListInUse.splice(index, 0, prev[0]);
@@ -77,4 +78,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.table-container {
+  width: 100%;
+  /deep/ .el-table__body-wrapper {
+    /deep/ .cell {
+      white-space: nowrap;
+    }
+  }
+}
+</style>
