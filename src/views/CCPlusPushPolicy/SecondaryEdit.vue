@@ -69,7 +69,11 @@
         </el-form-item>
 
         <el-form-item label="优先级:" prop="priority">
-          <el-select v-model="form.priority" placeholder="请选择优先级">
+          <el-select
+            v-model="form.priority"
+            placeholder="请选择优先级"
+            @change="changePriority"
+          >
             <el-option
               v-for="item in priorityOptions"
               :key="item.label"
@@ -129,7 +133,11 @@
       </el-form>
     </div>
 
-    <el-dialog title="选择区域" :visible.sync="showSelectRegionDialog" v-if="showSelectRegionDialog">
+    <el-dialog
+      title="选择区域"
+      :visible.sync="showSelectRegionDialog"
+      v-if="showSelectRegionDialog"
+    >
       <SelectRegionComponent @getRegion="getRegion" />
     </el-dialog>
   </ContentCard>
@@ -265,7 +273,7 @@ export default {
         this.form.supportVersion = [];
       } else {
         this.form.supportVersion = this.form.supportVersion.filter(item => {
-          return (item !== "All" && item !== val);
+          return item !== "All" && item !== val;
         });
       }
     },
@@ -384,9 +392,10 @@ export default {
         });
       }
     },
-    checkIfColumnHasMedia() { //检查所有栏目模板，是否包含了媒资资源
-      for(let i = 0, len = this.form.itemList.length; i < len; i++) {
-        if(this.form.itemList[i].itemMediaList.length === 0){
+    checkIfColumnHasMedia() {
+      //检查所有栏目模板，是否包含了媒资资源
+      for (let i = 0, len = this.form.itemList.length; i < len; i++) {
+        if (this.form.itemList[i].itemMediaList.length === 0) {
           throw new Error("栏目模板必须添加媒资资源，请检查");
         }
       }
@@ -398,7 +407,7 @@ export default {
         if (colNum === 0) {
           throw new Error("必须有至少一个栏目模板");
         }
-        this.checkIfColumnHasMedia()
+        this.checkIfColumnHasMedia();
         let res;
         if (colNum > 1) {
           res = this.checkDuplicatedSerialNo();
@@ -463,8 +472,16 @@ export default {
       if (rest[1]) {
         this.form.ctmDevCtrId = rest[0];
         this.form.ctmDevCtrName = rest[1];
+        // 移除校验结果
+        this.$refs["ccplusSecondaryEditForm"].clearValidate("ctmDevCtrName");
       }
       this.showSelectRegionDialog = false;
+    },
+    changePriority(val) {
+      if (val) {
+        // 移除校验结果
+        this.$refs["ccplusSecondaryEditForm"].clearValidate("priority");
+      }
     }
   }
 };

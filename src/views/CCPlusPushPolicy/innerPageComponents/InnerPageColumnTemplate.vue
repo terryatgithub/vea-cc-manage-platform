@@ -60,7 +60,7 @@
           </el-popover>
         </el-form-item>
 
-        <el-form-item v-if="content.template < 'G'">
+        <el-form-item v-if="content.template <= 'G'">
           <el-button @click="handleEditMovies" type="primary" plain
             >编辑栏目影片</el-button
           >
@@ -203,7 +203,7 @@ export default {
       showSelectPosterDialog: false,
       adheredPosterIndex: -1,
       showEditDetailPage: false,
-      specialTemplates: ["H", "J"],
+      specialTemplates: ["G", "H", "J"],
       templateOptions: [
         { label: "模板A 媒资混排", value: "A" },
         { label: "模板B 媒资竖图", value: "B" },
@@ -318,7 +318,12 @@ export default {
       }
       // For 'H' 'J' 模板，设置最大数量
       if (this.specialTemplates.includes(this.content.template)) {
-        this.content.itemMediaMax = this.content.template === "H" ? 1 : 2;
+        this.content.itemMediaMax =
+          this.content.template === "H"
+            ? 1
+            : this.content.template === "J"
+            ? 2
+            : 99;
       }
     },
     reSortSequence() {
