@@ -728,6 +728,8 @@ export default {
   },
   activated() {
     console.log("cc innerpage activated");
+    this.getMediaResourceInfo();
+    this.fetchData();
   },
   deactivated() {
     console.log("cc innerpage deactivated");

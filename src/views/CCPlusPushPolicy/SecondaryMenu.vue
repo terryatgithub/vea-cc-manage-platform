@@ -717,6 +717,8 @@ export default {
   },
   created() {
     console.log("cc created");
+    this.getMediaResourceInfo();
+    this.fetchData();
   },
   mounted() {
     console.log("cc mounted");
