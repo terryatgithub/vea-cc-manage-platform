@@ -126,6 +126,23 @@
     </el-dialog>
 
     <el-dialog
+      :visible.sync="showChooseMovieDialog"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      width="60%"
+    >
+      <MultiChooseMovieDialog
+        v-bind="$attrs"
+        @done-movie-replace="handleReplaceMovie"
+      />
+    </el-dialog>
+
+
+
+
+
+    <el-dialog
       :visible.sync="showEditDetailPage"
       title="编辑栏目详情"
       :show-close="false"
@@ -144,6 +161,7 @@
 // 添加栏目的'栏目模板'组件
 import ColumnResourceSelectDialog from "../components/ColumnResourceSelectDialog.vue";
 import ColumnTemplateDetail from "../components/ColumnTemplateDetail";
+import MultiChooseMovieDialog from "./MultiChooseMovieDialog";
 import PosterSelPop from "@/components/liteOS/posterSelPop";
 
 export default {
@@ -151,6 +169,7 @@ export default {
   components: {
     ColumnResourceSelectDialog,
     ColumnTemplateDetail,
+    MultiChooseMovieDialog,
     PosterSelPop
   },
   props: {
@@ -201,6 +220,7 @@ export default {
       mediaMaxPrev: 0, //保存影片上限旧值，供恢复旧值用
       showSelectResourceDialog: false,
       showSelectPosterDialog: false,
+      showChooseMovieDialog: false, // G模板专用选择资源
       adheredPosterIndex: -1,
       showEditDetailPage: false,
       specialTemplates: ["G", "H", "J"],
@@ -415,6 +435,13 @@ export default {
     posterClose() {
       this.showSelectPosterDialog = false;
     },
+    handleReplaceMovie(...rest) {
+      this.showChooseMovieDialog = false;
+      if (!rest[0]) {
+        return;
+      }
+      // todo 
+    },
     sortAndDedupItemMediaList() {
       const { itemMediaList } = this.content;
       //dedup
@@ -454,11 +481,12 @@ export default {
       }, 2000);
     },
     handleSelectColumnResource() {
-      let type = this.content.template > "G";
-      if (type) {
+      if (this.content.template > "G") {
         this.showSelectPosterDialog = true;
-      } else {
+      } else if(this.content.template < "G"){
         this.showSelectResourceDialog = true;
+      } else {
+        this.showChooseMovieDialog = true
       }
     },
     addPosterForGTemplate(index) {
