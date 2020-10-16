@@ -357,7 +357,7 @@ export default {
         fDate(a.releaseDate) > fDate(b.releaseDate)
           ? -1
           : fDate(a.releaseDate) === fDate(b.releaseDate) &&
-            parseInt(a.score) > parseInt(b.score)
+            parseFloat(a.score) > parseFloat(b.score)
           ? -1
           : 1;
       itemMediaList.sort(sort);
