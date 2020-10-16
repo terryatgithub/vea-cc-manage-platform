@@ -575,6 +575,12 @@ export default {
           if (pageInfoList[i].itemList[j].itemMediaList.length === 0) {
             throw new Error("栏目模板必须添加媒资资源，请检查");
           }
+          // 判断J模板必须关联2张媒资
+          if (pageInfoList[i].itemList[j].template === "J") {
+            if(pageInfoList[i].itemList[j].itemMediaList.length !== 2) {
+                throw new Error("J模板必须关联2个媒资资源，请检查");
+            }
+          }
           // 判断G模板是否关联海报
           if (pageInfoList[i].itemList[j].template === "G") {
             for (
