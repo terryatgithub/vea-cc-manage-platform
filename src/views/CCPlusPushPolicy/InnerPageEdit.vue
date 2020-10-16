@@ -91,12 +91,11 @@
       <div class="page-info-tabs">
         <el-button
           @click="showPageListSortDlg"
-          style="position:absolute;z-index:1;right:80px;"
+          class="page-operation-button second"
+          style=""
           >页面排序</el-button
         >
-        <el-button
-          @click="addNewPage"
-          style="position:absolute;z-index:1;right:0;"
+        <el-button @click="addNewPage" class="page-operation-button"
           >新增页面</el-button
         >
         <el-tabs
@@ -676,9 +675,27 @@ export default {
 .page-info-tabs {
   position: relative;
   /deep/ .el-tabs__nav-scroll {
-    width: calc(100% - 160px);
+    width: 100%;
+    // width: calc(100% - 160px);
   }
 
+  /deep/ .el-tabs__item {
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .page-operation-button {
+    position: absolute;
+    z-index: 1;
+    right: 80px;
+    top: -30px;
+  }
+
+  .page-operation-button.second {
+    right: 0;
+  }
   .column-template-tab-pane {
     position: relative;
     .btn-column-sort,
