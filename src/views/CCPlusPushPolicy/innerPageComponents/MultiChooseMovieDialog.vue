@@ -188,7 +188,11 @@ export default {
       this.table.data = [];
       this.selectedItems.splice(0);
     },
-    rowSelectionAdd(...rest) {
+    rowSelectionAdd(...rest) {//test
+      if(this.selectedItems.length >= this.$attrs.itemMediaMax) {
+        this.$message.error('G模板最多添加99个资源')
+        return
+      }
       this.selectedItems.push(rest[0]);
       this.updateTableSelected();
     },

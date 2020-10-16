@@ -137,6 +137,7 @@
         v-if="showChooseMovieDialog"
         :templateType="content.template === 'G' ? 'C' : content.template"
         :content="content.itemMediaList"
+        :itemMediaMax='content.itemMediaMax'
         @done-movie-selected="handleSelected"
       />
     </el-dialog>
