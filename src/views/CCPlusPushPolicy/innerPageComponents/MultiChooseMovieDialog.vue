@@ -72,11 +72,9 @@
         :header="table.header"
         :data="table.data"
         :selection-type="table.selectionType"
-        :selected="tableSelected"
+        :selected="table.selected"
         @row-selection-remove="rowSelectionRemove"
         @row-selection-add="rowSelectionAdd"
-        @row-click="rowClick"
-        @selection-change="handleSelectionChange"
       />
     </ContentWrapper>
     <div class="footer">
@@ -93,15 +91,20 @@ import BaseList from "@/components/BaseList";
 import { cloneDeep } from "lodash";
 
 export default {
-  name: "ChooseMovieDialog",
+  name: "MultiChooseMovieDialog",
   extends: BaseList,
   components: {
     ContentWrapper,
     Table
   },
+  props: {
+    content: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
-      radioUserSelect: -1,
       sourceOptions: [],
       categoryOptions: [],
       tagOptions: [],
@@ -111,9 +114,10 @@ export default {
         currentPage: 1,
         pageSize: 10
       },
-      tableSelected: [], //保存复选的多选项
+      selectedItems: cloneDeep(this.content),
       table: {
         selectionType: "multiple",
+        selected: [], // 保存当前页选中的index
         props: {
           "max-height": 400
         },
@@ -182,24 +186,46 @@ export default {
     uninit() {
       this.$refs.CCChooseMovieForm.resetFields();
       this.table.data = [];
-      this.radioUserSelect = -1;
+      this.selectedItems.splice(0);
     },
-    handleSelectionChange(val) {
-      // todo
+    rowSelectionAdd(...rest) {
+      this.selectedItems.push(rest[0]);
+      this.updateTableSelected();
+    },
+    rowSelectionRemove(...rest) {
+      const idField = "mediaResourcesId";
+      this.selectedItems = this.selectedItems.filter(
+        item => item[idField] !== rest[0][idField]
+      );
+      this.updateTableSelected();
+    },
+    updateTableSelected() {
+      const idField = "mediaResourcesId";
+      const table = this.table;
+      const newSelectedIndex = this.selectedItems.reduce((result, item) => {
+        result[item[idField]] = true;
+        return result;
+      }, {});
+      table.selected = table.data.reduce((result, item, index) => {
+        if (newSelectedIndex[item[idField]]) {
+          result.push(index);
+        }
+        return result;
+      }, []);
     },
     handlerFinish(confirm) {
       let selected = null;
       if (confirm) {
-        if (this.radioUserSelect === -1) {
+        if (this.selectedItems.length === 0) {
           this.$message({
             type: "error",
-            message: "请先选择替换的影片"
+            message: "请先选择影片"
           });
           return;
         }
-        selected = Object.assign({}, this.table.data[this.radioUserSelect]);
+        selected = this.selectedItems;
       }
-      this.$emit("done-movie-replace", selected);
+      this.$emit("done-movie-selected", selected);
       this.uninit();
     },
     async getAllSelections() {
@@ -233,7 +259,6 @@ export default {
       )[0].scrollTop = 0;
     },
     resetTableData() {
-      this.radioUserSelect = -1; //reset index
       this.table.data.splice(0);
     },
     async fetchData() {
@@ -247,9 +272,11 @@ export default {
         results.forEach((item, index) => {
           data.push({});
           data[index].mediaResourcesId = item.mediaResourcesId;
-          data[index].title = item.title;
           data[index].mediaPicType = item.posterType;
           data[index].mediaPic = item.posterUrl;
+          data[index].title = item.title;
+          data[index].releaseDate = item.releaseDate;
+          data[index].score = item.score;
           data[index].detailSeq = index;
         });
         this.scrollTableTop();

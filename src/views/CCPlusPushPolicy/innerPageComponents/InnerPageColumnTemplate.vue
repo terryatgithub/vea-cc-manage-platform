@@ -132,15 +132,14 @@
       :close-on-press-escape="false"
       width="60%"
     >
+      <!-- 后台要求请求资源时G模板传C -->
       <MultiChooseMovieDialog
-        v-bind="$attrs"
-        @done-movie-replace="handleReplaceMovie"
+        v-if="showChooseMovieDialog"
+        :templateType="content.template === 'G' ? 'C' : content.template"
+        :content="content.itemMediaList"
+        @done-movie-selected="handleSelected"
       />
     </el-dialog>
-
-
-
-
 
     <el-dialog
       :visible.sync="showEditDetailPage"
@@ -435,12 +434,28 @@ export default {
     posterClose() {
       this.showSelectPosterDialog = false;
     },
-    handleReplaceMovie(...rest) {
+    handleSelected(...rest) {
       this.showChooseMovieDialog = false;
       if (!rest[0]) {
         return;
       }
-      // todo 
+      const results = rest[0];
+      const { itemMediaList } = this.content;
+      itemMediaList.splice(0);
+      results.forEach((item, index) => {
+        itemMediaList.push({
+          mediaResourcesId: item.mediaResourcesId,
+          mediaPicType: item.mediaPicType,
+          mediaPic: item.mediaPic,
+          title: item.title,
+          releaseDate: item.releaseDate,
+          score: item.score,
+          detailSeq: index,
+          posterId: null, //海报id
+          posterName: "" //海报名称
+        });
+      });
+      // this.sortAndDedupItemMediaList();
     },
     sortAndDedupItemMediaList() {
       const { itemMediaList } = this.content;
@@ -483,10 +498,10 @@ export default {
     handleSelectColumnResource() {
       if (this.content.template > "G") {
         this.showSelectPosterDialog = true;
-      } else if(this.content.template < "G"){
+      } else if (this.content.template < "G") {
         this.showSelectResourceDialog = true;
       } else {
-        this.showChooseMovieDialog = true
+        this.showChooseMovieDialog = true;
       }
     },
     addPosterForGTemplate(index) {
