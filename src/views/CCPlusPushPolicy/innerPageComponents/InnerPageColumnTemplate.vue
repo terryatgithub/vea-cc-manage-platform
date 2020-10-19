@@ -150,7 +150,7 @@
       <ColumnTemplateDetail
         v-if="showEditDetailPage"
         :content="content"
-        :templateType="content.template"
+        :templateType="content.template === 'G' ? 'C' : content.template"
         @done-pic-operation="donePicOperation"
       />
     </el-dialog>
