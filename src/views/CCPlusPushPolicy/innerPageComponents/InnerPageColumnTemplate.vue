@@ -452,8 +452,8 @@ export default {
           releaseDate: item.releaseDate,
           score: item.score,
           detailSeq: index,
-          posterId: null, //海报id
-          posterName: "" //海报名称
+          posterId: item.posterId || '', //海报id
+          posterName: item.posterName || "" //海报名称
         });
       });
       // this.sortAndDedupItemMediaList();
